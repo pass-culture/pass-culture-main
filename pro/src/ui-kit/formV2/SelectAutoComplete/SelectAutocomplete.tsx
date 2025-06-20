@@ -240,6 +240,7 @@ export const SelectAutocomplete = forwardRef(
 
     // When an option is chosen
     const selectOption = (value: string) => {
+      console.log('selected value', value)
       setField(value)
       setSearchField(optionsLabelById.current?.get(value) ?? '')
 
@@ -326,12 +327,15 @@ export const SelectAutocomplete = forwardRef(
             ref={inputRef}
             name={name}
             onChange={(e) => {
-              setSearchField(e.target.value)
+              // setSearchField(e.target.value)
 
-              onChange({
-                type: 'change',
-                target: { name, value: e.target.value },
-              })
+              // onChange({
+              //   type: 'change',
+              //   target: { name, value: e.target.value },
+              // })
+
+              setSearchField(e.target.value)
+              onSearch(e.target.value)
             }}
             onBlur={(e) => {
               setSearchField(e.target.value)

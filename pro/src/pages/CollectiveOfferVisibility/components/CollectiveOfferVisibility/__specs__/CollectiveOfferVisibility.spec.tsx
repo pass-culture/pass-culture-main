@@ -143,11 +143,13 @@ describe('CollectiveOfferVisibility', () => {
         /Nom de l’établissement scolaire ou code UAI/
       )
     ).toBeDisabled()
+    expect(await screen.findByLabelText(/Prénom et nom/)).toBeDisabled()
     expect(screen.getByText(/Enregistrer et continuer/)).toBeDisabled()
   })
 
   it('should disable submit button if the user did not select an institution', () => {
     renderVisibilityStep(props)
+    expect(screen.getByLabelText(/Prénom et nom/)).toBeDisabled()
     expect(
       screen.getByRole('button', { name: /Enregistrer et continuer/ })
     ).toBeDisabled()
@@ -201,22 +203,15 @@ describe('CollectiveOfferVisibility', () => {
 
     renderVisibilityStep(props)
 
-    const institutionSelect = screen.getAllByTestId('select')[0]
-    await userEvent.selectOptions(institutionSelect, '12')
+    const institutionInput = screen.getByLabelText(
+      /Nom de l’établissement scolaire/i
+    )
+    await userEvent.type(institutionInput, 'Collège Institution 1')
+    await userEvent.keyboard('{ArrowDown}{Enter}')
 
-    await waitFor(() => {
-      expect(screen.getByLabelText(/enseignant/i)).not.toBeDisabled()
-    })
     const teacherInput = screen.getByLabelText(/Prénom et nom de l’enseignant/)
-    await userEvent.type(teacherInput, 'Red')
-
-    // await userEvent.selectOptions(
-    //   screen.getAllByTestId('select')[1],
-    //   'compte.test@education.gouv.fr'
-    // )
-
-    const option = await screen.findByText('KHTEUR REDA')
-    await userEvent.click(option)
+    await userEvent.type(teacherInput, 'KHTEUR')
+    await userEvent.keyboard('{ArrowDown}{Enter}')
 
     await userEvent.click(
       screen.getByRole('button', { name: /Enregistrer et continuer/ })
@@ -247,10 +242,6 @@ describe('CollectiveOfferVisibility', () => {
     await userEvent.click(institutionInput)
 
     await userEvent.type(institutionInput, 'Test input')
-
-    await userEvent.click(
-      await screen.findByTestId('wrapper-search-institution')
-    )
 
     await userEvent.click(institutionInput)
 
@@ -344,8 +335,11 @@ describe('CollectiveOfferVisibility', () => {
       },
     ])
 
-    const institutionSelect = screen.getAllByTestId('select')[0]
-    await userEvent.selectOptions(institutionSelect, '12')
+    const institutionInput = screen.getByLabelText(
+      /Nom de l’établissement scolaire/i
+    )
+    await userEvent.type(institutionInput, 'Collège Institution 1')
+    await userEvent.keyboard('{ArrowDown}{Enter}')
     const teacherInput = screen.getByLabelText(/Prénom et nom de l’enseignant/)
     await userEvent.type(teacherInput, 'Red')
 
@@ -373,13 +367,16 @@ describe('CollectiveOfferVisibility', () => {
         surname: 'KHTEUR',
       },
     ])
-    const institutionSelect = screen.getAllByTestId('select')[0]
-    await userEvent.selectOptions(institutionSelect, '12')
+    const institutionInput = screen.getByLabelText(
+      /Nom de l’établissement scolaire/i
+    )
+    await userEvent.type(institutionInput, 'Collège Institution 1')
+    await userEvent.keyboard('{ArrowDown}{Enter}')
     const teacherInput = screen.getByLabelText(/Prénom et nom de l’enseignant/)
     await userEvent.type(teacherInput, 'Red')
 
     expect(
-      screen.getByRole('option', { name: 'KHTEUR REDA' })
+      screen.getByRole('option', { name: /KHTEUR REDA/i })
     ).toBeInTheDocument()
 
     await userEvent.type(
@@ -388,7 +385,7 @@ describe('CollectiveOfferVisibility', () => {
     )
 
     expect(
-      screen.queryByRole('option', { name: 'KHTEUR REDA' })
+      screen.queryByRole('option', { name: /KHTEUR REDA/i })
     ).not.toBeInTheDocument()
   })
 
@@ -449,6 +446,9 @@ describe('CollectiveOfferVisibility', () => {
       expect(
         await screen.findByText(/Option sélectionnée : KHTEUR REDA/)
       ).toBeInTheDocument()
+
+      const institutionSelect = screen.getAllByTestId('select')[0]
+      expect(institutionSelect).toHaveValue('43')
       expect(
         screen.getByText(
           /Option sélectionnée : LYCEE POLYVALENT METIER ROBERT DOISNEAU - CORBEIL-ESSONNES - AZERTY13/
@@ -495,13 +495,19 @@ describe('CollectiveOfferVisibility', () => {
 
     expect(screen.getByText('Brouillon enregistré')).toBeInTheDocument()
 
-    const institutionSelect = screen.getAllByTestId('select')[0]
-    await userEvent.selectOptions(institutionSelect, '12')
+    const institutionInput = screen.getByLabelText(
+      /Nom de l’établissement scolaire/i
+    )
+    await userEvent.type(institutionInput, 'Collège Institution 1')
+    await userEvent.keyboard('{ArrowDown}{Enter}')
+
     const teacherInput = screen.getByLabelText(/Prénom et nom de l’enseignant/)
-    await userEvent.type(teacherInput, 'Red')
+    await userEvent.type(teacherInput, 'KHTEUR')
+    await userEvent.keyboard('{ArrowDown}{Enter}')
 
-    expect(screen.getByText('Brouillon non enregistré')).toBeInTheDocument()
-
+    await waitFor(() => {
+      expect(screen.getByText(/Brouillon non enregistré/i)).toBeInTheDocument()
+    })
     expect(
       await screen.findByRole('button', { name: 'Enregistrer et continuer' })
     ).toBeInTheDocument()

@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useMemo, useState } from 'react'
-import { Controller, FormProvider, useForm } from 'react-hook-form'
+import { useEffect, useMemo, useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import useSWR from 'swr'
 import { InferType } from 'yup'
 
@@ -157,27 +157,29 @@ export const CollectiveOfferVisibilityScreen = ({
     }
   }
 
-  initialValues = requestInformations
-    ? {
+  const finalInitialValues = useMemo(() => {
+    if (mode === Mode.EDITION && requestInformations) {
+      return {
         ...extractInitialVisibilityValues(null, null, requestInformations),
         institution:
           institutionsOptions
             .find(
-              (option) =>
-                option.institutionId ===
+              (opt) =>
+                opt.institutionId ===
                 requestInformations.institution.institutionId
             )
             ?.value.toString() || '',
       }
-    : initialValues
+    }
+    return initialValues
+  }, [mode, requestInformations, institutionsOptions, initialValues])
 
   const form = useForm<VisibilityFormValues>({
-    defaultValues: initialValues,
+    defaultValues: finalInitialValues,
     resolver: yupResolver(validationSchema),
   })
 
   const {
-    control,
     register,
     handleSubmit,
     setValue,
@@ -185,6 +187,56 @@ export const CollectiveOfferVisibilityScreen = ({
     watch,
     formState: { isDirty, isSubmitting },
   } = form
+
+  useEffect(() => {
+    const fetchInitialTeacher = async () => {
+      if (
+        mode === Mode.EDITION &&
+        requestInformations?.redactor.email &&
+        requestInformations.institution.institutionId
+      ) {
+        try {
+          const payload = await api.getAutocompleteEducationalRedactorsForUai(
+            requestInformations.institution.institutionId,
+            requestInformations.redactor.lastName ?? ''
+          )
+
+          setTeachersOptions(
+            payload.map(({ name, surname, gender, email }) => ({
+              label: `${surname} ${name}`.trim(),
+              value: email,
+              surname,
+              name,
+              gender,
+              email,
+            }))
+          )
+
+          setValue('teacher', requestInformations.redactor.email)
+        } catch {
+          notify.error(GET_DATA_ERROR_MESSAGE)
+        }
+      }
+    }
+
+    void fetchInitialTeacher()
+  }, [mode, requestInformations, setValue, notify])
+
+  useEffect(() => {
+    if (!requestInformations || institutionsOptions.length === 0) {
+      return
+    }
+    const institution = institutionsOptions.find(
+      (opt) =>
+        opt.institutionId === requestInformations.institution.institutionId
+    )
+    if (institution) {
+      reset({
+        institution: institution.value.toString(),
+        teacher: requestInformations.redactor.email,
+      })
+    }
+  }, [requestInformations, institutionsOptions, reset])
 
   const selectedTeacher: TeacherOption | null = requestId
     ? teachersOptions[0]
@@ -201,9 +253,7 @@ export const CollectiveOfferVisibilityScreen = ({
         (institution) => institution.value === watchedInstitution
       ) ?? null)
 
-  const onChangeTeacher = async () => {
-    const searchTeacherValue = watch('teacher')?.trim()
-
+  const onChangeTeacher = async (searchTeacherValue: string) => {
     if (
       !searchTeacherValue ||
       searchTeacherValue.length < 3 ||
@@ -239,7 +289,6 @@ export const CollectiveOfferVisibilityScreen = ({
       notify.error(GET_DATA_ERROR_MESSAGE)
     }
   }
-
   return (
     <>
       <FormLayout.MandatoryInfo />
@@ -269,49 +318,62 @@ export const CollectiveOfferVisibilityScreen = ({
                   <Spinner />
                 ) : (
                   <>
+                    {/* <Controller
+                      name="institution"
+                      control={control}
+                      render={({ field }) => ( */}
                     <SelectAutocomplete
                       {...register('institution')}
                       options={institutionsOptions}
                       label="Nom de l’établissement scolaire ou code UAI"
                       description="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
                       hideArrow
-                      onChange={(e) => {
-                        setValue('institution', e.target.value, {
-                          shouldDirty: true,
-                          shouldTouch: true,
-                        })
-                        setValue('teacher', '', {
-                          shouldDirty: false,
-                          shouldTouch: false,
-                        })
+                      onChange={() => {
+                        console.log('onChange')
+                        // field.onChange(e)
+                        setTeachersOptions([])
+                        setValue('teacher', '')
                       }}
-                      resetOnOpen={false}
+                      // resetOnOpen={false}
                       disabled={!canEditInstitution}
+                      onReset={() => {
+                        setTeachersOptions([])
+                        setValue('teacher', '')
+                      }}
                       searchInOptions={(options, pattern) =>
                         searchPatternInOptions(options, pattern, 300)
                       }
+                      onSearch={(value) => {
+                        console.log(value)
+                        setValue('institution', value)
+                        setValue('teacher', '')
+                      }}
                     />
+                    {/* )}
+                    /> */}
                   </>
                 )}
               </FormLayout.Row>
 
               <FormLayout.Row className={styles['row-layout']}>
-                <Controller
-                  name="teacher"
-                  control={control}
-                  render={({ field }) => (
-                    <SelectAutocomplete
-                      {...field}
-                      options={teachersOptions}
-                      label="Prénom et nom de l’enseignant (au moins 3 caractères)"
-                      isOptional
-                      description="Ex: Camille Dupont"
-                      hideArrow
-                      disabled={!canEditInstitution || !selectedInstitution}
-                      onSearch={onChangeTeacher}
-                      resetOnOpen={false}
-                    />
-                  )}
+                <SelectAutocomplete
+                  {...register('teacher')}
+                  value={watch('teacher')}
+                  options={teachersOptions}
+                  label="Prénom et nom de l’enseignant (au moins 3 caractères)"
+                  isOptional
+                  description="Ex: Camille Dupont"
+                  hideArrow
+                  disabled={!canEditInstitution || !watch('institution')}
+                  onSearch={onChangeTeacher}
+                  // resetOnOpen={false}
+                  onReset={() => {
+                    setTeachersOptions([])
+                    setValue('teacher', '')
+                  }}
+                  // onChange={(e) => {
+                  //   field.onChange(e)
+                  // }}
                 />
               </FormLayout.Row>
             </FormLayout.Section>
