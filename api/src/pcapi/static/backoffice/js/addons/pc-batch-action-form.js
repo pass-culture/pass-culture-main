@@ -125,16 +125,16 @@ class PcBatchActionForm extends PcAddOn {
       }
 
       this.getBatchConfirmButtons($batchConfirmBtnGroup).forEach(($button) => {
-        $button.disabled = selectedRowsIds.size === 0
+        $button.disabled = selectedRowsIds.length === 0
       })
     })
     if($menuContainer !== null) {
-      if (selectedRowsIds.size === 0) {
+      if (selectedRowsIds.length === 0) {
         $menuContainer.classList.add('d-none')
       } else {
         $menuContainer.classList.remove('d-none')
         const $counterElement = this.getCounterElement($menuContainer)
-        $counterElement.innerText = selectedRowsIds.size
+        $counterElement.innerText = selectedRowsIds.length
       }
     }
   }
