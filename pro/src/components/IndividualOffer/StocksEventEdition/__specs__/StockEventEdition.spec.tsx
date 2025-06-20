@@ -5,6 +5,7 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
+import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
 import {
@@ -417,10 +418,12 @@ describe('screens:StocksEventEdition', () => {
       stocks_count: 1,
     })
 
+    expect(screen.getByLabelText('Tarif *')).toHaveValue('2')
     await userEvent.selectOptions(
       screen.getByLabelText('Tarif *'),
       priceCategoryId
     )
+    expect(screen.getByLabelText('Tarif *')).toHaveValue('1')
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
