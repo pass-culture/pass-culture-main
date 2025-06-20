@@ -57,12 +57,17 @@ export const onSubmit = async (
       notify.success(
         stocks_count > 1
           ? `${new Intl.NumberFormat('fr-FR').format(
-            stocks_count
-          )} nouvelles dates ont été ajoutées`
+              stocks_count
+            )} nouvelles dates ont été ajoutées`
           : `${stocks_count} nouvelle date a été ajoutée`
       )
     } catch (error) {
-      notify.error(getHumanReadableApiError(error, 'Une erreur est survenue lors de l’enregistrement de vos stocks.'))
+      notify.error(
+        getHumanReadableApiError(
+          error,
+          'Une erreur est survenue lors de l’enregistrement de vos stocks.'
+        )
+      )
     }
   }
 }
@@ -180,6 +185,7 @@ const generateStocksForDates = (
 ): StocksEventWithOptionalId[] =>
   dates.flatMap((beginningDate) =>
     values.beginningTimes
+      .map((time) => time.beginningTime)
       // We filter out the times that are in the past for today
       .filter((beginningTime) =>
         isTimeInTheFuture(beginningDate, beginningTime)
@@ -197,17 +203,15 @@ const generateStocksForDates = (
               beginningTime,
               departmentCode
             )
-            const bookingLimitDateInterval =
-              values.bookingLimitDateInterval === ''
-                ? 0
-                : values.bookingLimitDateInterval
+            const bookingLimitDateInterval = !values.bookingLimitDateInterval
+              ? 0
+              : values.bookingLimitDateInterval
 
             return {
-              priceCategoryId: parseInt(quantityPerPriceCategory.priceCategory),
-              quantity:
-                quantityPerPriceCategory.quantity === ''
-                  ? null
-                  : quantityPerPriceCategory.quantity,
+              priceCategoryId: quantityPerPriceCategory.priceCategory
+                ? parseInt(quantityPerPriceCategory.priceCategory)
+                : 0,
+              quantity: quantityPerPriceCategory.quantity || null,
               beginningDatetime,
               bookingLimitDatetime: toISOStringWithoutMilliseconds(
                 sub(new Date(beginningDatetime), {

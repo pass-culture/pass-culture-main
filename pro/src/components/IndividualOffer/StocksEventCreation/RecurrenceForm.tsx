@@ -1,12 +1,20 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import * as Dialog from '@radix-ui/react-dialog'
-import { FieldArray, FormikProvider, useFormik } from 'formik'
+import {
+  useFieldArray,
+  FormProvider,
+  useForm,
+  useFormContext,
+} from 'react-hook-form'
 
 import { PriceCategoryResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
+import { SelectOption } from 'commons/custom_types/form'
 import { isDateValid, mapDayToFrench } from 'commons/utils/date'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import fullClearIcon from 'icons/full-clear.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
@@ -17,15 +25,16 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
-import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
-import { Select } from 'ui-kit/form/Select/Select'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
+import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
 import { DayCheckbox } from 'ui-kit/formV2/DayCheckbox/DayCheckbox'
+import { QuantityInput } from 'ui-kit/formV2/QuantityInput/QuantityInput'
 import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
+import { Select } from 'ui-kit/formV2/Select/Select'
+import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { TimePicker } from 'ui-kit/formV2/TimePicker/TimePicker'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 
 import { getPriceCategoryOptions } from '../StocksEventEdition/getPriceCategoryOptions'
 
@@ -64,7 +73,9 @@ const mapNumberToFrenchOrdinals = (n: number): string => {
 }
 
 const getMonthlyOptions = (values: RecurrenceFormValues) => {
-  const startingDate = new Date(values.startingDate)
+  const startingDate = values.startingDate
+    ? new Date(values.startingDate)
+    : new Date()
   const xOfMonth = isDateValid(startingDate) ? startingDate.getDate() : 1
 
   const weekOfMonth = isDateValid(startingDate)
@@ -101,6 +112,180 @@ const getMonthlyOptions = (values: RecurrenceFormValues) => {
   return options
 }
 
+const BeginningTimesForm = (): JSX.Element => {
+  const { register, watch, formState } = useFormContext<RecurrenceFormValues>()
+
+  const { fields, append, remove } = useFieldArray({
+    name: 'beginningTimes',
+  })
+
+  return (
+    <fieldset>
+      <div className={styles['section']}>
+        <h2 className={styles['legend']}>
+          <SvgIcon
+            alt=""
+            src={strokeClockIcon}
+            className={styles['legend-icon']}
+          />{' '}
+          Horaires pour l’ensemble de ces dates
+        </h2>
+
+        <FormLayout.Row>
+          <>
+            <div className={styles['beginning-time-list']}>
+              {fields.map((field, index) => (
+                <div key={field.id} className={styles['time-slot']}>
+                  <TimePicker
+                    label={`Horaire ${index + 1}`}
+                    className={styles['time-slot-picker']}
+                    error={
+                      formState.errors.beginningTimes?.[index]?.beginningTime
+                        ?.message
+                    }
+                    {...register(`beginningTimes.${index}.beginningTime`)}
+                    required
+                  />
+                  {watch('beginningTimes').length > 1 && (
+                    <div className={styles['time-slot-clear']}>
+                      <Tooltip content={`Supprimer l'horaire ${index + 1}`}>
+                        <button
+                          type="button"
+                          className={styles['time-slot-clear-button']}
+                          onClick={() => remove(index)}
+                        >
+                          <SvgIcon
+                            alt={`Supprimer l'horaire ${index + 1}`}
+                            src={fullClearIcon}
+                            className={styles['time-slot-clear-button-icon']}
+                          ></SvgIcon>
+                        </button>
+                      </Tooltip>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            <Button
+              variant={ButtonVariant.TERNARY}
+              icon={fullMoreIcon}
+              onClick={() => {
+                append('')
+                const inputToFocus = `beginningTimes.${watch('beginningTimes').length}`
+
+                // The input we want to focus has not been rendered yet
+                setTimeout(() => {
+                  document.getElementById(inputToFocus)?.focus()
+                }, 0)
+              }}
+            >
+              Ajouter un créneau
+            </Button>
+          </>
+        </FormLayout.Row>
+      </div>
+    </fieldset>
+  )
+}
+
+const PriceCategoriesForm = ({
+  priceCategoryOptions,
+}: {
+  priceCategoryOptions: SelectOption[]
+}): JSX.Element => {
+  const { register, watch, setValue, formState } =
+    useFormContext<RecurrenceFormValues>()
+
+  const { fields, append, remove } = useFieldArray({
+    name: 'quantityPerPriceCategories',
+  })
+
+  return (
+    <fieldset>
+      <div className={styles['section']}>
+        <h2 className={styles['legend']}>
+          <SvgIcon
+            src={strokeEventsIcon}
+            alt=""
+            className={styles['legend-icon']}
+          />
+          Places et tarifs par horaire
+        </h2>
+        {fields.map((field, index) => (
+          <FormLayout.Row
+            key={field.id}
+            inline
+            mdSpaceAfter
+            testId={`wrapper-quantityPerPriceCategories.${index}`}
+          >
+            <QuantityInput
+              label="Nombre de places"
+              className={styles['quantity-input']}
+              minimum={1}
+              name={`quantityPerPriceCategories.${index}.quantity`}
+              error={
+                formState.errors.quantityPerPriceCategories?.[index]?.quantity
+                  ?.message
+              }
+              value={
+                watch(`quantityPerPriceCategories.${index}.quantity`) ||
+                undefined
+              }
+              onChange={(e) => {
+                setValue(
+                  `quantityPerPriceCategories.${index}.quantity`,
+                  e.target.value ? Number(e.target.value) : undefined
+                )
+              }}
+            />
+            <Select
+              label="Tarif"
+              options={priceCategoryOptions}
+              defaultOption={{
+                label: 'Sélectionner un tarif',
+                value: '',
+              }}
+              required
+              error={
+                formState.errors.quantityPerPriceCategories?.[index]
+                  ?.priceCategory?.message
+              }
+              className={styles['price-category-input']}
+              {...register(`quantityPerPriceCategories.${index}.priceCategory`)}
+            />
+
+            <div className={styles['align-icon']}>
+              {watch('quantityPerPriceCategories').length > 1 && (
+                <Button
+                  variant={ButtonVariant.TERNARY}
+                  icon={fullTrashIcon}
+                  iconPosition={IconPositionEnum.CENTER}
+                  onClick={() => remove(index)}
+                  tooltipContent="Supprimer les places"
+                />
+              )}
+            </div>
+          </FormLayout.Row>
+        ))}
+        {watch('quantityPerPriceCategories').length <
+          priceCategoryOptions.length && (
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            icon={fullMoreIcon}
+            onClick={() => append(INITIAL_QUANTITY_PER_PRICE_CATEGORY)}
+            to={`#quantityPerPriceCategories[${
+              watch('quantityPerPriceCategories').length - 1
+            }].quantity`}
+            isExternal
+          >
+            Ajouter d’autres places et tarifs
+          </ButtonLink>
+        )}
+      </div>
+    </fieldset>
+  )
+}
+
 export const RecurrenceForm = ({
   priceCategories,
   handleSubmit,
@@ -109,28 +294,36 @@ export const RecurrenceForm = ({
 
   const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
 
-  const formik = useFormik({
-    initialValues: computeInitialValues(priceCategoryOptions),
-    onSubmit: handleSubmit,
-    validationSchema: getValidationSchema(priceCategoryOptions),
+  const methods = useForm<RecurrenceFormValues>({
+    defaultValues: computeInitialValues(priceCategoryOptions),
+    resolver: yupResolver(getValidationSchema()),
+    mode: 'onTouched',
   })
-  const { values, setFieldValue, handleChange } = formik
-  const monthlyOptions = getMonthlyOptions(values)
 
-  const onRecurrenceTypeChange = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    handleChange(e)
-    await setFieldValue('startingDate', '')
-    await setFieldValue('endingDate', '')
+  const monthlyOptions = getMonthlyOptions(methods.watch())
+
+  const onRecurrenceTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    methods.setValue('recurrenceType', e.target.value as RecurrenceType)
+    methods.setValue('startingDate', '')
+    methods.setValue('endingDate', '')
   }
-  const minDateForEndingDate = isDateValid(values.startingDate)
-    ? new Date(values.startingDate)
+  const startingDate = methods.watch('startingDate')
+  const recurrenceType = methods.watch('recurrenceType')
+  const minDateForEndingDate = isDateValid(startingDate)
+    ? new Date(startingDate)
     : new Date()
 
   return (
-    <FormikProvider value={formik}>
-      <form onSubmit={formik.handleSubmit} className={styles['form']}>
+    <FormProvider {...methods}>
+      <form
+        onSubmit={(e) => {
+          e.stopPropagation()
+          e.preventDefault()
+          return methods.handleSubmit(handleSubmit)(e)
+        }}
+        className={styles['form']}
+        noValidate
+      >
         <div className={styles['form-content']}>
           <div className={styles['mandatory']}>
             Tous les champs suivis d’un * sont obligatoires.
@@ -149,7 +342,6 @@ export const RecurrenceForm = ({
                 </h2>
               }
               displayMode="inline"
-              name="recurrenceType"
               group={[
                 { label: 'Une seule fois', value: RecurrenceType.UNIQUE },
                 { label: 'Tous les jours', value: RecurrenceType.DAILY },
@@ -157,13 +349,15 @@ export const RecurrenceForm = ({
                 { label: 'Tous les mois', value: RecurrenceType.MONTHLY },
               ]}
               variant="detailed"
+              name="recurrenceType"
+              checkedOption={recurrenceType}
               onChange={onRecurrenceTypeChange}
-              checkedOption={values.recurrenceType}
             />
           </div>
+
           <fieldset>
             <div className={styles['section']}>
-              {values.recurrenceType === RecurrenceType.WEEKLY && (
+              {recurrenceType === RecurrenceType.WEEKLY && (
                 <>
                   <div className={styles['day-inputs']}>
                     {Object.values(RecurrenceDays).map((day) => {
@@ -171,215 +365,100 @@ export const RecurrenceForm = ({
                       return (
                         <DayCheckbox
                           key={day}
+                          name={day}
                           label={frenchDay[0]}
                           tooltipContent={frenchDay}
-                          checked={values.days.includes(day)}
-                          name="days"
+                          checked={methods.watch('days').includes(day)}
                           onChange={(e) => {
-                            let newDays = new Set(values.days)
+                            let newDays = new Set(methods.watch('days'))
                             if (e.target.checked) {
                               newDays.add(day)
                             } else {
                               newDays.delete(day)
                             }
-                            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                            setFieldValue('days', Array.from(newDays))
+                            methods.setValue('days', Array.from(newDays))
                           }}
                         />
                       )
                     })}
                   </div>
-                  {formik.errors.days && formik.touched.days && (
+                  {methods.formState.errors.days && (
                     <div className={styles['days-error']}>
-                      <FieldError name="days">{formik.errors.days}</FieldError>
+                      <FieldError name="days">
+                        {methods.formState.errors.days.message}
+                      </FieldError>
                     </div>
                   )}
                 </>
               )}
-              {values.recurrenceType !== RecurrenceType.MONTHLY && (
+              {recurrenceType !== RecurrenceType.MONTHLY && (
                 <FormLayout.Row inline>
                   <DatePicker
-                    name="startingDate"
                     label={
-                      values.recurrenceType === RecurrenceType.UNIQUE
+                      recurrenceType === RecurrenceType.UNIQUE
                         ? 'Date de l’évènement'
                         : 'Du'
                     }
                     className={styles['date-input']}
                     minDate={new Date()}
+                    error={methods.formState.errors.startingDate?.message}
+                    required
+                    {...methods.register('startingDate')}
                   />
 
-                  {values.recurrenceType !== RecurrenceType.UNIQUE && (
+                  {recurrenceType !== RecurrenceType.UNIQUE && (
                     <DatePicker
-                      name="endingDate"
                       label="Au"
                       className={styles['date-input']}
                       minDate={minDateForEndingDate}
+                      error={methods.formState.errors.endingDate?.message}
+                      required
+                      {...methods.register('endingDate')}
                     />
                   )}
                 </FormLayout.Row>
               )}
 
-              {values.recurrenceType === RecurrenceType.MONTHLY && (
+              {recurrenceType === RecurrenceType.MONTHLY && (
                 <FormLayout.Row inline>
                   <DatePicker
-                    name="startingDate"
                     label={'Premier évènement le'}
                     className={styles['date-input']}
                     minDate={new Date()}
+                    error={methods.formState.errors.startingDate?.message}
+                    required
+                    {...methods.register('startingDate')}
                   />
 
                   <Select
                     label="Détail de la récurrence"
-                    name="monthlyOption"
                     options={monthlyOptions}
                     className={styles['monthly-option-input']}
                     defaultOption={{
                       label: 'Sélectionner une option',
                       value: '',
                     }}
+                    required
+                    error={methods.formState.errors.monthlyOption?.message}
+                    {...methods.register('monthlyOption')}
                   />
 
                   <DatePicker
-                    name="endingDate"
                     label="Fin de la récurrence"
                     className={styles['date-input']}
                     minDate={minDateForEndingDate}
+                    error={methods.formState.errors.endingDate?.message}
+                    required
+                    {...methods.register('endingDate')}
                   />
                 </FormLayout.Row>
               )}
             </div>
           </fieldset>
 
-          <fieldset>
-            <div className={styles['section']}>
-              <h2 className={styles['legend']}>
-                <SvgIcon
-                  alt=""
-                  src={strokeClockIcon}
-                  className={styles['legend-icon']}
-                />{' '}
-                Horaires pour l’ensemble de ces dates
-              </h2>
+          <BeginningTimesForm />
 
-              <FormLayout.Row>
-                <FieldArray
-                  name="beginningTimes"
-                  render={(arrayHelpers) => (
-                    <>
-                      <div className={styles['beginning-time-list']}>
-                        {values.beginningTimes.map((_beginningTime, index) => (
-                          <TimePicker
-                            key={index}
-                            label={`Horaire ${index + 1}`}
-                            name={`beginningTimes[${index}]`}
-                            className={styles['beginning-time-input']}
-                            clearButtonProps={{
-                              tooltip: 'Supprimer',
-                              'aria-label': 'Supprimer le créneau',
-                              disabled: values.beginningTimes.length <= 1,
-                              onClick: () => arrayHelpers.remove(index),
-                            }}
-                          />
-                        ))}
-                      </div>
-
-                      <Button
-                        variant={ButtonVariant.TERNARY}
-                        icon={fullMoreIcon}
-                        onClick={() => {
-                          arrayHelpers.push('')
-                          const inputToFocus = `beginningTimes[${values.beginningTimes.length}]`
-
-                          // The input we want to focus has not been rendered yet
-                          setTimeout(() => {
-                            document.getElementById(inputToFocus)?.focus()
-                          }, 0)
-                        }}
-                      >
-                        Ajouter un créneau
-                      </Button>
-                    </>
-                  )}
-                />
-              </FormLayout.Row>
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <div className={styles['section']}>
-              <h2 className={styles['legend']}>
-                <SvgIcon
-                  src={strokeEventsIcon}
-                  alt=""
-                  className={styles['legend-icon']}
-                />
-                Places et tarifs par horaire
-              </h2>
-              <FieldArray
-                name="quantityPerPriceCategories"
-                render={(arrayHelpers) => (
-                  <>
-                    {values.quantityPerPriceCategories.map((_, index) => (
-                      <FormLayout.Row
-                        key={index}
-                        inline
-                        mdSpaceAfter
-                        testId={`wrapper-quantityPerPriceCategories.${index}`}
-                      >
-                        <QuantityInput
-                          label="Nombre de places"
-                          name={`quantityPerPriceCategories[${index}].quantity`}
-                          className={styles['quantity-input']}
-                          isOptional
-                          min={1}
-                        />
-                        <Select
-                          label="Tarif"
-                          name={`quantityPerPriceCategories[${index}].priceCategory`}
-                          options={priceCategoryOptions}
-                          defaultOption={{
-                            label: 'Sélectionner un tarif',
-                            value: '',
-                          }}
-                          className={styles['price-category-input']}
-                        />
-
-                        <div className={styles['align-icon']}>
-                          <Button
-                            variant={ButtonVariant.TERNARY}
-                            icon={fullTrashIcon}
-                            iconPosition={IconPositionEnum.CENTER}
-                            disabled={
-                              values.quantityPerPriceCategories.length <= 1
-                            }
-                            onClick={() => arrayHelpers.remove(index)}
-                            tooltipContent="Supprimer les places"
-                          />
-                        </div>
-                      </FormLayout.Row>
-                    ))}
-                    {values.quantityPerPriceCategories.length <
-                      priceCategoryOptions.length && (
-                      <ButtonLink
-                        variant={ButtonVariant.TERNARY}
-                        icon={fullMoreIcon}
-                        onClick={() =>
-                          arrayHelpers.push(INITIAL_QUANTITY_PER_PRICE_CATEGORY)
-                        }
-                        to={`#quantityPerPriceCategories[${
-                          values.quantityPerPriceCategories.length - 1
-                        }].quantity`}
-                        isExternal
-                      >
-                        Ajouter d’autres places et tarifs
-                      </ButtonLink>
-                    )}
-                  </>
-                )}
-              />
-            </div>
-          </fieldset>
+          <PriceCategoriesForm priceCategoryOptions={priceCategoryOptions} />
 
           <fieldset>
             <div className={styles['section']}>
@@ -394,22 +473,24 @@ export const RecurrenceForm = ({
 
               <div className={styles['booking-date-limit-container']}>
                 <TextInput
-                  name="bookingLimitDateInterval"
                   label="Date limite de réservation (en nombre de jours avant le début de l’évènement)"
                   isLabelHidden
                   type="number"
                   step="1"
                   min={0}
                   className={styles['booking-date-limit-input']}
+                  error={
+                    methods.formState.errors.bookingLimitDateInterval?.message
+                  }
+                  {...methods.register('bookingLimitDateInterval')}
                   onBlur={() => {
-                    if (
-                      formik.initialValues.bookingLimitDateInterval !==
-                      values.bookingLimitDateInterval
-                    ) {
+                    const bookingLimitDateInterval = methods.watch(
+                      'bookingLimitDateInterval'
+                    )
+                    if (bookingLimitDateInterval) {
                       logEvent(Events.UPDATED_BOOKING_LIMIT_DATE, {
                         from: location.pathname,
-                        bookingLimitDateInterval:
-                          values.bookingLimitDateInterval,
+                        bookingLimitDateInterval: bookingLimitDateInterval,
                       })
                     }
                   }}
@@ -431,14 +512,14 @@ export const RecurrenceForm = ({
 
             <Button
               type="submit"
-              disabled={formik.isSubmitting}
-              isLoading={formik.isSubmitting}
+              disabled={methods.formState.isSubmitting}
+              isLoading={methods.formState.isSubmitting}
             >
               Valider
             </Button>
           </div>
         </DialogBuilder.Footer>
       </form>
-    </FormikProvider>
+    </FormProvider>
   )
 }
