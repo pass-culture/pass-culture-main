@@ -104,28 +104,26 @@ describe('Edit digital individual offers', () => {
       cy.findAllByTestId('spinner').should('not.exist')
 
       cy.stepLog({ message: 'Save initial date of events' })
-      cy.findByTestId('wrapper-stocks[0]beginningDate').within(() => {
-        cy.get('input').then(($elt) => {
-          cy.log('date: ' + $elt.val())
-          cy.stepLog({ message: '=> Date of event was: ' + $elt.val() })
-          cy.stepLog({
-            message:
-              '=> Type new date of event: ' + format(newDate, 'yyyy-MM-dd'),
-          })
-          cy.wrap($elt).type('{selectall}{del}' + format(newDate, 'yyyy-MM-dd'))
+      cy.findByTestId('stocks.0.beginningDate').then(($elt) => {
+        cy.log('date: ' + $elt.val())
+        cy.stepLog({ message: '=> Date of event was: ' + $elt.val() })
+        cy.stepLog({
+          message:
+            '=> Type new date of event: ' + format(newDate, 'yyyy-MM-dd'),
         })
+        cy.wrap($elt).type('{selectall}{del}' + format(newDate, 'yyyy-MM-dd'))
+        cy.findByLabelText('Quantité restante *').click()
       })
-      cy.findByTestId('wrapper-stocks[0]bookingLimitDatetime').within(() => {
-        cy.get('input').then(($elt) => {
-          cy.log('date: ' + $elt.val())
-          cy.stepLog({ message: '=> Date of booking limit was: ' + $elt.val() })
-          cy.stepLog({
-            message:
-              '=> Type new date of booking limit: ' +
-              format(newDate, 'yyyy-MM-dd'),
-          })
-          cy.wrap($elt).type('{selectall}{del}' + format(newDate, 'yyyy-MM-dd'))
+      cy.findByTestId('stocks.0.bookingLimitDatetime').then(($elt) => {
+        cy.log('date: ' + $elt.val())
+        cy.stepLog({ message: '=> Date of booking limit was: ' + $elt.val() })
+        cy.stepLog({
+          message:
+            '=> Type new date of booking limit: ' +
+            format(newDate, 'yyyy-MM-dd'),
         })
+        cy.wrap($elt).type('{selectall}{del}' + format(newDate, 'yyyy-MM-dd'))
+        cy.findByLabelText('Quantité restante *').click()
       })
 
       cy.stepLog({ message: 'Save modifications' })

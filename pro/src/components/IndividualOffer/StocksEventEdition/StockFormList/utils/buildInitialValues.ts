@@ -52,7 +52,7 @@ export const buildInitialValues = ({
       ...hiddenValues,
       remainingQuantity:
         stock.quantity === null || stock.quantity === undefined
-          ? ''
+          ? null
           : stock.quantity - stock.bookingsQuantity,
       bookingsQuantity: stock.bookingsQuantity || 0,
       beginningDate: isDateValid(stock.beginningDatetime)

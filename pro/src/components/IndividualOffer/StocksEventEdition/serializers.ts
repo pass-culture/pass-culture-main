@@ -104,10 +104,9 @@ const serializeStockEvent = (
         )
       : serializedbeginningDatetime,
     priceCategoryId: parseInt(formValues.priceCategoryId),
-    quantity:
-      formValues.remainingQuantity === ''
-        ? null
-        : formValues.remainingQuantity + formValues.bookingsQuantity,
+    quantity: formValues.remainingQuantity
+      ? formValues.remainingQuantity + formValues.bookingsQuantity
+      : null,
   }
 }
 
