@@ -602,9 +602,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=sa.func.now()
     )
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
-    user: sa_orm.Mapped[users_models.User] = sa_orm.relationship(
-        "User", foreign_keys=[userId], backref="beneficiaryFraudChecks", order_by=dateCreated
-    )
+    user: sa_orm.Mapped[users_models.User] = sa_orm.relationship("User", back_populates="beneficiaryFraudChecks")
 
     def get_detailed_source(self) -> str:
         if self.type == FraudCheckType.DMS.value:
