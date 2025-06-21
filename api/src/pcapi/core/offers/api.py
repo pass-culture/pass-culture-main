@@ -378,6 +378,12 @@ def update_offer(
     if not updates:
         return offer
 
+    if "bookingAllowedDatetime" in updates:
+        utc_now = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        bookingAllowedDatetime = get_field(offer, updates, "bookingAllowedDatetime", aliases=aliases)
+        if not bookingAllowedDatetime or (bookingAllowedDatetime <= utc_now):
+            reminders_notifications.notify_users_offer_is_bookable(offer)
+
     if (
         "audioDisabilityCompliant" in updates
         or "mentalDisabilityCompliant" in updates
@@ -582,7 +588,7 @@ def activate_future_offers_and_remind_users() -> None:
 
     for offer_id in offer_ids:
         offer = db.session.get(models.Offer, offer_id)
-        reminders_notifications.notify_users_future_offer_activated(offer=offer)
+        reminders_notifications.notify_users_offer_is_bookable(offer=offer)
 
 
 def set_upper_timespan_of_inactive_headline_offers() -> None:
