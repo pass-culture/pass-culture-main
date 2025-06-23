@@ -861,7 +861,7 @@ describe('IndividualOfferDetails', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should let update an image even for provided offers', async () => {
+    it('should let update an image for synchronized offers', async () => {
       const mockHandleImageOnSubmit = vi.fn().mockResolvedValue(undefined)
       vi.spyOn(
         imageUploadModule,
@@ -894,6 +894,40 @@ describe('IndividualOfferDetails', () => {
       expect(api.patchDraftOffer).not.toHaveBeenCalledOnce()
       expect(mockHandleImageOnSubmit).toHaveBeenCalled()
     })
+
+    it('should not let update an image for product-based offers', async () => {
+      const mockHandleImageOnSubmit = vi.fn().mockResolvedValue(undefined)
+      vi.spyOn(
+        imageUploadModule,
+        'useIndividualOfferImageUpload'
+      ).mockReturnValue({
+        displayedImage: { url: 'my url', credit: null },
+        hasUpsertedImage: false,
+        onImageDelete: vi.fn(),
+        onImageUpload: vi.fn(),
+        handleEanImage: vi.fn(),
+        handleImageOnSubmit: mockHandleImageOnSubmit,
+      })
+
+      const context = individualOfferContextValuesFactory({
+        categories: MOCK_DATA.categories,
+        subCategories: MOCK_DATA.subCategories,
+        offer: getIndividualOfferFactory({
+          productId: 1,
+          subcategoryId: 'physicalBis' as SubcategoryIdEnum,
+        }),
+      })
+
+      renderDetailsScreen({
+        contextValue: context,
+        mode: OFFER_WIZARD_MODE.EDITION,
+      })
+
+      await userEvent.click(screen.getByText('Enregistrer les modifications'))
+
+      expect(mockHandleImageOnSubmit).not.toHaveBeenCalled()
+    })
+
     it('should display categories and subcategories as disabled', () => {
       const context = individualOfferContextValuesFactory({
         categories: MOCK_DATA.categories,

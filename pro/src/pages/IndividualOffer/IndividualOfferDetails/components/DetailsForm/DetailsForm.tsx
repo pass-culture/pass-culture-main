@@ -168,6 +168,7 @@ export const DetailsForm = ({
         onImageDelete={onImageDelete}
         onImageDropOrSelected={logOnImageDropOrSelected}
         hideActionButtons={isProductBased}
+        isDisabled={isProductBased}
       />
       {!showAddVenueBanner && (
         <Subcategories

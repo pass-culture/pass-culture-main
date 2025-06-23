@@ -20,10 +20,7 @@ import {
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
-import {
-  isOfferProductBased,
-  isOfferSynchronized,
-} from 'commons/core/Offers/utils/typology'
+import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { getIndividualOfferImage } from 'components/IndividualOffer/utils/getIndividualOfferImage'
@@ -89,7 +86,7 @@ export const IndividualOfferDetailsScreen = ({
     handleEanImage,
     handleImageOnSubmit,
   } = useIndividualOfferImageUpload(initialImageOffer)
-  const isDirtyDraftOffer = !offer
+  const isDraftOffer = !offer
 
   const [filteredCategories, filteredSubcategories] = filterCategories(
     categories,
@@ -103,7 +100,7 @@ export const IndividualOfferDetailsScreen = ({
     categoryStatus === CATEGORY_STATUS.ONLINE || Boolean(offer?.isDigital)
   )
 
-  const initialValues = isDirtyDraftOffer
+  const initialValues = isDraftOffer
     ? //  When there is only one venue available the venueId field is not displayed
       //  Thus we need to set the venueId programmatically
       {
@@ -118,20 +115,35 @@ export const IndividualOfferDetailsScreen = ({
         subcategories: subCategories,
       })
 
+  const form = useForm<DetailsFormValues>({
+    defaultValues: initialValues,
+    resolver: yupResolver<DetailsFormValues>(
+      getValidationSchema({
+        isDigitalOffer:
+          categoryStatus === CATEGORY_STATUS.ONLINE ||
+          Boolean(offer?.isDigital),
+      })
+    ),
+    mode: 'onBlur',
+  })
+
+  // Either draft or already created product-based offer.
+  const isProductBased = !!form.watch('productId')
+  const isOfferProductBased = !isDraftOffer && isProductBased
+
   const onSubmit = async (formValues: DetailsFormValues): Promise<void> => {
     try {
-      const isSynchronized = isOfferSynchronized(offer)
-      const isProductBased = isOfferProductBased(offer)
       // Draft offer PATCH requests are useless for product-based offers
       // and synchronized / provider offers since neither of the inputs displayed in
       // DetailsScreen can be edited at all
-      const shouldNotPatchData = isSynchronized || isProductBased
+      const shouldNotPatchData =
+        isOfferSynchronized(offer) || isOfferProductBased
       const initialOfferId = offer?.id
 
       let response: GetIndividualOfferResponseModel | undefined
       let offerId = initialOfferId
 
-      if (isDirtyDraftOffer) {
+      if (isDraftOffer) {
         response = await api.postDraftOffer(
           serializeDetailsPostData(formValues)
         )
@@ -144,9 +156,10 @@ export const IndividualOfferDetailsScreen = ({
 
       offerId = response?.id ?? initialOfferId
 
-      const shouldSubmitImages = !!offerId && !isProductBased
-
-      if (shouldSubmitImages && offerId !== undefined) {
+      // Images can never be uploaded for product-based offers,
+      // the drag & drop should not be displayed / enabled so
+      // this is a safeguard.
+      if (!!offerId && !isProductBased) {
         await handleImageOnSubmit(offerId)
         await mutate([GET_OFFER_QUERY_KEY, offerId])
       }
@@ -198,18 +211,6 @@ export const IndividualOfferDetailsScreen = ({
     }
   }
 
-  const form = useForm<DetailsFormValues>({
-    defaultValues: initialValues,
-    resolver: yupResolver<DetailsFormValues>(
-      getValidationSchema({
-        isDigitalOffer:
-          categoryStatus === CATEGORY_STATUS.ONLINE ||
-          Boolean(offer?.isDigital),
-      })
-    ),
-    mode: 'onBlur',
-  })
-
   const handlePreviousStepOrBackToReadOnly = () => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -227,27 +228,19 @@ export const IndividualOfferDetailsScreen = ({
     }
   }
 
-  // (Draft) offers are created via POST request.
-  // On Details screen, the form might be pre-filled with a product,
-  // until the form is submitted, the draft offer is not created yet.
-  const isOfferButNotProductBased =
-    !isDirtyDraftOffer && !isOfferProductBased(offer)
-  const isProductBased = !!form.watch('productId')
+  const readOnlyFields = setFormReadOnlyFields(offer, isProductBased)
 
-  const readOnlyFields = publishedOfferWithSameEAN
-    ? Object.keys(DEFAULT_DETAILS_FORM_VALUES)
-    : setFormReadOnlyFields(offer, isProductBased)
   const isEanSearchAvailable =
     isRecordStore(venues) &&
     queryOfferType === INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
   const isEanSearchDisplayed =
     isEanSearchAvailable &&
     mode === OFFER_WIZARD_MODE.CREATION &&
-    !isOfferButNotProductBased
+    (isDraftOffer || isProductBased)
   const isEanSearchCalloutAloneDisplayed =
     isEanSearchAvailable &&
     mode === OFFER_WIZARD_MODE.EDITION &&
-    isOfferProductBased(offer)
+    isOfferProductBased
 
   const onEanSearch = (ean: string, product: Product) => {
     const {
@@ -309,15 +302,17 @@ export const IndividualOfferDetailsScreen = ({
       <FormLayout.MandatoryInfo />
       {isEanSearchDisplayed && (
         <DetailsEanSearch
-          isDirtyDraftOffer={isDirtyDraftOffer}
-          productId={form.watch('productId')}
+          isDraftOffer={isDraftOffer}
+          isProductBased={isProductBased}
           subcategoryId={form.watch('subcategoryId')}
           initialEan={offer?.extraData?.ean}
           onEanSearch={onEanSearch}
           onEanReset={onEanReset}
         />
       )}
-      {isEanSearchCalloutAloneDisplayed && <EanSearchCallout />}
+      {isEanSearchCalloutAloneDisplayed && (
+        <EanSearchCallout isDraftOffer={false} />
+      )}
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FormLayout fullWidthActions>

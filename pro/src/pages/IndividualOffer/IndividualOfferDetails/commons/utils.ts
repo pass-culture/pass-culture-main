@@ -263,31 +263,30 @@ export function setFormReadOnlyFields(
   offer: GetIndividualOfferResponseModel | null,
   isProductBased?: boolean
 ): string[] {
-  if (isProductBased && offer === null) {
-    const editableFields = ['venueId']
+  const allFields: string[] = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
+  const hasPendingOrRejectedStatus =
+    offer && [OfferStatus.REJECTED, OfferStatus.PENDING].includes(offer.status)
 
-    return Object.keys(DEFAULT_DETAILS_FORM_VALUES).filter(
-      (field) => !editableFields.includes(field)
-    )
-  }
-
-  if (isProductBased && offer !== null) {
-    return Object.keys(DEFAULT_DETAILS_FORM_VALUES)
-  }
-
+  // Offer is still a draft / being created.
   if (offer === null) {
+    // An EAS search was performed, so the form is product based.
+    // Multiple fields are read-only.
+    if (isProductBased) {
+      const editableFields = ['venueId']
+
+      return allFields.filter((field) => !editableFields.includes(field))
+    }
+
     return []
+  } else if (
+    isProductBased ||
+    isOfferSynchronized(offer) ||
+    hasPendingOrRejectedStatus
+  ) {
+    return allFields
+  } else {
+    return ['categoryId', 'subcategoryId', 'venueId']
   }
-
-  if ([OfferStatus.REJECTED, OfferStatus.PENDING].includes(offer.status)) {
-    return Object.keys(DEFAULT_DETAILS_FORM_VALUES)
-  }
-
-  if (isOfferSynchronized(offer)) {
-    return Object.keys(DEFAULT_DETAILS_FORM_VALUES)
-  }
-
-  return ['categoryId', 'subcategoryId', 'venueId']
 }
 
 export const serializeExtraData = (formValues: DetailsFormValues) => {

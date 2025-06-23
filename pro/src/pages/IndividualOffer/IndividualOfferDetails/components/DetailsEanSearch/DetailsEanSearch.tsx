@@ -24,8 +24,8 @@ type EanSearchForm = {
 }
 
 export type DetailsEanSearchProps = {
-  isDirtyDraftOffer: boolean
-  productId?: string
+  isDraftOffer: boolean
+  isProductBased: boolean
   subcategoryId: string
   initialEan?: string
   eanSubmitError?: string
@@ -34,8 +34,8 @@ export type DetailsEanSearchProps = {
 }
 
 export const DetailsEanSearch = ({
-  isDirtyDraftOffer,
-  productId,
+  isDraftOffer,
+  isProductBased,
   subcategoryId,
   initialEan,
   eanSubmitError,
@@ -47,9 +47,8 @@ export const DetailsEanSearch = ({
   const [wasCleared, setWasCleared] = useState(false)
   const [subcatError, setSubcatError] = useState<string | null>(null)
 
-  const isProductBased = !!productId
-  const isDirtyDraftOfferProductBased = isDirtyDraftOffer && isProductBased
-  const isDirtyDraftOfferNotProductBased = isDirtyDraftOffer && !isProductBased
+  const isDraftOfferProductBased = isDraftOffer && isProductBased
+  const isDraftOfferNotProductBased = isDraftOffer && !isProductBased
 
   const {
     register,
@@ -84,12 +83,12 @@ export const DetailsEanSearch = ({
   }, [eanSubmitError, setError])
 
   useEffect(() => {
-    if (isDirtyDraftOfferNotProductBased && isSubCategoryCD(subcategoryId)) {
+    if (isDraftOfferNotProductBased && isSubCategoryCD(subcategoryId)) {
       setSubcatError('Les offres de type CD doivent être liées à un produit.')
     } else {
       setSubcatError(null)
     }
-  }, [isDirtyDraftOfferNotProductBased, subcategoryId])
+  }, [isDraftOfferNotProductBased, subcategoryId])
 
   const onSearch = async (data: EanSearchForm) => {
     if (data.eanSearch) {
@@ -126,7 +125,7 @@ export const DetailsEanSearch = ({
 
   const shouldButtonBeDisabled =
     isProductBased || !ean || !isValid || !!apiError || isLoading
-  const displayClearButton = isDirtyDraftOfferProductBased
+  const displayClearButton = isDraftOfferProductBased
 
   const cumulativeError = subcatError
     ? `${subcatError}\n${errors.eanSearch?.message || ''}`
@@ -178,11 +177,7 @@ export const DetailsEanSearch = ({
           </div>
         </div>
         <div role="status" className={styles['details-ean-search-callout']}>
-          {isProductBased && (
-            <EanSearchCallout
-              isDirtyDraftOfferProductBased={isDirtyDraftOfferProductBased}
-            />
-          )}
+          {isProductBased && <EanSearchCallout isDraftOffer={isDraftOffer} />}
         </div>
       </FormLayout>
     </form>
