@@ -252,11 +252,7 @@ def mark_4xx_as_invalid(response: flask.Response) -> flask.Response:
 @app.teardown_request
 def remove_db_session(exc: BaseException | None = None) -> None:
     try:
-        if settings.USE_FLASK_SQLALCHEMY:
-            db.session.remove()
-        else:
-            db.remove_session()
-            db.clean_engines()
+        db.session.remove()
     except Exception as exception:
         logger.error(
             "An error happened while removing the transaction",
@@ -271,11 +267,10 @@ def remove_db_session(exc: BaseException | None = None) -> None:
 def teardown_atomic(exc: BaseException | None = None) -> None:
     if app.config.get("USE_GLOBAL_ATOMIC", False):
         try:
-            if settings.USE_FLASK_SQLALCHEMY or db.has_open_session():
-                if exc:
-                    session_management.mark_transaction_as_invalid()
-                session_management._finalize_managed_session()
-                db.session.autoflush = True
+            if exc:
+                session_management.mark_transaction_as_invalid()
+            session_management._finalize_managed_session()
+            db.session.autoflush = True
         except Exception as exception:
             logger.error(
                 "An error happened while managing the transaction",

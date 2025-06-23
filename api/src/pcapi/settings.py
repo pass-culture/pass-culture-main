@@ -77,11 +77,6 @@ DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT = int(os.environ.get("DATABASE_IDLE
 # Pull requests and local envs only have one user.
 DATABASE_HAS_SPECIFIC_ROLES = bool(int(os.environ.get("DATABASE_HAS_SPECIFIC_ROLES", "1")))
 SQLALCHEMY_ECHO = bool(int(os.environ.get("SQLALCHEMY_ECHO", "0")))
-USE_FLASK_SQLALCHEMY = bool(int(os.environ.get("USE_FLASK_SQLALCHEMY", 1)))
-# if an engine is not used for 1h it will be removed in case its thread is dead
-SQLALCHEMY_UNUSED_ENGINE_TIMEOUT = int(os.environ.get("SQLALCHEMY_UNUSED_ENGINE_TIMEOUT", 3600))
-# the probability of cleaning the engine is 1/SQLALCHEMY_ENGINE_CLEAN_PROBABILITY
-SQLALCHEMY_ENGINE_CLEAN_PROBABILITY = int(os.environ.get("SQLALCHEMY_ENGINE_CLEAN_PROBABILITY", 5000))
 
 
 # FLASK

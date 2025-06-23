@@ -4,7 +4,6 @@ import functools
 import hashlib
 import json as json_lib
 import os
-import sys
 import time
 import typing
 import urllib.parse
@@ -79,7 +78,6 @@ def pytest_configure(config):
 def build_backoffice_app():
     from flask_login import FlaskLoginClient
 
-    from pcapi import settings
     from pcapi.backoffice_app import app
     from pcapi.backoffice_app import csrf
     from pcapi.flask_app import remove_db_session
@@ -87,12 +85,6 @@ def build_backoffice_app():
     # Some tests fail without this. It's probably because of
     # pytest_flask_sqlalchemy.
     app.teardown_request_funcs[None].remove(remove_db_session)
-
-    if settings.USE_FLASK_SQLALCHEMY:
-        # Since sqla1.4, in tests teardown, all nested transactions (the way to handle 'savepoints') are closed recursively.
-        # But in some tests, there are more recursions than the default accepted number (1000)
-        # not needed with our pytest-flask-sqlalchemy
-        sys.setrecursionlimit(3000)
 
     with app.app_context():
         from pcapi.utils import login_manager
@@ -124,18 +116,12 @@ def build_backoffice_app():
 
 
 def build_main_app():
-    from pcapi import settings
     from pcapi.app import app
     from pcapi.flask_app import remove_db_session
 
     # Some tests fail without this. It's probably because of
     # pytest_flask_sqlalchemy.
     app.teardown_request_funcs[None].remove(remove_db_session)
-    if settings.USE_FLASK_SQLALCHEMY:
-        # Since sqla1.4, in tests teardown, all nested transactions (the way to handle 'savepoints') are closed recursively.
-        # But in some tests, there are more recursions than the default accepted number (1000)
-        # not needed withour pytest-flask-sqlalchemy
-        sys.setrecursionlimit(3000)
 
     app.config.from_mapping(
         CELERY=dict(
@@ -696,151 +682,8 @@ def generate_rsa_keys():
     return private_key_pem_file, public_key_pem_file
 
 
-#################################################################################################################
-# BEGIN pytest-flask-sqlalchemy rewrite                                                                         #
-# Temporary extract from pytest-flask-sqlalchemy library's sources to allow updating the project's dependencies #
-#################################################################################################################
-
-
 @pytest.fixture(scope="function")
-def _transaction(request, _db):
-    """
-    Create a transactional context for tests to run in.
-    """
-
-    from pcapi import settings
-
-    if not settings.USE_FLASK_SQLALCHEMY:
-        return
-
-    # Start a transaction
-    connection = _db.engine.connect()
-    transaction = connection.begin()
-
-    # Bind a session to the transaction. The empty `binds` dict is necessary
-    # when specifying a `bind` option, or else Flask-SQLAlchemy won't scope
-    # the connection properly
-    session = _db.create_scoped_session(options={"bind": connection, "binds": {}})
-
-    # Make sure the session, connection, and transaction can't be closed by accident in
-    # the codebase
-    connection.force_close = connection.close
-    transaction.force_rollback = transaction.rollback
-
-    connection.close = lambda: None
-    transaction.rollback = lambda: None
-    session.close = lambda: None
-
-    # Begin a nested transaction (any new transactions created in the codebase
-    # will be held until this outer transaction is committed or closed)
-    session.begin_nested()
-
-    # Each time the SAVEPOINT for the nested transaction ends, reopen it
-    @sa.event.listens_for(session, "after_transaction_end")
-    def restart_savepoint(session, trans):
-        if trans.nested and not trans._parent.nested:
-            # ensure that state is expired the way
-            # session.commit() at the top level normally does
-            session.expire_all()
-
-            session.begin_nested()
-
-    # Force the connection to use nested transactions
-    connection.begin = connection.begin_nested
-
-    # If an object gets moved to the 'detached' state by a call to flush the session,
-    # add it back into the session (this allows us to see changes made to objects
-    # in the context of a test, even when the change was made elsewhere in
-    # the codebase)
-    @sa.event.listens_for(session, "persistent_to_detached")
-    @sa.event.listens_for(session, "deleted_to_detached")
-    def rehydrate_object(session, obj):
-        session.add(obj)
-
-    @request.addfinalizer
-    def teardown_transaction():
-        # Delete the session
-        session.remove()
-
-        # Rollback the transaction and return the connection to the pool
-        transaction.force_rollback()
-        connection.force_close()
-
-    return connection, transaction, session
-
-
-@pytest.fixture(scope="function")
-def _engine(request, _transaction, mocker):
-    """
-    Mock out direct access to the semi-global Engine object.
-    """
-    from pcapi import settings
-
-    if not settings.USE_FLASK_SQLALCHEMY:
-        return
-
-    connection, _, session = _transaction
-
-    # Make sure that any attempts to call `connect()` simply return a
-    # reference to the open connection
-    engine = mocker.MagicMock(spec=sa.engine.Engine)
-
-    engine.connect.return_value = connection
-
-    # References to `Engine.dialect` should redirect to the Connection (this
-    # is primarily useful for the `autoload` flag in SQLAlchemy, which references
-    # the Engine dialect to reflect tables)
-    engine.dialect = connection.dialect
-
-    @contextlib.contextmanager
-    def begin():
-        """
-        Open a new nested transaction on the `connection` object.
-        """
-        with connection.begin_nested():
-            yield connection
-
-    # Force the engine object to use the current connection and transaction
-    engine.begin = begin
-    engine.execute = connection.execute
-
-    # Enforce nested transactions for raw DBAPI connections
-    def raw_connection():
-        # Start a savepoint
-        connection.execute("""SAVEPOINT raw_conn""")
-
-        # Preserve close/commit/rollback methods
-        connection.connection.force_close = connection.connection.close
-        connection.connection.force_commit = connection.connection.commit
-        connection.connection.force_rollback = connection.connection.rollback
-
-        # Prevent the connection from being closed accidentally
-        connection.connection.close = lambda: None
-        connection.connection.commit = lambda: None
-        connection.connection.set_isolation_level = lambda level: None
-
-        # If a rollback is initiated, return to the original savepoint
-        connection.connection.rollback = lambda: connection.execute("""ROLLBACK TO SAVEPOINT raw_conn""")
-
-        return connection.connection
-
-    engine.raw_connection = raw_connection
-
-    session.bind = engine
-
-    @request.addfinalizer
-    def reset_raw_connection():
-        # Return the underlying connection to its original state if it has changed
-        if hasattr(connection.connection, "force_rollback"):
-            connection.connection.commit = connection.connection.force_commit
-            connection.connection.rollback = connection.connection.force_rollback
-            connection.connection.close = connection.connection.force_close
-
-    return engine
-
-
-@pytest.fixture(scope="function")
-def db_session(_engine, _transaction, mocker, request):
+def db_session(_db, mocker, request):
     """
     Make sure all the different ways that we access the database in the code
     are scoped to a transactional context, and return a Session object that
@@ -854,27 +697,18 @@ def db_session(_engine, _transaction, mocker, request):
     """
 
     # No need for the fixture, `clean_database` will do the job
-    from pcapi import settings
-
-    nested = False
-
     if "clean_database" in request.fixturenames:
         yield None
-    elif settings.USE_FLASK_SQLALCHEMY:
-        _, _, _session = _transaction
-
-        # Whenever the code tries to access a Flask session, use the Session object
-        # instead
-        mocker.patch("pcapi.models.db.session", new=_session)
-
-        yield _session
     else:
         # from: https://docs.sqlalchemy.org/en/14/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites
         # TODO RPA: after migration to sqlalchemy 2.0 migrate to https://docs.sqlalchemy.org/en/20/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites
         engine = db.engine
         connection = engine.connect()
         transaction = connection.begin()
-        db.session = db.session_maker(bind=connection)
+        # Bind a session to the transaction. The empty `binds` dict is necessary
+        # when specifying a `bind` option, or else Flask-SQLAlchemy won't scope
+        # the connection properly
+        session = _db.create_scoped_session(options={"bind": connection, "binds": {}})
         nested = connection.begin_nested()
         session_data = SessionStructre(
             engine=engine,
@@ -882,23 +716,21 @@ def db_session(_engine, _transaction, mocker, request):
             transaction=transaction,
             nested=nested,
         )
+        # Whenever the code tries to access a Flask session, use the Session object
+        # instead
+        mocker.patch("pcapi.models.db.session", new=session)
 
-        @sa.event.listens_for(db.session, "after_transaction_end")
+        @sa.event.listens_for(session, "after_transaction_end")
         def end_savepoint(session, transaction):
             if not session_data.nested.is_active:
                 session_data.nested = connection.begin_nested()
 
-        yield db.session
+        yield session
+
         try:
-            db.session.close()
+            session.remove()
         except Exception:
             # some tests do not open a session
             pass
         session_data.transaction.rollback()
         session_data.connection.close()
-        db.remove_session()
-
-
-#################################################################################################################
-# END pytest-flask-sqlalchemy rewrite                                                                           #
-#################################################################################################################
