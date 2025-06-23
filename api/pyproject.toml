@@ -263,10 +263,6 @@ addopts = [
 filterwarnings = [
   # Mark warnings as errors
   "error",
-  # -------------- Temporary ignored warnings due to SLQAlchemy bump to 1.4 -------------- #
-  # Warning on SELECT with IN. Fix: pass a select() construct explicitly
-  "ignore:Coercing Subquery object into a select\\(\\) for use in IN\\(\\):sqlalchemy.exc.SAWarning",
-  # ---------------------------- #
 ]
 testpaths = ["tests"]
 norecursedirs = [".git", "venv", ".pytest_cache"]
