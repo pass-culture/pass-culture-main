@@ -7,6 +7,7 @@ from pcapi.core.users import repository as users_repository
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementCsvByInvoicesModel
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementCsvQueryModel
@@ -20,6 +21,7 @@ from . import blueprint
 
 
 @private_api.route("/reimbursements/csv", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(
     json_format=False,
@@ -58,6 +60,7 @@ def _get_reimbursements_csv_filter(user: User, query: ReimbursementCsvQueryModel
 
 
 @private_api.route("/v2/reimbursements/csv", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(
     json_format=False,

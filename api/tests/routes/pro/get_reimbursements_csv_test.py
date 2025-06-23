@@ -27,6 +27,7 @@ def test_without_reimbursement_period(client):
     client = client.with_session_auth(pro.email)
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # check user_offerer exists
+    num_queries += 1  # rollback
     with testing.assert_num_queries(num_queries):
         response = client.get(f"/reimbursements/csv?offererId={offerer_id}")
         assert response.status_code == 400
@@ -45,7 +46,9 @@ def test_without_offerer_id(client):
     pro = user_offerer.user
 
     client = client.with_session_auth(pro.email)
-    with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # rollback
+    with testing.assert_num_queries(num_queries):
         response = client.get(
             "/reimbursements/csv?reimbursementPeriodBeginningDate=2021-01-01&reimbursementPeriodEndingDate=2021-01-15"
         )
