@@ -31,12 +31,14 @@
 {% block details_container %}
   <!-- INFO -->
   {# section info #}
-  {% call content_navbar("product-details") %}
-    {{ content_navbar_button('product', 'Détails', default=True) }}
-    {% if product.ean and titelive_data and titelive_data.oeuvre %}{{ content_navbar_button('titelive', 'Informations Titelive') }}{% endif %}
-    {{ content_navbar_button('linked-offers', 'Offres liées') }}
-    {% if unlinked_offers %}{{ content_navbar_button('unlinked-offers', 'Offres non liées') }}{% endif %}
-  {% endcall %}
+  <div class="mt-3">
+    {% call content_navbar("product-details") %}
+      {{ content_navbar_button('product', 'Détails', default=True) }}
+      {% if product.ean and titelive_data and titelive_data.oeuvre %}{{ content_navbar_button('titelive', 'Informations Titelive') }}{% endif %}
+      {{ content_navbar_button('linked-offers', 'Offres liées') }}
+      {% if unlinked_offers %}{{ content_navbar_button('unlinked-offers', 'Offres non liées') }}{% endif %}
+    {% endcall %}
+  </div>
   {% call details_content_wrapper("product-details") %}
     <div class="tab-content"
          id="offersTabContent">
