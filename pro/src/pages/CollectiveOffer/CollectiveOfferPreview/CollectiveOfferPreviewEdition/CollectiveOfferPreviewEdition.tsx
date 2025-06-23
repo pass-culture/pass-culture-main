@@ -8,7 +8,7 @@ import {
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import styles from './CollectiveOfferPreviewEdition.module.scss'
+import { PreviewHeader } from '../components/PreviewHeader'
 
 export const CollectiveOfferPreviewEdition = ({
   offer,
@@ -18,11 +18,8 @@ export const CollectiveOfferPreviewEdition = ({
     : `/offre/${offer.id}/collectif/recapitulatif`
 
   return (
-    <Layout layout={'sticky-actions'} mainHeading='Aperçu de l’offre'>
-      <p className={styles['preview-info']}>
-        Voici à quoi ressemble votre offre une fois publiée sur la plateforme
-        ADAGE.
-      </p>
+    <Layout layout={'sticky-actions'} mainHeading="Aperçu de l’offre">
+      <PreviewHeader offer={offer} />
       <AdagePreviewLayout offer={offer} />
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
