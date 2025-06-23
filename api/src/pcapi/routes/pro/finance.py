@@ -12,6 +12,7 @@ import pcapi.core.finance.repository as finance_repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import finance_serialize
 from pcapi.serialization.decorator import spectree_serialize
@@ -22,6 +23,7 @@ from . import blueprint
 
 
 @private_api.route("/v2/finance/invoices", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(response_model=finance_serialize.InvoiceListV2ResponseModel, api=blueprint.pro_private_schema)
 def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance_serialize.InvoiceListV2ResponseModel:
@@ -47,6 +49,7 @@ def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance
 
 
 @private_api.route("/v2/finance/has-invoice", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(response_model=finance_serialize.HasInvoiceResponseModel, api=blueprint.pro_private_schema)
 def has_invoice(query: finance_serialize.HasInvoiceQueryModel) -> finance_serialize.HasInvoiceResponseModel:
@@ -57,6 +60,7 @@ def has_invoice(query: finance_serialize.HasInvoiceQueryModel) -> finance_serial
 
 
 @private_api.route("/finance/combined-invoices", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(
     api=blueprint.pro_private_schema,
@@ -112,6 +116,7 @@ def get_combined_invoices(query: finance_serialize.CombinedInvoiceListModel) -> 
 
 
 @private_api.route("/finance/bank-accounts", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(
     response_model=finance_serialize.FinanceBankAccountListResponseModel, api=blueprint.pro_private_schema
