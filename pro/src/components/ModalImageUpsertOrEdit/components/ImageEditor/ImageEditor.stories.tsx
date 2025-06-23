@@ -14,7 +14,6 @@ export const Default: StoryObj<typeof ImageEditor> = {
   args: {
     canvasHeight: 300,
     canvasWidth: 400,
-    cropBorderColor: '#FFF',
     cropBorderHeight: 30,
     cropBorderWidth: 40,
     image: sampleImage as unknown as File,

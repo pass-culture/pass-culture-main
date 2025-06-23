@@ -29,7 +29,6 @@ export const getImageEditorConfig = (
     [UploaderModeEnum.OFFER]: {
       canvasHeight,
       canvasWidth: (canvasHeight * 2) / 3,
-      cropBorderColor: '#FFF',
       cropBorderHeight: 50,
       cropBorderWidth: 105,
       maxScale,
@@ -37,7 +36,6 @@ export const getImageEditorConfig = (
     [UploaderModeEnum.OFFER_COLLECTIVE]: {
       canvasHeight,
       canvasWidth: (canvasHeight * 2) / 3,
-      cropBorderColor: '#FFF',
       cropBorderHeight: 50,
       cropBorderWidth: 105,
       maxScale,
@@ -45,7 +43,6 @@ export const getImageEditorConfig = (
     [UploaderModeEnum.VENUE]: {
       canvasHeight,
       canvasWidth: (canvasHeight * 3) / 2,
-      cropBorderColor: '#FFF',
       cropBorderHeight: 40,
       cropBorderWidth: 100,
       maxScale,
