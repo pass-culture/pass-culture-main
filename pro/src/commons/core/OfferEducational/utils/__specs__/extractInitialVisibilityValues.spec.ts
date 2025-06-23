@@ -10,8 +10,6 @@ describe('extractInitialVisibilityValues', () => {
     expect(extractInitialVisibilityValues(null)).toStrictEqual({
       visibility: 'all',
       institution: '',
-      'search-institution': '',
-      'search-teacher': '',
       teacher: null,
     })
   })
@@ -28,8 +26,6 @@ describe('extractInitialVisibilityValues', () => {
     expect(extractInitialVisibilityValues(institution)).toStrictEqual({
       visibility: 'one',
       institution: '1',
-      'search-institution': 'Collège Bellevue - Alès - ABCDEF11',
-      'search-teacher': '',
       teacher: null,
     })
   })
@@ -52,8 +48,6 @@ describe('extractInitialVisibilityValues', () => {
     expect(extractInitialVisibilityValues(institution, teacher)).toStrictEqual({
       visibility: 'one',
       institution: '1',
-      'search-institution': 'Collège Bellevue - Alès - ABCDEF11',
-      'search-teacher': `${teacher.firstName} ${teacher.lastName}`,
       teacher: 'reda.khteur@example.com',
     })
   })
@@ -79,8 +73,6 @@ describe('extractInitialVisibilityValues', () => {
     ).toStrictEqual({
       visibility: 'one',
       institution: '',
-      'search-institution': 'COLLEGE Collège Bellevue - Alès - ABCDEF11',
-      'search-teacher': `Reda Khteur`,
       teacher: 'reda.khteur@example.com',
     })
   })

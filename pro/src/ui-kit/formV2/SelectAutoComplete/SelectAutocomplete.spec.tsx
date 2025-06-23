@@ -237,6 +237,7 @@ describe('SelectAutocomplete', () => {
       <SelectAutocomplete
         {...{
           ...props,
+          value: '02',
           resetOnOpen: false,
           onReset: undefined,
           ref: (ref) => {

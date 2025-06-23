@@ -39,7 +39,7 @@ import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavin
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
+import { SelectAutocomplete } from 'ui-kit/formV2/SelectAutoComplete/SelectAutocomplete'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './CollectiveOfferVisibility.module.scss'
@@ -89,7 +89,6 @@ export const CollectiveOfferVisibilityScreen = ({
   const notify = useNotification()
 
   const [teachersOptions, setTeachersOptions] = useState<TeacherOption[]>([])
-  const [buttonPressed, setButtonPressed] = useState(false)
 
   const canEditInstitution = isActionAllowedOnCollectiveOffer(
     offer,
@@ -131,7 +130,11 @@ export const CollectiveOfferVisibilityScreen = ({
   )
 
   const onSubmit = async (values: VisibilityFormValues) => {
-    setButtonPressed(true)
+    const selectedTeacher: TeacherOption | null = requestId
+      ? teachersOptions[0]
+      : (teachersOptions.find(
+          (teacher) => teacher.value === formik.values.teacher
+        ) ?? null)
 
     try {
       const collectiveOffer =
@@ -150,25 +153,23 @@ export const CollectiveOfferVisibilityScreen = ({
       formik.resetForm({
         values: extractInitialVisibilityValues(collectiveOffer.institution),
       })
-      setButtonPressed(false)
     } catch {
       notify.error(SENT_DATA_ERROR_MESSAGE)
-      setButtonPressed(false)
     }
   }
 
   initialValues = requestInformations
     ? {
-      ...extractInitialVisibilityValues(null, null, requestInformations),
-      institution:
-        institutionsOptions
-          .find(
-            (option) =>
-              option.institutionId ===
-              requestInformations.institution.institutionId
-          )
-          ?.value.toString() || '',
-    }
+        ...extractInitialVisibilityValues(null, null, requestInformations),
+        institution:
+          institutionsOptions
+            .find(
+              (option) =>
+                option.institutionId ===
+                requestInformations.institution.institutionId
+            )
+            ?.value.toString() || '',
+      }
     : initialValues
 
   const formik = useFormik<VisibilityFormValues>({
@@ -178,24 +179,12 @@ export const CollectiveOfferVisibilityScreen = ({
     enableReinitialize: true,
   })
 
-  const selectedTeacher: TeacherOption | null = requestId
-    ? teachersOptions[0]
-    : (teachersOptions.find(
-      (teacher) => teacher.value === formik.values.teacher
-    ) ?? null)
-
-  const selectedInstitution: InstitutionOption | null = requestId
-    ? institutionsOptions.filter(({ label }) =>
-      label
-        .toLowerCase()
-        .includes(formik.values['search-institution'].trim().toLowerCase())
-    )[0]
-    : (institutionsOptions.find(
+  const onSearchTeacher = async (pattern: string) => {
+    const selectedInstitution = institutionsOptions.find(
       (institution) => institution.value === formik.values.institution
-    ) ?? null)
+    )
 
-  const onChangeTeacher = async () => {
-    const searchTeacherValue = formik.values['search-teacher']?.trim()
+    const searchTeacherValue = pattern.trim()
 
     if (
       !searchTeacherValue ||
@@ -232,7 +221,6 @@ export const CollectiveOfferVisibilityScreen = ({
       notify.error(GET_DATA_ERROR_MESSAGE)
     }
   }
-
   return (
     <>
       <FormLayout.MandatoryInfo />
@@ -256,7 +244,6 @@ export const CollectiveOfferVisibilityScreen = ({
                 L’établissement et l’enseignant renseignés sont les seuls à
                 pouvoir visualiser et préréserver votre offre sur ADAGE.
               </p>
-
               <FormLayout.Row className={styles['row-layout']}>
                 {isLoadingInstitutions ? (
                   <Spinner />
@@ -268,26 +255,27 @@ export const CollectiveOfferVisibilityScreen = ({
                       label="Nom de l’établissement scolaire ou code UAI"
                       description="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
                       hideArrow
-                      onReset={async () => {
-                        setTeachersOptions([])
-                        await formik.setFieldValue('search-teacher', '')
+                      onReset={() => {
+                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                        formik.setFieldValue('institution', null)
+                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                        formik.setFieldValue('teacher', null)
                       }}
-                      onSearch={async () => {
-                        if (formik.dirty) {
-                          await formik.setFieldValue('institution', '')
-                          await formik.setFieldValue('search-teacher', '')
-                        }
+                      onChange={(event) => {
+                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                        formik.setFieldValue('institution', event.target.value)
+                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                        formik.setFieldValue('teacher', undefined)
                       }}
-                      resetOnOpen={false}
                       disabled={!canEditInstitution}
                       searchInOptions={(options, pattern) =>
                         searchPatternInOptions(options, pattern, 300)
                       }
+                      value={formik.values.institution}
                     />
                   </>
                 )}
               </FormLayout.Row>
-
               <FormLayout.Row className={styles['row-layout']}>
                 <SelectAutocomplete
                   name="teacher"
@@ -296,11 +284,21 @@ export const CollectiveOfferVisibilityScreen = ({
                   isOptional
                   description="Ex: Camille Dupont"
                   hideArrow
-                  disabled={!canEditInstitution || !selectedInstitution}
-                  onSearch={async () => {
-                    await onChangeTeacher()
+                  onReset={() => {
+                    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                    formik.setFieldValue('teacher', null)
                   }}
-                  resetOnOpen={false}
+                  onSearch={onSearchTeacher}
+                  disabled={!canEditInstitution || !formik.values.institution}
+                  onChange={(event) => {
+                    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                    formik.setFieldValue('teacher', event.target.value)
+                  }}
+                  value={
+                    formik.values.institution
+                      ? formik.values.teacher || undefined
+                      : undefined
+                  }
                 />
               </FormLayout.Row>
             </FormLayout.Section>
@@ -310,8 +308,9 @@ export const CollectiveOfferVisibilityScreen = ({
                   variant={ButtonVariant.SECONDARY}
                   to={
                     mode === Mode.CREATION
-                      ? `/offre/${offer.id}/collectif/stocks${requestId ? `?requete=${requestId}` : ''
-                      }`
+                      ? `/offre/${offer.id}/collectif/stocks${
+                          requestId ? `?requete=${requestId}` : ''
+                        }`
                       : '/offres/collectives'
                   }
                 >
@@ -321,11 +320,7 @@ export const CollectiveOfferVisibilityScreen = ({
               <ActionsBarSticky.Right dirtyForm={formik.dirty} mode={mode}>
                 <Button
                   type="submit"
-                  disabled={
-                    buttonPressed ||
-                    !formik.values.institution ||
-                    !canEditInstitution
-                  }
+                  disabled={!formik.values.institution || !canEditInstitution}
                 >
                   Enregistrer et continuer
                 </Button>

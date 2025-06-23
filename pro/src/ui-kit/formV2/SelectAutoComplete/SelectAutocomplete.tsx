@@ -132,7 +132,7 @@ export const SelectAutocomplete = forwardRef(
 
     // Handles "resetOnOpen" behavior
     useEffect(() => {
-      if (resetOnOpen && isDropdownOpen && searchField !== '') {
+      if (resetOnOpen && isDropdownOpen) {
         setField('')
         setSearchField('')
         onReset()
@@ -269,7 +269,8 @@ export const SelectAutocomplete = forwardRef(
     // When the inputRef's value changes externally
     useEffect(() => {
       // get the value from either the "value" prop or via the inputRef
-      const externalValue = (inputValue || inputRef.current?.value) ?? ''
+      const externalValue =
+        (inputValue || (ref && inputRef.current?.value)) ?? ''
 
       // associate the new value to the good label in the "searchField" (ex: "05" -> "Hautes-Alpes")
       // fallback to the external value if the inputRef's value is not in the options
@@ -277,7 +278,7 @@ export const SelectAutocomplete = forwardRef(
         optionsLabelById.current?.get(externalValue) ?? externalValue
       )
       setField(externalValue) // Provokes a re-render and also updates the hidden <select> element connected to the "field" (a11y)
-    }, [inputRef, inputValue])
+    }, [inputRef, inputValue, ref])
 
     // Connect the external reference to the internal one "inputRef", so we can read it's value in the "useEffect" above
     useImperativeHandle(ref, () => inputRef.current as HTMLInputElement)
@@ -353,7 +354,7 @@ export const SelectAutocomplete = forwardRef(
             id={`help-${name}`}
           >
             {field !== '' &&
-              `Option sélectionnée : ${optionsLabelById.current?.get(field) ?? ''}. `}
+              `Option sélectionnée : ${options.find((op) => op.value === inputValue)?.label ?? ''}. `}
             {isDropdownOpen
               ? `${filteredOptions.length} options ${
                   searchField === ''

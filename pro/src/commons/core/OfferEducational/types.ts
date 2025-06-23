@@ -1,11 +1,11 @@
 import { CollectiveLocationType, EacFormat } from 'apiClient/adage'
 import {
-  OfferAddressType,
-  StudentLevels,
+  CollectiveOfferResponseModel,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-  CollectiveOfferResponseModel,
   ListOffersOfferResponseModel,
+  OfferAddressType,
+  StudentLevels,
 } from 'apiClient/v1'
 import {
   AccessibilityFormValues,
@@ -100,8 +100,6 @@ export const isCollectiveOfferTemplate = (
 export type VisibilityFormValues = {
   visibility: 'all' | 'one'
   institution: string
-  'search-institution': string
-  'search-teacher': string | null
   teacher: string | null
 }
 
