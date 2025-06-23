@@ -22,7 +22,7 @@ def get_offers_by_tag(tag_name: str) -> serializers.OffersResponse:
         .join(offers_models.Offer.stocks)
         .filter(
             criteria_models.Criterion.name == tag_name,
-            offers_models.Offer.is_released_and_bookable,
+            offers_models.Offer.isReleased,
         )
         .options(
             sa_orm.joinedload(offers_models.Offer.stocks),
