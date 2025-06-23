@@ -12,14 +12,13 @@ import {
   ModalImageUpsertOrEdit,
   OnImageUploadArgs,
 } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import { ImagePlaceholder } from 'components/SafeImage/ImagePlaceholder/ImagePlaceholder'
+import { SafeImage } from 'components/SafeImage/SafeImage'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-
-import { ImagePlaceholder } from '../SafeImage/ImagePlaceholder/ImagePlaceholder'
-import { SafeImage } from '../SafeImage/SafeImage'
 
 import styles from './ImageDragAndDropUploader.module.scss'
 export interface ImageDragAndDropUploaderProps {

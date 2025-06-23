@@ -2,7 +2,6 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { forwardRef } from 'react'
 
-import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { ImageUploader, ImageUploaderProps } from './ImageUploader'
@@ -46,7 +45,6 @@ describe('ImageUploader', () => {
     props = {
       onImageUpload: async () => {},
       onImageDelete: async () => {},
-      mode: UploaderModeEnum.OFFER,
       initialValues: {
         imageUrl: 'noimage.jpg',
         originalImageUrl: 'noimage.jpg',
@@ -82,7 +80,6 @@ describe('ImageUploader', () => {
     props = {
       onImageUpload: async () => {},
       onImageDelete: async () => {},
-      mode: UploaderModeEnum.OFFER,
     }
     renderImageUploader(props)
     expect(
@@ -105,14 +102,11 @@ describe('ImageUploader', () => {
 
   it('should upload a new image', async () => {
     const mockUpload = vi.fn()
-    const mockFile = new File(['fake img'], 'fake_img.jpg', {
-      type: 'image/jpeg',
-    })
+    const mockFile = new File(['fake img'], 'fake_img.jpg', {})
 
     props = {
       onImageUpload: mockUpload,
       onImageDelete: async () => {},
-      mode: UploaderModeEnum.OFFER,
     }
 
     renderImageUploader(props)
