@@ -83,7 +83,7 @@ const serializeStockEvent = (
     throw Error("L'heure de début d'évenement est invalide")
   }
   if (formValues.priceCategoryId === '') {
-    throw Error("Le tarif est invalide")
+    throw Error('Le tarif est invalide')
   }
 
   const serializedbeginningDatetime = serializeDateTimeToUTCFromLocalDepartment(
@@ -91,7 +91,7 @@ const serializeStockEvent = (
     formValues.beginningTime,
     departementCode
   )
-  
+
   return {
     id: formValues.stockId,
     beginningDatetime: serializedbeginningDatetime,
@@ -103,7 +103,7 @@ const serializeStockEvent = (
           departementCode
         )
       : serializedbeginningDatetime,
-    priceCategoryId:parseInt(formValues.priceCategoryId),
+    priceCategoryId: parseInt(formValues.priceCategoryId),
     quantity:
       formValues.remainingQuantity === ''
         ? null

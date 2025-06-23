@@ -33,7 +33,7 @@
     &-th {
       @include a11y.visually-hidden-reset;
 
-      padding: rem.torem(8px) 0;
+      padding: rem.torem(8px) rem.torem(16px) rem.torem(8px) rem.torem(8px);
 
       &-checkbox {
         &-input {

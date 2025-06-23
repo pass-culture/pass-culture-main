@@ -6,12 +6,14 @@ import {
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { CheckboxCell } from 'components/OffersTable/Cells/CheckboxCell'
 import { OfferNameCell } from 'components/OffersTable/Cells/OfferNameCell/OfferNameCell'
 
 import { AddressCell } from './components/AddressCell'
 import { IndividualActionsCells } from './components/IndividualActionsCells'
+import { OfferBookingCell } from './components/OfferBookingCell'
 import { OfferRemainingStockCell } from './components/OfferRemainingStockCell'
 import { OfferStatusCell } from './components/OfferStatusCell'
 import styles from './IndividualOfferRow.module.scss'
@@ -27,8 +29,13 @@ export const IndividualOfferRow = ({
   isSelected,
   selectOffer,
 }: IndividualOfferRowProps) => {
+  const isRefactoFutureOfferEnabled = useActiveFeature(
+    'WIP_REFACTO_FUTURE_OFFER'
+  )
+
   const rowId = `collective-offer-${offer.id}`
-  const { headlineOffer, isHeadlineOfferAllowedForOfferer } = useHeadlineOfferContext()
+  const { headlineOffer, isHeadlineOfferAllowedForOfferer } =
+    useHeadlineOfferContext()
 
   const offerLink = getIndividualOfferUrl({
     offerId: offer.id,
@@ -80,12 +87,21 @@ export const IndividualOfferRow = ({
         displayLabel
       />
       <OfferStatusCell
+        offer={offer}
         rowId={rowId}
-        status={offer.status}
         className={styles['individual-cell-status']}
         displayLabel
-        isHeadline={isHeadlineOfferAllowedForOfferer && offer.id === headlineOffer?.id}
+        isHeadline={
+          isHeadlineOfferAllowedForOfferer && offer.id === headlineOffer?.id
+        }
       />
+      {isRefactoFutureOfferEnabled && (
+        <OfferBookingCell
+          offer={offer}
+          rowId={rowId}
+          className={styles['individual-cell-bookings']}
+        />
+      )}
       <IndividualActionsCells
         rowId={rowId}
         offer={offer}

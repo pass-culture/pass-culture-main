@@ -8,7 +8,9 @@
     "check title title"
     ". venue venue"
     ". stock-or-institution stock-or-institution"
-    ". status actions";
+    ". status status"
+    ". bookings bookings"
+    ". actions actions";
   grid-gap: rem.torem(8px) rem.torem(16px);
   border-bottom: rem.torem(1px) solid var(--color-border-subtle);
 
