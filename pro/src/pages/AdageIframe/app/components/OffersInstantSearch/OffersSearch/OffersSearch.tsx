@@ -139,6 +139,7 @@ export const OffersSearch = ({
   }
 
   const resetForm = () => {
+    setIsUserTriggered(true)
     setlocalisationFilterState(LocalisationFilterStates.NONE)
     Object.entries(ADAGE_FILTERS_DEFAULT_VALUES).map(([key, value]) => {
       form.setValue(key as keyof SearchFormValues, value)
@@ -177,6 +178,19 @@ export const OffersSearch = ({
   }
   const [localisationFilterState, setlocalisationFilterState] =
     useState<LocalisationFilterStates>(getActiveLocalisationFilter())
+  const [isUserTriggered, setIsUserTriggered] = useState(false)
+
+  // This useEffect ensures onSubmit is called only when localisationFilterState changes to NONE due to user actions.
+  // Ensures onSubmit runs after localisationFilterState updates to NONE, fixing async state issues.
+  useEffect(() => {
+    if (
+      isUserTriggered &&
+      localisationFilterState === LocalisationFilterStates.NONE
+    ) {
+      onSubmit()
+      setIsUserTriggered(false)
+    }
+  }, [localisationFilterState, isUserTriggered])
 
   const offerFilterRef = useRef<HTMLDivElement>(null)
   const [isOfferFiltersVisible] = useIsElementVisible(offerFilterRef)
@@ -207,6 +221,7 @@ export const OffersSearch = ({
           setLocalisationFilterState={setlocalisationFilterState}
           resetForm={resetForm}
           onSubmit={onSubmit}
+          setIsUserTriggered={setIsUserTriggered}
         />
       </FormProvider>
       <div className="search-results">

@@ -23,6 +23,7 @@ interface FiltersTagsProps {
   setLocalisationFilterState: (state: LocalisationFilterStates) => void
   resetForm: () => void
   onSubmit: () => void
+  setIsUserTriggered?: (isUserTriggered: boolean) => void
 }
 
 const createTag = (label: string, onClose: () => void) => {
@@ -53,6 +54,7 @@ export const FiltersTags = ({
   setLocalisationFilterState,
   resetForm,
   onSubmit,
+  setIsUserTriggered,
 }: FiltersTagsProps) => {
   const form = useFormContext<SearchFormValues>()
 
@@ -82,7 +84,6 @@ export const FiltersTags = ({
       } else {
         form.setValue('eventAddressType', OfferAddressType.OTHER)
       }
-      setLocalisationFilterState(LocalisationFilterStates.NONE)
       onSubmit()
     })
   }
@@ -95,7 +96,7 @@ export const FiltersTags = ({
       () => {
         form.setValue('geolocRadius', 50)
         setLocalisationFilterState(LocalisationFilterStates.NONE)
-        onSubmit()
+        setIsUserTriggered && setIsUserTriggered(true)
       }
     )
   }
@@ -126,14 +127,14 @@ export const FiltersTags = ({
       {getGeoLocalisationTag()}
       {academiesValue.map((academy) =>
         createTag(academy, () => {
-          if (academiesValue.length === 1) {
+          const updatedAcademies = academiesValue.filter((x) => x !== academy)
+          form.setValue('academies', updatedAcademies)
+          if (updatedAcademies.length === 0) {
             setLocalisationFilterState(LocalisationFilterStates.NONE)
+            setIsUserTriggered && setIsUserTriggered(true)
+          } else {
+            onSubmit()
           }
-          form.setValue(
-            'academies',
-            academiesValue.filter((x) => x !== academy)
-          )
-          onSubmit()
         })
       )}
       {departmentsValue.map((department) =>
@@ -141,14 +142,16 @@ export const FiltersTags = ({
           departmentOptions.find((dpt) => dpt.value === department)?.label ||
             '',
           () => {
-            if (departmentsValue.length === 1) {
-              setLocalisationFilterState(LocalisationFilterStates.NONE)
-            }
-            form.setValue(
-              'departments',
-              departmentsValue.filter((x) => x !== department)
+            const updatedDepartments = departmentsValue.filter(
+              (x) => x !== department
             )
-            onSubmit()
+            form.setValue('departments', updatedDepartments)
+            if (updatedDepartments.length === 0) {
+              setLocalisationFilterState(LocalisationFilterStates.NONE)
+              setIsUserTriggered && setIsUserTriggered(true)
+            } else {
+              onSubmit()
+            }
           }
         )
       )}
