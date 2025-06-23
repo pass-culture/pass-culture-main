@@ -904,7 +904,7 @@ def publish_offer(
     publication_datetime: datetime.datetime | None = None,
     booking_allowed_datetime: datetime.datetime | None = None,
 ) -> models.Offer:
-    finalization_date = datetime.datetime.now(datetime.timezone.utc)
+    finalization_date = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
 
     if not offer.finalizationDatetime:
         offer.finalizationDatetime = finalization_date
@@ -913,7 +913,9 @@ def publish_offer(
     validation.check_publication_date(offer, publication_datetime)
 
     if booking_allowed_datetime:
-        booking_allowed_datetime = local_datetime_to_default_timezone(booking_allowed_datetime, offer.venue.timezone)
+        booking_allowed_datetime = local_datetime_to_default_timezone(
+            booking_allowed_datetime, offer.venue.timezone
+        ).replace(tzinfo=None)
 
     offer.bookingAllowedDatetime = booking_allowed_datetime
 
