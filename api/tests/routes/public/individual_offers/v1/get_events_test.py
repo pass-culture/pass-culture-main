@@ -18,8 +18,11 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
 
     num_queries_with_error = 1  # select api_key, offerer and provider
     num_queries_with_error += 1  # check provider EXISTS
+    num_queries_with_error += 1  # rollback atomic
 
-    num_queries = num_queries_with_error + 1  # fetch offers (1 query)
+    num_queries = 1  # select api_key, offerer and provider
+    num_queries += 1  # check provider EXISTS
+    num_queries += 1  # fetch offers (1 query)
     num_queries += 1  # fetch stocks (1 query)
     num_queries += 1  # fetch mediations (1 query)
     num_queries += 1  # fetch price categories (1 query)
@@ -51,8 +54,8 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
             response = client.with_explicit_token(plain_api_key).get(
                 self.endpoint_url, params={"venueId": venue_id, "limit": 5}
             )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert [event["id"] for event in response.json["events"]] == [offer.id for offer in offers[0:5]]
 
     def test_get_first_page(self, client):
@@ -67,7 +70,8 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
             )
 
             assert response.status_code == 200
-            assert [event["id"] for event in response.json["events"]] == [offer.id for offer in offers[0:5]]
+
+        assert [event["id"] for event in response.json["events"]] == [offer.id for offer in offers[0:5]]
 
     # This test should be removed when our database has consistant data
     def test_get_offers_with_missing_fields(self, client):
@@ -150,7 +154,8 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
             )
 
             assert response.status_code == 200
-            assert [event["id"] for event in response.json["events"]] == [event_1.id, event_2.id]
+
+        assert [event["id"] for event in response.json["events"]] == [event_1.id, event_2.id]
 
     def test_should_return_offers_linked_to_address_id(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -168,7 +173,8 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
 
             assert response.status_code == 200
             assert len(response.json["events"]) == 1
-            assert response.json["events"][0]["id"] == offer1.id
+
+        assert response.json["events"][0]["id"] == offer1.id
 
     def should_not_fail_when_empty_string_in_extra_data(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
