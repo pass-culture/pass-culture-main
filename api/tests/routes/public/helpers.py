@@ -74,11 +74,9 @@ class PublicAPIEndpointBaseHelper:
         if self.default_path_params:
             url = url.format(**self.default_path_params)
 
-        if num_queries is None:
-            num_queries = 1  # Select API key
-        with testing.assert_num_queries(num_queries):
-            response = client_method(url)
-            assert response.status_code == 401
+        # TODO: (tcoudray-pass, 23/06/25) Restore `testing.assert_num_queries` when all public API endpoints use `@atomic`
+        response = client_method(url)
+        assert response.status_code == 401
 
         assert response.json == {"auth": "Deprecated API key. Please contact provider support to get a new API key"}
 

@@ -27,6 +27,7 @@ from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.repository.session_management import atomic
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public import utils as public_utils
@@ -51,6 +52,7 @@ logger = logging.getLogger(__name__)
 
 
 @blueprints.public_api.route("/public/offers/v1/show_types", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -81,6 +83,7 @@ def get_show_types() -> serialization.GetShowTypesResponse:
 
 
 @blueprints.public_api.route("/public/offers/v1/music_types", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -113,6 +116,7 @@ def get_music_types() -> serialization.GetMusicTypesResponse:
 
 
 @blueprints.public_api.route("/public/offers/v1/music_types/all", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -144,6 +148,7 @@ def get_all_titelive_music_types() -> serialization.GetTiteliveMusicTypesRespons
 
 
 @blueprints.public_api.route("/public/offers/v1/music_types/event", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
