@@ -83,7 +83,7 @@ class VenueModel(BaseModel):
             longitude = float(venue_address.longitude)
             city = venue_address.city
         else:
-            # TODO(OA): remove this when the virtual venues are migrated
+            # TODO(OA): CLEAN_OA remove this when the virtual venues are migrated
             address = None
             latitude = None
             longitude = None

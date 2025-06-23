@@ -366,22 +366,34 @@ class GetOfferManagingOffererResponseModel(BaseModel):
 
 
 class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
-    # BULLE
-    # street: str | None
-    # street: str | None = venues_serialize.GetVenueOffererAddressInfo("street")
-    street: str | None = _obj.offererAddress.address.street
+    street: str | None
     bookingEmail: str | None
-    # city: str | None
-    city : str | None = offerers_models.OffererAddress.address.city
-    # departementCode: str | None
-    departmentCode: str | None = offerers_models.OffererAddress.address.departmentCode
+    city: str | None
+    departementCode: str | None
     id: int
     isVirtual: bool
     managingOfferer: GetOfferManagingOffererResponseModel
     name: str
-    # postalCode: str | None
-    postalCode: str | None = offerers_models.OffererAddress.address.postalCode
+    postalCode: str | None
     publicName: str | None
+
+    @classmethod
+    def from_orm(cls, venue: offerers_models.Venue) -> "GetOfferVenueResponseModel":
+        VenueResponseModel = super().from_orm(venue)
+        if venue.offererAddress is not None:
+            venue_address = venue.offererAddress.address
+            VenueResponseModel.street = venue_address.street
+            VenueResponseModel.postalCode = venue_address.postalCode
+            VenueResponseModel.departementCode = venue_address.departmentCode
+            VenueResponseModel.city = venue_address.city
+        else:
+            # TODO(OA): CLEAN_OA remove this when the virtual venues are migrated
+            VenueResponseModel.street = None
+            VenueResponseModel.departementCode = None
+            VenueResponseModel.postalCode = None
+            VenueResponseModel.city = None
+
+        return VenueResponseModel
 
     class Config:
         orm_mode = True
@@ -533,7 +545,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     thumbUrl: str | None
     externalTicketOfficeUrl: str | None
     url: str | None
-    #BULLE
+    # BULLE
     venue: GetOfferVenueResponseModel
     withdrawalDelay: int | None
     withdrawalDetails: str | None
