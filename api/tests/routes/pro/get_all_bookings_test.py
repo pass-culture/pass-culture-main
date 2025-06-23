@@ -348,11 +348,13 @@ class Returns200Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
+    num_queries = 3  # user + session + rollback
+
     def when_page_number_is_not_a_number(self, client: Any):
         pro = users_factories.ProFactory()
 
         client = client.with_session_auth(pro.email)
-        with assert_num_queries(2):  # user + session
+        with assert_num_queries(self.num_queries):
             response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&page=not-a-number")
             assert response.status_code == 400
 
@@ -362,7 +364,7 @@ class Returns400Test:
         pro = users_factories.ProFactory()
 
         client = client.with_session_auth(pro.email)
-        with assert_num_queries(2):  # user + session
+        with assert_num_queries(self.num_queries):
             response = client.get(
                 "/bookings/pro?bookingPeriodBeginningDate=20234-08-10&bookingPeriodEndingDate=2020-08-12"
             )
@@ -372,7 +374,7 @@ class Returns400Test:
         pro = users_factories.ProFactory()
 
         client = client.with_session_auth(pro.email)
-        with assert_num_queries(2):  # user + session
+        with assert_num_queries(self.num_queries):
             response = client.get("/bookings/pro")
             assert response.status_code == 400
 
