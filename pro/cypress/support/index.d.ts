@@ -51,6 +51,8 @@ declare namespace Cypress {
       onRequest: (response: any) => void,
       retry?: boolean
     ): Chainable
+
+    waitForElementToDisappear(element: Cypress.Chainable<JQuery>): Chainable<void>
   }
 }
 

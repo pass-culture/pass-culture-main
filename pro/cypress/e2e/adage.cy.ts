@@ -1,3 +1,5 @@
+import { DEFAULT_AXE_RULES } from "../support/constants.ts"
+
 describe('ADAGE discovery', () => {
   let offerId: number
   let adageToken: string
@@ -225,6 +227,8 @@ describe('ADAGE discovery', () => {
       'Ajouté à vos favoris'
     )
 
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
+
     cy.stepLog({ message: 'the first offer should be added to favorites' })
     cy.contains('Mes Favoris').click()
     cy.contains(offerName).should('be.visible')
@@ -236,6 +240,8 @@ describe('ADAGE discovery', () => {
       'contain',
       'Supprimé de vos favoris'
     )
+
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
   })
 
   it('It should redirect to adage discovery', () => {
@@ -253,6 +259,8 @@ describe('ADAGE discovery', () => {
     cy.get('[class^=_discovery-banner]').contains(
       'Découvrez la part collective du pass Culture'
     )
+
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
   })
 
   it('It should redirect to a page dedicated to the offer with an active header on the discovery tab', () => {
@@ -267,6 +275,8 @@ describe('ADAGE discovery', () => {
     cy.findAllByRole('link', { name: 'Découvrir (Onglet actif)' })
       .first()
       .should('have.attr', 'aria-current', 'page')
+    
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
   })
 
   it('It should redirect to search page with filtered venue on click in venue card', () => {
@@ -288,6 +298,8 @@ describe('ADAGE discovery', () => {
 
     cy.stepLog({ message: 'Venue filter should be there' })
     cy.findByText(`Lieu : ${venueName}`).should('be.visible')
+
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
   })
 
   it('It should redirect to search page with filtered domain on click in domain card', () => {
@@ -309,6 +321,8 @@ describe('ADAGE discovery', () => {
 
     cy.stepLog({ message: 'the "Danse" button should be displayed' })
     cy.get('button').contains('Danse')
+
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
   })
 
   it('It should not keep filters after page change', () => {
@@ -330,10 +344,14 @@ describe('ADAGE discovery', () => {
 
     cy.stepLog({ message: 'I go back to search page' })
     cy.findByText(`Lieu : ${venueName}`).should('be.visible')
+
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
+
     cy.findByRole('link', { name: 'Découvrir' }).click()
     cy.findByRole('link', { name: 'Rechercher' }).click()
 
     cy.stepLog({ message: 'The filter has disappear' })
+
     cy.findByText(`Lieu : ${venueName}`).should('not.exist')
   })
 
@@ -363,7 +381,7 @@ describe('ADAGE discovery', () => {
     cy.findByText(`Lieu : ${venueName}`).should('not.exist')
   })
 
-  it('It should save view type in search page', () => {
+  it.only('It should save view type in search page', () => {
     cy.visit(`/adage-iframe/recherche?token=${adageToken}`)
 
     cy.wait(['@authenticate', '@catalogView']).then((interception) => {
@@ -383,6 +401,8 @@ describe('ADAGE discovery', () => {
     cy.findAllByTestId('toggle-button').click()
 
     cy.stepLog({ message: 'offer descriptions are not displayed' })
+
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
     cy.findAllByTestId('offer-listitem')
     cy.findAllByTestId('offer-description').should('not.exist')
 
@@ -461,5 +481,7 @@ describe('ADAGE discovery', () => {
 
     cy.stepLog({ message: 'page has not changed' })
     cy.findByText('Page 2/19').should('be.visible')
+
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
   })
 })

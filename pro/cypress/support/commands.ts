@@ -38,10 +38,19 @@
 
 import '@testing-library/cypress/add-commands'
 
+import { DEFAULT_AXE_CONFIG } from './constants.ts'
+
 Cypress.on('uncaught:exception', () => {
   // returning false here prevents Cypress from failing the test
   return false
 })
+
+Cypress.Commands.overwrite('visit', (originalFn, url) => {
+  originalFn(url)
+  cy.injectAxe(DEFAULT_AXE_CONFIG)
+})
+
+
 
 // eslint-disable-next-line no-undef
 Cypress.Commands.add('setFeatureFlags', (features: Feature[]) => {
@@ -173,5 +182,9 @@ Cypress.Commands.add(
     })
   }
 )
+
+Cypress.Commands.add('waitForElementToDisappear', (element: Cypress.Chainable<JQuery>) => {
+  element.should('not.exist')
+})
 
 export {}

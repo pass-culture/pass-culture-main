@@ -1,10 +1,9 @@
-import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
+import { DEFAULT_AXE_RULES } from '../support/constants.ts'
 import { logInAndGoToPage } from '../support/helpers.ts'
 
 describe('Account creation', () => {
   beforeEach(() => {
     cy.visit('/inscription')
-    cy.injectAxe(DEFAULT_AXE_CONFIG)
 
     cy.sandboxCall(
       'GET',
@@ -49,7 +48,6 @@ describe('Account creation', () => {
         expect(response.body.To).to.eq(randomEmail)
         cy.stepLog({ message: 'use the link in email to valide account' })
         cy.visit(response.body.params.EMAIL_VALIDATION_LINK)
-        cy.injectAxe(DEFAULT_AXE_CONFIG)
       }
     )
 
