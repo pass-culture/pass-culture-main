@@ -215,6 +215,7 @@ class Returns422Test:
 
         test_client = client.with_session_auth(email=user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # rollback
         with testing.assert_num_queries(num_queries):
             response = test_client.get("/get-statistics/")
             assert response.status_code == 422
@@ -235,6 +236,7 @@ class Returns403Test:
         test_client = client.with_session_auth(email=user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select Offerer
+        num_queries += 1  # rollback
         with testing.assert_num_queries(num_queries):
             response = test_client.get(f"/get-statistics/?venue_ids={venue_id}&venue_ids={foreign_venue}")
             assert response.status_code == 403
@@ -254,6 +256,7 @@ class Returns403Test:
         test_client = client.with_session_auth(email=user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select Offerer
+        num_queries += 1  # rollback
         with testing.assert_num_queries(num_queries):
             response = test_client.get(f"/get-statistics/?venue_ids={venue_id}")
             assert response.status_code == 403

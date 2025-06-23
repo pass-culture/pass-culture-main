@@ -6,6 +6,7 @@ from flask_login import login_required
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.core.offers.repository import venues_have_individual_and_collective_offers
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.statistics_serialize import AggregatedRevenueModel
 from pcapi.routes.serialization.statistics_serialize import StatisticsModel
@@ -17,6 +18,7 @@ from . import blueprint
 
 
 @private_api.route("/get-statistics", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(
     response_model=StatisticsModel, api=blueprint.pro_private_schema, query_params_as_list=["venue_ids"]
