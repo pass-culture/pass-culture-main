@@ -13,6 +13,7 @@ export interface ImageUploaderOfferProps {
   onImageDelete: () => void
   onImageDropOrSelected?: () => void
   hideActionButtons?: boolean
+  isDisabled?: boolean
 }
 
 export const ImageUploaderOffer = ({
@@ -21,6 +22,7 @@ export const ImageUploaderOffer = ({
   onImageDelete,
   onImageDropOrSelected,
   hideActionButtons,
+  isDisabled = false,
 }: ImageUploaderOfferProps) => (
   <FormLayout.Section title="Illustrez votre offre">
     <FormLayout.Row>
@@ -36,6 +38,7 @@ export const ImageUploaderOffer = ({
         mode={UploaderModeEnum.OFFER}
         onImageDropOrSelected={onImageDropOrSelected}
         hideActionButtons={hideActionButtons}
+        disabled={isDisabled}
       />
     </FormLayout.Row>
   </FormLayout.Section>
