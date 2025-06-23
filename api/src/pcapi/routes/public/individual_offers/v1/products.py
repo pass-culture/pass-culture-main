@@ -3,10 +3,8 @@ import datetime
 import logging
 
 import sqlalchemy as sa
-import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from flask import request
-from psycopg2.errorcodes import UNIQUE_VIOLATION
 
 from pcapi import repository
 from pcapi.core import search
@@ -179,96 +177,8 @@ def get_event_titelive_music_types() -> serialization.GetTiteliveEventMusicTypes
     )
 
 
-class CreateProductError(Exception):
-    msg = "can't create this offer"
-
-
-class CreateProductDBError(CreateProductError):
-    msg = "internal error, can't create this offer"
-
-
-class ExistingVenueWithIdAtProviderError(CreateProductDBError):
-    msg = "`idAtProvider` already exists for this venue, can't create this offer"
-
-
-class CreateStockError(CreateProductError):
-    pass
-
-
-class CreateStockDBError(CreateStockError):
-    pass
-
-
-def _create_product(
-    venue: offerers_models.Venue,
-    body: serialization.ProductOfferCreation,
-    offerer_address: offerers_models.OffererAddress | None,
-) -> offers_models.Offer:
-    try:
-        offer_body = offers_schemas.CreateOffer(
-            name=body.name,
-            subcategoryId=body.category_related_fields.subcategory_id,
-            audioDisabilityCompliant=body.accessibility.audio_disability_compliant,
-            mentalDisabilityCompliant=body.accessibility.mental_disability_compliant,
-            motorDisabilityCompliant=body.accessibility.motor_disability_compliant,
-            visualDisabilityCompliant=body.accessibility.visual_disability_compliant,
-            bookingContact=body.booking_contact,
-            bookingEmail=body.booking_email,
-            description=body.description,
-            externalTicketOfficeUrl=body.external_ticket_office_url,
-            ean=body.category_related_fields.ean if hasattr(body.category_related_fields, "ean") else None,
-            extraData=serialization.deserialize_extra_data(body.category_related_fields, venue_id=venue.id),
-            idAtProvider=body.id_at_provider,
-            isDuo=body.enable_double_bookings,
-            url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
-            withdrawalDetails=body.withdrawal_details,
-        )  # type: ignore[call-arg]
-        created_product = offers_api.create_offer(
-            offer_body,
-            venue=venue,
-            provider=current_api_key.provider,
-            offerer_address=offerer_address,
-        )
-
-        # To create stocks or publishing the offer we need to flush
-        # the session to get the offer id
-        db.session.flush()
-    except sa_exc.IntegrityError as error:
-        # a unique constraint violation can only mean that the venueId/idAtProvider
-        # already exists
-        is_offer_table = error.orig.diag.table_name == offers_models.Offer.__tablename__
-        is_unique_constraint_violation = error.orig.pgcode == UNIQUE_VIOLATION
-        unique_id_at_provider_venue_id_is_violated = is_offer_table and is_unique_constraint_violation
-
-        if unique_id_at_provider_venue_id_is_violated:
-            raise ExistingVenueWithIdAtProviderError() from error
-        # Other error are unlikely, but we still need to manage them.
-        raise CreateProductDBError() from error
-    except sa_exc.SQLAlchemyError as error:
-        raise CreateProductDBError() from error
-
-    return created_product
-
-
-def _create_stock(product: offers_models.Offer, body: serialization.ProductOfferCreation) -> None:
-    if not body.stock:
-        return
-
-    try:
-        offers_api.create_stock(
-            offer=product,
-            price=finance_utils.cents_to_full_unit(body.stock.price),
-            quantity=serialization.deserialize_quantity(body.stock.quantity),
-            booking_limit_datetime=body.stock.booking_limit_datetime,
-            creating_provider=current_api_key.provider,
-        )
-    except sa_exc.SQLAlchemyError as error:
-        raise CreateStockDBError() from error
-    except Exception as error:
-        raise CreateStockError() from error
-
-
 @blueprints.public_api.route("/public/offers/v1/products", methods=["POST"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -294,31 +204,54 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
     venue = utils.get_venue_with_offerer_address(venue_provider.venueId)
 
     try:
-        with repository.transaction():
-            offerer_address = venue.offererAddress  # default offerer_address
+        offerer_address = venue.offererAddress  # default offerer_address
 
-            if body.location.type == "address":
-                address = public_utils.get_address_or_raise_404(body.location.address_id)
-                offerer_address = offerers_api.get_or_create_offerer_address(
-                    offerer_id=venue.managingOffererId,
-                    address_id=address.id,
-                    label=body.location.address_label,
-                )
-            product = _create_product(venue=venue, body=body, offerer_address=offerer_address)
+        if body.location.type == "address":
+            address = public_utils.get_address_or_raise_404(body.location.address_id)
+            offerer_address = offerers_api.get_or_create_offerer_address(
+                offerer_id=venue.managingOffererId,
+                address_id=address.id,
+                label=body.location.address_label,
+            )
 
-            if body.image:
-                utils.save_image(body.image, product)
+        product = offers_api.create_offer(
+            offers_schemas.CreateOffer(
+                name=body.name,
+                subcategoryId=body.category_related_fields.subcategory_id,
+                audioDisabilityCompliant=body.accessibility.audio_disability_compliant,
+                mentalDisabilityCompliant=body.accessibility.mental_disability_compliant,
+                motorDisabilityCompliant=body.accessibility.motor_disability_compliant,
+                visualDisabilityCompliant=body.accessibility.visual_disability_compliant,
+                bookingContact=body.booking_contact,
+                bookingEmail=body.booking_email,
+                description=body.description,
+                externalTicketOfficeUrl=body.external_ticket_office_url,
+                ean=body.category_related_fields.ean if hasattr(body.category_related_fields, "ean") else None,
+                extraData=serialization.deserialize_extra_data(body.category_related_fields, venue_id=venue.id),
+                idAtProvider=body.id_at_provider,
+                isDuo=body.enable_double_bookings,
+                url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
+                withdrawalDetails=body.withdrawal_details,
+            ),  # type: ignore[call-arg]
+            venue=venue,
+            provider=current_api_key.provider,
+            offerer_address=offerer_address,
+        )
 
-            _create_stock(product=product, body=body)
-            offers_api.update_offer_fraud_information(product, user=None)
-            offers_api.publish_offer(product)
-    except ExistingVenueWithIdAtProviderError as error:
-        raise api_errors.ApiErrors({"error": error.msg}, status_code=400)
-    except CreateProductError as error:
-        # This is very unlikely. Therefore, the error should be logged in
-        # order to check that there is no bug on our side.
-        logger.error("Unlikely create product error encountered", extra={"error": error, "body": body})
-        raise api_errors.ApiErrors({"error": error.msg}, status_code=400)
+        if body.image:
+            utils.save_image(body.image, product)
+
+        if body.stock:
+            offers_api.create_stock(
+                offer=product,
+                price=finance_utils.cents_to_full_unit(body.stock.price),
+                quantity=serialization.deserialize_quantity(body.stock.quantity),
+                booking_limit_datetime=body.stock.booking_limit_datetime,
+                creating_provider=current_api_key.provider,
+            )
+
+        offers_api.update_offer_fraud_information(product, user=None)
+        offers_api.publish_offer(product)
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
 
