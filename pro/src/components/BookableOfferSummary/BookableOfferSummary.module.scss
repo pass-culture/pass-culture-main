@@ -1,0 +1,128 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
+
+.header-title {
+  display: flex;
+  margin-bottom: rem.torem(24px);
+  justify-content: space-between;
+  align-items: center;
+
+  @media (max-width: size.$tablet) {
+    flex-direction: column;
+    gap: rem.torem(8px);
+    align-items: unset;
+  }
+
+  .title-and-back-to-nav-link {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .title {
+      @include fonts.title1;
+    }
+
+    .back-to-nav-link {
+      margin-left: rem.torem(16px);
+    }
+  }
+
+  span {
+    height: rem.torem(24px);
+    padding: rem.torem(0) rem.torem(8px);
+    justify-content: center;
+  }
+}
+
+.header-description {
+  display: flex;
+  border: rem.torem(1px) solid var(--color-border-subtle);
+  border-radius: rem.torem(8px);
+  padding: rem.torem(24px);
+
+  @media (max-width: size.$tablet) {
+    flex-direction: column;
+    gap: rem.torem(24px);
+  }
+
+  &-info {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+
+    @media (max-width: size.$tablet) {
+      flex-direction: column;
+      gap: rem.torem(32px);
+    }
+  }
+}
+
+.header-actions {
+  display: flex;
+  flex-direction: column;
+  margin-right: rem.torem(32px);
+
+  li {
+    margin-bottom: rem.torem(8px);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &-title {
+    @include fonts.body-accent-s;
+
+    color: var(--color-text-subtle);
+    margin-bottom: rem.torem(16px);
+  }
+}
+
+.image-preview {
+  height: rem.torem(192px);
+  aspect-ratio: 2 / 3;
+  border-radius: rem.torem(8px);
+  box-shadow: 0 1px 8px 0 var(--color-large-shadow);
+  margin-right: rem.torem(24px);
+}
+
+.default-preview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: rem.torem(8px);
+  background: var(--color-background-subtle);
+
+  svg {
+    height: rem.torem(50px);
+    width: rem.torem(50px);
+    color: var(--color-icon-subtle);
+  }
+}
+
+.definition-item {
+  @include fonts.body-xs;
+
+  display: flex;
+  gap: rem.torem(8px);
+  align-items: center;
+  margin-bottom: rem.torem(8px);
+  line-height: rem.torem(16px);
+
+  &:first-child {
+    margin-bottom: rem.torem(16px);
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.button-cancel-booking {
+  color: var(--color-text-error);
+}
+
+.banner-container {
+  margin-bottom: rem.torem(24px);
+}

@@ -81,11 +81,7 @@ describe('CollectiveOfferSummary', () => {
       features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'],
     })
 
-    expect(
-      await screen.findByText(
-        'Nouveau composant de recap pour une offre réservable : Work in progress'
-      )
-    ).toBeInTheDocument()
+    expect(await screen.findByText('n°2')).toBeInTheDocument()
   })
 
   it('should not display new composant for new collective offer detail page when offer is template and FF is enabled', async () => {
@@ -94,11 +90,7 @@ describe('CollectiveOfferSummary', () => {
     })
 
     await waitFor(() =>
-      expect(
-        screen.queryByText(
-          'Nouveau composant de recap pour une offre réservable : Work in progress'
-        )
-      ).not.toBeInTheDocument()
+      expect(screen.queryByText('n°2')).not.toBeInTheDocument()
     )
   })
 })
