@@ -3,11 +3,11 @@ import pytest
 from pcapi.core.educational import factories
 from pcapi.core.educational import models
 from pcapi.core.educational import testing
+from pcapi.core.educational.serialization.collective_booking import serialize_collective_booking
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import factories as user_factories
-from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
