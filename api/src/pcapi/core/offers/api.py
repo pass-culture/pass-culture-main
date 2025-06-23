@@ -1925,7 +1925,11 @@ def move_offer(
 
 
 def move_event_offer(
-    offer: models.Offer, destination_venue: offerers_models.Venue, notify_beneficiary: bool = False
+    offer: models.Offer,
+    destination_venue: offerers_models.Venue,
+    *,
+    move_offer_address: bool = False,
+    notify_beneficiary: bool = False,
 ) -> None:
     offer_id = offer.id
 
@@ -1978,8 +1982,17 @@ def move_event_offer(
         for price_category_label in original_price_category_labels
     }
     with transaction():
+        if move_offer_address:
+            offer.offererAddressId = destination_venue.offererAddressId
+        else:
+            # Use a different OA if the offer uses the venue OA
+            if offer.offererAddress and offer.offererAddress == offer.venue.offererAddress:
+                destination_oa = offerers_api.get_or_create_offerer_address(
+                    offer.venue.managingOffererId, offer.venue.offererAddress.addressId, offer.venue.common_name
+                )
+                db.session.add(destination_oa)
+                offer.offererAddress = destination_oa
         offer.venue = destination_venue
-        offer.offererAddressId = destination_venue.offererAddressId
         db.session.add(offer)
 
         for price_category in offer.priceCategories:
