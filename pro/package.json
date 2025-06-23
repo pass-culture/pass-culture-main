@@ -95,7 +95,7 @@
     "@vitest/coverage-istanbul": "^3.1.4",
     "@vitest/runner": "^3.2.4",
     "allure-js-commons": "^3.3.0",
-    "allure-vitest": "^3.2.2",
+    "allure-vitest": "^3.3.0",
     "axe-core": "^4.10.3",
     "cypress": "14.5.0",
     "cypress-axe": "1.6.0",
