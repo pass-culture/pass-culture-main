@@ -152,9 +152,6 @@ class PatchOfferPublishBodyModel(BaseModel):
     publicationDatetime: datetime.datetime | None
     bookingAllowedDatetime: datetime.datetime | None
 
-    _validation_publication_datetime = validate_datetime("publicationDatetime")
-    _validation_bookings_allowed_datetime = validate_datetime("bookingAllowedDatetime")
-
 
 class PatchOfferActiveStatusBodyModel(BaseModel):
     is_active: bool
@@ -369,15 +366,21 @@ class GetOfferManagingOffererResponseModel(BaseModel):
 
 
 class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
-    street: str | None
+    # BULLE
+    # street: str | None
+    # street: str | None = venues_serialize.GetVenueOffererAddressInfo("street")
+    street: str | None = _obj.offererAddress.address.street
     bookingEmail: str | None
-    city: str | None
-    departementCode: str | None
+    # city: str | None
+    city : str | None = offerers_models.OffererAddress.address.city
+    # departementCode: str | None
+    departmentCode: str | None = offerers_models.OffererAddress.address.departmentCode
     id: int
     isVirtual: bool
     managingOfferer: GetOfferManagingOffererResponseModel
     name: str
-    postalCode: str | None
+    # postalCode: str | None
+    postalCode: str | None = offerers_models.OffererAddress.address.postalCode
     publicName: str | None
 
     class Config:
@@ -530,6 +533,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     thumbUrl: str | None
     externalTicketOfficeUrl: str | None
     url: str | None
+    #BULLE
     venue: GetOfferVenueResponseModel
     withdrawalDelay: int | None
     withdrawalDetails: str | None
