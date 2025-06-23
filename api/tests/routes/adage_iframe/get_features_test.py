@@ -15,7 +15,7 @@ class FeaturesTest:
 
         # then
         assert response.status_code == 200
-        feature_name_keys = [feature_dict["nameKey"] for feature_dict in response.json]
+        feature_name_keys = [feature_dict["nameKey"] for feature_dict in response.json["features"]]
         assert "SYNCHRONIZE_ALLOCINE" in feature_name_keys
 
     @pytest.mark.usefixtures("db_session")

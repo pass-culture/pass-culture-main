@@ -9487,7 +9487,7 @@
         "title": "pass Culture REST API",
         "version": "1.0"
     },
-    "openapi": "3.0.3",
+    "openapi": "3.1.0",
     "paths": {
         "/public/bookings/v1/bookings": {
             "get": {
@@ -9615,7 +9615,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -9674,7 +9674,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -9730,7 +9730,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -9793,7 +9793,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -9849,7 +9849,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -9878,7 +9878,8 @@
                                 "$ref": "#/components/schemas/AddressModel"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -9905,7 +9906,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -10024,7 +10025,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -10085,7 +10086,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -10202,7 +10203,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -10229,7 +10230,8 @@
                                 "$ref": "#/components/schemas/EventOfferCreation"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -10259,7 +10261,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -10303,7 +10305,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -10361,7 +10363,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -10399,7 +10401,8 @@
                                 "$ref": "#/components/schemas/EventOfferEdition"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -10429,7 +10432,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -10530,7 +10533,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -10568,7 +10571,8 @@
                                 "$ref": "#/components/schemas/EventStocksCreation"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -10598,7 +10602,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -10662,7 +10666,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -10710,7 +10714,8 @@
                                 "$ref": "#/components/schemas/EventStockEdition"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -10740,7 +10745,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -10841,7 +10846,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -10879,7 +10884,8 @@
                                 "$ref": "#/components/schemas/PriceCategoriesCreation"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -10909,7 +10915,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -10959,7 +10965,8 @@
                                 "$ref": "#/components/schemas/PriceCategoryEdition"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -10989,7 +10996,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -11034,7 +11041,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -11078,7 +11085,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -11122,7 +11129,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -11180,7 +11187,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -11294,7 +11301,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -11321,7 +11328,8 @@
                                 "$ref": "#/components/schemas/ProductOfferEdition"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -11351,7 +11359,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -11378,7 +11386,8 @@
                                 "$ref": "#/components/schemas/ProductOfferCreation"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "201": {
@@ -11408,7 +11417,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -11452,7 +11461,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -11521,7 +11530,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -11548,7 +11557,8 @@
                                 "$ref": "#/components/schemas/ProductsOfferByEanCreation"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -11571,7 +11581,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -11628,7 +11638,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -11686,7 +11696,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -11730,7 +11740,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -11787,7 +11797,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -11827,7 +11837,8 @@
                                 "$ref": "#/components/schemas/ImageUploadFile"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -11844,7 +11855,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -11888,7 +11899,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -11915,7 +11926,8 @@
                                 "$ref": "#/components/schemas/ProviderUpdate"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -11942,7 +11954,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -11982,7 +11994,8 @@
                                 "$ref": "#/components/schemas/VenueProviderExternalUrlsUpdate"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -12005,7 +12018,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -12059,7 +12072,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -12113,7 +12126,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -12167,7 +12180,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -12221,7 +12234,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -12275,7 +12288,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -12326,7 +12339,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -12380,7 +12393,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -12424,7 +12437,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -12563,7 +12576,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -12607,7 +12620,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -12726,7 +12739,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -12753,7 +12766,8 @@
                                 "$ref": "#/components/schemas/PostCollectiveOfferBodyModel"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "201": {
@@ -12786,7 +12800,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -12815,7 +12829,8 @@
                                 "$ref": "#/components/schemas/ArchiveCollectiveOfferBodyModel"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -12838,7 +12853,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -12872,7 +12887,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -12936,7 +12951,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -12974,7 +12989,8 @@
                                 "$ref": "#/components/schemas/PatchCollectiveOfferBodyModel"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -13007,7 +13023,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
@@ -13051,7 +13067,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"

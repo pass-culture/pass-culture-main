@@ -2,6 +2,8 @@ import pytest
 
 from pcapi.core import testing
 from pcapi.core.users import factories as users_factories
+from pcapi.models import db
+from pcapi.models.feature import Feature
 
 
 class Returns200Test:
@@ -16,7 +18,19 @@ class Returns200Test:
             response = client.get("/features")
             assert response.status_code == 200
 
-        feature_name_keys = [feature_dict["nameKey"] for feature_dict in response.json]
+        assert response.json == {
+            "features": [
+                {
+                    "description": feature.description,
+                    "id": str(feature.id),
+                    "isActive": feature.isActive,
+                    "name": feature.name,
+                    "nameKey": feature.nameKey,
+                }
+                for feature in db.session.query(Feature)
+            ]
+        }
+        feature_name_keys = [feature_dict["nameKey"] for feature_dict in response.json["features"]]
         assert "SYNCHRONIZE_ALLOCINE" in feature_name_keys
 
     @pytest.mark.usefixtures("db_session")

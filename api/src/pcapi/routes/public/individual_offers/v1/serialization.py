@@ -807,11 +807,18 @@ class GetTiteliveEventMusicTypesResponse(serialization.ConfiguredBaseModel):
     __root__: list[TiteliveEventMusicTypeResponse]
 
 
+class BaseFileModel(BaseFile):
+    @classmethod
+    def __modify_schema__(cls, field_schema: dict[str, typing.Any], field: typing.Any):
+        field_schema["format"] = "binary"
+        field_schema["type"] = "string"
+
+
 class ImageUploadFile(BaseModel):
     # This field is required but cannot be handled by pydantic.
     # We validate it manually in the validator below.
     # This is used by spectree to generate a correct swagger documentation.
-    file: BaseFile | None = pydantic_v1.Field(
+    file: BaseFileModel | None = pydantic_v1.Field(
         description="[required] Image format must be PNG, JPEG or JPG. Size must be between 400x600 and 800x1200 pixels. Aspect ratio must be 2:3 (portrait format).",
     )
     credit: str | None
@@ -821,3 +828,6 @@ class ImageUploadFile(BaseModel):
         if request.files and "file" in request.files:
             return value
         raise ValueError("A file must be provided in the request")
+
+    class Config:
+        arbitrary_types_allowed = True

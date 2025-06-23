@@ -30,7 +30,7 @@ def _make_json_response(
 ) -> flask.Response:
     """serializes model, creates JSON response with given status code"""
     if status_code == 204:
-        return flask.make_response("", 204)
+        return flask.make_response({}, 204)
 
     if not content:
         raise ApiErrors({"configuration": "You need to provide a response body model if the status code is not 204"})
@@ -45,7 +45,7 @@ def _make_json_response(
 def _make_string_response(content: BaseModel | None, status_code: int, headers: dict | None = None) -> flask.Response:
     """serializes model, creates JSON response with given status code"""
     if status_code == 204:
-        return flask.make_response("", 204)
+        return flask.make_response({}, 204)
 
     if not content:
         raise ApiErrors({"configuration": "You need to provide a response body model if the status code is not 204"})
