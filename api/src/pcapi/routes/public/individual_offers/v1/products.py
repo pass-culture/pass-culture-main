@@ -626,6 +626,7 @@ def get_product_by_ean(
 
 
 @blueprints.public_api.route("/public/offers/v1/products/ean/check_availability", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -709,6 +710,7 @@ def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sa_orm.Query
 
 
 @blueprints.public_api.route("/public/offers/v1/products", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -758,6 +760,7 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
 
 
 @blueprints.public_api.route("/public/offers/v1/products", methods=["PATCH"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -796,45 +799,42 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
     venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body)
 
     try:
-        with repository.transaction():
-            updates = body.dict(by_alias=True, exclude_unset=True)
-            dc = updates.get("accessibility", {})
-            extra_data = copy.deepcopy(offer.extraData)
-            offer_body = offers_schemas.UpdateOffer(
-                name=get_field(offer, updates, "name"),
-                audioDisabilityCompliant=get_field(offer, dc, "audioDisabilityCompliant"),
-                mentalDisabilityCompliant=get_field(offer, dc, "mentalDisabilityCompliant"),
-                motorDisabilityCompliant=get_field(offer, dc, "motorDisabilityCompliant"),
-                visualDisabilityCompliant=get_field(offer, dc, "visualDisabilityCompliant"),
-                bookingContact=get_field(offer, updates, "bookingContact"),
-                bookingEmail=get_field(offer, updates, "bookingEmail"),
-                description=get_field(offer, updates, "description"),
-                extraData=(
-                    serialization.deserialize_extra_data(
-                        body.category_related_fields, extra_data, venue_id=venue.id if venue else None
-                    )
-                    if "categoryRelatedFields" in updates
-                    else extra_data
-                ),
-                isActive=get_field(offer, updates, "isActive"),
-                idAtProvider=get_field(offer, updates, "idAtProvider"),
-                isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
-                withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
-            )  # type: ignore[call-arg]
-            updated_offer = offers_api.update_offer(offer, offer_body, venue=venue, offerer_address=offerer_address)
-            if body.image:
-                utils.save_image(body.image, updated_offer)
-            if "stock" in updates:
-                _upsert_product_stock(updated_offer, body.stock, current_api_key.provider)
+        updates = body.dict(by_alias=True, exclude_unset=True)
+        dc = updates.get("accessibility", {})
+        extra_data = copy.deepcopy(offer.extraData)
+        offer_body = offers_schemas.UpdateOffer(
+            name=get_field(offer, updates, "name"),
+            audioDisabilityCompliant=get_field(offer, dc, "audioDisabilityCompliant"),
+            mentalDisabilityCompliant=get_field(offer, dc, "mentalDisabilityCompliant"),
+            motorDisabilityCompliant=get_field(offer, dc, "motorDisabilityCompliant"),
+            visualDisabilityCompliant=get_field(offer, dc, "visualDisabilityCompliant"),
+            bookingContact=get_field(offer, updates, "bookingContact"),
+            bookingEmail=get_field(offer, updates, "bookingEmail"),
+            description=get_field(offer, updates, "description"),
+            extraData=(
+                serialization.deserialize_extra_data(
+                    body.category_related_fields, extra_data, venue_id=venue.id if venue else None
+                )
+                if "categoryRelatedFields" in updates
+                else extra_data
+            ),
+            isActive=get_field(offer, updates, "isActive"),
+            idAtProvider=get_field(offer, updates, "idAtProvider"),
+            isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
+            withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
+        )  # type: ignore[call-arg]
+        updated_offer = offers_api.update_offer(offer, offer_body, venue=venue, offerer_address=offerer_address)
+        db.session.flush()
+
+        if body.image:
+            utils.save_image(body.image, updated_offer)
+
+        if "stock" in updates:
+            _upsert_product_stock(updated_offer, body.stock, current_api_key.provider)
+            db.session.refresh(offer)  # to ensure that `offer.activeStocks` is correctly populated
     except offers_exceptions.OfferException as e:
         raise api_errors.ApiErrors(e.errors)
 
-    # TODO(jeremieb): this should not be needed. BUT since datetime from
-    # db are not timezone aware and those from the request are...
-    # things get complicated during serialization (which does not
-    # know how to serialize timezone-aware datetime). So... reload
-    # everything and use data from the db.
-    offer = query.one_or_none()
     return serialization.ProductOfferResponse.build_product_offer(offer)
 
 
@@ -874,6 +874,7 @@ def _upsert_product_stock(
 
 
 @blueprints.public_api.route("/public/offers/v1/products/categories", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -903,6 +904,7 @@ def get_product_categories() -> serialization.GetProductCategoriesResponse:
 
 
 @blueprints.public_api.route("/public/offers/v1/<int:offer_id>/image", methods=["POST"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -927,13 +929,12 @@ def upload_image(offer_id: int, form: serialization.ImageUploadFile) -> None:
         logger.exception("Error while reading image file", extra={"offer_id": offer_id, "err": err})
         raise api_errors.ApiErrors({"file": ["The image is not valid."]}, status_code=400)
     try:
-        with repository.transaction():
-            offers_api.create_mediation(
-                user=None,
-                offer=offer,
-                credit=form.credit,
-                image_as_bytes=image_as_bytes,
-            )
+        offers_api.create_mediation(
+            user=None,
+            offer=offer,
+            credit=form.credit,
+            image_as_bytes=image_as_bytes,
+        )
     except offers_exceptions.ImageValidationError as error:
         if isinstance(error, offers_exceptions.ImageTooSmall):
             message = f"The image is too small. It must be above {constants.MIN_IMAGE_WIDTH}x{constants.MIN_IMAGE_HEIGHT} pixels."
