@@ -986,7 +986,7 @@ def _invalidate_bookings(bookings: list[bookings_models.Booking]) -> list[bookin
 
 def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connect_as: bool | None = None) -> None:
     stock.isSoftDeleted = True
-    repository.save(stock)
+    db.session.flush()
 
     # the algolia sync for the stock will happen within this function
     cancelled_bookings = bookings_api.cancel_bookings_from_stock_by_offerer(stock, author_id, user_connect_as)
@@ -1004,10 +1004,13 @@ def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connec
         },
         technical_message_id="stock.deleted",
     )
+
     if cancelled_bookings:
         for booking in cancelled_bookings:
             transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(booking)
+
         transactional_mails.send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings)
+
         if not feature.FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION.is_active():
             on_commit(
                 partial(
