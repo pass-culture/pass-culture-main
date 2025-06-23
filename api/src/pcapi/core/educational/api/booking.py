@@ -21,6 +21,7 @@ from pcapi.core.educational import validation
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.repository import find_pending_booking_confirmation_limit_date_in_3_days
 from pcapi.core.educational.schemas import RedactorInformation
+from pcapi.core.educational.serialization import collective_booking as collective_booking_serialize
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
@@ -28,7 +29,6 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository.session_management import atomic
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.repository.session_management import on_commit
-from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.serialization import collective_bookings_serialize
 
 
@@ -82,7 +82,7 @@ def book_collective_offer(
 
     transactional_mails.send_eac_new_collective_prebooking_email_to_pro(booking)
 
-    on_commit(partial(_notify_prebooking, data=prebooking.serialize_collective_booking(booking)))
+    on_commit(partial(_notify_prebooking, data=collective_booking_serialize.serialize_collective_booking(booking)))
 
     return booking
 
@@ -300,7 +300,7 @@ def cancel_collective_offer_booking(offer_id: int, author_id: int, user_connect_
     on_commit(
         partial(
             notify_redactor_that_booking_has_been_cancelled,
-            prebooking.serialize_collective_booking(cancelled_booking),
+            collective_booking_serialize.serialize_collective_booking(cancelled_booking),
         ),
     )
     notify_pro_that_booking_has_been_cancelled(cancelled_booking)
@@ -448,7 +448,7 @@ def notify_reimburse_collective_booking(
     on_commit(
         partial(
             adage_client.notify_reimburse_collective_booking,
-            data=prebooking.serialize_reimbursement_notification(
+            data=collective_booking_serialize.serialize_reimbursement_notification(
                 collective_booking=collective_booking,
                 reason=reason,
                 value=value,

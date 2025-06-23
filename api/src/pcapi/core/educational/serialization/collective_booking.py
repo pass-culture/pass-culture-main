@@ -1,71 +1,17 @@
 import decimal
-import typing
-from datetime import datetime
 from typing import Iterable
 
-from pydantic.v1 import PositiveInt
-from pydantic.v1.fields import Field
-
-from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.adage_backends import serialize as adage_serialize
-from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.educational.models import CollectiveBookingCancellationReasons
-from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.offers.utils import offer_app_link
-from pcapi.routes.serialization import BaseModel
-
-
-class MergeInstitutionPrebookingsQueryModel(educational_schemas.AdageBaseResponseModel):
-    source_uai: str
-    destination_uai: str
-    bookings_ids: list[int]
-
-
-class GetEducationalBookingsRequest(BaseModel):
-    redactorEmail: str | None = Field(description="Email of querying redactor")
-
-    class Config:
-        title = "Prebookings query filters"
-
-
-class EducationalBookingsResponse(educational_schemas.AdageBaseResponseModel):
-    prebookings: list[educational_schemas.EducationalBookingResponse]
-
-    class Config:
-        title = "List of prebookings"
-
-
-class EducationalBookingPerYearResponse(educational_schemas.AdageBaseResponseModel):
-    id: int
-    UAICode: str
-    status: EducationalBookingStatus | CollectiveBookingStatus
-    cancellationReason: CollectiveBookingCancellationReasons | None
-    confirmationLimitDate: datetime
-    totalAmount: decimal.Decimal
-    startDatetime: datetime
-    endDatetime: datetime
-    venueTimezone: str
-    name: str
-    redactorEmail: str
-    domainIds: list[int]
-    domainLabels: list[str]
-    venueId: int | None
-    venueName: str | None
-    offererName: str | None
-    formats: typing.Sequence[EacFormat]
-
-    class Config:
-        use_enum_values = True
 
 
 def get_collective_bookings_per_year_response(
-    bookings: Iterable[CollectiveBooking],
-) -> "EducationalBookingsPerYearResponse":
+    bookings: Iterable[educational_models.CollectiveBooking],
+) -> educational_schemas.EducationalBookingsPerYearResponse:
     serialized_bookings = [
-        EducationalBookingPerYearResponse(
+        educational_schemas.EducationalBookingPerYearResponse(
             id=booking.id,
             UAICode=booking.educationalInstitution.institutionId,
             status=get_collective_booking_status(booking),  # type: ignore[arg-type]
@@ -86,20 +32,11 @@ def get_collective_bookings_per_year_response(
         )
         for booking in bookings
     ]
-    return EducationalBookingsPerYearResponse(bookings=serialized_bookings)
-
-
-class EducationalBookingsPerYearResponse(educational_schemas.AdageBaseResponseModel):
-    bookings: list[EducationalBookingPerYearResponse]
-
-
-class GetAllBookingsPerYearQueryModel(BaseModel):
-    page: PositiveInt | None
-    per_page: PositiveInt | None
+    return educational_schemas.EducationalBookingsPerYearResponse(bookings=serialized_bookings)
 
 
 def serialize_collective_bookings(
-    educational_bookings: list[CollectiveBooking],
+    educational_bookings: list[educational_models.CollectiveBooking],
 ) -> list[educational_schemas.EducationalBookingResponse]:
     serialized_educational_bookings = []
     for educational_booking in educational_bookings:
@@ -109,7 +46,7 @@ def serialize_collective_bookings(
 
 
 def serialize_collective_booking(
-    collective_booking: CollectiveBooking,
+    collective_booking: educational_models.CollectiveBooking,
 ) -> educational_schemas.EducationalBookingResponse:
     stock = collective_booking.collectiveStock
     offer = stock.collectiveOffer
@@ -164,17 +101,17 @@ def serialize_collective_booking(
 
 
 def get_collective_booking_status(
-    collective_booking: CollectiveBooking,
+    collective_booking: educational_models.CollectiveBooking,
 ) -> str:
     if collective_booking.status in (
-        CollectiveBookingStatus.USED,
-        CollectiveBookingStatus.REIMBURSED,
+        educational_models.CollectiveBookingStatus.USED,
+        educational_models.CollectiveBookingStatus.REIMBURSED,
     ):
-        return CollectiveBookingStatus.USED.value
+        return educational_models.CollectiveBookingStatus.USED.value
 
     if collective_booking.cancellationReason in [
-        CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE,
-        CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER,
+        educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE,
+        educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER,
     ]:
         return "REFUSED"
 
@@ -203,7 +140,7 @@ def _get_educational_offer_accessibility(offer: educational_models.CollectiveOff
 
 
 def serialize_reimbursement_notification(
-    collective_booking: CollectiveBooking, reason: str, value: decimal.Decimal, details: str
+    collective_booking: educational_models.CollectiveBooking, reason: str, value: decimal.Decimal, details: str
 ) -> educational_schemas.AdageReimbursementNotification:
     stock = collective_booking.collectiveStock
     offer = stock.collectiveOffer

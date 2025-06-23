@@ -7,13 +7,13 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import validation
 from pcapi.core.educational.api import booking as educational_api_booking
+from pcapi.core.educational.serialization import collective_booking as collective_booking_serialize
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.repository.session_management import atomic
 from pcapi.repository.session_management import on_commit
-from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
@@ -77,7 +77,7 @@ def cancel_collective_booking(booking_id: int) -> None:
     on_commit(
         partial(
             educational_api_booking.notify_redactor_that_booking_has_been_cancelled,
-            serialize_collective_booking(booking),
+            collective_booking_serialize.serialize_collective_booking(booking),
         ),
     )
     educational_api_booking.notify_pro_that_booking_has_been_cancelled(booking)

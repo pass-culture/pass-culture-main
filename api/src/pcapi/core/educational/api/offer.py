@@ -22,6 +22,7 @@ from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import shared as api_shared
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.schemas import EducationalBookingEdition
+from pcapi.core.educational.serialization import collective_booking as collective_booking_serialize
 from pcapi.core.educational.utils import get_image_from_url
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.finance import api as finance_api
@@ -44,7 +45,6 @@ from pcapi.models import validation_status_mixin
 from pcapi.models.pc_object import BaseQuery
 from pcapi.repository.session_management import is_managed_transaction
 from pcapi.repository.session_management import on_commit
-from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequestBodyModel
 from pcapi.routes.public import utils as public_utils
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
@@ -72,7 +72,7 @@ def notify_educational_redactor_on_collective_offer_or_stock_edit(
         return
 
     data = EducationalBookingEdition(
-        **prebooking.serialize_collective_booking(active_collective_bookings).dict(),
+        **collective_booking_serialize.serialize_collective_booking(active_collective_bookings).dict(),
         updatedFields=updated_fields,
     )
     try:

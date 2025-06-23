@@ -1,6 +1,6 @@
 from pcapi.core.educational import models
+from pcapi.core.educational.serialization.collective_booking import _get_educational_offer_accessibility
 from pcapi.core.offers.utils import offer_app_link
-from pcapi.routes.adage.v1.serialization.prebooking import _get_educational_offer_accessibility
 from pcapi.utils.date import format_into_utc_date
 
 

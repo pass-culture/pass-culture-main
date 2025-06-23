@@ -3,11 +3,11 @@ import logging
 from pcapi.core.educational.api.adage import find_collective_bookings_for_adage
 from pcapi.core.educational.api.deposit import find_educational_deposit_by_institution_id_and_year
 from pcapi.core.educational.repository import find_educational_institution_by_uai_code
+from pcapi.core.educational.serialization import collective_booking as collective_booking_serialize
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository.session_management import atomic
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.serialization.educational_institution import EducationalInstitutionResponse
-from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_bookings
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
@@ -34,7 +34,7 @@ def get_educational_institution(year_id: str, uai_code: str) -> EducationalInsti
         raise ApiErrors({"code": "EDUCATIONAL_INSTITUTION_NOT_FOUND"}, status_code=404)
 
     collective_bookings = find_collective_bookings_for_adage(uai_code=uai_code, year_id=year_id)
-    prebookings = serialize_collective_bookings(collective_bookings)
+    prebookings = collective_booking_serialize.serialize_collective_bookings(collective_bookings)
 
     educational_deposit = find_educational_deposit_by_institution_id_and_year(
         educational_year_id=year_id, educational_institution_id=educational_institution.id

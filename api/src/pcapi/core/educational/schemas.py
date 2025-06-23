@@ -1,6 +1,8 @@
 import decimal
+import typing
 from datetime import datetime
 
+from pydantic.v1 import PositiveInt
 from pydantic.v1.fields import Field
 
 from pcapi.core.categories.models import EacFormat
@@ -129,3 +131,55 @@ class RedactorInformation(BaseModel):
     firstname: str | None
     email: str
     uai: str
+
+
+class MergeInstitutionPrebookingsQueryModel(AdageBaseResponseModel):
+    source_uai: str
+    destination_uai: str
+    bookings_ids: list[int]
+
+
+class GetEducationalBookingsRequest(BaseModel):
+    redactorEmail: str | None = Field(description="Email of querying redactor")
+
+    class Config:
+        title = "Prebookings query filters"
+
+
+class EducationalBookingsResponse(AdageBaseResponseModel):
+    prebookings: list[EducationalBookingResponse]
+
+    class Config:
+        title = "List of prebookings"
+
+
+class EducationalBookingPerYearResponse(AdageBaseResponseModel):
+    id: int
+    UAICode: str
+    status: educational_models.EducationalBookingStatus | educational_models.CollectiveBookingStatus
+    cancellationReason: educational_models.CollectiveBookingCancellationReasons | None
+    confirmationLimitDate: datetime
+    totalAmount: decimal.Decimal
+    startDatetime: datetime
+    endDatetime: datetime
+    venueTimezone: str
+    name: str
+    redactorEmail: str
+    domainIds: list[int]
+    domainLabels: list[str]
+    venueId: int | None
+    venueName: str | None
+    offererName: str | None
+    formats: typing.Sequence[EacFormat]
+
+    class Config:
+        use_enum_values = True
+
+
+class EducationalBookingsPerYearResponse(AdageBaseResponseModel):
+    bookings: list[EducationalBookingPerYearResponse]
+
+
+class GetAllBookingsPerYearQueryModel(BaseModel):
+    page: PositiveInt | None
+    per_page: PositiveInt | None
