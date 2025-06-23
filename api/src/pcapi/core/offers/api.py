@@ -756,9 +756,13 @@ def create_stock(
         offer.lastValidationPrice = price
     repository.add_to_session(created_stock, *created_activation_codes, offer)
     db.session.flush()
-    search.async_index_offer_ids(
-        [offer.id],
-        reason=search.IndexationReason.STOCK_CREATION,
+
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            [offer.id],
+            reason=search.IndexationReason.STOCK_CREATION,
+        ),
     )
 
     return created_stock
