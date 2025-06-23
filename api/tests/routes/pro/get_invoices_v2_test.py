@@ -232,6 +232,7 @@ class GetInvoicesTest:
         params = {"offererId": user_offerer_2.offerer.id}
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # check user_offerer exists
+        queries += 1  # rollback
         with testing.assert_num_queries(queries):
             response = client.get("/v2/finance/has-invoice", params=params)
             assert response.status_code == 403

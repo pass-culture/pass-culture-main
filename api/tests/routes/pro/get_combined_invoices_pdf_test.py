@@ -84,7 +84,7 @@ def test_get_combined_invoices_pdf_404(client):
     pro = users_factories.ProFactory()
 
     client = client.with_session_auth(pro.email)
-    with assert_num_queries(3):  # session + user + invoice
+    with assert_num_queries(4):  # session + user + invoice + rollback
         response = client.get("/finance/combined-invoices?invoiceReferences=F240000000&invoiceReferences=F240000001")
         assert response.status_code == 404
 
@@ -100,7 +100,7 @@ def test_get_combined_invoices_pdf_user_not_loged_in(client):
 def test_get_combined_invoices_pdf_no_invoice_references(client):
     pro = users_factories.ProFactory()
     client = client.with_session_auth(pro.email)
-    with assert_num_queries(2):  #  session + user
+    with assert_num_queries(3):  #  session + user + rollback
         response = client.get("/finance/combined-invoices")
         assert response.status_code == 400
 
@@ -117,12 +117,13 @@ def test_get_combined_invoices_pdf_failed_http_request(client, requests_mock):
     client = client.with_session_auth(pro.email)
 
     requests_mock.side_effect = [requests.exceptions.ConnectionError]
-    expected_num_queries = 5
+    expected_num_queries = 6
     # session
     # user
     # invoice
     # bank_account
     # user_offerer
+    # rollback
     with assert_num_queries(expected_num_queries):
         response = client.get("/finance/combined-invoices?invoiceReferences=F240000187")
         assert response.status_code == 424
@@ -137,11 +138,12 @@ def test_user_has_no_access_to_offerer(client):
 
     pro = users_factories.ProFactory()
     client = client.with_session_auth(pro.email)
-    expected_num_queries = 4
+    expected_num_queries = 5
     # session
     # user
     # invoice
     # bank_account
+    # rollback
     with assert_num_queries(expected_num_queries):
         response = client.get("/finance/combined-invoices?invoiceReferences=F240000000")
         assert response.status_code == 400
