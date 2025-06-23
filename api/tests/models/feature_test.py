@@ -1,8 +1,8 @@
 import enum
 from unittest.mock import patch
 
-from flask.globals import _cv_request
 import pytest
+from flask.globals import _cv_request
 
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
