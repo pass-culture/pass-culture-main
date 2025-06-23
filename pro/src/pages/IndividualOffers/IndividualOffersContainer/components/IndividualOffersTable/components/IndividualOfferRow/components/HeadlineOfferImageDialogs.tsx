@@ -65,20 +65,19 @@ export const HeadlineOfferImageDialogs = ({
     try {
       setIsImageUploaderOpen(false)
 
+      const thumbnail = {
+        thumb: imageFile,
+        credit: credit ?? '',
+        croppingRectHeight: cropParams?.height,
+        croppingRectWidth: cropParams?.width,
+        croppingRectX: cropParams?.x,
+        croppingRectY: cropParams?.y,
+        offerId: offer.id,
+      }
+
       await mutate(
         [GET_OFFERS_QUERY_KEY, apiFilters],
-        api.createThumbnail({
-          // TODO This TS error will be removed when spectree is updated to the latest
-          // version (dependant on Flask update) which will include files in the generated schema
-          // @ts-expect-error
-          thumb: imageFile,
-          credit: credit ?? '',
-          croppingRectHeight: cropParams?.height,
-          croppingRectWidth: cropParams?.width,
-          croppingRectX: cropParams?.x,
-          croppingRectY: cropParams?.y,
-          offerId: offer.id,
-        }),
+        api.createThumbnail(thumbnail),
         {
           populateCache: (updatedThumbnail, offersList = []) => {
             return offersList.map((item: ListOffersOfferResponseModel) =>
