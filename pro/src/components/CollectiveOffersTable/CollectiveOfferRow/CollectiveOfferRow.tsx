@@ -6,6 +6,7 @@ import {
 } from 'apiClient/v1'
 import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isCollectiveOfferSelectable } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { ThumbCell } from 'components/CollectiveOffersTable/CollectiveOfferRow/ThumbCell'
 import { CheckboxCell } from 'components/OffersTable/Cells/CheckboxCell'
@@ -44,13 +45,20 @@ export const CollectiveOfferRow = ({
   isFirstRow,
 }: CollectiveOfferRowProps) => {
   const id = computeURLCollectiveOfferId(offer.id, Boolean(offer.isShowcase))
+  const isNewCollectiveOfferDetailPageActive = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'
+  )
+
   const rowId = `collective-offer-${id}`
 
   const isOfferDraft =
     offer.displayedStatus === CollectiveOfferDisplayedStatus.DRAFT &&
     `/offre/collectif/${id}/creation`
 
-  const offerLink = isOfferDraft || `/offre/${id}/collectif/recapitulatif`
+  const offerLink =
+    isNewCollectiveOfferDetailPageActive && !offer.isShowcase
+      ? `/offre/${id}/collectif/recapitulatif`
+      : isOfferDraft || `/offre/${id}/collectif/recapitulatif`
 
   const editionOfferLink = isOfferDraft || `/offre/${id}/collectif/edition`
 
