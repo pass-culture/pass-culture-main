@@ -174,14 +174,14 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         )
 
         assert response.status_code == 200
+        assert product_offer.activeStocks[0].quantity == 1
+        assert product_offer.activeStocks[0].price == 10
         assert response.json["stock"] == {
             "bookedQuantity": 0,
             "bookingLimitDatetime": None,
             "price": 1000,
             "quantity": 1,
         }
-        assert product_offer.activeStocks[0].quantity == 1
-        assert product_offer.activeStocks[0].price == 10
 
     def test_update_stock_quantity(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -363,32 +363,25 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         expected_num_queries = 1  # get api key
         expected_num_queries += 1  # get offer
 
+        expected_num_queries += 1  # get price categories
         expected_num_queries += 1  # get mediations
         expected_num_queries += 1  # get stocks
-        expected_num_queries += 1  # get price categories
 
         expected_num_queries += 1  # select oa
         expected_num_queries += 1  # update offer
-        expected_num_queries += 1  # reload provider
-        expected_num_queries += 1  # reload offer
-
-        expected_num_queries += 1  # reload stock
-        expected_num_queries += 1  # reload price categories
-        expected_num_queries += 1  # reload mediations
 
         expected_num_queries += 1  # check venue offerer address
         expected_num_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
         with assert_num_queries(expected_num_queries):
             response = client.with_explicit_token(plain_api_key).patch(
-                "/public/offers/v1/products",
+                self.endpoint_url,
                 json={"offerId": offer_id, "name": new_name, "description": new_desc},
             )
 
             assert response.status_code == 200
-        assert response.json["name"] == new_name
-        assert response.json["description"] == new_desc
+            assert response.json["name"] == new_name
+            assert response.json["description"] == new_desc
 
-        db.session.refresh(product_offer)
         assert product_offer.name == new_name
         assert product_offer.description == new_desc
 
@@ -403,8 +396,6 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
 
         response = self.send_update_request(client, plain_api_key, product, json_data)
         assert response.status_code == 200
-
-        db.session.refresh(product)
 
         assert product.venueId == other_venue.id
         assert product.venue.offererAddress.id == other_venue.offererAddress.id
@@ -449,7 +440,6 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         response = self.send_update_request(client, plain_api_key, product, json_data)
         assert response.status_code == 200
 
-        db.session.refresh(product)
         assert product.offererAddress.addressId == address.id
 
     def send_update_request(self, client, plain_api_key, product, json_data):

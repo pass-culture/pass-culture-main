@@ -18,6 +18,7 @@ class GetEANsAvailabilityTest(PublicAPIEndpointBaseHelper):
     expected_num_queries_success += 1  # 3. Select products
 
     expected_num_queries_400 = 1  # 1. Select API key
+    expected_num_queries_400 += 1  # rollback atomic
 
     def test_should_return_eans_ordered_by_availability(self, client: TestClient):
         plain_api_key, _ = self.setup_provider()
