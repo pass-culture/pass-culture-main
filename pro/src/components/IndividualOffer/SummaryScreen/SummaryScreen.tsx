@@ -26,6 +26,7 @@ import { Callout } from 'ui-kit/Callout/Callout'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { serializeDateTimeToUTCFromLocalDepartment } from '../StocksEventEdition/serializers'
+import { getDepartmentCode } from '../utils/getDepartmentCode'
 
 import { DisplayOfferInAppLink } from './DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { EventPublicationForm } from './EventPublicationForm/EventPublicationForm'
@@ -56,6 +57,8 @@ export const SummaryScreen = () => {
       return
     }
 
+    const departmentCode = getDepartmentCode(offer)
+
     try {
       const offererResponse = await api.getOfferer(
         offer.venue.managingOfferer.id
@@ -69,7 +72,7 @@ export const SummaryScreen = () => {
             ? serializeDateTimeToUTCFromLocalDepartment(
                 values.publicationDate,
                 values.publicationTime,
-                offer.venue.departementCode
+                departmentCode
               )
             : undefined,
         bookingAllowedDatetime:
@@ -79,7 +82,7 @@ export const SummaryScreen = () => {
             ? serializeDateTimeToUTCFromLocalDepartment(
                 values.bookingAllowedDate,
                 values.bookingAllowedTime,
-                offer.venue.departementCode
+                departmentCode
               )
             : undefined,
       })
