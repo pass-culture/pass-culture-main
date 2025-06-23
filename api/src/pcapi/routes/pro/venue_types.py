@@ -1,6 +1,7 @@
 from flask_login import login_required
 
 from pcapi.core.offerers import models as offerers_models
+from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.venue_types_serialize import VenueTypeListResponseModel
 from pcapi.routes.serialization.venue_types_serialize import VenueTypeResponseModel
@@ -10,6 +11,7 @@ from . import blueprint
 
 
 @private_api.route("/venue-types", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(response_model=VenueTypeListResponseModel, api=blueprint.pro_private_schema)
 def get_venue_types() -> VenueTypeListResponseModel:
