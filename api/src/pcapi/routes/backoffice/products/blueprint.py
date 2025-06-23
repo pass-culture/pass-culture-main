@@ -13,6 +13,7 @@ from flask_login import current_user
 from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
+import pcapi.core.offers.exceptions as offers_exceptions
 from pcapi.connectors.serialization import titelive_serializers
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.connectors.titelive import get_by_ean13
@@ -157,6 +158,8 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
     if product.ean:
         try:
             titelive_data = get_by_ean13(product.ean)
+        except offers_exceptions.TiteLiveAPINotExistingEAN:
+            pass
         except Exception as err:
             flash(
                 Markup(
