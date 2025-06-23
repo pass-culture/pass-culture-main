@@ -20,8 +20,11 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
 
     num_queries_404 = 1  # select api_key, offerer and provider
     num_queries_404 += 1  # select offers
+    num_queries_404 += 1  # rollback atomic
 
-    num_queries = num_queries_404 + 1  # select price categories
+    num_queries = 1  # select price categories
+    num_queries += 1  # select api_key, offerer and provider
+    num_queries += 1  # select price categories
     num_queries += 1  # select mediations
     num_queries += 1  # select stocks
     num_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER

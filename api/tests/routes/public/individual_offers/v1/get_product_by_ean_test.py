@@ -13,13 +13,15 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
     endpoint_method = "get"
 
     num_queries_400 = 1  # select api_key, offerer and provider
+    num_queries_400 += 1  # rollback atomic (at the end)
     num_queries_404 = num_queries_400 + 1  # check venue_provider exists
 
-    num_queries_offer_not_found = num_queries_404 + 1  # fetch offer (1 query)
-
-    num_queries_success = num_queries_offer_not_found + 1  # fetch stocks (1 query)
-    num_queries_success += 1  # fetch mediations (1 query)
-    num_queries_success += 1  # fetch price categories (1 query)
+    num_queries_success = 1  # select api_key, offerer and provider
+    num_queries_success += 1  # check venue_provider exists
+    num_queries_success += 1  # fetch offer
+    num_queries_success += 1  # fetch stocks
+    num_queries_success += 1  # fetch mediations
+    num_queries_success += 1  # fetch price categories
     num_queries_success += 1  # FF WIP_REFACTO_FUTURE_OFFER
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
@@ -290,7 +292,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
             name="Vieux motard que jamais",
         )
 
-        with testing.assert_num_queries(self.num_queries_offer_not_found):
+        with testing.assert_num_queries(self.num_queries_404):  # + fetch offer - rollback atomic
             response = client.with_explicit_token(plain_api_key).get(
                 f"/public/offers/v1/products/ean?eans=1234567890123&venueId={venue_id}"
             )

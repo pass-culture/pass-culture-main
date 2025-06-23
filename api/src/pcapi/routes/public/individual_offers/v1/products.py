@@ -259,6 +259,7 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
 
 
 @blueprints.public_api.route("/public/offers/v1/products/ean", methods=["POST"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -554,6 +555,7 @@ def _create_offer_from_product(
 
 
 @blueprints.public_api.route("/public/offers/v1/products/<int:product_id>", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -586,6 +588,7 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
 
 
 @blueprints.public_api.route("/public/offers/v1/products/ean", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
