@@ -1,23 +1,4 @@
-## 🎯 Related Ticket or 🔧 Changes Made
+Please go to the `Preview` tab and select the appropriate sub-template:
 
-[Ticket Jira](https://passculture.atlassian.net/browse/PC-XXXXX)
-
-<!-- Please include a summary of the changes and the related issue.
-- List your changes here
-- What did you add, fix, or update?
--->
-
-<!-- Describe the steps to test your changes. Include setup instructions, commands, and expected results. -->
-
-
-## 🖼️ Before & After Images
-
-<!--
-If your PR includes UI changes, please add screenshots or GIFs here to show before and after.
-
-Example:
-
-Before | After
-:---: | :---:
-![before](link-to-before-image) | ![after](link-to-after-image)
--->
+- [Front](?expand=1&template=template_front.md)
+- [Back](?expand=1&template=template_back.md)
