@@ -1661,6 +1661,7 @@ def create_price_category(
         offer=offer, price=price, priceCategoryLabel=price_category_label, idAtProvider=id_at_provider
     )
     repository.add_to_session(created_price_category)
+    db.session.flush()
     return created_price_category
 
 

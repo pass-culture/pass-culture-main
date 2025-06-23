@@ -18,6 +18,10 @@ class GetEventStocksTest(PublicAPIVenueEndpointHelper):
     endpoint_method = "get"
     default_path_params = {"event_id": 1}
 
+    num_queries_400 = 1  # select api_key, offerer and provider
+    num_queries_400 += 1  # select offers
+    num_queries_400 += 1  # rollback atomic
+
     num_queries = 1  # select api_key, offerer and provider
     num_queries += 1  # select offers
     num_queries_with_stocks = num_queries + 1  # Select stock ids
@@ -44,7 +48,7 @@ class GetEventStocksTest(PublicAPIVenueEndpointHelper):
         event, _ = self.setup_base_resource()
         event_id = event.id
 
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_400):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_id))
             assert response.status_code == 404
 
@@ -53,7 +57,7 @@ class GetEventStocksTest(PublicAPIVenueEndpointHelper):
         event, _ = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
         event_id = event.id
 
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries_400):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_id))
             assert response.status_code == 404
 
@@ -62,11 +66,13 @@ class GetEventStocksTest(PublicAPIVenueEndpointHelper):
         event_offer = offers_factories.EventOfferFactory(
             venue=venue_provider.venue, lastProvider=venue_provider.provider
         )
-        response = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url.format(event_id=event_offer.id),
-            params={"idsAtProvider": ",".join(["1234567890123" for _ in range(101)])},
-        )
-        assert response.status_code == 400
+        with testing.assert_num_queries(self.num_queries_400):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url.format(event_id=event_offer.id),
+                params={"idsAtProvider": ",".join(["1234567890123" for _ in range(101)])},
+            )
+            assert response.status_code == 400
+
         assert response.json == {"idsAtProvider": ["Too many ids"]}
 
     def test_event_with_dates(self, client: TestClient):
