@@ -2029,13 +2029,16 @@ class EditOfferVenueTest(PostEndpointHelper):
         self,
         mocked_async_index_offer_ids,
         authenticated_client,
+        *,
         source_venue: offerers_models.Venue,
         destination_venue: offerers_models.Venue,
+        move_offer_address: bool,
         notify_beneficiary: bool,
         with_pricings: bool = True,
         expected_error: str | None = None,
     ):
         offer = offers_factories.EventOfferFactory(venue=source_venue)
+        original_address_id = offer.offererAddress.address.id
 
         stock1 = offers_factories.EventStockFactory(offer=offer)
         booking1_1 = bookings_factories.BookingFactory(stock=stock1)
@@ -2061,7 +2064,11 @@ class EditOfferVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             offer_id=offer.id,
-            form={"venue": destination_venue.id, "notify_beneficiary": "on" if notify_beneficiary else ""},
+            form={
+                "venue": destination_venue.id,
+                "move_offer_address": "on" if move_offer_address else "",
+                "notify_beneficiary": "on" if notify_beneficiary else "",
+            },
         )
         assert response.status_code == 303
 
@@ -2096,20 +2103,31 @@ class EditOfferVenueTest(PostEndpointHelper):
         assert finance_event1_2.pricingPointId == expected_venue.current_pricing_point.id
         assert finance_event2_1.venueId == expected_venue.id
         assert finance_event2_1.pricingPointId == expected_venue.current_pricing_point.id
-        assert offer.offererAddressId == expected_venue.offererAddress.id
+        if move_offer_address:
+            assert offer.offererAddressId == expected_venue.offererAddress.id
+        else:
+            assert offer.offererAddress.id != expected_venue.offererAddress.id
+            assert offer.offererAddress.id != source_venue.offererAddress.id
+            assert offer.offererAddress.address.id == original_address_id
 
-    @pytest.mark.parametrize("notify_beneficiary", [False, True])
+    @pytest.mark.parametrize("move_offer_address, notify_beneficiary", [(False, False), (True, False), (True, True)])
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_move_event_offer_when_venue_has_same_pricing_point(
-        self, mocked_async_index_offer_ids, authenticated_client, venues_in_same_offerer, notify_beneficiary
+        self,
+        mocked_async_index_offer_ids,
+        authenticated_client,
+        venues_in_same_offerer,
+        move_offer_address,
+        notify_beneficiary,
     ):
         source_venue, venue_with_same_pricing_point, _, _ = venues_in_same_offerer
         self._test_move_event(
             mocked_async_index_offer_ids,
             authenticated_client,
-            source_venue,
-            venue_with_same_pricing_point,
-            notify_beneficiary,
+            source_venue=source_venue,
+            destination_venue=venue_with_same_pricing_point,
+            move_offer_address=move_offer_address,
+            notify_beneficiary=notify_beneficiary,
         )
 
     @patch("pcapi.core.search.async_index_offer_ids")
@@ -2120,9 +2138,10 @@ class EditOfferVenueTest(PostEndpointHelper):
         self._test_move_event(
             mocked_async_index_offer_ids,
             authenticated_client,
-            source_venue,
-            venue_with_own_pricing_point,
-            True,
+            source_venue=source_venue,
+            destination_venue=venue_with_own_pricing_point,
+            move_offer_address=True,
+            notify_beneficiary=True,
             with_pricings=False,
         )
 
@@ -2134,9 +2153,10 @@ class EditOfferVenueTest(PostEndpointHelper):
         self._test_move_event(
             mocked_async_index_offer_ids,
             authenticated_client,
-            source_venue,
-            venue_with_own_pricing_point,
-            True,
+            source_venue=source_venue,
+            destination_venue=venue_with_own_pricing_point,
+            move_offer_address=True,
+            notify_beneficiary=True,
             expected_error="Le partenaire culturel de cette offre ne peut pas être modifié : "
             "Il existe des réservations valorisées sur un autre point de valorisation que celui du nouveau partenaire culturel",
         )
@@ -2150,9 +2170,10 @@ class EditOfferVenueTest(PostEndpointHelper):
         self._test_move_event(
             mocked_async_index_offer_ids,
             authenticated_client,
-            source_venue,
-            venue_without_pricing_point,
-            True,
+            source_venue=source_venue,
+            destination_venue=venue_without_pricing_point,
+            move_offer_address=True,
+            notify_beneficiary=True,
             with_pricings=False,
             expected_error="Le partenaire culturel de cette offre ne peut pas être modifié : Ce partenaire culturel n'est pas éligible au transfert de l'offre",
         )
@@ -2249,10 +2270,35 @@ class EditOfferVenueTest(PostEndpointHelper):
         self._test_move_event(
             mocked_async_index_offer_ids,
             authenticated_client,
-            source_venue,
-            venue_with_offerer_address,
-            False,
+            source_venue=source_venue,
+            destination_venue=venue_with_offerer_address,
+            move_offer_address=True,
+            notify_beneficiary=False,
         )
+
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_sould_keep_event_offerer_address(
+        self, mocked_async_index_offer_ids, authenticated_client, venues_in_same_offerer
+    ):
+        source_venue, destination_venue, _, _ = venues_in_same_offerer
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=source_venue.managingOfferer)
+        offer = offers_factories.EventOfferFactory(venue=source_venue, offererAddress=offerer_address)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer.id,
+            form={"venue": destination_venue.id, "move_offer_address": "", "notify_beneficiary": ""},
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200
+        assert (
+            html_parser.extract_alert(response.data)
+            == f"L'offre a été déplacée vers le partenaire culturel {destination_venue.name}"
+        )
+
+        assert offer.venueId == destination_venue.id
+        assert offer.offererAddress == offerer_address
 
 
 class GetOfferStockEditFormTest(GetEndpointHelper):
