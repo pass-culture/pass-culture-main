@@ -575,6 +575,9 @@ class BatchEditOfferForm(empty_forms.BatchForm, EditOfferForm):
 
 class EditOfferVenueForm(FlaskForm):
     venue = fields.PCSelectWithPlaceholderValueField("Nouveau partenaire culturel", choices=[], validate_choice=False)
+    move_offer_address = fields.PCSwitchBooleanField(
+        "Déplacer aussi la localisation à l'adresse du nouveau partenaire culturel", full_row=True
+    )
     notify_beneficiary = fields.PCSwitchBooleanField("Notifier les jeunes", full_row=True)
 
     def set_venue_choices(self, venues: list[offerers_models.Venue]) -> None:
