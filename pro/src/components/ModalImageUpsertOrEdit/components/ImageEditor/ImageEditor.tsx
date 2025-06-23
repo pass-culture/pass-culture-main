@@ -4,7 +4,6 @@ import { useDebouncedCallback } from 'use-debounce'
 
 import { Slider } from 'ui-kit/form/Slider/Slider'
 
-import { CanvasTools } from './canvas'
 import style from './ImageEditor.module.scss'
 
 const CANVAS_MOBILE_BREAKPOINT = 600
@@ -28,7 +27,6 @@ export function map(
 interface ImageEditorConfig {
   canvasHeight: number
   canvasWidth: number
-  cropBorderColor: string
   cropBorderHeight: number
   cropBorderWidth: number
   maxScale: number
@@ -49,7 +47,6 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
       image,
       canvasHeight,
       canvasWidth,
-      cropBorderColor,
       cropBorderHeight,
       cropBorderWidth,
       initialPosition = { x: 0.5, y: 0.5 },
@@ -107,26 +104,6 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
       cropBorderHeight
     )
 
-    const drawCropBorder = () => {
-      const canvas = document.querySelector('canvas')
-      const ctx = canvas?.getContext('2d')
-      if (!ctx) {
-        return
-      }
-
-      const canvasTools = new CanvasTools(ctx)
-      canvasTools.drawArea({
-        width: 0,
-        color: cropBorderColor,
-        coordinates: [
-          responsiveCropBorderWidth,
-          responsiveCropBorderHeight,
-          responsiveCanvasWidth,
-          responsiveCanvasHeight,
-        ],
-      })
-    }
-
     /* istanbul ignore next: DEBT, TO FIX */
     const onPositionChange = useCallback((position: Position) => {
       setPosition(position)
@@ -140,23 +117,20 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
     return (
       <div className={style['image-editor']}>
         <AvatarEditor
-          border={[responsiveCropBorderWidth, responsiveCropBorderHeight]}
           color={[0, 0, 0, 0.2]}
           crossOrigin="anonymous"
-          height={responsiveCanvasHeight}
           image={image}
-          onImageChange={drawCropBorder}
           onImageReady={() => {
             onImagePainted?.()
-            drawCropBorder()
           }}
-          onMouseMove={drawCropBorder}
           onMouseUp={onChangeDone}
           onPositionChange={onPositionChange}
           position={position}
           ref={ref}
-          scale={Number(scale)}
+          scale={scale}
           width={responsiveCanvasWidth}
+          height={responsiveCanvasHeight}
+          border={[responsiveCropBorderWidth, responsiveCropBorderHeight]}
           aria-label="Editeur d'image"
         />
         <label className={style['image-editor-label']} htmlFor="scale">
