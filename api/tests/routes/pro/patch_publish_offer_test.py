@@ -11,6 +11,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.date import local_datetime_to_default_timezone
@@ -52,6 +53,7 @@ class Returns200Test:
     num_queries += 1  # 12 update offer
     num_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
 
+    @pytest.mark.features(WIP_REFACTO_FUTURE_OFFER=True)
     @time_machine.travel(now_datetime_with_tz, tick=False)
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
     @patch("pcapi.core.offers.api.rule_flags_offer", return_value=False)
@@ -134,6 +136,105 @@ class Returns200Test:
         assert content["isActive"] is False
         assert content["isNonFreeOffer"] is True
         mock_async_index_offer_ids.assert_not_called()
+        mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
+
+    @pytest.mark.features(WIP_REFACTO_FUTURE_OFFER=True)
+    @time_machine.travel(now_datetime_with_tz, tick=False)
+    @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
+    @patch("pcapi.core.offers.api.rule_flags_offer", return_value=False)
+    def test_publish_offer_in_future(
+        self,
+        mock_rule_flags_offer,
+        mocked_send_first_venue_approved_offer_email_to_pro,
+        mock_async_index_offer_ids,
+        client,
+    ):
+        stock = offers_factories.StockFactory(
+            offer__isActive=False,
+            offer__validation=OfferValidationStatus.DRAFT,
+            offer__subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=stock.offer.venue.managingOfferer,
+        )
+
+        client = client.with_session_auth("user@example.com")
+        publication_date = datetime.datetime.utcnow().replace(minute=0, second=0) + datetime.timedelta(days=30)
+        offer_id = stock.offerId
+        # +1 insert into future_offer
+        with assert_num_queries(self.num_queries + 1):
+            response = client.patch(
+                "/offers/publish",
+                json={"id": offer_id, "publicationDatetime": format_into_utc_date(publication_date)},
+            )
+
+        expected_publication_date = local_datetime_to_default_timezone(publication_date, "Europe/Paris").replace(
+            microsecond=0, tzinfo=None
+        )
+        assert response.status_code == 200
+        content = response.json
+        offer: offers_models.Offer = db.session.get(offers_models.Offer, stock.offer.id)
+        assert offer.validation == OfferValidationStatus.APPROVED
+        assert offer.lastValidationPrice is None
+        assert offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert offer.publicationDatetime == expected_publication_date
+        assert not offer.bookingAllowedDatetime
+        assert content["status"] == OfferStatus.SCHEDULED.name
+        assert content["isActive"] is False
+        assert content["isNonFreeOffer"] is True
+        mock_async_index_offer_ids.assert_not_called()
+        mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
+
+    @pytest.mark.features(WIP_REFACTO_FUTURE_OFFER=True)
+    @time_machine.travel(now_datetime_with_tz, tick=False)
+    @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
+    @patch("pcapi.core.offers.api.rule_flags_offer", return_value=False)
+    def test_publish_now_but_bookable_in_future(
+        self,
+        mock_rule_flags_offer,
+        mocked_send_first_venue_approved_offer_email_to_pro,
+        mock_async_index_offer_ids,
+        client,
+    ):
+        stock = offers_factories.StockFactory(
+            offer__isActive=False,
+            offer__validation=OfferValidationStatus.DRAFT,
+            offer__subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=stock.offer.venue.managingOfferer,
+        )
+
+        client = client.with_session_auth("user@example.com")
+        booking_allowed_datetime = datetime.datetime.utcnow().replace(minute=0, second=0) + datetime.timedelta(days=30)
+        offer_id = stock.offerId
+
+        with assert_num_queries(self.num_queries):
+            response = client.patch(
+                "/offers/publish",
+                json={
+                    "id": offer_id,
+                    "bookingAllowedDatetime": format_into_utc_date(booking_allowed_datetime),
+                },
+            )
+
+        expected_booking_allowed_datetime = local_datetime_to_default_timezone(
+            booking_allowed_datetime, "Europe/Paris"
+        ).replace(tzinfo=None)
+        assert response.status_code == 200
+        content = response.json
+        offer: offers_models.Offer = db.session.get(offers_models.Offer, stock.offer.id)
+        assert offer.validation == OfferValidationStatus.APPROVED
+        assert offer.lastValidationPrice is None
+        assert offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert offer.publicationDatetime == offer.finalizationDatetime
+        assert offer.bookingAllowedDatetime == expected_booking_allowed_datetime
+        assert content["status"] == OfferStatus.PUBLISHED.name
+        assert content["isActive"] is True
+        assert content["isNonFreeOffer"] is True
+        mock_async_index_offer_ids.assert_called_once()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
 
     @time_machine.travel(now_datetime_with_tz, tick=False)
