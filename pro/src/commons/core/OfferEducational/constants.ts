@@ -88,8 +88,6 @@ export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {
 export const DEFAULT_VISIBILITY_FORM_VALUES: VisibilityFormValues = {
   visibility: 'one',
   institution: '',
-  'search-institution': '',
-  'search-teacher': '',
   teacher: null,
 }
 

@@ -23,20 +23,10 @@ export const extractInitialVisibilityValues = (
   requestInformations?: GetCollectiveOfferRequestResponseModel | null
 ): VisibilityFormValues => ({
   institution: institution?.id.toString() ?? '',
-  'search-institution': institution
-    ? formatInstitutionDisplayName(institution)
-    : requestInformations
-      ? formatInstitutionDisplayName(requestInformations.institution)
-      : '',
   teacher: teacher
     ? `${teacher.email}`
     : requestInformations
       ? `${requestInformations.redactor.email}`
       : null,
   visibility: institution || requestInformations ? 'one' : 'all',
-  'search-teacher': teacher
-    ? `${teacher.firstName} ${teacher.lastName}`
-    : requestInformations
-      ? `${requestInformations.redactor.firstName} ${requestInformations.redactor.lastName}`
-      : '',
 })

@@ -1,6 +1,6 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { it } from 'vitest'
+import { expect, it } from 'vitest'
 
 import { api } from 'apiClient/api'
 import {
@@ -201,15 +201,17 @@ describe('CollectiveOfferVisibility', () => {
 
     renderVisibilityStep(props)
 
-    const institutionSelect = screen.getAllByTestId('select')[0]
-    await userEvent.selectOptions(institutionSelect, '12')
+    const institutionInput = screen.getByLabelText(
+      /Nom de l’établissement scolaire ou code UAI/
+    )
+    await userEvent.type(institutionInput, 'Collège Institution 1')
+
+    await userEvent.keyboard('{ArrowDown}{Enter}')
+
     const teacherInput = screen.getByLabelText(/Prénom et nom de l’enseignant/)
     await userEvent.type(teacherInput, 'Red')
 
-    await userEvent.selectOptions(
-      screen.getAllByTestId('select')[1],
-      'compte.test@education.gouv.fr'
-    )
+    await userEvent.keyboard('{ArrowDown}{Enter}')
 
     await userEvent.click(
       screen.getByRole('button', { name: /Enregistrer et continuer/ })
@@ -229,25 +231,6 @@ describe('CollectiveOfferVisibility', () => {
         'Les paramètres de visibilité de votre offre ont bien été enregistrés',
       payload: resultingOffer,
     })
-  })
-
-  it('should not clear search input field when clicking on the input again', async () => {
-    renderVisibilityStep(props)
-
-    const institutionInput = await screen.findByLabelText(
-      /Nom de l’établissement scolaire ou code UAI/
-    )
-    await userEvent.click(institutionInput)
-
-    await userEvent.type(institutionInput, 'Test input')
-
-    await userEvent.click(
-      await screen.findByTestId('wrapper-search-institution')
-    )
-
-    await userEvent.click(institutionInput)
-
-    expect(institutionInput).toHaveDisplayValue('Test input')
   })
 
   it('should display an error when the institution could not be saved', async () => {
@@ -337,8 +320,13 @@ describe('CollectiveOfferVisibility', () => {
       },
     ])
 
-    const institutionSelect = screen.getAllByTestId('select')[0]
-    await userEvent.selectOptions(institutionSelect, '12')
+    const institutionInput = screen.getByLabelText(
+      /Nom de l’établissement scolaire ou code UAI/
+    )
+    await userEvent.type(institutionInput, 'Collège Institution 1')
+
+    await userEvent.keyboard('{ArrowDown}{Enter}')
+
     const teacherInput = screen.getByLabelText(/Prénom et nom de l’enseignant/)
     await userEvent.type(teacherInput, 'Red')
 
@@ -366,8 +354,14 @@ describe('CollectiveOfferVisibility', () => {
         surname: 'KHTEUR',
       },
     ])
-    const institutionSelect = screen.getAllByTestId('select')[0]
-    await userEvent.selectOptions(institutionSelect, '12')
+
+    const institutionInput = screen.getByLabelText(
+      /Nom de l’établissement scolaire ou code UAI/
+    )
+    await userEvent.type(institutionInput, 'Collège Institution 1')
+
+    await userEvent.keyboard('{ArrowDown}{Enter}')
+
     const teacherInput = screen.getByLabelText(/Prénom et nom de l’enseignant/)
     await userEvent.type(teacherInput, 'Red')
 
@@ -393,8 +387,6 @@ describe('CollectiveOfferVisibility', () => {
         initialValues: {
           visibility: 'one',
           institution: '24',
-          'search-institution': 'Institution 2',
-          'search-teacher': 'Teacher 1',
           teacher: 'teacher.teach@example.com',
         },
       })
@@ -490,8 +482,12 @@ describe('CollectiveOfferVisibility', () => {
 
     expect(screen.getByText('Brouillon enregistré')).toBeInTheDocument()
 
-    const institutionSelect = screen.getAllByTestId('select')[0]
-    await userEvent.selectOptions(institutionSelect, '12')
+    const institutionInput = screen.getByLabelText(
+      /Nom de l’établissement scolaire ou code UAI/
+    )
+    await userEvent.type(institutionInput, 'Collège Institution 1')
+
+    await userEvent.keyboard('{ArrowDown}{Enter}')
     const teacherInput = screen.getByLabelText(/Prénom et nom de l’enseignant/)
     await userEvent.type(teacherInput, 'Red')
 
