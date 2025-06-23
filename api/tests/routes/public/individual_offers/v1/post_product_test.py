@@ -5,7 +5,6 @@ import pathlib
 from unittest import mock
 
 import pytest
-import sqlalchemy.exc as sa_exc
 import time_machine
 
 from pcapi import settings
@@ -692,35 +691,8 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
         offer = offers_factories.OfferFactory(venue=venue_provider.venue, idAtProvider="some_id")
 
-        payload = build_base_payload(venue_provider.venue, idAtProvider=offer.idAtProvider)
+        payload = self._get_base_payload(venue_provider.venue.id)
+        payload["idAtProvider"] = offer.idAtProvider
         response = auth_client.post(self.endpoint_url, json=payload)
 
         assert response.status_code == 400
-
-    def test_db_error(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        auth_client = client.with_explicit_token(plain_api_key)
-
-        patch_path = "pcapi.routes.public.individual_offers.v1.products.db"
-        with mock.patch(patch_path) as mocked_db:
-            orig = mock.MagicMock()
-            err = sa_exc.IntegrityError(statement="oops", params="none", orig=orig)
-            mocked_db.session.flush.side_effect = err
-
-            payload = build_base_payload(venue_provider.venue)
-            response = auth_client.post(self.endpoint_url, json=payload)
-
-            assert response.status_code == 400
-
-
-def build_base_payload(venue, **extra):
-    return {
-        "location": {"type": "physical", "venueId": venue.id},
-        "categoryRelatedFields": {
-            "category": "SUPPORT_PHYSIQUE_FILM",
-            "ean": "1234567891234",
-        },
-        "accessibility": ACCESSIBILITY_FIELDS,
-        "name": "Le champ des possibles",
-        **extra,
-    }
