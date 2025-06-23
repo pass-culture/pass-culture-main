@@ -111,7 +111,7 @@ def get_capped_offers_for_filters(
                 models.Offer.url,
                 models.Offer.publicationDatetime,
                 models.Offer.bookingAllowedDatetime,
-            ).joinedload(models.Offer.headlineOffers),
+            ).selectinload(models.Offer.headlineOffers),
             sa_orm.joinedload(models.Offer.venue).options(
                 sa_orm.load_only(
                     offerers_models.Venue.id,
@@ -130,7 +130,7 @@ def get_capped_offers_for_filters(
                     ),
                 ),
             ),
-            sa_orm.joinedload(models.Offer.stocks).load_only(
+            sa_orm.selectinload(models.Offer.stocks).load_only(
                 models.Stock.id,
                 models.Stock.beginningDatetime,
                 models.Stock.bookingLimitDatetime,
@@ -138,7 +138,7 @@ def get_capped_offers_for_filters(
                 models.Stock.dnBookedQuantity,
                 models.Stock.isSoftDeleted,
             ),
-            sa_orm.joinedload(models.Offer.mediations).load_only(
+            sa_orm.selectinload(models.Offer.mediations).load_only(
                 models.Mediation.id,
                 models.Mediation.credit,
                 models.Mediation.dateCreated,
@@ -150,7 +150,7 @@ def get_capped_offers_for_filters(
                 models.Product.id,
                 models.Product.thumbCount,
             )
-            .joinedload(models.Product.productMediations),
+            .selectinload(models.Product.productMediations),
             sa_orm.joinedload(models.Offer.lastProvider).load_only(providers_models.Provider.localClass),
             sa_orm.joinedload(models.Offer.offererAddress).options(
                 sa_orm.joinedload(offerers_models.OffererAddress.address),
