@@ -26,7 +26,9 @@ def test_without_invoices_references(client):
     pro = user_offerer.user
 
     client = client.with_session_auth(pro.email)
-    with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # rollback
+    with testing.assert_num_queries(num_queries):
         response = client.get("/v2/reimbursements/csv")
         assert response.status_code == 400
 
