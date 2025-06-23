@@ -38,10 +38,12 @@ class TestingBackend(AlgoliaBackend):
     """
 
     def create_algolia_clients(self) -> None:
+        assert settings.ALGOLIA_ARTISTS_INDEX_NAME  # helps mypy
         assert settings.ALGOLIA_OFFERS_INDEX_NAME  # helps mypy
         assert settings.ALGOLIA_VENUES_INDEX_NAME  # helps mypy
         assert settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME  # helps mypy
         self.index_mapping = {
+            settings.ALGOLIA_ARTISTS_INDEX_NAME: FakeClient("artists"),
             settings.ALGOLIA_OFFERS_INDEX_NAME: FakeClient("offers"),
             settings.ALGOLIA_VENUES_INDEX_NAME: FakeClient("venues"),
             settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME: FakeClient("collective-offers-templates"),

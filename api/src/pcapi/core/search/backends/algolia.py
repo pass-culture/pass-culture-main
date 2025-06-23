@@ -49,6 +49,8 @@ class AlgoliaBackend(
             settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME
         )
         self.algolia_venues_client = client.init_index(settings.ALGOLIA_VENUES_INDEX_NAME)
+        if settings.ALGOLIA_ARTISTS_INDEX_NAME is None:
+            raise ValueError("Expected 'ALGOLIA_ARTISTS_INDEX_NAME' to be set in settings")
         if settings.ALGOLIA_OFFERS_INDEX_NAME is None:
             raise ValueError("Expected 'ALGOLIA_OFFERS_INDEX_NAME' to be set in settings")
         if settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME is None:
@@ -56,6 +58,7 @@ class AlgoliaBackend(
         if settings.ALGOLIA_VENUES_INDEX_NAME is None:
             raise ValueError("Expected 'ALGOLIA_VENUES_INDEX_NAME' to be set in settings")
         self.index_mapping = {
+            settings.ALGOLIA_ARTISTS_INDEX_NAME: self.algolia_artists_client,
             settings.ALGOLIA_OFFERS_INDEX_NAME: self.algolia_offers_client,
             settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME: self.algolia_collective_offers_templates_client,
             settings.ALGOLIA_VENUES_INDEX_NAME: self.algolia_venues_client,
@@ -83,7 +86,7 @@ class AlgoliaBackend(
         return self.index_mapping[index].search(query, params)
 
     def index_artists(self, artists: artists_models.Artist) -> None:
-        self.algolia_artists_client.save_objects([self.serialize_artist(artist) for artist in artists])
+        self.save_objects(settings.ALGOLIA_ARTISTS_INDEX_NAME, [self.serialize_artist(artist) for artist in artists])
 
     def index_offers(self, offers: abc.Collection[offers_models.Offer], last_30_days_bookings: dict[int, int]) -> None:
         # Warning: if you ever need to alter the DB, please make sure you take into account that
