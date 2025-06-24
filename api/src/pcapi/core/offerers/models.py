@@ -1430,8 +1430,6 @@ class NonPaymentNotice(PcObject, Base, Model):
     )
     motivation: NoticeStatusMotivation = sa.Column(db_utils.MagicEnum(NoticeStatusMotivation), nullable=True)
     venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="SET NULL"), nullable=True, index=True)
-    venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", foreign_keys=[venueId], backref="nonPaymentNotices")
+    venue: sa_orm.Mapped["Venue | None"] = sa_orm.relationship("Venue", foreign_keys=[venueId])
     offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="SET NULL"), nullable=True, index=True)
-    offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship(
-        "Offerer", foreign_keys=[offererId], backref="nonPaymentNotices"
-    )
+    offerer: sa_orm.Mapped["Offerer | None"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])

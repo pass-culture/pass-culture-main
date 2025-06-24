@@ -101,6 +101,8 @@ ACTION_TYPE_TO_STRING = {
     history_models.ActionType.SYNC_VENUE_TO_PROVIDER: "Synchronisation du partenaire culturel avec un partenaire technique",
     history_models.ActionType.VENUE_REGULARIZATION: "Régularisation des partenaires culturels",
     history_models.ActionType.VENUE_SOFT_DELETED: "Suppression réversible",
+    # Actions related to an offerer and/or a venue:
+    history_models.ActionType.NON_PAYMENT_NOTICE_CREATED: "Saisie d'un avis d'impayé",
     # Permissions role changes:
     history_models.ActionType.ROLE_PERMISSIONS_CHANGED: "Modification des permissions du rôle",
     # RGPD scripts

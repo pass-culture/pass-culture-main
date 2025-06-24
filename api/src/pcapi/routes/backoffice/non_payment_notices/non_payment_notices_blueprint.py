@@ -161,6 +161,9 @@ def create_non_payment_notice() -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.non_payment_notices.list_notices"), code=303)
 
+    offerer = db.session.get(offerers_models.Offerer, int(form.offerer.data[0])) if form.offerer.data[0] else None
+    venue = db.session.get(offerers_models.Venue, int(form.venue.data[0])) if form.venue.data[0] else None
+
     try:
         notice = offerers_models.NonPaymentNotice(
             amount=form.amount.data,
@@ -168,17 +171,19 @@ def create_non_payment_notice() -> utils.BackofficeResponse:
             emitterEmail=form.emitter_email.data,
             emitterName=form.emitter_name.data,
             noticeType=offerers_models.NoticeType[form.notice_type.data],
-            offererId=int(form.offerer.data[0]) if form.offerer.data[0] else None,
             reference=form.reference.data,
-            venueId=int(form.venue.data[0]) if form.venue.data[0] else None,
+            offerer=offerer,
+            venue=venue,
         )
         db.session.add(notice)
-        if notice.venue or notice.offerer:
+        if offerer or venue:
+            db.session.flush()  # mandatory to get notice.id
             history_api.add_action(
                 history_models.ActionType.NON_PAYMENT_NOTICE_CREATED,
                 author=current_user,
-                venue=notice.venue,
-                offerer=notice.offerer,
+                offerer=offerer,
+                venue=venue,
+                non_payment_notice_id=notice.id,
             )
         db.session.flush()
         flash("L'avis d'impayé a été créé", "success")

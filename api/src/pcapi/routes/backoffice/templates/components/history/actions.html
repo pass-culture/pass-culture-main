@@ -89,6 +89,12 @@
                      class="link-primary">Voir l'incident #{{ linked_incident_id }}</a>
                 {% endif %}
               {% endif %}
+              {% set non_payment_notice_id = action.extraData.get('non_payment_notice_id') %}
+              {% if non_payment_notice_id %}
+                {% set link = url_for('backoffice_web.non_payment_notices.list_notices', q=non_payment_notice_id, offerer=action.offererId, venue=action.venueId) %}
+                <a href="{{ link }}"
+                   class="link-primary">Voir l'avis d'impayé #{{ non_payment_notice_id }}</a>
+              {% endif %}
               {% set provider_id = action.extraData.get('provider_id') %}
               {% if provider_id %}{{ action.extraData.get("provider_name") | empty_string_if_null }} (Provider ID : {{ provider_id }}){% endif %}
               {% set ds_dossier_id = action.extraData.get('ds_dossier_id') %}
