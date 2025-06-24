@@ -39,7 +39,7 @@ def create_new_pro_user_and_offerer_with_venue() -> dict:
 
 def create_regular_pro_user() -> dict:
     pro_user = users_factories.ProFactory.create()
-    offerer = offerers_factories.OffererFactory.create()
+    offerer = offerers_factories.OffererFactory.create(allowedOnAdage=False)
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
     venue = offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
     offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer)
@@ -114,12 +114,14 @@ def create_regular_pro_user_with_virtual_offer() -> dict:
 
 def create_pro_user_with_financial_data() -> dict:
     pro_user = users_factories.ProFactory.create()
-    offerer_A = offerers_factories.OffererFactory.create()
+    offerer_A = offerers_factories.OffererFactory.create(allowedOnAdage=False)
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer_A)
     offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer_A)
     offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer_A)
 
-    offerer_B = offerers_factories.OffererFactory.create(name="Structure avec informations bancaires")
+    offerer_B = offerers_factories.OffererFactory.create(
+        name="Structure avec informations bancaires", allowedOnAdage=False
+    )
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer_B)
     venue_B = offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer_B)
     offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer_B)
@@ -136,7 +138,9 @@ def create_pro_user_with_financial_data() -> dict:
 def create_pro_user_with_financial_data_and_3_venues() -> dict:
     pro_user = users_factories.ProFactory.create()
 
-    offerer_C = offerers_factories.OffererFactory.create(name="Structure avec informations bancaires et 3 lieux")
+    offerer_C = offerers_factories.OffererFactory.create(
+        name="Structure avec informations bancaires et 3 lieux", allowedOnAdage=False
+    )
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer_C)
     venue_C = offerers_factories.VenueFactory.create(name="Mon lieu 1", managingOfferer=offerer_C)
     venue_D = offerers_factories.VenueFactory.create(name="Mon lieu 2", managingOfferer=offerer_C)

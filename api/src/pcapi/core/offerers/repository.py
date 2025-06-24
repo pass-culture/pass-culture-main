@@ -668,7 +668,9 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
             has_pending_bank_account_subquery.label("hasPendingBankAccount"),
             has_active_offers_subquery.label("hasActiveOffer"),
             has_bank_account_with_pending_corrections_subquery.label("hasBankAccountWithPendingCorrections"),
-            sa.or_(has_adage_id, has_collective_application, has_non_draft_offers).label("isOnboarded"),
+            sa.or_(
+                models.Offerer.allowedOnAdage.is_(True), has_adage_id, has_collective_application, has_non_draft_offers
+            ).label("isOnboarded"),
             has_headline_offer.label("hasHeadlineOffer"),
             has_partner_page.label("hasPartnerPage"),
         )

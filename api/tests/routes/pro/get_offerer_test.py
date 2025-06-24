@@ -209,28 +209,29 @@ class GetOffererTest:
         assert response.json["hasNonFreeOffer"] is True
 
     @pytest.mark.parametrize(
-        "offers_status,count_offer,adage_id,collective_ds_application,is_onboarded",
+        "allowed_on_adage,offers_status,count_offer,adage_id,collective_ds_application,is_onboarded",
         [
-            (offers_models.OfferValidationStatus.DRAFT, 1, None, None, False),
-            (offers_models.OfferValidationStatus.DRAFT, 3, None, None, False),
-            (offers_models.OfferValidationStatus.APPROVED, 1, None, None, True),
-            (offers_models.OfferValidationStatus.APPROVED, 3, None, None, True),
-            (None, 0, None, None, False),
-            (None, 0, "1", None, True),
-            (offers_models.OfferValidationStatus.DRAFT, 1, "1", None, True),
-            (offers_models.OfferValidationStatus.DRAFT, 3, "1", None, True),
-            (offers_models.OfferValidationStatus.DRAFT, 1, None, 1, True),
-            (None, 0, None, 1, True),
-            (None, 0, "1", 1, True),
-            (offers_models.OfferValidationStatus.DRAFT, 1, "1", 1, True),
-            (offers_models.OfferValidationStatus.DRAFT, 3, "1", 1, True),
+            (False, offers_models.OfferValidationStatus.DRAFT, 1, None, None, False),
+            (False, offers_models.OfferValidationStatus.DRAFT, 3, None, None, False),
+            (False, offers_models.OfferValidationStatus.APPROVED, 1, None, None, True),
+            (False, offers_models.OfferValidationStatus.APPROVED, 3, None, None, True),
+            (False, None, 0, None, None, False),
+            (False, None, 0, "1", None, True),
+            (False, offers_models.OfferValidationStatus.DRAFT, 1, "1", None, True),
+            (False, offers_models.OfferValidationStatus.DRAFT, 3, "1", None, True),
+            (False, offers_models.OfferValidationStatus.DRAFT, 1, None, 1, True),
+            (False, None, 0, None, 1, True),
+            (False, None, 0, "1", 1, True),
+            (False, offers_models.OfferValidationStatus.DRAFT, 1, "1", 1, True),
+            (False, offers_models.OfferValidationStatus.DRAFT, 3, "1", 1, True),
+            (True, None, 0, None, None, True),
         ],
     )
     def test_offerer_onboarding_status(
-        self, client, offers_status, count_offer, adage_id, collective_ds_application, is_onboarded
+        self, client, allowed_on_adage, offers_status, count_offer, adage_id, collective_ds_application, is_onboarded
     ):
         pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory(allowedOnAdage=allowed_on_adage)
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, adageId=adage_id)

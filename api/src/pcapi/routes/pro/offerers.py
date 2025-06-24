@@ -354,6 +354,14 @@ def get_offerer_eligibility(
     check_user_has_access_to_offerer(current_user, offerer_id)
 
     try:
+        is_allowed_on_adage = api.is_allowed_on_adage(offerer_id)
+        if is_allowed_on_adage:
+            return offerers_serialize.OffererEligibilityResponseModel(
+                offerer_id=offerer_id,
+                has_adage_id=False,
+                has_ds_application=None,
+                is_onboarded=True,
+            )
         has_adage_id = api.synchronize_from_adage_and_check_registration(offerer_id)
         if has_adage_id:
             return offerers_serialize.OffererEligibilityResponseModel(
@@ -391,5 +399,5 @@ def get_offerer_eligibility(
         offerer_id=offerer_id,
         has_adage_id=has_adage_id,
         has_ds_application=has_ds_application,
-        is_onboarded=has_adage_id or has_ds_application,
+        is_onboarded=is_allowed_on_adage or has_adage_id or has_ds_application,
     )
