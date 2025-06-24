@@ -60,7 +60,6 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { DialogStockEventDeleteConfirm } from '../DialogStockDeleteConfirm/DialogStockEventDeleteConfirm'
 import { DialogStocksEventEditConfirm } from '../DialogStocksEventEditConfirm/DialogStocksEventEditConfirm'
-import { useNotifyFormError } from '../hooks/useNotifyFormError'
 import { RecurrenceFormValues } from '../StocksEventCreation/form/types'
 import { RecurrenceForm } from '../StocksEventCreation/RecurrenceForm'
 import { getDepartmentCode } from '../utils/getDepartmentCode'
@@ -424,11 +423,6 @@ export const StocksEventEdition = ({
     setValue,
     formState: { errors, isSubmitting, isDirty },
   } = hookForm
-
-  useNotifyFormError({
-    isSubmitting,
-    errors,
-  })
 
   const { fields } = useFieldArray({
     control,
