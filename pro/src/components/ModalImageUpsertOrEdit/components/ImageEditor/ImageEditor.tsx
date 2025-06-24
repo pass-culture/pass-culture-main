@@ -4,6 +4,7 @@ import { useDebouncedCallback } from 'use-debounce'
 
 import { Slider } from 'ui-kit/form/Slider/Slider'
 
+import { CanvasTools } from './canvas'
 import style from './ImageEditor.module.scss'
 
 const CANVAS_MOBILE_BREAKPOINT = 600
@@ -114,14 +115,36 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
 
     const isScaleDisabled = maxScale <= 1
 
+    const drawCropBorder = () => {
+      const canvas = document.querySelector('canvas')
+      const ctx = canvas?.getContext('2d')
+      if (!ctx) {
+        return
+      }
+
+      const canvasTools = new CanvasTools(ctx)
+      canvasTools.drawArea({
+        width: 0,
+        color: '#FFF',
+        coordinates: [
+          responsiveCropBorderWidth,
+          responsiveCropBorderHeight,
+          responsiveCanvasWidth,
+          responsiveCanvasHeight,
+        ],
+      })
+    }
+
     return (
       <div className={style['image-editor']}>
         <AvatarEditor
           color={[0, 0, 0, 0.2]}
           crossOrigin="anonymous"
           image={image}
+          onImageChange={drawCropBorder}
           onImageReady={() => {
             onImagePainted?.()
+            drawCropBorder()
           }}
           onMouseUp={onChangeDone}
           onPositionChange={onPositionChange}
