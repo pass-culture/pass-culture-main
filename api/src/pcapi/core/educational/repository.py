@@ -1399,8 +1399,9 @@ def get_collective_offer_templates_for_playlist_query(
             sa_orm.joinedload(educational_models.CollectiveOfferTemplate.domains),
             *_get_collective_offer_template_address_joinedload_with_expression(),
         ),
-        sa_orm.joinedload(educational_models.CollectivePlaylist.venue).joinedload(
-            offerers_models.Venue.googlePlacesInfo
+        sa_orm.joinedload(educational_models.CollectivePlaylist.venue).options(
+            sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
         ),
     ).populate_existing()
     return query

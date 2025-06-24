@@ -212,7 +212,8 @@ def get_local_offerers_playlist(
                 publicName=item.venue.publicName,
                 name=item.venue.name,
                 distance=format_distance(item.distanceInKm),
-                city=item.venue.city,
+                # TODO(OA): remove this when the virtual venues are migrated
+                city=item.venue.offererAddress.address.city if item.venue.offererAddress else None,
                 id=item.venue.id,
             )
             for item in playlist_items
@@ -242,7 +243,8 @@ def get_new_offerers_playlist(
                 publicName=item.venue.publicName,
                 name=item.venue.name,
                 distance=format_distance(item.distanceInKm),
-                city=item.venue.city,
+                # TODO(OA): remove this when the virtual venues are migrated
+                city=item.venue.offererAddress.address.city if item.venue.offererAddress else None,
                 id=item.venue.id,
             )
             for item in playlist_items

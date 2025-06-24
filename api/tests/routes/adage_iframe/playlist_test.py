@@ -380,11 +380,13 @@ class SharedOfferersPlaylistTests:
             assert response_venue["id"] == venues[idx].id
             assert response_venue["distance"] == expected_distance
             assert response_venue["imgUrl"] == IMAGE_URL
+            assert response_venue["city"] == venues[idx].offererAddress.address.city
 
         # item above
         assert response_venues[-1]["id"] == venues[-1].id
         assert response_venues[-1]["distance"] == 150
         assert response_venues[-1]["imgUrl"] == IMAGE_URL
+        assert response_venues[-1]["city"] == venues[-1].offererAddress.address.city
 
     def test_no_data(self, client):
         iframe_client = _get_iframe_client(client)
