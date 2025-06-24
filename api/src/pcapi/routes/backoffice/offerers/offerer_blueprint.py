@@ -33,6 +33,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -1014,6 +1015,14 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
             sa_orm.contains_eager(offerers_models.Venue.bankAccountLinks)
             .joinedload(offerers_models.VenueBankAccountLink.bankAccount)
             .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label),
+            sa.orm.selectinload(offerers_models.Venue.venueProviders)
+            .load_only(providers_models.VenueProvider.isActive)
+            .joinedload(providers_models.VenueProvider.provider)
+            .load_only(
+                providers_models.Provider.id,
+                providers_models.Provider.name,
+                providers_models.Provider.isActive,
+            ),
         )
         .order_by(offerers_models.Venue.common_name)
         .all()

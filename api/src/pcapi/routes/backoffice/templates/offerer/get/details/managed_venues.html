@@ -29,6 +29,7 @@
       <th scope="col">Présence web</th>
       <th scope="col">Offres cibles</th>
       <th scope="col">Compte bancaire associé</th>
+      <th scope="col">Partenaire technique</th>
       {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}<th scope="col">Fraude</th>{% endif %}
     </tr>
   </thead>
@@ -69,6 +70,16 @@
         <td>
           {% set bank_account_link = venue.current_bank_account_link %}
           {% if bank_account_link %}{{ links.build_bank_account_name_to_details_link(bank_account_link.bankAccount) }}{% endif %}
+        </td>
+        <td>
+          {% for venue_provider in venue.venueProviders %}
+            {{ links.build_provider_name_to_details_link(venue_provider.provider) }}
+            {% if venue_provider.isActive and venue_provider.provider.isActive %}
+              (actif)
+            {% else %}
+              (inactif)
+            {% endif %}
+          {% endfor %}
         </td>
         {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
           <td>{{ build_fraudulent_booking_badge(row.has_fraudulent_booking, "Réservations frauduleuses") }}</td>
