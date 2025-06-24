@@ -334,6 +334,12 @@ class Returns200Test:
             "cancellationLimitDate": format_into_utc_date(booking.cancellationLimitDate),
             "cancellationReason": None,
             "confirmationLimitDate": format_into_utc_date(booking.confirmationLimitDate),
+            "educationalRedactor": {
+                "civility": booking.educationalRedactor.civility,
+                "email": booking.educationalRedactor.email,
+                "firstName": booking.educationalRedactor.firstName,
+                "lastName": booking.educationalRedactor.lastName,
+            },
         }
 
     def test_booking_field_cancelled(self, client):
@@ -354,6 +360,12 @@ class Returns200Test:
             "cancellationLimitDate": format_into_utc_date(booking.cancellationLimitDate),
             "cancellationReason": educational_models.CollectiveBookingCancellationReasons.OFFERER.value,
             "confirmationLimitDate": format_into_utc_date(booking.confirmationLimitDate),
+            "educationalRedactor": {
+                "civility": booking.educationalRedactor.civility,
+                "email": booking.educationalRedactor.email,
+                "firstName": booking.educationalRedactor.firstName,
+                "lastName": booking.educationalRedactor.lastName,
+            },
         }
 
     def test_dates_on_offer(self, client):
