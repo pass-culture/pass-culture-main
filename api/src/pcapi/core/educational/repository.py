@@ -1268,9 +1268,9 @@ def get_collective_offer_by_id_query(offer_id: int) -> sa_orm.Query:
         )
         .options(sa_orm.joinedload(educational_models.CollectiveOffer.domains))
         .options(
-            sa_orm.contains_eager(educational_models.CollectiveOffer.collectiveStock).joinedload(
-                educational_models.CollectiveStock.collectiveBookings
-            )
+            sa_orm.contains_eager(educational_models.CollectiveOffer.collectiveStock)
+            .joinedload(educational_models.CollectiveStock.collectiveBookings)
+            .joinedload(educational_models.CollectiveBooking.educationalRedactor)
         )
         .options(sa_orm.joinedload(educational_models.CollectiveOffer.nationalProgram))
         .options(sa_orm.joinedload(educational_models.CollectiveOffer.provider))
