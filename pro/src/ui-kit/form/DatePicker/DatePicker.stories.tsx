@@ -25,7 +25,6 @@ export const WithLabel = {
     name: 'date',
     disabled: false,
     label: 'label',
-    smallLabel: false,
   },
 }
 

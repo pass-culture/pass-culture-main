@@ -32,14 +32,6 @@
     }
   }
 
-  &-small-label &-label {
-    @include fonts.body-accent-xs;
-
-    display: block;
-    min-height: forms.$input-label-min-height;
-    margin-bottom: forms.$label-small-space-before-input;
-  }
-
   &-button-tooltip-help {
     border: none;
     padding: 0;
