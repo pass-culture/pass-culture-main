@@ -1,6 +1,5 @@
 import datetime
 import enum
-import json
 import logging
 from typing import Any
 
@@ -83,7 +82,7 @@ def login(cinema_details: BoostCinemaDetails, ignore_device: bool = True) -> str
         try:
             content = response.json()
             message = content.get("message", "")
-        except json.JSONDecodeError:
+        except requests.exceptions.JSONDecodeError:
             message = response.content
         raise BoostLoginException(
             f"Unexpected {response.status_code} response from Boost login API on {response.request.url}: {message}"
@@ -270,7 +269,7 @@ def _extract_message_from_response(response: requests.Response) -> str:
     try:
         content = response.json()
         message = content.get("message", "")
-    except json.JSONDecodeError:
+    except requests.exceptions.JSONDecodeError:
         message = response.content
     return message
 

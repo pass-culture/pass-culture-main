@@ -301,7 +301,7 @@ class ApiAdresseBackend(BaseBackend):
         response = self._request("GET", url, params=params, timeout=3)
         try:
             data = response.json()
-        except json.JSONDecodeError:
+        except requests.exceptions.JSONDecodeError:
             raise AdresseApiException("Unexpected non-JSON response from Adresse API")
         return data
 

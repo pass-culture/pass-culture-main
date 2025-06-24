@@ -51,7 +51,7 @@ class InseeBackend(BaseBackend):
             raise exceptions.ApiException(f"Unexpected {response.status_code} response from Sirene API: {url}")
         try:
             return response.json()
-        except json.JSONDecodeError:
+        except requests.exceptions.JSONDecodeError:
             raise exceptions.ApiException(f"Unexpected non-JSON response from Sirene API: {url}")
 
     def _cached_get(self, subpath: str) -> dict:

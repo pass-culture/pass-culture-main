@@ -47,7 +47,7 @@ class AbstractEMSConnector:
         try:
             content = response.json()
             message = content.get("message", "")
-        except json.JSONDecodeError:
+        except requests.exceptions.JSONDecodeError:
             message = response.content
         return message
 

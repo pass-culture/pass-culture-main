@@ -2,7 +2,6 @@ import datetime
 import logging
 import traceback
 import typing
-from json import JSONDecodeError
 
 from pydantic.v1 import parse_obj_as
 
@@ -50,7 +49,7 @@ class AdageHttpClient(AdageClient):
     ) -> exceptions.AdageException:
         try:
             json_response = api_response.json()
-        except JSONDecodeError:
+        except requests.exceptions.JSONDecodeError:
             return exceptions.AdageException(
                 message=f"Error while reading Adage API json response - status code: {api_response.status_code}",
                 status_code=api_response.status_code,
