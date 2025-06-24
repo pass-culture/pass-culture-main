@@ -152,6 +152,54 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert not created_offer.bookingAllowedDatetime
         assert created_offer.futureOffer.isWaitingForPublication
 
+    @time_machine.travel(datetime(2025, 6, 26, tzinfo=timezone.utc), tick=False)
+    @pytest.mark.parametrize(
+        "request_publication_date,address_tz,expected_publication_date,response_publication_date",
+        [
+            # request publication date has tz
+            (
+                "2025-06-26T14:30:00+02:00",
+                "Europe/Paris",
+                datetime(2025, 6, 26, 12, 30, tzinfo=None),
+                "2025-06-26T12:30:00Z",
+            ),
+            (
+                "2025-06-26T14:30:00Z",
+                "America/Cayenne",
+                datetime(2025, 6, 26, 14, 30, tzinfo=None),
+                "2025-06-26T14:30:00Z",
+            ),
+            # request publication date does NOT have tz
+            (
+                "2025-06-26T14:30:00",
+                "America/Cayenne",
+                datetime(2025, 6, 26, 17, 30, tzinfo=None),
+                "2025-06-26T17:30:00Z",
+            ),
+        ],
+    )
+    def test_publication_date_with_and_without_tz(
+        self, client, request_publication_date, address_tz, expected_publication_date, response_publication_date
+    ):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue_provider.venue.offererAddress.address.timezone = address_tz
+
+        payload = self._get_base_payload(venue_provider.venueId)
+        payload["publicationDate"] = request_publication_date
+        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+
+        assert response.status_code == 200
+        assert response.json["publicationDate"] == response_publication_date
+        created_offer = db.session.query(offers_models.Offer).one()
+        # TODO : (tcoudray-pass, 12/06/25) Remove when future_offer is removed
+        assert created_offer.publicationDate == expected_publication_date
+
+        assert created_offer.publicationDatetime == expected_publication_date
+        assert created_offer.finalizationDatetime == datetime(2025, 6, 26)
+
+        assert not created_offer.bookingAllowedDatetime
+        assert created_offer.futureOffer.isWaitingForPublication
+
     def test_event_creation_should_return_400_because_id_at_provider_is_taken(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
 

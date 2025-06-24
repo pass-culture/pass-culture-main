@@ -1,5 +1,6 @@
 import datetime
 from unittest.mock import patch
+from zoneinfo import ZoneInfo
 
 import pytest
 import time_machine
@@ -14,7 +15,6 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.date import format_into_utc_date
-from pcapi.utils.date import local_datetime_to_default_timezone
 
 
 @pytest.mark.usefixtures("db_session")
@@ -76,7 +76,9 @@ class Returns200Test:
             response = client.patch("/offers/publish", json={"id": offer_id})
 
         assert response.status_code == 200
-        content = response.json
+        assert response.json["isActive"] is True
+        assert response.json["isNonFreeOffer"] is True
+
         offer: offers_models.Offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
         assert offer.finalizationDatetime == offer.publicationDatetime
@@ -85,8 +87,6 @@ class Returns200Test:
         assert offer.lastValidationPrice == stock.price
         assert offer.publicationDate is None
         assert not offer.futureOffer
-        assert content["isActive"] is True
-        assert content["isNonFreeOffer"] is True
         mock_async_index_offer_ids.assert_called_once()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
 
@@ -111,30 +111,31 @@ class Returns200Test:
         )
 
         client = client.with_session_auth("user@example.com")
-        publication_date = datetime.datetime.utcnow().replace(minute=0, second=0) + datetime.timedelta(days=30)
+        publication_date = now_datetime_with_tz.replace(minute=0, second=0, microsecond=0) + datetime.timedelta(days=30)
         offer_id = stock.offerId
         # +1 insert into future_offer
         with assert_num_queries(self.num_queries + 1):
             response = client.patch(
                 "/offers/publish",
-                json={"id": offer_id, "publicationDatetime": format_into_utc_date(publication_date)},
+                json={
+                    "id": offer_id,
+                    "publicationDatetime": publication_date.isoformat(),
+                },
             )
 
-        expected_publication_date = local_datetime_to_default_timezone(publication_date, "Europe/Paris").replace(
-            microsecond=0, tzinfo=None
-        )
         assert response.status_code == 200
-        content = response.json
+        assert response.json["isActive"] is False
+        assert response.json["isNonFreeOffer"] is True
+        assert response.json["publicationDatetime"] == format_into_utc_date(publication_date)
+
         offer: offers_models.Offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice is None
         assert offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
-        assert offer.publicationDatetime == expected_publication_date
-        assert offer.publicationDate == expected_publication_date
+        assert offer.publicationDatetime == publication_date.replace(tzinfo=None)
+        assert offer.publicationDate == offer.publicationDatetime
         assert not offer.bookingAllowedDatetime
         assert offer.futureOffer.isWaitingForPublication
-        assert content["isActive"] is False
-        assert content["isNonFreeOffer"] is True
         mock_async_index_offer_ids.assert_not_called()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
 
@@ -160,29 +161,35 @@ class Returns200Test:
         )
 
         client = client.with_session_auth("user@example.com")
-        publication_date = datetime.datetime.utcnow().replace(minute=0, second=0) + datetime.timedelta(days=30)
+        publication_date = datetime.datetime.now(tz=ZoneInfo("Europe/Paris")).replace(
+            minute=0, second=0, microsecond=0
+        ) + datetime.timedelta(days=30)
         offer_id = stock.offerId
+
         # +1 insert into future_offer
         with assert_num_queries(self.num_queries + 1):
             response = client.patch(
                 "/offers/publish",
-                json={"id": offer_id, "publicationDatetime": format_into_utc_date(publication_date)},
+                json={
+                    "id": offer_id,
+                    "publicationDatetime": publication_date.isoformat(),
+                },
             )
 
-        expected_publication_date = local_datetime_to_default_timezone(publication_date, "Europe/Paris").replace(
-            microsecond=0, tzinfo=None
-        )
+        expected_publication_date = publication_date.astimezone(datetime.timezone.utc).replace(tzinfo=None)
         assert response.status_code == 200
-        content = response.json
+        assert response.json["publicationDatetime"] == format_into_utc_date(publication_date)
+        assert response.json["status"] == OfferStatus.SCHEDULED.name
+        assert response.json["isActive"] is False
+        assert response.json["isNonFreeOffer"] is True
+
         offer: offers_models.Offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice is None
         assert offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
         assert offer.publicationDatetime == expected_publication_date
         assert not offer.bookingAllowedDatetime
-        assert content["status"] == OfferStatus.SCHEDULED.name
-        assert content["isActive"] is False
-        assert content["isNonFreeOffer"] is True
+
         mock_async_index_offer_ids.assert_not_called()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
 
@@ -208,7 +215,9 @@ class Returns200Test:
         )
 
         client = client.with_session_auth("user@example.com")
-        booking_allowed_datetime = datetime.datetime.utcnow().replace(minute=0, second=0) + datetime.timedelta(days=30)
+        booking_allowed_datetime = datetime.datetime.now(datetime.timezone.utc).replace(
+            minute=0, second=0, microsecond=0
+        ) + datetime.timedelta(days=30)
         offer_id = stock.offerId
 
         with assert_num_queries(self.num_queries):
@@ -216,24 +225,23 @@ class Returns200Test:
                 "/offers/publish",
                 json={
                     "id": offer_id,
-                    "bookingAllowedDatetime": format_into_utc_date(booking_allowed_datetime),
+                    "bookingAllowedDatetime": booking_allowed_datetime.isoformat(),
                 },
             )
 
-        expected_booking_allowed_datetime = local_datetime_to_default_timezone(
-            booking_allowed_datetime, "Europe/Paris"
-        ).replace(tzinfo=None)
+        expected_booking_allowed_datetime = booking_allowed_datetime.replace(tzinfo=None)
         assert response.status_code == 200
-        content = response.json
+        assert response.json["bookingAllowedDatetime"] == format_into_utc_date(booking_allowed_datetime)
+        assert response.json["status"] == OfferStatus.PUBLISHED.name
+        assert response.json["isActive"] is True
+        assert response.json["isNonFreeOffer"] is True
+
         offer: offers_models.Offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice is None
         assert offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
         assert offer.publicationDatetime == offer.finalizationDatetime
         assert offer.bookingAllowedDatetime == expected_booking_allowed_datetime
-        assert content["status"] == OfferStatus.PUBLISHED.name
-        assert content["isActive"] is True
-        assert content["isNonFreeOffer"] is True
         mock_async_index_offer_ids.assert_called_once()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
 
@@ -256,8 +264,12 @@ class Returns200Test:
         )
 
         client = client.with_session_auth("user@example.com")
-        publication_date = datetime.datetime.utcnow().replace(minute=0, second=0) + datetime.timedelta(days=30)
-        booking_allowed_datetime = datetime.datetime.utcnow().replace(minute=0, second=0) + datetime.timedelta(days=31)
+        publication_date = datetime.datetime.now(datetime.timezone.utc).replace(
+            minute=0, second=0, microsecond=0
+        ) + datetime.timedelta(days=30)
+        booking_allowed_datetime = datetime.datetime.now(datetime.timezone.utc).replace(
+            minute=0, second=0, microsecond=0
+        ) + datetime.timedelta(days=31)
         offer_id = stock.offerId
 
         # +1 insert into future_offer
@@ -271,17 +283,14 @@ class Returns200Test:
                 },
             )
 
-        expected_publication_datetime = local_datetime_to_default_timezone(publication_date, "Europe/Paris").replace(
-            microsecond=0, tzinfo=None
-        )
+        expected_publication_datetime = publication_date.replace(tzinfo=None)
+        booking_allowed_datetime = booking_allowed_datetime.replace(tzinfo=None)
 
         assert response.status_code == 200
         offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.publicationDate == expected_publication_datetime
         assert offer.publicationDatetime == expected_publication_datetime
-        assert offer.bookingAllowedDatetime == local_datetime_to_default_timezone(
-            booking_allowed_datetime, "Europe/Paris"
-        ).replace(tzinfo=None)
+        assert offer.bookingAllowedDatetime == booking_allowed_datetime
         assert offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
         first_finalization_datetime = offer.finalizationDatetime
         mock_async_index_offer_ids.assert_not_called()
@@ -291,12 +300,12 @@ class Returns200Test:
         response = client.patch("/offers/publish", json={"id": stock.offerId})
 
         assert response.status_code == 200
-        content = response.json
+        assert response.json["isActive"] is True
+
         offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.finalizationDatetime == first_finalization_datetime
         assert offer.finalizationDatetime <= offer.publicationDatetime
         assert offer.publicationDate is None
-        assert content["isActive"] is True
         mock_async_index_offer_ids.assert_called_once()
         assert db.session.query(offers_models.FutureOffer).count() == 0
 

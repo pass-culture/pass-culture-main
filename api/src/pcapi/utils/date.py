@@ -148,6 +148,12 @@ def format_time_in_second_to_human_readable(time_in_second: int) -> str | None:
     return None
 
 
+def to_naive_utc_datetime(dt: datetime) -> datetime:
+    if dt.tzinfo is None:
+        raise ValueError("dt must be timezone-aware")
+    return dt.astimezone(ZoneInfo(DEFAULT_STORED_TIMEZONE)).replace(tzinfo=None)
+
+
 def local_datetime_to_default_timezone(dt: datetime, local_tz: str) -> datetime:
     from_zone = ZoneInfo(local_tz)
     to_zone = ZoneInfo(DEFAULT_STORED_TIMEZONE)
