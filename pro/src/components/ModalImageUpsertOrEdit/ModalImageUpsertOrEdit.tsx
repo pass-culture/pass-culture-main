@@ -77,8 +77,6 @@ export const ModalImageUpsertOrEdit = ({
   const previouslyUploadedImageUrl =
     initialOriginalImageUrl || initialCroppedImageUrl
 
-  // First version of the back don't use width_crop_percent
-  // which is needed to display the original image with the correct crop.
   const {
     xCropPercent: initalXCropPercent,
     yCropPercent: initalYCropPercent,
