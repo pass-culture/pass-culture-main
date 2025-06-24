@@ -1,3 +1,5 @@
+import typing
+
 from pcapi.routes.serialization import BaseModel
 
 
@@ -13,4 +15,4 @@ class FeatureResponseModel(BaseModel):
 
 
 class ListFeatureResponseModel(BaseModel):
-    __root__: list[FeatureResponseModel]
+    features: typing.Sequence[FeatureResponseModel]
