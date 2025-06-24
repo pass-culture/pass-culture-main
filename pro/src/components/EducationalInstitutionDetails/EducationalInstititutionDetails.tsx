@@ -1,56 +1,21 @@
-import { EducationalInstitutionResponseModel, CollectiveBookingEducationalRedactorResponseModel } from 'apiClient/v1'
+import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+import { Contact, EducationalRedactorDetails } from 'components/EductionalRedactorDetails/EducationalRedactorDetails'
+import { EducationalRedactorDetailsForBooking } from 'components/EductionalRedactorDetailsForBooking/EducationalRedactorDetailsForBooking'
 import strokeLocationIcon from 'icons/stroke-location.svg'
-import strokeMailIcon from 'icons/stroke-mail.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
-import strokeUserIcon from 'icons/stroke-user.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './EducationalInstitutionDetails.module.scss'
 
-interface EducationalRedactorDetailsProps {
-    educationalRedactor: CollectiveBookingEducationalRedactorResponseModel
-}
-
-const EducationalRedactorDetails = ({ educationalRedactor }: EducationalRedactorDetailsProps) => {
-    return (
-        <>
-            <div className={styles['contact-detail']}>
-                <dt>
-                    <SvgIcon
-                        src={strokeUserIcon}
-                        alt="Nom"
-                        className={styles['contact-detail-icon']} />
-                </dt>
-                <dd>{`${educationalRedactor.firstName} ${educationalRedactor.lastName}`}</dd>
-            </div>
-
-            <div className={styles['contact-detail']}>
-                <dt>
-                    <SvgIcon
-                        className={styles['contact-detail-icon']}
-                        alt="Email"
-                        src={strokeMailIcon} />
-                </dt>
-                <dd>
-                    <ButtonLink
-                        to={`mailto:${educationalRedactor.email}`}
-                        isExternal
-                    >
-                        {educationalRedactor.email}
-                    </ButtonLink>
-                </dd>
-            </div>
-        </>)
-}
 
 export interface EducationalInstitutionDetailsProps {
     educationalInstitution: EducationalInstitutionResponseModel
-    educationalRedactor?: CollectiveBookingEducationalRedactorResponseModel | null
+    educationalRedactor?: Contact | null
+    teacher?: Contact | null
     newLayout?: boolean
 }
 
-export const EducationalInstitutionDetails = ({ educationalInstitution, educationalRedactor, newLayout = false }: EducationalInstitutionDetailsProps) => {
+export const EducationalInstitutionDetails = ({ educationalInstitution, educationalRedactor, teacher, newLayout = false }: EducationalInstitutionDetailsProps) => {
     return <div>
         <div className={newLayout ? styles['contact-details-container-newlayout'] : styles['contact-details-container-oldlayout']}>
             <div className={newLayout ? styles['contact-details-title-newlayout'] : styles['contact-details-title-oldlayout']}>
@@ -81,7 +46,12 @@ export const EducationalInstitutionDetails = ({ educationalInstitution, educatio
                     <dd>{educationalInstitution.phoneNumber}</dd>
                 </div>
 
-                {educationalRedactor && <EducationalRedactorDetails educationalRedactor={educationalRedactor} />}
+                {newLayout ? <>
+                    {teacher && <EducationalRedactorDetails contact={teacher} title="Offre destinée à :" />}
+                    {educationalRedactor && <EducationalRedactorDetails contact={educationalRedactor} title="Offre préréservée par :" />}
+                </> : <>
+                    {educationalRedactor && <EducationalRedactorDetailsForBooking contact={educationalRedactor} />}
+                </>}
             </dl>
         </div>
     </div >

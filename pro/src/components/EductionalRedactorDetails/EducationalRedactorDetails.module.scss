@@ -1,0 +1,24 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+
+
+.contact-detail {
+  display: flex;
+  gap: rem.torem(8px);
+  align-items: center;
+
+  &-icon {
+    display: flex;
+    height: rem.torem(16px);
+    width: rem.torem(16px);
+    color: var(--color-icon-default);
+  }
+}
+
+.contact-container {
+  margin-top: rem.torem(24px);
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(8px);
+}
