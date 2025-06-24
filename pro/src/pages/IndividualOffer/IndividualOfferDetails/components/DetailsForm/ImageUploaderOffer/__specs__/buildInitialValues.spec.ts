@@ -7,8 +7,7 @@ describe('test ImageUploader:utils:buildInitialValues', () => {
   it('should build default initial values', () => {
     const initialValues = buildInitialValues()
     expect(initialValues).toEqual({
-      originalImageUrl: '',
-      imageUrl: '',
+      croppedImageUrl: '',
       credit: '',
       cropParams: {
         xCropPercent: 1,
@@ -21,7 +20,6 @@ describe('test ImageUploader:utils:buildInitialValues', () => {
 
   it('should build initial values for previously saved image', () => {
     const imageOffer: IndividualOfferImage = {
-      originalUrl: 'https://cropped.test.url',
       url: 'https://test.url',
       credit: 'John Do',
       cropParams: {
@@ -33,8 +31,7 @@ describe('test ImageUploader:utils:buildInitialValues', () => {
     }
     const initialValues = buildInitialValues(imageOffer)
     expect(initialValues).toEqual({
-      imageUrl: imageOffer.url,
-      originalImageUrl: imageOffer.originalUrl,
+      croppedImageUrl: imageOffer.url,
       credit: imageOffer.credit,
       cropParams: {
         xCropPercent: 0.5,
@@ -59,8 +56,7 @@ describe('test ImageUploader:utils:buildInitialValues', () => {
     }
     const initialValues = buildInitialValues(imageOffer)
     expect(initialValues).toEqual({
-      imageUrl: imageOffer.imageCroppedDataUrl,
-      originalImageUrl: imageOffer.imageCroppedDataUrl,
+      croppedImageUrl: imageOffer.imageCroppedDataUrl,
       credit: imageOffer.credit,
       cropParams: {
         xCropPercent: 1,

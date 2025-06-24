@@ -46,7 +46,7 @@ describe('ImageUploader', () => {
       onImageUpload: async () => {},
       onImageDelete: async () => {},
       initialValues: {
-        imageUrl: 'noimage.jpg',
+        croppedImageUrl: 'noimage.jpg',
         originalImageUrl: 'noimage.jpg',
         credit: 'John Do',
         cropParams: {

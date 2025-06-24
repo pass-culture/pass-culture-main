@@ -19,8 +19,7 @@ export interface ImageUploaderOfferProps {
 const buildInitialValues = (
   imageOffer: OfferCollectiveImage | null
 ): UploadImageValues => ({
-  imageUrl: imageOffer?.url || '',
-  originalImageUrl: imageOffer?.url || '',
+  croppedImageUrl: imageOffer?.url || '',
   credit: imageOffer?.credit || '',
 })
 

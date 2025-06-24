@@ -11,7 +11,6 @@ export const getIndividualOfferImage = (
   if (offer.activeMediation) {
     if (offer.activeMediation.thumbUrl) {
       return {
-        originalUrl: offer.activeMediation.thumbUrl,
         url: offer.activeMediation.thumbUrl,
         credit: offer.activeMediation.credit || '',
       }
@@ -19,7 +18,6 @@ export const getIndividualOfferImage = (
   } else if (offer.thumbUrl) {
     // synchronized offers have thumbUrl but no mediation
     return {
-      originalUrl: offer.thumbUrl,
       url: offer.thumbUrl,
       credit: '',
     }
