@@ -579,6 +579,31 @@ def create_collective_offer_template(
     return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)
 
 
+def _check_image(image_as_bytes: bytes) -> None:
+    try:
+        offers_validation.check_image(
+            image_as_bytes,
+            accepted_types=offers_validation.ACCEPTED_THUMBNAIL_FORMATS,
+            min_width=offers_validation.STANDARD_THUMBNAIL_WIDTH,
+            min_height=offers_validation.STANDARD_THUMBNAIL_HEIGHT,
+        )
+    except offers_exceptions.UnacceptedFileType:
+        raise ApiErrors(
+            errors={
+                "imageFile": [f"Les formats acceptés sont:  {', '.join(offers_validation.ACCEPTED_THUMBNAIL_FORMATS)}"]
+            }
+        )
+    except offers_exceptions.ImageTooSmall:
+        raise ApiErrors(
+            errors={
+                "imageFile": [
+                    f"L'image doit faire au moins {offers_validation.STANDARD_THUMBNAIL_WIDTH} x "
+                    f"{offers_validation.STANDARD_THUMBNAIL_HEIGHT} pixels"
+                ]
+            }
+        )
+
+
 @private_api.route("/collective/offers/<int:offer_id>/image", methods=["POST"])
 @atomic()
 @login_required
@@ -606,30 +631,7 @@ def attach_offer_image(
 
     image_as_bytes = form.get_image_as_bytes(request)
 
-    try:
-        offers_validation.check_image(
-            image_as_bytes,
-            accepted_types=offers_validation.ACCEPTED_THUMBNAIL_FORMATS,
-            min_width=offers_validation.STANDARD_THUMBNAIL_WIDTH,
-            min_height=offers_validation.STANDARD_THUMBNAIL_HEIGHT,
-        )
-    except offers_exceptions.UnacceptedFileType:
-        raise ApiErrors(
-            errors={
-                "imageFile": [f"Les formats acceptés sont:  {', '.join(offers_validation.ACCEPTED_THUMBNAIL_FORMATS)}"],
-            },
-            status_code=400,
-        )
-    except offers_exceptions.ImageTooSmall:
-        raise ApiErrors(
-            errors={
-                "imageFile": [
-                    f"L'image doit faire au moins {offers_validation.STANDARD_THUMBNAIL_WIDTH} x "
-                    f"{offers_validation.STANDARD_THUMBNAIL_HEIGHT} pixels"
-                ],
-            },
-            status_code=400,
-        )
+    _check_image(image_as_bytes)
 
     try:
         educational_api_offer.attach_image(
@@ -663,6 +665,8 @@ def attach_offer_template_image(
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     image_as_bytes = form.get_image_as_bytes(request)
+
+    _check_image(image_as_bytes)
 
     try:
         educational_api_offer.attach_image(
