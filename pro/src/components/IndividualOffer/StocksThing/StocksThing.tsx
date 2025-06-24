@@ -36,7 +36,6 @@ import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
 import { DialogStockThingDeleteConfirm } from '../DialogStockDeleteConfirm/DialogStockThingDeleteConfirm'
-import { useNotifyFormError } from '../hooks/useNotifyFormError'
 import { getDepartmentCode } from '../utils/getDepartmentCode'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
@@ -169,11 +168,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     watch,
     formState: { errors, isSubmitting, isDirty, defaultValues },
   } = hookForm
-
-  useNotifyFormError({
-    isSubmitting,
-    errors,
-  })
 
   const handlePreviousStepOrBackToReadOnly = () => {
     /* istanbul ignore next: DEBT, TO FIX */
