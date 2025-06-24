@@ -382,6 +382,7 @@ class GetCollectiveOfferBookingResponseModel(BaseModel):
     id: int
     dateCreated: datetime
     status: educational_models.CollectiveBookingStatus
+    educationalRedactor: EducationalRedactorResponseModel | None
     cancellationLimitDate: datetime
     cancellationReason: educational_models.CollectiveBookingCancellationReasons | None
     confirmationLimitDate: datetime
