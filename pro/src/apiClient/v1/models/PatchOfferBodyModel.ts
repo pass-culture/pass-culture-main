@@ -20,7 +20,7 @@ export type PatchOfferBodyModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name?: string | null;
-  publicationDatetime?: string | null;
+  publicationDatetime?: (string | 'now') | null;
   shouldSendMail?: boolean | null;
   url?: string | null;
   visualDisabilityCompliant?: boolean | null;

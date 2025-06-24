@@ -6,6 +6,10 @@ import pydantic.v1 as pydantic_v1
 import pytz
 
 from pcapi.models.api_errors import ApiErrors
+from pcapi.utils.date import get_naive_utc_now
+
+
+NOW_LITERAL = typing.Literal["now"]
 
 
 def to_camel(string: str) -> str:
@@ -134,9 +138,14 @@ def without_timezone(d: datetime.datetime) -> datetime.datetime:
     return datetime.datetime(d.year, d.month, d.day, d.hour, d.minute, d.second, d.microsecond)
 
 
-def check_date_in_future_and_remove_timezone(value: datetime.datetime | None) -> datetime.datetime | None:
+def check_date_in_future_and_remove_timezone(value: datetime.datetime | NOW_LITERAL | None) -> datetime.datetime | None:
     if not value:
         return None
+    if value == "now":
+        return get_naive_utc_now()
+
+    assert isinstance(value, datetime.datetime)  # to make mypy happy
+
     if value.tzinfo is None:
         raise ValueError("The datetime must be timezone-aware.")
     no_tz_value = as_utc_without_timezone(value)
