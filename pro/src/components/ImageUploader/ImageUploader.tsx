@@ -31,11 +31,12 @@ export const ImageUploader = ({
   hideActionButtons = false,
   disableForm = false,
 }: ImageUploaderProps) => {
-  const { imageUrl, originalImageUrl, credit, cropParams } = initialValues
+  const { croppedImageUrl, originalImageUrl } = initialValues
+  const imageUrl = croppedImageUrl || originalImageUrl
 
   return (
     <div className={cn(styles['image-uploader-image-container'], className)}>
-      {imageUrl && originalImageUrl ? (
+      {imageUrl ? (
         <>
           <img
             alt={'Prévisualisation de l’image'}
@@ -53,12 +54,7 @@ export const ImageUploader = ({
               <div className={styles['actions-wrapper']}>
                 <ButtonImageEdit
                   mode={mode}
-                  initialValues={{
-                    originalImageUrl,
-                    imageUrl,
-                    credit,
-                    cropParams,
-                  }}
+                  initialValues={initialValues}
                   onImageUpload={onImageUpload}
                   onImageDelete={onImageDelete}
                   onClickButtonImage={onClickButtonImageAdd}

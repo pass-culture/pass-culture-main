@@ -62,7 +62,7 @@ describe('ModalImageUpsertOrEdit', () => {
       const mockImageUrl = 'http://example.com/image.jpg'
       renderModalImageCrop({
         initialValues: {
-          imageUrl: mockImageUrl,
+          croppedImageUrl: mockImageUrl,
           originalImageUrl: mockImageUrl,
         },
       })
@@ -80,7 +80,7 @@ describe('ModalImageUpsertOrEdit', () => {
       const mockImageUrl = 'http://example.com/image.jpg'
       renderModalImageCrop({
         initialValues: {
-          imageUrl: mockImageUrl,
+          croppedImageUrl: mockImageUrl,
           originalImageUrl: mockImageUrl,
         },
       })
@@ -98,7 +98,7 @@ describe('ModalImageUpsertOrEdit', () => {
       const mockImageUrl = 'http://example.com/image.jpg'
       renderModalImageCrop({
         initialValues: {
-          imageUrl: mockImageUrl,
+          croppedImageUrl: mockImageUrl,
           originalImageUrl: mockImageUrl,
         },
       })
@@ -122,7 +122,7 @@ describe('ModalImageUpsertOrEdit', () => {
         const mockImageUrl = 'http://example.com/image.jpg'
         renderModalImageCrop({
           initialValues: {
-            imageUrl: mockImageUrl,
+            croppedImageUrl: mockImageUrl,
             originalImageUrl: mockImageUrl,
           },
           mode: UploaderModeEnum.VENUE,
@@ -142,7 +142,7 @@ describe('ModalImageUpsertOrEdit', () => {
         const mockImageUrl = 'http://example.com/image.jpg'
         renderModalImageCrop({
           initialValues: {
-            imageUrl: mockImageUrl,
+            croppedImageUrl: mockImageUrl,
             originalImageUrl: mockImageUrl,
           },
           mode: UploaderModeEnum.OFFER_COLLECTIVE,
@@ -162,7 +162,7 @@ describe('ModalImageUpsertOrEdit', () => {
         const mockImageUrl = 'http://example.com/image.jpg'
         renderModalImageCrop({
           initialValues: {
-            imageUrl: mockImageUrl,
+            croppedImageUrl: mockImageUrl,
             originalImageUrl: mockImageUrl,
           },
           mode: UploaderModeEnum.OFFER,
@@ -179,7 +179,7 @@ describe('ModalImageUpsertOrEdit', () => {
         const mockImageUrl = 'http://example.com/image.jpg'
         renderModalImageCrop({
           initialValues: {
-            imageUrl: mockImageUrl,
+            croppedImageUrl: mockImageUrl,
             originalImageUrl: mockImageUrl,
           },
         })
@@ -200,7 +200,7 @@ describe('ModalImageUpsertOrEdit', () => {
         const mockImageUrl = 'http://example.com/image.jpg'
         renderModalImageCrop({
           initialValues: {
-            imageUrl: mockImageUrl,
+            croppedImageUrl: mockImageUrl,
             originalImageUrl: mockImageUrl,
           },
         })
@@ -220,7 +220,7 @@ describe('ModalImageUpsertOrEdit', () => {
         const mockImageUrl = 'http://example.com/image.jpg'
         renderModalImageCrop({
           initialValues: {
-            imageUrl: mockImageUrl,
+            croppedImageUrl: mockImageUrl,
             originalImageUrl: mockImageUrl,
           },
         })
@@ -250,7 +250,7 @@ describe('ModalImageUpsertOrEdit', () => {
         const mockImageUrl = 'http://example.com/image.jpg'
         renderModalImageCrop({
           initialValues: {
-            imageUrl: mockImageUrl,
+            croppedImageUrl: mockImageUrl,
             originalImageUrl: mockImageUrl,
           },
         })
@@ -270,7 +270,7 @@ describe('ModalImageUpsertOrEdit', () => {
         const mockImageUrl = 'http://example.com/image.jpg'
         renderModalImageCrop({
           initialValues: {
-            imageUrl: mockImageUrl,
+            croppedImageUrl: mockImageUrl,
             originalImageUrl: mockImageUrl,
           },
           mode: UploaderModeEnum.OFFER_COLLECTIVE,

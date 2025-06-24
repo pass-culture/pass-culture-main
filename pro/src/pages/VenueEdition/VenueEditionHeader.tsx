@@ -53,7 +53,7 @@ export const buildInitialValues = (
   }
 
   return {
-    imageUrl: bannerUrl || undefined,
+    croppedImageUrl: bannerUrl || undefined,
     originalImageUrl: bannerMeta?.original_image_url || undefined,
     cropParams,
     credit: bannerMeta?.image_credit || '',

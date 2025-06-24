@@ -55,7 +55,6 @@ export interface OfferCollectiveImage {
 }
 
 export interface IndividualOfferImage {
-  originalUrl?: string
   url?: string
   credit: string | null
   cropParams?: CropParams
