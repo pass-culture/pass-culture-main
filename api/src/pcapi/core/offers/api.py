@@ -84,7 +84,6 @@ from pcapi.utils.chunks import get_chunks
 from pcapi.utils.custom_keys import get_field
 from pcapi.utils.custom_logic import OPERATIONS
 from pcapi.utils.date import get_naive_utc_now
-from pcapi.utils.date import local_datetime_to_default_timezone
 from pcapi.workers import push_notification_job
 
 from . import exceptions
@@ -893,39 +892,23 @@ def handle_event_stock_beginning_datetime_update(stock: models.Stock) -> None:
     _notify_beneficiaries_upon_stock_edit(stock, bookings)  # TODO: (tcoudray-pass, 16/04/2025) rename this function
 
 
-def _format_publication_date(publication_date: datetime.datetime | None, timezone: str) -> datetime.datetime | None:
-    if publication_date is None:
-        return None
-
-    minute = publication_date.minute
-    publication_date = local_datetime_to_default_timezone(publication_date, timezone)
-    # Some UTC offsets may change minute (like Pacific/Marquesas UTC-09:30),
-    # in this case publication_date is rounded to the next hour
-    if publication_date.minute != minute:
-        publication_date += datetime.timedelta(hours=1)
-        publication_date = publication_date.replace(minute=0)
-
-    publication_date = publication_date.replace(second=0, microsecond=0, tzinfo=None)
-    return publication_date
-
-
 def publish_offer(
     offer: models.Offer,
     publication_datetime: datetime.datetime | None = None,
     booking_allowed_datetime: datetime.datetime | None = None,
 ) -> models.Offer:
-    finalization_date = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+    """
+    :publication_datetime     : /!\ must be a naive utc datetime
+    :booking_allowed_datetime : /!\ must be a naive utc datetime
+    """
+    finalization_date = get_naive_utc_now()
 
     if not offer.finalizationDatetime:
         offer.finalizationDatetime = finalization_date
 
-    publication_datetime = _format_publication_date(publication_datetime, offer.venue.timezone)
+    if publication_datetime:
+        publication_datetime = publication_datetime.replace(second=0, microsecond=0)
     validation.check_publication_date(offer, publication_datetime)
-
-    if booking_allowed_datetime:
-        booking_allowed_datetime = local_datetime_to_default_timezone(
-            booking_allowed_datetime, offer.venue.timezone
-        ).replace(tzinfo=None)
 
     offer.bookingAllowedDatetime = booking_allowed_datetime
 
@@ -953,6 +936,7 @@ def publish_offer(
             extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
             technical_message_id="offer.published",
         )
+
     return offer
 
 

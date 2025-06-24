@@ -3,6 +3,7 @@ import copy
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
+import pcapi.utils.date as date_utils
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import utils as finance_utils
@@ -130,7 +131,23 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
         if body.image:
             utils.save_image(body.image, created_offer)
 
-        offers_api.publish_offer(created_offer, publication_datetime=body.publication_date)
+        publication_date = body.publication_date
+
+        # LEGACY :
+        # we must must do this transformation on `publicationDate`
+        # as our serializer authorizes naive datetimes
+        if publication_date:
+            if publication_date.tzinfo is None:  # the provider did not provide a tz in the payload
+                tz = offerer_address.address.timezone if offerer_address else venue.timezone
+                publication_date = date_utils.local_datetime_to_default_timezone(publication_date, local_tz=tz).replace(
+                    tzinfo=None
+                )
+            else:
+                publication_date = date_utils.to_naive_utc_datetime(publication_date)
+
+        offers_api.publish_offer(created_offer, publication_datetime=publication_date)
+        db.session.flush()
+        db.session.refresh(created_offer)  # due to future_offer
 
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
