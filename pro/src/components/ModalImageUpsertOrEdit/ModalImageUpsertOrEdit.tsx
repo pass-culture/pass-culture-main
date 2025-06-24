@@ -66,11 +66,16 @@ export const ModalImageUpsertOrEdit = ({
   }
 
   const {
+    croppedImageUrl: initialCroppedImageUrl,
     originalImageUrl: initialOriginalImageUrl,
     credit: initialCredit,
     cropParams: initialCropParams,
   } = previouslyUploadedImage
-  const previouslyUploadedImageUrl = initialOriginalImageUrl
+
+  // Only venue images seem to have both cropped and original image URLs saved.
+  // Offers lose the ability to retrieve the original image URL after the first upload.
+  const previouslyUploadedImageUrl =
+    initialOriginalImageUrl || initialCroppedImageUrl
 
   // First version of the back don't use width_crop_percent
   // which is needed to display the original image with the correct crop.

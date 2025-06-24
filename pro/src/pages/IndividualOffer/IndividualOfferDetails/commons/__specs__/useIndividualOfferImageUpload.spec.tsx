@@ -85,7 +85,6 @@ describe('useIndividualOfferImageUpload', () => {
     expect(result.current.displayedImage).toEqual({
       credit: null,
       url: eanImageUrl,
-      originalUrl: eanImageUrl,
     })
   })
 

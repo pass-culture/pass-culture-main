@@ -7,7 +7,7 @@ export interface CropParams {
 
 export interface UploadImageValues {
   draftImage?: File
-  imageUrl?: string
+  croppedImageUrl?: string
   originalImageUrl?: string
   credit?: string
   cropParams?: CropParams
