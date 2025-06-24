@@ -10,6 +10,8 @@ export type BookableOfferSummaryProps = {
 
 export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
   const { institution } = offer
+  const educationalRedactor = offer.booking?.educationalRedactor
+  const teacher = offer.teacher
 
   return (
     <Layout layout={'sticky-actions'}>
@@ -22,7 +24,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
           <p>{offer.name}</p>
         </div>
         {/* FIXME: this should be offer.booking.educationalRedactor instead of null*/}
-        {institution && <EducationalInstitutionDetails educationalInstitution={institution} educationalRedactor={null} newLayout />}
+        {institution && <EducationalInstitutionDetails educationalInstitution={institution} educationalRedactor={educationalRedactor} teacher={teacher} newLayout />}
       </div>
     </Layout>
   )
