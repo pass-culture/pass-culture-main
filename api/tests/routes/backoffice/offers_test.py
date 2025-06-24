@@ -1783,6 +1783,39 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
 
         assert html_parser.count_table_rows(response.data) == 0
 
+    def test_list_offers_on_show_type(self, authenticated_client):
+        offer_to_display = offers_factories.OfferFactory(name="display")
+        offers_factories.OfferFactory(name="hide")
+
+        query_args = {
+            "algolia_search": "display",
+            "limit": 1000,
+            "search-0-search_field": "SHOW_TYPE",
+            "search-0-operator": "IN",
+            "search-0-show_type": ["Cirque"],
+        }
+
+        with patch(
+            "pcapi.routes.backoffice.offers.blueprint.search_offer_ids", return_value=(offer_to_display.id,)
+        ) as algolia_mock:
+            with assert_num_queries(self.expected_num_queries):
+                response = authenticated_client.get(url_for(self.endpoint, **query_args))
+                assert response.status_code == 200
+            algolia_mock.assert_called_once_with(
+                query="display",
+                count=1001,
+                facetFilters=[
+                    [
+                        "offer.showType:Cirque",
+                    ]
+                ],
+                numericFilters=[],
+            )
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offer_to_display.id)
+
 
 class ValidateOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.validate_offer"

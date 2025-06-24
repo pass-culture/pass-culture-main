@@ -232,6 +232,10 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
             )
         },
     },
+    "SHOW_TYPE": {
+        "facet": "offer.showType",
+        "field": "show_type",
+    },
 }
 
 JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
