@@ -1,108 +1,107 @@
 import { screen } from '@testing-library/react'
 
-import { CollectiveBookingEducationalRedactorResponseModel, EducationalInstitutionResponseModel } from 'apiClient/v1'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { EducationalInstitutionDetails, EducationalInstitutionDetailsProps } from '../EducationalInstititutionDetails'
 
-describe('CollectiveStatusLabel without educationalRedactor', () => {
-    let props: EducationalInstitutionDetailsProps
-    beforeEach(() => {
-        const educationalInstitution: EducationalInstitutionResponseModel = {
-            id: 1,
-            phoneNumber: "0600000000",
-            institutionId: "0290063L",
-            name: 'Mon Établissement scolaire',
-            postalCode: '75000',
-            city: 'Paris',
-            institutionType: 'Établissement scolaire',
-        }
+describe('EducationalInstitutionDetails', () => {
+    const educationalInstitution = {
+        id: 1,
+        phoneNumber: '0600000000',
+        institutionId: '0290063L',
+        name: 'Mon Établissement scolaire',
+        postalCode: '75000',
+        city: 'Paris',
+        institutionType: 'Établissement scolaire',
+    }
+    const teacher = {
+        firstName: 'Alice',
+        lastName: 'Teacher',
+        email: 'alice.teacher@example.com',
+    }
+    const educationalRedactor = {
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john.doe@example.com',
+    }
 
-        props = {
-            educationalInstitution,
-        }
-    })
+    const render = (props: Partial<EducationalInstitutionDetailsProps> = {}, newLayout = true) => {
+        return renderWithProviders(
+            <EducationalInstitutionDetails
+                educationalInstitution={educationalInstitution}
+                newLayout={newLayout}
+                {...props}
+            />
+        )
+    }
 
-    it(
-        'should render without educationalRedactor',
-        () => {
-
-            renderWithProviders(
-                <EducationalInstitutionDetails {...props} newLayout={true} />
-            )
+    describe('newLayout = true', () => {
+        it('renders with no teacher and no educationalRedactor', () => {
+            render({}, true)
             expect(screen.getByText('Contact de l’établissement')).toBeInTheDocument()
             expect(screen.getByRole('img', { name: 'Adresse de l’établissement' })).toBeInTheDocument()
             expect(screen.getByText('Mon Établissement scolaire', { exact: false })).toBeInTheDocument()
+            expect(screen.getByRole('img', { name: 'Téléphone' })).toBeInTheDocument()
+            expect(screen.getByText('0600000000')).toBeInTheDocument()
+            // Ne doit pas afficher les sections teacher ou redactor
+            expect(screen.queryByText('Offre destinée à :')).not.toBeInTheDocument()
+            expect(screen.queryByText('Offre préréservée par :')).not.toBeInTheDocument()
+        })
 
-            expect(screen.queryByRole('img', { name: 'Nom' })).not.toBeInTheDocument()
-        }
+        it('renders with only teacher', () => {
+            render({ teacher }, true)
+            expect(screen.getByText('Offre destinée à :')).toBeInTheDocument()
+            expect(screen.getByText('Alice Teacher')).toBeInTheDocument()
+            expect(screen.getByText('alice.teacher@example.com')).toBeInTheDocument()
+            // Ne doit pas afficher la section redactor
+            expect(screen.queryByText('Offre préréservée par :')).not.toBeInTheDocument()
+        })
 
-    )
-
-    it(
-        'should render old layout',
-        () => {
-
-            renderWithProviders(
-                <EducationalInstitutionDetails {...props} newLayout={false} />
-            )
-            expect(screen.getByText('Contact de l’établissement scolaire')).toBeInTheDocument()
-        }
-    )
-})
-
-describe('CollectiveStatusLabel with educationalRedactor', () => {
-    let props: EducationalInstitutionDetailsProps
-    beforeEach(() => {
-        const educationalInstitution: EducationalInstitutionResponseModel = {
-            id: 1,
-            phoneNumber: "0600000000",
-            institutionId: "0290063L",
-            name: 'Mon Établissement scolaire',
-            postalCode: '75000',
-            city: 'Paris',
-            institutionType: 'Établissement scolaire',
-        }
-
-        const educationalRedactor: CollectiveBookingEducationalRedactorResponseModel = {
-            id: 1,
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john.doe@example.com',
-        }
-
-        props = {
-            educationalInstitution,
-            educationalRedactor,
-        }
-    })
-
-    it(
-        'should render with educationalRedactor',
-        () => {
-
-            renderWithProviders(
-                <EducationalInstitutionDetails {...props} newLayout={true} />
-            )
-            expect(screen.getByText('Contact de l’établissement')).toBeInTheDocument()
-            expect(screen.getByRole('img', { name: 'Adresse de l’établissement' })).toBeInTheDocument()
-            expect(screen.getByText('Mon Établissement scolaire', { exact: false })).toBeInTheDocument()
-
-            expect(screen.queryByRole('img', { name: 'Nom' })).toBeInTheDocument()
+        it('renders with only educationalRedactor', () => {
+            render({ educationalRedactor }, true)
+            expect(screen.getByText('Offre préréservée par :')).toBeInTheDocument()
             expect(screen.getByText('John Doe')).toBeInTheDocument()
             expect(screen.getByText('john.doe@example.com')).toBeInTheDocument()
-        }
+            // Ne doit pas afficher la section teacher
+            expect(screen.queryByText('Offre destinée à :')).not.toBeInTheDocument()
+        })
 
-    )
+        it('renders with both teacher and educationalRedactor', () => {
+            render({ teacher, educationalRedactor }, true)
+            expect(screen.getByText('Offre destinée à :')).toBeInTheDocument()
+            expect(screen.getByText('Alice Teacher')).toBeInTheDocument()
+            expect(screen.getByText('alice.teacher@example.com')).toBeInTheDocument()
+            expect(screen.getByText('Offre préréservée par :')).toBeInTheDocument()
+            expect(screen.getByText('John Doe')).toBeInTheDocument()
+            expect(screen.getByText('john.doe@example.com')).toBeInTheDocument()
+        })
+    })
 
-    it(
-        'should render old layout',
-        () => {
-
-            renderWithProviders(
-                <EducationalInstitutionDetails {...props} newLayout={false} />
-            )
+    describe('newLayout = false', () => {
+        it('renders old layout with no educationalRedactor', () => {
+            render({}, false)
             expect(screen.getByText('Contact de l’établissement scolaire')).toBeInTheDocument()
-        }
-    )
+            // Ne doit pas afficher de nom ou email
+            expect(screen.queryByText('John Doe')).not.toBeInTheDocument()
+            expect(screen.queryByText('alice.teacher@example.com')).not.toBeInTheDocument()
+        })
+
+        it('renders old layout with educationalRedactor', () => {
+            render({ educationalRedactor }, false)
+            expect(screen.getByText('Contact de l’établissement scolaire')).toBeInTheDocument()
+            expect(screen.getByText('John Doe')).toBeInTheDocument()
+            expect(screen.getByText('john.doe@example.com')).toBeInTheDocument()
+            // Ne doit pas afficher la section teacher
+            expect(screen.queryByText('Alice Teacher')).not.toBeInTheDocument()
+        })
+
+        it('renders old layout with both teacher and educationalRedactor (should only show redactor)', () => {
+            render({ teacher, educationalRedactor }, false)
+            expect(screen.getByText('Contact de l’établissement scolaire')).toBeInTheDocument()
+            expect(screen.getByText('John Doe')).toBeInTheDocument()
+            expect(screen.getByText('john.doe@example.com')).toBeInTheDocument()
+            // Ne doit pas afficher la section teacher
+            expect(screen.queryByText('Alice Teacher')).not.toBeInTheDocument()
+        })
+    })
 })
