@@ -13,7 +13,6 @@ from flask_login import current_user
 from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
-import pcapi.core.offers.exceptions as offers_exceptions
 from pcapi.connectors.serialization import titelive_serializers
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.connectors.titelive import get_by_ean13
