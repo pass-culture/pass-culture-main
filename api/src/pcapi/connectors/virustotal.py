@@ -7,7 +7,6 @@ Our very basic usage does not really require a module.
 """
 
 import base64
-import json
 import logging
 import time
 
@@ -103,7 +102,7 @@ class VirusTotalBackend(BaseBackend):
             raise VirusTotalApiException(f"Unexpected {response.status_code} response from VirusTotal API: {url}")
         try:
             data = response.json()
-        except json.JSONDecodeError:
+        except requests.exceptions.JSONDecodeError:
             raise VirusTotalApiException("Unexpected non-JSON response from VirusTotal API")
         return data
 

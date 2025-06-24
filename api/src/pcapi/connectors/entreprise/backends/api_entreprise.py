@@ -131,7 +131,7 @@ class EntrepriseBackend(BaseBackend):
                     error_message = errors[0]["detail"]
                 except TypeError:
                     error_message = errors[0]
-            except json.JSONDecodeError:
+            except requests.exceptions.JSONDecodeError:
                 errors = None
                 error_message = None
 
@@ -157,7 +157,7 @@ class EntrepriseBackend(BaseBackend):
             raise exceptions.ApiException(error_message)
         try:
             return response.json()
-        except json.JSONDecodeError:
+        except requests.exceptions.JSONDecodeError:
             raise exceptions.ApiException(f"Unexpected non-JSON response from Sirene API: {url}")
 
     def _cached_get(self, subpath: str) -> dict:

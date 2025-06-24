@@ -1,6 +1,5 @@
 import datetime
 import functools
-import json
 import logging
 
 import pydantic.v1 as pydantic_v1
@@ -207,7 +206,7 @@ def book_event_ticket(
 
     try:
         parsed_response = pydantic_v1.parse_obj_as(serialize.ExternalEventBookingResponse, response.json())
-    except (pydantic_v1.ValidationError, json.JSONDecodeError) as err:
+    except (pydantic_v1.ValidationError, requests.exceptions.JSONDecodeError) as err:
         logger.exception(
             "Could not parse external booking response",
             extra={"status_code": response.status_code, "response": response.text, "error": err},
@@ -309,7 +308,7 @@ def cancel_event_ticket(
             if is_booking_saved:
                 new_quantity -= len(barcodes)
             stock.quantity = new_quantity
-    except (ValueError, json.JSONDecodeError, pydantic_v1.ValidationError):
+    except (ValueError, requests.exceptions.JSONDecodeError, pydantic_v1.ValidationError):
         logger.exception(
             "Could not parse external booking cancel response",
             extra={"status_code": response.status_code, "response": response.text},

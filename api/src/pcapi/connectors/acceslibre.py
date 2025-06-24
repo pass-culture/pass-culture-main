@@ -5,7 +5,6 @@ Further explanations at: https://schema.data.gouv.fr/MTES-MCT/acceslibre-schema/
 """
 
 import enum
-import json
 import logging
 import time
 from datetime import datetime
@@ -553,7 +552,7 @@ class AcceslibreBackend(BaseBackend):
         if response.status_code == 200:
             try:
                 return response.json()
-            except json.JSONDecodeError:
+            except requests.exceptions.JSONDecodeError:
                 logger.error(
                     "Got non-JSON or malformed JSON response from AccesLibre",
                     extra={"url": response.url, "response": response.content},

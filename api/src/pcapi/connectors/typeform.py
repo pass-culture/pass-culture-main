@@ -4,7 +4,6 @@ API Documentation: https://www.typeform.com/developers/
 """
 
 import hashlib
-import json
 import logging
 import typing
 from datetime import datetime
@@ -197,7 +196,7 @@ class TypeformBackend(BaseBackend):
 
         try:
             data = response.json()
-        except json.JSONDecodeError:
+        except requests.exceptions.JSONDecodeError:
             raise TypeformApiException("Unexpected non-JSON response from Typeform API")
         return data
 
