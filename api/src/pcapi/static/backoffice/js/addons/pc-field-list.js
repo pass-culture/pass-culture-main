@@ -249,7 +249,7 @@ class PcFieldList extends PcAddOn {
     const { fieldListContainerId } = $target.dataset
     const $fieldListContainer = this.#getFieldListContainerFromId(fieldListContainerId)
     const $ul = $fieldListContainer.querySelector(PcFieldList.PC_FIELD_LIST_UL_SELECTOR)
-    const $li = event.target.parentElement // remove button is within li
+    const $li = $target.parentElement // remove button is within li
     $li.remove()
     this.#filterMinEntries($ul)
     this.#changeButtonDisplay($ul, PcFieldList.ADD_BUTTON_SELECTOR, true)
