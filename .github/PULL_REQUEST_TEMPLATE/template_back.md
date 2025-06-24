@@ -9,4 +9,4 @@
 
 <!-- Describe the steps to test your changes. Include setup instructions, commands, and expected results. -->
 
-[ ] Travail pair testé en environnement de preview
+- [ ] Travail pair testé en environnement de preview
