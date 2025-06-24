@@ -27,6 +27,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -1757,8 +1758,9 @@ class GetOffererVenuesTest(GetEndpointHelper):
 
     # - session + authenticated user (2 queries)
     # - venues with joined data (1 query)
+    # - venue providers (selectinload: 1 query)
     # - WIP_IS_OPEN_TO_PUBLIC feature flag (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 5
 
     def test_get_managed_venues(self, authenticated_client, offerer):
         now = datetime.datetime.utcnow()
@@ -1784,6 +1786,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         educational_factories.CollectiveDmsApplicationFactory(venue=venue_2, application=35)
         bookings_factories.FraudulentBookingTagFactory(booking__stock__offer__venue=venue_2)
         offerers_factories.VenueFactory(managingOfferer=other_offerer)
+        providers_factories.VenueProviderFactory(venue=venue_2, provider__name="Partenaire Tech")
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
@@ -1804,6 +1807,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[0]["Présence web"] == "https://example.com https://pass.culture.fr"
         assert rows[0]["Offres cibles"] == "Indiv. et coll."
         assert rows[0]["Compte bancaire associé"] == ""
+        assert rows[0]["Partenaire technique"] == "Partenaire Tech (actif)"
         assert rows[0]["Fraude"] == "Réservations frauduleuses"
 
         assert rows[1]["ID"] == str(venue_1.id)
@@ -1816,6 +1820,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[1]["Présence web"] == ""
         assert rows[1]["Offres cibles"] == ""
         assert rows[1]["Compte bancaire associé"] == "Compte actuel"
+        assert rows[1]["Partenaire technique"] == ""
         assert rows[1]["Fraude"] == ""
 
     def test_get_caledonian_managed_venues(self, authenticated_client):
