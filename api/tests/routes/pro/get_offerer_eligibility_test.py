@@ -12,17 +12,20 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class Return200Test:
     @pytest.mark.parametrize(
-        "adage_id,collective_ds_application,is_onboarded",
+        "allowed_on_adage,adage_id,collective_ds_application,is_onboarded",
         [
-            (None, None, False),
-            ("1", None, True),
-            (None, "1", True),
-            ("1", "1", True),
+            (False, None, None, False),
+            (False, "1", None, True),
+            (False, None, "1", True),
+            (False, "1", "1", True),
+            (True, None, None, True),
         ],
     )
-    def test_get_offerer_eligibility_success(self, client, adage_id, collective_ds_application, is_onboarded):
+    def test_get_offerer_eligibility_success(
+        self, client, allowed_on_adage, adage_id, collective_ds_application, is_onboarded
+    ):
         pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory(allowedOnAdage=allowed_on_adage)
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, adageId=adage_id)
@@ -34,9 +37,12 @@ class Return200Test:
         response = client.get(f"/offerers/{offerer_id}/eligibility")
         assert response.status_code == 200
         assert response.json.get("isOnboarded") is is_onboarded
-        assert adage_id is None or response.json.get("hasAdageId")
-        if adage_id is None:
-            assert collective_ds_application is None or response.json.get("hasDsApplication")
+        if allowed_on_adage:
+            assert adage_id is None and collective_ds_application is None
+        else:
+            assert adage_id is None or response.json.get("hasAdageId")
+            if adage_id is None:
+                assert collective_ds_application is None or response.json.get("hasDsApplication")
 
 
 class Return400Test:

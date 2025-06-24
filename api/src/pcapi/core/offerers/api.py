@@ -3361,3 +3361,12 @@ def synchronize_from_ds_and_check_application(offerer_id: int) -> bool:
         .filter(offerers_models.Venue.collectiveDmsApplications.any())
     )
     return db.session.query(query.exists()).scalar()
+
+
+def is_allowed_on_adage(offerer_id: int) -> bool:
+    query = (
+        db.session.query(models.Offerer)
+        .filter(offerers_models.Offerer.id == offerer_id)
+        .filter(offerers_models.Offerer.allowedOnAdage.is_(True))
+    )
+    return db.session.query(query.exists()).scalar()
