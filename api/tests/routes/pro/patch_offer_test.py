@@ -4,6 +4,7 @@ from decimal import Decimal
 from unittest.mock import patch
 
 import pytest
+import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.mails.testing as mails_testing
@@ -64,7 +65,32 @@ class Returns200Test:
         assert updated_offer.bookingAllowedDatetime == booking_allowed_datetime.replace(tzinfo=None)
         assert not updated_offer.product
 
-    def test_patch_offer_unset_publication_datetime(self, client):
+    @time_machine.travel(datetime.datetime(2025, 6, 24, tzinfo=datetime.timezone.utc), tick=False)
+    @pytest.mark.parametrize(
+        "initial_publication_datetime,request_publication_datetime,final_publication_datetime,response_publication_datetime",
+        [
+            # update publicationDatetime
+            (
+                datetime.datetime(2025, 6, 26),
+                "2025-06-28T14:30:00+02:00",
+                datetime.datetime(2025, 6, 28, 12, 30),
+                "2025-06-28T12:30:00Z",
+            ),
+            (None, "2025-06-28T14:30:00Z", datetime.datetime(2025, 6, 28, 14, 30), "2025-06-28T14:30:00Z"),
+            # publish offer now
+            (datetime.datetime(2025, 6, 26), "now", datetime.datetime(2025, 6, 24), "2025-06-24T00:00:00Z"),
+            # unpublish offer
+            (datetime.datetime(2025, 6, 26), None, None, None),
+        ],
+    )
+    def test_patch_offer_publication_datetime(
+        self,
+        client,
+        initial_publication_datetime,
+        request_publication_datetime,
+        final_publication_datetime,
+        response_publication_datetime,
+    ):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
@@ -73,23 +99,67 @@ class Returns200Test:
             name="New name",
             url="test@test.com",
             description="description",
-            bookingAllowedDatetime=datetime.datetime.now() + datetime.timedelta(days=2),
-            publicationDatetime=datetime.datetime.now() + datetime.timedelta(days=3),
+            publicationDatetime=initial_publication_datetime,
         )
-
-        assert offer.publicationDatetime
-        assert offer.bookingAllowedDatetime
 
         response = client.with_session_auth("user@example.com").patch(
             f"/offers/{offer.id}",
-            json={"publicationDatetime": None, "bookingAllowedDatetime": None},
+            json={"publicationDatetime": request_publication_datetime},
         )
 
         assert response.status_code == 200
+        assert response.json["publicationDatetime"] == response_publication_datetime
 
         updated_offer = db.session.get(Offer, offer.id)
-        assert updated_offer.publicationDatetime == None
-        assert updated_offer.bookingAllowedDatetime == None
+        assert updated_offer.publicationDatetime == final_publication_datetime
+
+    @time_machine.travel(datetime.datetime(2025, 6, 24, tzinfo=datetime.timezone.utc), tick=False)
+    @pytest.mark.parametrize(
+        "initial_booking_allowed_datetime,request_booking_allowed_datetime,final_booking_allowed_datetime,response_booking_allowed_datetime",
+        [
+            # update bookingAllowedDatetime
+            (
+                datetime.datetime(2025, 6, 26),
+                "2025-06-28T14:30:00+02:00",
+                datetime.datetime(2025, 6, 28, 12, 30),
+                "2025-06-28T12:30:00Z",
+            ),
+            (None, "2025-06-28T14:30:00Z", datetime.datetime(2025, 6, 28, 14, 30), "2025-06-28T14:30:00Z"),
+            # unset bookingAllowedDatetime
+            (datetime.datetime(2025, 6, 26), None, None, None),
+        ],
+    )
+    def test_patch_offer_booking_allowed_datetime(
+        self,
+        client,
+        initial_booking_allowed_datetime,
+        request_booking_allowed_datetime,
+        final_booking_allowed_datetime,
+        response_booking_allowed_datetime,
+    ):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
+            venue=venue,
+            name="New name",
+            url="test@test.com",
+            description="description",
+            publicationDatetime=datetime.datetime(2025, 6, 23),
+            bookingAllowedDatetime=initial_booking_allowed_datetime,
+        )
+
+        response = client.with_session_auth("user@example.com").patch(
+            f"/offers/{offer.id}",
+            json={"bookingAllowedDatetime": request_booking_allowed_datetime},
+        )
+
+        assert response.status_code == 200
+        assert response.json["bookingAllowedDatetime"] == response_booking_allowed_datetime
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.bookingAllowedDatetime == final_booking_allowed_datetime
+        assert updated_offer.publicationDatetime == datetime.datetime(2025, 6, 23)
 
     def test_we_handle_unique_address_among_manual_edition_while_patch_offer(self, client):
         user_offerer_1 = offerers_factories.UserOffererFactory(user__email="user1@example.com")
