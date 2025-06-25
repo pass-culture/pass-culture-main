@@ -4,6 +4,5 @@
         "ms-python.python",
         "charliermarsh.ruff",
         "ms-python.mypy-type-checker",
-        "ms-python.black-formatter"
     ]
 }
