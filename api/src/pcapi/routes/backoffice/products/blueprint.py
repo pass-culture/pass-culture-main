@@ -154,6 +154,9 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
     pending_offers_count = sum(1 for offer in product.offers if offer.validation == OfferValidationStatus.PENDING)
     rejected_offers_count = sum(1 for offer in product.offers if offer.validation == OfferValidationStatus.REJECTED)
 
+    titelive_data = {}
+    ineligibility_reasons = None
+    product_whitelist = None
     if product.ean:
         try:
             titelive_data = get_by_ean13(product.ean)
@@ -166,11 +169,10 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
                 ).format(message=str(err) or err.__class__.__name__),
                 "warning",
             )
-            titelive_data = {}
         try:
             data = pydantic_v1.parse_obj_as(titelive_serializers.TiteLiveBookWork, titelive_data["oeuvre"])
         except Exception:
-            ineligibility_reasons = None
+            pass
         else:
             ineligibility_reasons = get_ineligibility_reasons(data.article[0], data.titre)
 
@@ -190,10 +192,6 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
             )
             .one_or_none()
         )
-    else:
-        titelive_data = None
-        ineligibility_reasons = None
-        product_whitelist = None
 
     return render_template(
         "products/details.html",
