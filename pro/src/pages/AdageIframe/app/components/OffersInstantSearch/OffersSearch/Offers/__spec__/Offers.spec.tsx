@@ -538,7 +538,9 @@ describe('offers', () => {
     })
 
     it('should show diffuse help', async () => {
-      vi.spyOn(global.Date, "now").mockImplementation(() => new Date("2025-02-04T00:00:00Z").getTime());
+      vi.spyOn(global.Date, 'now').mockImplementation(() =>
+        new Date('2025-08-15T00:00:00Z').getTime()
+      )
 
       vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
         collectiveOffers: [offerInParis, offerInCayenne],
