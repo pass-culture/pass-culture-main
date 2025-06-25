@@ -97,12 +97,6 @@ export const isCollectiveOfferTemplate = (
   (hasProperty(value, 'isTemplate') && value.isTemplate === true) ||
   (hasProperty(value, 'isShowcase') && value.isShowcase === true)
 
-export type VisibilityFormValues = {
-  visibility: 'all' | 'one'
-  institution: string
-  teacher: string | null
-}
-
 export enum CollectiveOffersSortingColumn {
   EVENT_DATE = 'EVENT_DATE',
 }

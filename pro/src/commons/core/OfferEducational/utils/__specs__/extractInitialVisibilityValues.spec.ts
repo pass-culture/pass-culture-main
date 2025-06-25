@@ -10,7 +10,7 @@ describe('extractInitialVisibilityValues', () => {
     expect(extractInitialVisibilityValues(null)).toStrictEqual({
       visibility: 'all',
       institution: '',
-      teacher: null,
+      teacher: '',
     })
   })
 
@@ -26,7 +26,7 @@ describe('extractInitialVisibilityValues', () => {
     expect(extractInitialVisibilityValues(institution)).toStrictEqual({
       visibility: 'one',
       institution: '1',
-      teacher: null,
+      teacher: '',
     })
   })
 

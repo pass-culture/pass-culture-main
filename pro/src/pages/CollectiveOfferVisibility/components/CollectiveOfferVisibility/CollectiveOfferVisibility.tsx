@@ -1,6 +1,8 @@
-import { FormikProvider, useFormik } from 'formik'
-import { useMemo, useState } from 'react'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useEffect, useMemo, useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import useSWR from 'swr'
+import { InferType } from 'yup'
 
 import { api } from 'apiClient/api'
 import {
@@ -10,11 +12,7 @@ import {
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
 import { GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import {
-  isCollectiveOffer,
-  Mode,
-  VisibilityFormValues,
-} from 'commons/core/OfferEducational/types'
+import { isCollectiveOffer, Mode } from 'commons/core/OfferEducational/types'
 import {
   extractInitialVisibilityValues,
   formatInstitutionDisplayName,
@@ -77,6 +75,8 @@ interface TeacherOption extends SelectOption {
   email: string
 }
 
+export type VisibilityFormValues = InferType<typeof validationSchema>
+
 export const CollectiveOfferVisibilityScreen = ({
   mode,
   initialValues,
@@ -133,7 +133,7 @@ export const CollectiveOfferVisibilityScreen = ({
     const selectedTeacher: TeacherOption | null = requestId
       ? teachersOptions[0]
       : (teachersOptions.find(
-          (teacher) => teacher.value === formik.values.teacher
+          (teacher) => teacher.value === watch('teacher')
         ) ?? null)
 
     try {
@@ -150,8 +150,8 @@ export const CollectiveOfferVisibilityScreen = ({
         payload: collectiveOffer,
       })
 
-      formik.resetForm({
-        values: extractInitialVisibilityValues(collectiveOffer.institution),
+      reset({
+        ...extractInitialVisibilityValues(collectiveOffer.institution),
       })
     } catch {
       notify.error(SENT_DATA_ERROR_MESSAGE)
@@ -172,16 +172,52 @@ export const CollectiveOfferVisibilityScreen = ({
       }
     : initialValues
 
-  const formik = useFormik<VisibilityFormValues>({
-    initialValues,
-    onSubmit,
-    validationSchema,
-    enableReinitialize: true,
+  const form = useForm<VisibilityFormValues>({
+    defaultValues: initialValues,
+    resolver: yupResolver(validationSchema),
   })
+
+  const {
+    handleSubmit,
+    setValue,
+    reset,
+    watch,
+    formState: { isDirty, isSubmitting },
+  } = form
+
+  useEffect(() => {
+    if (!requestInformations) {
+      return
+    }
+
+    const institutionOption = institutionsOptions.find(
+      (opt) =>
+        opt.institutionId === requestInformations.institution.institutionId
+    )
+
+    const formValues: VisibilityFormValues = {
+      ...extractInitialVisibilityValues(null, null, requestInformations),
+      institution: institutionOption?.value.toString() ?? '',
+      teacher: requestInformations.redactor.email,
+    }
+
+    reset(formValues)
+
+    const { firstName, lastName, email } = requestInformations.redactor
+    setTeachersOptions([
+      {
+        label: `${lastName ?? ''} ${firstName ?? ''}`.trim(),
+        value: email,
+        surname: lastName ?? '',
+        name: firstName ?? '',
+        email,
+      },
+    ])
+  }, [requestInformations, institutionsOptions, reset])
 
   const onSearchTeacher = async (pattern: string) => {
     const selectedInstitution = institutionsOptions.find(
-      (institution) => institution.value === formik.values.institution
+      (institution) => institution.value === watch('institution')
     )
 
     const searchTeacherValue = pattern.trim()
@@ -221,6 +257,7 @@ export const CollectiveOfferVisibilityScreen = ({
       notify.error(GET_DATA_ERROR_MESSAGE)
     }
   }
+
   return (
     <>
       <FormLayout.MandatoryInfo />
@@ -231,8 +268,8 @@ export const CollectiveOfferVisibilityScreen = ({
         mode={mode}
       />
 
-      <FormikProvider value={formik}>
-        <form onSubmit={formik.handleSubmit}>
+      <FormProvider {...form}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <FormLayout>
             {isCollectiveOffer(offer) && offer.isPublicApi && (
               <BannerPublicApi className={styles['banner-space']}>
@@ -256,22 +293,21 @@ export const CollectiveOfferVisibilityScreen = ({
                       description="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
                       hideArrow
                       onReset={() => {
-                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                        formik.setFieldValue('institution', null)
-                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                        formik.setFieldValue('teacher', null)
+                        setValue('institution', '')
+                        setValue('teacher', '')
                       }}
                       onChange={(event) => {
-                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                        formik.setFieldValue('institution', event.target.value)
-                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                        formik.setFieldValue('teacher', undefined)
+                        setValue('institution', event.target.value, {
+                          shouldDirty: true,
+                        })
+
+                        setValue('teacher', undefined)
                       }}
                       disabled={!canEditInstitution}
                       searchInOptions={(options, pattern) =>
                         searchPatternInOptions(options, pattern, 300)
                       }
-                      value={formik.values.institution}
+                      value={watch('institution')}
                     />
                   </>
                 )}
@@ -285,20 +321,16 @@ export const CollectiveOfferVisibilityScreen = ({
                   description="Ex: Camille Dupont"
                   hideArrow
                   onReset={() => {
-                    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                    formik.setFieldValue('teacher', null)
+                    setValue('teacher', '')
                   }}
                   onSearch={onSearchTeacher}
-                  disabled={!canEditInstitution || !formik.values.institution}
+                  disabled={!canEditInstitution || !watch('institution')}
                   onChange={(event) => {
-                    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                    formik.setFieldValue('teacher', event.target.value)
+                    setValue('teacher', event.target.value, {
+                      shouldDirty: true,
+                    })
                   }}
-                  value={
-                    formik.values.institution
-                      ? formik.values.teacher || undefined
-                      : undefined
-                  }
+                  value={watch('institution') ? watch('teacher') : undefined}
                 />
               </FormLayout.Row>
             </FormLayout.Section>
@@ -317,10 +349,10 @@ export const CollectiveOfferVisibilityScreen = ({
                   {mode === Mode.CREATION ? 'Retour' : 'Annuler et quitter'}
                 </ButtonLink>
               </ActionsBarSticky.Left>
-              <ActionsBarSticky.Right dirtyForm={formik.dirty} mode={mode}>
+              <ActionsBarSticky.Right dirtyForm={isDirty} mode={mode}>
                 <Button
                   type="submit"
-                  disabled={!formik.values.institution || !canEditInstitution}
+                  disabled={!watch('institution') || !canEditInstitution}
                 >
                   Enregistrer et continuer
                 </Button>
@@ -328,9 +360,9 @@ export const CollectiveOfferVisibilityScreen = ({
             </ActionsBarSticky>
           </FormLayout>
         </form>
-      </FormikProvider>
+      </FormProvider>
       <RouteLeavingGuardCollectiveOfferCreation
-        when={formik.dirty && !formik.isSubmitting}
+        when={isDirty && !isSubmitting}
       />
     </>
   )
