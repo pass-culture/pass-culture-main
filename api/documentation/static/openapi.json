@@ -3413,6 +3413,7 @@
                     "quantity": {
                         "anyOf": [
                             {
+                                "exclusiveMinimum": 0,
                                 "type": "integer"
                             },
                             {
@@ -8724,6 +8725,7 @@
                     "quantity": {
                         "anyOf": [
                             {
+                                "exclusiveMinimum": 0,
                                 "type": "integer"
                             },
                             {

@@ -63,6 +63,8 @@ EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER = {
     "withdrawalDelay",
     "withdrawalType",
     "idAtProvider",
+    "bookingAllowedDatetime",
+    "publicationDatetime",
 } | EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
 
 MAX_THUMBNAIL_SIZE = 10_000_000

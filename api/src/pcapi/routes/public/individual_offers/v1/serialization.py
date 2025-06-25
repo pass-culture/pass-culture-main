@@ -467,7 +467,7 @@ class StockUpsert(StockCreation):
 
 class BaseStockEdition(serialization.ConfiguredBaseModel):
     booking_limit_datetime: datetime.datetime | None = fields.BOOKING_LIMIT_DATETIME
-    quantity: pydantic_v1.StrictInt | UNLIMITED_LITERAL | None = fields.QUANTITY
+    quantity: pydantic_v1.NonNegativeInt | UNLIMITED_LITERAL | None = fields.QUANTITY
 
     _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
 
@@ -667,6 +667,23 @@ class ProductOfferEdition(OfferEditionBase):
     name: OfferName | None = fields.OFFER_NAME
     description: str | None = fields.OFFER_DESCRIPTION_WITH_MAX_LENGTH
     enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_ENABLED
+
+    @pydantic_v1.root_validator(skip_on_failure=True)
+    def validate_stock_datetime_is_coherent(cls, values: dict) -> dict:
+        stock: StockEdition | None = values.get("stock")
+        publication_datetime: datetime.datetime | None = values.get("publication_datetime")
+        booking_allowed_datetime: datetime.datetime | None = values.get("booking_allowed_datetime")
+
+        if not stock or not stock.booking_limit_datetime:
+            return values
+
+        if publication_datetime and stock.booking_limit_datetime < publication_datetime:
+            raise ValueError("`stock.bookingLimitDatetime` must be after `publicationDatetime`")
+
+        if booking_allowed_datetime and stock.booking_limit_datetime < booking_allowed_datetime:
+            raise ValueError("`stock.bookingLimitDatetime` must be after `bookingAllowedDatetime`")
+
+        return values
 
     class Config:
         extra = "forbid"
