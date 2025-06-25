@@ -100,7 +100,7 @@ The date and time when the offer becomes visible in the beneficiary application.
 """
 
 BOOKING_ALLOWED_DATETIME_FIELD_DESCRIPTION = """
-The date and time when the offer becomes bookable in the beneficiary application. If not set, the offer will be bookable as soon as it is published
+The date and time when the offer becomes bookable in the beneficiary application. If not set, the offer will be bookable as soon as it is published.
 
 **Constraints on datetime:**
 - Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.
