@@ -91,19 +91,6 @@ jobs:
       - if: inputs.ENV != 'testing'
         run: |
           cat package.json | grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > build/version.txt
-      - name: "Create Sentry release"
-        if: ${{ inputs.PUSH_RELEASE_TO_SENTRY }}
-        uses: getsentry/action-release@v3
-        env:
-          SENTRY_AUTH_TOKEN: ${{ steps.secrets.outputs.SENTRY_TOKEN }}
-          SENTRY_ORG: sentry
-          SENTRY_PROJECT: pro
-          SENTRY_URL: https://sentry.passculture.team/
-        with:
-          sourcemaps: ./build
-          working_directory: pro
-          version: ${{ inputs.CHANNEL }}
-          url_prefix: "~"
       - name: "Create SaaS Sentry release"
         if: ${{ inputs.PUSH_RELEASE_TO_SENTRY }}
         uses: getsentry/action-release@v3
