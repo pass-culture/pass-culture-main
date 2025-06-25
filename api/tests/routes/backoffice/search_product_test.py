@@ -171,6 +171,19 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
             in html_parser.content_as_text(response.data)
         )
 
+    def test_search_by_ean_with_invalid_ean(self, authenticated_client):
+        with assert_num_queries(self.expected_num_queries - 1):
+            response = authenticated_client.get(
+                url_for(
+                    self.endpoint,
+                    q="123456",
+                    product_filter_type=ProductFilterTypeEnum.EAN.name,
+                )
+            )
+
+        assert response.status_code == 200
+        assert "EAN invalide: un EAN doit être composé de 13 chiffres" in html_parser.extract_alerts(response.data)
+
     def test_search_by_visa_existing_product(self, authenticated_client):
         product = offers_factories.ProductFactory.create(
             description="Une offre pour tester",

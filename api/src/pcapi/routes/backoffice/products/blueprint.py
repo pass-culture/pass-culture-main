@@ -32,6 +32,7 @@ from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils import requests
+from pcapi.utils import string as string_utils
 
 from . import forms
 
@@ -155,6 +156,7 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
     rejected_offers_count = sum(1 for offer in product.offers if offer.validation == OfferValidationStatus.REJECTED)
 
     if product.ean:
+        titelive_data = {}
         try:
             titelive_data = get_by_ean13(product.ean)
         except offers_exceptions.TiteLiveAPINotExistingEAN:
@@ -166,7 +168,6 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
                 ).format(message=str(err) or err.__class__.__name__),
                 "warning",
             )
-            titelive_data = {}
         try:
             data = pydantic_v1.parse_obj_as(titelive_serializers.TiteLiveBookWork, titelive_data["oeuvre"])
         except Exception:
@@ -412,6 +413,15 @@ def search_product() -> utils.BackofficeResponse:
 
     elif result_type == forms.ProductFilterTypeEnum.EAN:
         ean = search_query
+
+        if not string_utils.is_ean_valid(ean):
+            flash(Markup("EAN invalide: un EAN doit être composé de 13 chiffres"), "warning")
+            return render_template(
+                "products/search_product_result.html",
+                form=form,
+                dst=url_for(".search_product"),
+            )
+
         product = db.session.query(offers_models.Product).filter_by(ean=ean).one_or_none()
         if not product:
             titelive_data = {}

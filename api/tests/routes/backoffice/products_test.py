@@ -4,6 +4,7 @@ import pytest
 from flask import url_for
 
 from pcapi.core.categories import subcategories
+from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
@@ -188,6 +189,26 @@ class GetProductDetailsTest(GetEndpointHelper):
         assert not card_ean
 
         mock_get_by_ean13.assert_not_called()
+
+    @pytest.mark.parametrize(
+        "titelive_error",
+        (offers_exceptions.TiteLiveAPINotExistingEAN(), requests.exceptions.Timeout, requests.ExternalAPIException),
+    )
+    @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
+    def test_get_detail_product_titelive_api_raise_error(self, mock_get_by_ean13, titelive_error, authenticated_client):
+        mock_get_by_ean13.side_effect = titelive_error
+        product = offers_factories.ProductFactory.create(
+            description="Une offre pour tester",
+            ean="1234567891234",
+            extraData={"author": "Jean-Christophe Rufin", "editeur": "Editor", "gtl_id": "08010000"},
+        )
+        offers_factories.OfferFactory.create(product=product, ean="1234567891234")
+        offers_factories.OfferFactory.create(ean="1234567891234")
+
+        url = url_for(self.endpoint, product_id=product.id, _external=True)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
 
 
 class ProductSynchronizationWithTiteliveButtonTest(button_helpers.ButtonHelper):
