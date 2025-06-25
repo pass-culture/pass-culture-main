@@ -7,7 +7,6 @@ title: Pass Culture API change logs
 :::warning
 💡 Important notice some old resources are going to be removed in the coming months.
 
-- If you were using `/v2/venue/<venue_id>/stocks` to manage stocks, you will have to migrate to this endpoint : [/public/offers/v1/products/ean](/rest-api#tag/Product-Offer-Bulk-Operations/operation/PostProductOfferByEan). The endpoint `/v2/stock` will not be available anymore starting from September, the 31st 2024.
 - If you were using `/v2/bookings` to manage bookings, you will have to migrate to those endpoints [/public/bookings/v1/bookings](/rest-api#tag/Bookings).  The endpoint `/v2/bookings` will not be available anymore starting from June, the 30th 2025.
 
 **You can find a migration tutorial [here](/docs/tutorials/migrate-to-the-new-api).**
@@ -27,6 +26,11 @@ title: Pass Culture API change logs
   - Collective offers that are currently `isActive = false` and do not have a related booking will be archived. This does not apply to offers that are under review or rejected by the validation process.
   - **You can find details on the new status and the allowed actions [here](/docs/understanding-our-api/resources/collective-offers#collective-offer-status-and-allowed-actions).**
 :::
+
+## July 2025
+
+- You can specify a `publicationDatetime` and a `bookingAllowedDatetime` for your product offers in the [**Create Product Offer**](/rest-api#tag/Product-Offers/operation/PostProductOffer) and [**Update Product Offer**](/rest-api#tag/Product-Offers/operation/EditProduct) endpoints
+
 
 ## June 2025
 
