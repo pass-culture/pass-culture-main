@@ -22,9 +22,13 @@ import { adageSearchViewSelector } from 'commons/store/adageFilter/selectors'
 import { LOGS_DATA } from 'commons/utils/config'
 import fullGoTopIcon from 'icons/full-go-top.svg'
 import fullGridIcon from 'icons/full-grid.svg'
+import fullLinkIcon from 'icons/full-link.svg'
 import fullListIcon from 'icons/full-list.svg'
+import TFD2025 from 'pages/AdageIframe/app/components/HighlightBanner/assets/TFD2025.svg'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { ShadowTipsHelpIcon } from 'ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -76,7 +80,11 @@ export const Offers = ({
     ? scopedResults.find((res) => res.indexId === indexId)?.results
     : nonScopedResult
 
-  const showDiffuseHelp = (submitCount ?? 0) > 0
+  const highlightTargetDate = new Date('2025-08-10').getTime()
+  const currentDate = Date.now()
+
+  const showDiffuseHelp =
+    (submitCount ?? 0) > 0 && currentDate >= highlightTargetDate
 
   const isInSuggestions = indexId?.startsWith('no_results_offers')
 
@@ -168,6 +176,14 @@ export const Offers = ({
     })
   }
 
+  const logOpenHighlightBanner = (bannerName: string) => {
+    apiAdage.logOpenHighlightBanner({
+      iframeFrom: location.pathname,
+      queryId: results.queryID,
+      banner: bannerName,
+    })
+  }
+
   return (
     <>
       {!isInSuggestions && (
@@ -223,7 +239,7 @@ export const Offers = ({
                 viewType={adageViewType}
               />
             )}
-            {adageViewType === 'list' && index === 0 && showDiffuseHelp && (
+            {adageViewType === 'list' && index === 0 && showDiffuseHelp ? (
               <HighlightBanner
                 title={'Le saviez-vous ?'}
                 description={
@@ -236,6 +252,38 @@ export const Offers = ({
                   />
                 }
               />
+            ) : (
+              adageViewType === 'list' &&
+              index === 0 &&
+              currentDate < highlightTargetDate && (
+                <HighlightBanner
+                  title={"Permettre aux jeunes de s'exprimer par la danse"}
+                  description={
+                    "Du 23 juin au 10 août 2025, le pass Culture propose aux jeunes de 15 à 21 ans de participer au concours d'été de danse en filmant une chorégraphie dans la thématique des “soulèvements”. Des sélections de spectacles, livres, médias et vidéos d’artistes chorégraphes et danseurs seront diffusées sur l'application pour nourrir la créativité des jeunes."
+                  }
+                  localStorageKey={'TFD_2025_ADAGE_SEEN'}
+                  img={
+                    <img
+                      src={TFD2025}
+                      className={styles['banner']}
+                      alt="Soulèvements"
+                    />
+                  }
+                  primaryButton={
+                    <ButtonLink
+                      variant={ButtonVariant.PRIMARY}
+                      to="https://passculture.docsend.com/view/nn7q3isav3dmhue2/d/pkhf9bba2ft4myz8"
+                      isExternal
+                      opensInNewTab
+                      icon={fullLinkIcon}
+                      className={styles['highlight-banner-button']}
+                      onClick={() => logOpenHighlightBanner('TFD-2025')}
+                    >
+                      en savoir plus
+                    </ButtonLink>
+                  }
+                />
+              )
             )}
             {adageViewType === 'list' &&
               index === 1 &&
