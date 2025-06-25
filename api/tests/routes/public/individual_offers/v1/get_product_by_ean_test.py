@@ -1,4 +1,7 @@
+import datetime
+
 import pytest
+import time_machine
 
 from pcapi.core import testing
 from pcapi.core.categories import subcategories
@@ -60,6 +63,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
             )
             assert response.status_code == 404
 
+    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
     def test_valid_ean(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
@@ -81,6 +85,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
         assert response.json == {
             "products": [
                 {
+                    "bookingAllowedDatetime": None,
                     "bookingContact": None,
                     "bookingEmail": None,
                     "categoryRelatedFields": {
@@ -100,6 +105,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
                     "image": None,
                     "itemCollectionDetails": None,
                     "location": {"type": "physical", "venueId": product_offer.venueId},
+                    "publicationDatetime": "2025-06-25T12:25:00Z",
                     "name": "Vieux motard que jamais",
                     "status": "SOLD_OUT",
                     "stock": None,
@@ -108,6 +114,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
             ]
         }
 
+    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
     def test_multiple_valid_eans(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
@@ -149,6 +156,8 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
         assert response.json == {
             "products": [
                 {
+                    "bookingAllowedDatetime": None,
+                    "publicationDatetime": "2025-06-25T12:25:00Z",
                     "bookingContact": None,
                     "bookingEmail": None,
                     "categoryRelatedFields": {
@@ -174,6 +183,8 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
                     "idAtProvider": None,
                 },
                 {
+                    "bookingAllowedDatetime": None,
+                    "publicationDatetime": "2025-06-25T12:25:00Z",
                     "bookingContact": None,
                     "bookingEmail": None,
                     "categoryRelatedFields": {
@@ -199,6 +210,8 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
                     "idAtProvider": None,
                 },
                 {
+                    "bookingAllowedDatetime": None,
+                    "publicationDatetime": "2025-06-25T12:25:00Z",
                     "bookingContact": None,
                     "bookingEmail": None,
                     "categoryRelatedFields": {
@@ -300,6 +313,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
 
         assert response.json == {"products": []}
 
+    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
     def test_200_when_one_ean_in_list_not_found(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
@@ -323,6 +337,8 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
         assert response.json == {
             "products": [
                 {
+                    "bookingAllowedDatetime": None,
+                    "publicationDatetime": "2025-06-25T12:25:00Z",
                     "bookingContact": None,
                     "bookingEmail": None,
                     "categoryRelatedFields": {

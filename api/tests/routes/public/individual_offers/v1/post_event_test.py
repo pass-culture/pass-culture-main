@@ -219,7 +219,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json == {"idAtProvider": ["`rolala` is already taken by another venue offer"]}
 
-    @time_machine.travel(now_datetime_with_tz, tick=False)
+    @time_machine.travel(datetime(2025, 6, 25, 12, 30, tzinfo=timezone.utc), tick=False)
     def test_event_creation_with_full_body(self, client, clear_tests_assets_bucket):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
 
@@ -278,8 +278,11 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         }
         assert created_offer.bookingEmail == "nicoj@example.com"
 
-        assert created_offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
-        assert created_offer.publicationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        # TODO : (tcoudray-pass, 12/06/25) Remove when future_offer is removed
+        assert created_offer.publicationDate == datetime(2025, 6, 25, 12, 30)
+        assert created_offer.finalizationDatetime == datetime(2025, 6, 25, 12, 30)
+        assert created_offer.publicationDatetime == datetime(2025, 6, 25, 12, 30)
+
         assert not created_offer.bookingAllowedDatetime
         assert created_offer.description == "Space is only noise if you can see"
         assert created_offer.externalTicketOfficeUrl == "https://maposaic.com"
@@ -303,6 +306,8 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_price_category.idAtProvider == "gold_triangle"
 
         assert response.json == {
+            "bookingAllowedDatetime": None,
+            "publicationDatetime": "2025-06-25T12:30:00Z",
             "accessibility": {
                 "audioDisabilityCompliant": False,
                 "mentalDisabilityCompliant": True,
@@ -317,7 +322,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
                 "musicType": "ELECTRO-HOUSE",
                 "performer": "Nicolas Jaar",
             },
-            "publicationDate": date_utils.format_into_utc_date(now_datetime_with_tz),
+            "publicationDate": "2025-06-25T12:30:00Z",
             "description": "Space is only noise if you can see",
             "enableDoubleBookings": True,
             "eventDuration": 120,
