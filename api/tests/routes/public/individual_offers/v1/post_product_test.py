@@ -30,8 +30,6 @@ ACCESSIBILITY_FIELDS = {
     "visualDisabilityCompliant": True,
 }
 
-now_datetime_with_tz = datetime.datetime.now(datetime.timezone.utc)
-
 
 @pytest.mark.usefixtures("db_session")
 class PostProductTest(PublicAPIVenueEndpointHelper):
@@ -69,7 +67,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         )
         assert response.status_code == 404
 
-    @time_machine.travel(now_datetime_with_tz, tick=False)
+    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
     @mock.patch("pcapi.tasks.sendinblue_tasks.update_sib_pro_attributes_task")
     def test_physical_product_minimal_body(self, update_sib_pro_task_mock, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -88,8 +86,8 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is True
         assert created_offer.visualDisabilityCompliant is True
-        assert created_offer.publicationDatetime == now_datetime_with_tz.replace(tzinfo=None)
-        assert created_offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert created_offer.publicationDatetime == datetime.datetime(2025, 6, 25, 12, 30)
+        assert created_offer.finalizationDatetime == datetime.datetime(2025, 6, 25, 12, 30)
         assert not created_offer.bookingAllowedDatetime
         assert not created_offer.isDuo
         assert created_offer.bookingEmail is None
@@ -98,6 +96,8 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.offererAddress.id == venue_provider.venue.offererAddress.id
 
         assert response.json == {
+            "bookingAllowedDatetime": None,
+            "publicationDatetime": "2025-06-25T12:30:00Z",
             "bookingContact": None,
             "bookingEmail": None,
             "categoryRelatedFields": {
@@ -123,7 +123,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             "idAtProvider": None,
         }
 
-    @time_machine.travel(now_datetime_with_tz, tick=False)
+    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
     def test_product_creation_with_full_body(self, client, clear_tests_assets_bucket):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -174,8 +174,8 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is False
         assert created_offer.visualDisabilityCompliant is False
-        assert created_offer.publicationDatetime == now_datetime_with_tz.replace(tzinfo=None)
-        assert created_offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert created_offer.publicationDatetime == datetime.datetime(2025, 6, 25, 12, 30)
+        assert created_offer.finalizationDatetime == datetime.datetime(2025, 6, 25, 12, 30)
         assert not created_offer.bookingAllowedDatetime
         assert created_offer.isDuo is False
         assert created_offer.bookingEmail == "spam@example.com"
@@ -201,6 +201,8 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.json == {
+            "bookingAllowedDatetime": None,
+            "publicationDatetime": "2025-06-25T12:30:00Z",
             "bookingContact": "contact@example.com",
             "bookingEmail": "spam@example.com",
             "categoryRelatedFields": {

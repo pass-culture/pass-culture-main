@@ -77,10 +77,32 @@ Booking status explanation:
 
 BEGINNING_DATETIME_FIELD_DESCRIPTION = "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)."
 BOOKING_LIMIT_DATETIME_FIELD_DESCRIPTION = "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)."
-PUBLICATION_DATETIME_FIELD_DESCRIPTION = """
+PUBLICATION_DATE_FIELD_DESCRIPTION = """
+[DEPRECATED] You should use `publicationDatetime` instead
+
 The date and time when the offer will be published in the beneficiary application.
 
 - Must not be in the past
 - Time must be rounded to the nearest quarter-hour
 - Format: **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (timezone-aware datetime)
+"""
+
+PUBLICATION_DATETIME_FIELD_DESCRIPTION = """
+The date and time when the offer becomes visible in the beneficiary application.
+
+**Constraints on datetime:**
+- Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.
+- Must be a datetime in the future. Offers are published every 15 minutes. Therefore, a small delay may occur between the indicated datetime and the actual publication time.
+
+**Other options:**
+- If set to `"now"` (default value), the offer is published immediately (no delay).
+- If set to `null`, the offer will not be published.
+"""
+
+BOOKING_ALLOWED_DATETIME_FIELD_DESCRIPTION = """
+The date and time when the offer becomes bookable in the beneficiary application. If not set, the offer will be bookable as soon as it is published
+
+**Constraints on datetime:**
+- Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.
+- Must be a datetime in the future. Offer bookability is updated every 15 minutes. As a result, there may be a short delay between the specified datetime and the actual moment the offer becomes bookable.
 """

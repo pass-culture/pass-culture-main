@@ -2506,6 +2506,14 @@
                     "accessibility": {
                         "$ref": "#/components/schemas/Accessibility"
                     },
+                    "bookingAllowedDatetime": {
+                        "description": "\nThe date and time when the offer becomes bookable in the beneficiary application. If not set, the offer will be bookable as soon as it is published\n\n**Constraints on datetime:**\n- Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.\n- Must be a datetime in the future. Offer bookability is updated every 15 minutes. As a result, there may be a short delay between the specified datetime and the actual moment the offer becomes bookable.\n",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Bookingalloweddatetime",
+                        "type": "string"
+                    },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
                         "example": "support@yourcompany.com",
@@ -2741,12 +2749,31 @@
                         "type": "array"
                     },
                     "publicationDate": {
-                        "description": "\nThe date and time when the offer will be published in the beneficiary application.\n\n- Must not be in the past\n- Time must be rounded to the nearest quarter-hour\n- Format: **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (timezone-aware datetime)\n",
+                        "description": "\nThe date and time when the offer becomes visible in the beneficiary application.\n\n**Constraints on datetime:**\n- Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.\n- Must be a datetime in the future. Offers are published every 15 minutes. Therefore, a small delay may occur between the indicated datetime and the actual publication time.\n\n**Other options:**\n- If set to `\"now\"` (default value), the offer is published immediately (no delay).\n- If set to `null`, the offer will not be published.\n",
                         "example": "2025-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Publicationdate",
                         "type": "string"
+                    },
+                    "publicationDatetime": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "enum": [
+                                    "now"
+                                ],
+                                "type": "string"
+                            }
+                        ],
+                        "default": "now",
+                        "description": "\nThe date and time when the offer becomes visible in the beneficiary application.\n\n**Constraints on datetime:**\n- Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.\n- Must be a datetime in the future. Offers are published every 15 minutes. Therefore, a small delay may occur between the indicated datetime and the actual publication time.\n\n**Other options:**\n- If set to `\"now\"` (default value), the offer is published immediately (no delay).\n- If set to `null`, the offer will not be published.\n",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "nullable": true,
+                        "title": "Publicationdatetime"
                     }
                 },
                 "required": [
@@ -2771,6 +2798,14 @@
                         "description": "Accessibility to disabled people. Leave fields undefined to keep current value",
                         "nullable": true,
                         "title": "Accessibility"
+                    },
+                    "bookingAllowedDatetime": {
+                        "description": "\nThe date and time when the offer becomes bookable in the beneficiary application. If not set, the offer will be bookable as soon as it is published\n\n**Constraints on datetime:**\n- Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.\n- Must be a datetime in the future. Offer bookability is updated every 15 minutes. As a result, there may be a short delay between the specified datetime and the actual moment the offer becomes bookable.\n",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Bookingalloweddatetime",
+                        "type": "string"
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
@@ -2958,6 +2993,24 @@
                         "nullable": true,
                         "title": "Name",
                         "type": "string"
+                    },
+                    "publicationDatetime": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "enum": [
+                                    "now"
+                                ],
+                                "type": "string"
+                            }
+                        ],
+                        "description": "\nThe date and time when the offer becomes visible in the beneficiary application.\n\n**Constraints on datetime:**\n- Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.\n- Must be a datetime in the future. Offers are published every 15 minutes. Therefore, a small delay may occur between the indicated datetime and the actual publication time.\n\n**Other options:**\n- If set to `\"now\"` (default value), the offer is published immediately (no delay).\n- If set to `null`, the offer will not be published.\n",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "nullable": true,
+                        "title": "Publicationdatetime"
                     }
                 },
                 "title": "EventOfferEdition",
@@ -2967,6 +3020,14 @@
                 "properties": {
                     "accessibility": {
                         "$ref": "#/components/schemas/AccessibilityResponse"
+                    },
+                    "bookingAllowedDatetime": {
+                        "description": "\nThe date and time when the offer becomes bookable in the beneficiary application. If not set, the offer will be bookable as soon as it is published\n\n**Constraints on datetime:**\n- Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.\n- Must be a datetime in the future. Offer bookability is updated every 15 minutes. As a result, there may be a short delay between the specified datetime and the actual moment the offer becomes bookable.\n",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Bookingalloweddatetime",
+                        "type": "string"
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
@@ -3205,11 +3266,19 @@
                         "type": "array"
                     },
                     "publicationDate": {
-                        "description": "\nThe date and time when the offer will be published in the beneficiary application.\n\n- Must not be in the past\n- Time must be rounded to the nearest quarter-hour\n- Format: **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (timezone-aware datetime)\n",
+                        "description": "\nThe date and time when the offer becomes visible in the beneficiary application.\n\n**Constraints on datetime:**\n- Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.\n- Must be a datetime in the future. Offers are published every 15 minutes. Therefore, a small delay may occur between the indicated datetime and the actual publication time.\n\n**Other options:**\n- If set to `\"now\"` (default value), the offer is published immediately (no delay).\n- If set to `null`, the offer will not be published.\n",
                         "example": "2025-07-24T14:00:00+02:00",
                         "format": "date-time",
                         "nullable": true,
                         "title": "Publicationdate",
+                        "type": "string"
+                    },
+                    "publicationDatetime": {
+                        "description": "\nThe date and time when the offer becomes visible in the beneficiary application.\n\n**Constraints on datetime:**\n- Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.\n- Must be a datetime in the future. Offers are published every 15 minutes. Therefore, a small delay may occur between the indicated datetime and the actual publication time.\n\n**Other options:**\n- If set to `\"now\"` (default value), the offer is published immediately (no delay).\n- If set to `null`, the offer will not be published.\n",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Publicationdatetime",
                         "type": "string"
                     },
                     "status": {
@@ -6643,6 +6712,14 @@
                     "accessibility": {
                         "$ref": "#/components/schemas/Accessibility"
                     },
+                    "bookingAllowedDatetime": {
+                        "description": "\nThe date and time when the offer becomes bookable in the beneficiary application. If not set, the offer will be bookable as soon as it is published\n\n**Constraints on datetime:**\n- Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.\n- Must be a datetime in the future. Offer bookability is updated every 15 minutes. As a result, there may be a short delay between the specified datetime and the actual moment the offer becomes bookable.\n",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Bookingalloweddatetime",
+                        "type": "string"
+                    },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
                         "example": "support@yourcompany.com",
@@ -6826,6 +6903,25 @@
                         "title": "Name",
                         "type": "string"
                     },
+                    "publicationDatetime": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "enum": [
+                                    "now"
+                                ],
+                                "type": "string"
+                            }
+                        ],
+                        "default": "now",
+                        "description": "\nThe date and time when the offer becomes visible in the beneficiary application.\n\n**Constraints on datetime:**\n- Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.\n- Must be a datetime in the future. Offers are published every 15 minutes. Therefore, a small delay may occur between the indicated datetime and the actual publication time.\n\n**Other options:**\n- If set to `\"now\"` (default value), the offer is published immediately (no delay).\n- If set to `null`, the offer will not be published.\n",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "nullable": true,
+                        "title": "Publicationdatetime"
+                    },
                     "stock": {
                         "anyOf": [
                             {
@@ -6857,6 +6953,14 @@
                         "description": "Accessibility to disabled people. Leave fields undefined to keep current value",
                         "nullable": true,
                         "title": "Accessibility"
+                    },
+                    "bookingAllowedDatetime": {
+                        "description": "\nThe date and time when the offer becomes bookable in the beneficiary application. If not set, the offer will be bookable as soon as it is published\n\n**Constraints on datetime:**\n- Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.\n- Must be a datetime in the future. Offer bookability is updated every 15 minutes. As a result, there may be a short delay between the specified datetime and the actual moment the offer becomes bookable.\n",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Bookingalloweddatetime",
+                        "type": "string"
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
@@ -7045,6 +7149,24 @@
                         "title": "Offerid",
                         "type": "integer"
                     },
+                    "publicationDatetime": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "enum": [
+                                    "now"
+                                ],
+                                "type": "string"
+                            }
+                        ],
+                        "description": "\nThe date and time when the offer becomes visible in the beneficiary application.\n\n**Constraints on datetime:**\n- Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.\n- Must be a datetime in the future. Offers are published every 15 minutes. Therefore, a small delay may occur between the indicated datetime and the actual publication time.\n\n**Other options:**\n- If set to `\"now\"` (default value), the offer is published immediately (no delay).\n- If set to `null`, the offer will not be published.\n",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "nullable": true,
+                        "title": "Publicationdatetime"
+                    },
                     "stock": {
                         "allOf": [
                             {
@@ -7066,6 +7188,14 @@
                 "properties": {
                     "accessibility": {
                         "$ref": "#/components/schemas/AccessibilityResponse"
+                    },
+                    "bookingAllowedDatetime": {
+                        "description": "\nThe date and time when the offer becomes bookable in the beneficiary application. If not set, the offer will be bookable as soon as it is published\n\n**Constraints on datetime:**\n- Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.\n- Must be a datetime in the future. Offer bookability is updated every 15 minutes. As a result, there may be a short delay between the specified datetime and the actual moment the offer becomes bookable.\n",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Bookingalloweddatetime",
+                        "type": "string"
                     },
                     "bookingContact": {
                         "description": "Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
@@ -7348,6 +7478,14 @@
                         "description": "Offer title",
                         "example": "Le Petit Prince",
                         "title": "Name",
+                        "type": "string"
+                    },
+                    "publicationDatetime": {
+                        "description": "\nThe date and time when the offer becomes visible in the beneficiary application.\n\n**Constraints on datetime:**\n- Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.\n- Must be a datetime in the future. Offers are published every 15 minutes. Therefore, a small delay may occur between the indicated datetime and the actual publication time.\n\n**Other options:**\n- If set to `\"now\"` (default value), the offer is published immediately (no delay).\n- If set to `null`, the offer will not be published.\n",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Publicationdatetime",
                         "type": "string"
                     },
                     "status": {
