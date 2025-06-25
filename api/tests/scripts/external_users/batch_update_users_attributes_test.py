@@ -131,6 +131,7 @@ def test_format_sendinblue_user():
     assert len(res) == 1
     assert res[0].email == user.email
     assert res[0].attributes == {
+        "ACHIEVEMENTS": "",
         "BOOKED_OFFER_CATEGORIES": "FILM",
         "BOOKED_OFFER_CATEGORIES_COUNT": 1,
         "BOOKED_OFFER_SUBCATEGORIES": "SUPPORT_PHYSIQUE_FILM",
