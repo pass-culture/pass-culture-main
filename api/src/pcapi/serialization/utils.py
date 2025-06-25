@@ -154,5 +154,7 @@ def check_date_in_future_and_remove_timezone(value: datetime.datetime | NOW_LITE
     return no_tz_value
 
 
-def validate_datetime(field_name: str) -> classmethod:
-    return pydantic_v1.validator(field_name, pre=False, allow_reuse=True)(check_date_in_future_and_remove_timezone)
+def validate_datetime(field_name: str, always: bool = False) -> classmethod:
+    return pydantic_v1.validator(field_name, pre=False, allow_reuse=True, always=always)(
+        check_date_in_future_and_remove_timezone
+    )

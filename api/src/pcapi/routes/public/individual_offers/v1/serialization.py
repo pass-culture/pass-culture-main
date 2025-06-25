@@ -238,7 +238,10 @@ class OfferCreationBase(serialization.ConfiguredBaseModel):
     )
     booking_allowed_datetime: datetime.datetime | None = fields.OFFER_BOOKING_ALLOWED_DATETIME
 
-    _validate_publicationDatetime = serialization_utils.validate_datetime("publication_datetime")
+    _validate_publicationDatetime = serialization_utils.validate_datetime(
+        "publication_datetime",
+        always=True,  # to convert default literal `"now"` into an actual datetime
+    )
     _validate_bookingAllowedDatetime = serialization_utils.validate_datetime("booking_allowed_datetime")
 
 
@@ -490,6 +493,23 @@ class ProductOfferCreation(OfferCreationBase):
     category_related_fields: product_category_creation_fields
     stock: StockCreation | None
     location: PhysicalLocation | DigitalLocation | AddressLocation = fields.OFFER_LOCATION
+
+    @pydantic_v1.root_validator(skip_on_failure=True)
+    def validate_stock_datetime_is_coherent(cls, values: dict) -> dict:
+        stock: StockCreation | None = values.get("stock")
+        publication_datetime: datetime.datetime | None = values.get("publication_datetime")
+        booking_allowed_datetime: datetime.datetime | None = values.get("booking_allowed_datetime")
+
+        if not stock or not stock.booking_limit_datetime:
+            return values
+
+        if publication_datetime and stock.booking_limit_datetime < publication_datetime:
+            raise ValueError("`stock.bookingLimitDatetime` must be after `publicationDatetime`")
+
+        if booking_allowed_datetime and stock.booking_limit_datetime < booking_allowed_datetime:
+            raise ValueError("`stock.bookingLimitDatetime` must be after `bookingAllowedDatetime`")
+
+        return values
 
     class Config:
         extra = "forbid"
