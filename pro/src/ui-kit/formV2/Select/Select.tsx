@@ -23,6 +23,7 @@ type SelectProps = {
   asterisk?: boolean
   error?: string
   value?: string
+  ariaLabel?: string
 }
 
 export const Select = forwardRef(
@@ -40,6 +41,7 @@ export const Select = forwardRef(
       error,
       asterisk = true,
       value,
+      ariaLabel,
     }: SelectProps,
     ref: ForwardedRef<HTMLSelectElement>
   ): JSX.Element => {
@@ -66,6 +68,7 @@ export const Select = forwardRef(
             aria-describedby={errorId}
             ref={ref}
             id={labelId}
+            aria-label={ariaLabel}
           />
         </div>
         <div role="alert" id={errorId}>

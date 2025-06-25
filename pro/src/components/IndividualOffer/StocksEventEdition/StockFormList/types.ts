@@ -6,7 +6,7 @@ export interface StockEventFormHiddenValues {
 
 export interface StockEventFormValues extends StockEventFormHiddenValues {
   bookingsQuantity: number
-  remainingQuantity: number | null
+  remainingQuantity?: number | null
   bookingLimitDatetime: string
   priceCategoryId: string | ''
   beginningDate: string

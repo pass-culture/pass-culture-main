@@ -112,7 +112,7 @@ describe('Edit digital individual offers', () => {
             '=> Type new date of event: ' + format(newDate, 'yyyy-MM-dd'),
         })
         cy.wrap($elt).type('{selectall}{del}' + format(newDate, 'yyyy-MM-dd'))
-        cy.findByLabelText('Quantité restante *').click()
+        cy.findByLabelText('Quantité restante').click()
       })
       cy.findByTestId('stocks.0.bookingLimitDatetime').then(($elt) => {
         cy.log('date: ' + $elt.val())
@@ -123,7 +123,7 @@ describe('Edit digital individual offers', () => {
             format(newDate, 'yyyy-MM-dd'),
         })
         cy.wrap($elt).type('{selectall}{del}' + format(newDate, 'yyyy-MM-dd'))
-        cy.findByLabelText('Quantité restante *').click()
+        cy.findByLabelText('Quantité restante').click()
       })
 
       cy.stepLog({ message: 'Save modifications' })
