@@ -580,7 +580,8 @@ def get_collective_offers_by_filters(
             status.value for status in statuses if status != educational_models.CollectiveOfferDisplayedStatus.HIDDEN
         ]
 
-        displayed_status, last_booking_id = educational_models.CollectiveOffer.get_displayed_status_expression()
+        displayed_status = educational_models.CollectiveOffer.get_displayed_status_expression()
+        last_booking_id = educational_models.CollectiveOffer.get_last_booking_id_subquery()
         query = (
             query.outerjoin(educational_models.CollectiveOffer.collectiveStock)
             .outerjoin(educational_models.CollectiveBooking, educational_models.CollectiveBooking.id == last_booking_id)

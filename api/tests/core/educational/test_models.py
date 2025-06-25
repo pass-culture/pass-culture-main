@@ -642,7 +642,8 @@ class CollectiveOfferDisplayedStatusTest:
     def test_get_offer_displayed_status_hybrid(self, status):
         offer = factories.create_collective_offer_by_status(status)
 
-        displayed_status, last_booking_id = CollectiveOffer.get_displayed_status_expression()
+        displayed_status = CollectiveOffer.get_displayed_status_expression()
+        last_booking_id = CollectiveOffer.get_last_booking_id_subquery()
         [hybrid_status] = (
             db.session.query(displayed_status)
             .outerjoin(CollectiveOffer.collectiveStock)
@@ -660,11 +661,12 @@ class CollectiveOfferDisplayedStatusTest:
         other_status = next((s for s in CollectiveOfferDisplayedStatus if s != status))
         factories.create_collective_offer_by_status(other_status, venue=offer.venue)
 
-        displayed_status, last_booking_subquery = CollectiveOffer.get_displayed_status_expression()
+        displayed_status = CollectiveOffer.get_displayed_status_expression()
+        last_booking_id = CollectiveOffer.get_last_booking_id_subquery()
         result = (
             db.session.query(CollectiveOffer)
             .outerjoin(CollectiveOffer.collectiveStock)
-            .outerjoin(CollectiveBooking, CollectiveBooking.id == last_booking_subquery)
+            .outerjoin(CollectiveBooking, CollectiveBooking.id == last_booking_id)
             .filter(displayed_status == status.value)
             .one()
         )
