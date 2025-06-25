@@ -1,13 +1,13 @@
-import { format, isBefore, isValid, isEqual } from 'date-fns'
+import { format, isBefore, isEqual, isValid } from 'date-fns'
 import * as yup from 'yup'
 import { ObjectSchema } from 'yup'
 
 import { oneOfSelectOption } from 'commons/core/shared/utils/validation'
 import { SelectOption } from 'commons/custom_types/form'
-import { getToday, removeTime, FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
+import { FORMAT_ISO_DATE_ONLY, getToday, removeTime } from 'commons/utils/date'
 import {
-  StocksEventFormValues,
   StockEventFormValues,
+  StocksEventFormValues,
 } from 'components/IndividualOffer/StocksEventEdition/StockFormList/types'
 import { MAX_STOCKS_QUANTITY } from 'components/IndividualOffer/StocksThing/validationSchema'
 
@@ -82,7 +82,6 @@ const getSingleValidationSchema = (
     remainingQuantity: yup
       .number()
       .required()
-      .nullable()
       .typeError('Doit être un nombre')
       .min(0, 'Doit être positif')
       .max(

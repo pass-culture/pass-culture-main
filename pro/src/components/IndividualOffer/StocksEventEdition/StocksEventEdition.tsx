@@ -1,8 +1,8 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import cn from 'classnames'
 import { format } from 'date-fns'
-import { useCallback, useEffect, useMemo, useState, ChangeEvent } from 'react'
-import { useForm, useFieldArray, UseFormSetValue } from 'react-hook-form'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useFieldArray, useForm, UseFormSetValue } from 'react-hook-form'
 import { useLocation, useNavigate, useSearchParams } from 'react-router'
 import { useSWRConfig } from 'swr'
 
@@ -24,7 +24,7 @@ import { SortingMode, useColumnSorting } from 'commons/hooks/useColumnSorting'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { usePaginationWithSearchParams } from 'commons/hooks/usePagination'
-import { getToday, FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
+import { FORMAT_ISO_DATE_ONLY, getToday } from 'commons/utils/date'
 import { hasErrorCode } from 'commons/utils/error'
 import { isEqual } from 'commons/utils/isEqual'
 import {
@@ -37,23 +37,19 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { onSubmit as onRecurrenceSubmit } from 'components/IndividualOffer/StocksEventCreation/form/onSubmit'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
-import { FilterResultsRow } from 'components/StocksEventList/FilterResultsRow'
 import { NoResultsRow } from 'components/StocksEventList/NoResultsRow'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
 import { STOCKS_PER_PAGE } from 'components/StocksEventList/StocksEventList'
 import fullMoreIcon from 'icons/full-more.svg'
+import fullRefreshIcon from 'icons/full-refresh.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
-import { SelectInput, SelectInputVariant } from 'ui-kit/form/Select/SelectInput'
-import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
 import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
 import { QuantityInput } from 'ui-kit/formV2/QuantityInput/QuantityInput'
 import { Select } from 'ui-kit/formV2/Select/Select'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 import { TimePicker } from 'ui-kit/formV2/TimePicker/TimePicker'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
@@ -501,17 +497,65 @@ export const StocksEventEdition = ({
               </DialogBuilder>
             </div>
 
+            <div className={cn(styles['filter-input'])}>
+              <div>
+                <DatePicker
+                  label="Filtrer par date"
+                  name="dateFilter"
+                  onChange={(event) => {
+                    setDateFilter(event.target.value)
+                    onFilterChange()
+                  }}
+                  value={dateFilter ?? ''}
+                />
+              </div>
+              <div>
+                <TimePicker
+                  label="Filtrer par horaire"
+                  name="timeFilter"
+                  onChange={(event) => {
+                    setTimeFilter(event.target.value)
+                    onFilterChange()
+                  }}
+                  value={timeFilter}
+                />
+              </div>
+              <div>
+                <Select
+                  label="Filtrer par tarif"
+                  name="priceCategoryIdFilter"
+                  defaultOption={{ label: '', value: '' }}
+                  options={priceCategoriesOptions}
+                  value={priceCategoryIdFilter ?? ''}
+                  onChange={(event) => {
+                    setPriceCategoryIdFilter(event.target.value)
+                    onFilterChange()
+                  }}
+                />
+              </div>
+            </div>
+
+            <Button
+              icon={fullRefreshIcon}
+              variant={ButtonVariant.TERNARY}
+              onClick={() => {
+                setDateFilter('')
+                setTimeFilter('')
+                setPriceCategoryIdFilter('')
+                onFilterChange()
+              }}
+              disabled={!areFiltersActive}
+            >
+              Réinitialiser les filtres
+            </Button>
+
             <div className={styles['stock-table-container']}>
               <table className={styles['stock-table']}>
                 <caption className={styles['visually-hidden']}>
                   Tableau d’édition des stocks
                 </caption>
 
-                <thead
-                  className={cn({
-                    [styles['filters-active']]: areFiltersActive,
-                  })}
-                >
+                <thead>
                   <tr>
                     <th
                       className={cn(styles['table-head'], styles['head-date'])}
@@ -527,18 +571,6 @@ export const StocksEventEdition = ({
                             : SortingMode.NONE
                         }
                       />
-
-                      <div className={cn(styles['filter-input'])}>
-                        <BaseDatePicker
-                          onChange={(event) => {
-                            setDateFilter(event.target.value)
-                            onFilterChange()
-                          }}
-                          value={dateFilter ?? ''}
-                          filterVariant
-                          aria-label="Filtrer par date"
-                        />
-                      </div>
                     </th>
 
                     <th
@@ -555,17 +587,6 @@ export const StocksEventEdition = ({
                             : SortingMode.NONE
                         }
                       />
-                      <div className={cn(styles['filter-input'])}>
-                        <BaseTimePicker
-                          onChange={(event) => {
-                            setTimeFilter(event.target.value)
-                            onFilterChange()
-                          }}
-                          value={timeFilter}
-                          filterVariant
-                          aria-label="Filtrer par horaire"
-                        />
-                      </div>
                     </th>
 
                     <th
@@ -585,20 +606,6 @@ export const StocksEventEdition = ({
                             : SortingMode.NONE
                         }
                       />
-                      <div className={cn(styles['filter-input'])}>
-                        <SelectInput
-                          name="priceCategoryIdFilter"
-                          defaultOption={{ label: '', value: '' }}
-                          options={priceCategoriesOptions}
-                          value={priceCategoryIdFilter ?? ''}
-                          onChange={(event) => {
-                            setPriceCategoryIdFilter(event.target.value)
-                            onFilterChange()
-                          }}
-                          variant={SelectInputVariant.FILTER}
-                          aria-label="Filtrer par tarif"
-                        />
-                      </div>
                     </th>
 
                     <th
@@ -627,7 +634,6 @@ export const StocksEventEdition = ({
                             : SortingMode.NONE
                         }
                       />
-                      <div className={cn(styles['filter-input'])}>&nbsp;</div>
                     </th>
 
                     <th
@@ -652,7 +658,6 @@ export const StocksEventEdition = ({
                             : SortingMode.NONE
                         }
                       />
-                      <div className={cn(styles['filter-input'])}>&nbsp;</div>
                     </th>
 
                     <th
@@ -677,7 +682,6 @@ export const StocksEventEdition = ({
                             : SortingMode.NONE
                         }
                       />
-                      <div className={cn(styles['filter-input'])}>&nbsp;</div>
                     </th>
 
                     <th className={styles['head-actions']} />
@@ -685,17 +689,6 @@ export const StocksEventEdition = ({
                 </thead>
 
                 <tbody className={styles['table-body']}>
-                  {areFiltersActive && (
-                    <FilterResultsRow
-                      colSpan={7}
-                      onFiltersReset={() => {
-                        setDateFilter('')
-                        setTimeFilter('')
-                        setPriceCategoryIdFilter('')
-                        onFilterChange()
-                      }}
-                    />
-                  )}
                   {fields.map((f, index) => {
                     const stock = f as unknown as StockEventFormValues
                     const { readOnlyFields } = stock
@@ -706,12 +699,11 @@ export const StocksEventEdition = ({
                       <tr className={styles['table-row']} key={index}>
                         <td className={styles['data']}>
                           <DatePicker
+                            label=""
                             {...register(`stocks.${index}.beginningDate`)}
                             error={
                               errors.stocks?.[index]?.beginningDate?.message
                             }
-                            required
-                            label="Date"
                             minDate={today}
                             disabled={readOnlyFields.includes('beginningDate')}
                           />
@@ -723,26 +715,23 @@ export const StocksEventEdition = ({
                             error={
                               errors.stocks?.[index]?.beginningTime?.message
                             }
-                            label="Horaire"
-                            isLabelHidden
-                            required
                             disabled={readOnlyFields.includes('beginningTime')}
                           />
                         </td>
 
                         <td className={styles['data']}>
                           <Select
+                            label=""
                             {...register(`stocks.${index}.priceCategoryId`)}
                             error={
                               errors.stocks?.[index]?.priceCategoryId?.message
                             }
+                            ariaLabel="Tarif"
                             options={priceCategoriesOptions}
-                            label="Tarif"
                             defaultOption={{
                               label: 'Sélectionner un tarif',
                               value: '',
                             }}
-                            required
                             disabled={
                               priceCategoriesOptions.length === 1 ||
                               readOnlyFields.includes('priceCategoryId')
@@ -752,6 +741,7 @@ export const StocksEventEdition = ({
 
                         <td className={styles['data']}>
                           <DatePicker
+                            label=""
                             {...register(
                               `stocks.${index}.bookingLimitDatetime`
                             )}
@@ -759,9 +749,7 @@ export const StocksEventEdition = ({
                               errors.stocks?.[index]?.bookingLimitDatetime
                                 ?.message
                             }
-                            label="Date limite de réservation"
                             minDate={today}
-                            required
                             maxDate={
                               beginningDate
                                 ? computeMaxBookingLimitDatetime(
@@ -777,49 +765,42 @@ export const StocksEventEdition = ({
 
                         <td className={styles['data']}>
                           <QuantityInput
-                            value={stock.remainingQuantity ?? undefined}
+                            className={styles['quantity-input']}
+                            minimum={0}
                             error={
                               errors.stocks?.[index]?.remainingQuantity?.message
                             }
-                            label={
-                              mode === OFFER_WIZARD_MODE.EDITION
-                                ? 'Quantité restante'
-                                : 'Quantité'
-                            }
-                            required
                             disabled={readOnlyFields.includes(
                               'remainingQuantity'
                             )}
-                            onBlur={(event: ChangeEvent<HTMLInputElement>) =>
+                            label=""
+                            value={
+                              watch('stocks')[index].remainingQuantity ??
+                              undefined
+                            }
+                            onChange={(event) =>
                               setValue(
                                 `stocks.${index}.remainingQuantity`,
                                 Number(event.target.value),
                                 { shouldDirty: true }
                               )
                             }
-                            className={styles['quantity-input']}
+                            ariaLabel="Quantité restante"
                           />
                         </td>
 
-                        <td className={styles['data']}>
-                          <TextInput
-                            {...register(`stocks.${index}.bookingsQuantity`)}
-                            error={
-                              errors.stocks?.[index]?.bookingsQuantity?.message
-                            }
-                            value={watch('stocks')[index].bookingsQuantity}
-                            readOnly
-                            label="Réservations"
-                            required
-                            isLabelHidden
-                          />
+                        <td
+                          align="center"
+                          className={cn(
+                            styles['data'],
+                            styles['style-bookings-quantity']
+                          )}
+                        >
+                          {watch('stocks')[index]?.bookingsQuantity}
                         </td>
 
                         {stock.isDeletable && !isDisabled && (
-                          <td
-                            className={cn(styles['stock-actions'])}
-                            data-label="Supprimer"
-                          >
+                          <td data-label="Supprimer" className={styles['data']}>
                             <Button
                               variant={ButtonVariant.TERNARY}
                               onClick={async () => {

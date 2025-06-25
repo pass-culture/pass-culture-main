@@ -201,7 +201,7 @@ describe('StocksEventList', () => {
     await renderStocksEventList([stock1, stock2, stock3])
 
     await waitFor(() => {
-      expect(screen.getAllByRole('row')).toHaveLength(4) // 1 header + 3 stock rows
+      expect(screen.getAllByRole('row')).toHaveLength(4)
     })
 
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
@@ -225,7 +225,7 @@ describe('StocksEventList', () => {
       )
     })
     expect(screen.getByText('Réinitialiser les filtres')).toBeInTheDocument()
-    expect(screen.getAllByRole('row')).toHaveLength(4) // 1 header + 1 filter result row + 2 stock rows
+    expect(screen.getAllByRole('row')).toHaveLength(3)
 
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
       stocks: [stock2],
@@ -244,7 +244,7 @@ describe('StocksEventList', () => {
         1
       )
     })
-    expect(screen.getAllByRole('row')).toHaveLength(3) // 1 header + 1 filter result row + 1 stock rows
+    expect(screen.getAllByRole('row')).toHaveLength(2) // 1 header + 1 filter result row + 1 stock rows
 
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
       stocks: [stock2],
@@ -266,7 +266,7 @@ describe('StocksEventList', () => {
         1
       )
     })
-    expect(screen.getAllByRole('row')).toHaveLength(3) // 1 header + 1 filter result row + 1 stock rows
+    expect(screen.getAllByRole('row')).toHaveLength(2)
   })
 
   it('should clear filters', async () => {
@@ -291,9 +291,7 @@ describe('StocksEventList', () => {
       hasStocks: true,
     })
     await userEvent.click(screen.getByText('Réinitialiser les filtres'))
-    expect(
-      screen.queryByText('Réinitialiser les filtres')
-    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Réinitialiser les filtres')).toBeDisabled()
     await waitFor(() => {
       expect(api.getStocks).toHaveBeenCalledWith(
         offerId,
