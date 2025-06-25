@@ -174,6 +174,7 @@ class PostDraftOfferBodyModel(BaseModel):
     extra_data: typing.Any = None
     duration_minutes: int | None = None
     product_id: int | None
+    video_url: str | None
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:

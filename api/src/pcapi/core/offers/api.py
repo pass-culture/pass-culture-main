@@ -220,7 +220,9 @@ def create_draft_offer(
 
     validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
 
-    fields = {key: value for key, value in body.dict(by_alias=True).items() if key not in ("venueId", "callId")}
+    fields = {
+        key: value for key, value in body.dict(by_alias=True).items() if key not in ("venueId", "callId", "videoUrl")
+    }
     fields.update({"ean": body_ean})
     fields.update(_get_accessibility_compliance_fields(venue))
     fields.update({"withdrawalDetails": venue.withdrawalDetails})
@@ -235,7 +237,8 @@ def create_draft_offer(
         validation=models.OfferValidationStatus.DRAFT,
         product=product,
     )
-    db.session.add(offer)
+    offer_metadata = models.OfferMetaData(offer=offer, videoUrl=body.video_url)
+    db.session.add(offer, offer_metadata)
     db.session.flush()
 
     update_external_pro(venue.bookingEmail)
