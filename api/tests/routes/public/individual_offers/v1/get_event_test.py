@@ -1,7 +1,9 @@
 from datetime import datetime
 from datetime import timedelta
+from datetime import timezone
 
 import pytest
+import time_machine
 
 from pcapi.core import testing
 from pcapi.core.categories import subcategories
@@ -70,6 +72,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
             assert response.status_code == 404
 
+    @time_machine.travel(datetime(2025, 6, 25, 12, 30, tzinfo=timezone.utc), tick=False)
     def test_get_event(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event_offer = self.setup_base_resource(venue=venue_provider.venue)
@@ -77,8 +80,8 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
 
         with testing.assert_num_queries(self.num_queries_full):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == {
             "accessibility": {
                 "audioDisabilityCompliant": False,
@@ -86,6 +89,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
                 "motorDisabilityCompliant": False,
                 "visualDisabilityCompliant": False,
             },
+            "bookingAllowedDatetime": None,
             "bookingContact": None,
             "bookingEmail": None,
             "categoryRelatedFields": {"author": None, "category": "SEANCE_CINE", "stageDirector": None, "visa": None},
@@ -104,6 +108,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
             "status": "SOLD_OUT",
             "hasTicket": False,
             "priceCategories": [],
+            "publicationDatetime": "2025-06-25T12:25:00Z",
             "idAtProvider": "Oh le bel id <3",
             "publicationDate": date_utils.format_into_utc_date(event_offer.publicationDatetime),
         }

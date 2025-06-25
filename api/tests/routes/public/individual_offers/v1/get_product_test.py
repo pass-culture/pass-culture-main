@@ -2,6 +2,7 @@ import datetime
 import decimal
 
 import pytest
+import time_machine
 
 from pcapi.core import testing
 from pcapi.core.bookings import factories as bookings_factories
@@ -60,6 +61,7 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
             )
             assert response.status_code == 404
 
+    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
     def test_product_without_stock(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
@@ -78,6 +80,8 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
             assert response.status_code == 200
 
         assert response.json == {
+            "bookingAllowedDatetime": None,
+            "publicationDatetime": "2025-06-25T12:25:00Z",
             "bookingContact": None,
             "bookingEmail": None,
             "categoryRelatedFields": {"category": "CARTE_CINE_ILLIMITE"},

@@ -153,7 +153,21 @@ class _FIELDS:
         description="Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
         example="support@yourcompany.com",
     )
-    OFFER_PUBLICATION_DATE = Field(
+    OFFER_PUBLICATION_DATETIME_WITH_DEFAULT = Field(
+        description=descriptions.PUBLICATION_DATETIME_FIELD_DESCRIPTION,
+        example=_example_datetime_with_tz,
+        default="now",
+    )
+    OFFER_PUBLICATION_DATETIME = Field(
+        description=descriptions.PUBLICATION_DATETIME_FIELD_DESCRIPTION,
+        example=_example_datetime_with_tz,
+    )
+    OFFER_BOOKING_ALLOWED_DATETIME = Field(
+        description=descriptions.BOOKING_ALLOWED_DATETIME_FIELD_DESCRIPTION,
+        example=_example_datetime_with_tz,
+        default=None,
+    )
+    DEPRECATED_OFFER_PUBLICATION_DATE = Field(
         description=descriptions.PUBLICATION_DATETIME_FIELD_DESCRIPTION,
         example=_example_datetime_with_tz,
     )

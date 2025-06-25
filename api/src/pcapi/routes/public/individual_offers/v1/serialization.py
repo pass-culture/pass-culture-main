@@ -233,6 +233,13 @@ class OfferCreationBase(serialization.ConfiguredBaseModel):
     name: str = fields.OFFER_NAME_WITH_MAX_LENGTH
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
+    publication_datetime: datetime.datetime | serialization_utils.NOW_LITERAL | None = (
+        fields.OFFER_PUBLICATION_DATETIME_WITH_DEFAULT
+    )
+    booking_allowed_datetime: datetime.datetime | None = fields.OFFER_BOOKING_ALLOWED_DATETIME
+
+    _validate_publicationDatetime = serialization_utils.validate_datetime("publication_datetime")
+    _validate_bookingAllowedDatetime = serialization_utils.validate_datetime("booking_allowed_datetime")
 
 
 class Method(enum.Enum):
@@ -564,7 +571,7 @@ class EventOfferCreation(OfferCreationBase):
     location: PhysicalLocation | DigitalLocation | AddressLocation = fields.OFFER_LOCATION
     has_ticket: bool = fields.EVENT_HAS_TICKET
     price_categories: list[PriceCategoryCreation] | None = fields.PRICE_CATEGORIES_WITH_MAX_ITEMS
-    publication_date: datetime.datetime | None = fields.OFFER_PUBLICATION_DATE
+    publication_date: datetime.datetime | None = fields.DEPRECATED_OFFER_PUBLICATION_DATE
     enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_ENABLED
 
     @pydantic_v1.validator("price_categories")
@@ -615,6 +622,11 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
     name: OfferName | None = fields.OFFER_NAME
     location: PhysicalLocation | DigitalLocation | AddressLocation | None = fields.OFFER_LOCATION
+    publication_datetime: datetime.datetime | serialization_utils.NOW_LITERAL | None = fields.OFFER_PUBLICATION_DATETIME
+    booking_allowed_datetime: datetime.datetime | None = fields.OFFER_BOOKING_ALLOWED_DATETIME
+
+    _validate_publicationDatetime = serialization_utils.validate_datetime("publication_datetime")
+    _validate_bookingAllowedDatetime = serialization_utils.validate_datetime("booking_allowed_datetime")
 
     class Config:
         extra = "forbid"
@@ -764,6 +776,8 @@ class OfferResponse(serialization.ConfiguredBaseModel):
     )
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
     id_at_provider: str | None = fields.ID_AT_PROVIDER
+    publication_datetime: datetime.datetime | None = fields.OFFER_PUBLICATION_DATETIME
+    booking_allowed_datetime: datetime.datetime | None = fields.OFFER_BOOKING_ALLOWED_DATETIME
 
     @classmethod
     def get_location(cls, offer: offers_models.Offer) -> PhysicalLocation | DigitalLocation | AddressLocation:
@@ -790,6 +804,8 @@ class OfferResponse(serialization.ConfiguredBaseModel):
             status=offer.status,
             withdrawal_details=offer.withdrawalDetails,
             id_at_provider=offer.idAtProvider,
+            publication_datetime=offer.publicationDatetime,
+            booking_allowed_datetime=offer.bookingAllowedDatetime,
         )
 
 
@@ -827,7 +843,7 @@ class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
     category_related_fields: event_category_reading_fields
     event_duration: int | None = fields.EVENT_DURATION
     has_ticket: bool = fields.EVENT_HAS_TICKET
-    publication_date: datetime.datetime | None = fields.OFFER_PUBLICATION_DATE
+    publication_date: datetime.datetime | None = fields.DEPRECATED_OFFER_PUBLICATION_DATE
 
     @classmethod
     def build_event_offer(cls, offer: offers_models.Offer) -> "EventOfferResponse":
