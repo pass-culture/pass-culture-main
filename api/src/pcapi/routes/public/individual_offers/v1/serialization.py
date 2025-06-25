@@ -594,6 +594,17 @@ class EventOfferCreation(OfferCreationBase):
     publication_date: datetime.datetime | None = fields.DEPRECATED_OFFER_PUBLICATION_DATE
     enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_ENABLED
 
+    @pydantic_v1.root_validator(pre=True)
+    def check_publication_date_and_publication_datetime_are_not_both_set(cls, values: dict) -> dict:
+        print(values)
+        publication_date = values.get("publicationDate")
+        publication_datetime = values.get("publicationDatetime")
+
+        if publication_date and publication_datetime:
+            raise ValueError("You cannot set both `publicationDate` and `publicationDatetime`")
+
+        return values
+
     @pydantic_v1.validator("price_categories")
     def get_unique_price_categories(
         cls,
