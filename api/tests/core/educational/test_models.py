@@ -13,6 +13,7 @@ from pcapi.core.educational import factories
 from pcapi.core.educational.models import ALLOWED_ACTIONS_BY_DISPLAYED_STATUS
 from pcapi.core.educational.models import COLLECTIVE_OFFER_TEMPLATE_STATUSES
 from pcapi.core.educational.models import TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS
+from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveDmsApplication
 from pcapi.core.educational.models import CollectiveOffer
@@ -641,9 +642,11 @@ class CollectiveOfferDisplayedStatusTest:
     def test_get_offer_displayed_status_hybrid(self, status):
         offer = factories.create_collective_offer_by_status(status)
 
+        displayed_status, last_booking_id = CollectiveOffer.get_displayed_status_expression()
         [hybrid_status] = (
-            db.session.query(CollectiveOffer.displayedStatus)
+            db.session.query(displayed_status)
             .outerjoin(CollectiveOffer.collectiveStock)
+            .outerjoin(CollectiveBooking, CollectiveBooking.id == last_booking_id)
             .filter(CollectiveOffer.id == offer.id)
             .one()
         )
@@ -657,12 +660,15 @@ class CollectiveOfferDisplayedStatusTest:
         other_status = next((s for s in CollectiveOfferDisplayedStatus if s != status))
         factories.create_collective_offer_by_status(other_status, venue=offer.venue)
 
+        displayed_status, last_booking_subquery = CollectiveOffer.get_displayed_status_expression()
         result = (
             db.session.query(CollectiveOffer)
             .outerjoin(CollectiveOffer.collectiveStock)
-            .filter(CollectiveOffer.displayedStatus == status.value)
+            .outerjoin(CollectiveBooking, CollectiveBooking.id == last_booking_subquery)
+            .filter(displayed_status == status.value)
             .one()
         )
+
         assert result.id == offer.id
 
     @pytest.mark.parametrize(

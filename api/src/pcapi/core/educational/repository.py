@@ -542,9 +542,7 @@ def get_collective_offers_by_filters(
     period_ending_date: date | None = None,
     formats: list[EacFormat] | None = None,
 ) -> BaseQuery:
-    query = db.session.query(educational_models.CollectiveOffer).outerjoin(
-        educational_models.CollectiveOffer.collectiveStock
-    )
+    query = db.session.query(educational_models.CollectiveOffer)
 
     if not user_is_admin:
         query = (
@@ -581,7 +579,13 @@ def get_collective_offers_by_filters(
         status_values = [
             status.value for status in statuses if status != educational_models.CollectiveOfferDisplayedStatus.HIDDEN
         ]
-        query = query.filter(educational_models.CollectiveOffer.displayedStatus.in_(status_values))
+
+        displayed_status, last_booking_id = educational_models.CollectiveOffer.get_displayed_status_expression()
+        query = (
+            query.outerjoin(educational_models.CollectiveOffer.collectiveStock)
+            .outerjoin(educational_models.CollectiveBooking, educational_models.CollectiveBooking.id == last_booking_id)
+            .filter(displayed_status.in_(status_values))
+        )
 
     if period_beginning_date is not None or period_ending_date is not None:
         subquery = (
