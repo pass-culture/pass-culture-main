@@ -181,17 +181,12 @@ describe('screens:StocksEventEdition', () => {
   it('render stock event row', async () => {
     await renderStockEventScreen(apiOffer, apiStocks)
 
-    expect(await screen.findByLabelText('Date *')).toBeInTheDocument()
-    expect(screen.getByLabelText('Horaire *')).toBeInTheDocument()
-    expect(screen.getByLabelText('Tarif *')).toBeInTheDocument()
+    expect(screen.getByTestId('stocks.0.beginningDate')).toBeInTheDocument()
+    expect(screen.getByLabelText('Tarif')).toBeInTheDocument()
     expect(
-      screen.getByLabelText('Date limite de réservation *')
+      screen.getByTestId('stocks.0.bookingLimitDatetime')
     ).toBeInTheDocument()
-    expect(
-      screen.getByRole('spinbutton', { name: 'Quantité restante *' })
-    ).toBeInTheDocument()
-
-    expect(screen.getAllByText('Réservations *')[0]).toBeInTheDocument()
+    expect(screen.getByLabelText('Quantité restante')).toBeInTheDocument()
 
     expect(
       screen.getByRole('button', { name: 'Supprimer' })
@@ -368,10 +363,7 @@ describe('screens:StocksEventEdition', () => {
       stocks_count: apiStocks.length,
     })
 
-    await userEvent.type(
-      screen.getByRole('spinbutton', { name: 'Quantité restante *' }),
-      '30'
-    )
+    await userEvent.type(screen.getByLabelText('Quantité restante'), '30')
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
@@ -418,12 +410,12 @@ describe('screens:StocksEventEdition', () => {
       stocks_count: 1,
     })
 
-    expect(screen.getByLabelText('Tarif *')).toHaveValue('2')
+    expect(screen.getByLabelText('Tarif')).toHaveValue('2')
     await userEvent.selectOptions(
-      screen.getByLabelText('Tarif *'),
+      screen.getByLabelText('Tarif'),
       priceCategoryId
     )
-    expect(screen.getByLabelText('Tarif *')).toHaveValue('1')
+    expect(screen.getByLabelText('Tarif')).toHaveValue('1')
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
@@ -443,10 +435,10 @@ describe('screens:StocksEventEdition', () => {
     await renderStockEventScreen(apiOffer, apiStocks)
 
     await userEvent.selectOptions(
-      screen.getByLabelText('Tarif *'),
+      screen.getByLabelText('Tarif'),
       priceCategoryId
     )
-    expect(screen.getByLabelText('Tarif *')).toHaveValue(priceCategoryId)
+    expect(screen.getByLabelText('Tarif')).toHaveValue(priceCategoryId)
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
@@ -520,7 +512,7 @@ describe('screens:StocksEventEdition', () => {
 
     await renderStockEventScreen(apiOffer, apiStocks)
     await userEvent.selectOptions(
-      screen.getByLabelText('Tarif *'),
+      screen.getByLabelText('Tarif'),
       priceCategoryId
     )
 
@@ -541,10 +533,8 @@ describe('screens:StocksEventEdition', () => {
       STOCKS_PER_PAGE * 5 + 10,
       '?page=3'
     )
-    await userEvent.type(
-      screen.getByRole('spinbutton', { name: 'Quantité restante *' }),
-      '30'
-    )
+
+    await userEvent.type(screen.getByLabelText('Quantité restante'), '30')
 
     // should block on next page
     await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))

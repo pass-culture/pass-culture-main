@@ -36,12 +36,9 @@
 }
 
 .filter-input {
-  margin-top: rem.torem(4px);
-  min-height: rem.torem(24px);
-
-  // Resets the cascading style of <th> otherwise
-  // the font-weight is applied to the datepicker dropdown
-  font-weight: initial;
+  display: flex;
+  gap: rem.torem(8px);
+  margin-bottom: rem.torem(24px);
 }
 
 .table-body {
@@ -89,8 +86,8 @@
   padding-bottom: rem.torem(8px);
 }
 
-.stock-actions {
-  padding-top: rem.torem(8px);
+.styleBookingsQuantity {
+  padding-bottom: rem.torem(16px);
 }
 
 .quantity-input {
