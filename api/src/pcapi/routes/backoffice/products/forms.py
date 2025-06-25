@@ -7,6 +7,7 @@ from flask_wtf import FlaskForm
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
+from pcapi.utils import string as string_utils
 
 
 class BatchLinkOfferToProductForm(empty_forms.BatchForm):
@@ -46,8 +47,12 @@ class ProductSearchForm(utils.PCForm):
     )
 
     def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
-        if q.data and not q.data.isdigit():
-            raise wtforms.validators.ValidationError("Format invalide. Veuillez entrer uniquement des chiffres.")
+        if self.product_filter_type.data == ProductFilterTypeEnum.EAN.name:
+            if q.data and not string_utils.is_ean_valid(q.data):
+                raise wtforms.validators.ValidationError("EAN invalide. Un EAN doit être composé de 13 chiffres.")
+        else:
+            if q.data and not q.data.isdigit():
+                raise wtforms.validators.ValidationError("Format invalide. Veuillez entrer uniquement des chiffres.")
         return q
 
     def filter_q(self, q: str | None) -> str | None:
