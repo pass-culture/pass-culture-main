@@ -1,6 +1,9 @@
+import base64
 import datetime
+import pathlib
 
 import pytest
+import time_machine
 
 from pcapi import settings
 from pcapi.core.bookings import factories as bookings_factories
@@ -16,6 +19,7 @@ from pcapi.models import db
 from pcapi.utils import human_ids
 from pcapi.utils.date import format_into_utc_date
 
+import tests
 from tests.routes import image_data
 from tests.routes.public.helpers import ProductEndpointHelper
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
@@ -288,6 +292,223 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         assert confirmed_booking.status == bookings_models.BookingStatus.CANCELLED
         assert used_booking.status == bookings_models.BookingStatus.USED
 
+    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
+    @pytest.mark.parametrize(
+        "partial_request_json,expected_publication_datetime,expected_response_publication_datetime",
+        [
+            # should set new value
+            (
+                {"publicationDatetime": "2025-08-01T08:00:00+02:00"},  # tz: Europe/Paris
+                datetime.datetime(2025, 8, 1, 6),  # tz: utc
+                "2025-08-01T06:00:00Z",
+            ),
+            (
+                {"publicationDatetime": "now"},
+                datetime.datetime(2025, 6, 25, 12, 30),
+                "2025-06-25T12:30:00Z",
+            ),
+            # should unset previous value
+            ({"publicationDatetime": None}, None, None),
+            # should keep previous value
+            ({}, datetime.datetime(2025, 5, 1, 3), "2025-05-01T03:00:00Z"),
+        ],
+    )
+    def test_publication_datetime_param(
+        self, client, partial_request_json, expected_publication_datetime, expected_response_publication_datetime
+    ):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.ABO_MEDIATHEQUE.id,
+            lastProvider=venue_provider.provider,
+            publicationDatetime=datetime.datetime(2025, 5, 1, 3),
+        )
+
+        partial_request_json["offerId"] = product_offer.id
+
+        response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url, json=partial_request_json)
+
+        assert response.status_code == 200
+        assert response.json["publicationDatetime"] == expected_response_publication_datetime
+
+        update_offer = db.session.query(offers_models.Offer).filter_by(id=product_offer.id).one()
+        assert update_offer.publicationDatetime == expected_publication_datetime
+
+    @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
+    @pytest.mark.parametrize(
+        "partial_request_json,expected_booking_allowed_datetime,expected_response_booking_allowed_datetime",
+        [
+            # should set new value
+            (
+                {"bookingAllowedDatetime": "2025-08-01T08:00:00+02:00"},  # tz: Europe/Paris
+                datetime.datetime(2025, 8, 1, 6),  # tz: utc
+                "2025-08-01T06:00:00Z",
+            ),
+            # should unset value
+            ({"bookingAllowedDatetime": None}, None, None),
+            # should keep previous value
+            ({}, datetime.datetime(2025, 5, 1, 3), "2025-05-01T03:00:00Z"),
+        ],
+    )
+    def test_booking_allowed_datetime_param(
+        self,
+        client,
+        partial_request_json,
+        expected_booking_allowed_datetime,
+        expected_response_booking_allowed_datetime,
+    ):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.ABO_MEDIATHEQUE.id,
+            lastProvider=venue_provider.provider,
+            bookingAllowedDatetime=datetime.datetime(2025, 5, 1, 3),
+        )
+
+        partial_request_json["offerId"] = product_offer.id
+
+        response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url, json=partial_request_json)
+
+        assert response.status_code == 200
+        assert response.json["bookingAllowedDatetime"] == expected_response_booking_allowed_datetime
+
+        update_offer = db.session.query(offers_models.Offer).filter_by(id=product_offer.id).one()
+        assert update_offer.bookingAllowedDatetime == expected_booking_allowed_datetime
+
+    @pytest.mark.parametrize(
+        "partial_request_json, expected_response_json",
+        [
+            # errors on name
+            (
+                {"name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256"},
+                {"name": ["Le titre d'une offre ne peut contenir l'EAN"]},
+            ),
+            (
+                {"name": "Jean Tartine est de retour", "description": "A" * 10_001},
+                {"description": ["ensure this value has at most 10000 characters"]},
+            ),
+            # errors on datetimes
+            (
+                {"bookingAllowedDatetime": "2021-01-01T00:00:00"},
+                {"bookingAllowedDatetime": ["The datetime must be timezone-aware."]},
+            ),
+            (
+                {"bookingAllowedDatetime": "2021-01-01T00:00:00+00:00"},
+                {"bookingAllowedDatetime": ["The datetime must be in the future."]},
+            ),
+            (
+                {"publicationDatetime": "2021-01-01T00:00:00"},
+                {"publicationDatetime": ["The datetime must be timezone-aware."]},
+            ),
+            (
+                {"publicationDatetime": "2021-01-01T00:00:00+00:00"},
+                {"publicationDatetime": ["The datetime must be in the future."]},
+            ),
+            (
+                {"publicationDatetime": "NOW"},
+                {"publicationDatetime": ["invalid datetime format", "unexpected value; permitted: 'now'"]},
+            ),
+            # errors on idAtProvider
+            (
+                {"idAtProvider": "a" * 71},
+                {"idAtProvider": ["ensure this value has at most 70 characters"]},
+            ),
+            (
+                {"idAtProvider": "c'est déjà pris :'("},
+                {"idAtProvider": ["`c'est déjà pris :'(` is already taken by another venue offer"]},
+            ),
+            # errors on image
+            (
+                {
+                    "image": {
+                        "file": base64.b64encode(
+                            (pathlib.Path(tests.__path__[0]) / "files" / "mouette_square.jpg").read_bytes()
+                        ).decode()
+                    }
+                },
+                {"imageFile": "Bad image ratio: expected 0.66, found 1.0"},
+            ),
+            (
+                {"image": {"file": image_data.WRONG_IMAGE_SIZE}},
+                {"imageFile": "The image is too small. It must be above 400x600 pixels."},
+            ),
+            # errors on stock
+            (
+                {
+                    "stock": {"bookingLimitDatetime": "2021-01-01T00:00:00", "price": 10, "quantity": 10},
+                },
+                {"stock.bookingLimitDatetime": ["The datetime must be timezone-aware."]},
+            ),
+            (
+                {
+                    "stock": {"bookingLimitDatetime": "2021-01-01T00:00:00+00:00", "price": 10, "quantity": 10},
+                },
+                {"stock.bookingLimitDatetime": ["The datetime must be in the future."]},
+            ),
+            ({"stock": {"price": 12.34, "quantity": "unlimited"}}, {"stock.price": ["value is not a valid integer"]}),
+            (
+                {"stock": {"price": -1200, "quantity": "unlimited"}},
+                {"stock.price": ["ensure this value is greater than or equal to 0"]},
+            ),
+            (
+                {"stock": {"price": 1200, "quantity": -1}},
+                {
+                    "stock.quantity": [
+                        "ensure this value is greater than or equal to 0",
+                        "unexpected value; permitted: 'unlimited'",
+                    ]
+                },
+            ),
+            # `stock.bookingLimitDatetime` and `publicationDatetime` not coherent
+            (
+                {
+                    "stock": {
+                        "bookingLimitDatetime": (
+                            datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=3)
+                        ).isoformat(),
+                        "price": 10,
+                        "quantity": 10,
+                    },
+                    "publicationDatetime": (
+                        datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=100)
+                    ).isoformat(),
+                },
+                {"__root__": ["`stock.bookingLimitDatetime` must be after `publicationDatetime`"]},
+            ),
+            # `stock.bookingLimitDatetime` and `bookingLimitDatetime` not coherent
+            (
+                {
+                    "stock": {
+                        "bookingLimitDatetime": (
+                            datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=3)
+                        ).isoformat(),
+                        "price": 10,
+                        "quantity": 10,
+                    },
+                    "bookingAllowedDatetime": (
+                        datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=100)
+                    ).isoformat(),
+                },
+                {"__root__": ["`stock.bookingLimitDatetime` must be after `bookingAllowedDatetime`"]},
+            ),
+        ],
+    )
+    def test_incorrect_payload_should_return_400(self, client, partial_request_json, expected_response_json):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.ABO_LIVRE_NUMERIQUE.id,
+            lastProvider=venue_provider.provider,
+        )
+        offers_factories.OfferFactory(venue=venue_provider.venue, idAtProvider="c'est déjà pris :'(")
+
+        partial_request_json["offerId"] = product_offer.id
+
+        response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url, json=partial_request_json)
+
+        assert response.status_code == 400
+        assert response.json == expected_response_json
+
     def test_update_subcategory_raises_error(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         product_offer = offers_factories.ThingOfferFactory(
@@ -307,24 +528,6 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
                 "Only ABO_BIBLIOTHEQUE, ABO_CONCERT, ABO_LIVRE_NUMERIQUE, ABO_MEDIATHEQUE, ABO_PLATEFORME_MUSIQUE, ABO_PLATEFORME_VIDEO, ABO_PRATIQUE_ART, ABO_PRESSE_EN_LIGNE, ABO_SPECTACLE, ACHAT_INSTRUMENT, APP_CULTURELLE, AUTRE_SUPPORT_NUMERIQUE, CAPTATION_MUSIQUE, CARTE_JEUNES, CARTE_MUSEE, LIVRE_AUDIO_PHYSIQUE, LIVRE_NUMERIQUE, LOCATION_INSTRUMENT, PARTITION, PLATEFORME_PRATIQUE_ARTISTIQUE, PODCAST, PRATIQUE_ART_VENTE_DISTANCE, SPECTACLE_ENREGISTRE, SUPPORT_PHYSIQUE_FILM, TELECHARGEMENT_LIVRE_AUDIO, TELECHARGEMENT_MUSIQUE, VISITE_VIRTUELLE, VOD products can be edited"
             ]
         }
-
-    def test_update_with_ean_in_name_raises(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        product_offer = offers_factories.ThingOfferFactory(
-            venue=venue_provider.venue,
-            subcategoryId=subcategories.ABO_BIBLIOTHEQUE.id,
-            lastProvider=venue_provider.provider,
-        )
-
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url,
-            json={
-                "offerId": product_offer.id,
-                "name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256",
-            },
-        )
-        assert response.status_code == 400
-        assert response.json == {"name": ["Le titre d'une offre ne peut contenir l'EAN"]}
 
     def test_update_unallowed_subcategory_product_raises_error(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()

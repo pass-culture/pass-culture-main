@@ -826,6 +826,8 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
             idAtProvider=get_field(offer, updates, "idAtProvider"),
             isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
             withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
+            publicationDatetime=get_field(offer, updates, "publicationDatetime"),
+            bookingAllowedDatetime=get_field(offer, updates, "bookingAllowedDatetime"),
         )  # type: ignore[call-arg]
         updated_offer = offers_api.update_offer(offer, offer_body, venue=venue, offerer_address=offerer_address)
         db.session.flush()
