@@ -137,7 +137,7 @@ describe('DetailsSubForm', () => {
       it('on edition, should display the EAN field', () => {
         renderDetailsSubForm({
           props: {
-            isEanSearchDisplayed: true,
+            isEanSearchDisplayed: false,
             isProductBased: true,
           },
           mode: OFFER_WIZARD_MODE.EDITION,
