@@ -66,7 +66,6 @@ jobs:
         with:
           secrets: |-
             FIREBASE_TOKEN:passculture-metier-ehp/pc_pro_${{ inputs.ENV }}_firebase_json
-            SENTRY_TOKEN:passculture-metier-ehp/passculture-app-pro-sentry-token
             SAAS_SENTRY_TOKEN:passculture-metier-ehp/passculture-app-pro-saas-sentry-token
       - if: inputs.resource_label != ''
         run: |
