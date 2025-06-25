@@ -92,6 +92,7 @@ dependencies = [
   "wtforms==3.2.1",
   "xlsxwriter==3.2.5",
   "zeep==4.3.1",
+  "sqlalchemy-easy-softdelete @ git+https://github.com/pass-culture/sqlalchemy-easy-softdelete.git",
 ]
 
 [tool.poetry.group.dev]
