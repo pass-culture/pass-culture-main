@@ -10,7 +10,6 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
 from pcapi.models import db
 
@@ -80,6 +79,8 @@ def check_expenses_limits(user: User, requested_amount: Decimal, offer: Offer) -
     """Raise an error if the requested amount would exceed the user's
     expense limits.
     """
+    from pcapi.core.users.api import get_domains_credit  # avoid circular import
+
     domains_credit = get_domains_credit(user)
     deposit = user.deposit
     if not domains_credit or not deposit:
