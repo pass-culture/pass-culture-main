@@ -789,35 +789,10 @@ def check_accessibility_compliance(
         raise exceptions.OfferException({"global": ["L’accessibilité de l’offre doit être définie"]})
 
 
-def check_publication_date(offer: models.Offer, publication_date: datetime.datetime | None) -> None:
-    if publication_date is None:
-        return
-
-    if offer.publicationDate is not None:
+def check_publication_date(publication_date: datetime.datetime) -> None:
+    if publication_date > date.get_naive_utc_now() + relativedelta(years=2):
         raise exceptions.OfferException(
-            {"publication_date": ["Cette offre est déjà programmée pour être publiée dans le futur"]}
-        )
-
-    if not offer.subcategory.is_event:
-        raise exceptions.OfferException(
-            {"publication_date": ["Seules les offres d’événements peuvent avoir une date de publication"]}
-        )
-
-    if publication_date.minute not in [0, 15, 30, 45]:
-        raise exceptions.OfferException(
-            {"publication_date": ["L’heure de publication ne peut avoir une précision supérieure au quart d'heure"]}
-        )
-
-    now = datetime.datetime.utcnow()
-    if publication_date < now:
-        raise exceptions.OfferException(
-            {"publication_date": ["Impossible de sélectionner une date de publication dans le passé"]}
-        )
-
-    years = 2
-    if publication_date > now + relativedelta(years=years):
-        raise exceptions.OfferException(
-            {"publication_date": [f"Impossible sélectionner une date de publication plus de {years} ans en avance"]}
+            {"publication_date": ["Impossible sélectionner une date de publication plus de 2 ans en avance"]}
         )
 
 
