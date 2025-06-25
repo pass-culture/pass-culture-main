@@ -1,4 +1,4 @@
-import { StockEventFormValues, StockEventFormHiddenValues } from './types'
+import { StockEventFormHiddenValues, StockEventFormValues } from './types'
 
 const STOCK_EVENT_FORM_DEFAULT_HIDDEN_VALUES: StockEventFormHiddenValues = {
   stockId: 0,
@@ -9,7 +9,7 @@ const STOCK_EVENT_FORM_DEFAULT_HIDDEN_VALUES: StockEventFormHiddenValues = {
 export const STOCK_EVENT_FORM_DEFAULT_VALUES: StockEventFormValues = {
   beginningDate: '',
   beginningTime: '',
-  remainingQuantity: null,
+  remainingQuantity: 0,
   bookingsQuantity: 0,
   bookingLimitDatetime: '',
   priceCategoryId: '',
