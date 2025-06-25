@@ -5,10 +5,12 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offers.models as offers_models
+import pcapi.core.offers.repository as offers_repository
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
 from pcapi.core.categories import subcategories
-from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
 
 
@@ -372,7 +374,7 @@ class Returns200Test:
         )
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=offerer_address1)
         event_offer = offers_factories.EventOfferFactory(
-            venue=venue, offererAddress=None, validation=OfferValidationStatus.DRAFT
+            venue=venue, offererAddress=None, validation=offers_models.OfferValidationStatus.DRAFT
         )
         event_stock = offers_factories.EventStockFactory(
             offer=event_offer, beginningDatetime=datetime.datetime(2022, 9, 21, 13, 19)
@@ -491,6 +493,22 @@ class Returns200Test:
                 "bookingsCount": 0,
             }
         ]
+
+    def should_not_list_offers_from_soft_deleted_venues(self):
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        soft_deleted_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offers_factories.EventOfferFactory(venue=venue)
+        offers_factories.EventOfferFactory(venue=soft_deleted_venue)
+
+        soft_deleted_venue.isSoftDeleted = True
+        db.session.add(soft_deleted_venue)
+        db.session.flush()
+
+        offers = offers_repository.get_offers_by_filters(user_id=pro.id, user_is_admin=False).all()
+        assert len(offers) == 1
 
     def should_return_offers_filtered_by_offerer_address(self, client):
         pro = users_factories.ProFactory()
