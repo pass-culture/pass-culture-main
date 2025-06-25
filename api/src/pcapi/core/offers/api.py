@@ -892,6 +892,35 @@ def handle_event_stock_beginning_datetime_update(stock: models.Stock) -> None:
     _notify_beneficiaries_upon_stock_edit(stock, bookings)  # TODO: (tcoudray-pass, 16/04/2025) rename this function
 
 
+def finalize_offer(
+    offer: models.Offer,
+    publication_datetime: datetime.datetime | None,
+    booking_allowed_datetime: datetime.datetime | None,
+) -> models.Offer:
+    """
+    :publication_datetime     : /!\ must be a naive utc datetime
+    :booking_allowed_datetime : /!\ must be a naive utc datetime
+    """
+    offer.finalizationDatetime = get_naive_utc_now()
+
+    if publication_datetime:
+        publication_datetime = publication_datetime.replace(second=0, microsecond=0)
+        validation.check_publication_date(publication_datetime)
+        offer.publicationDatetime = publication_datetime
+        offer.isActive = publication_datetime <= get_naive_utc_now()
+
+    offer.bookingAllowedDatetime = booking_allowed_datetime
+
+    on_commit(partial(search.async_index_offer_ids, [offer.id], reason=search.IndexationReason.OFFER_PUBLICATION))
+    logger.info(
+        "Offer has been published",
+        extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
+        technical_message_id="offer.published",
+    )
+
+    return offer
+
+
 def publish_offer(
     offer: models.Offer,
     publication_datetime: datetime.datetime | None = None,
@@ -908,7 +937,7 @@ def publish_offer(
 
     if publication_datetime:
         publication_datetime = publication_datetime.replace(second=0, microsecond=0)
-    validation.check_publication_date(offer, publication_datetime)
+        validation.check_publication_date(publication_datetime)
 
     offer.bookingAllowedDatetime = booking_allowed_datetime
 

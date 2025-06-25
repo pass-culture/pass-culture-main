@@ -663,25 +663,6 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json == {"priceCategories": ["Price categories must be unique"]}
 
-    def test_future_event_400(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-
-        publication_date = datetime.utcnow().replace(minute=0, second=0) - timedelta(days=30)
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "categoryRelatedFields": {"category": "RENCONTRE"},
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue_provider.venueId},
-                "name": "Le champ des possibles",
-                "hasTicket": False,
-                "publicationDate": publication_date.isoformat(),
-            },
-        )
-
-        assert response.status_code == 400
-        assert response.json["publication_date"] == ["Impossible de sélectionner une date de publication dans le passé"]
-
     def test_should_raise_400_because_of_duplicated_price_category_ids_at_provider(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
 

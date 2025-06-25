@@ -214,7 +214,7 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
                 label=body.location.address_label,
             )
 
-        product = offers_api.create_offer(
+        offer = offers_api.create_offer(
             offers_schemas.CreateOffer(
                 name=body.name,
                 subcategoryId=body.category_related_fields.subcategory_id,
@@ -239,23 +239,27 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
         )
 
         if body.image:
-            utils.save_image(body.image, product)
+            utils.save_image(body.image, offer)
 
         if body.stock:
             offers_api.create_stock(
-                offer=product,
+                offer=offer,
                 price=finance_utils.cents_to_full_unit(body.stock.price),
                 quantity=serialization.deserialize_quantity(body.stock.quantity),
                 booking_limit_datetime=body.stock.booking_limit_datetime,
                 creating_provider=current_api_key.provider,
             )
 
-        offers_api.update_offer_fraud_information(product, user=None)
-        offers_api.publish_offer(product)
+        offers_api.update_offer_fraud_information(offer, user=None)
+        offers_api.finalize_offer(
+            offer,
+            publication_datetime=body.publication_datetime,  # type: ignore[arg-type]
+            booking_allowed_datetime=body.booking_allowed_datetime,
+        )
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
 
-    return serialization.ProductOfferResponse.build_product_offer(product)
+    return serialization.ProductOfferResponse.build_product_offer(offer)
 
 
 @blueprints.public_api.route("/public/offers/v1/products/ean", methods=["POST"])
