@@ -1,6 +1,7 @@
 import datetime
 import decimal
 import json
+import logging
 from unittest import mock
 
 import dateutil
@@ -727,6 +728,93 @@ class SynchroniseInstitutionsGeolocationTest:
         assert institution_with_values.longitude == decimal.Decimal("2.3488000")
         assert institution_not_present.latitude is None
         assert institution_not_present.longitude is None
+
+
+@pytest.mark.usefixtures("db_session")
+class UpdateInstitutionsEducationalProgramTest:
+    def test_update_program(self, caplog):
+        program = educational_factories.EducationalInstitutionProgramFactory(name="The Program")
+        now = datetime.datetime.now()
+        past = now - datetime.timedelta(days=100)
+        past_timespan = db_utils.make_timerange(past, now - datetime.timedelta(days=2))
+        current_timespan = db_utils.make_timerange(past, None)
+
+        uai_1 = "11111111"
+        uai_2 = "11111112"
+        uai_3 = "11111113"
+        uai_4 = "11111114"
+        uai_5 = "11111115"
+        uai_6 = "11111116"
+        uais = [uai_1, uai_3, uai_5]
+
+        # institution not associated to the program, added to the program
+        # expected: link institution to the program, log an info
+        institution_1 = educational_factories.EducationalInstitutionFactory(institutionId=uai_1)
+        assert len(institution_1.programAssociations) == 0
+        # institution not associated to the program, not added to the program
+        # expected: no change
+        institution_2 = educational_factories.EducationalInstitutionFactory(institutionId=uai_2)
+        assert len(institution_2.programAssociations) == 0
+
+        # institution previously associated to the program, added to the program
+        # expected: no change, log an error
+        institution_3 = educational_factories.EducationalInstitutionFactory(institutionId=uai_3)
+        association_3 = educational_factories.EducationalInstitutionProgramAssociationFactory(
+            institution=institution_3, program=program, timespan=past_timespan
+        )
+        association_3_timespan = association_3.timespan
+        # institution previously associated to the program, not added to the program
+        # expected: no change
+        institution_4 = educational_factories.EducationalInstitutionFactory(institutionId=uai_4)
+        association_4 = educational_factories.EducationalInstitutionProgramAssociationFactory(
+            institution=institution_4, program=program, timespan=past_timespan
+        )
+        association_4_timespan = association_4.timespan
+
+        # institution currently associated to the program, added to the program
+        # expected: no change
+        institution_5 = educational_factories.EducationalInstitutionFactory(institutionId=uai_5)
+        association_5 = educational_factories.EducationalInstitutionProgramAssociationFactory(
+            institution=institution_5, program=program, timespan=current_timespan
+        )
+        association_5_timespan = association_5.timespan
+        # institution currently associated to the program, not added to the program
+        # expected: no change, log an error
+        institution_6 = educational_factories.EducationalInstitutionFactory(institutionId=uai_6)
+        association_6 = educational_factories.EducationalInstitutionProgramAssociationFactory(
+            institution=institution_6, program=program, timespan=current_timespan
+        )
+        association_6_timespan = association_6.timespan
+
+        with caplog.at_level(logging.INFO):
+            institution_api._update_institutions_educational_program(educational_program=program, uais=uais, start=now)
+
+        [association_1] = institution_1.programAssociations
+        assert association_1.programId == program.id
+        assert association_1.timespan == db_utils.make_timerange(now, None)
+
+        # check that associations (and their timespan) have not changed
+        assert len(institution_2.programAssociations) == 0
+        assert institution_3.programAssociations == [association_3]
+        assert association_3.timespan == association_3_timespan
+        assert institution_4.programAssociations == [association_4]
+        assert association_4.timespan == association_4_timespan
+        assert institution_5.programAssociations == [association_5]
+        assert association_5.timespan == association_5_timespan
+        assert institution_6.programAssociations == [association_6]
+        assert association_6.timespan == association_6_timespan
+
+        assert len(caplog.records) == 3
+        logs = {(log_record.message, log_record.levelname) for log_record in caplog.records}
+        assert ("Linking UAI 11111111 to program The Program", "INFO") in logs
+        assert (
+            "UAI 11111113 was previously associated with program The Program, cannot add it back",
+            "ERROR",
+        ) in logs
+        assert (
+            "UAIs in DB are associated with program The Program but not present in data: 11111116",
+            "ERROR",
+        ) in logs
 
 
 class CheckAllowedActionTest:
