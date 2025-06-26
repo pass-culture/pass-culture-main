@@ -239,6 +239,14 @@ describe('validationSchema OfferEducational', () => {
         expectedErrors: ['Veuillez renseigner au moins un département'],
         isCollectiveOaActive: true,
       },
+      {
+        description: 'valid when duration is greater than 23:59',
+        formValues: {
+          ...defaultValues,
+          duration: '70:00',
+        },
+        expectedErrors: [],
+      },
     ]
 
     cases.forEach(
