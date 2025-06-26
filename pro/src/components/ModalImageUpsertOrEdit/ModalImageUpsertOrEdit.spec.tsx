@@ -47,9 +47,7 @@ describe('ModalImageUpsertOrEdit', () => {
     await waitForRender()
 
     expect(screen.getByRole('button', { name: 'Annuler' })).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Enregistrer' })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Importer' })).toBeInTheDocument()
   })
 
   describe('when an image is loaded', () => {
@@ -211,9 +209,7 @@ describe('ModalImageUpsertOrEdit', () => {
         })
         await userEvent.click(replaceButton)
 
-        expect(
-          screen.getByRole('button', { name: 'Enregistrer' })
-        ).toBeDisabled()
+        expect(screen.getByRole('button', { name: 'Importer' })).toBeDisabled()
       })
 
       it('should display the image editor again once the image is uploaded', async () => {

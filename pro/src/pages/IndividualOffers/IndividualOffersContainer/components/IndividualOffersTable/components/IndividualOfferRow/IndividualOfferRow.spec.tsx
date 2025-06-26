@@ -341,7 +341,7 @@ describe('IndividualOfferRow', () => {
         const inputField = screen.getByLabelText('Importez une image')
         await userEvent.upload(inputField, mockFile)
 
-        await userEvent.click(screen.getByText('Enregistrer'))
+        await userEvent.click(screen.getByText('Importer'))
         expect(api.createThumbnail).toHaveBeenCalled()
         expect(api.upsertHeadlineOffer).toHaveBeenCalledWith({
           offerId: offer.id,
@@ -390,7 +390,7 @@ describe('IndividualOfferRow', () => {
         const inputField = screen.getByLabelText('Importez une image')
         await userEvent.upload(inputField, mockFile)
 
-        await userEvent.click(screen.getByText('Enregistrer'))
+        await userEvent.click(screen.getByText('Importer'))
         expect(api.createThumbnail).toHaveBeenCalled()
 
         expect(

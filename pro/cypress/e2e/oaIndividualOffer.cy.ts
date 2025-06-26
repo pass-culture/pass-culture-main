@@ -178,7 +178,7 @@ describe('Create individual offers with OA', () => {
     )
     cy.get('input[type=range]').setSliderValue(1.7)
 
-    cy.findByText('Enregistrer').click()
+    cy.findByText('Importer').click()
 
     cy.stepLog({ message: 'the details of offer should be correct' })
     cy.findByLabelText('Titre de l’offre *').should('have.value', offerTitle)
