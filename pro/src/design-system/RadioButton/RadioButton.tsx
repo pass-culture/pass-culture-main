@@ -86,7 +86,7 @@ export const RadioButton = forwardRef(
           className={cn(styles['radio-button'], {
             [styles['sizing-fill']]: sizing === 'fill',
             [styles['variant-detailed']]: isVariantDetailed,
-            [styles['is-collapsed']]: collapsed,
+            [styles['is-collapsed']]: collapsed && checked,
             [styles['is-checked']]: checked,
             [styles['is-disabled']]: disabled,
             [styles['has-error']]: hasError,
