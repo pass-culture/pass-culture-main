@@ -298,7 +298,7 @@ def update_provider_external_urls(
     if cancel_external_url != UNCHANGED:
         provider.cancelExternalUrl = cancel_external_url
 
-    repository.save(provider)
+    db.session.flush()
 
     return provider
 
@@ -350,13 +350,15 @@ def update_venue_provider_external_urls(
     )
 
     if is_deletion:
-        repository.delete(venue_provider_external_urls)
+        db.session.delete(venue_provider_external_urls)
+        db.session.flush()
         return
 
     if is_creation:
         venue_provider_external_urls = providers_models.VenueProviderExternalUrls(
             venueProvider=venue_provider,
         )
+        db.session.add(venue_provider_external_urls)
 
     # Update
     if notification_external_url != UNCHANGED:
@@ -368,7 +370,7 @@ def update_venue_provider_external_urls(
     if cancel_external_url != UNCHANGED:
         venue_provider_external_urls.cancelExternalUrl = cancel_external_url
 
-    repository.save(venue_provider_external_urls)
+    db.session.flush()
 
     return
 

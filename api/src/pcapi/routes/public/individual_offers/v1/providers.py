@@ -2,6 +2,7 @@ from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import exceptions as providers_exceptions
 from pcapi.core.providers import repository as providers_repository
 from pcapi.models import api_errors
+from pcapi.repository.session_management import atomic
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
@@ -15,6 +16,7 @@ from pcapi.validation.routes.users_authentifications import provider_api_key_req
 
 
 @blueprints.public_api.route("/public/providers/v1/provider", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -38,6 +40,7 @@ def get_provider() -> providers_serialization.ProviderResponse:
 
 
 @blueprints.public_api.route("/public/providers/v1/provider", methods=["PATCH"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -75,6 +78,7 @@ def update_provider(body: providers_serialization.ProviderUpdate) -> providers_s
 
 
 @blueprints.public_api.route("/public/providers/v1/venues/<int:venue_id>", methods=["PATCH"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     on_success_status=204,
