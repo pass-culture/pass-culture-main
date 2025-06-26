@@ -55,7 +55,7 @@ export function getOfferEducationalValidationSchema(
     duration: yup
       .string()
       .matches(
-        /^(([01]?[0-9]|2[0-3]):[0-5][0-9])?$/,
+        /^$|([0-9]{1,2}:[0-5][0-9])/,
         'Veuillez entrer une durée sous la forme HH:MM (ex: 1:30 pour 1h30)'
       ),
     offererId: yup
