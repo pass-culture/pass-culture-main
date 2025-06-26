@@ -178,7 +178,7 @@ export const VenueEditionHeader = ({
                 Visualiser votre page
               </ButtonLink>
             )}
-          {imageValues.originalImageUrl && (
+          {imageValues.croppedImageUrl && (
             <ButtonImageEdit
               mode={UploaderModeEnum.VENUE}
               initialValues={imageValues}
