@@ -547,6 +547,9 @@ class TestClient:
 
         print("===========================================\n")
 
+    def session_transaction(self, *args, **kwargs):
+        return self.client.session_transaction(*args, **kwargs)
+
 
 class UbbleTestClient(TestClient):
     def __init__(self, client: FlaskClient, signing_key: ecdsa.SigningKey):

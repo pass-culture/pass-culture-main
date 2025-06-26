@@ -7,9 +7,29 @@
   {% endblock header %}
   {% block page_wrapper %}
     <div class="page-wrapper">
-      {% include "components/messages.html" %}
+      <div id="flash-messages"
+           hx-get="{{ url_for('backoffice_web.get_messages') }}"
+           hx-trigger="refreshMessages">{% include "components/messages.html" %}</div>
       {% block page %}
       {% endblock page %}
     </div>
   {% endblock page_wrapper %}
+  <div class="modal"
+       id="loading-htmx-modal"
+       data-bs-backdrop="static"
+       data-bs-keyboard="false"
+       tabindex="-1"
+       role="dialog"
+       aria-hidden="false"
+       aria-label="loading-htmx">
+    <div class="modal-dialog modal-sm modal-dialog-centered"
+         role="document">
+      <div class="modal-body text-center">
+        <div class="spinner-border text-light"
+             role="status">
+          <span class="visually-hidden">Chargement…</span>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock content %}

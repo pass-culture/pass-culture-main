@@ -1,0 +1,33 @@
+{% from "components/turbo/spinner.html" import build_loading_spinner %}
+{% macro build_dynamic_modal(url, div_id, modal_size = "lg", method = "get", form = None, ajax_submit = True) %}
+  <div class="modal fade modal-{{ modal_size }}"
+       id="{{ div_id }}"
+       tabindex="-1"
+       aria-labelledby="{{ div_id }}-label"
+       aria-hidden="false">
+    {# deactivate djlint here because it's suggesting the following:
++         hx-
++         {{ method }}
++         None="{{ url }}"> #}
+    {# djlint:off #}
+    <div class="modal-dialog modal-dialog-centered"
+         hx-trigger="intersect"
+         {% if form %}hx-include="#{{ form }}"{% endif %}
+         {% if ajax_submit %}
+         data-hide-parent-modal-on-error="true"
+         {% else %}
+         hx-vals='{"redirect": "true"}'
+         {% endif %}
+         hx-{{ method }}="{{ url }}">
+      <div class="modal-content">
+        <div class="modal-body row">{{ build_loading_spinner() }}</div>
+        <div class="modal-footer">
+          <button type="button"
+                  class="btn btn-outline-primary-subtle-bg"
+                  data-bs-dismiss="modal">Annuler</button>
+        </div>
+      </div>
+    </div>
+    {# djlint:on #}
+  </div>
+{% endmacro %}
