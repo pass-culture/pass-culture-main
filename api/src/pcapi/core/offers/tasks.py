@@ -3,6 +3,7 @@ import logging
 
 import sqlalchemy as sa
 
+from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.core import search
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import utils as finance_utils
@@ -11,6 +12,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
@@ -148,8 +150,39 @@ def _get_existing_offers(
     )
 
 
+@celery_async_task(
+    name="tasks.offers.default.create_or_update_ean_offers",
+    model=offers_schemas.CreateOrUpdateEANOffersRequest,
+)
+def create_or_update_ean_offers_celery(payload: offers_schemas.CreateOrUpdateEANOffersRequest) -> None:
+    _create_or_update_ean_offers(
+        serialized_products_stocks=payload.serialized_products_stocks,
+        venue_id=payload.venue_id,
+        provider_id=payload.provider_id,
+        address_id=payload.address_id,
+        address_label=payload.address_label,
+    )
+
+
 @job(worker.low_queue)
 def create_or_update_ean_offers(
+    *,
+    serialized_products_stocks: dict,
+    venue_id: int,
+    provider_id: int,
+    address_id: int | None = None,
+    address_label: str | None = None,
+) -> None:
+    _create_or_update_ean_offers(
+        serialized_products_stocks=serialized_products_stocks,
+        venue_id=venue_id,
+        provider_id=provider_id,
+        address_id=address_id,
+        address_label=address_label,
+    )
+
+
+def _create_or_update_ean_offers(
     *,
     serialized_products_stocks: dict,
     venue_id: int,
@@ -217,6 +250,7 @@ def create_or_update_ean_offers(
                             "exc": exc.__class__.__name__,
                         },
                     )
+
             db.session.bulk_save_objects(created_offers)
 
             reloaded_offers = _get_existing_offers(ean_list_to_create, venue)
