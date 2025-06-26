@@ -64,19 +64,22 @@ class PcTableManager extends PcAddOn {
     return configuration
   }
 
-
   #initializeTableFromHtml = ($table) => {
     const lines = $table.querySelectorAll("tr")
     const configuration = this.#initializeHeaders($table)
     lines.forEach(($line) => {
-      const cells = $line.querySelectorAll("td")
-      if (cells !== null){
-        for(let i=0; i < Math.min(cells.length, configuration.columns.length); i++){
-          cells[i].classList.add(configuration.columns[i].id)
-        }
-      }
+      this.#initializeRow(configuration, $line)
     })
     return configuration
+  }
+
+  #initializeRow = (configuration, $line) => {
+    const cells = $line.querySelectorAll("td")
+    if (cells !== null) {
+      for (let i=0; i < Math.min(cells.length, configuration.columns.length); i++) {
+        cells[i].classList.add(configuration.columns[i].id)
+      }
+    }
   }
 
   #initializeHeaders = ($table) => {
@@ -93,7 +96,7 @@ class PcTableManager extends PcAddOn {
       if (columnConfiguration.id === ''){
         columnConfiguration.id = ($column.dataset.pcColumnName || ("default-headerNumber")).replaceAll(/[^a-zA-Z0-9]/g, '')
       }
-      columnConfiguration.id = "column-" + columnConfiguration.id 
+      columnConfiguration.id = "column-" + columnConfiguration.id
       columnConfiguration.name = $column.dataset.pcColumnName || text_content
       columnConfiguration.display = ($column.dataset.pcDisplayColumn || "true") == "true"
       configuration.columns.push(columnConfiguration)
@@ -236,7 +239,7 @@ class PcTableManager extends PcAddOn {
     event.target.parentElement.dataset.pcTableManagerDraggableHeight = event.target.getBoundingClientRect().height
     setTimeout(() => {
       event.target.classList.add('d-none')
-      event.target.parentElement.appendChild(event.target) // small hack to avoir graphical glicth
+      event.target.parentElement.appendChild(event.target) // small hack to avoid graphical glitch
     }, 0)
   }
 
@@ -310,7 +313,7 @@ class PcTableManager extends PcAddOn {
   #applyConfigurationOnTable = (configuration) => {
     const previousConfiguration = this.configurations[configuration.id]
     const $table = document.querySelector(`table[data-pc-table-manager-id="${configuration.id}"]`)
-    
+
     if(! this.#needUpdate(previousConfiguration, configuration)){
       // fast path to not blink the table if nothing changed
       $table.classList.remove('d-none')
@@ -320,38 +323,41 @@ class PcTableManager extends PcAddOn {
     }
 
     $table.classList.add('d-none')
-    const oldConfigurationMap = {}
-
     $table.querySelectorAll("tr").forEach(($line) => {
-      // ignore lines with too few colonnes for pages like bookings
-      if($line.children.length >= (configuration.columns.length * 0.5)) {
-        configuration.columns.forEach((columnConfiguration) => {
-          // retrieve cell to move/update
-          let $cell
-          if (oldConfigurationMap[columnConfiguration.id] === undefined) {
-            for(let i=0; i < $line.children.length; i++){
-              if ($line.children[i].classList.contains(columnConfiguration.id)){
-                $cell = $line.children[i]
-                oldConfigurationMap[columnConfiguration.id] = i
-                break
-              }
-            }
-          } else {
-            $cell = $line.children[oldConfigurationMap[columnConfiguration.id]]
-          }
-          if ($cell){
-            // apply configuration
-            if(columnConfiguration.display){
-              $cell.classList.remove('d-none')
-              $line.appendChild($cell)
-            } else {
-              $cell.classList.add('d-none')
-            }
-          }
-        })
-      }
+      this.#applyConfigurationOnLine(configuration, $line)
     })
     $table.classList.remove('d-none')
+  }
+
+  #applyConfigurationOnLine = (configuration, $line) => {
+    const oldConfigurationMap = {}
+    // ignore lines with too few colonnes for pages like bookings
+    if($line.children.length >= (configuration.columns.length * 0.5)) {
+      configuration.columns.forEach((columnConfiguration) => {
+        // retrieve cell to move/update
+        let $cell
+        if (oldConfigurationMap[columnConfiguration.id] === undefined) {
+          for(let i=0; i < $line.children.length; i++){
+            if ($line.children[i].classList.contains(columnConfiguration.id)){
+              $cell = $line.children[i]
+              oldConfigurationMap[columnConfiguration.id] = i
+              break
+            }
+          }
+        } else {
+          $cell = $line.children[oldConfigurationMap[columnConfiguration.id]]
+        }
+        if ($cell){
+          // apply configuration
+          if(columnConfiguration.display){
+            $cell.classList.remove('d-none')
+            $line.appendChild($cell)
+          } else {
+            $cell.classList.add('d-none')
+          }
+        }
+      })
+    }
   }
 
   #getConfigurationForEdit = (id) => {
@@ -368,6 +374,33 @@ class PcTableManager extends PcAddOn {
       }
     }
     return false
+  }
+
+  #applyConfigurationOnLoadedLines = (event) => {
+    if (!event.detail.isError) {
+      let $table = event.target.closest(`table${PcTableManager.SELECTOR}`)
+
+      if (!!$table) {
+        // replace default htmx swap behaviour
+        event.detail.shouldSwap = false
+        // create a temporary table to place rows received from server response
+        const tempTable = document.createElement("table")
+        const tableId = $table.dataset.pcTableManagerId
+        const configuration = this.configurations[tableId]
+        const defaultConfiguration = this.defaultConfigurations[tableId]
+        tempTable.innerHTML = event.detail.serverResponse
+        const $newLines = tempTable.querySelectorAll("tr")
+        // re-arrange each line's columns to fit applied filters
+        $newLines.forEach(($newLine) => {
+          this.#initializeRow(defaultConfiguration, $newLine)
+          this.#applyConfigurationOnLine(configuration, $newLine)
+          htmx.swap(`tr#${$newLine.id}`, $newLine.outerHTML, {swapStyle: "outerHTML"})
+        })
+        // re-init table selection checkboxes and unselect them all
+        this.app.addons.PcTableMultiSelectId.refreshTableState($table)
+        this.app.addons.PcTableMultiSelectId.batchSelect($table, false)
+      }
+    }
   }
 
   initialize = () => {
@@ -394,8 +427,8 @@ class PcTableManager extends PcAddOn {
     EventHandler.on(document.body, 'click', PcTableManager.DISPLAY_DEFAULT, this.#onDisplayDefaultClick)
     EventHandler.on(document.body, 'click', PcTableManager.CLOSE_BUTTON, this.#onCloseMenuClick)
     EventHandler.on(document.body, 'click', PcTableManager.DROPDOWN_MENU, this.#stopPropagation)
+    EventHandler.on(document.body, "htmx:beforeSwap", this.#applyConfigurationOnLoadedLines)
   }
-  
 
   unbindEvents = () => {
     EventHandler.off(document.body, 'dragstart', PcTableManager.DRAGGABLE, this.#onDragStart)
@@ -407,6 +440,7 @@ class PcTableManager extends PcAddOn {
     EventHandler.off(document.body, 'click', PcTableManager.DISPLAY_DEFAULT, this.#onDisplayDefaultClick)
     EventHandler.off(document.body, 'click', PcTableManager.CLOSE_BUTTON, this.#onCloseMenuClick)
     EventHandler.off(document.body, 'click', PcTableManager.DROPDOWN_MENU, this.#stopPropagation)
+    EventHandler.off(document.body, "htmx:beforeSwap", this.#applyConfigurationOnLoadedLines)
   }
 
   applyConfiguration = (configuration) => {

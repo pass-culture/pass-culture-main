@@ -562,7 +562,7 @@ class GetOfferAlgoliaSearchForm(BaseOfferAdvancedSearchForm):
         return empty and super().is_empty()
 
 
-class EditOfferForm(FlaskForm):
+class EditOfferForm(empty_forms.DynamicForm):
     criteria = fields.PCTomSelectField(
         "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_web.autocomplete_criteria"
     )

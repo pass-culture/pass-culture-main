@@ -1418,6 +1418,54 @@ class EditOfferTest(PostEndpointHelper):
         # offer should be reindexed
         mock_reindex_offer_ids.assert_called_once_with([offer_to_edit.id])
 
+    @patch("pcapi.core.search.reindex_offer_ids")
+    def test_update_offer_tags_from_htmx(self, mock_reindex_offer_ids, legit_user, authenticated_client, criteria):
+        offer_to_edit = offers_factories.OfferFactory(
+            name="A Very Specific Name That Is Longer",
+            criteria=[criteria[0]],
+            venue__postalCode="74000",
+            venue__departementCode="74",
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
+        chosen_ranking_weight = 22
+        base_form = {"criteria": [criteria[0].id, criteria[1].id], "rankingWeight": chosen_ranking_weight}
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer_to_edit.id,
+            form=base_form,
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
+        # ensure that the row is rendered
+        row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_edit.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert len(cells) == 22
+        assert cells[0] == ""  # Checkbox
+        assert cells[1] == (  # Actions
+            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Désactiver l'offre Taguer / Pondérer"
+        )
+        assert cells[2] == ""  # Image
+        assert cells[3] == str(offer_to_edit.id)  # ID
+        assert cells[4] == offer_to_edit.name  # Nom de l'offre
+        assert cells[5] == offer_to_edit.category.pro_label  # Catégorie
+        assert cells[6] == offer_to_edit.subcategory.pro_label  # Sous-catégorie
+        assert cells[7] == ""  # Règles de conformité
+        assert cells[8] == ""  # Score data
+        assert cells[9] == "-"  # Tarif
+        assert cells[10] == f"{criteria[0].name} {criteria[1].name}"  # Tag
+        assert cells[11] == ""  # Date(s) de l'évènement
+        assert cells[12] == ""  # Date(s) limite(s) de réservation
+        assert cells[13] == "22"  # Pondération
+        assert cells[14] == "• Validée"  # État
+        assert cells[15] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
+        assert cells[16] == ""  # Dérnière validation
+        assert cells[17] == offer_to_edit.venue.departementCode  # Département
+        assert cells[18] == offer_to_edit.venue.managingOfferer.name  # Entité juridique
+        assert cells[19] == offer_to_edit.venue.name  # Partenaire culturel
+        assert cells[20] == "Voir toutes les offres"  # Offres du partenaire culturel
+        assert cells[21] == ""  # Partenaire technique
+
 
 class GetEditOfferFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.offer.get_edit_offer_form"
@@ -1439,13 +1487,6 @@ class GetBatchEditOfferFormTest(PostEndpointHelper):
     endpoint_kwargs = {"offer_ids": "1,2"}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
-    def test_get_empty_edit_form_test(self, legit_user, authenticated_client):
-        form_url = url_for(self.endpoint, _external=True)
-
-        with assert_num_queries(2):  # session + current user
-            response = authenticated_client.get(form_url)
-            assert response.status_code == 200
-
     def test_get_edit_form_with_values_test(self, legit_user, authenticated_client, criteria):
         offers = offers_factories.OfferFactory.create_batch(
             3, subcategoryId=subcategories.LIVRE_PAPIER.id, criteria=[criteria[2]], rankingWeight=22
@@ -1465,7 +1506,7 @@ class GetBatchEditOfferFormTest(PostEndpointHelper):
         # Edit N°1 - The two first offers
         base_form["criteria"].extend([criteria[0].id, criteria[1].id])
         response = self._update_offers(authenticated_client, base_form)
-        assert response.status_code == 303
+        assert response.status_code == 200
         for offer in offers[:-1]:
             assert set(offer.criteria) == set(criteria[:3])
             assert offer.rankingWeight is None
@@ -1532,8 +1573,13 @@ class BatchEditOfferTest(PostEndpointHelper):
         # 1 x all criteria
         # 1 x update offers (for 3 offers)
         # 1 x insert into offer_criterion (for 3 insertions)
-        response = self.post_to_endpoint(authenticated_client, form=base_form, expected_num_queries=6)
-        assert response.status_code == 303
+        # 1 x re-fetch to render updated rows
+        response = self.post_to_endpoint(authenticated_client, form=base_form, expected_num_queries=7)
+        assert response.status_code == 200
+        # ensure rows are rendered
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[0].id}", is_xml=True)
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[1].id}", is_xml=True)
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[2].id}", is_xml=True)
 
         for offer in offers:
             assert offer.rankingWeight == chosen_ranking_weight
@@ -1840,6 +1886,53 @@ class ValidateOfferTest(PostEndpointHelper):
         assert offer_to_validate.lastValidationDate.date() == datetime.date.today()
         assert offer_to_validate.lastValidationPrice == decimal.Decimal("10.1")
 
+    def test_validate_offer_with_stocks_using_htmx(self, legit_user, authenticated_client):
+        offer_to_validate = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.REJECTED)
+        offers_factories.StockFactory(offer=offer_to_validate, price=10.1)
+        offers_factories.StockFactory(offer=offer_to_validate, price=1.01)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer_to_validate.id,
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
+        # ensure that the row is rendered
+        row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_validate.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert len(cells) == 22
+        assert cells[0] == ""  # Checkbox
+        assert cells[1] == (  # Actions
+            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Désactiver l'offre Taguer / Pondérer"
+        )
+        assert cells[2] == ""  # Image
+        assert cells[3] == str(offer_to_validate.id)  # ID
+        assert cells[4] == offer_to_validate.name  # Nom de l'offre
+        assert cells[5] == offer_to_validate.category.pro_label  # Catégorie
+        assert cells[6] == offer_to_validate.subcategory.pro_label  # Sous-catégorie
+        assert cells[7] == ""  # Règles de conformité
+        assert cells[8] == ""  # Score data
+        assert cells[9] == "1,01 € - 10,10 €"  # Tarif
+        assert cells[10] == ""  # Tag
+        assert cells[11] == ""  # Date(s) de l'évènement
+        assert cells[12] == ""  # Date(s) limite(s) de réservation
+        assert cells[13] == ""  # Pondération
+        assert cells[14] == "• Validée"  # État
+        assert cells[15] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
+        assert cells[16] == datetime.date.today().strftime("%d/%m/%Y")  # Dérnière validation
+        assert cells[17] == offer_to_validate.venue.departementCode  # Département
+        assert cells[18] == offer_to_validate.venue.managingOfferer.name  # Entité juridique
+        assert cells[19] == offer_to_validate.venue.name  # Partenaire culturel
+        assert cells[20] == "Voir toutes les offres"  # Offres du partenaire culturel
+        assert cells[21] == ""  # Partenaire technique
+
+        db.session.refresh(offer_to_validate)
+        assert offer_to_validate.isActive is True
+        assert offer_to_validate.validation == offers_models.OfferValidationStatus.APPROVED
+        assert offer_to_validate.lastValidationType == OfferValidationType.MANUAL
+        assert offer_to_validate.lastValidationDate.date() == datetime.date.today()
+        assert offer_to_validate.lastValidationPrice == decimal.Decimal("10.1")
+
     def test_validate_offer_without_stocks(self, legit_user, authenticated_client):
         offer_to_validate = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.REJECTED)
 
@@ -1903,6 +1996,66 @@ class RejectOfferTest(PostEndpointHelper):
             TransactionalEmail.OFFER_VALIDATED_TO_REJECTED_TO_PRO.value
         )
 
+    def test_reject_offer_with_htmx(self, legit_user, authenticated_client):
+        offer_to_reject = offers_factories.OfferFactory(validation=offers_models.OfferValidationStatus.APPROVED)
+        confirmed_booking = bookings_factories.BookingFactory(
+            user=users_factories.BeneficiaryFactory(),
+            stock__offer=offer_to_reject,
+            status=BookingStatus.CONFIRMED,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer_to_reject.id,
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
+        # ensure that the row is rendered
+        row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_reject.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert len(cells) == 22
+        assert cells[0] == ""  # Checkbox
+        assert cells[1] == (  # Actions
+            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Activer l'offre Taguer / Pondérer"
+        )
+        assert cells[2] == ""  # Image
+        assert cells[3] == str(offer_to_reject.id)  # ID
+        assert cells[4] == offer_to_reject.name  # Nom de l'offre
+        assert cells[5] == offer_to_reject.category.pro_label  # Catégorie
+        assert cells[6] == offer_to_reject.subcategory.pro_label  # Sous-catégorie
+        assert cells[7] == ""  # Règles de conformité
+        assert cells[8] == ""  # Score data
+        assert cells[9] == "10,10 €"  # Tarif
+        assert cells[10] == ""  # Tag
+        assert cells[11] == ""  # Date(s) de l'évènement
+        assert cells[12] == ""  # Date(s) limite(s) de réservation
+        assert cells[13] == ""  # Pondération
+        assert cells[14] == "• Rejetée"  # État
+        assert cells[15] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
+        assert cells[16] == datetime.date.today().strftime("%d/%m/%Y")  # Dérnière validation
+        assert cells[17] == offer_to_reject.venue.departementCode  # Département
+        assert cells[18] == offer_to_reject.venue.managingOfferer.name  # Entité juridique
+        assert cells[19] == offer_to_reject.venue.name  # Partenaire culturel
+        assert cells[20] == "Voir toutes les offres"  # Offres du partenaire culturel
+        assert cells[21] == ""  # Partenaire technique
+
+        assert offer_to_reject.isActive is False
+        assert offer_to_reject.validation == offers_models.OfferValidationStatus.REJECTED
+        assert offer_to_reject.lastValidationType == OfferValidationType.MANUAL
+        assert offer_to_reject.lastValidationDate.date() == datetime.date.today()
+        assert offer_to_reject.lastValidationPrice is None
+
+        assert len(mails_testing.outbox) == 2
+        assert mails_testing.outbox[0]["To"] == confirmed_booking.user.email
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value
+        )
+        assert mails_testing.outbox[0]["params"]["REJECTED"] is True
+        assert mails_testing.outbox[1]["To"] == offer_to_reject.venue.bookingEmail
+        assert mails_testing.outbox[1]["template"] == dataclasses.asdict(
+            TransactionalEmail.OFFER_VALIDATED_TO_REJECTED_TO_PRO.value
+        )
+
 
 class GetRejectOfferFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.offer.get_reject_offer_form"
@@ -1934,11 +2087,16 @@ class BatchOfferValidateTest(PostEndpointHelper):
         # select offer (3 in 1 query)
         # update offer (3 in 1 query)
         # fetch the venues for AO label if needed (3 in 1 query)
+        # re-fetch updated offers to render updated rows
         response = self.post_to_endpoint(
-            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=5
+            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=6
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        # ensure rows are rendered
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[0].id}", is_xml=True)
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[1].id}", is_xml=True)
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[2].id}", is_xml=True)
         for offer in offers:
             db.session.refresh(offer)
             assert offer.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime("%d/%m/%Y")
@@ -1968,7 +2126,7 @@ class BatchOfferRejectTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
 
         assert confirmed_booking.status == BookingStatus.CANCELLED
-        assert response.status_code == 303
+        assert response.status_code == 200
         for offer in [draft_offer, pending_offer, confirmed_offer]:
             db.session.refresh(offer)
             assert offer.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime("%d/%m/%Y")
@@ -3096,6 +3254,51 @@ class ActivateOfferTest(PostEndpointHelper):
         db.session.refresh(offer_to_activate)
         assert offer_to_activate.isActive is True
 
+    def test_activate_offer_with_stocks_using_htmx(self, legit_user, authenticated_client):
+        offer_to_activate = offers_factories.OfferFactory(isActive=False)
+
+        expected_num_queries = self.expected_num_queries
+        expected_num_queries += 1  # re-fetch to render updated offer
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer_to_activate.id,
+            expected_num_queries=expected_num_queries,
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
+        # ensure that the row is rendered
+        row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_activate.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert len(cells) == 22
+        assert cells[0] == ""  # Checkbox
+        assert cells[1] == (  # Actions
+            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Désactiver l'offre Taguer / Pondérer"
+        )
+        assert cells[2] == ""  # Image
+        assert cells[3] == str(offer_to_activate.id)  # ID
+        assert cells[4] == offer_to_activate.name  # Nom de l'offre
+        assert cells[5] == offer_to_activate.category.pro_label  # Catégorie
+        assert cells[6] == offer_to_activate.subcategory.pro_label  # Sous-catégorie
+        assert cells[7] == ""  # Règles de conformité
+        assert cells[8] == ""  # Score data
+        assert cells[9] == "-"  # Tarif
+        assert cells[10] == ""  # Tag
+        assert cells[11] == ""  # Date(s) de l'évènement
+        assert cells[12] == ""  # Date(s) limite(s) de réservation
+        assert cells[13] == ""  # Pondération
+        assert cells[14] == "• Validée"  # État
+        assert cells[15] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
+        assert cells[16] == ""  # Dérnière validation
+        assert cells[17] == offer_to_activate.venue.departementCode  # Département
+        assert cells[18] == offer_to_activate.venue.managingOfferer.name  # Entité juridique
+        assert cells[19] == offer_to_activate.venue.name  # Partenaire culturel
+        assert cells[20] == "Voir toutes les offres"  # Offres du partenaire culturel
+        assert cells[21] == ""  # Partenaire technique
+
+        db.session.refresh(offer_to_activate)
+        assert offer_to_activate.isActive is True
+
 
 class GetActivateOfferFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.offer.get_activate_offer_form"
@@ -3142,6 +3345,51 @@ class DeactivateOfferTest(PostEndpointHelper):
         db.session.refresh(offer_to_deactivate)
         assert offer_to_deactivate.isActive is False
 
+    def test_deactivate_offer_with_stocks_using_htmx(self, legit_user, authenticated_client):
+        offer_to_deactivate = offers_factories.OfferFactory(isActive=True)
+
+        expected_num_queries = self.expected_num_queries
+        # re-fetch offer to render again
+        expected_num_queries += 1
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer_to_deactivate.id,
+            expected_num_queries=expected_num_queries,
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
+        # ensure that the row is rendered
+        row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_deactivate.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert len(cells) == 22
+        assert cells[0] == ""  # Checkbox
+        assert cells[1] == (  # Actions
+            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Activer l'offre Taguer / Pondérer"
+        )
+        assert cells[2] == ""  # Image
+        assert cells[3] == str(offer_to_deactivate.id)  # ID
+        assert cells[4] == offer_to_deactivate.name  # Nom de l'offre
+        assert cells[5] == offer_to_deactivate.category.pro_label  # Catégorie
+        assert cells[6] == offer_to_deactivate.subcategory.pro_label  # Sous-catégorie
+        assert cells[7] == ""  # Règles de conformité
+        assert cells[8] == ""  # Score data
+        assert cells[9] == "-"  # Tarif
+        assert cells[10] == ""  # Tag
+        assert cells[11] == ""  # Date(s) de l'évènement
+        assert cells[12] == ""  # Date(s) limite(s) de réservation
+        assert cells[13] == ""  # Pondération
+        assert cells[14] == "• Validée"  # État
+        assert cells[15] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
+        assert cells[16] == ""  # Dérnière validation
+        assert cells[17] == offer_to_deactivate.venue.departementCode  # Département
+        assert cells[18] == offer_to_deactivate.venue.managingOfferer.name  # Entité juridique
+        assert cells[19] == offer_to_deactivate.venue.name  # Partenaire culturel
+        assert cells[20] == "Voir toutes les offres"  # Offres du partenaire culturel
+        assert cells[21] == ""  # Partenaire technique
+
+        db.session.refresh(offer_to_deactivate)
+        assert offer_to_deactivate.isActive is False
+
 
 class GetDeactivateOfferFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.offer.get_deactivate_offer_form"
@@ -3169,7 +3417,8 @@ class BatchOfferActivateTest(PostEndpointHelper):
     # current user
     # get offers
     # update offers
-    expected_num_queries = 4
+    # re-fetch to render updated offer rows
+    expected_num_queries = 5
 
     def test_batch_activate_offers(self, legit_user, authenticated_client):
         offers = offers_factories.OfferFactory.create_batch(3, isActive=False)
@@ -3181,7 +3430,11 @@ class BatchOfferActivateTest(PostEndpointHelper):
             expected_num_queries=self.expected_num_queries,
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        # ensure rows are rendered
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[0].id}", is_xml=True)
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[1].id}", is_xml=True)
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[2].id}", is_xml=True)
         for offer in offers:
             db.session.refresh(offer)
             assert offer.isActive is True
@@ -3194,7 +3447,8 @@ class BatchOfferDeactivateTest(PostEndpointHelper):
     # current user
     # get offers
     # update offers
-    expected_num_queries = 4
+    # re-fetch to render updated offer rows
+    expected_num_queries = 5
 
     def test_batch_deactivate_offers(self, legit_user, authenticated_client):
         offers = offers_factories.OfferFactory.create_batch(3)
@@ -3206,7 +3460,11 @@ class BatchOfferDeactivateTest(PostEndpointHelper):
             expected_num_queries=self.expected_num_queries,
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        # ensure rows are rendered
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[0].id}", is_xml=True)
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[1].id}", is_xml=True)
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[2].id}", is_xml=True)
         for offer in offers:
             db.session.refresh(offer)
             assert offer.isActive is False

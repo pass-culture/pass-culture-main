@@ -267,6 +267,19 @@ def roles_with_permissions_fixture():
     return roles
 
 
+@pytest.fixture(name="user_with_no_permissions")
+def user_with_no_permissions_fixture():
+    user = users_factories.UserFactory(
+        firstName="Hercule",
+        lastName="Poirot",
+        roles=["ADMIN"],
+    )
+
+    perm_api.create_backoffice_profile(user)
+    user.backoffice_profile.dsInstructorId = "legit=user=instructor=="
+    return user
+
+
 @pytest.fixture(scope="function", name="legit_user")
 def legit_user_fixture(roles_with_permissions: None) -> users_models.User:
     user = users_factories.UserFactory(
