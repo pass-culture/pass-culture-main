@@ -491,6 +491,8 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
                 },
                 {"__root__": ["`stock.bookingLimitDatetime` must be after `bookingAllowedDatetime`"]},
             ),
+            # additional properties not allowed
+            ({"tkilol": ""}, {"tkilol": ["extra fields not permitted"]}),
         ],
     )
     def test_incorrect_payload_should_return_400(self, client, partial_request_json, expected_response_json):

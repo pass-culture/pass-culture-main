@@ -239,6 +239,10 @@ class _FIELDS:
     BOOKING_STATUS = Field(description=descriptions.BOOKING_STATUS_DESCRIPTION, example="CONFIRMED")
 
     # Stock fields
+    STOCK_EDITION = Field(
+        description="If stock is set to null, all cancellable bookings (i.e not used) will be cancelled. To prevent from further bookings, you may alternatively set stock.quantity to the bookedQuantity (but not below).",
+    )
+
     STOCK_ID = Field(description="Stock id", example=45)
     QUANTITY = Field(
         description="Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",

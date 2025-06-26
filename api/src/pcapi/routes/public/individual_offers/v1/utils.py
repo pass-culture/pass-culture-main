@@ -11,6 +11,7 @@ from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.routes.public import utils as public_utils
+from pcapi.routes.public.individual_offers.v1.serializers import products as products_serializers
 from pcapi.utils import image_conversion
 from pcapi.validation.routes.users_authentifications import current_api_key
 
@@ -68,7 +69,7 @@ def check_venue_id_is_tied_to_api_key(venue_id: int | None) -> None:
 
 
 def check_offer_subcategory(
-    body: serialization.ProductOfferEdition | serialization.EventOfferEdition, offer_subcategory_id: str
+    body: products_serializers.ProductOfferEdition | serialization.EventOfferEdition, offer_subcategory_id: str
 ) -> None:
     if body.category_related_fields is not None and (
         body.category_related_fields.subcategory_id != offer_subcategory_id
