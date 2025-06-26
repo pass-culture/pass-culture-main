@@ -57,7 +57,7 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
             )
             assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.product.get_product_details", product_id=product.id, _external=True)
+        expected_url = url_for("backoffice_web.product.get_product_details", product_id=product.id)
         assert response.location == expected_url
 
     @pytest.mark.parametrize(
@@ -187,7 +187,7 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
             )
             assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.product.get_product_details", product_id=product.id, _external=True)
+        expected_url = url_for("backoffice_web.product.get_product_details", product_id=product.id)
         assert response.location == expected_url
 
     def test_search_by_visa_unexisting_product(self, authenticated_client):
@@ -219,7 +219,7 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
             )
             assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.product.get_product_details", product_id=product.id, _external=True)
+        expected_url = url_for("backoffice_web.product.get_product_details", product_id=product.id)
         assert response.location == expected_url
 
     def test_search_by_allocine_id_unexisting_product(self, authenticated_client):
@@ -339,7 +339,7 @@ class PostImportProductFromTiteliveTest(PostEndpointHelper):
         whitelist_product = db.session.query(fraud_models.ProductWhitelist).filter_by(ean=ean).one_or_none()
         assert not whitelist_product
 
-        expected_url = url_for("backoffice_web.product.get_product_details", product_id=product.id, _external=True)
+        expected_url = url_for("backoffice_web.product.get_product_details", product_id=product.id)
         assert response.location == expected_url
 
         redirection = authenticated_client.get(response.location)
@@ -388,7 +388,7 @@ class PostImportProductFromTiteliveTest(PostEndpointHelper):
         whitelist_product = db.session.query(fraud_models.ProductWhitelist).filter_by(ean=ean).one_or_none()
         assert whitelist_product
 
-        expected_url = url_for("backoffice_web.product.get_product_details", product_id=product.id, _external=True)
+        expected_url = url_for("backoffice_web.product.get_product_details", product_id=product.id)
         assert response.location == expected_url
 
         redirection = authenticated_client.get(response.location)
@@ -411,7 +411,7 @@ class PostImportProductFromTiteliveTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, ean=ean, is_ineligible=False)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.product.search_product", _external=True)
+        expected_url = url_for("backoffice_web.product.search_product")
         assert response.location == expected_url
 
         redirection = authenticated_client.get(response.location)

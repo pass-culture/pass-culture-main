@@ -5181,4 +5181,4 @@ class CreateVenueTest(PostEndpointHelper):
         assert new_venue.offererAddress.address == venue.offererAddress.address
         assert new_venue.offererAddressId != venue.offererAddressId
 
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=new_venue.id, _external=True)
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=new_venue.id)

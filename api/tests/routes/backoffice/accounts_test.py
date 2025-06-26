@@ -5347,7 +5347,7 @@ class CreateAccountTagTest(PostEndpointHelper):
         }
         response = self.post_to_endpoint(authenticated_client, form=base_form)
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.account_tag.list_account_tags", _external=True)
+        assert response.location == url_for("backoffice_web.account_tag.list_account_tags")
 
         created_tag = db.session.query(users_models.UserTag).one()
         assert created_tag.name == name
@@ -5417,7 +5417,6 @@ class CreateAccountTagCategoryTest(PostEndpointHelper):
         assert response.location == url_for(
             "backoffice_web.account_tag.list_account_tags",
             active_tab="categories",
-            _external=True,
         )
 
         created_category = db.session.query(users_models.UserTagCategory).one()

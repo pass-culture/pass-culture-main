@@ -213,7 +213,9 @@ def clear_tests_invoices_bucket(settings):
 
 @pytest.fixture(scope="function")
 def clean_database():
+    db.session.close()
     yield
+    db.session.close()
     clean_all_database()
 
 
