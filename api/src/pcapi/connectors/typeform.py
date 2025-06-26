@@ -189,7 +189,7 @@ class TypeformBackend(BaseBackend):
                 extra={
                     "url": url,
                     "status_code": response.status_code,
-                    "message": response.text,
+                    "text": response.text,
                 },
             )
             raise TypeformApiException(f"Error {response.status_code} response from Typeform API: {url}")
