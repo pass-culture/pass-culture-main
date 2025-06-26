@@ -1,5 +1,6 @@
 import {
   CollectiveOfferOfferVenueResponseModel,
+  GetOffererVenueResponseModel,
   GetVenueResponseModel,
   OfferAddressType,
 } from 'apiClient/v1'
@@ -7,7 +8,8 @@ import { EVENT_ADDRESS_SCHOOL_LABEL } from 'pages/CollectiveOffer/CollectiveOffe
 
 export const formatOfferEventAddress = (
   eventAddress: CollectiveOfferOfferVenueResponseModel,
-  venue: GetVenueResponseModel
+  venue: GetVenueResponseModel,
+  manadgedVenues: GetOffererVenueResponseModel[]
 ): string => {
   if (eventAddress.addressType === OfferAddressType.SCHOOL) {
     return EVENT_ADDRESS_SCHOOL_LABEL
@@ -17,10 +19,16 @@ export const formatOfferEventAddress = (
     return eventAddress.otherAddress
   }
 
+  const offererAddressVenue = manadgedVenues.find(
+    (venue) => venue.id === eventAddress.venueId
+  )
+
+  const displayedVenue = offererAddressVenue || venue
+
   return [
-    venue.publicName || venue.name,
-    venue.street,
-    venue.postalCode,
-    venue.city,
+    displayedVenue.publicName || displayedVenue.name,
+    displayedVenue.street,
+    displayedVenue.postalCode,
+    displayedVenue.city,
   ].join(', ')
 }
