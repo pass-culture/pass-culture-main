@@ -5,6 +5,8 @@ from wtforms.validators import Length
 from wtforms.validators import Optional
 from wtforms.validators import Regexp
 
+from pcapi.core.chronicles import models as chronicles_models
+from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils as forms_utils
 
@@ -51,6 +53,15 @@ class GetChronicleSearchForm(forms_utils.PCForm):
     social_media_diffusible = fields.PCSelectMultipleField(
         "Diffusible réseaux sociaux",
         choices=[("true", "Oui"), ("false", "Non")],
+    )
+
+    category = fields.PCSelectMultipleField(
+        "Club",
+        choices=(
+            forms_utils.choices_from_enum(
+                chronicles_models.ChronicleClubType, formatter=filters.format_chronicle_club_type
+            )
+        ),
     )
 
 
