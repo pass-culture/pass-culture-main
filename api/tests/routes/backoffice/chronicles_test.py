@@ -304,11 +304,10 @@ class PublishChronicleTest(PostEndpointHelper):
     # session
     # current user
     # get chronicle
-    expected_num_queries_base = 3
     # update chronicle
     # reload chronicle
     # ListChroniclesTest.expected_num_queries (follow redirect)
-    expected_num_queries = expected_num_queries_base + 2 + ListChroniclesTest.expected_num_queries
+    expected_num_queries = 5 + ListChroniclesTest.expected_num_queries
 
     def test_publish_chronicle(self, authenticated_client, legit_user):
         chronicle = chronicles_factories.ChronicleFactory(
@@ -333,7 +332,7 @@ class PublishChronicleTest(PostEndpointHelper):
     def test_publish_chronicle_does_not_exist(self, authenticated_client):
         response = self.post_to_endpoint(
             follow_redirects=True,
-            expected_num_queries=self.expected_num_queries_base,
+            expected_num_queries=self.expected_num_queries - (1 + ListChroniclesTest.expected_num_queries),
             chronicle_id=0,
             client=authenticated_client,
         )
@@ -347,11 +346,10 @@ class UnpublishChronicleTest(PostEndpointHelper):
     # session
     # current user
     # get chronicle
-    expected_num_queries_base = 3
     # update chronicle
     # reload chronicle
     # ListChroniclesTest.expected_num_queries (follow redirect)
-    expected_num_queries = expected_num_queries_base + 2 + ListChroniclesTest.expected_num_queries
+    expected_num_queries = 5 + ListChroniclesTest.expected_num_queries
 
     def test_unpublish_chronicle(self, authenticated_client, legit_user):
         chronicle = chronicles_factories.ChronicleFactory(
@@ -376,7 +374,7 @@ class UnpublishChronicleTest(PostEndpointHelper):
     def test_unpublish_chronicle_does_not_exist(self, authenticated_client):
         response = self.post_to_endpoint(
             follow_redirects=True,
-            expected_num_queries=self.expected_num_queries_base,
+            expected_num_queries=self.expected_num_queries - (1 + ListChroniclesTest.expected_num_queries),
             chronicle_id=0,
             client=authenticated_client,
         )
@@ -520,7 +518,7 @@ class DetachProductTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(
             follow_redirects=True,
-            expected_num_queries=self.expected_num_queries,
+            expected_num_queries=self.expected_num_queries + 1,  # rollback on error
             chronicle_id=chronicle.id,
             product_id=product.id,
             client=authenticated_client,
