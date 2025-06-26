@@ -727,7 +727,7 @@ def mark_as_used(booking: models.Booking, validation_author_type: models.Booking
     finance_api.add_event(finance_models.FinanceEventMotive.BOOKING_USED, booking=booking)
     achievements_api.unlock_achievement(booking)
 
-    repository.save(booking)
+    db.session.flush()
 
     logger.info(
         "Booking was marked as used",
@@ -847,7 +847,8 @@ def mark_as_unused(booking: models.Booking) -> None:
         booking=booking,
     )
     booking.mark_as_unused_set_confirmed()
-    repository.save(booking)
+
+    db.session.flush()
 
     logger.info(
         "Booking was marked as unused",

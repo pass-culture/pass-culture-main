@@ -14,6 +14,7 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.repository.session_management import atomic
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
@@ -105,6 +106,7 @@ def _get_paginated_and_filtered_bookings(
 
 
 @blueprints.public_api.route("/public/bookings/v1/bookings", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -165,6 +167,7 @@ def _get_booking_by_token(token: str) -> booking_models.Booking | None:
 
 
 @blueprints.public_api.route("/public/bookings/v1/token/<string:token>", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -207,6 +210,7 @@ def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
 
 
 @blueprints.public_api.route("/public/bookings/v1/use/token/<token>", methods=["PATCH"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     on_success_status=204,
@@ -254,6 +258,7 @@ def validate_booking_by_token(token: str) -> None:
 
 
 @blueprints.public_api.route("/public/bookings/v1/keep/token/<token>", methods=["PATCH"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     on_success_status=204,
@@ -301,6 +306,7 @@ def cancel_booking_validation_by_token(token: str) -> None:
 
 
 @blueprints.public_api.route("/public/bookings/v1/cancel/token/<token>", methods=["PATCH"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     on_success_status=204,

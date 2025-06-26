@@ -8,6 +8,7 @@ from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.bookings import validation as bookings_validation
 from pcapi.models import api_errors
 from pcapi.models.api_errors import ForbiddenError
+from pcapi.repository.session_management import atomic
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.booking_token import blueprint
 from pcapi.routes.public.documentation_constants import tags
@@ -81,6 +82,7 @@ def get_booking_by_token_v2(token: str) -> serialization.GetBookingResponse:
 
 
 @blueprint.deprecated_booking_token_blueprint.route("/bookings/use/token/<token>", methods=["PATCH"])
+@atomic()
 @spectree_serialize(
     api=spectree_schemas.deprecated_public_api_schema,
     tags=[tags.DEPRECATED_BOOKING_TOKEN],
@@ -164,6 +166,7 @@ def patch_cancel_booking_by_token(token: str) -> None:
 
 
 @blueprint.deprecated_booking_token_blueprint.route("/bookings/keep/token/<token>", methods=["PATCH"])
+@atomic()
 @spectree_serialize(
     api=spectree_schemas.deprecated_public_api_schema,
     tags=[tags.DEPRECATED_BOOKING_TOKEN],
