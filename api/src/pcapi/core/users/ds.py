@@ -288,6 +288,13 @@ def _sync_ds_application(
         user_messages = [message for message in messages if message["email"] == node["usager"]["email"]]
         instructor_messages = [message for message in messages if message["email"].endswith("@passculture.app")]
 
+        if instructors:
+            last_instructor_email = instructors[-1]["email"]
+        elif instructor_messages:
+            last_instructor_email = instructor_messages[-1]["email"]
+        else:
+            last_instructor_email = None
+
         data = {
             "firstName": node["demandeur"]["prenom"],
             "lastName": node["demandeur"]["nom"],
@@ -300,7 +307,7 @@ def _sync_ds_application(
             "newFirstName": None,
             "newLastName": None,
             "allConditionsChecked": all(field["checked"] for field in fields if "checked" in field),
-            "lastInstructorId": user_id_by_email.get(instructors[-1]["email"]) if instructors else None,
+            "lastInstructorId": user_id_by_email.get(last_instructor_email) if last_instructor_email else None,
             "dateLastUserMessage": _from_ds_date(user_messages[-1]["createdAt"]) if user_messages else None,
             "dateLastInstructorMessage": (
                 _from_ds_date(instructor_messages[-1]["createdAt"]) if instructor_messages else None
