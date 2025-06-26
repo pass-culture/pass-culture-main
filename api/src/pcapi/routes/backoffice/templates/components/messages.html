@@ -1,9 +1,9 @@
 {% with messages = get_flashed_messages(with_categories=True) %}
   {% if messages %}
     <div class="position-relative z-3">
-      <div class="vstack gap-2 position-absolute top-0 end-0 pt-2 pe-5">
+      <div class="vstack gap-2 position-fixed top-0 end-0 pt-2 pe-5">
         {% for category, message in messages %}
-          <div class="alert alert-{{ category }} alert-dismissible fade show"
+          <div class="alert alert-{{ category }} alert-dismissible fade show mw-100"
                role="alert">
             {{ message | safe }}
             <button type="button"

@@ -60,7 +60,7 @@
  */
 class PcBatchActionForm extends PcAddOn {
   static BATCH_CONFIRM_BTN_GROUP_SELECTOR = '[data-toggle="pc-batch-confirm-btn-group"]'
-  static BATCH_CONFIRM_BTN_SELECTOR = 'button[data-use-confirmation-modal]'
+  static BATCH_CONFIRM_BTN_SELECTOR = 'button[data-use-confirmation-modal],button[data-use-dynamic-modal]'
   static BATCH_ACTION_BUTTON_CONTAINER = '[data-table-multiselect-menu-for="%s"]'
   static BATCH_ACTION_BUTTON_CONTAINER_ITEM_COUNTER = '.counter'
 
@@ -137,10 +137,38 @@ class PcBatchActionForm extends PcAddOn {
         $counterElement.innerText = selectedRowsIds.length
       }
     }
+    this.#updateHiddenFormIds(tableMultiSelectId, selectedRowsIds)
+  }
+
+  #updateHiddenFormIds = (tableMultiSelectId, selectedRowsIds) => {
+    const formId = `form-ids-${tableMultiSelectId}`
+    const idsStr = [...selectedRowsIds].join(',')
+    let $form = document.getElementById(formId)
+    let $input = null
+    if (!$form) {
+      $form = document.createElement("form")
+      $form.classList.add("d-none")
+      $form.innerHTML = this.app.csrfTokenInput
+      $form.id = formId
+      $form.name = formId
+      $input = document.createElement("input")
+      $input.name = "object_ids"
+      $input.type = "hidden"
+      $input.value = idsStr
+      $form.appendChild($input)
+      document.body.append($form)
+    } else {
+      $input = $form.querySelector("[name=object_ids]")
+      $input.value = idsStr
+    }
   }
 
   #onBatchButtonClick = async (event) => {
-    const { useConfirmationModal, pcTableMultiSelectId, toggleId, url, mode, fetchUrl, modalSelector } = event.target.dataset
+    const { useConfirmationModal, useDynamicModal, pcTableMultiSelectId, toggleId, url, mode, fetchUrl, modalSelector } = event.target.dataset
+    if (useDynamicModal === "true") {
+      // TODO remove the remaining of the function and use htmx instead of turboframe
+      return
+    }
     const { inputIdsName } = this.state[toggleId]
     const tableMultiSelectState = this.app.addons.PcTableMultiSelectId.state[pcTableMultiSelectId]
     const idsStr = [...tableMultiSelectState.selectedRowsIds].join(',')

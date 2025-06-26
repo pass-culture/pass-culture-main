@@ -1,0 +1,161 @@
+{% import "components/links.html" as links with context %}
+{% import "components/badges.html" as badges with context %}
+{% from "components/connect_as.html" import build_connect_as_link %}
+{% for row in rows %}
+  {% set offer = row.Offer %}
+  <tr id="offer-row-{{ offer.id }}">
+    <td>
+      <input type="checkbox"
+             class="form-check-input"
+             name="pc-table-multi-select-check-{{ offer.id }}"
+             data-id="{{ offer.id }}" />
+    </td>
+    <td class="text-center">
+      <div class="dropdown">
+        <button type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                class="btn p-0 btn-outline-primary-subtle-bg border-0 px-2 py-1">
+          <i class="bi bi-three-dots-vertical"></i>
+        </button>
+        <ul class="dropdown-menu">
+          <li class="dropdown-item">
+            <a class="btn btn-sm d-block w-100 text-start px-3"
+               href="{{ url_for('backoffice_web.offer.get_offer_details', offer_id=offer.id) }}">Voir le détail de l’offre</a>
+          </li>
+          {% if has_permission("PRO_FRAUD_ACTIONS") %}
+            <li class="dropdown-item">
+              <a class="btn btn-sm d-block w-100 text-start px-3"
+                 data-bs-toggle="modal"
+                 data-bs-target="#validate-offer-modal-{{ offer.id }}">Valider l'offre</a>
+            </li>
+            <li class="dropdown-item">
+              <a class="btn btn-sm d-block w-100 text-start px-3"
+                 data-bs-toggle="modal"
+                 data-bs-target="#reject-offer-modal-{{ offer.id }}">Rejeter l'offre</a>
+            </li>
+          {% endif %}
+          {% if has_permission("ADVANCED_PRO_SUPPORT") %}
+            {% if offer.isActive %}
+              <li class="dropdown-item">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#deactivate-offer-modal-{{ offer.id }}">Désactiver l'offre</a>
+              </li>
+            {% else %}
+              <li class="dropdown-item">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#activate-offer-modal-{{ offer.id }}">Activer l'offre</a>
+              </li>
+            {% endif %}
+          {% endif %}
+          {% if has_permission("MANAGE_OFFERS") %}
+            <li class="dropdown-item">
+              <a class="btn btn-sm d-block w-100 text-start px-3"
+                 data-bs-toggle="modal"
+                 data-bs-target="#edit-offer-modal-{{ offer.id }}">Taguer / Pondérer</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </td>
+    <td class="px-2 py-3">
+      {% if row.offer_mediation %}
+        {% set mediation_url = row.offer_mediation.id | offer_mediation_link(row.offer_mediation.thumbCount) %}
+      {% elif  row.product_mediation %}
+        {% set mediation_url = row.product_mediation | product_mediation_link %}
+      {% endif %}
+      {% if mediation_url %}
+        <div class="rounded pc-offer-table-image pc-offer-table-image-container"
+             style="background-image: url('{{ mediation_url }}')"></div>
+      {% else %}
+        <div class="rounded pc-offer-table-no-image pc-offer-table-image-container">
+          <i class="bi bi-file-image"></i>
+        </div>
+      {% endif %}
+    </td>
+    <td>{{ links.build_offer_details_link(offer) }}</td>
+    <td>{{ build_connect_as_link(connect_as[offer.id], offer.name, "link-primary") }}</td>
+    <td>{{ offer.subcategoryId | format_offer_category }}</td>
+    <td>{{ offer.subcategoryId | format_offer_subcategory }}</td>
+    {% if not has_permission("PRO_FRAUD_ACTIONS") %}
+      <td class="text-nowrap text-center">{{ row.booked_quantity }}</td>
+      <td class="text-nowrap text-center">{{ row.remaining_quantity }}</td>
+    {% endif %}
+    {% if has_permission("PRO_FRAUD_ACTIONS") or has_permission("VALIDATE_OFFERER") %}
+      <td>
+        {% if row.rules %}{{ row.rules | join(", ") | escape }}{% endif %}
+      </td>
+    {% endif %}
+    {% if has_permission("PRO_FRAUD_ACTIONS") %}
+      <td>
+        {% set compliance_score = offer.compliance.compliance_score if offer.compliance else "" %}
+        {{ compliance_score }}
+        {% set compliance_reasons = offer.compliance.compliance_reasons if offer.compliance else none %}
+        {% if compliance_reasons %}
+          <i class="bi bi-info-circle"
+             data-bs-toggle="tooltip"
+             data-bs-placement="top"
+             data-bs-custom-class="primary-tooltip"
+             data-bs-html="true"
+             data-bs-title="Raison de score faible : {{ compliance_reasons | format_compliance_reasons(return_markup=false) }}"></i>
+        {% endif %}
+      </td>
+      <td>
+        {% if row.prices.min_price is none %}
+          -
+        {% elif row.prices.min_price == row.prices.max_price %}
+          {{ row.prices.min_price | format_amount(target=offer.venue) }}
+        {% else %}
+          {{ row.prices.min_price | format_amount(target=offer.venue) }}
+          -
+          {{ row.prices.max_price | format_amount(target=offer.venue) }}
+        {% endif %}
+      </td>
+    {% endif %}
+    {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ row.tags | format_as_badges }}</td>{% endif %}
+    <td>
+      {% if row.offer_event_dates|length > 0 %}
+        {% if row.offer_event_dates|length == 1 %}
+          {{ row.offer_event_dates[0] | format_date("%d/%m/%Y") }}
+        {% else %}
+          {{ row.offer_event_dates[0] | format_date("%d/%m/%Y") }} → {{ row.offer_event_dates[1] | format_date("%d/%m/%Y") }}
+        {% endif %}
+      {% endif %}
+    </td>
+    <td>
+      {% if row.offer_booking_limit_dates|length > 0 %}
+        {% if row.offer_booking_limit_dates|length == 1 %}
+          {{ row.offer_booking_limit_dates[0] | format_date("%d/%m/%Y") }}
+        {% else %}
+          {{ row.offer_booking_limit_dates[0] | format_date("%d/%m/%Y") }} → {{ row.offer_booking_limit_dates[1] | format_date("%d/%m/%Y") }}
+        {% endif %}
+      {% endif %}
+    </td>
+    {% if not has_permission("PRO_FRAUD_ACTIONS") %}
+      <td>{{ links.build_pro_user_name_to_details_link(offer.author.id, offer.author.full_name) }}</td>
+    {% endif %}
+    {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ offer.rankingWeight | empty_string_if_null }}</td>{% endif %}
+    <td>{{ offer.validation | format_offer_validation_status(with_badge=True) }}</td>
+    <td>{{ offer.dateCreated | format_date("%d/%m/%Y") }}</td>
+    <td>{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</td>
+    <td>{{ offer.venue.departementCode | empty_string_if_null }}</td>
+    <td>
+      {{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}
+      {% call badges.badges_container() %}
+        {{ badges.build_offer_offerer_fraud_badges(offer.venue.managingOfferer) }}
+      {% endcall %}
+    </td>
+    <td>
+      {{ links.build_venue_name_to_details_link(offer.venue) }}
+      {% call badges.badges_container() %}
+        {{ badges.build_offer_venue_fraud_badges(offer.venue) }}
+      {% endcall %}
+    </td>
+    <td>{{ links.build_venue_offers_icon_link_advanced(".list_offers", "Offres individuelles", offer.venue) }}</td>
+    <td>
+      {% if offer.lastProviderId %}{{ offer.lastProvider.name | format_badge("primary") }}{% endif %}
+    </td>
+  </tr>
+{% endfor %}

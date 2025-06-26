@@ -145,3 +145,8 @@ def home() -> utils.BackofficeResponse:
         data.update(stats._mapping)
 
     return render_template("home/home.html", **data)
+
+
+@blueprint.backoffice_web.route("/_messages", methods=["GET"])
+def get_messages() -> utils.BackofficeResponse:
+    return render_template("components/messages.html")

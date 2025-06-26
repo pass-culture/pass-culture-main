@@ -458,3 +458,14 @@ def generate_algolia_search_string(
             filter_dict["facetFilters"].extend(result)
 
     return filter_dict, warnings
+
+
+def format_response_error_messages(errors: dict) -> list[str]:
+    """
+    Format unhandled errors. It's used in generate_error_response for htmx requests
+    """
+    lines = []
+    for error_key, error_details in errors.items():
+        for error_detail in error_details:
+            lines.append(f"[{error_key}] {error_detail}")
+    return lines
