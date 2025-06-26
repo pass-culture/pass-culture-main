@@ -104,6 +104,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         token = booking.token
         num_queries = 1  # select api_key
         num_queries += 1  # select booking
+        num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=token))
             assert response.status_code == 404
@@ -114,6 +115,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         token = booking.token
         num_queries = 1  # select api_key
         num_queries += 1  # select booking
+        num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=token))
             assert response.status_code == 404
@@ -226,6 +228,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries = 1  # select api_key
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
+        num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
             assert response.status_code == 403
@@ -250,6 +253,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
 
         num_queries = 1  # select api_key
         num_queries += 1  # select booking
+        num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
             assert response.status_code == 403
@@ -272,6 +276,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries = 1  # select api_key
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
+        num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
             assert response.status_code == 403
@@ -288,6 +293,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries = 1  # select api_key
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
+        num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
             assert response.status_code == 410
@@ -304,6 +310,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries = 1  # select api_key
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
+        num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
             assert response.status_code == 410

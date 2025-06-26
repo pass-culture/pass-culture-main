@@ -34,6 +34,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         offer_id = offer.id
         num_queries = 1  # select api_key, offerer and provider
         num_queries += 1  # select offer
+        num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"offer_id": offer_id})
             assert response.status_code == 404
@@ -45,6 +46,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         offer_id = offer.id
         num_queries = 1  # select api_key, offerer and provider
         num_queries += 1  # select offer
+        num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"offer_id": offer_id})
             assert response.status_code == 404
@@ -61,6 +63,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         product_offer_id = product_offer.id
         num_queries = 1  # select api_key, offerer and provider
         num_queries += 1  # select offer
+        num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(
                 self.endpoint_url, params={"offer_id": product_offer_id + 1}
@@ -871,6 +874,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         bookings_factories.UsedBookingFactory(stock=product_stock)
 
         num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
 
