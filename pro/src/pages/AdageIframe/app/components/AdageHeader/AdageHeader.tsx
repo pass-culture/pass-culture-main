@@ -41,7 +41,7 @@ export const AdageHeader = () => {
   const institutionBudget = getEducationalInstitutionBudget.data?.budget
 
   return (
-    <div
+    <header
       className={cn([styles['adage-header']], {
         [styles['adage-header-discovery']]: isDiscoveryPage,
       })}
@@ -65,7 +65,7 @@ export const AdageHeader = () => {
           )}
       </nav>
       {adageUser.role !== AdageFrontRoles.READONLY && !isDiscoveryPage && (
-        <div className={styles['adage-header-help']}>
+        <section className={styles['adage-header-help']}>
           Besoin d’aide pour réserver des offres pass Culture ?
           <ButtonLink
             variant={ButtonVariant.TERNARY}
@@ -77,8 +77,8 @@ export const AdageHeader = () => {
           >
             Télécharger l’aide
           </ButtonLink>
-        </div>
+        </section>
       )}
-    </div>
+    </header>
   )
 }

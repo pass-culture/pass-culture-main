@@ -1,4 +1,5 @@
 import {
+  DEFAULT_AXE_RULES,
   MOCKED_BACK_ADDRESS_LABEL,
   MOCKED_BACK_ADDRESS_STREET,
 } from '../support/constants.ts'
@@ -177,6 +178,7 @@ export function homePageLoaded() {
   cy.findByText('Bienvenue sur votre espace partenaire')
   cy.findAllByText(/Votre page partenaire|Vos pages partenaire/)
   cy.findAllByTestId('spinner').should('not.exist')
+  cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 }
 
 /**

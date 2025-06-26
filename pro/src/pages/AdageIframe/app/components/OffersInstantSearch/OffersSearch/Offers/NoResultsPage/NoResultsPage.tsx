@@ -1,4 +1,3 @@
-
 import { VenueResponse } from 'apiClient/adage'
 import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -32,7 +31,7 @@ export const NoResultsPage = ({
 
   return (
     <div className={styles['no-results']}>
-      <p className={styles['no-results-text']}>{noResultText}</p>
+      <h1 className={styles['no-results-text']}>{noResultText}</h1>
       <p className={styles['no-results-suggestion']}>
         {!venue && noResultSuggestionText}
       </p>
