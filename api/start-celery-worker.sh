@@ -6,4 +6,6 @@ until psql $DATABASE_URL -c '\q'; do
   sleep 1
 done
 
-celery -A pcapi.celery_tasks.celery_worker worker -Q "celery.external_calls.priority,celery.external_calls.default" --loglevel=DEBUG
+celery -A pcapi.celery_tasks.celery_worker worker \
+  -Q "celery.external_calls.priority,celedy.internal_calls.priority,celery.internal_calls.default,celery.external_calls.default" \
+  --loglevel=DEBUG
