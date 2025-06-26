@@ -120,6 +120,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    truncate_artist_tables()
-    import_all_artists_data()
+    if args.not_dry:
+        truncate_artist_tables()
+        import_all_artists_data()
+
     reindex_artist_product_offers(batch_size=args.batch_size, not_dry=args.not_dry)
