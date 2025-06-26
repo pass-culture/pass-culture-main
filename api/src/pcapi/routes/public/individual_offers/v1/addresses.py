@@ -1,12 +1,12 @@
 import logging
 
-from pcapi import repository
 from pcapi.connectors import api_adresse
 from pcapi.core.geography import models as geography_models
 from pcapi.core.geography import repository as geography_repository
 from pcapi.core.offerers import api as offerers_api
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.repository.session_management import atomic
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 @blueprints.public_api.route("/public/offers/v1/addresses/<int:address_id>", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -55,6 +56,7 @@ def get_address(
 
 
 @blueprints.public_api.route("/public/offers/v1/addresses/search", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -112,6 +114,7 @@ def search_addresses(query: AddressModel) -> SearchAddressResponse:
 
 
 @blueprints.public_api.route("/public/offers/v1/addresses", methods=["POST"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -178,11 +181,11 @@ def create_address(body: AddressModel) -> AddressResponse:
             latitude=body.latitude,
             longitude=body.longitude,
         )
-    with repository.transaction():
-        address = offerers_api.get_or_create_address(
-            location_data=location_data,
-            is_manual_edition=ban_address is None,
-        )
+
+    address = offerers_api.get_or_create_address(
+        location_data=location_data,
+        is_manual_edition=ban_address is None,
+    )
 
     return AddressResponse.from_orm(address)
 
