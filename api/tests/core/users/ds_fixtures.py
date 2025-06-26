@@ -1096,7 +1096,7 @@ DS_RESPONSE_CORRECTION_RESOLVED = {
                     "deposeParUnTiers": False,
                     "demandeur": {"nom": "B\u00e9n\u00e9ficiaire", "prenom": "Jeune", "email": None},
                     "demarche": {"revision": {"id": "UHJvY2VkdXJlUmV2aXNpb24tMTYyOTUz"}},
-                    "instructeurs": [{"email": "instructeur@passculture.app"}],
+                    "instructeurs": [],  # when empty, check that we get last instructor from messages
                     "champs": [
                         {"id": "Q2hhbXAtMzM0NjAwOA==", "value": None},
                         {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": "2006-09-08"},
