@@ -98,11 +98,10 @@ describe('Create collective offers', () => {
     cy.get('#list-institution')
       .findByText(/COLLEGE 123/)
       .click()
-    cy.findByText("Renseignez l'établissement scolaire et l'enseignant").click()
-
-    cy.findByText("Renseignez l'établissement scolaire et l'enseignant").click()
-
     cy.findByText('Enregistrer et continuer').click()
+    cy.wait('@educationalOfferers').its('response.statusCode').should('eq', 200)
+    cy.findByRole('heading', { name: 'Détails de l’offre' }).should('exist')
+
     cy.findByText('Enregistrer et continuer').click()
     cy.findByText('Sauvegarder le brouillon et quitter').click()
 
@@ -116,7 +115,7 @@ describe('Create collective offers', () => {
     cy.findByText('Filtrer').click()
 
     cy.findByRole('button', { name: 'Statut' }).click()
-    cy.findByTestId('panel-scrollable').scrollTo('bottom') 
+    cy.findByTestId('panel-scrollable').scrollTo('bottom')
     cy.findByText('Brouillon').click()
 
     // We click outside the filter to close it
@@ -275,6 +274,8 @@ describe('Create collective offers', () => {
     cy.findByText("Renseignez l'établissement scolaire et l'enseignant").click()
 
     cy.findByText('Enregistrer et continuer').click()
+    cy.wait('@educationalOfferers').its('response.statusCode').should('eq', 200)
+    cy.findByRole('heading', { name: 'Détails de l’offre' }).should('exist')
     cy.findByText('Enregistrer et continuer').click()
     cy.findByText('Sauvegarder le brouillon et quitter').click()
 
@@ -288,7 +289,7 @@ describe('Create collective offers', () => {
     cy.findByText('Filtrer').click()
 
     cy.findByRole('button', { name: 'Statut' }).click()
-    cy.findByTestId('panel-scrollable').scrollTo('bottom') 
+    cy.findByTestId('panel-scrollable').scrollTo('bottom')
     cy.findByText('Brouillon').click()
     // We click outside the filter to close it
     cy.findByRole('heading', { name: 'Offres collectives' }).click()
