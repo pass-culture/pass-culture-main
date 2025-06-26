@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 def celery_async_task(
     name: str,
-    autoretry_for: typing.Tuple[Exception, ...],
     model: type[pydantic_v1.BaseModel] | None,
+    autoretry_for: typing.Tuple[Exception, ...] = (),
     retry_backoff: bool = True,
 ) -> typing.Callable:
     """
@@ -21,6 +21,8 @@ def celery_async_task(
 
     Parameters :
     name:  controls what route is used for the task and therefore which worker will run it.
+    autoretry_for:  a tuple of exception that will make the worker retry the task automatically if they are raised.
+    retry_backoff: if set, the task will not be retried immediately and will follow an exponential backoff retry scheme.
     model: if not None, will perform input validation against pydantic model and parse and load it to and from JSON to ensure
     that the input is JSON serializable. Otherwise this step will be skipped.
     """

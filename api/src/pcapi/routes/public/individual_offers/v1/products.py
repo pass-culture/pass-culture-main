@@ -22,6 +22,7 @@ from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public import utils as public_utils
@@ -326,13 +327,23 @@ def post_product_offer_by_ean(body: products_serializers.ProductsOfferByEanCreat
 
     chunk_size = settings.PUBLIC_API_EAN_PRODUCTS_BATCH_SIZE
     for products in chunks_utils.get_chunks(body.products, chunk_size=chunk_size):
-        offers_tasks.create_or_update_ean_offers.delay(
-            serialized_products_stocks=_serialize_products_from_body(products),
-            venue_id=venue.id,
-            provider_id=current_api_key.provider.id,
-            address_id=address_id,
-            address_label=address_label,
-        )
+        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CREATE_UPDATE_EAN_OFFERS.is_active():
+            payload = offers_schemas.CreateOrUpdateEANOffersRequest(
+                serialized_products_stocks=_serialize_products_from_body(products),
+                venue_id=venue.id,
+                provider_id=current_api_key.provider.id,
+                address_id=address_id,
+                address_label=address_label,
+            )
+            offers_tasks.create_or_update_ean_offers_celery.delay(payload.dict())
+        else:
+            offers_tasks.create_or_update_ean_offers.delay(
+                serialized_products_stocks=_serialize_products_from_body(products),
+                venue_id=venue.id,
+                provider_id=current_api_key.provider.id,
+                address_id=address_id,
+                address_label=address_label,
+            )
 
 
 def _serialize_products_from_body(

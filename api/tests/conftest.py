@@ -35,6 +35,7 @@ import pcapi.core.search.testing as search_testing
 import pcapi.core.testing
 import pcapi.core.users.models as users_models
 from pcapi.celery_tasks.celery import celery_init_app
+from pcapi.celery_tasks.config import CELERY_BASE_SETTINGS
 from pcapi.core.users import testing as users_testing
 from pcapi.db_utils import clean_all_database
 from pcapi.db_utils import install_database_extensions
@@ -123,11 +124,10 @@ def build_main_app():
     # pytest_flask_sqlalchemy.
     app.teardown_request_funcs[None].remove(remove_db_session)
 
+    celery_config = {**CELERY_BASE_SETTINGS, "task_always_eager": True}
+
     app.config.from_mapping(
-        CELERY=dict(
-            # For testing, tasks are run locally
-            task_always_eager=True,
-        ),
+        CELERY=celery_config,
     )
 
     celery_init_app(app)

@@ -25,6 +25,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 from pcapi import settings
 from pcapi.celery_tasks.celery import celery_init_app
+from pcapi.celery_tasks.config import CELERY_BASE_SETTINGS
 from pcapi.core import monkeypatches
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.logging import get_or_set_correlation_id
@@ -219,21 +220,7 @@ install_commands(app)
 finance_utils.install_template_filters(app)
 
 app.config.from_mapping(
-    CELERY=dict(
-        broker_url=settings.REDIS_URL,
-        task_acks_late=True,
-        task_reject_on_worker_lost=True,
-        task_serializer="json",
-        result_serializer="json",
-        accept_content=["json"],
-        # We must prefix celery queues with "celery." to easily monitor
-        # their length using the redis prometheus exporter
-        task_routes={
-            "tasks.mails.default.*": {"queue": "celery.external_calls.default"},
-            "tasks.mails.priority.*": {"queue": "celery.external_calls.priority"},
-        },
-        task_ignore_result=True,
-    ),
+    CELERY=CELERY_BASE_SETTINGS,
 )
 
 celery_init_app(app)
