@@ -397,7 +397,7 @@ describe('CollectiveActionsCells', () => {
         offerVenue: {
           addressType: OfferAddressType.OTHER,
           otherAddress: 'A la mairie',
-          venueId: 0,
+          venueId: 4,
         },
         students: ['Collège - 3e'],
         templateId: 200,

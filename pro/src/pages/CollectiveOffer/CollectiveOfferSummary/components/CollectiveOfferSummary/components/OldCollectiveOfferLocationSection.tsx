@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -6,6 +7,8 @@ import {
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { useOfferer } from 'commons/hooks/swr/useOfferer'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import {
   Description,
   SummaryDescriptionList,
@@ -30,6 +33,9 @@ export const OldCollectiveOfferLocationSection = ({
     ([, venueIdParam]) => api.getVenue(venueIdParam)
   )
 
+  const offererId = useSelector(selectCurrentOffererId)
+  const { data: offerer } = useOfferer(offererId)
+
   const interventionAreas = getInterventionAreaLabels(offer.interventionArea)
 
   const venue = venueQuery.data
@@ -47,7 +53,13 @@ export const OldCollectiveOfferLocationSection = ({
   }
 
   const descriptions: Description[] = [
-    { text: formatOfferEventAddress(offer.offerVenue, venue) },
+    {
+      text: formatOfferEventAddress(
+        offer.offerVenue,
+        venue,
+        offerer?.managedVenues || []
+      ),
+    },
   ]
   if (interventionAreas) {
     descriptions.push({

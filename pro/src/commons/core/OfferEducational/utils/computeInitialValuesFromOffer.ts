@@ -173,7 +173,10 @@ export const computeInitialValuesFromOffer = (
     title: offer.name,
     description: offer.description,
     duration: computeDurationString(offer.durationMinutes),
-    eventAddress: offer.offerVenue,
+    eventAddress: {
+      ...offer.offerVenue,
+      venueId: offer.offerVenue.venueId || Number(initialVenueId),
+    },
     participants: participants,
     accessibility: {
       audio: Boolean(offer.audioDisabilityCompliant),
