@@ -114,7 +114,9 @@ def import_deposit_institution_csv(
                 db.session.query(educational_models.EducationalInstitutionProgram).filter_by(name=program_name).one()
             )
             logger.info("Updating institutions with program %s", program_name)
-            _update_institutions_educational_program(educational_program=educational_program, uais=data.keys())
+            _update_institutions_educational_program(
+                educational_program=educational_program, uais=data.keys(), start=educational_year.beginningDate
+            )
 
         return total_amount
 
@@ -207,24 +209,61 @@ def import_deposit_institution_data(
 
 
 def _update_institutions_educational_program(
-    educational_program: educational_models.EducationalInstitutionProgram, uais: typing.Iterable[str]
+    educational_program: educational_models.EducationalInstitutionProgram, uais: typing.Iterable[str], start: datetime
 ) -> None:
-    institutions: typing.Iterable[educational_models.EducationalInstitution] = db.session.query(
-        educational_models.EducationalInstitution
-    ).options(sa_orm.joinedload(educational_models.EducationalInstitution.programAssociations))
+    """
+    For now we do not manage the specific cases:
+    - an institution is currently linked to the program, but it is not present in the deposit data (i.e not present in uais)
+    - an institution was previously linked to the program and it is present in the deposit data
+    In both cases we log an error
+
+    For an institution that was never linked to the program, we simply add the link
+    """
+    institutions: list[educational_models.EducationalInstitution] = (
+        db.session.query(educational_models.EducationalInstitution)
+        .options(sa_orm.joinedload(educational_models.EducationalInstitution.programAssociations))
+        .all()
+    )
+
     institution_by_uai = {institution.institutionId: institution for institution in institutions}
+
+    institutions_in_program_not_in_data = {
+        institution.institutionId
+        for institution in institutions
+        if institution.institutionId not in uais
+        and institution.programAssociations
+        and start in institution.programAssociations[0].timespan
+    }
+    if institutions_in_program_not_in_data:
+        logger.error(
+            "UAIs in DB are associated with program %s but not present in data: %s",
+            educational_program.name,
+            ", ".join(institutions_in_program_not_in_data),
+        )
 
     for uai in uais:
         institution = institution_by_uai[uai]
+        program_associations = [
+            association
+            for association in institution.programAssociations
+            if association.programId == educational_program.id
+        ]
+        if program_associations:
+            [association] = institution.programAssociations
+        else:
+            association = None
 
-        if educational_program.id not in {assoc.programId for assoc in institution.programAssociations}:
+        if association is None:
             logger.info("Linking UAI %s to program %s", uai, educational_program.name)
-            # FIXME: (rprasquier) the timespan will be updated accordingly once the logic of in/out of a program will be implemented on the import script
             institution.programAssociations.append(
                 educational_models.EducationalInstitutionProgramAssociation(
                     programId=educational_program.id,
-                    timespan=db_utils.make_timerange(datetime.utcnow(), None),
+                    timespan=db_utils.make_timerange(start, None),
                 )
+            )
+        elif association.timespan.upper is not None and association.timespan.upper < start:
+            logger.error(
+                "UAI %s was previously associated with program %s, cannot add it back", uai, educational_program.name
             )
 
     db.session.flush()
