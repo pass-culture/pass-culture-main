@@ -335,7 +335,7 @@ export const ModalImageUpsertOrEdit = ({
               }}
               disabled={!image}
             >
-              Enregistrer
+              Importer
             </Button>
           </div>
         </DialogBuilder.Footer>
