@@ -866,7 +866,7 @@ class CheckBookingLimitDatetimeTest:
 
 class CheckPublicationDateTest:
     def test_check_publication_date_should_raise(self):
-        with pytest.raises(exceptions.OfferException) as exc:
+        with pytest.raises(exceptions.OfferException):
             validation.check_publication_date(datetime.datetime.utcnow() + datetime.timedelta(days=750))
 
     def test_check_publication_date_should_raise_not_raise(self):

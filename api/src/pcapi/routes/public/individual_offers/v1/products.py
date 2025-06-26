@@ -31,6 +31,7 @@ from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public import utils as public_utils
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
+from pcapi.routes.public.individual_offers.v1.serializers import products as products_serializers
 from pcapi.routes.public.services import authorization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
@@ -194,7 +195,7 @@ def get_event_titelive_music_types() -> serialization.GetTiteliveEventMusicTypes
         )
     ),
 )
-def post_product_offer(body: serialization.ProductOfferCreation) -> serialization.ProductOfferResponse:
+def post_product_offer(body: products_serializers.ProductOfferCreation) -> serialization.ProductOfferResponse:
     """
     Create Product Offer
 
@@ -780,7 +781,7 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
         )
     ),
 )
-def edit_product(body: serialization.ProductOfferEdition) -> serialization.ProductOfferResponse:
+def edit_product(body: products_serializers.ProductOfferEdition) -> serialization.ProductOfferResponse:
     """
     Update Product Offer
 
