@@ -22,6 +22,7 @@
   <th scope="col">Formats</th>
   {% if has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Règles de conformité</th>{% endif %}
   <th scope="col">État</th>
+  <th scope="col">Statut</th>
   <th scope="col">Créateur de l'offre</th>
   <th scope="col">
     {% if date_created_sort_url %}
@@ -100,6 +101,7 @@
           {{ collective_offer.rejectionReason | format_collective_offer_rejection_reason }}
         {% endif %}
       </td>
+      <td>{{ collective_offer.displayedStatus | format_collective_offer_displayed_status }}</td>
       <td>{{ links.build_pro_user_name_to_details_link(collective_offer.authorId, collective_offer.author.full_name) }}</td>
       <td>{{ collective_offer.dateCreated | format_date }}</td>
       <td>

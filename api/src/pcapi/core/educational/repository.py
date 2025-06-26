@@ -576,7 +576,7 @@ def get_collective_offers_by_filters(
         query = query.filter(educational_models.CollectiveOffer.name.ilike(search))
 
     if statuses:
-        query = _filter_collective_offers_by_statuses(query, statuses)
+        query = filter_collective_offers_by_statuses(query, statuses)
 
     if period_beginning_date is not None or period_ending_date is not None:
         subquery = (
@@ -686,7 +686,7 @@ def get_collective_offers_template_by_filters(
     return query
 
 
-def _filter_collective_offers_by_statuses(
+def filter_collective_offers_by_statuses(
     query: BaseQuery,
     statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None,
 ) -> BaseQuery:
@@ -1120,7 +1120,7 @@ def list_public_collective_offers(
     )
 
     if displayedStatus is not None:
-        query = _filter_collective_offers_by_statuses(query, statuses=[displayedStatus])
+        query = filter_collective_offers_by_statuses(query, statuses=[displayedStatus])
 
     query = query.order_by(educational_models.CollectiveOffer.id)
     query = query.limit(limit)
