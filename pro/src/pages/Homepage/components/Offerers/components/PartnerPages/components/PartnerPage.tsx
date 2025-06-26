@@ -101,7 +101,6 @@ export const PartnerPage = ({
           onImageUpload={handleOnImageUpload}
           onImageDelete={() => {}}
           initialValues={imageValues}
-          mode={UploaderModeEnum.VENUE}
           hideActionButtons
           onClickButtonImageAdd={logButtonAddClick}
         />

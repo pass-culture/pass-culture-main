@@ -12,6 +12,8 @@ import {
   ModalImageUpsertOrEdit,
   OnImageUploadArgs,
 } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import { ImagePlaceholder } from 'components/SafeImage/ImagePlaceholder/ImagePlaceholder'
+import { SafeImage } from 'components/SafeImage/SafeImage'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -19,7 +21,6 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ImageDragAndDropUploader.module.scss'
-
 export interface ImageDragAndDropUploaderProps {
   className?: string
   dragAndDropClassName?: string
@@ -87,9 +88,9 @@ export const ImageDragAndDropUploader = ({
   return (
     <div className={cn(styles['image-uploader-image-container'], className)}>
       {hasImage && (
-        <img
+        <SafeImage
           alt={'Prévisualisation de l’image'}
-          data-testid="image-preview"
+          testId="image-preview"
           className={cn(styles['image-preview'], {
             [styles['preview-venue']]: mode === UploaderModeEnum.VENUE,
             [styles['preview-offer']]:
@@ -97,6 +98,16 @@ export const ImageDragAndDropUploader = ({
               mode === UploaderModeEnum.OFFER_COLLECTIVE,
           })}
           src={imageUrl}
+          placeholder={
+            <ImagePlaceholder
+              className={cn({
+                [styles['placeholder-venue']]: mode === UploaderModeEnum.VENUE,
+                [styles['placeholder-offer']]:
+                  mode === UploaderModeEnum.OFFER ||
+                  mode === UploaderModeEnum.OFFER_COLLECTIVE,
+              })}
+            />
+          }
         />
       )}
       <div

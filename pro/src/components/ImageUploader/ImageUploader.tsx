@@ -5,6 +5,8 @@ import {
   UploaderModeEnum,
 } from 'commons/utils/imageUploadTypes'
 import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import { ImagePlaceholder } from 'components/SafeImage/ImagePlaceholder/ImagePlaceholder'
+import { SafeImage } from 'components/SafeImage/SafeImage'
 
 import { ButtonImageDelete } from './components/ButtonImageDelete/ButtonImageDelete'
 import { ButtonImageEdit } from './components/ButtonImageEdit/ButtonImageEdit'
@@ -15,7 +17,6 @@ export interface ImageUploaderProps {
   onImageUpload: (values: OnImageUploadArgs) => void
   onImageDelete: () => void
   initialValues?: UploadImageValues
-  mode: UploaderModeEnum
   onClickButtonImageAdd?: () => void
   hideActionButtons?: boolean
   disableForm?: boolean
@@ -26,7 +27,6 @@ export const ImageUploader = ({
   onImageUpload,
   onImageDelete,
   initialValues = {},
-  mode,
   onClickButtonImageAdd,
   hideActionButtons = false,
   disableForm = false,
@@ -37,22 +37,20 @@ export const ImageUploader = ({
     <div className={cn(styles['image-uploader-image-container'], className)}>
       {imageUrl && originalImageUrl ? (
         <>
-          <img
+          <SafeImage
             alt={'Prévisualisation de l’image'}
             data-testid="image-preview"
-            className={cn(styles['image-preview'], {
-              [styles['preview-venue']]: mode === UploaderModeEnum.VENUE,
-              [styles['preview-offer']]:
-                mode === UploaderModeEnum.OFFER ||
-                mode === UploaderModeEnum.OFFER_COLLECTIVE,
-            })}
+            className={cn(styles['image-preview'], styles['preview-venue'])}
             src={imageUrl}
+            placeholder={
+              <ImagePlaceholder className={styles['placeholder-venue']} />
+            }
           />
           {!hideActionButtons && (
             <div className={styles['image-uploader-actions-container']}>
               <div className={styles['actions-wrapper']}>
                 <ButtonImageEdit
-                  mode={mode}
+                  mode={UploaderModeEnum.VENUE}
                   initialValues={{
                     originalImageUrl,
                     imageUrl,
@@ -72,7 +70,7 @@ export const ImageUploader = ({
         </>
       ) : (
         <ButtonImageEdit
-          mode={mode}
+          mode={UploaderModeEnum.VENUE}
           onImageUpload={onImageUpload}
           onImageDelete={onImageDelete}
           onClickButtonImage={onClickButtonImageAdd}
