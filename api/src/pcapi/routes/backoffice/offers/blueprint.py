@@ -742,27 +742,30 @@ def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
     if not offer:
         raise NotFound()
 
-    form = forms.EditOfferForm()
+    form = forms.EditOfferForm(utils.get_query_params())
     form.criteria.choices = [(criterion.id, criterion.name) for criterion in offer.criteria]
     if offer.rankingWeight:
         form.rankingWeight.data = offer.rankingWeight
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id=f"#offer-row-{offer_id}",
         form=form,
         dst=url_for("backoffice_web.offer.edit_offer", offer_id=offer.id),
         div_id=f"edit-offer-modal-{offer.id}",
         title=f"Édition de l'offre {offer.name}",
         button_text="Enregistrer les modifications",
+        ajax_submit=not form.redirect.data,
     )
 
 
-@list_offers_blueprint.route("/batch/validate", methods=["GET"])
+@list_offers_blueprint.route("/batch/validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_validate_offers_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#offers-table",
         form=form,
         dst=url_for("backoffice_web.offer.batch_validate_offers"),
         div_id="batch-validate-offer-modal",
@@ -782,15 +785,16 @@ def batch_validate_offers() -> utils.BackofficeResponse:
 
     _batch_validate_offers(form.object_ids_list)
     flash("Les offres ont été validées", "success")
-    return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
+    return _render_offer_rows(form.object_ids_list)
 
 
-@list_offers_blueprint.route("/batch/reject", methods=["GET"])
+@list_offers_blueprint.route("/batch/reject", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_reject_offers_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#offers-table",
         form=form,
         dst=url_for("backoffice_web.offer.batch_reject_offers"),
         div_id="batch-reject-offer-modal",
@@ -810,10 +814,10 @@ def batch_reject_offers() -> utils.BackofficeResponse:
 
     _batch_reject_offers(form.object_ids_list)
     flash("Les offres ont été rejetées", "success")
-    return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
+    return _render_offer_rows(form.object_ids_list)
 
 
-@list_offers_blueprint.route("/batch/edit", methods=["GET", "POST"])
+@list_offers_blueprint.route("/batch/edit", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def get_batch_edit_offer_form() -> utils.BackofficeResponse:
     form = forms.BatchEditOfferForm()
@@ -839,7 +843,8 @@ def get_batch_edit_offer_form() -> utils.BackofficeResponse:
             form.criteria.choices = [(criterion.id, criterion.name) for criterion in criteria]
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#offers-table",
         form=form,
         dst=url_for("backoffice_web.offer.batch_edit_offer"),
         div_id="batch-edit-offer-modal",
@@ -885,6 +890,8 @@ def batch_edit_offer() -> utils.BackofficeResponse:
 
         db.session.add(offer)
 
+    db.session.flush()
+
     on_commit(
         functools.partial(
             search.async_index_offer_ids,
@@ -894,7 +901,7 @@ def batch_edit_offer() -> utils.BackofficeResponse:
     )
 
     flash("Les offres ont été modifiées", "success")
-    return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
+    return _render_offer_rows(form.object_ids_list)
 
 
 @list_offers_blueprint.route("/<int:offer_id>/edit", methods=["POST"])
@@ -925,6 +932,10 @@ def edit_offer(offer_id: int) -> utils.BackofficeResponse:
     on_commit(functools.partial(search.reindex_offer_ids, [offer.id]))
 
     flash("L'offre a été modifiée", "success")
+
+    if utils.is_request_from_htmx():
+        return _render_offer_rows([offer_id])
+
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
@@ -936,15 +947,34 @@ def get_validate_offer_form(offer_id: int) -> utils.BackofficeResponse:
     if not offer:
         raise NotFound()
 
-    form = empty_forms.EmptyForm()
+    form = empty_forms.DynamicForm(utils.get_query_params())
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id=f"#offer-row-{offer_id}",
         form=form,
         dst=url_for("backoffice_web.offer.validate_offer", offer_id=offer.id),
         div_id=f"validate-offer-modal-{offer.id}",
         title=f"Validation de l'offre {offer.name}",
         button_text="Valider l'offre",
+        ajax_submit=not form.redirect.data,
+    )
+
+
+def _render_offer_rows(offer_ids: list[int]) -> utils.BackofficeResponse:
+    offer_rows = _get_offers_by_ids(offer_ids=offer_ids)
+    connect_as = {}
+    for offer_row in offer_rows:
+        offer = offer_row.Offer
+        connect_as[offer.id] = get_connect_as(
+            object_type="offer",
+            object_id=offer.id,
+            pc_pro_path=urls.build_pc_pro_offer_path(offer),
+        )
+    return render_template(
+        "offer/list_rows.html",
+        rows=offer_rows,
+        connect_as=connect_as,
     )
 
 
@@ -953,6 +983,9 @@ def get_validate_offer_form(offer_id: int) -> utils.BackofficeResponse:
 def validate_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_validate_offers([offer_id])
     flash("L'offre a été validée", "success")
+
+    if utils.is_request_from_htmx():
+        return _render_offer_rows([offer_id])
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
@@ -964,15 +997,17 @@ def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
     if not offer:
         raise NotFound()
 
-    form = empty_forms.EmptyForm()
+    form = empty_forms.DynamicForm(formdata=utils.get_query_params())
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id=f"#offer-row-{offer_id}",
         form=form,
         dst=url_for("backoffice_web.offer.reject_offer", offer_id=offer.id),
         div_id=f"reject-offer-modal-{offer.id}",
         title=f"Rejet de l'offre {offer.name}",
         button_text="Rejeter l'offre",
+        ajax_submit=not form.redirect.data,
     )
 
 
@@ -981,6 +1016,9 @@ def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
 def reject_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_reject_offers([offer_id])
     flash("L'offre a été rejetée", "success")
+
+    if utils.is_request_from_htmx():
+        return _render_offer_rows([offer_id])
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
@@ -1665,15 +1703,17 @@ def get_activate_offer_form(offer_id: int) -> utils.BackofficeResponse:
     if not offer:
         raise NotFound()
 
-    form = empty_forms.EmptyForm()
+    form = empty_forms.DynamicForm(formdata=utils.get_query_params())
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id=f"#offer-row-{offer_id}",
         form=form,
         dst=url_for("backoffice_web.offer.activate_offer", offer_id=offer.id),
         div_id=f"activate-offer-modal-{offer.id}",
         title=f"Activation de l'offre {offer.name}",
         button_text="Activer l'offre",
+        ajax_submit=not form.redirect.data,
     )
 
 
@@ -1685,24 +1725,27 @@ def get_deactivate_offer_form(offer_id: int) -> utils.BackofficeResponse:
     if not offer:
         raise NotFound()
 
-    form = empty_forms.EmptyForm()
+    form = empty_forms.DynamicForm(formdata=utils.get_query_params())
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id=f"#offer-row-{offer_id}",
         form=form,
         dst=url_for("backoffice_web.offer.deactivate_offer", offer_id=offer.id),
         div_id=f"deactivate-offer-modal-{offer.id}",
         title=f"Désactivation de l'offre {offer.name}",
         button_text="Désactiver l'offre",
+        ajax_submit=not form.redirect.data,
     )
 
 
-@list_offers_blueprint.route("/batch/activate", methods=["GET"])
+@list_offers_blueprint.route("/batch/activate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def get_batch_activate_offers_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#offers-table",
         form=form,
         dst=url_for("backoffice_web.offer.batch_activate_offers"),
         div_id="batch-activate-offer-modal",
@@ -1711,12 +1754,13 @@ def get_batch_activate_offers_form() -> utils.BackofficeResponse:
     )
 
 
-@list_offers_blueprint.route("/batch/deactivate", methods=["GET"])
+@list_offers_blueprint.route("/batch/deactivate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def get_batch_deactivate_offers_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#offers-table",
         form=form,
         dst=url_for("backoffice_web.offer.batch_deactivate_offers"),
         div_id="batch-deactivate-offer-modal",
@@ -1735,6 +1779,8 @@ def _batch_update_activation_offers(offer_ids: list[int], *, is_active: bool) ->
 def activate_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_update_activation_offers([offer_id], is_active=True)
     flash("L'offre a été activée", "success")
+    if utils.is_request_from_htmx():
+        return _render_offer_rows([offer_id])
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
@@ -1749,7 +1795,7 @@ def batch_activate_offers() -> utils.BackofficeResponse:
 
     _batch_update_activation_offers(form.object_ids_list, is_active=True)
     flash("Les offres ont été activées", "success")
-    return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
+    return _render_offer_rows(form.object_ids_list)
 
 
 @list_offers_blueprint.route("/<int:offer_id>/deactivate", methods=["POST"])
@@ -1757,6 +1803,8 @@ def batch_activate_offers() -> utils.BackofficeResponse:
 def deactivate_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_update_activation_offers([offer_id], is_active=False)
     flash("L'offre a été désactivée", "success")
+    if utils.is_request_from_htmx():
+        return _render_offer_rows([offer_id])
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
@@ -1771,4 +1819,4 @@ def batch_deactivate_offers() -> utils.BackofficeResponse:
 
     _batch_update_activation_offers(form.object_ids_list, is_active=False)
     flash("Les offres ont été désactivées", "success")
-    return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
+    return _render_offer_rows(form.object_ids_list)

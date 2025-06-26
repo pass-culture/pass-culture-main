@@ -55,24 +55,27 @@ class PcTableMultiSelect extends PcAddOn {
     this.refreshState()
   }
 
-  refreshState = () => {
-    this.$tables.forEach(($table) => {
-      const rowsIds = new Set([])
-      const { tableMultiSelectId } = $table.dataset
-      if(!$table.querySelector(PcTableMultiSelect.CHECKBOX_ALL_SELECTOR)){
-        return
-      }
-      $table.querySelector(PcTableMultiSelect.CHECKBOX_ALL_SELECTOR).dataset.tableMultiSelectId = tableMultiSelectId
-      $table.querySelectorAll(PcTableMultiSelect.CHECKBOXES_SELECTOR).forEach(($checkbox) => {
-        $checkbox.dataset.tableMultiSelectId = tableMultiSelectId
-        rowsIds.add($checkbox.dataset.id)
-      })
-      this.state[tableMultiSelectId] = {
-        rowsIds,
-        selectedRowsIds: new Set(this.state[tableMultiSelectId] ? this.state[tableMultiSelectId].selectedRowsIds || [] : []),
-      }
+  refreshTableState = ($table) => {
+    const rowsIds = new Set([])
+    const { tableMultiSelectId } = $table.dataset
+    if(!$table.querySelector(PcTableMultiSelect.CHECKBOX_ALL_SELECTOR)){
+      return
+    }
+    $table.querySelector(PcTableMultiSelect.CHECKBOX_ALL_SELECTOR).dataset.tableMultiSelectId = tableMultiSelectId
+    $table.querySelectorAll(PcTableMultiSelect.CHECKBOXES_SELECTOR).forEach(($checkbox) => {
+      $checkbox.dataset.tableMultiSelectId = tableMultiSelectId
+      rowsIds.add($checkbox.dataset.id)
     })
+    this.state[tableMultiSelectId] = {
+      rowsIds,
+      selectedRowsIds: new Set(this.state[tableMultiSelectId] ? this.state[tableMultiSelectId].selectedRowsIds || [] : []),
+    }
   }
+
+  refreshState = () => {
+    this.$tables.forEach(this.refreshTableState)
+  }
+
   bindEvents = () => {
     this.refreshState()
     EventHandler.on(document.body, 'click', PcTableMultiSelect.CHECKBOXES_SELECTOR, this.#onCheckboxClick)
@@ -117,7 +120,7 @@ class PcTableMultiSelect extends PcAddOn {
   #onCheckboxAllClick = (event) => {
     const { tableMultiSelectId } = event.target.dataset
     const $table = this.#getTableFromTableMultiSelectId(tableMultiSelectId)
-    this.#batchSelect($table, event.target.checked)
+    this.batchSelect($table, event.target.checked)
   }
 
   #onCheckboxClick = (event) => {
@@ -149,7 +152,7 @@ class PcTableMultiSelect extends PcAddOn {
     this.#emitChangeEvent($table)
   }
 
-  #batchSelect = ($table, checked) => {
+  batchSelect = ($table, checked) => {
     const { tableMultiSelectId } = $table.dataset
     const selectableCheckboxes = this.#getSelectableCheckboxes($table)
 

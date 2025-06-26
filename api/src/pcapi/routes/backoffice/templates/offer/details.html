@@ -5,6 +5,7 @@
 {% import "components/logo.html" as logo %}
 {% from "components/connect_as.html" import build_connect_as %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
 {% from "components/generic_modal.html" import build_simple_modal_form with context %}
 {% from "components/description.html" import description_detail_horizontal %}
 {% from "components/description.html" import description_detail_vertical %}
@@ -461,19 +462,19 @@
     {% endfor %}
   {% endif %}
   {% if action.DEACTIVATE in allowed_actions %}
-    {{ build_lazy_modal(url_for('backoffice_web.offer.get_deactivate_offer_form', offer_id=offer.id) , "deactivate-offer-modal-" + offer.id|string) }}
+    {{ build_dynamic_modal(url_for('backoffice_web.offer.get_deactivate_offer_form', offer_id=offer.id) , "deactivate-offer-modal-" + offer.id|string, ajax_submit = False) }}
   {% endif %}
   {% if action.ACTIVATE in allowed_actions %}
-    {{ build_lazy_modal(url_for('backoffice_web.offer.get_activate_offer_form', offer_id=offer.id) , "activate-offer-modal-" + offer.id|string) }}
+    {{ build_dynamic_modal(url_for('backoffice_web.offer.get_activate_offer_form', offer_id=offer.id) , "activate-offer-modal-" + offer.id|string, ajax_submit = False) }}
   {% endif %}
   {% if action.VALIDATE in allowed_actions %}
-    {{ build_lazy_modal(url_for('backoffice_web.offer.get_validate_offer_form', offer_id=offer.id) , "validate-offer-modal-" + offer.id|string) }}
+    {{ build_dynamic_modal(url_for('backoffice_web.offer.get_validate_offer_form', offer_id=offer.id) , "validate-offer-modal-" + offer.id|string, ajax_submit = False) }}
   {% endif %}
   {% if action.REJECT in allowed_actions %}
-    {{ build_lazy_modal(url_for('backoffice_web.offer.get_reject_offer_form', offer_id=offer.id) , "reject-offer-modal-" + offer.id|string) }}
+    {{ build_dynamic_modal(url_for('backoffice_web.offer.get_reject_offer_form', offer_id=offer.id) , "reject-offer-modal-" + offer.id|string, ajax_submit = False) }}
   {% endif %}
   {% if action.TAG_WEIGHT in allowed_actions %}
-    {{ build_lazy_modal(url_for('backoffice_web.offer.get_edit_offer_form', offer_id=offer.id) , "edit-offer-modal-" + offer.id|string) }}
+    {{ build_dynamic_modal(url_for('backoffice_web.offer.get_edit_offer_form', offer_id=offer.id) , "edit-offer-modal-" + offer.id|string, ajax_submit = False) }}
   {% endif %}
   {% if action.RESYNC in allowed_actions %}
     <form type="button"

@@ -12,8 +12,8 @@ def filter_whitespaces(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip())
 
 
-def get_soup(html_content: str, from_encoding: str = "utf-8") -> BeautifulSoup:
-    return BeautifulSoup(html_content, features="html5lib", from_encoding=from_encoding)
+def get_soup(html_content: str, from_encoding: str = "utf-8", is_xml: bool = False) -> BeautifulSoup:
+    return BeautifulSoup(html_content, features="lxml" if is_xml else "html5lib", from_encoding=from_encoding)
 
 
 def content_as_text(html_content: str, from_encoding: str = "utf-8") -> str:
@@ -135,11 +135,11 @@ def extract_pagination_info(html_content: str) -> tuple[int, int, int]:
     return int(active_page_link.text), len(page_links), total_results
 
 
-def extract(html_content: str, tag: str = "div", class_: str | None = None) -> list[str]:
+def extract(html_content: str, tag: str = "div", class_: str | None = None, is_xml: bool = False) -> list[str]:
     """
     Extract text from all <div> matching the class, as strings
     """
-    soup = get_soup(html_content)
+    soup = get_soup(html_content, is_xml=is_xml)
 
     if class_ is None:
         elements = soup.find_all(tag)
@@ -166,22 +166,21 @@ def extract_alert(html_content: str, raise_if_not_found: bool = True) -> str | N
     """
     Extract the first flash message
     """
-    soup = get_soup(html_content)
-
-    alert = soup.find("div", class_="alert")
-
-    if alert is None and not raise_if_not_found:
-        return None
-
-    assert alert is not None
-    return filter_whitespaces(alert.text)
+    alerts = extract_alerts(html_content, raise_if_not_found)
+    return alerts[0] if alerts else None
 
 
-def get_tag(html_content: str, class_: str = sentinel, tag: str = "div", **attrs: typing.Any) -> str:
+def get_tag(
+    html_content: str,
+    class_: str = sentinel,
+    tag: str = "div",
+    is_xml: bool = False,
+    **attrs: typing.Any,
+) -> str:
     """
     Find a tag given its class
     """
-    soup = get_soup(html_content)
+    soup = get_soup(html_content, is_xml=is_xml)
     if class_ is not sentinel:
         attrs["class_"] = class_
     found_tag = soup.find(tag, **attrs)
@@ -190,14 +189,15 @@ def get_tag(html_content: str, class_: str = sentinel, tag: str = "div", **attrs
     return found_tag.encode("utf-8")
 
 
-def extract_alerts(html_content: str) -> list[str]:
+def extract_alerts(html_content: str, raise_if_not_found: bool = True) -> list[str]:
     """
     Extract all flash messages
     """
     soup = get_soup(html_content)
 
     alerts = soup.find_all("div", class_="alert")
-    assert alerts
+    if raise_if_not_found:
+        assert alerts
 
     return [filter_whitespaces(alert.text) for alert in alerts]
 

@@ -1,9 +1,15 @@
 import wtforms
 from flask_wtf import FlaskForm
 
+from pcapi.routes.backoffice.forms.fields import HiddenBooleanField
+
 
 class EmptyForm(FlaskForm):
     pass
+
+
+class DynamicForm(EmptyForm):
+    redirect = HiddenBooleanField(default=False)
 
 
 class BatchForm(FlaskForm):

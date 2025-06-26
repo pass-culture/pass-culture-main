@@ -234,6 +234,11 @@ class PCIntegerField(wtforms.IntegerField):
     ]
 
 
+class HiddenBooleanField(wtforms.BooleanField):
+    widget = wtforms.widgets.HiddenInput()
+    false_values = (False, "False", "false", "off", "0", "")
+
+
 class PCOptHiddenIntegerField(wtforms.IntegerField):
     widget = partial(widget, template="components/forms/string_field.html")
     validators = [
