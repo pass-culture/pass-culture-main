@@ -21,6 +21,7 @@ export interface ToggleProps {
    * The label text for the toggle.
    */
   label: string
+  labelPosition?: 'left' | 'right'
   /**
    * Callback function triggered when the toggle is clicked.
    */
@@ -46,13 +47,13 @@ export interface ToggleProps {
  * />
  *
  * @accessibility
- * - **Aria-Pressed**: The button uses the `aria-pressed` attribute to indicate its current state to assistive technologies.
  * - **Labeling**: Ensure the `label` prop is descriptive to inform users of the toggle's purpose.
  */
 export const Toggle = ({
   isActiveByDefault = false,
   isDisabled = false,
-  label = 'Label',
+  label,
+  labelPosition = 'left',
   handleClick,
 }: ToggleProps) => {
   const [isActive, setIsActive] = useState(isActiveByDefault)
@@ -74,8 +75,9 @@ export const Toggle = ({
       aria-pressed={isActive}
       onClick={onClick}
     >
-      {label}
+      {labelPosition === 'left' ? label : null}
       <span className={cn(styles['toggle-display'])} hidden />
+      {labelPosition === 'right' ? label : null}
     </button>
   )
 }
