@@ -4,6 +4,7 @@ import logging
 import sqlalchemy as sa
 
 from pcapi import repository
+from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.core import search
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import utils as finance_utils
@@ -12,12 +13,14 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.routes.public.individual_offers.v1 import utils as individual_offers_v1_utils
+from pcapi.routes.serialization import BaseModel
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
 
@@ -146,7 +149,39 @@ def _get_existing_offers(
     )
 
 
+@celery_async_task(
+    name="tasks.offers.default.create_or_update_ean_offers",
+    autoretry_for=(),
+    model=offers_schemas.CreateOrUpdateEANOffersRequest,
+)
+def create_or_update_ean_offers_celery(payload: offers_schemas.CreateOrUpdateEANOffersRequest) -> None:
+    create_or_update_ean_offers(
+        serialized_products_stocks=payload.serialized_products_stocks,
+        venue_id=payload.venue_id,
+        provider_id=payload.provider_id,
+        address_id=payload.address_id,
+        address_label=payload.address_label,
+    )
+
+
 @job(worker.low_queue)
+def create_or_update_ean_offers_rq(
+    *,
+    serialized_products_stocks: dict,
+    venue_id: int,
+    provider_id: int,
+    address_id: int | None = None,
+    address_label: str | None = None,
+) -> None:
+    create_or_update_ean_offers(
+        serialized_products_stocks=serialized_products_stocks,
+        venue_id=venue_id,
+        provider_id=provider_id,
+        address_id=address_id,
+        address_label=address_label,
+    )
+
+
 def create_or_update_ean_offers(
     *,
     serialized_products_stocks: dict,
@@ -262,6 +297,7 @@ def create_or_update_ean_offers(
                 # -> datetimes are not always handleded the same way.
                 # -> it can be messy.
                 booking_limit = stock_data["booking_limit_datetime"]
+                booking_limit = _parse_booking_datetime(booking_limit)
                 booking_limit = booking_limit.replace(tzinfo=datetime.timezone.utc) if booking_limit else None
 
                 upsert_product_stock(
@@ -287,3 +323,10 @@ def create_or_update_ean_offers(
         reason=search.IndexationReason.OFFER_UPDATE,
         log_extra={"venue_id": venue_id, "source": "offers_public_api"},
     )
+
+
+def _parse_booking_datetime(datetime_str: str | None) -> datetime.datetime | None:
+    result = None
+    if datetime_str is not None:
+        result = datetime.datetime.strptime(datetime_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+    return result

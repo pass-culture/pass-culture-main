@@ -123,13 +123,6 @@ def build_main_app():
     # pytest_flask_sqlalchemy.
     app.teardown_request_funcs[None].remove(remove_db_session)
 
-    app.config.from_mapping(
-        CELERY=dict(
-            # For testing, tasks are run locally
-            task_always_eager=True,
-        ),
-    )
-
     celery_init_app(app)
 
     with app.app_context():

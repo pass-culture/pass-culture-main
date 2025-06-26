@@ -33,7 +33,7 @@ services:
       target: api-flask
     working_dir: /usr/src/app
     container_name: pc-api
-    command: [ "./start-api-when-database-is-ready.sh" ]
+    command: ["./start-api-when-database-is-ready.sh"]
     volumes:
       - ./api:/usr/src/app
     env_file:
@@ -57,7 +57,7 @@ services:
       target: api-flask
     working_dir: /usr/src/app
     container_name: pc-backoffice
-    command: [ "./start-backoffice-when-api-is-ready.sh" ]
+    command: ["./start-backoffice-when-api-is-ready.sh"]
     volumes:
       - ./api:/usr/src/app
     env_file:
@@ -81,7 +81,7 @@ services:
       target: api-flask
     working_dir: /usr/src/app
     container_name: pc-celery-worker
-    command: [ "./start-celery-worker.sh" ]
+    command: ["./start-celery-worker.sh"]
     volumes:
       - ./api:/usr/src/app
     env_file:
@@ -92,6 +92,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - postgres-test
     ports:
       - 10003:10003 # debugger port
 

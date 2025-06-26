@@ -6,12 +6,14 @@ from pydantic.v1 import ConstrainedList
 from pydantic.v1 import EmailStr
 from pydantic.v1 import Field
 from pydantic.v1 import HttpUrl
+from pydantic.v1 import StrictInt
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
+from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils.date import time_to_int
@@ -309,3 +311,17 @@ class UpdateOffer(BaseModel):
         arbitrary_types_allowed = True
         alias_generator = serialization_utils.to_camel
         extra = "forbid"
+
+
+class SerializedProductsStocks(typing.TypedDict):
+    quantity: StrictInt | individual_offers_v1_serialization.UNLIMITED_LITERAL | None
+    price: int
+    booking_limit_datetime: str | None
+
+
+class CreateOrUpdateEANOffersRequest(BaseModel):
+    serialized_products_stocks: dict[str, SerializedProductsStocks]
+    venue_id: int
+    provider_id: int
+    address_id: int | None
+    address_label: str | None

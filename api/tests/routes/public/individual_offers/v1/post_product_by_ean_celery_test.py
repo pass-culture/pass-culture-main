@@ -21,7 +21,7 @@ from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 
 @pytest.mark.usefixtures("db_session")
-@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_CREATE_UPDATE_EAN_OFFERS=False)
+@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_CREATE_UPDATE_EAN_OFFERS=True)
 class PostProductByEanTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/products/ean"
     endpoint_method = "post"

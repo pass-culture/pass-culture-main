@@ -19,6 +19,7 @@ from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository.session_management import atomic
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
@@ -296,25 +297,39 @@ def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) ->
         address_label = body.location.address_label
 
     serialized_products_stocks = _serialize_products_from_body(body.products)
-    offers_tasks.create_or_update_ean_offers(
-        serialized_products_stocks=serialized_products_stocks,
-        venue_id=venue.id,
-        provider_id=current_api_key.provider.id,
-        address_id=address_id,
-        address_label=address_label,
-    )
+    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CREATE_UPDATE_EAN_OFFERS.is_active():
+        payload = offers_schemas.CreateOrUpdateEANOffersRequest(
+            serialized_products_stocks=serialized_products_stocks,
+            venue_id=venue.id,
+            provider_id=current_api_key.provider.id,
+            address_id=address_id,
+            address_label=address_label,
+        )
+        offers_tasks.create_or_update_ean_offers_celery.delay(payload.dict())
+    else:
+        offers_tasks.create_or_update_ean_offers_rq.delay(
+            serialized_products_stocks=serialized_products_stocks,
+            venue_id=venue.id,
+            provider_id=current_api_key.provider.id,
+            address_id=address_id,
+            address_label=address_label,
+        )
 
 
 def _serialize_products_from_body(
     products: list[serialization.ProductOfferByEanCreation],
-) -> dict:
-    stock_details = {}
+) -> dict[str, offers_schemas.SerializedProductsStocks]:
+    stock_details: dict[str, offers_schemas.SerializedProductsStocks] = {}
     for product in products:
-        stock_details[product.ean] = {
-            "quantity": product.stock.quantity,
-            "price": product.stock.price,
-            "booking_limit_datetime": product.stock.booking_limit_datetime,
-        }
+        booking_limit_datetime = product.stock.booking_limit_datetime
+        booking_limit_str: str | None = None
+        if booking_limit_datetime is not None:
+            booking_limit_str = booking_limit_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        stock_details[product.ean] = offers_schemas.SerializedProductsStocks(
+            quantity=product.stock.quantity,
+            price=product.stock.price,
+            booking_limit_datetime=booking_limit_str,
+        )
     return stock_details
 
 
