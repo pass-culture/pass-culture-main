@@ -40,6 +40,7 @@ interface ImageEditorProps extends ImageEditorConfig {
   children?: never
   onChangeDone?: () => void
   onImagePainted?: () => void
+  onImageError?: (ev: Event) => void
 }
 
 export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
@@ -55,6 +56,7 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
       initialScale = 1,
       onChangeDone,
       onImagePainted,
+      onImageError,
     },
     ref
   ) => {
@@ -141,6 +143,7 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
           color={[0, 0, 0, 0.2]}
           crossOrigin="anonymous"
           image={image}
+          onLoadFailure={onImageError}
           onImageChange={drawCropBorder}
           onImageReady={() => {
             onImagePainted?.()

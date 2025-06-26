@@ -184,6 +184,11 @@ export const ModalImageUpsertOrEdit = ({
     }
   }
 
+  const onImageError = () => {
+    setIsPaintingImage(false)
+    notification.error('Erreur lors de la récupération de votre image.')
+  }
+
   const handleImageChange = (
     callback?:
       | ((
@@ -249,6 +254,7 @@ export const ModalImageUpsertOrEdit = ({
                     initialScale={scale}
                     onChangeDone={onImageEditorChange}
                     onImagePainted={onImagePainted}
+                    onImageError={onImageError}
                   />
                   <div className={style['modal-image-crop-actions']}>
                     <Button
