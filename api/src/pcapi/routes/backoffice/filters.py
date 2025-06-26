@@ -23,6 +23,7 @@ from pcapi.core.categories import pro_categories
 from pcapi.core.categories.genres import show
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
+from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import api as finance_api
@@ -1831,6 +1832,16 @@ def get_offer_type(
 
 def nl2br(text: str) -> str:
     return escape(text).replace("\n", Markup("<br>"))
+
+
+def format_chronicle_club_type(club_type: chronicles_models.ChronicleClubType) -> str:
+    match club_type:
+        case chronicles_models.ChronicleClubType.BOOK_CLUB:
+            return "Livres"
+        case chronicles_models.ChronicleClubType.CINE_CLUB:
+            return "Cinéma"
+        case _:
+            return club_type.value
 
 
 def format_user_subscription_tunnel_step_status(status: str) -> str:
