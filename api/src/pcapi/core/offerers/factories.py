@@ -118,7 +118,8 @@ class VenueFactory(BaseFactory):
         address=factory.SubFactory(
             "pcapi.core.geography.factories.AddressFactory",
             banId=factory.SelfAttribute("...banId"),
-            street=factory.SelfAttribute("...street"),
+            # street=factory.SelfAttribute("...street"),
+            street = "rue poisson",
             postalCode=factory.SelfAttribute("...postalCode"),
             inseeCode="75102",
             city=factory.SelfAttribute("...city"),

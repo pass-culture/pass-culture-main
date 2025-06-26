@@ -101,6 +101,7 @@ class OfferStockResponse(ConfiguredBaseModel):
 
 
 class OfferVenueResponseGetterDict(GetterDict):
+    # BULLE
     def get(self, key: str, default: Any = None) -> Any:
         venue = self._obj
         latitude = None
@@ -108,6 +109,7 @@ class OfferVenueResponseGetterDict(GetterDict):
         city = None
         postalCode = None
         address = None
+        departmentCode = None
         timezone = venue.timezone
         if venue.offererAddress:
             latitude = venue.offererAddress.address.latitude
@@ -116,12 +118,15 @@ class OfferVenueResponseGetterDict(GetterDict):
             postalCode = venue.offererAddress.address.postalCode
             timezone = venue.offererAddress.address.timezone
             address = venue.offererAddress.address.street
+            departmentCode = venue.offererAddress.address.departmentCode
         if key == "coordinates":
             return {"latitude": latitude, "longitude": longitude}
-        if key == "address":
+        if key == "address" or key == "street":
             return address
         if key == "city":
             return city
+        if key == "departmentCode" or key == "departementCode":
+            return departmentCode
         if key == "postalCode":
             return postalCode
         if key == "timezone":
