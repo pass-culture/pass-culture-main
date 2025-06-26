@@ -246,7 +246,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     @pytest.mark.parametrize("query", ["'", '""', "v", "xx"])
     def test_can_search_public_account_by_short_name(self, authenticated_client, query):
         with assert_num_queries(self.expected_num_queries_when_no_query):
-            response = authenticated_client.get(url_for(self.endpoint, q="v"))
+            response = authenticated_client.get(url_for(self.endpoint, q=query))
             assert response.status_code == 400
 
         assert "Attention, la recherche doit contenir au moins 3 lettres." in html_parser.extract_warnings(

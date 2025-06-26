@@ -588,7 +588,7 @@ def get_history(venue_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
 def get_entreprise_info(venue_id: int) -> utils.BackofficeResponse:
     venue = db.session.query(offerers_models.Venue).get_or_404(venue_id)
-
+    breakpoint()
     if not venue.siret:
         raise NotFound()
 
