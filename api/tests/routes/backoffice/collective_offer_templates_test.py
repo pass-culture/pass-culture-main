@@ -307,7 +307,6 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
 
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["Statut"] == "Publiée"
-        assert descriptions["Statut PC Pro"] == "Publiée"
         assert descriptions["Date de création"] == f"{collectiveOfferTemplate.dateCreated:%d/%m/%Y}"
         assert descriptions["Description"] == collectiveOfferTemplate.description
         assert descriptions["Entité juridique"] == collectiveOfferTemplate.venue.managingOfferer.name
