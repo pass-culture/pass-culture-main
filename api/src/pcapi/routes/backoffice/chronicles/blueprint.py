@@ -109,6 +109,13 @@ def list_chronicles() -> utils.BackofficeResponse:
             chronicles_models.Chronicle.isSocialMediaDiffusible.is_(form.social_media_diffusible.data[0] == "true"),
         )
 
+    if form.chronicle_type.data and len(form.chronicle_type.data) != len(chronicles_models.ChronicleClubType):
+        query = query.filter(
+            chronicles_models.Chronicle.clubType.in_(
+                [chronicles_models.ChronicleClubType[club_type] for club_type in form.chronicle_type.data]
+            )
+        )
+
     query = query.order_by(chronicles_models.Chronicle.id.desc())
 
     paginated_chronicles = paginate(
