@@ -12,7 +12,6 @@ from flask_wtf import FlaskForm
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
-from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
@@ -199,8 +198,10 @@ class CollectiveOfferAdvancedSearchSubForm(forms_utils.PCForm):
     status = fields.PCSelectMultipleField(
         "Statut",
         choices=forms_utils.choices_from_enum(
-            CollectiveOfferStatus,
-            formatter=filters.format_offer_status,
+            educational_models.CollectiveOfferDisplayedStatus,
+            formatter=filters.format_collective_offer_displayed_status,
+            # HIDDEN status is limited to collective offer templates
+            exclude_opts=[educational_models.CollectiveOfferDisplayedStatus.HIDDEN],
         ),
         search_inline=True,
         field_list_compatibility=True,

@@ -676,30 +676,26 @@ def format_product_cgu_compatibility_status(
 
 def format_offer_status(status: offer_mixin.OfferStatus) -> str:
     match status:
-        case offer_mixin.OfferStatus.DRAFT | offer_mixin.CollectiveOfferStatus.DRAFT:
+        case offer_mixin.OfferStatus.DRAFT:
             return "Brouillon"
         case offer_mixin.OfferStatus.SCHEDULED:
             return "Programmée"
         case offer_mixin.OfferStatus.PUBLISHED:
             return "Publiée non réservable"
-        case offer_mixin.CollectiveOfferStatus.ACTIVE:
-            return "Publiée"
         case offer_mixin.OfferStatus.ACTIVE:
             if FeatureToggle.WIP_REFACTO_FUTURE_OFFER.is_active():
                 return "Réservable"
             return "Publiée"
-        case offer_mixin.OfferStatus.PENDING | offer_mixin.CollectiveOfferStatus.PENDING:
+        case offer_mixin.OfferStatus.PENDING:
             return "En instruction"
-        case offer_mixin.OfferStatus.EXPIRED | offer_mixin.CollectiveOfferStatus.EXPIRED:
+        case offer_mixin.OfferStatus.EXPIRED:
             return "Expirée"
-        case offer_mixin.OfferStatus.REJECTED | offer_mixin.CollectiveOfferStatus.REJECTED:
+        case offer_mixin.OfferStatus.REJECTED:
             return "Non conforme"
-        case offer_mixin.OfferStatus.SOLD_OUT | offer_mixin.CollectiveOfferStatus.SOLD_OUT:
+        case offer_mixin.OfferStatus.SOLD_OUT:
             return "Épuisée"
-        case offer_mixin.OfferStatus.INACTIVE | offer_mixin.CollectiveOfferStatus.INACTIVE:
+        case offer_mixin.OfferStatus.INACTIVE:
             return "En pause"
-        case offer_mixin.CollectiveOfferStatus.ARCHIVED:
-            return "Archivée"
         case _:
             return status.value
 

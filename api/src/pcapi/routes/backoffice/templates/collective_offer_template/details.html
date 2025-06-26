@@ -58,9 +58,6 @@
       {{ clipboard.copy_to_clipboard(collective_offer_template.id, "Copier l'ID de l'offre") }}
     {% endcall %}
     {% call description_detail_vertical("Statut") %}
-      {{ collective_offer_template.status | format_offer_status }}
-    {% endcall %}
-    {% call description_detail_vertical("Statut PC Pro") %}
       {{ collective_offer_template.displayedStatus | format_collective_offer_displayed_status }}
     {% endcall %}
     <hr />

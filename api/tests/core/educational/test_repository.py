@@ -456,13 +456,13 @@ class FilterCollectiveOfferByStatusesTest:
         pending_offer = create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.UNDER_REVIEW)
 
         base_query = db.session.query(models.CollectiveOffer)
-        filtered_booked_query = educational_repository._filter_collective_offers_by_statuses(
+        filtered_booked_query = educational_repository.filter_collective_offers_by_statuses(
             base_query, [models.CollectiveOfferDisplayedStatus.BOOKED]
         )
 
         assert filtered_booked_query.one() == booked_offer
 
-        filtered_pending_query = educational_repository._filter_collective_offers_by_statuses(
+        filtered_pending_query = educational_repository.filter_collective_offers_by_statuses(
             base_query, [models.CollectiveOfferDisplayedStatus.UNDER_REVIEW]
         )
 
@@ -474,7 +474,7 @@ class FilterCollectiveOfferByStatusesTest:
         booked_offer = create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.BOOKED)
         _pending_offer = create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.UNDER_REVIEW)
 
-        filtered_booked_query = educational_repository._filter_collective_offers_by_statuses(
+        filtered_booked_query = educational_repository.filter_collective_offers_by_statuses(
             db.session.query(models.CollectiveOffer), [models.CollectiveOfferDisplayedStatus.BOOKED, status]
         )
 
@@ -487,7 +487,7 @@ class FilterCollectiveOfferByStatusesTest:
         offer = create_collective_offer_by_status(status)
         _pending_offer = create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.UNDER_REVIEW)
 
-        filtered_booked_query = educational_repository._filter_collective_offers_by_statuses(
+        filtered_booked_query = educational_repository.filter_collective_offers_by_statuses(
             db.session.query(models.CollectiveOffer), [status]
         )
 
@@ -500,7 +500,7 @@ class FilterCollectiveOfferByStatusesTest:
         _other_offer = create_collective_offer_by_status(status)
         pending_offer = create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.UNDER_REVIEW)
 
-        filtered_booked_query = educational_repository._filter_collective_offers_by_statuses(
+        filtered_booked_query = educational_repository.filter_collective_offers_by_statuses(
             db.session.query(models.CollectiveOffer), [models.CollectiveOfferDisplayedStatus.UNDER_REVIEW]
         )
 
@@ -514,18 +514,18 @@ class FilterCollectiveOfferByStatusesTest:
         published_offer = create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.PUBLISHED)
 
         base_query = db.session.query(models.CollectiveOffer)
-        filtered_query = educational_repository._filter_collective_offers_by_statuses(
+        filtered_query = educational_repository.filter_collective_offers_by_statuses(
             base_query, [models.CollectiveOfferDisplayedStatus.PUBLISHED]
         )
         assert filtered_query.one() == published_offer
 
-        filtered_out_query = educational_repository._filter_collective_offers_by_statuses(base_query, [status])
+        filtered_out_query = educational_repository.filter_collective_offers_by_statuses(base_query, [status])
         assert filtered_out_query.one() == other_offer
 
     def test_all_filters(self):
         all_offers = [create_collective_offer_by_status(s) for s in self.ALL_STATUS_WITHOUT_INACTIVE]
 
-        filtered_query = educational_repository._filter_collective_offers_by_statuses(
+        filtered_query = educational_repository.filter_collective_offers_by_statuses(
             db.session.query(models.CollectiveOffer), list(self.ALL_STATUS_WITHOUT_INACTIVE)
         )
         filtered_query_ids = {offer.id for offer in filtered_query}
@@ -538,7 +538,7 @@ class FilterCollectiveOfferByStatusesTest:
         expired_offer = create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.EXPIRED)
 
         base_query = db.session.query(models.CollectiveOffer)
-        filtered_query = educational_repository._filter_collective_offers_by_statuses(
+        filtered_query = educational_repository.filter_collective_offers_by_statuses(
             base_query, [models.CollectiveOfferDisplayedStatus.EXPIRED]
         )
 
@@ -553,7 +553,7 @@ class FilterCollectiveOfferByStatusesTest:
 
         base_query = db.session.query(models.CollectiveOffer)
 
-        filtered_query = educational_repository._filter_collective_offers_by_statuses(base_query, filtered_status)
+        filtered_query = educational_repository.filter_collective_offers_by_statuses(base_query, filtered_status)
 
         assert base_query.count() == len(self.ALL_STATUS_WITHOUT_INACTIVE)
 
@@ -577,7 +577,7 @@ class FilterCollectiveOfferByStatusesTest:
             validation=offer_mixin.OfferValidationStatus.PENDING
         )
 
-        filtered_nostatus_query = educational_repository._filter_collective_offers_by_statuses(
+        filtered_nostatus_query = educational_repository.filter_collective_offers_by_statuses(
             db.session.query(models.CollectiveOffer), []
         )
 
@@ -597,7 +597,7 @@ class FilterCollectiveOfferByStatusesTest:
             validation=offer_mixin.OfferValidationStatus.PENDING
         )
 
-        filtered_nostatus_query = educational_repository._filter_collective_offers_by_statuses(
+        filtered_nostatus_query = educational_repository.filter_collective_offers_by_statuses(
             db.session.query(models.CollectiveOffer), None
         )
 
@@ -611,11 +611,11 @@ class FilterCollectiveOfferByStatusesTest:
         _stock = educational_factories.CollectiveStockFactory(bookingLimitDatetime=past, collectiveOffer=offer)
 
         base_query = db.session.query(models.CollectiveOffer)
-        filtered_inactive_query = educational_repository._filter_collective_offers_by_statuses(
+        filtered_inactive_query = educational_repository.filter_collective_offers_by_statuses(
             base_query, [models.CollectiveOfferDisplayedStatus.EXPIRED]
         )
 
-        filtered_active_query = educational_repository._filter_collective_offers_by_statuses(
+        filtered_active_query = educational_repository.filter_collective_offers_by_statuses(
             base_query, [models.CollectiveOfferDisplayedStatus.PUBLISHED]
         )
 
@@ -628,11 +628,11 @@ class FilterCollectiveOfferByStatusesTest:
         _stock = educational_factories.CollectiveStockFactory(bookingLimitDatetime=futur, collectiveOffer=offer)
 
         base_query = db.session.query(models.CollectiveOffer)
-        filtered_inactive_query = educational_repository._filter_collective_offers_by_statuses(
+        filtered_inactive_query = educational_repository.filter_collective_offers_by_statuses(
             base_query, [models.CollectiveOfferDisplayedStatus.EXPIRED]
         )
 
-        filtered_active_query = educational_repository._filter_collective_offers_by_statuses(
+        filtered_active_query = educational_repository.filter_collective_offers_by_statuses(
             base_query, [models.CollectiveOfferDisplayedStatus.PUBLISHED]
         )
 
@@ -642,7 +642,7 @@ class FilterCollectiveOfferByStatusesTest:
     def test_reimbursed_status(self):
         create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.REIMBURSED)
 
-        filtered_query = educational_repository._filter_collective_offers_by_statuses(
+        filtered_query = educational_repository.filter_collective_offers_by_statuses(
             db.session.query(models.CollectiveOffer), [models.CollectiveOfferDisplayedStatus.ENDED]
         )
 
@@ -652,7 +652,7 @@ class FilterCollectiveOfferByStatusesTest:
         create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.HIDDEN)
         create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.UNDER_REVIEW)
 
-        filtered_query = educational_repository._filter_collective_offers_by_statuses(
+        filtered_query = educational_repository.filter_collective_offers_by_statuses(
             db.session.query(models.CollectiveOffer), [models.CollectiveOfferDisplayedStatus.HIDDEN]
         )
 
@@ -664,11 +664,11 @@ class FilterCollectiveOfferByStatusesTest:
         offer = educational_factories.create_collective_offer_by_status(status)
 
         base_query = db.session.query(models.CollectiveOffer)
-        filtered_query = educational_repository._filter_collective_offers_by_statuses(base_query, statuses=[status])
+        filtered_query = educational_repository.filter_collective_offers_by_statuses(base_query, statuses=[status])
         assert filtered_query.one() == offer
 
         statuses_no_result = set(models.CollectiveOfferDisplayedStatus) - {status}
-        filtered_query = educational_repository._filter_collective_offers_by_statuses(
+        filtered_query = educational_repository.filter_collective_offers_by_statuses(
             base_query, statuses=statuses_no_result
         )
         assert filtered_query.count() == 0
