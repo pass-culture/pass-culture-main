@@ -4,6 +4,7 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.repository.session_management import atomic
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
@@ -22,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 @blueprints.public_api.route("/public/offers/v1/offerer_venues", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -48,6 +50,7 @@ def get_offerer_venues(
 
 
 @blueprints.public_api.route("/public/offers/v1/venues/<siret>", methods=["GET"])
+@atomic()
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
