@@ -66,3 +66,57 @@ export const WithError: StoryObj<typeof Timeline> = {
     ],
   },
 }
+
+export const WithAllStepsCancelled: StoryObj<typeof Timeline> = {
+  args: {
+    steps: [
+      {
+        type: TimelineStepType.SUCCESS,
+        content: 'Success',
+      },
+      {
+        type: TimelineStepType.DISABLED,
+        content: 'Disabled',
+      },
+      {
+        type: TimelineStepType.ERROR,
+        content: 'Error',
+      },
+      {
+        type: TimelineStepType.WAITING,
+        content: 'Waiting',
+      },
+      {
+        type: TimelineStepType.CANCELLED,
+        content: 'Cancelled',
+      },
+    ],
+  },
+}
+
+export const WithAllStepsRefused: StoryObj<typeof Timeline> = {
+  args: {
+    steps: [
+      {
+        type: TimelineStepType.SUCCESS,
+        content: 'Success',
+      },
+      {
+        type: TimelineStepType.DISABLED,
+        content: 'Disabled',
+      },
+      // {
+      //   type: TimelineStepType.ERROR,
+      //   content: 'Error',
+      // },
+      {
+        type: TimelineStepType.WAITING,
+        content: 'Waiting',
+      },
+      {
+        type: TimelineStepType.REFUSED,
+        content: 'Refused',
+      },
+    ],
+  },
+}

@@ -38,6 +38,8 @@ $vertical-offset-icon-from-step: calc(
 
 .icon-success {
   color: var(--color-icon-success);
+  width: rem.torem(20px);
+  height: rem.torem(20px);
 }
 
 .icon-success-disabled {
@@ -45,7 +47,7 @@ $vertical-offset-icon-from-step: calc(
 }
 
 .icon-waiting {
-  color: var(--color-icon-subtle);
+  color: var(--color-icon-default);
 }
 
 .icon-disabled {

@@ -1,5 +1,6 @@
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { Layout } from 'app/App/layout/Layout'
+import { BookableOfferTimeline } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/BookableOfferTimeline'
 
 export type BookableOfferSummaryProps = {
   offer: GetCollectiveOfferResponseModel
@@ -15,6 +16,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
         </p>
         <p>{offer.name}</p>
       </div>
+      <BookableOfferTimeline offer={offer} />
     </Layout>
   )
 }
