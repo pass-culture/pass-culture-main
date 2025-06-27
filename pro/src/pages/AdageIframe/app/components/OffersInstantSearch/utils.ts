@@ -52,31 +52,11 @@ export const adageFiltersToFacetFilters = (
 
   const filteredFormats: string[] = formats.map((format) => `formats:${format}`)
 
-  let filteredDepartments: string[] = []
 
-  if (isCollectiveOaActive) {
-    if (locationType === CollectiveLocationType.SCHOOL) {
-      filteredDepartments = departments.flatMap((department) => [
-        `offer.schoolInterventionArea:${department}`,
-      ])
-    } else {
-      filteredDepartments = departments.flatMap((department) => [
-        `venue.departmentCode:${department}`,
-        `offer.interventionArea:${department}`,
-      ])
-    }
-  } else {
-    if (eventAddressType === OfferAddressType.SCHOOL) {
-      filteredDepartments = departments.flatMap((department) => [
-        `offer.schoolInterventionArea:${department}`,
-      ])
-    } else {
-      filteredDepartments = departments.flatMap((department) => [
-        `venue.departmentCode:${department}`,
-        `offer.interventionArea:${department}`,
-      ])
-    }
-  }
+    let filteredDepartments: string[] = departments.flatMap((department) => [
+    `offer.interventionArea:${department}`,
+    `venue.departmentCode:${department}`,
+  ])
 
   const filteredAcademies: string[] = academies.map(
     (academy) => `venue.academy:${academy}`
