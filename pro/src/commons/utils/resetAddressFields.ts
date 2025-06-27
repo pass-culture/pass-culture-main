@@ -1,5 +1,4 @@
-
-import { AddressFormValues } from 'commons/core/shared/types';
+import { AddressFormValues } from 'commons/core/shared/types'
 
 const fieldsNames: Map<keyof AddressFormValues, string | null> = new Map([
   ['street', ''],
@@ -14,9 +13,10 @@ const fieldsNames: Map<keyof AddressFormValues, string | null> = new Map([
   ['addressAutocomplete', ''],
 ])
 
-export function resetReactHookFormAddressFields(
-  resetField: { (name: any, defaultValue: any): void }) {
-  ;[...fieldsNames.entries()].map(([fieldName, defaultValue]) =>
-    resetField(fieldName, { defaultValue: defaultValue })
-  )
+export function resetReactHookFormAddressFields(resetField: {
+  (name: any, defaultValue: any): void
+}) {
+  ;[...fieldsNames.entries()].map(([fieldName, defaultValue]) => {
+    resetField(fieldName, defaultValue)
+  })
 }

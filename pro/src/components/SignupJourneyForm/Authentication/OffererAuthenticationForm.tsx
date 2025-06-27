@@ -31,7 +31,7 @@ export interface OffererAuthenticationFormValues
 }
 
 export const OffererAuthenticationForm = (): JSX.Element => {
-  const { watch, setValue, register, getFieldState, resetField } =
+  const { watch, setValue, register, getFieldState } =
     useFormContext<OffererAuthenticationFormValues>()
 
   const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
@@ -41,7 +41,7 @@ export const OffererAuthenticationForm = (): JSX.Element => {
     setValue('manuallySetAddress', !manuallySetAddress)
 
     resetReactHookFormAddressFields((name, defaultValue) =>
-      resetField(name, defaultValue)
+      setValue(name, defaultValue)
     )
   }
 

@@ -173,7 +173,7 @@ describe('FormLocation', () => {
     expect(formValues.postalCode).toBe('69002')
     expect(formValues.latitude).toBe('11.1')
     expect(formValues.longitude).toBe('-11.1')
-    expect(formValues.coords).toBe('48.87004, 2.3785')
+    expect(formValues.coords).toBe('11.1, -11.1')
     expect(formValues.banId).toBe('1')
   })
 
@@ -356,9 +356,6 @@ describe('FormLocation', () => {
       screen.getByText('Vous ne trouvez pas votre adresse ?')
     )
 
-    expect(screen.getByLabelText('Ville *')).toHaveValue(
-      props.venues.find((v) => v.id === Number(initialValues.venueId))?.address
-        ?.city
-    )
+    expect(screen.getByLabelText('Ville *')).toHaveValue('')
   })
 })
