@@ -29,7 +29,7 @@ const dayInTheFuture = addDays(new Date(), 2).toISOString()
 const dayInThePast = subDays(new Date(), 2).toISOString()
 
 describe('OfferBookingCell', () => {
-  it('should show the date of bookability', () => {
+  it('should show the booking allowed date', () => {
     renderOfferBookingCell({
       ...defaultProps,
       offer: listOffersOfferFactory({

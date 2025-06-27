@@ -7,6 +7,7 @@ import {
   OfferStatus,
 } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import { useNotification } from 'commons/hooks/useNotification'
 import { formatDateTimeParts, isDateValid } from 'commons/utils/date'
@@ -27,6 +28,7 @@ import { Status } from '../Status/Status'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos/SynchronizedProviderInformation'
 
 import styles from './IndividualOfferLayout.module.scss'
+import { OfferPublicationEdition } from './OfferPublicationEdition/OfferPublicationEdition'
 import { OfferStatusBanner } from './OfferStatusBanner/OfferStatusBanner'
 
 export interface IndividualOfferLayoutProps {
@@ -50,14 +52,28 @@ export const IndividualOfferLayout = ({
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
 
+  const isRefactoFutureOfferEnabled = useActiveFeature(
+    'WIP_REFACTO_FUTURE_OFFER'
+  )
+
+  const displayUpdatePublicationAndBookingDates =
+    isRefactoFutureOfferEnabled &&
+    offer &&
+    [
+      OfferStatus.ACTIVE,
+      OfferStatus.INACTIVE,
+      OfferStatus.PUBLISHED,
+      OfferStatus.SCHEDULED,
+    ].includes(offer.status)
+
+  const shouldDisplayActionOnStatus =
+    withStepper && !displayUpdatePublicationAndBookingDates
+
   const { date: publicationDate, time: publicationTime } = formatDateTimeParts(
     offer?.publicationDate
   )
   const notify = useNotification()
   const navigate = useNavigate()
-
-  const shouldDisplayActionOnStatus =
-    mode !== OFFER_WIZARD_MODE.CREATION && offer && withStepper
 
   // This is used to not be able to go to next step in creation mode
   const isUsefulInformationSubmitted =
@@ -100,8 +116,17 @@ export const IndividualOfferLayout = ({
             <h1 className={styles['title']}>{title}</h1>
             <BackToNavLink className={styles['back-to-nav-link']} />
           </div>
-          {shouldDisplayActionOnStatus && (
-            <span className={styles['status']}>{<Status offer={offer} />}</span>
+          {offer && mode !== OFFER_WIZARD_MODE.CREATION && (
+            <>
+              {shouldDisplayActionOnStatus && (
+                <span className={styles['status']}>
+                  {<Status offer={offer} />}
+                </span>
+              )}
+              {displayUpdatePublicationAndBookingDates && (
+                <OfferPublicationEdition offer={offer} />
+              )}
+            </>
           )}
         </div>
 
@@ -114,7 +139,8 @@ export const IndividualOfferLayout = ({
           </p>
         )}
 
-        {mode !== OFFER_WIZARD_MODE.CREATION &&
+        {!isRefactoFutureOfferEnabled &&
+          mode !== OFFER_WIZARD_MODE.CREATION &&
           offer?.status !== OfferStatus.ACTIVE &&
           isDateValid(offer?.publicationDate) &&
           new Date(offer.publicationDate) > new Date() && (

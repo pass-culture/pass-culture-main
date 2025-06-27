@@ -42,9 +42,9 @@ describe('StatusLabel', () => {
     renderStatusLabel(OfferStatus.SCHEDULED)
     expect(screen.getByText('programmée')).toBeInTheDocument()
   })
-  it('should display "publiée non réservable" if offer is published', () => {
+  it('should display "publiée" if offer is published', () => {
     renderStatusLabel(OfferStatus.PUBLISHED)
-    expect(screen.getByText('publiée non réservable')).toBeInTheDocument()
+    expect(screen.getByText('publiée')).toBeInTheDocument()
   })
   it('should display the original name of the status if it does not exist in the preset list', () => {
     renderStatusLabel('TEST FAKE STATUS' as OfferStatus)

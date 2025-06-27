@@ -42,7 +42,7 @@ const hours = [
 
 const minutes = ['00', '15', '30', '45']
 
-const getPublicationHoursOptions = (): SelectOption[] => {
+export const getPublicationHoursOptions = (): SelectOption[] => {
   const options = []
 
   for (const hour of hours) {

@@ -58,9 +58,9 @@ const OFFER_STATUS_PROPERTIES: Record<
     label: 'programmée',
   },
   [OfferStatus.PUBLISHED]: {
-    variant: TagVariant.WARNING,
-    icon: fullHideIcon,
-    label: 'publiée non réservable',
+    variant: TagVariant.SUCCESS,
+    icon: strokeCheckIcon,
+    label: 'publiée',
   },
 }
 
