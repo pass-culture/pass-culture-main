@@ -1,6 +1,5 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Formik } from 'formik'
 import * as instantSearch from 'react-instantsearch'
 
 import {
@@ -118,9 +117,7 @@ const renderOffers = (
 
   return renderWithProviders(
     <AdageUserContextProvider adageUser={adageUser}>
-      <Formik onSubmit={() => {}} initialValues={{}}>
-        <Offers {...props} />
-      </Formik>
+      <Offers {...props} />
     </AdageUserContextProvider>,
     options
   )
