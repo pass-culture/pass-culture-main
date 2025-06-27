@@ -2,7 +2,6 @@ import logging
 
 import pydantic.v1 as pydantic
 
-import pcapi.core.fraud.models as fraud_models
 from pcapi.connectors.serialization.titelive_serializers import GenreTitelive
 from pcapi.connectors.serialization.titelive_serializers import TiteLiveBookArticle
 from pcapi.connectors.serialization.titelive_serializers import TiteLiveBookWork
@@ -28,8 +27,9 @@ class TiteliveBookSearch(TiteliveSearchTemplate[TiteLiveBookWork]):
         super().__init__()
         self.product_whitelist_eans = {
             ean
-            for (ean,) in db.session.query(fraud_models.ProductWhitelist)
-            .with_entities(fraud_models.ProductWhitelist.ean)
+            for (ean,) in db.session.query(offers_models.Product)
+            .with_entities(offers_models.Product.ean)
+            .filter(offers_models.Product.gcuCompatibilityType == offers_models.GcuCompatibilityType.WHITELISTED)
             .all()
         }
 

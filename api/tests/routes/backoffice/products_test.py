@@ -48,10 +48,7 @@ class GetProductDetailsTest(GetEndpointHelper):
     # Unlinked offers and stock
     # 7) Unlinked Offer
     # 8) Unlinked Offer -> Stock (via selectinload)
-
-    # Whitelist
-    # 9) Whitelisted Product
-    expected_num_queries = 9
+    expected_num_queries = 8
 
     expected_num_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
 
@@ -174,13 +171,12 @@ class GetProductDetailsTest(GetEndpointHelper):
         product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SEANCE_CINE.id)
 
         url = url_for(self.endpoint, product_id=product.id, _external=True)
-        # The following 5 queries are not executed in this case:
+        # The following 4 queries are not executed in this case:
         # 1) No Stock associated with the linked Offer
         # 2) No Unlinked Offer
         # 3) No Stock associated with Unlinked Offer
-        # 4) No Whitelisted Product (missing EAN)
-        # 5) No FF WIP_REFACTO_FUTURE_OFFER
-        with assert_num_queries(self.expected_num_queries - 5):
+        # 4) No FF WIP_REFACTO_FUTURE_OFFER
+        with assert_num_queries(self.expected_num_queries - 4):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 

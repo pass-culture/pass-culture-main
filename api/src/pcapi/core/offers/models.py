@@ -153,6 +153,7 @@ class ProductMediation(PcObject, Base, Model):
 
 class GcuCompatibilityType(enum.Enum):
     COMPATIBLE = "COMPATIBLE"
+    WHITELISTED = "WHITELISTED"
     PROVIDER_INCOMPATIBLE = "PROVIDER_INCOMPATIBLE"
     FRAUD_INCOMPATIBLE = "FRAUD_INCOMPATIBLE"
 
@@ -216,13 +217,14 @@ class Product(PcObject, Base, Model, HasThumbMixin):
 
     @property
     def isGcuCompatible(self) -> bool:
-        return self.gcuCompatibilityType == GcuCompatibilityType.COMPATIBLE
+        return self.gcuCompatibilityType in (GcuCompatibilityType.COMPATIBLE, GcuCompatibilityType.WHITELISTED)
 
     @hybrid_property
     def can_be_synchronized(self) -> bool:
-        return (self.gcuCompatibilityType == GcuCompatibilityType.COMPATIBLE) & (
-            self.name != UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER
-        )
+        return (
+            (self.gcuCompatibilityType == GcuCompatibilityType.COMPATIBLE)
+            | (self.gcuCompatibilityType == GcuCompatibilityType.WHITELISTED)
+        ) & (self.name != UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER)
 
     @hybrid_property
     def images(self) -> dict[str, str | None]:
