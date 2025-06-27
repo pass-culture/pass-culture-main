@@ -7,7 +7,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Select.module.scss'
 
-export enum SelectInputVariant {
+enum SelectInputVariant {
   FILTER = 'filter',
   FORM = 'form',
 }

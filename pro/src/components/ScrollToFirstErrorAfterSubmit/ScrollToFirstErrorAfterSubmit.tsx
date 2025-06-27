@@ -1,4 +1,3 @@
-import { useFormikContext } from 'formik'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
@@ -21,19 +20,6 @@ const scrollToFirstError = () => {
       inline: 'center',
     })
   })
-}
-
-// Specific to Formik
-export const ScrollToFirstErrorAfterSubmit = () => {
-  const { isSubmitting, isValid, status } = useFormikContext()
-
-  useEffect(() => {
-    if ((isSubmitting && !isValid) || status === 'apiError') {
-      scrollToFirstError()
-    }
-  }, [isValid, isSubmitting, status])
-
-  return null
 }
 
 // Specific to React Hook Form
