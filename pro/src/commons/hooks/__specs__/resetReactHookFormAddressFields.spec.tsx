@@ -14,18 +14,18 @@ describe('resetReactHookFormAddressFields', () => {
     // Expected fields and default values based on your map
     const expectedCalls: [
       keyof AddressFormValues,
-      { defaultValue: string | null },
+      defaultValue: string | null,
     ][] = [
-      ['street', { defaultValue: '' }],
-      ['postalCode', { defaultValue: '' }],
-      ['city', { defaultValue: '' }],
-      ['latitude', { defaultValue: '' }],
-      ['longitude', { defaultValue: '' }],
-      ['coords', { defaultValue: '' }],
-      ['banId', { defaultValue: '' }],
-      ['inseeCode', { defaultValue: null }],
-      ['search-addressAutocomplete', { defaultValue: '' }],
-      ['addressAutocomplete', { defaultValue: '' }],
+      ['street', ''],
+      ['postalCode', ''],
+      ['city', ''],
+      ['latitude', ''],
+      ['longitude', ''],
+      ['coords', ''],
+      ['banId', ''],
+      ['inseeCode', null],
+      ['search-addressAutocomplete', ''],
+      ['addressAutocomplete', ''],
     ]
 
     // Check the number of calls
