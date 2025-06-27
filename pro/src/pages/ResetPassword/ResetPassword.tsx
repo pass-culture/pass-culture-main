@@ -35,14 +35,14 @@ export const ResetPassword = (): JSX.Element => {
   useRedirectLoggedUser()
 
   const invalidTokenHandler = useCallback(() => {
-    notify.error('Le lien a expiré. Veuillez recommencer.')
+    notify.error('Le lien a expiré ou est invalide. Veuillez recommencer.')
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/demande-mot-de-passe')
   }, [navigate, notify])
 
   // If the FF WIP_2025_SIGN_UP is enabled, we check token validity on page load
   useEffect(() => {
-    if (token && is2025SignUpEnabled) {
+    if (is2025SignUpEnabled) {
       api.postCheckToken({ token }).then(() => {
         setIsLoading(false)
       }, invalidTokenHandler)
