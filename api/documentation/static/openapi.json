@@ -3398,6 +3398,7 @@
                     "priceCategoryId": {
                         "description": "Price category id",
                         "example": 12,
+                        "exclusiveMinimum": 0,
                         "nullable": true,
                         "title": "Pricecategoryid",
                         "type": "integer"

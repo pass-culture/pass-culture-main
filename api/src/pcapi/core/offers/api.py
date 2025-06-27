@@ -796,6 +796,11 @@ def edit_stock(
 
     if booking_limit_datetime is not UNCHANGED and booking_limit_datetime != stock.bookingLimitDatetime:
         modifications["bookingLimitDatetime"] = booking_limit_datetime
+        if booking_limit_datetime:
+            validation.check_offer_is_bookable_before_stock_booking_limit_datetime(
+                stock.offer,
+                booking_limit_datetime,
+            )
         validation.check_activation_codes_expiration_datetime_on_stock_edition(
             stock.activationCodes,
             booking_limit_datetime,

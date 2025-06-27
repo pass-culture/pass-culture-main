@@ -690,19 +690,16 @@ def patch_event_stock(
     if not stock_to_edit:
         raise api_errors.ResourceNotFoundError({"stock_id": ["No stock could be found"]})
 
+    price_category: offers_models.PriceCategory | offers_api.T_UNCHANGED | None = offers_api.UNCHANGED
+
+    if body.price_category_id is not None:
+        price_category = next((c for c in offer.priceCategories if c.id == body.price_category_id), None)
+
+        if not price_category:
+            raise api_errors.ResourceNotFoundError({"priceCategoryId": ["The price category could not be found"]})
+
     update_body = body.dict(exclude_unset=True)
     try:
-        price_category_id = update_body.get("price_category_id", None)
-        price_category = (
-            next((c for c in offer.priceCategories if c.id == price_category_id), None)
-            if price_category_id is not None
-            else offers_api.UNCHANGED
-        )
-        if not price_category:
-            raise api_errors.ApiErrors(
-                {"price_category_id": ["The price category could not be found"]}, status_code=404
-            )
-
         quantity = serialization.deserialize_quantity(update_body.get("quantity", offers_api.UNCHANGED))
         edited_stock, is_beginning_updated = offers_api.edit_stock(
             stock_to_edit,
