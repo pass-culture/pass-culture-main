@@ -9,7 +9,6 @@ from pcapi.core import testing
 from pcapi.core.categories import subcategories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.utils import date as date_utils
 from pcapi.utils import human_ids
 
 from tests.conftest import TestClient
@@ -110,7 +109,6 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
             "priceCategories": [],
             "publicationDatetime": "2025-06-25T12:25:00Z",
             "idAtProvider": "Oh le bel id <3",
-            "publicationDate": date_utils.format_into_utc_date(event_offer.publicationDatetime),
         }
 
     def test_get_future_event(self, client):
@@ -124,7 +122,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
 
         assert response.status_code == 200
-        assert response.json["publicationDate"] == publication_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+        assert response.json["publicationDatetime"] == publication_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     def test_event_with_not_selectable_category_can_be_retrieved(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()

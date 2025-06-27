@@ -571,6 +571,16 @@ class EventOfferCreation(OfferCreationBase):
     publication_date: datetime.datetime | None = fields.DEPRECATED_OFFER_PUBLICATION_DATE
     enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_ENABLED
 
+    @pydantic_v1.root_validator(pre=True)
+    def check_publication_date_and_publication_datetime_are_not_both_set(cls, values: dict) -> dict:
+        publication_date = values.get("publicationDate")
+        publication_datetime = values.get("publicationDatetime")
+
+        if publication_date and publication_datetime:
+            raise ValueError("You cannot set both `publicationDate` and `publicationDatetime`")
+
+        return values
+
     @pydantic_v1.validator("price_categories")
     def get_unique_price_categories(
         cls,
@@ -820,7 +830,7 @@ class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
     category_related_fields: event_category_reading_fields
     event_duration: int | None = fields.EVENT_DURATION
     has_ticket: bool = fields.EVENT_HAS_TICKET
-    publication_date: datetime.datetime | None = fields.DEPRECATED_OFFER_PUBLICATION_DATE
+    publication_datetime: datetime.datetime | None = fields.OFFER_PUBLICATION_DATETIME
 
     @classmethod
     def build_event_offer(cls, offer: offers_models.Offer) -> "EventOfferResponse":
@@ -832,7 +842,6 @@ class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
             price_categories=[
                 PriceCategoryResponse.from_orm(price_category) for price_category in offer.priceCategories
             ],
-            publication_date=offer.publicationDate,
             **base_offer_response.dict(),
         )
 

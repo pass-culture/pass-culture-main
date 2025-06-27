@@ -3265,14 +3265,6 @@
                         "title": "Pricecategories",
                         "type": "array"
                     },
-                    "publicationDate": {
-                        "description": "\nThe date and time when the offer becomes visible in the beneficiary application.\n\n**Constraints on datetime:**\n- Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.\n- Must be a datetime in the future. Offers are published every 15 minutes. Therefore, a small delay may occur between the indicated datetime and the actual publication time.\n\n**Other options:**\n- If set to `\"now\"` (default value), the offer is published immediately (no delay).\n- If set to `null`, the offer will not be published.\n",
-                        "example": "2025-07-24T14:00:00+02:00",
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Publicationdate",
-                        "type": "string"
-                    },
                     "publicationDatetime": {
                         "description": "\nThe date and time when the offer becomes visible in the beneficiary application.\n\n**Constraints on datetime:**\n- Must be a timezone-aware datetime in **[ISO 8601 format](https://fr.wikipedia.org/wiki/ISO_8601)**.\n- Must be a datetime in the future. Offers are published every 15 minutes. Therefore, a small delay may occur between the indicated datetime and the actual publication time.\n\n**Other options:**\n- If set to `\"now\"` (default value), the offer is published immediately (no delay).\n- If set to `null`, the offer will not be published.\n",
                         "example": "2025-07-24T14:00:00+02:00",

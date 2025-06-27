@@ -133,10 +133,10 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
 
         publication_date = body.publication_date
 
-        # LEGACY :
-        # we must must do this transformation on `publicationDate`
-        # as our serializer authorizes naive datetimes
-        if publication_date:
+        if publication_date:  # the provider used the legacy `publicationDate` param
+            # LEGACY :
+            # we must must do this transformation on `publicationDate`
+            # as our serializer authorizes naive datetimes
             if publication_date.tzinfo is None:  # the provider did not provide a tz in the payload
                 tz = offerer_address.address.timezone if offerer_address else venue.timezone
                 publication_date = date_utils.local_datetime_to_default_timezone(publication_date, local_tz=tz).replace(
@@ -144,10 +144,15 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
                 )
             else:
                 publication_date = date_utils.to_naive_utc_datetime(publication_date)
+        else:  # the provider used the `publicationDatetime` param
+            publication_date = body.publication_datetime  # type: ignore[assignment]
 
-        offers_api.publish_offer(created_offer, publication_datetime=publication_date)
+        offers_api.finalize_offer(
+            created_offer,
+            publication_datetime=publication_date,
+            booking_allowed_datetime=body.booking_allowed_datetime,
+        )
         db.session.flush()
-        db.session.refresh(created_offer)  # due to future_offer
 
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
