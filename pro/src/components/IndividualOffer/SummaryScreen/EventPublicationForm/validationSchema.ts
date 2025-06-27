@@ -4,9 +4,8 @@ import * as yup from 'yup'
 import { isDateValid } from 'commons/utils/date'
 import { buildDateTime } from 'components/IndividualOffer/StocksEventEdition/serializers'
 
-export const validationSchema = yup.object().shape({
-  publicationMode: yup.string<'now' | 'later'>().required(),
-  publicationDate: yup.string().when('publicationMode', {
+export const publicationDateValidationSchema = (schema: yup.StringSchema) =>
+  schema.when('publicationMode', {
     is: (publicationMode: string) => publicationMode === 'later',
     then: (schema) =>
       schema
@@ -31,14 +30,17 @@ export const validationSchema = yup.object().shape({
             return isDateValid(value) && new Date(value) < twoYearsFromNow
           }
         ),
-  }),
-  publicationTime: yup.string().when('publicationMode', {
+  })
+
+export const publicationTimeValidationSchema = (schema: yup.StringSchema) =>
+  schema.when('publicationMode', {
     is: (publicationMode: string) => publicationMode === 'later',
     then: (schema) =>
       schema.required('Veuillez sélectionner une heure de publication'),
-  }),
-  bookingAllowedMode: yup.string<'now' | 'later'>().required(),
-  bookingAllowedDate: yup.string().when('bookingAllowedMode', {
+  })
+
+export const bookingAllowedDateValidationSchema = (schema: yup.StringSchema) =>
+  schema.when('bookingAllowedMode', {
     is: (bookingAllowedMode: string) => bookingAllowedMode === 'later',
     then: (schema) =>
       schema
@@ -63,10 +65,20 @@ export const validationSchema = yup.object().shape({
             return isDateValid(value) && new Date(value) < twoYearsFromNow
           }
         ),
-  }),
-  bookingAllowedTime: yup.string().when('bookingAllowedMode', {
+  })
+
+export const bookingAllowedTimeValidationSchema = (schema: yup.StringSchema) =>
+  schema.when('bookingAllowedMode', {
     is: (bookingAllowedMode: string) => bookingAllowedMode === 'later',
     then: (schema) =>
       schema.required('Veuillez sélectionner une heure de réservabilité'),
-  }),
+  })
+
+export const validationSchema = yup.object().shape({
+  publicationMode: yup.string<'now' | 'later'>().required(),
+  publicationDate: publicationDateValidationSchema(yup.string()),
+  publicationTime: publicationTimeValidationSchema(yup.string()),
+  bookingAllowedMode: yup.string<'now' | 'later'>().required(),
+  bookingAllowedDate: bookingAllowedDateValidationSchema(yup.string()),
+  bookingAllowedTime: bookingAllowedTimeValidationSchema(yup.string()),
 })

@@ -1,0 +1,34 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  &-content {
+    flex: 1;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: rem.torem(24px);
+}
+
+.date-picker {
+  width: rem.torem(180px);
+}
+
+.time-picker {
+  width: rem.torem(110px);
+}
+
+.inputs-row {
+  display: flex;
+  gap: rem.torem(24px);
+}
+
+.group,
+.toggle {
+  margin-bottom: rem.torem(32px);
+}
