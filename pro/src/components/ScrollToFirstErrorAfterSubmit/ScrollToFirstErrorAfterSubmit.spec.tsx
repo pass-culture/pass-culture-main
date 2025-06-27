@@ -10,6 +10,7 @@ import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
 import { ScrollToFirstHookFormErrorAfterSubmit } from './ScrollToFirstErrorAfterSubmit'
 
 const scrollIntoViewMock = vi.fn()
+const onSubmit = vi.fn()
 
 vi.mock('commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
@@ -28,15 +29,17 @@ function renderScrollToFirstErrorAfterSubmit() {
 
     return (
       <FormProvider {...form}>
-        <TextInput
-          label="firstName"
-          required={true}
-          {...form.register('firstName')}
-          error={form.formState.errors.firstName?.message}
-        />
-        <Button type="submit">Enregistrer</Button>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <ScrollToFirstHookFormErrorAfterSubmit />
 
-        <ScrollToFirstHookFormErrorAfterSubmit />
+          <TextInput
+            label="firstName"
+            required={true}
+            {...form.register('firstName')}
+            error={form.formState.errors.firstName?.message}
+          />
+          <Button type="submit">Enregistrer</Button>
+        </form>
       </FormProvider>
     )
   }
@@ -53,11 +56,13 @@ describe('ScrollToFirstErrorAfterSubmit', () => {
     renderScrollToFirstErrorAfterSubmit()
 
     await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
+
     await waitFor(() => {
       expect(screen.getByText('Veuillez remplir le champ')).toBeInTheDocument()
+      expect(scrollIntoViewMock).toHaveBeenCalled()
     })
 
-    expect(scrollIntoViewMock).toHaveBeenCalled()
     expect(screen.getByLabelText('firstName *')).toHaveFocus()
   })
 })
