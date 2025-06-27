@@ -1,0 +1,5 @@
+- revoir toute l'ui de la timeline (vu avec Agathe, on peut appliquer les changement aux timelines existantes donc directement modifier Timeline.tsx) cf specs https://www.figma.com/design/PVlT7c09U0iZzYP9Ru2R6g/Am%C3%A9lioration-offres-r%C3%A9servables---offres-vitrines?node-id=7283-51892&t=tBH815KCqQLPIQF0-0
+- factoriser le code dans BookableOfferTimeline
+- tests unitaires
+- bouger BookableOfferSummary dans src/pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary
+- brouillon => rediriger vers la P2
