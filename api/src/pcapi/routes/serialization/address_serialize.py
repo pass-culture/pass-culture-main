@@ -1,3 +1,5 @@
+import typing
+
 import pydantic.v1 as pydantic_v1
 
 from pcapi.core.offerers.models import OffererAddress
@@ -31,6 +33,36 @@ class AddressResponseIsLinkedToVenueModel(AddressResponseModel):
     id_oa: int
     isLinkedToVenue: bool | None
     isManualEdition: bool
+
+
+class VenueOffererAddressAddressInfoGetter(pydantic_v1.utils.GetterDict):
+    def get(self, key: str, default: typing.Any = None) -> typing.Any:
+        venue = self._obj
+        latitude = None
+        longitude = None
+        city = None
+        postalCode = None
+        address = None
+        departmentCode = None
+        if venue.offererAddress:
+            latitude = venue.offererAddress.address.latitude
+            longitude = venue.offererAddress.address.longitude
+            city = venue.offererAddress.address.city
+            postalCode = venue.offererAddress.address.postalCode
+            address = venue.offererAddress.address.street
+            departmentCode = venue.offererAddress.address.departmentCode
+        if key == "coordinates":
+            return {"latitude": latitude, "longitude": longitude}
+        if key == "address" or key == "street":
+            return address
+        if key == "city":
+            return city
+        if key == "postalCode":
+            return postalCode
+        if key == "departmentCode" or key == "departementCode":
+            return departmentCode
+
+        return super().get(key, default)
 
 
 def retrieve_address_info_from_oa(offerer_address: OffererAddress) -> dict:
