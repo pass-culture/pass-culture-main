@@ -5,14 +5,14 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { Audience } from 'commons/core/shared/types'
 import { SelectOption } from 'commons/custom_types/form'
-import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
+import { SelectInput } from 'ui-kit/form/shared/BaseSelectInput/SelectInput'
 
 import { BookingsFilters } from '../types'
 
 import {
-  EMPTY_FILTER_VALUE,
   COLLECTIVE_OMNISEARCH_FILTERS,
+  EMPTY_FILTER_VALUE,
   INDIVIDUAL_OMNISEARCH_FILTERS,
 } from './constants'
 import styles from './FilterByOmniSearch.module.scss'

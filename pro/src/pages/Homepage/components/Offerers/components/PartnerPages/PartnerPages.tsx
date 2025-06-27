@@ -13,7 +13,7 @@ import {
   getSavedPartnerPageVenueId,
   setSavedPartnerPageVenueId,
 } from 'commons/utils/savedPartnerPageVenueId'
-import { SelectInput } from 'ui-kit/form/Select/SelectInput'
+import { SelectInput } from 'ui-kit/form/shared/BaseSelectInput/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import { PartnerPage } from './components/PartnerPage'
