@@ -412,6 +412,8 @@ def update_offer(
 
     if "name" in updates:
         name = get_field(offer, updates, "name", aliases=aliases)
+        if name is None:
+            raise exceptions.OfferException({"name": ["cannot be null"]})
         validation.check_offer_name_does_not_contain_ean(name)
 
     if (

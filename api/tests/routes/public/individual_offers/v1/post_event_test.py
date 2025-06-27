@@ -752,6 +752,8 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
                 },
                 {"offer": ["Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"]},
             ),
+            # additional properties not allowed
+            ({"tkilol": ""}, {"tkilol": ["extra fields not permitted"]}),
         ],
     )
     def test_incorrect_payload_should_return_400(self, client, partial_request_json, expected_response_json):
