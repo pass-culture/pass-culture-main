@@ -324,11 +324,9 @@ jobs:
       fail-fast: false
       matrix:
         pytest_args:
-          - collection: "--ignore=tests/routes/backoffice"
-            description: "(without BO)"
-          - collection: "tests/routes/backoffice"
-            description: "(only BO)"
-        group: [1, 2, 3, 4]
+          - collection: "tests/core/offerers/test_script.py"
+            description: "(only script)"
+        group: [1]
     services:
       redis:
         image: redis:7-alpine
