@@ -34,7 +34,7 @@ describe('ButtonImageEdit', () => {
       ...props,
       initialValues: {
         ...props.initialValues,
-        imageUrl: 'https://test.url',
+        croppedImageUrl: 'https://test.url',
       },
     }
     renderButtonImageEdit(props)
@@ -63,8 +63,7 @@ describe('ButtonImageEdit', () => {
     props = {
       ...props,
       initialValues: {
-        imageUrl: 'https://test.url',
-        originalImageUrl: 'https://test.url',
+        croppedImageUrl: 'https://test.url',
         credit: 'John Do',
       },
     }

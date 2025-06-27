@@ -25,7 +25,7 @@ export default {
 const props: ImageUploaderProps = {
   initialValues: {
     originalImageUrl: sampleImagePortrait,
-    imageUrl: sampleImagePortrait,
+    croppedImageUrl: sampleImagePortrait,
     credit: 'John Do',
     cropParams: {
       xCropPercent: 0,
@@ -53,7 +53,7 @@ export const WithImageVenue: StoryObj<typeof ImageUploader> = {
   args: {
     ...props,
     initialValues: {
-      imageUrl: sampleImageLandscape,
+      croppedImageUrl: sampleImageLandscape,
       originalImageUrl: sampleImageLandscape,
     },
     mode: UploaderModeEnum.VENUE,

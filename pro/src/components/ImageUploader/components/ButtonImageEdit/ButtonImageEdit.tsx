@@ -36,7 +36,8 @@ export const ButtonImageEdit = ({
   children,
   disableForm,
 }: ButtonImageEditProps): JSX.Element => {
-  const { imageUrl, originalImageUrl } = initialValues
+  const { croppedImageUrl, originalImageUrl } = initialValues
+  const imageUrl = croppedImageUrl || originalImageUrl
 
   const [isModalImageOpen, setIsModalImageOpen] = useState(false)
 
@@ -64,7 +65,7 @@ export const ButtonImageEdit = ({
       onOpenChange={setIsModalImageOpen}
       open={isModalImageOpen}
       trigger={
-        imageUrl || originalImageUrl ? (
+        imageUrl ? (
           <Button
             onClick={onClickButtonImageAdd}
             variant={ButtonVariant.TERNARY}

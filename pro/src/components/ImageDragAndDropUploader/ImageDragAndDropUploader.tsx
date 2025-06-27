@@ -47,7 +47,7 @@ export const ImageDragAndDropUploader = ({
   const updateImageRef = useRef<HTMLButtonElement>(null)
   const inputDragAndDropRef = useRef<HTMLInputElement>(null)
 
-  const { imageUrl, originalImageUrl } = initialValues
+  const { croppedImageUrl, originalImageUrl } = initialValues
   const [isModalImageOpen, setIsModalImageOpen] = useState(false)
   const [draftImage, setDraftImage] = useState<File | undefined>(undefined)
   const previousDraftImage = usePrevious(draftImage)
@@ -56,7 +56,8 @@ export const ImageDragAndDropUploader = ({
     React.RefObject<HTMLElement> | undefined
   >(inputDragAndDropRef)
 
-  const hasImage = imageUrl && originalImageUrl
+  const imageUrl = croppedImageUrl || originalImageUrl
+  const hasImage = !!imageUrl
   const shouldDisplayActions = hasImage && !hideActionButtons
 
   useEffect(() => {

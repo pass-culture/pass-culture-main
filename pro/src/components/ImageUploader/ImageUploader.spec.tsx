@@ -48,7 +48,7 @@ describe('ImageUploader', () => {
       onImageDelete: async () => {},
       mode: UploaderModeEnum.OFFER,
       initialValues: {
-        imageUrl: 'noimage.jpg',
+        croppedImageUrl: 'noimage.jpg',
         originalImageUrl: 'noimage.jpg',
         credit: 'John Do',
         cropParams: {

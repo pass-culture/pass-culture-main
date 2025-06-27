@@ -28,7 +28,6 @@ export function map(
 interface ImageEditorConfig {
   canvasHeight: number
   canvasWidth: number
-  cropBorderColor: string
   cropBorderHeight: number
   cropBorderWidth: number
   maxScale: number
@@ -41,6 +40,7 @@ interface ImageEditorProps extends ImageEditorConfig {
   children?: never
   onChangeDone?: () => void
   onImagePainted?: () => void
+  onImageError?: (ev: Event) => void
 }
 
 export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
@@ -49,7 +49,6 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
       image,
       canvasHeight,
       canvasWidth,
-      cropBorderColor,
       cropBorderHeight,
       cropBorderWidth,
       initialPosition = { x: 0.5, y: 0.5 },
@@ -57,6 +56,7 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
       initialScale = 1,
       onChangeDone,
       onImagePainted,
+      onImageError,
     },
     ref
   ) => {
@@ -107,26 +107,6 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
       cropBorderHeight
     )
 
-    const drawCropBorder = () => {
-      const canvas = document.querySelector('canvas')
-      const ctx = canvas?.getContext('2d')
-      if (!ctx) {
-        return
-      }
-
-      const canvasTools = new CanvasTools(ctx)
-      canvasTools.drawArea({
-        width: 0,
-        color: cropBorderColor,
-        coordinates: [
-          responsiveCropBorderWidth,
-          responsiveCropBorderHeight,
-          responsiveCanvasWidth,
-          responsiveCanvasHeight,
-        ],
-      })
-    }
-
     /* istanbul ignore next: DEBT, TO FIX */
     const onPositionChange = useCallback((position: Position) => {
       setPosition(position)
@@ -137,26 +117,46 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
 
     const isScaleDisabled = maxScale <= 1
 
+    const drawCropBorder = () => {
+      const canvas = document.querySelector('canvas')
+      const ctx = canvas?.getContext('2d')
+      if (!ctx) {
+        return
+      }
+
+      const canvasTools = new CanvasTools(ctx)
+      canvasTools.drawArea({
+        width: 0,
+        color: '#FFF',
+        coordinates: [
+          responsiveCropBorderWidth,
+          responsiveCropBorderHeight,
+          responsiveCanvasWidth,
+          responsiveCanvasHeight,
+        ],
+      })
+    }
+
     return (
       <div className={style['image-editor']}>
         <AvatarEditor
-          border={[responsiveCropBorderWidth, responsiveCropBorderHeight]}
           color={[0, 0, 0, 0.2]}
           crossOrigin="anonymous"
-          height={responsiveCanvasHeight}
           image={image}
+          onLoadFailure={onImageError}
           onImageChange={drawCropBorder}
           onImageReady={() => {
             onImagePainted?.()
             drawCropBorder()
           }}
-          onMouseMove={drawCropBorder}
           onMouseUp={onChangeDone}
           onPositionChange={onPositionChange}
           position={position}
           ref={ref}
-          scale={Number(scale)}
+          scale={scale}
           width={responsiveCanvasWidth}
+          height={responsiveCanvasHeight}
+          border={[responsiveCropBorderWidth, responsiveCropBorderHeight]}
           aria-label="Editeur d'image"
         />
         <label className={style['image-editor-label']} htmlFor="scale">

@@ -10,7 +10,6 @@ describe('getIndividualOfferImage', () => {
         credit: 'John Do',
       },
       expectedImage: {
-        originalUrl: 'https://image.url',
         url: 'https://image.url',
         credit: 'John Do',
       },
@@ -31,7 +30,6 @@ describe('getIndividualOfferImage', () => {
         credit: null,
       },
       expectedImage: {
-        originalUrl: 'https://image.url',
         url: 'https://image.url',
         credit: '',
       },
@@ -56,7 +54,6 @@ describe('getIndividualOfferImage', () => {
     })
 
     expect(getIndividualOfferImage(offer)).toEqual({
-      originalUrl: 'https://image.url',
       url: 'https://image.url',
       credit: '',
     })

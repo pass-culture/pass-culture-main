@@ -6,8 +6,7 @@ export const buildInitialValues = (
   imageOffer?: IndividualOfferImage | OnImageUploadArgs
 ): UploadImageValues => {
   const defaultInitialValues = {
-    imageUrl: '',
-    originalImageUrl: '',
+    croppedImageUrl: '',
     credit: '',
     cropParams: {
       xCropPercent: 1,
@@ -25,8 +24,7 @@ export const buildInitialValues = (
   // Therefore, it's a OnImageUploadArgs type.
   if ('imageFile' in imageOffer) {
     return {
-      imageUrl: imageOffer.imageCroppedDataUrl ?? '',
-      originalImageUrl: imageOffer.imageCroppedDataUrl ?? '',
+      croppedImageUrl: imageOffer.imageCroppedDataUrl ?? '',
       credit: imageOffer.credit ?? '',
       cropParams: {
         xCropPercent: 1,
@@ -39,10 +37,9 @@ export const buildInitialValues = (
 
   // Image has been uploaded once.
   // Therefore, it's a IndividualOfferImage type.
-  if ('originalUrl' in imageOffer) {
+  if ('url' in imageOffer) {
     return {
-      imageUrl: imageOffer.url,
-      originalImageUrl: imageOffer.originalUrl,
+      croppedImageUrl: imageOffer.url,
       credit: imageOffer.credit ?? '',
       cropParams: imageOffer.cropParams ?? {
         xCropPercent: 1,

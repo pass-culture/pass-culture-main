@@ -50,7 +50,7 @@ describe('ImageDragAndDropUploader', () => {
       onImageDelete: () => {},
       mode: UploaderModeEnum.OFFER,
       initialValues: {
-        imageUrl: 'noimage.jpg',
+        croppedImageUrl: 'noimage.jpg',
         originalImageUrl: 'noimage.jpg',
         credit: 'John Do',
         cropParams: {
@@ -121,7 +121,7 @@ describe('ImageDragAndDropUploader', () => {
       onImageDelete: () => {},
       mode: UploaderModeEnum.OFFER,
       initialValues: {
-        imageUrl: 'noimage.jpg',
+        croppedImageUrl: 'noimage.jpg',
         originalImageUrl: 'noimage.jpg',
         credit: 'John Do',
         cropParams: {
@@ -210,7 +210,7 @@ describe('ImageDragAndDropUploader', () => {
       onImageDelete: mockDelete,
       mode: UploaderModeEnum.OFFER,
       initialValues: {
-        imageUrl: 'noimage.jpg',
+        croppedImageUrl: 'noimage.jpg',
         originalImageUrl: 'noimage.jpg',
         credit: 'John Do',
         cropParams: {

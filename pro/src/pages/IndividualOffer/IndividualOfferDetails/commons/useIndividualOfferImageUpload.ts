@@ -32,7 +32,6 @@ export const useIndividualOfferImageUpload = (
       // We still need to set the image offer to be able to
       // display it as preview.
       setImageOffer({
-        originalUrl: imageUrl,
         url: imageUrl,
         // Credit isn't defined in Product - images property,
         // is not needed for the preview anyway.

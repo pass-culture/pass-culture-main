@@ -66,14 +66,17 @@ export const ModalImageUpsertOrEdit = ({
   }
 
   const {
+    croppedImageUrl: initialCroppedImageUrl,
     originalImageUrl: initialOriginalImageUrl,
     credit: initialCredit,
     cropParams: initialCropParams,
   } = previouslyUploadedImage
-  const previouslyUploadedImageUrl = initialOriginalImageUrl
 
-  // First version of the back don't use width_crop_percent
-  // which is needed to display the original image with the correct crop.
+  // Only venue images seem to have both cropped and original image URLs saved.
+  // Offers lose the ability to retrieve the original image URL after the first upload.
+  const previouslyUploadedImageUrl =
+    initialOriginalImageUrl || initialCroppedImageUrl
+
   const {
     xCropPercent: initalXCropPercent,
     yCropPercent: initalYCropPercent,
@@ -181,6 +184,11 @@ export const ModalImageUpsertOrEdit = ({
     }
   }
 
+  const onImageError = () => {
+    setIsPaintingImage(false)
+    notification.error('Erreur lors de la récupération de votre image.')
+  }
+
   const handleImageChange = (
     callback?:
       | ((
@@ -246,6 +254,7 @@ export const ModalImageUpsertOrEdit = ({
                     initialScale={scale}
                     onChangeDone={onImageEditorChange}
                     onImagePainted={onImagePainted}
+                    onImageError={onImageError}
                   />
                   <div className={style['modal-image-crop-actions']}>
                     <Button
