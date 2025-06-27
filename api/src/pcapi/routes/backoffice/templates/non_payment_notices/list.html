@@ -17,11 +17,7 @@
   </div>
 {% endblock before_table %}
 {% block table_header %}
-  <th data-pc-column-name="Checkbox">
-    <input type="checkbox"
-           class="form-check-input fs-6 mt-0"
-           name="pc-table-multi-select-check-all" />
-  </th>
+  <th></th>
   <th>ID</th>
   <th>Date de création</th>
   <th>Date de réception</th>
@@ -40,10 +36,23 @@
   {% for notice in rows %}
     <tr>
       <td>
-        <input type="checkbox"
-               class="form-check-input"
-               name="pc-table-multi-select-check-{{ notice.id }}"
-               data-id="{{ notice.id }}" />
+        {% if has_permission('MANAGE_NON_PAYMENT_NOTICES') %}
+          <div class="dropdown">
+            <button type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    class="btn p-0">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <li class="dropdown-item p-0">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#edit-modal-{{ notice.id }}">Modifier les informations</a>
+              </li>
+            </ul>
+          </div>
+        {% endif %}
       </td>
       <td>{{ notice.id }}</td>
       <td>{{ notice.dateCreated | format_date }}</td>
@@ -68,4 +77,7 @@
   {% endfor %}
 {% endblock table_body %}
 {% block after_table %}
+  {% for notice in rows %}
+    {{ build_lazy_modal(url_for("backoffice_web.non_payment_notices.get_edit_form", notice_id=notice.id) , "edit-modal-" + notice.id|string) }}
+  {% endfor %}
 {% endblock after_table %}

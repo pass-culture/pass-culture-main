@@ -6,6 +6,7 @@ import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
 from flask import render_template
+from flask import request
 from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
@@ -137,6 +138,10 @@ def list_notices() -> utils.BackofficeResponse:
     )
 
 
+def _redirect_to_list() -> utils.BackofficeResponse:
+    return redirect(request.referrer or url_for("backoffice_web.non_payment_notices.list_notices"), code=303)
+
+
 @non_payment_notices_blueprint.route("/create", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
 def get_create_non_payment_notice_form() -> utils.BackofficeResponse:
@@ -152,44 +157,101 @@ def get_create_non_payment_notice_form() -> utils.BackofficeResponse:
     )
 
 
-@non_payment_notices_blueprint.route("/create", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
-def create_non_payment_notice() -> utils.BackofficeResponse:
-    form = forms.CreateNonPaymentNoticeForm()
-
+def _create_or_update_non_payment_notice(
+    form: forms.CreateNonPaymentNoticeForm, notice: offerers_models.NonPaymentNotice | None = None
+) -> utils.BackofficeResponse:
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.non_payment_notices.list_notices"), code=303)
+        return _redirect_to_list()
 
     offerer = db.session.get(offerers_models.Offerer, int(form.offerer.data[0])) if form.offerer.data[0] else None
     venue = db.session.get(offerers_models.Venue, int(form.venue.data[0])) if form.venue.data[0] else None
 
+    data = {
+        "amount": form.amount.data,
+        "dateReceived": form.date_received.data,
+        "emitterEmail": form.emitter_email.data,
+        "emitterName": form.emitter_name.data,
+        "noticeType": offerers_models.NoticeType[form.notice_type.data],
+        "reference": form.reference.data,
+        "offerer": offerer,
+        "venue": venue,
+    }
+
     try:
-        notice = offerers_models.NonPaymentNotice(
-            amount=form.amount.data,
-            dateReceived=form.date_received.data,
-            emitterEmail=form.emitter_email.data,
-            emitterName=form.emitter_name.data,
-            noticeType=offerers_models.NoticeType[form.notice_type.data],
-            reference=form.reference.data,
-            offerer=offerer,
-            venue=venue,
-        )
+        if notice:
+            has_offerer_or_venue_changed = (
+                data["offerer"] and data["offerer"] != notice.offerer or data["venue"] and data["venue"] != notice.venue
+            )
+            for key, value in data.items():
+                setattr(notice, key, value)
+        else:
+            has_offerer_or_venue_changed = data["offerer"] or data["venue"]
+            notice = offerers_models.NonPaymentNotice(**data)
+
         db.session.add(notice)
-        if offerer or venue:
+        if has_offerer_or_venue_changed:
             db.session.flush()  # mandatory to get notice.id
             history_api.add_action(
                 history_models.ActionType.NON_PAYMENT_NOTICE_CREATED,
                 author=current_user,
-                offerer=offerer,
-                venue=venue,
+                offerer=data["offerer"],
+                venue=data["venue"],
                 non_payment_notice_id=notice.id,
             )
         db.session.flush()
-        flash("L'avis d'impayé a été créé", "success")
+        flash("L'avis d'impayé a été enregistré", "success")
 
     except sa_exc.IntegrityError as err:
         mark_transaction_as_invalid()
-        flash(Markup("Erreur dans la création de l'avis d'impayé : {message}").format(message=str(err)), "warning")
+        flash(Markup("Erreur dans l'enregistrement de l'avis d'impayé : {message}").format(message=str(err)), "warning")
 
-    return redirect(url_for("backoffice_web.non_payment_notices.list_notices"), code=303)
+    return _redirect_to_list()
+
+
+@non_payment_notices_blueprint.route("/create", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def create_non_payment_notice() -> utils.BackofficeResponse:
+    form = forms.CreateNonPaymentNoticeForm()
+    return _create_or_update_non_payment_notice(form)
+
+
+@non_payment_notices_blueprint.route("/<int:notice_id>/edit", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def get_edit_form(notice_id: int) -> utils.BackofficeResponse:
+    notice: offerers_models.NonPaymentNotice = db.session.query(offerers_models.NonPaymentNotice).get_or_404(notice_id)
+
+    form = forms.EditNonPaymentNoticeForm(
+        date_received=notice.dateReceived,
+        notice_type=notice.noticeType.name,
+        amount=notice.amount,
+        reference=notice.reference,
+        emitter_name=notice.emitterName,
+        emitter_email=notice.emitterEmail,
+    )
+
+    if notice.offererId:
+        form.offerer.data = [str(notice.offererId)]
+        autocomplete.prefill_offerers_choices(form.offerer)
+
+    if notice.venueId:
+        form.venue.data = [str(notice.venueId)]
+        autocomplete.prefill_venues_choices(form.venue)
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.non_payment_notices.edit", notice_id=notice_id),
+        div_id=f"edit-modal-{notice_id}",  # must be consistent with parameter passed to build_lazy_modal
+        title="Modifier les informations",
+        button_text="Enregistrer",
+    )
+
+
+@non_payment_notices_blueprint.route("/<int:notice_id>/edit", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def edit(notice_id: int) -> utils.BackofficeResponse:
+    notice: offerers_models.NonPaymentNotice = db.session.query(offerers_models.NonPaymentNotice).get_or_404(notice_id)
+
+    form = forms.EditNonPaymentNoticeForm()
+    return _create_or_update_non_payment_notice(form, notice)

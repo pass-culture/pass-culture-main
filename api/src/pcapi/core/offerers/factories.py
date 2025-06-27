@@ -524,7 +524,7 @@ class WhitelistedVenueConfidenceRuleFactory(OffererConfidenceRuleFactory):
     confidenceLevel = models.OffererConfidenceLevel.WHITELIST
 
 
-class NonPaymentNoticeFactory(BaseFactory):
+class NonPaymentNoticeFactory(BaseFactory[models.NonPaymentNotice]):
     class Meta:
         model = models.NonPaymentNotice
 
