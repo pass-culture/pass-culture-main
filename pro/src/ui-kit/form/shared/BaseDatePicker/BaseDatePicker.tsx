@@ -4,7 +4,7 @@ import { ForwardedRef, forwardRef } from 'react'
 
 import { FORMAT_ISO_DATE_ONLY, isDateValid } from 'commons/utils/date'
 
-import { BaseInputProps, BaseInput } from '../shared/BaseInput/BaseInput'
+import { BaseInput, BaseInputProps } from '../BaseInput/BaseInput'
 
 import styles from './BaseDatePicker.module.scss'
 
