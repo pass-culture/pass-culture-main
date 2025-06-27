@@ -52,7 +52,7 @@ export const LostPassword = (): JSX.Element => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
   } = hookForm
 
   const submitChangePasswordRequest = async (formValues: FormValues) => {
@@ -133,7 +133,6 @@ export const LostPassword = (): JSX.Element => {
                   type="submit"
                   className={styles['validation-button']}
                   variant={ButtonVariant.PRIMARY}
-                  disabled={!isValid}
                 >
                   {is2025SignUpEnabled ? 'Réinitialiser' : 'Valider'}
                 </Button>
