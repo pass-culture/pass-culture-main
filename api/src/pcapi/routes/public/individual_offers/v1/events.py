@@ -501,6 +501,7 @@ def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) ->
         .filter(offers_models.Offer.isEvent)
         .one_or_none()
     )
+
     if not offer:
         raise api_errors.ResourceNotFoundError({"event_id": ["The event could not be found"]})
 
@@ -516,27 +517,34 @@ def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) ->
             }
         )
 
-    try:
-        for date in body.dates:
-            price_category = next((c for c in offer.priceCategories if c.id == date.price_category_id), None)
+    errors = {}
+
+    for date_index, date_item in enumerate(body.dates):
+        try:
+            price_category = next((c for c in offer.priceCategories if c.id == date_item.price_category_id), None)
             if not price_category:
-                raise api_errors.ResourceNotFoundError({"price_category_id": ["The price category could not be found"]})
+                errors[f"dates.{date_index}.priceCategoryId"] = ["The price category could not be found"]
+                continue
 
             new_dates.append(
                 offers_api.create_stock(
                     offer=offer,
                     price_category=price_category,
-                    quantity=serialization.deserialize_quantity(date.quantity),
-                    beginning_datetime=date.beginning_datetime,
-                    booking_limit_datetime=date.booking_limit_datetime,
+                    quantity=serialization.deserialize_quantity(date_item.quantity),
+                    beginning_datetime=date_item.beginning_datetime,
+                    booking_limit_datetime=date_item.booking_limit_datetime,
                     creating_provider=current_api_key.provider,
-                    id_at_provider=date.id_at_provider,
+                    id_at_provider=date_item.id_at_provider,
                 )
             )
-        if not existing_stocks_count and body.dates:
-            offers_api.update_offer_fraud_information(offer, user=None)
-    except offers_exceptions.OfferException as error:
-        raise api_errors.ApiErrors(error.errors)
+            if not existing_stocks_count and body.dates:
+                offers_api.update_offer_fraud_information(offer, user=None)
+        except offers_exceptions.OfferException as exc:
+            for error_key, error_msg in exc.errors.items():
+                errors[f"dates.{date_index}.{error_key}"] = error_msg
+
+    if errors:
+        raise api_errors.ApiErrors(errors)
 
     return serialization.PostDatesResponse(
         dates=[serialization.DateResponse.build_date(new_date) for new_date in new_dates]
