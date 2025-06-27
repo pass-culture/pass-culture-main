@@ -1,5 +1,7 @@
+import base64
 import decimal
 import logging
+import pathlib
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
@@ -18,6 +20,7 @@ from pcapi.models import offer_mixin
 from pcapi.utils import date as date_utils
 from pcapi.utils import human_ids
 
+import tests
 from tests.conftest import TestClient
 from tests.routes import image_data
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
@@ -87,7 +90,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.bookingEmail is None
 
         assert created_offer.description is None
-        assert created_offer.publicationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert created_offer.publicationDatetime == now_datetime_with_tz.replace(second=0, microsecond=0, tzinfo=None)
         assert created_offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
         assert not created_offer.bookingAllowedDatetime
         assert created_offer.status == offer_mixin.OfferStatus.DRAFT
@@ -180,7 +183,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
 
         assert response.status_code == 200
-        assert response.json["publicationDate"] == response_publication_date
+        assert response.json["publicationDatetime"] == response_publication_date
         created_offer = db.session.query(offers_models.Offer).one()
 
         assert created_offer.publicationDatetime == expected_publication_date
@@ -188,36 +191,75 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
 
         assert not created_offer.bookingAllowedDatetime
 
-    def test_event_creation_should_return_400_because_id_at_provider_is_taken(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-
-        id_at_provider = "rolala"
-        # existing offer with id_at_provider
-        offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            bookingContact="contact@example.com",
-            bookingEmail="notify@passq.com",
-            subcategoryId="CONCERT",
-            durationMinutes=20,
-            isDuo=False,
-            lastProvider=venue_provider.provider,
-            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
-            withdrawalDelay=86400,
-            withdrawalDetails="Around there",
-            description="A description",
-            idAtProvider=id_at_provider,
-        )
+    @time_machine.travel(datetime(2025, 6, 25, 12, 30, tzinfo=timezone.utc), tick=False)
+    @pytest.mark.parametrize(
+        "partial_request_json,expected_publication_datetime,expected_response_publication_datetime",
+        [
+            (
+                {"publicationDatetime": "2025-08-01T08:00:00+02:00"},  # tz: Europe/Paris
+                datetime(2025, 8, 1, 6),  # tz: utc
+                "2025-08-01T06:00:00Z",
+            ),
+            (
+                {"publicationDatetime": "now"},
+                datetime(2025, 6, 25, 12, 30),
+                "2025-06-25T12:30:00Z",
+            ),
+            # should default to now
+            ({}, datetime(2025, 6, 25, 12, 30), "2025-06-25T12:30:00Z"),
+            # draft
+            ({"publicationDatetime": None}, None, None),
+        ],
+    )
+    def test_publication_datetime_param(
+        self, client, partial_request_json, expected_publication_datetime, expected_response_publication_datetime
+    ):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         payload = self._get_base_payload(venue_provider.venueId)
-        payload["idAtProvider"] = id_at_provider
+        payload.update(**partial_request_json)
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json=payload,
-        )
+        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
 
-        assert response.status_code == 400
-        assert response.json == {"idAtProvider": ["`rolala` is already taken by another venue offer"]}
+        assert response.status_code == 200
+        assert response.json["publicationDatetime"] == expected_response_publication_datetime
+
+        created_offer = db.session.query(offers_models.Offer).one()
+        assert created_offer.publicationDatetime == expected_publication_datetime
+
+    @time_machine.travel(datetime(2025, 6, 25, 12, 30, tzinfo=timezone.utc), tick=False)
+    @pytest.mark.parametrize(
+        "partial_request_json,expected_booking_allowed_datetime,expected_response_booking_allowed_datetime",
+        [
+            (
+                {"bookingAllowedDatetime": "2025-08-01T08:00:00+02:00"},  # tz: Europe/Paris
+                datetime(2025, 8, 1, 6),  # tz: utc
+                "2025-08-01T06:00:00Z",
+            ),
+            ({"bookingAllowedDatetime": None}, None, None),
+            # should default to `None``
+            ({}, None, None),
+        ],
+    )
+    def test_booking_allowed_datetime_param(
+        self,
+        client,
+        partial_request_json,
+        expected_booking_allowed_datetime,
+        expected_response_booking_allowed_datetime,
+    ):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        payload = self._get_base_payload(venue_provider.venueId)
+        payload.update(**partial_request_json)
+
+        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+
+        assert response.status_code == 200
+        assert response.json["bookingAllowedDatetime"] == expected_response_booking_allowed_datetime
+
+        created_offer = db.session.query(offers_models.Offer).one()
+        assert created_offer.bookingAllowedDatetime == expected_booking_allowed_datetime
 
     @time_machine.travel(datetime(2025, 6, 25, 12, 30, tzinfo=timezone.utc), tick=False)
     def test_event_creation_with_full_body(self, client, clear_tests_assets_bucket):
@@ -320,7 +362,6 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
                 "musicType": "ELECTRO-HOUSE",
                 "performer": "Nicolas Jaar",
             },
-            "publicationDate": "2025-06-25T12:30:00Z",
             "description": "Space is only noise if you can see",
             "enableDoubleBookings": True,
             "eventDuration": 120,
@@ -539,37 +580,6 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "location.AddressLocation.addressId": [f"There is no address with id {not_existing_address_id}"]
         }
 
-    @pytest.mark.parametrize(
-        "partial_location,expected_json",
-        [
-            ({"addressId": "coucou"}, {"location.AddressLocation.addressId": ["value is not a valid integer"]}),
-            (
-                {"addressLabel": ""},
-                {"location.AddressLocation.addressLabel": ["ensure this value has at least 1 characters"]},
-            ),
-            (
-                {"addressLabel": "a" * 201},
-                {"location.AddressLocation.addressLabel": ["ensure this value has at most 200 characters"]},
-            ),
-        ],
-    )
-    def test_event_with_custom_address_should_raiser_400_because_address_location_params_are_incorrect(
-        self, client, partial_location, expected_json
-    ):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
-        payload = self._get_base_payload(venue_provider.venueId)
-        address = geography_factories.AddressFactory()
-        base_location_object = {
-            "type": "address",
-            "venueId": venue_provider.venueId,
-            "addressId": address.id,
-            "addressLabel": "My beautiful address no one knows about",
-        }
-        payload["location"] = dict(base_location_object, **partial_location)
-        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
-        assert response.status_code == 400
-        assert response.json == expected_json
-
     def test_event_without_ticket(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
 
@@ -625,6 +635,141 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
 
+    @pytest.mark.parametrize(
+        "partial_request_json, expected_response_json",
+        [
+            # errors on name
+            (
+                {"name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256"},
+                {"name": ["Le titre d'une offre ne peut contenir l'EAN"]},
+            ),
+            (
+                {"name": "Jean Tartine est de retour", "description": "A" * 10_001},
+                {"description": ["ensure this value has at most 10000 characters"]},
+            ),
+            ({"name": None}, {"name": ["none is not an allowed value"]}),
+            # errors on datetimes
+            (
+                {"bookingAllowedDatetime": "2021-01-01T00:00:00"},
+                {"bookingAllowedDatetime": ["The datetime must be timezone-aware."]},
+            ),
+            (
+                {"bookingAllowedDatetime": "2021-01-01T00:00:00+00:00"},
+                {"bookingAllowedDatetime": ["The datetime must be in the future."]},
+            ),
+            (
+                {"publicationDatetime": "2021-01-01T00:00:00"},
+                {"publicationDatetime": ["The datetime must be timezone-aware."]},
+            ),
+            (
+                {"publicationDatetime": "2021-01-01T00:00:00+00:00"},
+                {"publicationDatetime": ["The datetime must be in the future."]},
+            ),
+            (
+                {"publicationDatetime": "NOW"},
+                {"publicationDatetime": ["invalid datetime format", "unexpected value; permitted: 'now'"]},
+            ),
+            # `publicationDate` & `publicationDatetime` are both set
+            (
+                {
+                    "publicationDatetime": "2021-01-01T00:00:00+00:00",
+                    "publicationDate": "2021-01-01T00:00:00+00:00",
+                },
+                {"__root__": ["You cannot set both `publicationDate` and `publicationDatetime`"]},
+            ),
+            # errors on idAtProvider
+            (
+                {"idAtProvider": "a" * 71},
+                {"idAtProvider": ["ensure this value has at most 70 characters"]},
+            ),
+            (
+                {"idAtProvider": "c'est déjà pris :'("},
+                {"idAtProvider": ["`c'est déjà pris :'(` is already taken by another venue offer"]},
+            ),
+            # errors on image
+            (
+                {
+                    "image": {
+                        "file": base64.b64encode(
+                            (pathlib.Path(tests.__path__[0]) / "files" / "mouette_square.jpg").read_bytes()
+                        ).decode()
+                    }
+                },
+                {"imageFile": "Bad image ratio: expected 0.66, found 1.0"},
+            ),
+            (
+                {"image": {"file": image_data.WRONG_IMAGE_SIZE}},
+                {"imageFile": "The image is too small. It must be above 400x600 pixels."},
+            ),
+            # error on location
+            (
+                {"location": {"type": "address", "venueId": 1, "addressId": "coucou"}},
+                {"location.AddressLocation.addressId": ["value is not a valid integer"]},
+            ),
+            (
+                {"location": {"type": "address", "venueId": 1, "addressId": 1, "addressLabel": ""}},
+                {"location.AddressLocation.addressLabel": ["ensure this value has at least 1 characters"]},
+            ),
+            (
+                {"location": {"type": "address", "venueId": 1, "addressId": 1, "addressLabel": "a" * 201}},
+                {"location.AddressLocation.addressLabel": ["ensure this value has at most 200 characters"]},
+            ),
+            # error on price categories
+            (
+                {"priceCategories": [{"price": i * 100, "label": f"Tarif {i}"} for i in range(51)]},
+                {"priceCategories": ["ensure this value has at most 50 items"]},
+            ),
+            (
+                {
+                    "priceCategories": [
+                        {"price": 2500, "label": "triangle or"},
+                        {"price": 12, "label": "triangle argent"},
+                        {"price": 100, "label": "triangle bronze"},
+                        {"price": 2500, "label": "triangle or"},
+                    ]
+                },
+                {"priceCategories": ["Price categories must be unique"]},
+            ),
+            (
+                {
+                    "priceCategories": [
+                        {"price": 30000, "label": "triangle or", "idAtProvider": "comment_ça_ça_ne_marche_pas?"},
+                        {"price": 15000, "label": "rond d'argent", "idAtProvider": "comment_ça_ça_ne_marche_pas?"},
+                    ]
+                },
+                {
+                    "priceCategories": [
+                        "Price category `idAtProvider` must be unique. Duplicated value : comment_ça_ça_ne_marche_pas?"
+                    ]
+                },
+            ),
+            (
+                {
+                    "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
+                    "accessibility": ACCESSIBILITY_FIELDS,
+                    "name": "Le champ des possibles",
+                    "hasTicket": True,
+                },
+                {"offer": ["Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"]},
+            ),
+        ],
+    )
+    def test_incorrect_payload_should_return_400(self, client, partial_request_json, expected_response_json):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        existing_offer = offers_factories.OfferFactory(venue=venue_provider.venue, idAtProvider="c'est déjà pris :'(")
+
+        payload = self._get_base_payload(venue_provider.venueId)
+
+        payload.update(**partial_request_json)
+
+        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+
+        assert response.status_code == 400
+        assert response.json == expected_response_json
+
+        assert db.session.query(offers_models.Offer).filter(offers_models.Offer.id != existing_offer.id).first() is None
+        assert db.session.query(offers_models.Stock).first() is None
+
     def test_error_when_event_with_has_ticket_to_true_and_no_ticketing_service_set(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
 
@@ -643,87 +788,6 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert response.json == {
             "global": "You cannot create an event with `has_ticket=true` because you dont have a ticketing service enabled (neither at provider level nor at venue level)."
         }
-
-    def test_error_when_withdrawable_event_but_no_booking_contact(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue_provider.venueId},
-                "name": "Le champ des possibles",
-                "hasTicket": True,
-            },
-        )
-
-        assert response.status_code == 400
-        assert db.session.query(offers_models.Offer).count() == 0
-        assert response.json == {
-            "offer": ["Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"]
-        }
-
-    def test_error_when_duplicate_price_categories(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "enableDoubleBookings": True,
-                "bookingContact": "contact@example.com",
-                "bookingEmail": "nicoj@example.com",
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue_provider.venueId},
-                "name": "Le champ des possibles",
-                "categoryRelatedFields": {
-                    "author": "Ray Charles",
-                    "category": "CONCERT",
-                    "musicType": "ELECTRO-HOUSE",
-                    "gtl_id": "04030000",
-                    "performer": "Nicolas Jaar",
-                    "stageDirector": "Alfred",  # field not applicable
-                },
-                "hasTicket": True,
-                "priceCategories": [
-                    {"price": 2500, "label": "triangle or"},
-                    {"price": 12, "label": "triangle argent"},
-                    {"price": 100, "label": "triangle bronze"},
-                    {"price": 2500, "label": "triangle or"},
-                ],
-            },
-        )
-
-        assert response.status_code == 400
-        assert response.json == {"priceCategories": ["Price categories must be unique"]}
-
-    def test_should_raise_400_because_of_duplicated_price_category_ids_at_provider(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-
-        payload = self._get_base_payload(venue_provider.venueId)
-        payload["priceCategories"] = [
-            {"price": 30000, "label": "triangle or", "idAtProvider": "comment_ça_ça_ne_marche_pas?"},
-            {"price": 15000, "label": "rond d'argent", "idAtProvider": "comment_ça_ça_ne_marche_pas?"},
-        ]
-
-        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
-        assert response.status_code == 400
-        assert response.json == {
-            "priceCategories": [
-                "Price category `idAtProvider` must be unique. Duplicated value : comment_ça_ça_ne_marche_pas?"
-            ]
-        }
-
-    def test_should_raise_400_because_more_than_50_price_categories_count_sent(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-
-        payload = self._get_base_payload(venue_provider.venueId)
-        payload["priceCategories"] = [{"price": i * 100, "label": f"Tarif {i}"} for i in range(51)]
-
-        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
-
-        assert response.status_code == 400
-        assert response.json == {"priceCategories": ["ensure this value has at most 50 items"]}
 
     def test_should_not_raise_if_id_at_provider_is_none(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
