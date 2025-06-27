@@ -293,6 +293,8 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
                 withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
                 name=get_field(offer, updates, "name"),
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
+                publicationDatetime=get_field(offer, updates, "publicationDatetime"),
+                bookingAllowedDatetime=get_field(offer, updates, "bookingAllowedDatetime"),
             ),  # type: ignore[call-arg]
             venue=venue,
             offerer_address=offerer_address,
