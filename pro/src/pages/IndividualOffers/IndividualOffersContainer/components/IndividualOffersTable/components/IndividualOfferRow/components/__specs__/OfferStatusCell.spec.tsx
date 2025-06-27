@@ -77,7 +77,7 @@ describe('OfferStatusCell', () => {
       { features: ['WIP_REFACTO_FUTURE_OFFER'] }
     )
 
-    expect(screen.getByText('publiée non réservable')).toBeInTheDocument()
+    expect(screen.getByText('publiée')).toBeInTheDocument()
   })
 
   it('should show the status if the FF WIP_REFACTO_FUTURE_OFFER is enabled and the offer was published in the past', () => {
@@ -92,6 +92,6 @@ describe('OfferStatusCell', () => {
       { features: ['WIP_REFACTO_FUTURE_OFFER'] }
     )
 
-    expect(screen.getByText('publiée non réservable')).toBeInTheDocument()
+    expect(screen.getByText('publiée')).toBeInTheDocument()
   })
 })
