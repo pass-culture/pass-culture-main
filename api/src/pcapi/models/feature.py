@@ -136,9 +136,6 @@ class FeatureToggle(enum.Enum):
     )
     WIP_ENABLE_CLICKHOUSE_IN_BO = "Utiliser Clickhouse pour les statistiques des acteurs culturels dans le BO"
     WIP_ENABLE_EVENT_WITH_OPENING_HOUR = "Activer la nouvelle création d'un événement sur horaires d'ouverture"
-    WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
-        "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
-    )
     WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE = (
         "Activer la nouvelle structure des offres et réservations collectives"
     )
@@ -244,10 +241,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
-    FEATURES_DISABLED_BY_DEFAULT += (
-        FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API,
-        FeatureToggle.WIP_FREE_ELIGIBILITY,
-    )
+    FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_FREE_ELIGIBILITY,)
 
 
 def add_feature_to_database(feature: Feature) -> None:
