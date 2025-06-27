@@ -4,8 +4,6 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { GET_MUSIC_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { showOptionsTree } from 'commons/core/Offers/categoriesSubTypes'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
-import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 import { DetailsFormValues } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'
@@ -46,8 +44,6 @@ export const DetailsSubForm = ({
   isOfferCD,
   readOnlyFields,
 }: DetailsSubFormProps) => {
-  const mode = useOfferWizardMode()
-
   const {
     register,
     watch,
@@ -87,8 +83,7 @@ export const DetailsSubForm = ({
   )
 
   const displayEanField =
-    subcategoryConditionalFields.includes('ean') &&
-    (mode === OFFER_WIZARD_MODE.CREATION ? !isProductBased : true)
+    subcategoryConditionalFields.includes('ean') && !isEanSearchDisplayed
 
   return (
     <>
