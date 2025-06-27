@@ -659,7 +659,7 @@ class PriceCategoryEdition(serialization.ConfiguredBaseModel):
 
 class EventStockEdition(BaseStockEdition):
     beginning_datetime: datetime.datetime | None = fields.BEGINNING_DATETIME
-    price_category_id: int | None = fields.PRICE_CATEGORY_ID
+    price_category_id: pydantic_v1.PositiveInt | None = fields.PRICE_CATEGORY_ID
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
 
     _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
