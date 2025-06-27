@@ -583,23 +583,6 @@ class EventWeekDayOpeningHours(PcObject, Base, Model):
     )
 
 
-class FutureOffer(PcObject, Base, Model, SoftDeletableMixin):
-    __tablename__ = "future_offer"
-
-    offerId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
-    )
-    publicationDate = sa.Column(sa.DateTime, index=True, nullable=False)
-
-    @hybrid_property
-    def isWaitingForPublication(self) -> bool:
-        return datetime.datetime.utcnow() < self.publicationDate
-
-    @isWaitingForPublication.expression  # type: ignore[no-redef]
-    def isWaitingForPublication(cls) -> bool:
-        return sa.func.now() < cls.publicationDate
-
-
 class HeadlineOffer(PcObject, Base, Model):
     __tablename__ = "headline_offer"
 
