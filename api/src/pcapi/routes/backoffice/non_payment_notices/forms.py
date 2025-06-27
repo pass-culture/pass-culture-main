@@ -153,3 +153,7 @@ class CreateNonPaymentNoticeForm(FlaskForm):
             ]
 
         return super().validate(extra_validators)
+
+
+class EditNonPaymentNoticeForm(CreateNonPaymentNoticeForm):
+    pass

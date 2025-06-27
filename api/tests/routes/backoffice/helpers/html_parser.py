@@ -1,3 +1,4 @@
+import json
 import re
 import typing
 
@@ -205,7 +206,7 @@ def assert_no_alert(html_content: str) -> None:
     soup = get_soup(html_content)
 
     alert = soup.find("div", class_="alert")
-    assert alert is None
+    assert alert is None, alert.text
 
 
 def extract_warnings(html_content: str) -> list[str]:
@@ -222,6 +223,20 @@ def extract_select_options(html_content: str, name: str, selected_only: bool = F
     options = select.find_all("option", selected=selected_only or None)
 
     return {option["value"]: filter_whitespaces(option.text) for option in options if option["value"]}
+
+
+def extract_tom_select_options(html_content: str, name: str, selected_only: bool = False) -> dict[str, str]:
+    soup = get_soup(html_content)
+
+    select = soup.find("select", class_="pc-tom-select-field", attrs={"name": name})
+    assert select is not None
+
+    options = json.loads(select["data-tomselect-options"])
+    if selected_only:
+        selected_ids = json.loads(select["data-tomselect-items"])
+        options = [option for option in options if option["id"] in selected_ids]
+
+    return {option["id"]: filter_whitespaces(option["text"]) for option in options}
 
 
 def extract_input_value(html_content: str, name: str) -> str:

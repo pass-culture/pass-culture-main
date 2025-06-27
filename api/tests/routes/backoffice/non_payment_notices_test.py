@@ -250,7 +250,7 @@ class GetCreateNonPaymentNoticeFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.non_payment_notices.get_create_non_payment_notice_form"
     needed_permission = perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES
 
-    def test_get_create_form_test(self, legit_user, authenticated_client):
+    def test_get_create_form_test(self, authenticated_client):
         form_url = url_for(self.endpoint)
 
         with assert_num_queries(2):  # session + current user
@@ -279,7 +279,8 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data) == "L'avis d'impayé a été créé"
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "L'avis d'impayé a été enregistré"
         )
 
         notice = db.session.query(offerers_models.NonPaymentNotice).one()
@@ -316,7 +317,8 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data) == "L'avis d'impayé a été créé"
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "L'avis d'impayé a été enregistré"
         )
 
         notice = db.session.query(offerers_models.NonPaymentNotice).one()
@@ -358,7 +360,8 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data) == "L'avis d'impayé a été créé"
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "L'avis d'impayé a été enregistré"
         )
 
         notice = db.session.query(offerers_models.NonPaymentNotice).one()
@@ -376,7 +379,7 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
 
         action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.NON_PAYMENT_NOTICE_CREATED
-        assert action.actionDate is not None
+        assert action.actionDate.date() == datetime.date.today()
         assert action.authorUserId == legit_user.id
         assert action.offererId == venue.managingOfferer.id
         assert action.venueId == venue.id
@@ -401,7 +404,8 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data) == "L'avis d'impayé a été créé"
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "L'avis d'impayé a été enregistré"
         )
 
         notice = db.session.query(offerers_models.NonPaymentNotice).one()
@@ -448,3 +452,145 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         )
 
         assert db.session.query(offerers_models.NonPaymentNotice).count() == 0
+
+
+class GetEditFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.non_payment_notices.get_edit_form"
+    needed_permission = perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES
+    endpoint_kwargs = {"notice_id": 1}
+    expected_num_queries = 3  # session + current user + notice
+
+    def test_get_edit_form_test(self, authenticated_client):
+        notice = offerers_factories.NonPaymentNoticeFactory()
+        form_url = url_for(self.endpoint, notice_id=notice.id)
+
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+        assert html_parser.extract_input_value(response.data, "date_received") == notice.dateReceived.isoformat()
+        assert html_parser.extract_select_options(response.data, "notice_type", True) == {
+            offerers_models.NoticeType.UNPAID_AMOUNT_NOTICE.name: "Avis d'impayé"
+        }
+        assert html_parser.extract_input_value(response.data, "amount") == str(notice.amount)
+        assert html_parser.extract_input_value(response.data, "reference") == notice.reference
+        assert html_parser.extract_input_value(response.data, "emitter_name") == notice.emitterName
+        assert html_parser.extract_input_value(response.data, "emitter_email") == notice.emitterEmail
+        assert html_parser.extract_select_options(response.data, "offerer", True) == {}
+        assert html_parser.extract_select_options(response.data, "venue", True) == {}
+
+    def test_get_edit_form_test_with_offerer_and_venue(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        notice = offerers_factories.NonPaymentNoticeFactory(
+            noticeType=offerers_models.NoticeType.REMINDER_LETTER,
+            amount=Decimal("1500"),
+            offerer=venue.managingOfferer,
+            venue=venue,
+        )
+        form_url = url_for(self.endpoint, notice_id=notice.id)
+
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries + 2):  # queries on offerer and venue
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+        assert html_parser.extract_input_value(response.data, "date_received") == notice.dateReceived.isoformat()
+        assert html_parser.extract_select_options(response.data, "notice_type", True) == {
+            offerers_models.NoticeType.REMINDER_LETTER.name: "Lettre de relance"
+        }
+        assert html_parser.extract_input_value(response.data, "amount") == str(notice.amount)
+        assert html_parser.extract_input_value(response.data, "reference") == notice.reference
+        assert html_parser.extract_input_value(response.data, "emitter_name") == notice.emitterName
+        assert html_parser.extract_input_value(response.data, "emitter_email") == notice.emitterEmail
+        assert html_parser.extract_tom_select_options(response.data, "offerer", True) == {
+            str(
+                venue.managingOfferer.id
+            ): f"{venue.managingOfferer.id} - {venue.managingOfferer.name} ({venue.managingOfferer.siren})"
+        }
+        assert html_parser.extract_tom_select_options(response.data, "venue", True) == {
+            str(venue.id): f"{venue.id} - {venue.common_name} ({venue.siret})"
+        }
+
+
+class EditTest(PostEndpointHelper):
+    endpoint = "backoffice_web.non_payment_notices.edit"
+    endpoint_kwargs = {"notice_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES
+
+    def test_edit(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        notice = offerers_factories.NonPaymentNoticeFactory(offerer=venue.managingOfferer, venue=venue)
+
+        new_date_received = datetime.date.today() - datetime.timedelta(days=3)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            notice_id=notice.id,
+            form={
+                "date_received": new_date_received.isoformat(),
+                "notice_type": offerers_models.NoticeType.REMINDER_LETTER.name,
+                "amount": "256.50",
+                "reference": "NEWREF",
+                "emitter_name": "Centre de recouvrement",
+                "emitter_email": "recouvrement@example.com",
+                "offerer": str(venue.managingOfferer.id),
+                "venue": str(venue.id),
+            },
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+
+        assert html_parser.extract_alert(response.data) == "L'avis d'impayé a été enregistré"
+
+        db.session.refresh(notice)
+        assert notice.dateReceived == new_date_received
+        assert notice.status == offerers_models.NoticeStatus.CREATED
+        assert notice.noticeType == offerers_models.NoticeType.REMINDER_LETTER
+        assert notice.reference == "NEWREF"
+        assert notice.emitterName == "Centre de recouvrement"
+        assert notice.emitterEmail == "recouvrement@example.com"
+        assert notice.amount == Decimal("256.50")
+        assert notice.offerer == venue.managingOfferer
+        assert notice.venue == venue
+        assert notice.motivation is None
+        assert notice.batch is None
+
+        assert db.session.query(history_models.ActionHistory).count() == 0
+
+    def test_edit_set_offerer_and_venue(self, authenticated_client, legit_user):
+        venue = offerers_factories.VenueFactory()
+        notice = offerers_factories.NonPaymentNoticeFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            notice_id=notice.id,
+            form={
+                "date_received": notice.dateReceived.isoformat(),
+                "notice_type": notice.noticeType.name,
+                "amount": str(notice.amount),
+                "reference": notice.reference,
+                "emitter_name": notice.emitterName,
+                "emitter_email": notice.emitterEmail,
+                "offerer": "",
+                "venue": str(venue.id),
+            },
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+
+        assert html_parser.extract_alert(response.data) == "L'avis d'impayé a été enregistré"
+
+        db.session.refresh(notice)
+        assert notice.offerer == venue.managingOfferer
+        assert notice.venue == venue
+
+        action = db.session.query(history_models.ActionHistory).one()
+        assert action.actionType == history_models.ActionType.NON_PAYMENT_NOTICE_CREATED
+        assert action.actionDate.date() == datetime.date.today()
+        assert action.authorUserId == legit_user.id
+        assert action.offererId == venue.managingOfferer.id
+        assert action.venueId == venue.id
+        assert action.extraData == {"non_payment_notice_id": notice.id}
