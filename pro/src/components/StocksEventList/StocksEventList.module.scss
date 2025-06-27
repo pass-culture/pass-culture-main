@@ -148,12 +148,9 @@
   }
 
   .filter-input {
-    margin-top: rem.torem(4px);
-    min-height: rem.torem(24px);
-
-    // Resets the cascading style of <th> otherwise
-    // the font-weight is applied to the datepicker dropdown
-    font-weight: initial;
+    display: flex;
+    gap: rem.torem(8px);
+    margin-bottom: rem.torem(24px);
   }
 
   .time-column {

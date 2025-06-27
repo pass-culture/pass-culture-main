@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { TextInput, TextInputProps } from 'ui-kit/formV2/TextInput/TextInput'
@@ -18,7 +18,7 @@ export type QuantityInputProps = Pick<
   /**
    * A label for the text input.
    */
-  label: string
+  label?: string
   /**
    * The name of the input, mind what's being used in the form.
    */
@@ -44,6 +44,7 @@ export type QuantityInputProps = Pick<
    */
   maximum?: number
   error?: string
+  ariaLabel?: string
 }
 
 /**
@@ -71,6 +72,7 @@ export const QuantityInput = ({
   maximum = 1_000_000,
   value,
   error,
+  ariaLabel,
 }: QuantityInputProps) => {
   const quantityName = name
   const quantityRef = useRef<HTMLInputElement>(null)
@@ -152,6 +154,7 @@ export const QuantityInput = ({
       onBlur={onBlur}
       value={isUnlimited ? '' : value === 0 ? '0' : value || ''}
       error={error}
+      aria-label={ariaLabel}
     />
   )
 }

@@ -53,6 +53,17 @@ describe('validationSchema', () => {
         'Veuillez renseigner une date antérieure à la date de l’évènement',
       ],
     },
+    {
+      description: 'beginning date is empty',
+      formValues: {
+        stocks: [
+          stockEventFactory({
+            beginningDate: '',
+          }),
+        ],
+      },
+      expectedErrors: [],
+    },
   ]
 
   cases.forEach(({ description, formValues, expectedErrors }) => {

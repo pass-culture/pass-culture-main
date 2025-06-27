@@ -21,25 +21,25 @@ import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { formatPrice } from 'commons/utils/formatPrice'
 import { pluralize, pluralizeString } from 'commons/utils/pluralize'
 import {
-  isValidTime,
   convertTimeFromVenueTimezoneToUtc,
   formatLocalTimeDateString,
+  isValidTime,
 } from 'commons/utils/timezone'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { AddRecurrencesButton } from 'components/IndividualOffer/StocksEventCreation/AddRecurrencesButton'
 import { getPriceCategoryOptions } from 'components/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
+import fullRefreshIcon from 'icons/full-refresh.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
-import { SelectInput, SelectInputVariant } from 'ui-kit/form/Select/SelectInput'
-import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
+import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
+import { Select } from 'ui-kit/formV2/Select/Select'
+import { TimePicker } from 'ui-kit/formV2/TimePicker/TimePicker'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import { FilterResultsRow } from './FilterResultsRow'
 import { NoResultsRow } from './NoResultsRow'
 import { SortArrow } from './SortArrow'
 import styles from './StocksEventList.module.scss'
@@ -390,6 +390,57 @@ export const StocksEventList = ({
             </div>
           </div>
 
+          <div className={cn(styles['filter-input'])}>
+            <div>
+              <DatePicker
+                name={'dateFilter'}
+                label="Filtrer par date"
+                onChange={(event) => {
+                  setDateFilter(event.target.value)
+                  onFilterChange()
+                }}
+                value={dateFilter ?? ''}
+              />
+            </div>
+            <div>
+              <TimePicker
+                name={'timeFilter'}
+                label="Filtrer par horaire"
+                onChange={(event) => {
+                  setTimeFilter(event.target.value)
+                  onFilterChange()
+                }}
+                value={timeFilter}
+              />
+            </div>
+            <div>
+              <Select
+                name="priceCategoryFilter"
+                label="Filtrer par tarif"
+                defaultOption={{ label: '', value: '' }}
+                options={priceCategoryOptions}
+                value={priceCategoryIdFilter ?? ''}
+                onChange={(event) => {
+                  setPriceCategoryIdFilter(event.target.value)
+                  onFilterChange()
+                }}
+              />
+            </div>
+          </div>
+          <Button
+            icon={fullRefreshIcon}
+            variant={ButtonVariant.TERNARY}
+            onClick={() => {
+              setDateFilter('')
+              setTimeFilter('')
+              setPriceCategoryIdFilter('')
+              onFilterChange()
+            }}
+            disabled={!areFiltersActive}
+          >
+            Réinitialiser les filtres
+          </Button>
+
           <table className={styles['stock-event-table']}>
             <caption className={styles['visually-hidden']}>
               Liste des dates et capacités
@@ -412,18 +463,6 @@ export const StocksEventList = ({
                         : SortingMode.NONE
                     }
                   />
-
-                  <div className={cn(styles['filter-input'])}>
-                    <BaseDatePicker
-                      onChange={(event) => {
-                        setDateFilter(event.target.value)
-                        onFilterChange()
-                      }}
-                      value={dateFilter ?? ''}
-                      filterVariant
-                      aria-label="Filtrer par date"
-                    />
-                  </div>
                 </th>
 
                 <th
@@ -440,17 +479,6 @@ export const StocksEventList = ({
                         : SortingMode.NONE
                     }
                   />
-                  <div className={cn(styles['filter-input'])}>
-                    <BaseTimePicker
-                      onChange={(event) => {
-                        setTimeFilter(event.target.value)
-                        onFilterChange()
-                      }}
-                      value={timeFilter}
-                      filterVariant
-                      aria-label="Filtrer par horaire"
-                    />
-                  </div>
                 </th>
 
                 <th
@@ -469,20 +497,6 @@ export const StocksEventList = ({
                         : SortingMode.NONE
                     }
                   />
-                  <div className={cn(styles['filter-input'])}>
-                    <SelectInput
-                      name="priceCategoryFilter"
-                      defaultOption={{ label: '', value: '' }}
-                      options={priceCategoryOptions}
-                      value={priceCategoryIdFilter ?? ''}
-                      onChange={(event) => {
-                        setPriceCategoryIdFilter(event.target.value)
-                        onFilterChange()
-                      }}
-                      variant={SelectInputVariant.FILTER}
-                      aria-label="Filtrer par tarif"
-                    />
-                  </div>
                 </th>
 
                 <th
@@ -509,7 +523,6 @@ export const StocksEventList = ({
                         : SortingMode.NONE
                     }
                   />
-                  <div className={cn(styles['filter-input'])}>&nbsp;</div>
                 </th>
 
                 <th
@@ -529,7 +542,6 @@ export const StocksEventList = ({
                         : SortingMode.NONE
                     }
                   />
-                  <div className={cn(styles['filter-input'])}>&nbsp;</div>
                 </th>
 
                 {readonly ? (
@@ -552,7 +564,6 @@ export const StocksEventList = ({
                           : SortingMode.NONE
                       }
                     />
-                    <div className={cn(styles['filter-input'])}>&nbsp;</div>
                   </th>
                 ) : (
                   <th
@@ -563,18 +574,6 @@ export const StocksEventList = ({
             </thead>
 
             <tbody className={styles['body']}>
-              {areFiltersActive && (
-                <FilterResultsRow
-                  colSpan={6}
-                  onFiltersReset={() => {
-                    setDateFilter('')
-                    setTimeFilter('')
-                    setPriceCategoryIdFilter('')
-                    onFilterChange()
-                  }}
-                />
-              )}
-
               {stocks.map((stock) => {
                 const beginningDay = formatLocalTimeDateString(
                   stock.beginningDatetime,
