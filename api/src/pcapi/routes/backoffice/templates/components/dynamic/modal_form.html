@@ -1,0 +1,64 @@
+<div class="modal-content">
+  {% if form %}
+    <form name="{{ dst | action_to_name }}"
+          method="{% if form.method %}form.method{% else %}post{% endif %}"
+          {% if (ajax_submit is not defined) or ajax_submit %} hx-target="{{ target_id }}" hx-post="{{ dst }}" hx-swap="outerHTML" hx-trigger="submit" {% endif %}
+          action="{{ dst }}">
+      {% if form.meta.csrf %}{{ csrf_token }}{% endif %}
+    {% endif %}
+    <div class="modal-header">
+      <h5 class="modal-title">{{ title }}</h5>
+      <button type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Fermer"></button>
+    </div>
+    <div class="modal-body row">
+      <div class="d-flex flex-column">
+        {% if alert %}
+          <div class="alert alert-warning px-4"
+               role="alert">{{ alert }}</div>
+        {% endif %}
+        {% if info %}
+          <div class="alert alert-info px-4"
+               role="alert">{{ info }}</div>
+        {% endif %}
+        {# Be careful: when information is passed with dynamic data, it must use Markup to avoid risk of XSS vulnerability #}
+        {% if information %}<div class="my-1">{{ information | safe }}</div>{% endif %}
+        {% if additional_data %}
+          <div class="my-1 card">
+            <div class="card-body d-flex flex-wrap">
+              {% for key, value in additional_data %}
+                <div class="col-6 block">
+                  <span class="fw-bold">{{ key }} :</span> {{ value }}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+        {% if form %}
+          {% for form_field in form %}
+            {% if "Hidden" in form_field.type %}
+              {{ form_field }}
+            {% else %}
+              <div class="my-1">
+                {% for error in form_field.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
+                {{ form_field }}
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button"
+              class="btn btn-outline-primary-subtle-bg"
+              data-bs-dismiss="modal">Annuler</button>
+      {% if button_text %}
+        <button class="btn btn-primary"
+                type="submit"
+                data-bs-dismiss="modal">{{ button_text }}</button>
+      {% endif %}
+    </div>
+    {% if form %}</form>{% endif %}
+</div>

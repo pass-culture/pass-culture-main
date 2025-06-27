@@ -2,6 +2,7 @@
 import typing
 
 from flask import Response
+from flask import flash
 from flask import make_response
 from flask import render_template
 from flask import request
@@ -48,8 +49,14 @@ def handle_csrf_error(error: typing.Any) -> tuple[str, int]:
 
 
 def generate_error_response(errors: dict, backoffice_template_name: str = "errors/generic.html") -> Response:
+    from pcapi.routes.backoffice import utils
+
     # If the error happens inside a turbo-frame, it's id is reused to insert the error in the correct place
     turbo_frame_id = request.headers.get("Turbo-Frame")
+    # In case of a request coming from htmx, display errors as flash messages
+    if request.headers.get("hx-request") == "true":
+        for error_line in utils.format_response_error_messages(errors):
+            flash(error_line, "danger")
     content = render_template(
         backoffice_template_name,
         errors=errors,
