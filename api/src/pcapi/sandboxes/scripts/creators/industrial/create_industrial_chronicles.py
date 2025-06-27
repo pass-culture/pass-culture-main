@@ -3,6 +3,8 @@ import itertools
 import logging
 
 from pcapi.core.chronicles import factories as chronicles_factories
+from pcapi.core.chronicles import models as chronicles_models
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -16,6 +18,11 @@ def ean_generator(factor: int) -> str:
     return str((seed * (factor + 1)))[:13]
 
 
+def allocine_id_generator(factor: int) -> str:
+    seed = 7236233859864
+    return str((seed * (factor + 1)))[:10]
+
+
 def create_industrial_chronicles() -> None:
     logger.info("create_industrial_chronicles")
     users = (
@@ -24,7 +31,22 @@ def create_industrial_chronicles() -> None:
         .order_by(users_models.User.id)
         .limit(10)
     )
-    products = (
+
+    for ean in (
+        "9782073034809",
+        "9782073094681",
+        "9782203296619",
+        "9782290415313",
+        "9782413081715",
+        "9791034770366",
+        "9782731695014",
+        "9782849535301",
+        "9782253251491",
+        "9791035208547",
+    ):
+        offers_factories.ProductFactory.create(ean=ean)
+
+    products_with_ean = (
         db.session.query(offers_models.Product)
         .filter(
             ~offers_models.Product.ean.is_(None),
@@ -33,15 +55,21 @@ def create_industrial_chronicles() -> None:
         .limit(9)
     )
 
-    logger.info("create chronicles with all fields")
-    for user, product, i in zip(itertools.cycle(users), itertools.cycle(products), range(30)):
+    products_with_allocine_id = []
+    for allocineId in (1000002449, 1000007194, 1000004644):
+        products_with_allocine_id.append(offers_factories.ProductFactory.create(extraData={"allocineId": allocineId}))
+
+    logger.info("Creating 'BOOK' type chronicles with all fields")
+    for user, product, i in zip(itertools.cycle(users), itertools.cycle(products_with_ean), range(30)):
         ean = product.ean or "1234567890123"
         chronicles_factories.ChronicleFactory.create(
             age=(15 + (i % 5)),
             city=user.city,
-            content=f"Chronique sur le produit {product.name} écrite par l'utilisateur {user.full_name} ({user.id}).",
+            content=f"Chronique BOOK sur le produit {product.name} écrite par l'utilisateur {user.full_name} ({user.id}).",
             identifierChoiceId=hashlib.sha256(ean.encode()).hexdigest()[:20],
             productIdentifier=ean,
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.EAN,
+            clubType=chronicles_models.ChronicleClubType.BOOK_CLUB,
             email=user.email,
             firstName=user.firstName,
             isActive=bool(i % 5 == 0),
@@ -51,15 +79,17 @@ def create_industrial_chronicles() -> None:
             products=[product],
         )
 
-    logger.info("create chronicles without user")
-    for product, i in zip(itertools.cycle(products), range(5)):
+    logger.info("Creating 'BOOK' type chronicles without user")
+    for product, i in zip(itertools.cycle(products_with_ean), range(5)):
         ean = product.ean or "1234567890123"
         chronicles_factories.ChronicleFactory.create(
             age=(15 + (i % 5)),
             city=["Paris", None][i % 2],
-            content=f"Chronique sur le produit {product.name} mais sans utilisateur.",
+            content=f"Chronique BOOK sur le produit {product.name} mais sans utilisateur.",
             identifierChoiceId=hashlib.sha256(ean.encode()).hexdigest()[:20],
             productIdentifier=ean,
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.EAN,
+            clubType=chronicles_models.ChronicleClubType.BOOK_CLUB,
             email=f"emailnotfound{i}@example.com",
             isActive=bool(i % 5 == 0),
             isIdentityDiffusible=bool(i % 2 == 0),
@@ -67,15 +97,17 @@ def create_industrial_chronicles() -> None:
             products=[product],
         )
 
-    logger.info("create chronicles without products")
+    logger.info("Creating 'BOOK' type chronicles without products")
     for user, i in zip(itertools.cycle(users), range(5)):
         ean = ean_generator(i)
         chronicles_factories.ChronicleFactory.create(
             age=(15 + (i % 5)),
             city=user.city,
-            content=f"Chronique sans produit mais écrite par l'utilisateur {user.full_name} ({user.id}).",
+            content=f"Chronique BOOK sans produit mais écrite par l'utilisateur {user.full_name} ({user.id}).",
             identifierChoiceId=hashlib.sha256(ean.encode()).hexdigest()[:20],
             productIdentifier=ean,
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.EAN,
+            clubType=chronicles_models.ChronicleClubType.BOOK_CLUB,
             email=user.email,
             firstName=user.firstName,
             isActive=bool(i % 5 == 0),
@@ -84,11 +116,15 @@ def create_industrial_chronicles() -> None:
             user=user,
         )
 
+    logger.info("Création d'une chronique 'BOOK' minimale et une longue")
     chronicles_factories.ChronicleFactory.create(
         content="minimal chronicle",
+        clubType=chronicles_models.ChronicleClubType.BOOK_CLUB,
     )
     chronicles_factories.ChronicleFactory.create(
         productIdentifier=ean_generator(123),
+        productIdentifierType=chronicles_models.ChronicleProductIdentifierType.EAN,
+        clubType=chronicles_models.ChronicleClubType.BOOK_CLUB,
         content="""
 Une chronique avec un très long contenu en Français mais comme je n'ai pas d'idées voici à la place un extrait quelconque du Discours de la servitude volontaire d'Étienne de La Boétie:
 
@@ -119,3 +155,58 @@ des Grecs contre les Perses que la victoire de la liberté sur la domination, de
 la convoitise.
 """,
     )
+
+    logger.info("Creating 'CINÉ' type chronicles with all fields")
+    for user, product, i in zip(itertools.cycle(users), itertools.cycle(products_with_allocine_id), range(15)):
+        allocine_id = str(product.extraData["allocineId"])
+        chronicles_factories.ChronicleFactory.create(
+            age=(20 + (i % 7)),
+            content=f"Chronique CINÉ sur le produit {product.name} écrite par l'utilisateur {user.full_name} ({user.id}).",
+            identifierChoiceId=hashlib.sha256(allocine_id.encode()).hexdigest()[:20],
+            productIdentifier=allocine_id,
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID,
+            clubType=chronicles_models.ChronicleClubType.CINE_CLUB,
+            email=user.email,
+            firstName=user.firstName,
+            isActive=bool(i % 3 == 0),
+            isIdentityDiffusible=bool(i % 2 == 0),
+            isSocialMediaDiffusible=bool(i % 4 == 0),
+            user=user,
+            products=[product],
+        )
+
+    logger.info("Creating 'CINÉ' type chronicles without user")
+    for product, i in zip(itertools.cycle(products_with_allocine_id), range(3)):
+        allocine_id = str(product.extraData["allocineId"])
+        chronicles_factories.ChronicleFactory.create(
+            age=(20 + (i % 7)),
+            content=f"Chronique CINÉ sur le produit {product.name} mais sans utilisateur.",
+            identifierChoiceId=hashlib.sha256(allocine_id.encode()).hexdigest()[:20],
+            productIdentifier=allocine_id,
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID,
+            clubType=chronicles_models.ChronicleClubType.CINE_CLUB,
+            email=f"cine_anon{i}@example.com",
+            isActive=bool(i % 3 == 0),
+            isIdentityDiffusible=bool(i % 2 == 0),
+            isSocialMediaDiffusible=bool(i % 4 == 0),
+            products=[product],
+        )
+
+    logger.info("Creating 'CINÉ' type chronicles without products")
+    for user, i in zip(itertools.cycle(users), range(5)):
+        allocine_id = allocine_id_generator(i)
+        chronicles_factories.ChronicleFactory.create(
+            age=(20 + (i % 7)),
+            city=user.city,
+            content=f"Chronique CINÉ sans produit mais écrite par l'utilisateur {user.full_name} ({user.id}).",
+            identifierChoiceId=hashlib.sha256(allocine_id.encode()).hexdigest()[:20],
+            productIdentifier=allocine_id,
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID,
+            clubType=chronicles_models.ChronicleClubType.CINE_CLUB,
+            email=user.email,
+            firstName=user.firstName,
+            isActive=bool(i % 3 == 0),
+            isIdentityDiffusible=bool(i % 2 == 0),
+            isSocialMediaDiffusible=bool(i % 4 == 0),
+            user=user,
+        )
