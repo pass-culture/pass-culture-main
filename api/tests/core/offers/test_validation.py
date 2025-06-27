@@ -862,6 +862,79 @@ class CheckBookingLimitDatetimeTest:
         assert beginning.tzinfo == booking_limit_datetime.tzinfo == time_zone_expected
 
 
+class CheckOfferIsBookableBeforeStockBookingLimitDatetimeTest:
+    @pytest.mark.parametrize(
+        "offer_publication_datetime,offer_booking_allowed_datetime,stocks_datetime,expected_errors",
+        [
+            (
+                datetime.datetime(2025, 6, 27),
+                None,
+                datetime.datetime(2025, 6, 26),
+                {
+                    "bookingLimitDatetime": [
+                        "the stock will not be published before its `bookingLimitDatetime`. Either change `bookingLimitDatetime` to a later date, or update the offer `publicationDatetime`"
+                    ]
+                },
+            ),
+            (
+                None,
+                datetime.datetime(2025, 6, 27),
+                datetime.datetime(2025, 6, 26),
+                {
+                    "bookingLimitDatetime": [
+                        "the stock will not be bookable before its `bookingLimitDatetime`. Either change `bookingLimitDatetime` to a later date, or update the offer `bookingAllowedDatetime`"
+                    ]
+                },
+            ),
+            (
+                datetime.datetime(2025, 6, 29),
+                datetime.datetime(2025, 6, 27),
+                datetime.datetime(2025, 6, 26),
+                {
+                    "bookingLimitDatetime": [
+                        "the stock will not be published before its `bookingLimitDatetime`. Either change `bookingLimitDatetime` to a later date, or update the offer `publicationDatetime`",
+                        "the stock will not be bookable before its `bookingLimitDatetime`. Either change `bookingLimitDatetime` to a later date, or update the offer `bookingAllowedDatetime`",
+                    ],
+                },
+            ),
+        ],
+    )
+    def test_should_raise(
+        self,
+        offer_publication_datetime,
+        offer_booking_allowed_datetime,
+        stocks_datetime,
+        expected_errors,
+    ):
+        with pytest.raises(exceptions.OfferException) as exc:
+            offer = offers_factories.OfferFactory(
+                publicationDatetime=offer_publication_datetime,
+                bookingAllowedDatetime=offer_booking_allowed_datetime,
+            )
+            validation.check_offer_is_bookable_before_stock_booking_limit_datetime(offer, stocks_datetime)
+
+        assert exc.value.errors == expected_errors
+
+    @pytest.mark.parametrize(
+        "offer_publication_datetime,offer_booking_allowed_datetime,stocks_datetime",
+        [
+            (datetime.datetime(2025, 6, 23), None, datetime.datetime(2025, 6, 26)),
+            (None, datetime.datetime(2025, 6, 24), datetime.datetime(2025, 6, 26)),
+        ],
+    )
+    def test_should_NOT_raise(
+        self,
+        offer_publication_datetime,
+        offer_booking_allowed_datetime,
+        stocks_datetime,
+    ):
+        offer = offers_factories.OfferFactory(
+            publicationDatetime=offer_publication_datetime,
+            bookingAllowedDatetime=offer_booking_allowed_datetime,
+        )
+        validation.check_offer_is_bookable_before_stock_booking_limit_datetime(offer, stocks_datetime)
+
+
 class CheckPublicationDateTest:
     def test_check_publication_date_should_raise(self):
         with pytest.raises(exceptions.OfferException):
