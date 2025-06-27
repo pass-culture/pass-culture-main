@@ -681,7 +681,11 @@ def create_stock(
     price_category: models.PriceCategory | None = None,
     id_at_provider: str | None = None,
 ) -> models.Stock:
-    validation.check_booking_limit_datetime(None, beginning_datetime, booking_limit_datetime)
+    if booking_limit_datetime:
+        validation.check_booking_limit_datetime(None, beginning_datetime, booking_limit_datetime)
+        validation.check_offer_is_bookable_before_stock_booking_limit_datetime(
+            offer, booking_limit_datetime=booking_limit_datetime
+        )
 
     if id_at_provider is not None:
         validation.check_can_input_id_at_provider_for_this_stock(offer.id, id_at_provider)

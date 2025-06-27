@@ -2,6 +2,7 @@ import datetime
 import decimal
 
 import pytest
+import time_machine
 
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -19,24 +20,37 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
     default_path_params = {"event_id": 1}
 
     @staticmethod
-    def _get_base_payload(price_category_id: int, id_at_provider: str | None = None) -> dict:
+    def _get_base_date_dict(price_category_id: int, id_at_provider: str | None = None) -> dict:
         next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
         next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
         next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
         return {
-            "dates": [
-                {
-                    "beginningDatetime": next_month_in_non_utc_tz.isoformat(),
-                    "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
-                    "price_category_id": price_category_id,
-                    "quantity": 10,
-                    "id_at_provider": id_at_provider,
-                }
-            ]
+            "beginningDatetime": next_month_in_non_utc_tz.isoformat(),
+            "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
+            "price_category_id": price_category_id,
+            "quantity": 10,
+            "id_at_provider": id_at_provider,
         }
 
-    def setup_base_resource(self, venue=None, provider=None) -> tuple[offers_models.Offer, offers_models.PriceCategory]:
-        event = offers_factories.EventOfferFactory(venue=venue or self.setup_venue(), lastProvider=provider)
+    def setup_base_resource(
+        self,
+        venue=None,
+        provider=None,
+        publication_datetime=None,
+        booking_allowed_datetime=None,
+    ) -> tuple[offers_models.Offer, offers_models.PriceCategory]:
+        additional_offer_params = {}
+
+        if publication_datetime:
+            additional_offer_params["publicationDatetime"] = publication_datetime
+        if booking_allowed_datetime:
+            additional_offer_params["bookingAllowedDatetime"] = booking_allowed_datetime
+
+        event = offers_factories.EventOfferFactory(
+            venue=venue or self.setup_venue(),
+            lastProvider=provider,
+            **additional_offer_params,
+        )
         price_category = offers_factories.PriceCategoryFactory(
             offer=event,
             price=decimal.Decimal("88.99"),
@@ -51,7 +65,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         event, category = self.setup_base_resource()
         response = client.with_explicit_token(plain_api_key).post(
             self.endpoint_url.format(event_id=event.id),
-            json=self._get_base_payload(category.id),
+            json={"dates": [self._get_base_date_dict(category.id)]},
         )
         assert response.status_code == 404
 
@@ -60,7 +74,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         event, category = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
         response = client.with_explicit_token(plain_api_key).post(
             self.endpoint_url.format(event_id=event.id),
-            json=self._get_base_payload(category.id),
+            json={"dates": [self._get_base_date_dict(category.id)]},
         )
         assert response.status_code == 404
 
@@ -150,33 +164,9 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
     def test_should_raise_404_because_of_invalid_offer_id(self, client):
         plain_api_key, _ = self.setup_provider()
 
-        next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
-        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
-        next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
         response = client.with_explicit_token(plain_api_key).post(
             self.endpoint_url.format(event_id="gouzi_gouzi"),
-            json={
-                "dates": [
-                    {
-                        "beginningDatetime": next_month_in_non_utc_tz.isoformat(),
-                        "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
-                        "priceCategoryId": 0,
-                        "quantity": 10,
-                    }
-                ]
-            },
-        )
-
-        assert response.status_code == 404
-
-    def test_should_raise_404_because_of_price_category_id(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event, _ = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        payload_with_not_existing_category_id = self._get_base_payload(0)
-
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url.format(event_id=event.id),
-            json=payload_with_not_existing_category_id,
+            json={"dates": [self._get_base_date_dict(1)]},
         )
 
         assert response.status_code == 404
@@ -186,108 +176,100 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         product = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
 
         response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url.format(event_id=product.id), json=self._get_base_payload(0)
+            self.endpoint_url.format(event_id=product.id),
+            json={"dates": [self._get_base_date_dict(1)]},
         )
 
         assert response.status_code == 404
         assert response.json == {"event_id": ["The event could not be found"]}
 
-    def test_should_raise_400_for_dates_in_past(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event, _ = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url.format(event_id=event.id),
-            json={
-                "dates": [
-                    {
-                        "beginningDatetime": "1999-01-01T15:59:59+04:00",
-                        "bookingLimitDatetime": "1999-01-01T10:59:59-01:00",
-                        "priceCategoryId": 0,
-                        "quantity": 10,
-                    },
+    @time_machine.travel(datetime.datetime(2025, 6, 27), tick=False)
+    @pytest.mark.parametrize(
+        "partial_dates,expected_response_json",
+        [
+            # errors on datetimes
+            (
+                [{"beginningDatetime": "1999-01-01T15:59:59+04:00"}],
+                {"dates.0.beginningDatetime": ["The datetime must be in the future."]},
+            ),
+            (
+                [{}, {"bookingLimitDatetime": "1999-01-01T15:59:59+04:00"}],
+                {"dates.1.bookingLimitDatetime": ["The datetime must be in the future."]},
+            ),
+            (
+                [{"beginningDatetime": "2025-06-28T15:59:00"}],
+                {"dates.0.beginningDatetime": ["The datetime must be timezone-aware."]},
+            ),
+            (
+                [{}, {"bookingLimitDatetime": "2025-06-28T15:59:00"}],
+                {"dates.1.bookingLimitDatetime": ["The datetime must be timezone-aware."]},
+            ),
+            (
+                [
+                    {"bookingLimitDatetime": "2025-06-28T15:59:00+02:00"},
+                    {"bookingLimitDatetime": "2025-07-03T12:59:00+02:00"},
                 ],
-            },
-        )
-
-        assert response.status_code == 400
-        assert response.json == {
-            "dates.0.beginningDatetime": ["The datetime must be in the future."],
-            "dates.0.bookingLimitDatetime": ["The datetime must be in the future."],
-        }
-
-    def test_should_raise_400_because_id_at_provider_already_taken(self, client: TestClient):
+                {
+                    "dates.0.bookingLimitDatetime": [
+                        "the stock will not be published before its `bookingLimitDatetime`. Either change `bookingLimitDatetime` to a later date, or update the offer `publicationDatetime`",
+                        "the stock will not be bookable before its `bookingLimitDatetime`. Either change `bookingLimitDatetime` to a later date, or update the offer `bookingAllowedDatetime`",
+                    ],
+                    "dates.1.bookingLimitDatetime": [
+                        "the stock will not be bookable before its `bookingLimitDatetime`. Either change `bookingLimitDatetime` to a later date, or update the offer `bookingAllowedDatetime`",
+                    ],
+                },
+            ),
+            # errors on price category
+            (
+                [{}, {"priceCategoryId": 234445453}],
+                {"dates.1.priceCategoryId": ["The price category could not be found"]},
+            ),
+            # errors because too many items
+            (
+                [{} for a in range(0, offers_models.Offer.MAX_STOCKS_PER_OFFER + 1)],
+                {"dates": ["ensure this value has at most 2500 items"]},
+            ),
+            (  # should raise because offer has already one stock
+                [{} for a in range(0, offers_models.Offer.MAX_STOCKS_PER_OFFER)],
+                {
+                    "dates": [
+                        f"The maximum number of stock entries allowed per offer is {offers_models.Offer.MAX_STOCKS_PER_OFFER}"
+                    ]
+                },
+            ),
+            # errors on idAtProvider
+            (
+                [{"idAtProvider": "c'est déjà pris :'("}],
+                {"dates.0.idAtProvider": ["`c'est déjà pris :'(` is already taken by another offer stock"]},
+            ),
+            (
+                [{"idAtProvider": "a" * 71}],
+                {"dates.0.idAtProvider": ["ensure this value has at most 70 characters"]},
+            ),
+        ],
+    )
+    def test_should_raise_400(self, client, partial_dates, expected_response_json):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event, price_category = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        duplicate_id = "aïe aïe aïe"
-        offers_factories.StockFactory(offer=event, idAtProviders=duplicate_id)
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url.format(event_id=event.id),
-            json=self._get_base_payload(price_category_id=price_category.id, id_at_provider=duplicate_id),
+        event, price_category = self.setup_base_resource(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            publication_datetime=datetime.datetime(2025, 7, 2),
+            booking_allowed_datetime=datetime.datetime(2025, 7, 4),
         )
+        existing_stock = offers_factories.StockFactory(offer=event, idAtProviders="c'est déjà pris :'(")
+        dates = []
 
-        assert response.status_code == 400
-        assert response.json == {"idAtProvider": ["`aïe aïe aïe` is already taken by another offer stock"]}
-
-    def test_should_raise_400_because_too_many_stocks_sent(self, client: TestClient):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event, carre_or_price_category = self.setup_base_resource(
-            venue=venue_provider.venue, provider=venue_provider.provider
-        )
-
-        next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
-        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
-        next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
-
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url.format(event_id=event.id),
-            json={
-                "dates": [
-                    {
-                        "beginningDatetime": next_month_in_non_utc_tz.isoformat(),
-                        "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
-                        "price_category_id": carre_or_price_category.id,
-                        "quantity": 10,
-                        "id_at_provider": f"id_143556{a}",
-                    }
-                    for a in range(0, offers_models.Offer.MAX_STOCKS_PER_OFFER + 1)
-                ],
-            },
-        )
-
-        assert response.status_code == 400
-        assert response.json == {"dates": ["ensure this value has at most 2500 items"]}
-
-    def test_should_raise_400_because_stocks_would_exceed_max_stocks_per_offer(self, client: TestClient):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event, carre_or_price_category = self.setup_base_resource(
-            venue=venue_provider.venue, provider=venue_provider.provider
-        )
-        offers_factories.StockFactory(offer=event)
-
-        next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
-        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
-        next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
+        for partial_date in partial_dates:
+            date_dict = self._get_base_date_dict(price_category_id=price_category.id)
+            date_dict.update(**partial_date)
+            dates.append(date_dict)
 
         response = client.with_explicit_token(plain_api_key).post(
             self.endpoint_url.format(event_id=event.id),
-            json={
-                "dates": [
-                    {
-                        "beginningDatetime": next_month_in_non_utc_tz.isoformat(),
-                        "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
-                        "price_category_id": carre_or_price_category.id,
-                        "quantity": 10,
-                        "id_at_provider": f"id_143556{a}",
-                    }
-                    for a in range(0, offers_models.Offer.MAX_STOCKS_PER_OFFER)
-                ],
-            },
+            json={"dates": dates},
         )
 
         assert response.status_code == 400
-        assert response.json == {
-            "dates": [
-                f"The maximum number of stock entries allowed per offer is {offers_models.Offer.MAX_STOCKS_PER_OFFER}"
-            ]
-        }
+        assert response.json == expected_response_json
+
+        assert db.session.query(offers_models.Stock).filter(offers_models.Stock.id != existing_stock.id).count() == 0

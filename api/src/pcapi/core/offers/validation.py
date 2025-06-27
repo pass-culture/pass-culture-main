@@ -790,6 +790,29 @@ def check_accessibility_compliance(
         raise exceptions.OfferException({"global": ["L’accessibilité de l’offre doit être définie"]})
 
 
+def check_offer_is_bookable_before_stock_booking_limit_datetime(
+    offer: models.Offer,
+    booking_limit_datetime: datetime.datetime,
+) -> None:
+    """
+    :booking_limit_datetime: /!\ must be a naive utc datetime
+    """
+    errors = []
+
+    if offer.publicationDatetime and booking_limit_datetime < offer.publicationDatetime:
+        errors += [
+            "the stock will not be published before its `bookingLimitDatetime`. Either change `bookingLimitDatetime` to a later date, or update the offer `publicationDatetime`"
+        ]
+
+    if offer.bookingAllowedDatetime and booking_limit_datetime < offer.bookingAllowedDatetime:
+        errors += [
+            "the stock will not be bookable before its `bookingLimitDatetime`. Either change `bookingLimitDatetime` to a later date, or update the offer `bookingAllowedDatetime`"
+        ]
+
+    if errors:
+        raise exceptions.OfferException({"bookingLimitDatetime": errors})
+
+
 def check_publication_date(publication_date: datetime.datetime) -> None:
     if publication_date > date.get_naive_utc_now() + relativedelta(years=2):
         raise exceptions.OfferException(
