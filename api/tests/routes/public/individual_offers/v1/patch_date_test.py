@@ -5,13 +5,13 @@ import logging
 from unittest import mock
 
 import pytest
+import time_machine
 
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.mails.transactional import sendinblue_template_ids
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.models import db
 from pcapi.utils import date as date_utils
 
 from tests.conftest import TestClient
@@ -38,15 +38,33 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
             "id_at_provider": "some_id",
         }
 
-    def setup_base_resource(self, venue=None, provider=None) -> tuple[offers_models.Offer, offers_models.Stock]:
-        event = offers_factories.EventOfferFactory(venue=venue or self.setup_venue(), lastProvider=provider)
-        category_label = offers_factories.PriceCategoryLabelFactory(label="carre or", venue=event.venue)
+    def setup_base_resource(
+        self,
+        venue=None,
+        provider=None,
+        publication_datetime=None,
+        booking_allowed_datetime=None,
+    ) -> tuple[offers_models.Offer, offers_models.Stock]:
+        datetimes_params = {}
+
+        if publication_datetime:
+            datetimes_params["publicationDatetime"] = publication_datetime
+
+        if booking_allowed_datetime:
+            datetimes_params["bookingAllowedDatetime"] = booking_allowed_datetime
+
+        offer = offers_factories.EventOfferFactory(
+            venue=venue or self.setup_venue(),
+            lastProvider=provider,
+            **datetimes_params,
+        )
+        category_label = offers_factories.PriceCategoryLabelFactory(label="carre or", venue=offer.venue)
         price_category = offers_factories.PriceCategoryFactory(
-            offer=event, price=decimal.Decimal("88.99"), priceCategoryLabel=category_label
+            offer=offer, price=decimal.Decimal("88.99"), priceCategoryLabel=category_label
         )
         next_year = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=365)
         stock = offers_factories.EventStockFactory(
-            offer=event,
+            offer=offer,
             quantity=10,
             price=12,
             priceCategory=price_category,
@@ -54,7 +72,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
             beginningDatetime=next_year,
         )
 
-        return event, stock
+        return offer, stock
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
         plain_api_key, _ = self.setup_provider()
@@ -314,122 +332,6 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         assert stock.quantity == 20
         mocked_async_index_offer_ids.assert_not_called()
 
-    def test_should_raise_400_because_of_extra_fields(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        stock = offers_factories.EventStockFactory(
-            offer__venue=venue_provider.venue,
-            offer__lastProvider=venue_provider.provider,
-        )
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url.format(event_id=stock.offerId, stock_id=stock.id),
-            json={"testForbidField": "test"},
-        )
-        assert response.status_code == 400
-        assert response.json == {"testForbidField": ["extra fields not permitted"]}
-
-    def test_should_return_400_because_booking_limit_datetime_is_after_beginning_datetime(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            lastProvider=venue_provider.provider,
-        )
-        # dates
-        two_weeks_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=2)
-        one_hour_later = two_weeks_from_now + datetime.timedelta(hours=1)
-
-        # event stock 2 weeks from now
-        stock = offers_factories.EventStockFactory(
-            offer=event,
-            quantity=10,
-            price=12,
-            priceCategory=None,
-            bookingLimitDatetime=two_weeks_from_now,
-            beginningDatetime=two_weeks_from_now,
-        )
-
-        # tries to set `bookingLimitDatetime` to next month
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url.format(event_id=stock.offerId, stock_id=stock.id),
-            json={
-                "bookingLimitDatetime": date_utils.utc_datetime_to_department_timezone(
-                    one_hour_later, departement_code=venue_provider.venue.departementCode
-                ).isoformat()
-            },
-        )
-
-        assert response.status_code == 400
-        assert response.json == {
-            "bookingLimitDatetime": [
-                "The bookingLimitDatetime must be before the beginning of the event",
-            ],
-        }
-
-    @pytest.mark.parametrize("date_field", ["bookingLimitDatetime", "beginningDatetime"])
-    def test_should_return_400_because_new_date_is_in_the_past(self, client, date_field):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        now = datetime.datetime.now()
-        new_date = now - datetime.timedelta(days=2)
-
-        stock = offers_factories.EventStockFactory(
-            offer__venue=venue_provider.venue, offer__lastProvider=venue_provider.provider
-        )
-
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url.format(event_id=stock.offerId, stock_id=stock.id),
-            json={date_field: date_utils.format_into_utc_date(new_date)},
-        )
-
-        assert response.status_code == 400
-        assert response.json == {date_field: ["The datetime must be in the future."]}
-
-    def test_should_raise_400_because_stock_idAtProvider_already_taken(self, client: TestClient):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event, stock = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        duplicate_id_at_provider = "ouille ouille ouille"
-        offers_factories.StockFactory(offer=event, idAtProviders=duplicate_id_at_provider)
-
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url.format(event_id=stock.offerId, stock_id=stock.id),
-            json={"idAtProvider": duplicate_id_at_provider},
-        )
-
-        assert response.status_code == 400
-        assert response.json == {
-            "idAtProvider": [
-                "`ouille ouille ouille` is already taken by another offer stock",
-            ],
-        }
-
-    def test_find_no_stock_returns_404(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            lastProvider=venue_provider.provider,
-        )
-
-        new_beginning = datetime.datetime.now() + datetime.timedelta(minutes=1)
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url.format(event_id=event.id, stock_id="12"),
-            json={"beginningDatetime": date_utils.format_into_utc_date(new_beginning)},
-        )
-        assert response.status_code == 404
-        assert response.json == {"stock_id": ["No stock could be found"]}
-
-    def test_find_no_price_category_returns_404(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        stock = offers_factories.EventStockFactory(
-            offer__venue=venue_provider.venue,
-            offer__lastProvider=venue_provider.provider,
-            priceCategory=None,
-        )
-
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url.format(event_id=stock.offerId, stock_id=stock.id),
-            json={"priceCategoryId": 0},
-        )
-
-        assert response.status_code == 404
-
     def test_patch_date_with_the_same_date_should_not_trigger_any_notification(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -460,5 +362,126 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         assert parsed_date.tzinfo == datetime.timezone.utc
         assert parsed_date.date() == start.date()
 
-        db.session.refresh(stock)
         assert stock.beginningDatetime == start.replace(tzinfo=None)
+
+    @time_machine.travel(datetime.datetime(2025, 6, 27), tick=False)
+    @pytest.mark.parametrize(
+        "request_json,expected_response_json",
+        [
+            # errors on price category
+            (
+                {"priceCategoryId": "coucou"},
+                {"priceCategoryId": ["value is not a valid integer"]},
+            ),
+            (
+                {"priceCategoryId": -1},
+                {"priceCategoryId": ["ensure this value is greater than 0"]},
+            ),
+            # errors on quantity
+            (
+                {"quantity": "coucou"},
+                {"quantity": ["value is not a valid integer", "unexpected value; permitted: 'unlimited'"]},
+            ),
+            (
+                {"quantity": -1},
+                {
+                    "quantity": [
+                        "ensure this value is greater than or equal to 0",
+                        "unexpected value; permitted: 'unlimited'",
+                    ]
+                },
+            ),
+            # errors on datetimes
+            (
+                {"beginningDatetime": "1999-01-01T15:59:59+04:00"},
+                {"beginningDatetime": ["The datetime must be in the future."]},
+            ),
+            (
+                {"bookingLimitDatetime": "1999-01-01T15:59:59+04:00"},
+                {"bookingLimitDatetime": ["The datetime must be in the future."]},
+            ),
+            (
+                {"beginningDatetime": "2025-06-28T15:59:00"},
+                {"beginningDatetime": ["The datetime must be timezone-aware."]},
+            ),
+            (
+                {"bookingLimitDatetime": "2025-06-28T15:59:00"},
+                {"bookingLimitDatetime": ["The datetime must be timezone-aware."]},
+            ),
+            (
+                {"bookingLimitDatetime": "2025-06-28T15:59:00+02:00"},
+                {
+                    "bookingLimitDatetime": [
+                        "the stock will not be published before its `bookingLimitDatetime`. Either change `bookingLimitDatetime` to a later date, or update the offer `publicationDatetime`",
+                        "the stock will not be bookable before its `bookingLimitDatetime`. Either change `bookingLimitDatetime` to a later date, or update the offer `bookingAllowedDatetime`",
+                    ],
+                },
+            ),
+            (
+                {
+                    "bookingLimitDatetime": "2025-08-28T15:59:00+02:00",
+                    "beginningDatetime": "2025-08-23T15:59:59+04:00",
+                },
+                {
+                    "bookingLimitDatetime": ["The bookingLimitDatetime must be before the beginning of the event"],
+                },
+            ),
+            # errors on idAtProvider
+            (
+                {"idAtProvider": "c'est déjà pris :'("},
+                {"idAtProvider": ["`c'est déjà pris :'(` is already taken by another offer stock"]},
+            ),
+            (
+                {"idAtProvider": "a" * 71},
+                {"idAtProvider": ["ensure this value has at most 70 characters"]},
+            ),
+            # error on extra field
+            (
+                {"testForbidField": "test"},
+                {"testForbidField": ["extra fields not permitted"]},
+            ),
+        ],
+    )
+    def test_should_raise_400(self, client, request_json, expected_response_json):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer, stock = self.setup_base_resource(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            publication_datetime=datetime.datetime(2025, 6, 29),
+            booking_allowed_datetime=datetime.datetime(2025, 7, 4),
+        )
+        offers_factories.StockFactory(offer=offer, idAtProviders="c'est déjà pris :'(")
+
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url.format(event_id=offer.id, stock_id=stock.id),
+            json=request_json,
+        )
+
+        assert response.status_code == 400
+        assert response.json == expected_response_json
+
+    @pytest.mark.parametrize(
+        "partial_path_params, partial_request_json,expected_response_json",
+        [
+            ({}, {"priceCategoryId": 12}, {"priceCategoryId": ["The price category could not be found"]}),
+            ({"stock_id": 45}, {}, {"stock_id": ["No stock could be found"]}),
+            ({"event_id": 45}, {}, {"event_id": ["The event could not be found"]}),
+        ],
+    )
+    def test_should_raise_404(self, client, partial_path_params, partial_request_json, expected_response_json):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer, stock = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        path_params = dict(event_id=offer.id, stock_id=stock.id)
+        path_params.update(**partial_path_params)
+
+        payload = {"quantity": 10}
+        payload.update(**partial_request_json)
+
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url.format(**path_params),
+            json=payload,
+        )
+
+        assert response.status_code == 404
+        assert response.json == expected_response_json
