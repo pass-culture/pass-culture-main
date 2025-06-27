@@ -578,8 +578,7 @@ def create_collective_offer_public(
 
     # check domains and national program
     educational_domains = get_educational_domains_from_ids(body.domains)
-    if feature.FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API.is_active():
-        validation.validate_national_program(body.national_program_id, educational_domains)
+    validation.validate_national_program(body.national_program_id, educational_domains)
 
     institution = educational_repository.get_educational_institution_public(
         institution_id=body.educational_institution_id,
@@ -790,9 +789,7 @@ def edit_collective_offer_public(
     if edit_national_program:
         program_id_to_check = new_values["nationalProgramId"]
 
-    if (
-        edit_domains or edit_national_program
-    ) and feature.FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API.is_active():
+    if edit_domains or edit_national_program:
         validation.validate_national_program(national_program_id=program_id_to_check, domains=domains_to_check)
 
     # This variable is meant for Adage mailing
