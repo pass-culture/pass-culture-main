@@ -13,7 +13,7 @@ depends_on: list[str] | None = None
 
 
 def upgrade() -> None:
-    op.drop_table("future_offer_reminder")
+    op.drop_table("future_offer_reminder", if_exists=True)
 
 
 def downgrade() -> None:
@@ -28,4 +28,5 @@ def downgrade() -> None:
             ["futureOfferId"], ["future_offer.id"], name="future_offer_reminder_futureOfferId_fkey", ondelete="CASCADE"
         ),
         sa.UniqueConstraint("userId", "futureOfferId", name="unique_reminder_per_user_per_future_offer"),
+        if_not_exists=True
     )

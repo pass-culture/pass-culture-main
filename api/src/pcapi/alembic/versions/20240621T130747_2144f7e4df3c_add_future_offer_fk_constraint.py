@@ -14,7 +14,7 @@ depends_on: list[str] | None = None
 def upgrade() -> None:
     op.execute(
         """
-        ALTER TABLE "future_offer" ADD CONSTRAINT "future_offer_offerId" FOREIGN KEY("offerId") REFERENCES offer (id) on delete CASCADE NOT VALID;
+        ALTER TABLE IF EXISTS "future_offer" ADD CONSTRAINT "future_offer_offerId" FOREIGN KEY("offerId") REFERENCES offer (id) on delete CASCADE NOT VALID;
         """
     )
 

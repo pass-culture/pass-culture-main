@@ -20,8 +20,9 @@ def upgrade() -> None:
         sa.Column("futureOfferId", sa.BigInteger(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("userId", "futureOfferId", name="unique_reminder_per_user_per_future_offer"),
+        if_not_exists=True
     )
 
 
 def downgrade() -> None:
-    op.drop_table("future_offer_reminder")
+    op.drop_table("future_offer_reminder", if_exists=True)
