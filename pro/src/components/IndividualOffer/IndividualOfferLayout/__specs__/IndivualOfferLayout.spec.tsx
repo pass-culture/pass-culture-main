@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
-import { Route , Routes } from 'react-router'
+import { Route, Routes } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
@@ -347,5 +347,57 @@ describe('IndividualOfferLayout', () => {
         'Une erreur s’est produite lors de la suppression de l’offre'
       )
     ).toBeInTheDocument()
+  })
+
+  it('should show the update publication button when the FF WIP_REFACTO_FUTURE_OFFER is enabled', () => {
+    renderIndividualOfferLayout(
+      {
+        offer: getIndividualOfferFactory({
+          status: OfferStatus.PUBLISHED,
+          isEvent: true,
+        }),
+        children: <></>,
+      },
+      {
+        features: ['WIP_REFACTO_FUTURE_OFFER'],
+        initialRouterEntries: ['/offre/creation'],
+      }
+    )
+
+    expect(screen.getByRole('button', { name: 'Modifier' })).toBeInTheDocument()
+  })
+
+  it('should not show the update publication button when the FF WIP_REFACTO_FUTURE_OFFER is disabled', () => {
+    renderIndividualOfferLayout({
+      offer: getIndividualOfferFactory({
+        status: OfferStatus.PUBLISHED,
+        isEvent: true,
+      }),
+      children: <></>,
+    })
+
+    expect(
+      screen.queryByRole('button', { name: 'Modifier' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not show the update publication button when the offer is not published, inactive or scheduled', () => {
+    renderIndividualOfferLayout(
+      {
+        offer: getIndividualOfferFactory({
+          status: OfferStatus.EXPIRED,
+          isEvent: true,
+        }),
+        children: <></>,
+      },
+      {
+        features: ['WIP_REFACTO_FUTURE_OFFER'],
+        initialRouterEntries: ['/offre/creation'],
+      }
+    )
+
+    expect(
+      screen.queryByRole('button', { name: 'Modifier' })
+    ).not.toBeInTheDocument()
   })
 })
