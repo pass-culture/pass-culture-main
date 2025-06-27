@@ -67,6 +67,8 @@ def get_venues_without_photo(frequency: int) -> list[offerers_models.Venue]:
                 offerers_models.Offerer.isActive.is_(True),
                 offerers_models.Venue.id % (SHORTEST_MONTH_LENGTH // frequency) == (day - 1) // frequency,
             )
+            .join(offerers_models.Venue.offererAddress)
+            .join(offerers_models.OffererAddress.address)
             .order_by(offerers_models.Venue.id)
         )
     else:
@@ -80,6 +82,8 @@ def get_venues_without_photo(frequency: int) -> list[offerers_models.Venue]:
                 offerers_models.Offerer.isActive.is_(True),
                 offerers_models.Venue.id % (SHORTEST_MONTH_LENGTH // frequency) == (day - 1) // frequency,
             )
+            .join(offerers_models.Venue.offererAddress)
+            .join(offerers_models.OffererAddress.address)
             .order_by(offerers_models.Venue.id)
         )
     return query.all()
@@ -183,7 +187,11 @@ def synchronize_venues_banners_with_google_places(
                 if (datetime.datetime.utcnow() - venue.googlePlacesInfo.updateDate).days > 62:
                     continue
             else:
-                place_id = get_place_id(venue.common_name, venue.street, venue.city, venue.postalCode)
+                # TODO: CLEAN_OA - remove these conditions when there is no virtual Venue anymore
+                street = venue.offererAddress.address.street if venue.offererAddress else None
+                city = venue.offererAddress.address.city if venue.offererAddress else None
+                postal_code = venue.offererAddress.address.postalCode if venue.offererAddress else None
+                place_id = get_place_id(venue.common_name, street, city, postal_code)
                 venue.googlePlacesInfo = offerers_models.GooglePlacesInfo(placeId=place_id)
 
             if venue.googlePlacesInfo.placeId is None:
