@@ -967,13 +967,13 @@ class DeleteStockTest:
         booking_id_2 = booking2.id
         booking_id_3 = booking3.id
         booking_id_4 = booking4.id
+
         api.delete_stock(stock)
 
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
         db.session.expunge_all()
-        stock = db.session.query(models.Stock).one()
-        assert stock.isSoftDeleted
+        assert db.session.query(models.Stock.isSoftDeleted).scalar()
         booking1 = db.session.get(bookings_models.Booking, booking_id_1)
         assert booking1.status == bookings_models.BookingStatus.CANCELLED
         assert booking1.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
