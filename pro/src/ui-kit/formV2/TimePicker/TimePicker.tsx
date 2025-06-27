@@ -1,9 +1,11 @@
 import classNames from 'classnames'
 import { ForwardedRef, forwardRef, useId } from 'react'
 
+import {
+  BaseTimePicker,
+  SuggestedTimeList,
+} from 'ui-kit/form/shared/BaseTimePicker/BaseTimePicker'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
-import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
-import { SuggestedTimeList } from 'ui-kit/form/TimePicker/types'
 
 import styles from './TimePicker.module.scss'
 

@@ -3,10 +3,15 @@ import { ForwardedRef, forwardRef, useId } from 'react'
 
 import { isValidTime } from 'commons/utils/timezone'
 
-import { BaseInput, BaseInputProps } from '../shared/BaseInput/BaseInput'
+import { BaseInput, BaseInputProps } from '../BaseInput/BaseInput'
 
 import styles from './BaseTimePicker.module.scss'
-import { SuggestedTimeList } from './types'
+
+export type SuggestedTimeList = {
+  interval?: number
+  min?: string
+  max?: string
+}
 
 type Props = Omit<BaseInputProps, 'value'> & {
   value?: string
