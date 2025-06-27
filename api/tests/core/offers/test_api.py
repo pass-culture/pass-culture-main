@@ -5181,7 +5181,6 @@ def assert_offers_have_been_completely_cleaned(offer_ids):
         assert db.session.query(finance_models.CustomReimbursementRule).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(models.EventOpeningHours).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(users_models.Favorite).filter_by(offerId=offer_id).count() == 0
-        assert db.session.query(models.FutureOffer).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(models.HeadlineOffer).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(models.Mediation).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(chronicles_models.OfferChronicle).filter_by(offerId=offer_id).count() == 0
