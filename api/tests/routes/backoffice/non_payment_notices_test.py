@@ -1,3 +1,4 @@
+import dataclasses
 import datetime
 from decimal import Decimal
 
@@ -6,6 +7,8 @@ from flask import url_for
 
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.history import models as history_models
+from pcapi.core.mails import testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
@@ -594,3 +597,154 @@ class EditTest(PostEndpointHelper):
         assert action.offererId == venue.managingOfferer.id
         assert action.venueId == venue.id
         assert action.extraData == {"non_payment_notice_id": notice.id}
+
+
+class GetFormTestHelper(GetEndpointHelper):
+    needed_permission = perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES
+    endpoint_kwargs = {"notice_id": 1}
+    expected_num_queries = 2  # session + current user
+
+    def test_get_form_test(self, authenticated_client):
+        notice = offerers_factories.NonPaymentNoticeFactory()
+        form_url = url_for(self.endpoint, notice_id=notice.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+
+class GetSetPendingFormTest(GetFormTestHelper):
+    endpoint = "backoffice_web.non_payment_notices.get_set_pending_form"
+
+
+class SetPendingTest(PostEndpointHelper):
+    endpoint = "backoffice_web.non_payment_notices.set_pending"
+    endpoint_kwargs = {"notice_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES
+
+    def test_set_pending(self, authenticated_client):
+        notice = offerers_factories.NonPaymentNoticeFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            notice_id=notice.id,
+            form={"motivation": offerers_models.NoticeStatusMotivation.OFFERER_NOT_FOUND.name},
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+
+        html_parser.assert_no_alert(response.data)
+
+        db.session.refresh(notice)
+        assert notice.status == offerers_models.NoticeStatus.PENDING
+        assert notice.motivation == offerers_models.NoticeStatusMotivation.OFFERER_NOT_FOUND
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.NON_PAYMENT_NOTICE_PENDING.value
+        )
+        assert mails_testing.outbox[0]["To"] == notice.emitterEmail
+        assert mails_testing.outbox[0]["params"] == {"MOTIVATION": "OFFERER_NOT_FOUND"}
+
+    def test_set_missing_motivation(self, authenticated_client):
+        notice = offerers_factories.NonPaymentNoticeFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            notice_id=notice.id,
+            form={"motivation": ""},
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Les données envoyées comportent des erreurs. Motif : Information obligatoire ;"
+        )
+
+        db.session.refresh(notice)
+        assert notice.status == offerers_models.NoticeStatus.CREATED
+        assert len(mails_testing.outbox) == 0
+
+
+class GetNoContinuationFormTest(GetFormTestHelper):
+    endpoint = "backoffice_web.non_payment_notices.get_set_no_continuation_form"
+
+
+class SetNoContinuationTest(PostEndpointHelper):
+    endpoint = "backoffice_web.non_payment_notices.set_no_continuation"
+    endpoint_kwargs = {"notice_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES
+
+    def test_set_no_continuation(self, authenticated_client):
+        notice = offerers_factories.NonPaymentNoticeFactory()
+
+        response = self.post_to_endpoint(authenticated_client, notice_id=notice.id, form={}, follow_redirects=True)
+        assert response.status_code == 200
+
+        html_parser.assert_no_alert(response.data)
+
+        db.session.refresh(notice)
+        assert notice.status == offerers_models.NoticeStatus.WITHOUT_CONTINUATION
+        assert notice.motivation is None
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.NON_PAYMENT_NOTICE_WITHOUT_CONTINUATION.value
+        )
+        assert mails_testing.outbox[0]["To"] == notice.emitterEmail
+        assert mails_testing.outbox[0]["params"] == {}
+
+
+class GetCloseFormTest(GetFormTestHelper):
+    endpoint = "backoffice_web.non_payment_notices.get_close_form"
+
+
+class CloseTest(PostEndpointHelper):
+    endpoint = "backoffice_web.non_payment_notices.close"
+    endpoint_kwargs = {"notice_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES
+
+    def test_terminate(self, authenticated_client):
+        notice = offerers_factories.NonPaymentNoticeFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            notice_id=notice.id,
+            form={"motivation": offerers_models.NoticeStatusMotivation.ALREADY_PAID.name},
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+
+        html_parser.assert_no_alert(response.data)
+
+        db.session.refresh(notice)
+        assert notice.status == offerers_models.NoticeStatus.CLOSED
+        assert notice.motivation == offerers_models.NoticeStatusMotivation.ALREADY_PAID
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.NON_PAYMENT_NOTICE_CLOSED.value
+        )
+        assert mails_testing.outbox[0]["To"] == notice.emitterEmail
+        assert mails_testing.outbox[0]["params"] == {"MOTIVATION": "ALREADY_PAID"}
+
+    def test_set_missing_motivation(self, authenticated_client):
+        notice = offerers_factories.NonPaymentNoticeFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            notice_id=notice.id,
+            form={"motivation": ""},
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Les données envoyées comportent des erreurs. Motif : Information obligatoire ;"
+        )
+
+        db.session.refresh(notice)
+        assert notice.status == offerers_models.NoticeStatus.CREATED
+        assert len(mails_testing.outbox) == 0
