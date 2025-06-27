@@ -6,6 +6,7 @@ from unittest.mock import patch
 import pytest
 import time_machine
 
+from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import tasks as offerers_tasks
 from pcapi.models import db
@@ -37,7 +38,12 @@ class CheckActiveOfferersTest:
             run_command(app, "check_active_offerers")
 
         # Only check that the task is called; its behavior is tested in offerers/test_task.py
-        mock_get_siren.assert_called_once_with(offerer.siren, with_address=False, raise_if_non_public=False)
+        mock_get_siren.assert_called_once_with(
+            offerer.siren,
+            with_address=False,
+            raise_if_non_public=False,
+            timeout=offerers_constants.SIRENE_TIMEOUT_IN_TASKS,
+        )
 
 
 class CheckClosedOfferersTest:
@@ -57,7 +63,9 @@ class CheckClosedOfferersTest:
 
         run_command(app, "check_closed_offerers")
 
-        mock_get_siren_closed_at_date.assert_called_once_with(datetime.date.today() - datetime.timedelta(days=2))
+        mock_get_siren_closed_at_date.assert_called_once_with(
+            datetime.date.today() - datetime.timedelta(days=2), timeout=offerers_constants.SIRENE_TIMEOUT_IN_TASKS
+        )
 
         # Only check that the task is called; its behavior is tested in offerers/test_tasks.py
         mock_check_offerer_siren_task.delay.assert_called()
@@ -80,7 +88,9 @@ class CheckClosedOfferersTest:
     )
     def test_no_known_siren(self, mock_get_siren_closed_at_date, mock_check_offerer_siren_task, app):
         run_command(app, "check_closed_offerers")
-        mock_get_siren_closed_at_date.assert_called_once_with(datetime.date.today() - datetime.timedelta(days=2))
+        mock_get_siren_closed_at_date.assert_called_once_with(
+            datetime.date.today() - datetime.timedelta(days=2), timeout=offerers_constants.SIRENE_TIMEOUT_IN_TASKS
+        )
         mock_check_offerer_siren_task.assert_not_called()
 
     @patch("pcapi.core.offerers.tasks.check_offerer_siren_task")
@@ -93,7 +103,9 @@ class CheckClosedOfferersTest:
 
         run_command(app, "check_closed_offerers")
 
-        mock_get_siren_closed_at_date.assert_called_once_with(datetime.date.today() - datetime.timedelta(days=2))
+        mock_get_siren_closed_at_date.assert_called_once_with(
+            datetime.date.today() - datetime.timedelta(days=2), timeout=offerers_constants.SIRENE_TIMEOUT_IN_TASKS
+        )
         mock_redis_client_get.assert_called_once_with(
             f"check_closed_offerers:scheduled:{datetime.date.today().isoformat()}"
         )

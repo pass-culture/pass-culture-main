@@ -5,9 +5,11 @@ import click
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
+from pcapi.celery_tasks import offerers as celery_tasks_offerers
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
 from pcapi.connectors.entreprise import sirene
 from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import synchronize_venues_banners_with_google_places as banner_url_synchronizations
 from pcapi.core.offerers import tasks as offerers_tasks
@@ -65,7 +67,10 @@ def _create_check_offerer_tasks(siren_list: list[str], *, dry_run: bool, fill_in
             close_or_tag_when_inactive=not dry_run,
             fill_in_codir_report=fill_in_codir_report,
         )
-        offerers_tasks.check_offerer_siren_task.delay(payload)
+        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_TASKS_OFFERERS.is_active():
+            celery_tasks_offerers.check_offerer_siren_task_celery.delay(payload.dict())
+        else:
+            offerers_tasks.check_offerer_siren_task.delay(payload)
 
 
 @blueprint.cli.command("check_closed_offerers")
@@ -79,7 +84,7 @@ def check_closed_offerers(dry_run: bool = False, date_closed: str | None = None)
         query_date = datetime.date.today() - datetime.timedelta(days=2)
 
     try:
-        siren_list = sirene.get_siren_closed_at_date(query_date)
+        siren_list = sirene.get_siren_closed_at_date(query_date, timeout=offerers_constants.SIRENE_TIMEOUT_IN_TASKS)
     except entreprise_exceptions.SireneException as exc:
         logger.error("Could not fetch closed SIREN from Sirene API", extra={"date": query_date.isoformat(), "exc": exc})
     else:

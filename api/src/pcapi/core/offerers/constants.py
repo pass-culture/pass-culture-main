@@ -271,3 +271,6 @@ CODE_TO_CATEGORY_MAPPING = {
     9900: "Autre personne morale de droit privé",
     9970: "Groupement de coopération sanitaire à gestion privée",
 }
+
+# Longer timeout when calling API in cron or cloud tasks context, with no user waiting for the response
+SIRENE_TIMEOUT_IN_TASKS = 60

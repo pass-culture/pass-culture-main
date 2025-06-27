@@ -1,16 +1,20 @@
 import datetime
+import typing
 
 from pcapi.connectors.entreprise import models
 from pcapi.utils import module_loading
 
 
-def get_backend(module_path: str | None) -> "BaseBackend":
+def get_backend(module_path: str | None, timeout: int | None = None) -> "BaseBackend":
     assert module_path is not None
     backend_class = module_loading.import_string(module_path)
-    return backend_class()
+    return backend_class(timeout=timeout)
 
 
 class BaseBackend:
+    def __init__(self, **kwargs: typing.Any) -> None:
+        super().__init__()
+
     def get_siren(self, siren: str, with_address: bool = True, raise_if_non_public: bool = True) -> models.SirenInfo:
         raise NotImplementedError()
 

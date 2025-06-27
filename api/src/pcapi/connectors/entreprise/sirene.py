@@ -14,14 +14,18 @@ from . import models
 from .backends.base import get_backend
 
 
-def get_siren(siren: str, with_address: bool = True, raise_if_non_public: bool = True) -> models.SirenInfo:
+def get_siren(
+    siren: str, with_address: bool = True, raise_if_non_public: bool = True, timeout: int | None = None
+) -> models.SirenInfo:
     """Return information about the requested SIREN.
 
     Getting the address requires a second HTTP request to the Sirene
     API. Ask it only if needed.
+
+    timeout overrides the default timeout when set.
     """
     _check_feature_flag()
-    return get_backend(settings.SIRENE_BACKEND).get_siren(
+    return get_backend(settings.SIRENE_BACKEND, timeout=timeout).get_siren(
         siren, with_address=with_address, raise_if_non_public=raise_if_non_public
     )
 
@@ -38,11 +42,11 @@ def siret_is_active(siret: str, raise_if_non_public: bool = True) -> bool:
     return siret_info.active
 
 
-def get_siren_closed_at_date(date_closed: datetime.date) -> list[str]:
+def get_siren_closed_at_date(date_closed: datetime.date, timeout: int | None = None) -> list[str]:
     """Returns the list of SIREN which closure has been declared on the given date.
     Closure date may be the same day, in the past or in the future.
     """
-    return get_backend(settings.SIRENE_BACKEND).get_siren_closed_at_date(date_closed)
+    return get_backend(settings.SIRENE_BACKEND, timeout=timeout).get_siren_closed_at_date(date_closed)
 
 
 def _check_feature_flag() -> None:

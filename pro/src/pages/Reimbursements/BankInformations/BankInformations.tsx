@@ -102,12 +102,19 @@ export const BankInformations = (): JSX.Element => {
   return (
     <>
       <div className={styles['information']}>
-        {!selectedOfferer?.hasValidBankAccount &&
+        {!selectedOfferer?.isValidated &&
+          !selectedOfferer?.hasValidBankAccount &&
           !selectedOfferer?.hasPendingBankAccount &&
+          'Lorsque votre structure sera validée par les équipes du pass Culture, vous pourrez ajouter un compte bancaire ici.'}
+
+        {selectedOfferer?.isValidated &&
+          !selectedOfferer.hasValidBankAccount &&
+          !selectedOfferer.hasPendingBankAccount &&
           'Ajoutez au moins un compte bancaire pour percevoir vos remboursements.'}
 
-        {(selectedOfferer?.hasValidBankAccount ||
-          selectedOfferer?.hasPendingBankAccount) && (
+        {selectedOfferer?.isValidated &&
+          (selectedOfferer.hasValidBankAccount ||
+          selectedOfferer.hasPendingBankAccount) && (
           <>
             Vous pouvez ajouter plusieurs comptes bancaires afin de percevoir
             les remboursements de vos offres. Chaque compte bancaire fera
@@ -143,27 +150,30 @@ export const BankInformations = (): JSX.Element => {
             ))}
           </div>
         )}
-      <Button
-        icon={fullMoreIcon}
-        className={styles['add-bank-account-button']}
-        variant={
-          /* istanbul ignore next : graphic changes */ selectedOfferer &&
-          (selectedOfferer.hasPendingBankAccount ||
-            selectedOfferer.hasValidBankAccount)
-            ? ButtonVariant.SECONDARY
-            : ButtonVariant.PRIMARY
-        }
-        onClick={() => {
-          setShowAddBankInformationsDialog(true)
-          logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
-            from: location.pathname,
-            offererId: selectedOfferer?.id,
-          })
-        }}
-        ref={addBankAccountButtonRef}
-      >
-        Ajouter un compte bancaire
-      </Button>
+      {/*{selectedOfferer?.isValidated && (*/}
+      {selectedOfferer?.isValidated && (
+        <Button
+          icon={fullMoreIcon}
+          className={styles['add-bank-account-button']}
+          variant={
+            /* istanbul ignore next : graphic changes */
+            (selectedOfferer.hasPendingBankAccount ||
+              selectedOfferer.hasValidBankAccount)
+              ? ButtonVariant.SECONDARY
+              : ButtonVariant.PRIMARY
+          }
+          onClick={() => {
+            setShowAddBankInformationsDialog(true)
+            logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
+              from: location.pathname,
+              offererId: selectedOfferer.id,
+            })
+          }}
+          ref={addBankAccountButtonRef}
+        >
+          Ajouter un compte bancaire
+        </Button>
+      )}
       <AddBankInformationsDialog
         closeDialog={() => {
           setShowAddBankInformationsDialog(false)

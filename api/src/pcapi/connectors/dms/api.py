@@ -33,6 +33,7 @@ MAKE_REFUSED_MUTATION_NAME = "make_refused"
 MARK_WITHOUT_CONTINUATION_MUTATION_NAME = "mark_without_continuation"
 SEND_USER_MESSAGE_QUERY_NAME = "send_user_message"
 UPDATE_TEXT_ANNOTATION_QUERY_NAME = "update_text_annotation"
+UPDATE_DROPDOWN_ANNOTATION_QUERY_NAME = "update_dropdown_annotation"
 GET_EAC_APPLICATIONS_STATE_SIRET = "eac/get_applications_state_siret"
 GET_BANK_INFO_APPLICATIONS_QUERY_NAME = "pro/get_bank_info_applications"
 GET_INSTRUCTORS_QUERY_NAME = "get_instructors"
@@ -313,6 +314,18 @@ class DMSGraphQLClient:
             }
         }
         return self.execute_query(UPDATE_TEXT_ANNOTATION_QUERY_NAME, variables=variables)
+
+    def update_dropdown_annotation(self, dossier_id: str, instructeur_id: str, annotation_id: str, value: str) -> dict:
+        variables = {
+            "input": {
+                "dossierId": dossier_id,
+                "instructeurId": instructeur_id,
+                "annotationId": annotation_id,
+                "value": value,
+            }
+        }
+
+        return self.execute_query(UPDATE_DROPDOWN_ANNOTATION_QUERY_NAME, variables=variables)
 
     def add_label_to_application(self, application_techid: str, label_techid: str) -> None:
         params: dict[str, str] = {

@@ -213,6 +213,14 @@ def _add_internal_note(
         bo_link = urls.build_backoffice_public_account_link(attributes.user_id)
         html_body += Markup('<br/><a href="{}" target="_blank">{}</a>').format(bo_link, bo_link)
 
+    return add_internal_note(ticket_id, zendesk_user_id, html_body)
+
+
+def add_internal_note(
+    ticket_id: int,
+    zendesk_user_id: int,
+    html_body: str,
+) -> bool:
     data = {
         "ticket": {
             "comment": {

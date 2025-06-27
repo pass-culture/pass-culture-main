@@ -195,6 +195,7 @@ app.config.from_mapping(
         task_routes={
             "tasks.mails.default.*": {"queue": "celery.external_calls.default"},
             "tasks.mails.priority.*": {"queue": "celery.external_calls.priority"},
+            "tasks.offerers.default.*": {"queue": "celery.external_calls.default"},
         },
         task_ignore_result=True,
     ),

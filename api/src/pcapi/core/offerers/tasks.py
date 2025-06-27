@@ -62,12 +62,22 @@ class CheckOffererSirenRequest(BaseModel):
 
 @task(settings.GCP_CHECK_OFFERER_SIREN_QUEUE_NAME, "/offerers/check_offerer", task_request_timeout=3 * 60)  # type: ignore[arg-type]
 def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
+    check_offerer_siren(payload)
+
+
+def check_offerer_siren(payload: CheckOffererSirenRequest) -> None:
+    logger.info("### check_offerer_siren %s", payload)
     if not siren_utils.is_valid_siren(payload.siren):
         logger.error("Invalid SIREN format in the database", extra={"siren": payload.siren})
         return
 
     try:
-        siren_info = sirene.get_siren(payload.siren, with_address=False, raise_if_non_public=False)
+        siren_info = sirene.get_siren(
+            payload.siren,
+            with_address=False,
+            raise_if_non_public=False,
+            timeout=offerers_constants.SIRENE_TIMEOUT_IN_TASKS,
+        )
     except entreprise_exceptions.SireneException:
         try:
             siren_info = entreprise_api.get_siren(payload.siren, with_address=False, raise_if_non_public=False)

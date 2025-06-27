@@ -26,6 +26,11 @@ class InseeBackend(BaseBackend):
     base_url = settings.INSEE_SIRENE_API_URL
     timeout = 3
 
+    def __init__(self, timeout: int | None = None, **kwargs: typing.Any) -> None:
+        super().__init__(**kwargs)
+        if timeout:
+            self.timeout = timeout
+
     @property
     def headers(self) -> dict[str, str]:
         return {"Authorization": "Bearer " + settings.INSEE_SIRENE_API_TOKEN}
