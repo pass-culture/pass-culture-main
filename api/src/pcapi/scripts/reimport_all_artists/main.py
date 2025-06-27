@@ -17,51 +17,13 @@ from sqlalchemy import func
 
 from pcapi.app import app
 from pcapi.core import search
-from pcapi.core.artist.commands import import_all_artist_aliases
-from pcapi.core.artist.commands import import_all_artist_product_links
-from pcapi.core.artist.commands import import_all_artists
 from pcapi.core.artist.models import ArtistProductLink
 from pcapi.core.offers.models import Offer
 from pcapi.models import db
-from pcapi.repository import transaction
 from pcapi.utils.chunks import get_chunks
 
 
 logger = logging.getLogger(__name__)
-
-
-def truncate_artist_tables():
-    with transaction():
-        db.session.execute("DELETE FROM artist_product_link")
-
-    logger.info("ArtistProductLink table truncated")
-
-    with transaction():
-        db.session.execute("DELETE FROM artist_alias")
-
-    logger.info("ArtistAlias table truncated")
-
-    with transaction():
-        db.session.execute("DELETE FROM artist")
-
-    logger.info("Artist table truncated")
-
-
-def import_all_artists_data():
-    start_time = time.time()
-    import_all_artists()
-    import_time = time.time() - start_time
-    logger.info("Artists imported in %.2fs", import_time)
-
-    start_time = time.time()
-    import_all_artist_product_links()
-    import_time = time.time() - start_time
-    logger.info("Artist product links imported in %.2fs", import_time)
-
-    start_time = time.time()
-    import_all_artist_aliases()
-    import_time = time.time() - start_time
-    logger.info("Artist aliases imported in %.2fs", import_time)
 
 
 def _get_query_as_scalar_batches(query: sa.sql.expression.Select, batch_size: int) -> Generator[list[int], None, None]:
@@ -71,7 +33,7 @@ def _get_query_as_scalar_batches(query: sa.sql.expression.Select, batch_size: in
 def reindex_related_offers(product_ids: list[int], not_dry: bool) -> int:
     total_offers_reindexed = 0
     query = sa.select(Offer.id).where(Offer.productId.in_(product_ids))
-    offer_ids = _get_query_as_scalar_batches(query, batch_size=1000)
+    offer_ids = _get_query_as_scalar_batches(query, batch_size=100)
     for offer_ids_batch in offer_ids:
         if not_dry:
             search.reindex_offer_ids(offer_ids_batch)
@@ -91,7 +53,7 @@ def reindex_artist_product_offers(batch_size: int, not_dry: bool) -> None:
     total_offers_reindexed = 0
     processed_products = 0
     number_of_products = get_number_of_products()
-    query = sa.select(ArtistProductLink.product_id).distinct().order_by(ArtistProductLink.product_id)
+    query = sa.select(ArtistProductLink.product_id).distinct()
     product_ids = _get_query_as_scalar_batches(query, batch_size)
     for product_ids_batch in product_ids:
         batch_offers_reindexed = reindex_related_offers(product_ids_batch, not_dry)
@@ -119,9 +81,5 @@ if __name__ == "__main__":
     parser.add_argument("--batch-size", type=int, default=1_000)
 
     args = parser.parse_args()
-
-    if args.not_dry:
-        truncate_artist_tables()
-        import_all_artists_data()
 
     reindex_artist_product_offers(batch_size=args.batch_size, not_dry=args.not_dry)
