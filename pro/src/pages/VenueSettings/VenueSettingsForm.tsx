@@ -48,7 +48,6 @@ export const VenueSettingsForm = ({
     setValue,
     watch,
     clearErrors,
-    resetField,
     formState: { isDirty, isSubmitting, errors },
   } = methods
 
@@ -60,7 +59,7 @@ export const VenueSettingsForm = ({
     setValue('manuallySetAddress', !manuallySetAddress)
 
     resetReactHookFormAddressFields((name, defaultValue) =>
-      resetField(name, defaultValue)
+      setValue(name, defaultValue)
     )
     clearErrors()
   }

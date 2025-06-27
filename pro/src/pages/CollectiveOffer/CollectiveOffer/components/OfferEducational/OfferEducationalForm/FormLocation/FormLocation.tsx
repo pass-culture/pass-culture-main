@@ -34,7 +34,7 @@ export const FormLocation = ({
   venues,
   disableForm,
 }: FormLocationProps): JSX.Element => {
-  const { watch, setValue, resetField, register, getFieldState } =
+  const { watch, setValue, register, getFieldState } =
     useFormContext<OfferEducationalFormValues>()
   const [shouldShowManualAddressForm, setShouldShowManualAddressForm] =
     useState(watch('location.address')?.isManualEdition)
@@ -47,7 +47,7 @@ export const FormLocation = ({
       setValue('location.address.isVenueAddress', false)
       setValue('location.address.isManualEdition', true)
       resetReactHookFormAddressFields((name, defaultValue) =>
-        resetField(name, defaultValue)
+        setValue(name, defaultValue)
       )
     }
   }
@@ -76,9 +76,9 @@ export const FormLocation = ({
 
     if (isSpecificAddress) {
       setValue('location.address.label', '')
-      resetReactHookFormAddressFields((name, defaultValue) =>
-        resetField(name, defaultValue)
-      )
+      resetReactHookFormAddressFields((name, defaultValue) => {
+        setValue(name, defaultValue)
+      })
     } else {
       // If here, the user chose to use the venue address
       setVenueAddressFields()
@@ -95,6 +95,7 @@ export const FormLocation = ({
     setValue('longitude', data.longitude.toString())
     setValue('banId', data.id)
     setValue('inseeCode', data.inseeCode)
+    setValue('coords', `${data.latitude}, ${data.longitude}`)
   }
 
   const locationTypeRadios: RadioGroupProps['group'] = [
@@ -224,7 +225,7 @@ export const FormLocation = ({
       setValue('interventionArea', [])
     } else {
       resetReactHookFormAddressFields((name, defaultValue) =>
-        resetField(name, defaultValue)
+        setValue(name, defaultValue)
       )
     }
   }
