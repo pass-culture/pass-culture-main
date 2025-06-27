@@ -2,7 +2,6 @@ import dataclasses
 import enum
 
 import pydantic.v1 as pydantic_v1
-import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
@@ -17,14 +16,12 @@ from pcapi.connectors.serialization import titelive_serializers
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.connectors.titelive import get_by_ean13
 from pcapi.core.categories import subcategories
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers.titelive_book_search import get_ineligibility_reasons
-from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.repository.session_management import mark_transaction_as_invalid
@@ -156,7 +153,6 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
 
     titelive_data = {}
     ineligibility_reasons = None
-    product_whitelist = None
     if product.ean:
         try:
             titelive_data = get_by_ean13(product.ean)
@@ -176,23 +172,6 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
         else:
             ineligibility_reasons = get_ineligibility_reasons(data.article[0], data.titre)
 
-        product_whitelist = (
-            db.session.query(fraud_models.ProductWhitelist)
-            .filter(fraud_models.ProductWhitelist.ean == product.ean)
-            .options(
-                sa_orm.load_only(
-                    fraud_models.ProductWhitelist.ean,
-                    fraud_models.ProductWhitelist.dateCreated,
-                    fraud_models.ProductWhitelist.comment,
-                    fraud_models.ProductWhitelist.authorId,
-                ),
-                sa_orm.joinedload(fraud_models.ProductWhitelist.author).load_only(
-                    users_models.User.firstName, users_models.User.lastName
-                ),
-            )
-            .one_or_none()
-        )
-
     return render_template(
         "products/details.html",
         product=product,
@@ -207,7 +186,7 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
         pending_offers_count=pending_offers_count,
         rejected_offers_count=rejected_offers_count,
         ineligibility_reasons=ineligibility_reasons,
-        product_whitelist=product_whitelist,
+        product_whitelist=product.gcuCompatibilityType == offers_models.GcuCompatibilityType.WHITELISTED,
         music_titelive_subcategories=subcategories.MUSIC_TITELIVE_SUBCATEGORY_SEARCH_IDS,
     )
 
@@ -298,7 +277,11 @@ def whitelist_product(product_id: int) -> utils.BackofficeResponse:
     if not product:
         raise NotFound()
 
-    product.gcuCompatibilityType = offers_models.GcuCompatibilityType.COMPATIBLE
+    if product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE:
+        product.gcuCompatibilityType = offers_models.GcuCompatibilityType.COMPATIBLE
+    elif product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE:
+        product.gcuCompatibilityType = offers_models.GcuCompatibilityType.WHITELISTED
+
     flash("Le produit a été marqué compatible avec les CGU", "success")
     return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
 
@@ -456,14 +439,10 @@ def search_product() -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_import_product_from_titelive_form(ean: str) -> utils.BackofficeResponse:
     is_ineligible = request.args.get("is_ineligible", "false").lower() == "true"
-    if is_ineligible:
-        form = forms.CommentForm()
-    else:
-        form = empty_forms.EmptyForm()
 
     return render_template(
         "components/turbo/modal_form.html",
-        form=form,
+        form=empty_forms.EmptyForm(),
         dst=url_for("backoffice_web.product.import_product_from_titelive", ean=ean, is_ineligible=is_ineligible),
         div_id="import-product-modal",
         title="Voulez-vous importer ce produit ?",
@@ -487,33 +466,11 @@ def import_product_from_titelive(ean: str) -> utils.BackofficeResponse:
         )
     else:
         if is_ineligible:
-            try:
-                if product.ean:
-                    form = forms.CommentForm()
-                    product_whitelist = fraud_models.ProductWhitelist(
-                        comment=form.comment.data, ean=product.ean, title=product.name, authorId=current_user.id
-                    )
-                    db.session.add(product_whitelist)
-                    db.session.flush()
-            except sa.exc.IntegrityError as error:
-                mark_transaction_as_invalid()
-                flash(
-                    Markup("L'EAN <b>{ean}</b> n'a pas été ajouté dans la whitelist :<br/>{error}").format(
-                        ean=ean, error=error
-                    ),
-                    "warning",
-                )
-            except GtlIdError:
-                mark_transaction_as_invalid()
-                flash(
-                    Markup("L'EAN <b>{ean}</b> n'a pas de GTL ID côté Titelive").format(ean=ean),
-                    "warning",
-                )
-            else:
-                flash(Markup("L'EAN <b>{ean}</b> a été ajouté dans la whitelist").format(ean=ean), "success")
+            product.gcuCompatibilityType = offers_models.GcuCompatibilityType.WHITELISTED
+            flash(Markup("L'EAN <b>{ean}</b> a été ajouté dans la whitelist").format(ean=ean), "success")
 
-                if product:
-                    offers_api.revalidate_offers_after_product_whitelist(product, current_user)
+            if product:
+                offers_api.revalidate_offers_after_product_whitelist(product, current_user)
 
         flash(Markup("Le produit <b>{product_name}</b> a été créé").format(product_name=product.name), "success")
         return redirect(url_for(".get_product_details", product_id=product.id), 303)

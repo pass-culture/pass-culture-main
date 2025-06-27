@@ -92,23 +92,6 @@
               {{ 'Oui' if product_whitelist else 'Non' }}
             {% endcall %}
           </li>
-          {% if product_whitelist %}
-            <li class="list-group-item">
-              {% call description_detail_horizontal("Date d'ajout") %}
-                {{ product_whitelist.dateCreated|format_date }}
-              {% endcall %}
-            </li>
-            <li class="list-group-item">
-              {% call description_detail_horizontal("Auteur") %}
-                {{ product_whitelist.author.full_name }}
-              {% endcall %}
-            </li>
-            <li class="list-group-item">
-              {% call description_detail_horizontal("Commentaire") %}
-                {{ product_whitelist.comment }}
-              {% endcall %}
-            </li>
-          {% endif %}
         </ul>
       </div>
     </div>
