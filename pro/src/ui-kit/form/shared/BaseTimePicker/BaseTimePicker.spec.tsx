@@ -1,8 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import { Formik } from 'formik'
 
-import { BaseTimePicker } from '../BaseTimePicker'
-import { SuggestedTimeList } from '../types'
+import { BaseTimePicker, SuggestedTimeList } from './BaseTimePicker'
 
 const renderBaseTimePicker = ({
   value = '',
@@ -12,15 +10,13 @@ const renderBaseTimePicker = ({
   suggestedTimeList?: SuggestedTimeList
 } = {}) => {
   render(
-    <Formik initialValues={{ time: value }} onSubmit={vi.fn()}>
-      <BaseTimePicker
-        name="time"
-        suggestedTimeList={suggestedTimeList}
-        value={value}
-        onChange={vi.fn()}
-        aria-label="my time label"
-      />
-    </Formik>
+    <BaseTimePicker
+      name="time"
+      suggestedTimeList={suggestedTimeList}
+      value={value}
+      onChange={vi.fn()}
+      aria-label="my time label"
+    />
   )
 }
 
