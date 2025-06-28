@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from 'apiClient/api'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { ResetPassword } from '../ResetPassword'
+import { ResetPassword } from './ResetPassword'
 
 vi.mock('commons/utils/recaptcha', () => ({
   initReCaptchaScript: vi.fn(() => ({ remove: vi.fn() })),
@@ -96,6 +96,23 @@ describe('ResetPassword', () => {
       expect(mockUseNavigate).toHaveBeenCalledWith('/connexion')
     })
 
+    it('should immediately redirect to login page if token is missing', async () => {
+      const url = '/mot-de-passe-perdu'
+
+      vi.spyOn(api, 'postCheckToken').mockRejectedValue({
+        token: ['Ce champ est obligatoire'],
+      })
+
+      renderLostPassword(url, ['WIP_2025_SIGN_UP'])
+
+      await vi.waitFor(() => {
+        expect(mockUseNotification.error).toHaveBeenCalledWith(
+          'Le lien a expiré ou est invalide. Veuillez recommencer.'
+        )
+        expect(mockUseNavigate).toHaveBeenCalledWith('/demande-mot-de-passe')
+      })
+    })
+
     it('should immediately redirect to login page if token is invalid', async () => {
       const url = '/mot-de-passe-perdu?token=ABC'
 
@@ -107,7 +124,7 @@ describe('ResetPassword', () => {
 
       await vi.waitFor(() => {
         expect(mockUseNotification.error).toHaveBeenCalledWith(
-          'Le lien a expiré. Veuillez recommencer.'
+          'Le lien a expiré ou est invalide. Veuillez recommencer.'
         )
         expect(mockUseNavigate).toHaveBeenCalledWith('/demande-mot-de-passe')
       })
