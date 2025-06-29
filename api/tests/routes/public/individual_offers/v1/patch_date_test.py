@@ -425,7 +425,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
 
         response = client.with_explicit_token(plain_api_key).patch(
             self.endpoint_url.format(event_id=stock.offerId, stock_id=stock.id),
-            json={"priceCategoryId": 0},
+            json={"priceCategoryId": 10},
         )
 
         assert response.status_code == 404

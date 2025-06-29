@@ -133,10 +133,10 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
 
         publication_date = body.publication_date
 
-        # LEGACY :
-        # we must must do this transformation on `publicationDate`
-        # as our serializer authorizes naive datetimes
-        if publication_date:
+        if publication_date:  # the provider used the legacy `publicationDate` param
+            # LEGACY :
+            # we must must do this transformation on `publicationDate`
+            # as our serializer authorizes naive datetimes
             if publication_date.tzinfo is None:  # the provider did not provide a tz in the payload
                 tz = offerer_address.address.timezone if offerer_address else venue.timezone
                 publication_date = date_utils.local_datetime_to_default_timezone(publication_date, local_tz=tz).replace(
@@ -144,10 +144,15 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
                 )
             else:
                 publication_date = date_utils.to_naive_utc_datetime(publication_date)
+        else:  # the provider used the `publicationDatetime` param
+            publication_date = body.publication_datetime  # type: ignore[assignment]
 
-        offers_api.publish_offer(created_offer, publication_datetime=publication_date)
+        offers_api.finalize_offer(
+            created_offer,
+            publication_datetime=publication_date,
+            booking_allowed_datetime=body.booking_allowed_datetime,
+        )
         db.session.flush()
-        db.session.refresh(created_offer)  # due to future_offer
 
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
@@ -288,6 +293,8 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
                 withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
                 name=get_field(offer, updates, "name"),
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
+                publicationDatetime=get_field(offer, updates, "publicationDatetime"),
+                bookingAllowedDatetime=get_field(offer, updates, "bookingAllowedDatetime"),
             ),  # type: ignore[call-arg]
             venue=venue,
             offerer_address=offerer_address,
@@ -494,6 +501,7 @@ def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) ->
         .filter(offers_models.Offer.isEvent)
         .one_or_none()
     )
+
     if not offer:
         raise api_errors.ResourceNotFoundError({"event_id": ["The event could not be found"]})
 
@@ -509,27 +517,34 @@ def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) ->
             }
         )
 
-    try:
-        for date in body.dates:
-            price_category = next((c for c in offer.priceCategories if c.id == date.price_category_id), None)
+    errors = {}
+
+    for date_index, date_item in enumerate(body.dates):
+        try:
+            price_category = next((c for c in offer.priceCategories if c.id == date_item.price_category_id), None)
             if not price_category:
-                raise api_errors.ResourceNotFoundError({"price_category_id": ["The price category could not be found"]})
+                errors[f"dates.{date_index}.priceCategoryId"] = ["The price category could not be found"]
+                continue
 
             new_dates.append(
                 offers_api.create_stock(
                     offer=offer,
                     price_category=price_category,
-                    quantity=serialization.deserialize_quantity(date.quantity),
-                    beginning_datetime=date.beginning_datetime,
-                    booking_limit_datetime=date.booking_limit_datetime,
+                    quantity=serialization.deserialize_quantity(date_item.quantity),
+                    beginning_datetime=date_item.beginning_datetime,
+                    booking_limit_datetime=date_item.booking_limit_datetime,
                     creating_provider=current_api_key.provider,
-                    id_at_provider=date.id_at_provider,
+                    id_at_provider=date_item.id_at_provider,
                 )
             )
-        if not existing_stocks_count and body.dates:
-            offers_api.update_offer_fraud_information(offer, user=None)
-    except offers_exceptions.OfferException as error:
-        raise api_errors.ApiErrors(error.errors)
+            if not existing_stocks_count and body.dates:
+                offers_api.update_offer_fraud_information(offer, user=None)
+        except offers_exceptions.OfferException as exc:
+            for error_key, error_msg in exc.errors.items():
+                errors[f"dates.{date_index}.{error_key}"] = error_msg
+
+    if errors:
+        raise api_errors.ApiErrors(errors)
 
     return serialization.PostDatesResponse(
         dates=[serialization.DateResponse.build_date(new_date) for new_date in new_dates]
@@ -675,19 +690,16 @@ def patch_event_stock(
     if not stock_to_edit:
         raise api_errors.ResourceNotFoundError({"stock_id": ["No stock could be found"]})
 
+    price_category = offers_api.UNCHANGED
+
+    if body.price_category_id is not None:
+        price_category = next((c for c in offer.priceCategories if c.id == body.price_category_id), None)  # type: ignore[arg-type]
+
+        if not price_category:
+            raise api_errors.ResourceNotFoundError({"priceCategoryId": ["The price category could not be found"]})
+
     update_body = body.dict(exclude_unset=True)
     try:
-        price_category_id = update_body.get("price_category_id", None)
-        price_category = (
-            next((c for c in offer.priceCategories if c.id == price_category_id), None)
-            if price_category_id is not None
-            else offers_api.UNCHANGED
-        )
-        if not price_category:
-            raise api_errors.ApiErrors(
-                {"price_category_id": ["The price category could not be found"]}, status_code=404
-            )
-
         quantity = serialization.deserialize_quantity(update_body.get("quantity", offers_api.UNCHANGED))
         edited_stock, is_beginning_updated = offers_api.edit_stock(
             stock_to_edit,

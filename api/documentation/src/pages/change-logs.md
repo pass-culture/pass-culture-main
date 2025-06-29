@@ -30,6 +30,7 @@ title: Pass Culture API change logs
 ## July 2025
 
 - You can specify a `publicationDatetime` and a `bookingAllowedDatetime` for your product offers in the [**Create Product Offer**](/rest-api#tag/Product-Offers/operation/PostProductOffer) and [**Update Product Offer**](/rest-api#tag/Product-Offers/operation/EditProduct) endpoints
+- You can specify a `publicationDatetime` and a `bookingAllowedDatetime` for your event offers in the [**Create Event Offer**](/rest-api#tag/Event-Offers/operation/PostEventOffer) and [**Update Event Offer**](/rest-api#tag/Event-Offers/operation/EditEvent) endpoints
 
 
 ## June 2025

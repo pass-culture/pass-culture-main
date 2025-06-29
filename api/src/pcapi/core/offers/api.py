@@ -413,6 +413,8 @@ def update_offer(
 
     if "name" in updates:
         name = get_field(offer, updates, "name", aliases=aliases)
+        if name is None:
+            raise exceptions.OfferException({"name": ["cannot be null"]})
         validation.check_offer_name_does_not_contain_ean(name)
 
     if (
@@ -708,7 +710,11 @@ def create_stock(
     price_category: models.PriceCategory | None = None,
     id_at_provider: str | None = None,
 ) -> models.Stock:
-    validation.check_booking_limit_datetime(None, beginning_datetime, booking_limit_datetime)
+    if booking_limit_datetime:
+        validation.check_booking_limit_datetime(None, beginning_datetime, booking_limit_datetime)
+        validation.check_offer_is_bookable_before_stock_booking_limit_datetime(
+            offer, booking_limit_datetime=booking_limit_datetime
+        )
 
     if id_at_provider is not None:
         validation.check_can_input_id_at_provider_for_this_stock(offer.id, id_at_provider)
@@ -819,6 +825,11 @@ def edit_stock(
 
     if booking_limit_datetime is not UNCHANGED and booking_limit_datetime != stock.bookingLimitDatetime:
         modifications["bookingLimitDatetime"] = booking_limit_datetime
+        if booking_limit_datetime:
+            validation.check_offer_is_bookable_before_stock_booking_limit_datetime(
+                stock.offer,
+                booking_limit_datetime,
+            )
         validation.check_activation_codes_expiration_datetime_on_stock_edition(
             stock.activationCodes,
             booking_limit_datetime,
