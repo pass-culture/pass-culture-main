@@ -5,9 +5,6 @@ from pcapi.sandboxes.scripts.creators.industrial.add_accessibility_compliance_to
     add_accessibility_compliance_to_venues,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_closed_offerers import create_closed_offerers
-from pcapi.sandboxes.scripts.creators.industrial.create_event_with_opening_hours_offers import (
-    create_offerer_with_event_with_opening_hours,
-)
 from pcapi.sandboxes.scripts.creators.industrial.create_future_offers import create_future_offers
 from pcapi.sandboxes.scripts.creators.industrial.create_gdpr_user_extracts import create_gdpr_user_extract_data
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import create_industrial_admin_users
@@ -167,8 +164,6 @@ def save_industrial_sandbox() -> None:
     create_offers_with_price_categories(offerer_with_several_venues)
 
     create_offerer_providers_for_apis()
-
-    create_offerer_with_event_with_opening_hours()
 
     create_offers_with_ean()
 

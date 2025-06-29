@@ -116,7 +116,6 @@ export const getIndividualOfferFactory = (
     mentalDisabilityCompliant: true,
     hasPendingBookings: false,
     priceCategories: [priceCategoryFactory()],
-    eventOpeningHours: null,
     externalTicketOfficeUrl: 'https://chuck.no',
     extraData: {
       author: 'Chuck Norris',

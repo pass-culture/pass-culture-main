@@ -66,7 +66,6 @@ export type { CollectiveStockResponseModel } from './models/CollectiveStockRespo
 export type { CombinedInvoiceListModel } from './models/CombinedInvoiceListModel';
 export type { Consent } from './models/Consent';
 export type { CookieConsentRequest } from './models/CookieConsentRequest';
-export type { CreateEventOpeningHoursModel } from './models/CreateEventOpeningHoursModel';
 export type { CreateOffererQueryModel } from './models/CreateOffererQueryModel';
 export type { CreatePriceCategoryModel } from './models/CreatePriceCategoryModel';
 export type { CreateThumbnailBodyModel } from './models/CreateThumbnailBodyModel';
@@ -118,7 +117,6 @@ export type { GetEducationalOffererResponseModel } from './models/GetEducational
 export type { GetEducationalOfferersQueryModel } from './models/GetEducationalOfferersQueryModel';
 export type { GetEducationalOfferersResponseModel } from './models/GetEducationalOfferersResponseModel';
 export type { GetEducationalOffererVenueResponseModel } from './models/GetEducationalOffererVenueResponseModel';
-export type { GetEventOpeningHoursResponseModel } from './models/GetEventOpeningHoursResponseModel';
 export type { GetIndividualOfferResponseModel } from './models/GetIndividualOfferResponseModel';
 export type { GetIndividualOfferWithAddressResponseModel } from './models/GetIndividualOfferWithAddressResponseModel';
 export type { GetMusicTypesResponse } from './models/GetMusicTypesResponse';
@@ -196,7 +194,6 @@ export type { OffererStatsResponseModel } from './models/OffererStatsResponseMod
 export type { OffererViewsModel } from './models/OffererViewsModel';
 export type { OfferImage } from './models/OfferImage';
 export { OfferStatus } from './models/OfferStatus';
-export type { OpeningHoursByWeekDayModel } from './models/OpeningHoursByWeekDayModel';
 export type { OpeningHoursModel } from './models/OpeningHoursModel';
 export type { PatchAllOffersActiveStatusBodyModel } from './models/PatchAllOffersActiveStatusBodyModel';
 export type { PatchCollectiveOfferActiveStatusBodyModel } from './models/PatchCollectiveOfferActiveStatusBodyModel';
@@ -242,10 +239,8 @@ export { Target } from './models/Target';
 export type { TemplateDatesModel } from './models/TemplateDatesModel';
 export type { ThingStockCreateBodyModel } from './models/ThingStockCreateBodyModel';
 export type { ThingStockUpdateBodyModel } from './models/ThingStockUpdateBodyModel';
-export type { TimeSpan } from './models/TimeSpan';
 export type { TopOffersResponseData } from './models/TopOffersResponseData';
 export type { TotalRevenue } from './models/TotalRevenue';
-export type { UpdateEventOpeningHoursModel } from './models/UpdateEventOpeningHoursModel';
 export type { UserEmailValidationResponseModel } from './models/UserEmailValidationResponseModel';
 export type { UserHasBookingResponse } from './models/UserHasBookingResponse';
 export type { UserIdentityBodyModel } from './models/UserIdentityBodyModel';

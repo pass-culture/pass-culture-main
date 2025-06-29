@@ -23,7 +23,6 @@ from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
-from pcapi.core.offers import schemas
 from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
 from pcapi.models import db
@@ -865,67 +864,3 @@ def _opening_hours_base_checks(offer: models.Offer) -> None:
 
     if repository.offer_has_timestamped_stocks(offer.id):
         raise exceptions.OfferException({"offer": [f"Offer #{offer.id} already has timestamped stocks"]})
-
-
-def check_offer_can_have_opening_hours(
-    offer: models.Offer,
-) -> None:
-    _opening_hours_base_checks(offer)
-
-    if offer.hasOpeningHours:
-        raise exceptions.OfferException({"offer": [f"Offer #{offer.id} already has opening hours"]})
-
-
-def check_event_opening_hours_can_be_updated(
-    offer: models.Offer, opening_hours: models.EventOpeningHours, body: schemas.UpdateEventOpeningHoursModel
-) -> None:
-    """Check that an event opening hours can be updated, meaning:
-    * the opening hours to be updated is not (soft) deleted
-    * nothing can be changed if the event has already ended
-    * the new start date can't be after the end date (current or old)
-    * the new start date can't be too close (less than 48 hours - because
-      users must still be able to cancel)
-    * the new end date can't less than 48 hours from now (same as above)
-    """
-
-    def _ensure_datetime_has_tz(dt: datetime.datetime | None) -> datetime.datetime | None:
-        return dt.replace(tzinfo=datetime.timezone.utc) if dt and not dt.tzinfo else dt
-
-    now = datetime.datetime.now(datetime.timezone.utc)
-    two_days_from_now = now + datetime.timedelta(hours=48)
-
-    current_end = _ensure_datetime_has_tz(opening_hours.endDatetime)
-    new_end = _ensure_datetime_has_tz(body.endDatetime)
-    new_start = _ensure_datetime_has_tz(body.startDatetime)
-
-    _opening_hours_base_checks(offer)
-
-    if opening_hours.isSoftDeleted:
-        raise exceptions.EventOpeningHoursException(field="event", msg="event opening hours has been deleted")
-
-    if current_end and current_end <= now:
-        raise exceptions.EventOpeningHoursException(
-            field="event.endDatetime",
-            msg="event opening hours cannot be updated: end date has already passed (end date update)",
-        )
-
-    if new_start:
-        assert new_start
-
-        if new_start <= two_days_from_now:
-            raise exceptions.EventOpeningHoursException(
-                field="event.startDatetime",
-                msg="event opening hours cannot be updated: new start is too soon (too close to current end)",
-            )
-
-        new_start_date_after_current_end = current_end and new_start >= current_end
-        if not new_end and new_start_date_after_current_end:
-            raise exceptions.EventOpeningHoursException(
-                field="event.startDatetime",
-                msg="event opening hours cannot be updated: cannot start after ending (start date update)",
-            )
-
-    if new_end and new_end <= two_days_from_now:
-        raise exceptions.EventOpeningHoursException(
-            field="event.endDatetime", msg="event opening hours cannot be updated: new end is too soon"
-        )
