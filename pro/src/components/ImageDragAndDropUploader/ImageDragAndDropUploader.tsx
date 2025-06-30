@@ -83,7 +83,7 @@ export const ImageDragAndDropUploader = ({
     setDraftImage(values.imageFile)
     setRefToFocusOnClose(updateImageRef)
     onImageUpload(values)
-    notify.success('Votre image a bien été enregistrée')
+    notify.success('Votre image a bien été importée')
   }
 
   return (
