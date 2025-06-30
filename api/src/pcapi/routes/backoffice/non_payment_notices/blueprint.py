@@ -14,6 +14,7 @@ from markupsafe import Markup
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
+from pcapi.core.mails.transactional.pro import non_payment_notice_notification
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
@@ -255,3 +256,100 @@ def edit(notice_id: int) -> utils.BackofficeResponse:
 
     form = forms.EditNonPaymentNoticeForm()
     return _create_or_update_non_payment_notice(form, notice)
+
+
+@non_payment_notices_blueprint.route("/<int:notice_id>/pending", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def get_set_pending_form(notice_id: int) -> utils.BackofficeResponse:
+    form = forms.SetPendingForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.non_payment_notices.set_pending", notice_id=notice_id),
+        div_id=f"pending-modal-{notice_id}",  # must be consistent with parameter passed to build_lazy_modal
+        title="Mettre en attente",
+        button_text="Mettre en attente",
+    )
+
+
+@non_payment_notices_blueprint.route("/<int:notice_id>/pending", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def set_pending(notice_id: int) -> utils.BackofficeResponse:
+    notice = db.session.query(offerers_models.NonPaymentNotice).get_or_404(notice_id)
+
+    form = forms.SetPendingForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return _redirect_to_list()
+
+    notice.status = offerers_models.NoticeStatus.PENDING
+    notice.motivation = offerers_models.NoticeStatusMotivation(form.motivation.data)
+    db.session.add(notice)
+
+    non_payment_notice_notification.send_pending_non_payment_notice_email(notice)
+
+    return _redirect_to_list()
+
+
+@non_payment_notices_blueprint.route("/<int:notice_id>/no-continuation", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def get_set_no_continuation_form(notice_id: int) -> utils.BackofficeResponse:
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=forms.NoContinuationForm(),
+        dst=url_for("backoffice_web.non_payment_notices.set_no_continuation", notice_id=notice_id),
+        div_id=f"no-continuation-modal-{notice_id}",  # must be consistent with parameter passed to build_lazy_modal
+        title="Classer sans suite",
+        button_text="Classer sans suite",
+    )
+
+
+@non_payment_notices_blueprint.route("/<int:notice_id>/no-continuation", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def set_no_continuation(notice_id: int) -> utils.BackofficeResponse:
+    notice = db.session.query(offerers_models.NonPaymentNotice).get_or_404(notice_id)
+
+    form = forms.NoContinuationForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return _redirect_to_list()
+
+    notice.status = offerers_models.NoticeStatus.WITHOUT_CONTINUATION
+    db.session.add(notice)
+
+    non_payment_notice_notification.send_non_payment_notice_without_continuation_email(notice)
+
+    return _redirect_to_list()
+
+
+@non_payment_notices_blueprint.route("/<int:notice_id>/close", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def get_close_form(notice_id: int) -> utils.BackofficeResponse:
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=forms.CloseForm(),
+        dst=url_for("backoffice_web.non_payment_notices.close", notice_id=notice_id),
+        div_id=f"close-modal-{notice_id}",  # must be consistent with parameter passed to build_lazy_modal
+        title="Terminer",
+        button_text="Terminer",
+    )
+
+
+@non_payment_notices_blueprint.route("/<int:notice_id>/close", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
+def close(notice_id: int) -> utils.BackofficeResponse:
+    notice = db.session.query(offerers_models.NonPaymentNotice).get_or_404(notice_id)
+
+    form = forms.CloseForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return _redirect_to_list()
+
+    notice.status = offerers_models.NoticeStatus.CLOSED
+    notice.motivation = offerers_models.NoticeStatusMotivation(form.motivation.data)
+    db.session.add(notice)
+
+    non_payment_notice_notification.send_closed_non_payment_notice_email(notice)
+
+    return _redirect_to_list()
