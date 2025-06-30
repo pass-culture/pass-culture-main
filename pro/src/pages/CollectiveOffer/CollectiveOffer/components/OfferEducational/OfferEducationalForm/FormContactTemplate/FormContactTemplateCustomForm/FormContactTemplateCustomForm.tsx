@@ -2,8 +2,8 @@ import { useFormContext } from 'react-hook-form'
 
 import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './FormContactTemplateCustomForm.module.scss'
 

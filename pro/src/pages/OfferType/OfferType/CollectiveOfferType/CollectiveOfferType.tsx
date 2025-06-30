@@ -16,7 +16,7 @@ import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
-import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
+import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 
 import styles from './CollectiveOfferType.module.scss'
 

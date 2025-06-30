@@ -8,7 +8,7 @@ import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { getDepartmentCode } from 'components/IndividualOffer/utils/getDepartmentCode'
 import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
+import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 
 import {
   DurationTypeOption,

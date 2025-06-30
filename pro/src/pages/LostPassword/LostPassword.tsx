@@ -21,7 +21,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { Hero } from 'ui-kit/Hero/Hero'
 
 import emailIcon from './assets/email.svg'

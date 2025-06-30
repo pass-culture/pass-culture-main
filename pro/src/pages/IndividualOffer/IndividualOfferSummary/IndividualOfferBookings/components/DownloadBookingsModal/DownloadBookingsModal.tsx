@@ -21,7 +21,7 @@ import { daysOfWeek } from 'pages/VenueEdition/OpeningHoursForm/OpeningHoursForm
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
+import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 
 import style from './DownloadBookingsModal.module.scss'
 

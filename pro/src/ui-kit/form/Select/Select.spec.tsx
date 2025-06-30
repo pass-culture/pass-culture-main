@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { Select } from 'ui-kit/formV2/Select/Select'
+import { Select } from 'ui-kit/form/Select/Select'
 
 describe('Select', () => {
   it('should display a select input', () => {

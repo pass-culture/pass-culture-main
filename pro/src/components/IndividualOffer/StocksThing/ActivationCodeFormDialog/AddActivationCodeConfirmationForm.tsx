@@ -1,10 +1,10 @@
-import { useState, ChangeEvent } from 'react'
+import { ChangeEvent, useState } from 'react'
 
-import { isDateValid, formatShortDateForInput } from 'commons/utils/date'
+import { formatShortDateForInput, isDateValid } from 'commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
+import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 
 import styles from './ActivationCodeFormDialog.module.scss'
 

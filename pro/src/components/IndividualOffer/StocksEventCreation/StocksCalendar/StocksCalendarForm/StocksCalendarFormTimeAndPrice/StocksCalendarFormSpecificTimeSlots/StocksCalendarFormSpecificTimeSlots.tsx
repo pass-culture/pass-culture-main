@@ -5,7 +5,7 @@ import fullClearIcon from 'icons/full-clear.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { TimePicker } from 'ui-kit/formV2/TimePicker/TimePicker'
+import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 

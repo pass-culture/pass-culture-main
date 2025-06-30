@@ -9,7 +9,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { Select } from 'ui-kit/formV2/Select/Select'
+import { Select } from 'ui-kit/form/Select/Select'
 
 import styles from './PricingPointDialog.module.scss'
 import { validationSchema } from './validationSchema'

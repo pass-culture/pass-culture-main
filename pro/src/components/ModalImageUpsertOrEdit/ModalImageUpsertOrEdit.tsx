@@ -23,7 +23,7 @@ import {
   DialogBuilder,
   DialogBuilderProps,
 } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { ImageEditor } from './components/ImageEditor/ImageEditor'

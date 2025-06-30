@@ -3,7 +3,7 @@ import { UseFormReturn } from 'react-hook-form'
 
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { StocksCalendarFormValues } from 'components/IndividualOffer/StocksEventCreation/form/types'
-import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
+import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 
 import { StocksCalendarFormTimeAndPrice } from '../StocksCalendarFormTimeAndPrice/StocksCalendarFormTimeAndPrice'
 

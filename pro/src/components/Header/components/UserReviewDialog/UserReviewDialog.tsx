@@ -20,7 +20,7 @@ import {
   IconRadioGroup,
   IconRadioGroupValues,
 } from 'ui-kit/form/IconRadioGroup/IconRadioGroup'
-import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
+import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './UserReviewDialog.module.scss'

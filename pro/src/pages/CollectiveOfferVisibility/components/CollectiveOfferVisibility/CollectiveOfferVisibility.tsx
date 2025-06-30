@@ -37,7 +37,7 @@ import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavin
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SelectAutocomplete } from 'ui-kit/formV2/SelectAutoComplete/SelectAutocomplete'
+import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './CollectiveOfferVisibility.module.scss'

@@ -12,9 +12,9 @@ import {
 } from 'apiClient/v1'
 import { MAX_PRICE_DETAILS_LENGTH } from 'commons/core/OfferEducational/constants'
 import {
-  OfferEducationalStockFormValues,
   isCollectiveOffer,
   Mode,
+  OfferEducationalStockFormValues,
 } from 'commons/core/OfferEducational/types'
 import { NBSP } from 'commons/core/shared/constants'
 import { isDateValid } from 'commons/utils/date'
@@ -29,8 +29,8 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
-import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
+import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
+import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 
 import {
   BOOKING_LIMIT_DATETIME_LABEL,

@@ -5,9 +5,9 @@ import { getPriceCategoryOptions } from 'components/IndividualOffer/StocksEventE
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
-import { Select } from 'ui-kit/formV2/Select/Select'
-import { TimePicker } from 'ui-kit/formV2/TimePicker/TimePicker'
+import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
+import { Select } from 'ui-kit/form/Select/Select'
+import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 
 import { StocksTableFilters, StocksTableSort } from '../../form/types'
 

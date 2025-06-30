@@ -1,6 +1,6 @@
 import { useId } from 'react'
 
-import { IconRadio } from 'ui-kit/formV2/IconRadio/IconRadio'
+import { IconRadio } from 'ui-kit/form/IconRadio/IconRadio'
 
 import { FieldError } from '../shared/FieldError/FieldError'
 

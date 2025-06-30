@@ -5,12 +5,12 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 import { DetailsFormValues } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import {
-  onSubcategoryChange,
-  onCategoryChange,
   buildCategoryOptions,
   buildSubcategoryOptions,
+  onCategoryChange,
+  onSubcategoryChange,
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
-import { Select } from 'ui-kit/formV2/Select/Select'
+import { Select } from 'ui-kit/form/Select/Select'
 
 import styles from './Subcategories.module.scss'
 

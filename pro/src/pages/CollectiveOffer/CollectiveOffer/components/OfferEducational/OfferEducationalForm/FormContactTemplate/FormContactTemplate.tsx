@@ -1,9 +1,9 @@
 import { useFormContext } from 'react-hook-form'
 
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
-import { CheckboxGroup } from 'ui-kit/formV2/CheckboxGroup/CheckboxGroup'
-import { PhoneNumberInput } from 'ui-kit/formV2/PhoneNumberInput/PhoneNumberInput'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
+import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './FormContactTemplate.module.scss'
 import { FormContactTemplateCustomForm } from './FormContactTemplateCustomForm/FormContactTemplateCustomForm'

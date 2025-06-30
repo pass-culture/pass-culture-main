@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { isPasswordValid } from 'ui-kit/formV2/PasswordInput/validation'
+import { isPasswordValid } from 'ui-kit/form/PasswordInput/validation'
 
 export const validationSchema = yup.object().shape({
   oldPassword: yup

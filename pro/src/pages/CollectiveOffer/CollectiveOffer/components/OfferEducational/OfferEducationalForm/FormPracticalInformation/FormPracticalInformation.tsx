@@ -10,12 +10,9 @@ import { offerInterventionOptions } from 'commons/core/shared/interventionOption
 import { SelectOption } from 'commons/custom_types/form'
 import { selectInterventionAreas } from 'commons/utils/selectInterventionAreas'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import {
-  RadioGroup,
-  RadioGroupProps,
-} from 'ui-kit/formV2/RadioGroup/RadioGroup'
-import { Select } from 'ui-kit/formV2/Select/Select'
-import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
+import { RadioGroup, RadioGroupProps } from 'ui-kit/form/RadioGroup/RadioGroup'
+import { Select } from 'ui-kit/form/Select/Select'
+import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
 import { TipsBanner } from 'ui-kit/TipsBanner/TipsBanner'
 

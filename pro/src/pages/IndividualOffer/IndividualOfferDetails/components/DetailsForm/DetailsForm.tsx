@@ -16,9 +16,9 @@ import { DetailsFormValues } from 'pages/IndividualOffer/IndividualOfferDetails/
 import { isSubCategoryCD } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
-import { Select } from 'ui-kit/formV2/Select/Select'
-import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { Select } from 'ui-kit/form/Select/Select'
+import { TextArea } from 'ui-kit/form/TextArea/TextArea'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './DetailsForm.module.scss'
 import { DetailsSubForm } from './DetailsSubForm/DetailsSubForm'

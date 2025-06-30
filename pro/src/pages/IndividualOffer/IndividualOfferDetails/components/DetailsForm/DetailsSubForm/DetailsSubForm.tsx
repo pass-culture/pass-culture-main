@@ -13,9 +13,9 @@ import {
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
-import { Select } from 'ui-kit/formV2/Select/Select'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
-import { TimePicker } from 'ui-kit/formV2/TimePicker/TimePicker'
+import { Select } from 'ui-kit/form/Select/Select'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 
 import styles from './DetailsSubForm.module.scss'
 

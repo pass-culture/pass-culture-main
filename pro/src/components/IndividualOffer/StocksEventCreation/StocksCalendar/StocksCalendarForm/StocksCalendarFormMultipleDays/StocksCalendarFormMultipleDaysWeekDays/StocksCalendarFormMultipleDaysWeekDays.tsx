@@ -2,8 +2,8 @@ import { useId } from 'react'
 import { useFieldArray, UseFormReturn } from 'react-hook-form'
 
 import { StocksCalendarFormValues } from 'components/IndividualOffer/StocksEventCreation/form/types'
+import { DayCheckbox } from 'ui-kit/form/DayCheckbox/DayCheckbox'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
-import { DayCheckbox } from 'ui-kit/formV2/DayCheckbox/DayCheckbox'
 
 import styles from './StocksCalendarFormMultipleDaysWeekDays.module.scss'
 

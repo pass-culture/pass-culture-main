@@ -20,7 +20,7 @@ import fullUpIcon from 'icons/full-up.svg'
 import { validationSchema } from 'pages/Collaborators/validationSchema'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './Collaborators.module.scss'
 

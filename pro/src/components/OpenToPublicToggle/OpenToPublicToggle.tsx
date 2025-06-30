@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { useId } from 'react'
 
-import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
+import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 
 import styles from './OpenToPublicToggle.module.scss'
 

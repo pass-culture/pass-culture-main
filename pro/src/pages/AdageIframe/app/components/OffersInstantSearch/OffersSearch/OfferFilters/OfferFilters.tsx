@@ -20,15 +20,12 @@ import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { Option } from 'pages/AdageIframe/app/types'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { Slider } from 'ui-kit/form/Slider/Slider'
 import {
   AdageMultiselect,
   ItemProps,
-} from 'ui-kit/formV2/AdageMultiselect/AdageMultiselect'
-import {
-  RadioGroup,
-  RadioGroupProps,
-} from 'ui-kit/formV2/RadioGroup/RadioGroup'
+} from 'ui-kit/form/AdageMultiselect/AdageMultiselect'
+import { RadioGroup, RadioGroupProps } from 'ui-kit/form/RadioGroup/RadioGroup'
+import { Slider } from 'ui-kit/form/Slider/Slider'
 
 import { SearchFormValues } from '../../OffersInstantSearch'
 import { LocalisationFilterStates } from '../OffersSearch'
