@@ -27,8 +27,8 @@ defaults:
     working-directory: pro
 
 jobs:
-  tests-pro-e2e-tests:
-    name: "E2E tests and notifications"
+  tests-pro-e2e-tests-sequencial:
+    name: "E2E tests and notifications (Sequencial)"
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4.2.2
