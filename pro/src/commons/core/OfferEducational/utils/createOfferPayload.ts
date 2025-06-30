@@ -92,7 +92,7 @@ const getCommonOfferPayload = (
       return {
         location: {
           locationType: CollectiveLocationType.TO_BE_DEFINED,
-          locationComment: offer.location.locationComment,
+          locationComment: offer.location.locationComment || null,
         },
       }
     }

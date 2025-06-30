@@ -89,13 +89,13 @@ export const AdageOfferInfoSection = ({
       </div>
 
       {offer.location &&
-        offer.location.locationType ===
-          CollectiveLocationType.TO_BE_DEFINED && (
+        offer.location.locationType === CollectiveLocationType.TO_BE_DEFINED &&
+        offer.location.locationComment && (
           <div className={styles['offer-section-group-item']}>
             <h3 className={styles['offer-section-group-item-subtitle']}>
               Commentaire
             </h3>
-            {offer.location.locationComment ?? '-'}
+            {offer.location.locationComment}
           </div>
         )}
 
