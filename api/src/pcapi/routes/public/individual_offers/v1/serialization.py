@@ -520,94 +520,6 @@ class DecimalPriceGetterDict(GetterDict):
         return super().get(key, default)
 
 
-class PriceCategoryCreation(serialization.ConfiguredBaseModel):
-    if typing.TYPE_CHECKING:
-        label: str = fields.PRICE_CATEGORY_LABEL
-    else:
-        label: pydantic_v1.constr(min_length=1, max_length=50) = fields.PRICE_CATEGORY_LABEL
-    price: offer_price_model = fields.PRICE
-    id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
-
-    class Config:
-        getter_dict = DecimalPriceGetterDict
-
-
-class PriceCategoriesCreation(serialization.ConfiguredBaseModel):
-    price_categories: list[PriceCategoryCreation] = fields.PRICE_CATEGORIES_WITH_MAX_ITEMS
-
-    @pydantic_v1.validator("price_categories")
-    def get_unique_price_categories(
-        cls,
-        price_categories: list[PriceCategoryCreation],
-    ) -> list[PriceCategoryCreation]:
-        unique_price_categories = []
-        unique_id_at_provider_list = set()
-        for price_category in price_categories:
-            # unique (label, price)
-            if (price_category.label, price_category.price) in unique_price_categories:
-                raise ValueError("Price categories must be unique")
-            unique_price_categories.append((price_category.label, price_category.price))
-
-            # unique idAtProvider
-            if price_category.id_at_provider:
-                if price_category.id_at_provider in unique_id_at_provider_list:
-                    raise ValueError(
-                        f"Price category `idAtProvider` must be unique. Duplicated value : {price_category.id_at_provider}"
-                    )
-                unique_id_at_provider_list.add(price_category.id_at_provider)
-
-        return price_categories
-
-    class Config:
-        extra = "forbid"
-
-
-class EventOfferCreation(OfferCreationBase):
-    category_related_fields: event_category_creation_fields
-    event_duration: int | None = fields.EVENT_DURATION
-    location: PhysicalLocation | DigitalLocation | AddressLocation = fields.OFFER_LOCATION
-    has_ticket: bool = fields.EVENT_HAS_TICKET
-    price_categories: list[PriceCategoryCreation] | None = fields.PRICE_CATEGORIES_WITH_MAX_ITEMS
-    publication_date: datetime.datetime | None = fields.DEPRECATED_OFFER_PUBLICATION_DATE
-    enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_ENABLED
-
-    @pydantic_v1.root_validator(pre=True)
-    def check_publication_date_and_publication_datetime_are_not_both_set(cls, values: dict) -> dict:
-        publication_date = values.get("publicationDate")
-        publication_datetime = values.get("publicationDatetime")
-
-        if publication_date and publication_datetime:
-            raise ValueError("You cannot set both `publicationDate` and `publicationDatetime`")
-
-        return values
-
-    @pydantic_v1.validator("price_categories")
-    def get_unique_price_categories(
-        cls,
-        price_categories: list[PriceCategoryCreation],
-    ) -> list[PriceCategoryCreation]:
-        unique_price_categories = []
-        unique_id_at_provider_list = set()
-        for price_category in price_categories:
-            # unique (label, price)
-            if (price_category.label, price_category.price) in unique_price_categories:
-                raise ValueError("Price categories must be unique")
-            unique_price_categories.append((price_category.label, price_category.price))
-
-            # unique idAtProvider
-            if price_category.id_at_provider:
-                if price_category.id_at_provider in unique_id_at_provider_list:
-                    raise ValueError(
-                        f"Price category `idAtProvider` must be unique. Duplicated value : {price_category.id_at_provider}"
-                    )
-                unique_id_at_provider_list.add(price_category.id_at_provider)
-
-        return price_categories
-
-    class Config:
-        extra = "forbid"
-
-
 class OfferName(pydantic_v1.ConstrainedStr):
     min_length = 1
     max_length = 140
@@ -639,75 +551,6 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
         extra = "forbid"
 
 
-class PriceCategoryEdition(serialization.ConfiguredBaseModel):
-    if typing.TYPE_CHECKING:
-        label: str = fields.PRICE_CATEGORY_LABEL
-    else:
-        label: pydantic_v1.constr(min_length=1, max_length=50) | None = fields.PRICE_CATEGORY_LABEL
-    price: offer_price_model | None = fields.PRICE
-    id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
-
-    @pydantic_v1.validator("price")
-    def price_must_be_positive(cls, value: int | None) -> int | None:
-        if value and value < 0:
-            raise ValueError("Value must be positive")
-        return value
-
-    class Config:
-        extra = "forbid"
-
-
-class EventStockEdition(BaseStockEdition):
-    beginning_datetime: datetime.datetime | None = fields.BEGINNING_DATETIME
-    price_category_id: pydantic_v1.PositiveInt | None = fields.PRICE_CATEGORY_ID
-    id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
-
-    _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
-
-
-class EventOfferEdition(OfferEditionBase):
-    category_related_fields: event_category_edition_fields | None = pydantic_v1.Field(
-        None,
-        description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
-    )
-    event_duration: int | None = fields.EVENT_DURATION
-
-
-class EventStockCreation(BaseStockCreation):
-    beginning_datetime: datetime.datetime = fields.BEGINNING_DATETIME
-    booking_limit_datetime: datetime.datetime = fields.BOOKING_LIMIT_DATETIME
-    price_category_id: int = fields.PRICE_CATEGORY_ID
-    id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
-
-    _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
-    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
-
-
-class EventStocksCreation(serialization.ConfiguredBaseModel):
-    dates: list[EventStockCreation] = fields.EVENT_STOCKS
-
-    class Config:
-        extra = "forbid"
-
-
-class PriceCategoryResponse(serialization.ConfiguredBaseModel):
-    id: int
-    label: str = fields.PRICE_CATEGORY_LABEL
-    price: pydantic_v1.StrictInt = fields.PRICE
-    id_at_provider: str | None = fields.ID_AT_PROVIDER
-
-    class Config:
-        getter_dict = DecimalPriceGetterDict
-
-
-class PriceCategoriesResponse(serialization.ConfiguredBaseModel):
-    price_categories: list[PriceCategoryResponse] = fields.PRICE_CATEGORIES
-
-    @classmethod
-    def build_price_categories(cls, price_categories: list[offers_models.PriceCategory]) -> "PriceCategoriesResponse":
-        return cls(price_categories=[PriceCategoryResponse.from_orm(category) for category in price_categories])
-
-
 class BaseStockResponse(serialization.ConfiguredBaseModel):
     booking_limit_datetime: datetime.datetime | None = fields.BOOKING_LIMIT_DATETIME
     dnBookedQuantity: int = pydantic_v1.Field(..., description="Number of bookings.", example=0, alias="bookedQuantity")
@@ -720,29 +563,6 @@ class BaseStockResponse(serialization.ConfiguredBaseModel):
             dnBookedQuantity=stock.dnBookedQuantity,
             quantity=stock.quantity if stock.quantity is not None else "unlimited",
         )
-
-
-class DateResponse(BaseStockResponse):
-    id: int
-    beginning_datetime: datetime.datetime = fields.BEGINNING_DATETIME
-    booking_limit_datetime: datetime.datetime = fields.BOOKING_LIMIT_DATETIME
-    price_category: PriceCategoryResponse
-    id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
-
-    @classmethod
-    def build_date(cls, stock: offers_models.Stock) -> "DateResponse":
-        stock_response = BaseStockResponse.build_stock(stock)
-        return cls(
-            id=stock.id,
-            beginning_datetime=stock.beginningDatetime,  # type: ignore[arg-type]
-            price_category=PriceCategoryResponse.from_orm(stock.priceCategory),
-            id_at_provider=stock.idAtProviders,
-            **stock_response.dict(),
-        )
-
-
-class PostDatesResponse(serialization.ConfiguredBaseModel):
-    dates: list[DateResponse] = pydantic_v1.Field(description="Dates of the event.")
 
 
 class OfferResponse(serialization.ConfiguredBaseModel):
@@ -820,32 +640,6 @@ class ProductOfferResponse(OfferResponse):
         )
 
 
-def _serialize_has_ticket(offer: offers_models.Offer) -> bool:
-    # hasTicket is True only if the bookings are linked to an externalBooking
-    # This is the case for offers with withdrawalType IN_APP.
-    return offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
-
-
-class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
-    category_related_fields: event_category_reading_fields
-    event_duration: int | None = fields.EVENT_DURATION
-    has_ticket: bool = fields.EVENT_HAS_TICKET
-    publication_datetime: datetime.datetime | None = fields.OFFER_PUBLICATION_DATETIME
-
-    @classmethod
-    def build_event_offer(cls, offer: offers_models.Offer) -> "EventOfferResponse":
-        base_offer_response = OfferResponse.build_offer(offer)
-        return cls(
-            category_related_fields=serialize_extra_data(offer),
-            event_duration=offer.durationMinutes,
-            has_ticket=_serialize_has_ticket(offer),
-            price_categories=[
-                PriceCategoryResponse.from_orm(price_category) for price_category in offer.priceCategories
-            ],
-            **base_offer_response.dict(),
-        )
-
-
 class GetOffersQueryParams(IndexPaginationQueryParams):
     venue_id: int | None = fields.VENUE_ID
     ids_at_provider: str | None = fields.IDS_AT_PROVIDER_FILTER
@@ -858,44 +652,12 @@ class GetOffersQueryParams(IndexPaginationQueryParams):
         return None
 
 
-class GetPriceCategoriesQueryParams(IndexPaginationQueryParams):
-    ids_at_provider: str | None = fields.IDS_AT_PROVIDER_FILTER
-
-    @pydantic_v1.validator("ids_at_provider")
-    def validate_ids_at_provider(cls, ids_at_provider: str) -> list[str] | None:
-        if ids_at_provider:
-            return ids_at_provider.split(",")
-        return None
-
-
-class GetEventStocksQueryParams(IndexPaginationQueryParams):
-    ids_at_provider: str | None = fields.IDS_AT_PROVIDER_FILTER
-
-    @pydantic_v1.validator("ids_at_provider")
-    def validate_ids_at_provider(cls, ids_at_provider: str) -> list[str] | None:
-        if ids_at_provider:
-            ids_at_provider_list = ids_at_provider.split(",")
-            if len(ids_at_provider_list) > 100:
-                raise ValueError("Too many ids")
-            return ids_at_provider_list
-
-        return None
-
-
 class ProductOffersResponse(serialization.ConfiguredBaseModel):
     products: list[ProductOfferResponse]
 
 
 class ProductOffersByEanResponse(serialization.ConfiguredBaseModel):
     products: list[ProductOfferResponse]
-
-
-class EventOffersResponse(serialization.ConfiguredBaseModel):
-    events: list[EventOfferResponse]
-
-
-class GetDatesResponse(serialization.ConfiguredBaseModel):
-    dates: list[DateResponse]
 
 
 class GetProductsListByEansQuery(serialization.ConfiguredBaseModel):
@@ -972,23 +734,6 @@ class AvailableEANsResponse(serialization.ConfiguredBaseModel):
         )
 
 
-class EventCategoryResponse(serialization.ConfiguredBaseModel):
-    id: EventCategoryEnum  # type: ignore[valid-type]
-    conditional_fields: dict[str, bool] = pydantic_v1.Field(
-        description="The keys are fields that should be set in the category_related_fields of an event. The values indicate whether their associated field is mandatory during event creation."
-    )
-
-    @classmethod
-    def build_category(cls, subcategory: subcategories.Subcategory) -> "EventCategoryResponse":
-        return cls(
-            id=subcategory.id,
-            conditional_fields={
-                field: condition.is_required_in_external_form
-                for field, condition in subcategory.conditional_fields.items()
-            },
-        )
-
-
 class LocationTypeEnum(str, enum.Enum):
     DIGITAL = "DIGITAL"
     PHYSICAL = "PHYSICAL"
@@ -1019,10 +764,6 @@ class ProductCategoryResponse(serialization.ConfiguredBaseModel):
             conditional_fields=conditional_fields,
             locationType=locationType,
         )
-
-
-class GetEventCategoriesResponse(serialization.ConfiguredBaseModel):
-    __root__: list[EventCategoryResponse]
 
 
 class GetProductCategoriesResponse(serialization.ConfiguredBaseModel):
