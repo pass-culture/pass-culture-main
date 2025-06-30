@@ -1,7 +1,5 @@
-import fs from 'fs'
-
-// import { allureCypress } from 'allure-cypress/reporter'
 import { defineConfig } from 'cypress'
+import fs from 'fs'
 import cypressFailFast = require('cypress-fail-fast/plugin')
 
 // ts-unused-exports:disable-next-line

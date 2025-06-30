@@ -99,7 +99,6 @@ describe('Create collective offers with OA', () => {
       data.institution
     )
     cy.get('#list-institution').findByText(new RegExp(data.institution)).click()
-    cy.findByLabelText('Nom de l’établissement scolaire ou code UAI *').click()
     cy.findByText('Enregistrer et continuer').click()
   }
 
