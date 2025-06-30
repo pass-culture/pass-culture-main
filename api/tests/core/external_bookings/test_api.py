@@ -168,8 +168,8 @@ class BookEventTicketTest:
                 "user_first_name": "Jean",
                 "user_last_name": "Passedemeyeur",
                 "user_phone": user.phoneNumber,
-                "venue_address": "1 boulevard Poissonnière",
-                "venue_department_code": "75",
+                "venue_address": offer.venue.offererAddress.address.street,
+                "venue_department_code": offer.venue.offererAddress.address.departmentCode,
                 "venue_id": offer.venue.id,
                 "venue_name": offer.venue.name,
             }
@@ -306,8 +306,8 @@ class BookEventTicketTest:
                 "user_first_name": "Jean",
                 "user_last_name": "Passedemeyeur",
                 "user_phone": user.phoneNumber,
-                "venue_address": "1 boulevard Poissonnière",
-                "venue_department_code": "75",
+                "venue_address": offer.venue.offererAddress.address.street,
+                "venue_department_code": offer.venue.offererAddress.address.departmentCode,
                 "venue_id": offer.venue.id,
                 "venue_name": offer.venue.name,
             }
@@ -457,9 +457,12 @@ class BookEventTicketTest:
             user,
         )
         external_call_body = json.loads(requests_post.call_args_list[0].kwargs["json"])
-        assert external_call_body["venue_address"] == offer_without_address.venue.street
+        assert external_call_body["venue_address"] == offer_without_address.venue.offererAddress.address.street
         assert external_call_body["venue_name"] == offer_without_address.venue.name
-        assert external_call_body["venue_department_code"] == offer_without_address.venue.departementCode
+        assert (
+            external_call_body["venue_department_code"]
+            == offer_without_address.venue.offererAddress.address.departmentCode
+        )
 
         book_event_ticket(
             booking_of_the_offer_with_adress,
@@ -660,8 +663,8 @@ class SendBookingNotificationToExternalServiceTest:
         assert payload.user_first_name == "Jean"
         assert payload.user_last_name == "Potte"
         assert payload.user_phone == user.phoneNumber
-        assert payload.venue_address == venue.street
-        assert payload.venue_department_code == venue.departementCode
+        assert payload.venue_address == venue.offererAddress.address.street
+        assert payload.venue_department_code == venue.offererAddress.address.departmentCode
         assert payload.venue_id == venue.id
         assert payload.venue_name == venue.name
         assert payload.action == BookingAction.BOOK

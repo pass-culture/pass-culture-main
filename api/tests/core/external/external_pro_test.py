@@ -119,10 +119,10 @@ def test_update_external_pro_user_attributes(
     venue1 = offerers_factories.VenueFactory(
         managingOfferer=offerer1,
         name="Cinéma de la plage",
-        street="Rue des étoiles",
-        departementCode="06",
-        postalCode="06590",
-        city="Théoule-sur-mer",
+        offererAddress__address__street="Rue des étoiles",
+        offererAddress__address__departmentCode="06",
+        offererAddress__address__postalCode="06590",
+        offererAddress__address__city="Théoule-sur-mer",
         bookingEmail=email,
         siret="11122233300001",
         isPermanent=create_permanent,
@@ -137,10 +137,10 @@ def test_update_external_pro_user_attributes(
     venue1b = offerers_factories.VenueFactory(
         managingOfferer=offerer1,
         name="Théâtre de la plage",
-        street="Rue des molières",
-        departementCode="06",
-        postalCode="06590",
-        city="Théoule-sur-mer",
+        offererAddress__address__street="Rue des molières",
+        offererAddress__address__departmentCode="06",
+        offererAddress__address__postalCode="06590",
+        offererAddress__address__city="Théoule-sur-mer",
         bookingEmail=email,
         siret="11122233300002",
         isPermanent=create_permanent,
@@ -186,10 +186,10 @@ def test_update_external_pro_user_attributes(
     venue3 = offerers_factories.VenueFactory(
         managingOfferer=offerer3,
         name="Festival de la mer",
-        street="Promenade de l'ire landaise",
-        departementCode="83",
-        postalCode="83700",
-        city="Saint-Raphaël",
+        offererAddress__address__street="Promenade de l'ire landaise",
+        offererAddress__address__departmentCode="83",
+        offererAddress__address__postalCode="83700",
+        offererAddress__address__city="Saint-Raphaël",
         bookingEmail=email,
         siret="77789988800001",
         isPermanent=False,
@@ -222,10 +222,10 @@ def test_update_external_pro_user_attributes(
     venue4 = offerers_factories.VenueFactory(
         managingOfferer=offerer4,
         name="Librairie du port",
-        street="Rue du phare à éon",
-        departementCode="13",
-        postalCode="13260",
-        city="Cassis",
+        offererAddress__address__street="Rue du phare à éon",
+        offererAddress__address__departmentCode="13",
+        offererAddress__address__postalCode="13260",
+        offererAddress__address__city="Cassis",
         bookingEmail="librairie@example.net",
         siret="00100200300001",
         isPermanent=create_permanent,
@@ -263,10 +263,10 @@ def test_update_external_pro_user_attributes(
     offerers_factories.VenueFactory(
         managingOfferer=inactive_offerer,
         name="Salle de concert des calanques",
-        street="Rue des myrtilles",
-        departementCode="13",  # different from others
-        postalCode="13260",
-        city="Cassis",
+        offererAddress__address__street="Rue des myrtilles",
+        offererAddress__address__departmentCode="13",  # different from others
+        offererAddress__address__postalCode="13260",
+        offererAddress__address__city="Cassis",
         bookingEmail=email,
         siret="99999999900009",
         isPermanent=create_permanent,
@@ -390,8 +390,8 @@ def test_update_external_pro_booking_email_attributes():
     venue = offerers_factories.VenueFactory(
         managingOfferer=offerer,
         name="Musée de la châtaigne",
-        departementCode="06",
-        postalCode="06420",
+        offererAddress__address__departmentCode="06",
+        offererAddress__address__postalCode="06420",
         bookingEmail=email,
         siret="12345678900001",
         isPermanent=True,
@@ -412,8 +412,8 @@ def test_update_external_pro_booking_email_attributes():
     assert attributes.venues_names == {venue.name}
     assert attributes.venues_types == {venue.venueTypeCode.name}
     assert attributes.venues_labels == set()
-    assert attributes.departement_code == {venue.departementCode}
-    assert attributes.postal_code == {venue.postalCode}
+    assert attributes.departement_code == {venue.offererAddress.address.departmentCode}
+    assert attributes.postal_code == {venue.offererAddress.address.postalCode}
 
     assert attributes.user_id is None
     assert attributes.first_name is None
@@ -437,8 +437,8 @@ def test_update_external_pro_booking_email_attributes_for_permanent_venue_with_b
     offerers_factories.VenueFactory(
         managingOfferer=offerer,
         name="Musée de la châtaigne",
-        departementCode="06",
-        postalCode="06420",
+        offererAddress__address__departmentCode="06",
+        offererAddress__address__postalCode="06420",
         bookingEmail=email,
         siret="12345678900001",
         isPermanent=True,
@@ -458,8 +458,8 @@ def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_wi
     offerers_factories.VenueFactory(
         managingOfferer=offerer,
         name="Musée de la châtaigne",
-        departementCode="06",
-        postalCode="06420",
+        offererAddress__address__departmentCode="06",
+        offererAddress__address__postalCode="06420",
         bookingEmail=email,
         siret="12345678900001",
         isPermanent=False,
@@ -479,8 +479,8 @@ def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_wi
     offerers_factories.VenueFactory(
         managingOfferer=offerer,
         name="Musée de la châtaigne",
-        departementCode="06",
-        postalCode="06420",
+        offererAddress__address__departmentCode="06",
+        offererAddress__address__postalCode="06420",
         bookingEmail=email,
         siret="12345678900001",
         isPermanent=False,
