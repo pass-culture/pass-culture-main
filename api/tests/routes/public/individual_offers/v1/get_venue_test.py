@@ -2,7 +2,6 @@ import pytest
 
 from pcapi.utils.siren import SIRET_OR_RIDET_RE
 
-from tests.conftest import TestClient
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 
@@ -12,40 +11,36 @@ class GetVenueTest(PublicAPIVenueEndpointHelper):
     endpoint_method = "get"
     default_path_params = {"siret": 2}
 
-    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
+    def test_should_raise_404_because_has_no_access_to_venue(self):
         plain_api_key, _ = self.setup_provider()
         venue = self.setup_venue()
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(siret=venue.siret))
+        response = self.make_request(plain_api_key, path_params={"siret": venue.siret})
 
         assert response.status_code == 404
         assert response.json == {"global": "Venue cannot be found"}
 
-    def test_should_raise_404_because_venue_provider_is_inactive(self, client):
+    def test_should_raise_404_because_venue_provider_is_inactive(self):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
 
-        response = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url.format(siret=venue_provider.venue.siret)
-        )
+        response = self.make_request(plain_api_key, path_params={"siret": venue_provider.venue.siret})
 
         assert response.status_code == 404
         assert response.json == {"global": "Venue cannot be found"}
 
     @pytest.mark.parametrize("invalid_siret", ["000000034000091", "0000000340000", "coucou"])
-    def test_should_raise_400_because_siret_is_invalid(self, client: TestClient, invalid_siret: str):
+    def test_should_raise_400_because_siret_is_invalid(self, invalid_siret: str):
         plain_api_key, _ = self.setup_provider()
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(siret=invalid_siret))
+        response = self.make_request(plain_api_key, path_params={"siret": invalid_siret})
 
         assert response.status_code == 400
         assert response.json == {"siret": [f'string does not match regex "{SIRET_OR_RIDET_RE}"']}
 
-    def test_should_return_venue(self, client: TestClient):
+    def test_should_return_venue(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url.format(siret=venue_provider.venue.siret)
-        )
+        response = self.make_request(plain_api_key, path_params={"siret": venue_provider.venue.siret})
 
         assert response.status_code == 200
         assert response.json == {

@@ -1,15 +1,12 @@
 import contextlib
-import typing
 import uuid
 
 import pytest
+from werkzeug.test import TestResponse
 
 from pcapi.core import testing
-from pcapi.core.categories import subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offers import factories as offers_factories
-from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
@@ -20,10 +17,15 @@ from tests.conftest import TestClient
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+@pytest.mark.usefixtures("client")
 class PublicAPIEndpointBaseHelper:
     """
     For Public API endpoints that require authentication
     """
+
+    @pytest.fixture(autouse=True)
+    def _setup(self, request):
+        self.client: TestClient = request.getfixturevalue("client")
 
     @property
     def endpoint_url(self):
@@ -46,17 +48,46 @@ class PublicAPIEndpointBaseHelper:
         """
         return {}
 
+    def make_request(
+        self,
+        plain_api_key: str | None = None,
+        path_params: dict | None = None,
+        query_params: dict | None = None,
+        json_body: dict | None = None,
+        form_body: dict | None = None,
+    ) -> TestResponse:
+        """
+        Make request to the endpoint defined at class level thanks to the `endpoint_method` & `endpoint_url` properties
+        """
+        client_method = getattr(self.client, self.endpoint_method)
+
+        if plain_api_key is not None:
+            self.client.with_explicit_token(plain_api_key)
+
+        inputs = {}
+        url = self.endpoint_url
+        path_params = path_params or self.default_path_params
+
+        if path_params:
+            url = url.format(**path_params)
+
+        if query_params is not None:
+            inputs["params"] = query_params
+
+        if json_body is not None:
+            inputs["json"] = json_body
+
+        if form_body is not None:
+            inputs["form"] = form_body
+
+        return client_method(url, **inputs)
+
     def test_should_raise_401_because_not_authenticated(self, client: TestClient):
         """
         Default test ensuring the API call is authenticated before proceeding
         """
-        client_method = getattr(client, self.endpoint_method)
-        url = self.endpoint_url
-
-        if self.default_path_params:
-            url = url.format(**self.default_path_params)
         with testing.assert_num_queries(0):
-            response = client_method(url)
+            response = self.make_request()
             assert response.status_code == 401
 
         assert response.json == {"auth": "API key required"}
@@ -67,17 +98,10 @@ class PublicAPIEndpointBaseHelper:
         """
         Default test ensuring the API call is authenticated and that the API key authenticates a provider
         """
-        plain_api_key = self.setup_old_api_key()
-        client_method = getattr(client.with_explicit_token(plain_api_key), self.endpoint_method)
-        url = self.endpoint_url
-
-        if self.default_path_params:
-            url = url.format(**self.default_path_params)
-
         # TODO: (tcoudray-pass, 23/06/25) Restore `testing.assert_num_queries` when all public API endpoints use `@atomic`
-        response = client_method(url)
-        assert response.status_code == 401
+        response = self.make_request(plain_api_key=self.setup_old_api_key())
 
+        assert response.status_code == 401
         assert response.json == {"auth": "Deprecated API key. Please contact provider support to get a new API key"}
 
     def _setup_api_key(self, offerer, provider=None) -> str:
@@ -205,23 +229,6 @@ class PublicAPIRestrictedEnvEndpointHelper(PublicAPIVenueEndpointHelper):
 
     def _format_unexpected_json_error(self, response, key, expected_value):
         return f"expected: '{key}: {expected_value}', got: '{key}: {response.json.get(key)}'"
-
-
-class ProductEndpointHelper:
-    @staticmethod
-    def create_base_product(
-        venue: offerers_models.Venue, provider: providers_models.Provider | None = None, **extra: typing.Any
-    ) -> offers_models.Offer:
-        base_kwargs = {
-            "venue": venue,
-            "lastProviderId": provider and provider.id,
-            "subcategoryId": subcategories.LIVRE_PAPIER.id,
-            "description": "Un livre de contrepèterie",
-            "name": "Vieux motard que jamais",
-            "ean": "1234567890123",
-        }
-
-        return offers_factories.ThingOfferFactory(**{**base_kwargs, **extra})
 
 
 @contextlib.contextmanager

@@ -21,7 +21,6 @@ from pcapi.utils import date as date_utils
 from pcapi.utils import human_ids
 
 import tests
-from tests.conftest import TestClient
 from tests.routes import image_data
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
@@ -51,29 +50,24 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "hasTicket": False,
         }
 
-    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
+    def test_should_raise_404_because_has_no_access_to_venue(self):
         plain_api_key, _ = self.setup_provider()
         venue = self.setup_venue()
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url, json=self._get_base_payload(venue_id=venue.id)
-        )
+
+        response = self.make_request(plain_api_key, json_body=self._get_base_payload(venue_id=venue.id))
         assert response.status_code == 404
 
-    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
+    def test_should_raise_404_because_venue_provider_is_inactive(self):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url, json=self._get_base_payload(venue_id=venue_provider.venue.id)
-        )
+        response = self.make_request(plain_api_key, json_body=self._get_base_payload(venue_id=venue_provider.venue.id))
+
         assert response.status_code == 404
 
     @time_machine.travel(now_datetime_with_tz, tick=False)
-    def test_event_minimal_body(self, client):
+    def test_event_minimal_body(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json=self._get_base_payload(venue_provider.venueId),
-        )
+        response = self.make_request(plain_api_key, json_body=self._get_base_payload(venue_id=venue_provider.venue.id))
 
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
@@ -98,7 +92,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.withdrawalType is None
         assert created_offer.withdrawalDelay is None
 
-    def test_event_with_deprecated_music_type_triggers_warning_log(self, client, caplog):
+    def test_event_with_deprecated_music_type_triggers_warning_log(self, caplog):
         # TODO(jbaudet-pass): remove test once the deprecated enum
         # music type is not allowed anymore
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -108,12 +102,12 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         payload["bookingContact"] = "booking@test.com"
 
         with caplog.at_level(logging.INFO):
-            response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+            response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 200
         assert next(rec for rec in caplog.records if rec.msg == "offer: using old music type")
 
-    def test_event_with_new_and_expected_music_type_does_not_trigger_warning_log(self, client, caplog):
+    def test_event_with_new_and_expected_music_type_does_not_trigger_warning_log(self, caplog):
         # TODO(jbaudet-pass): remove test once the deprecated enum
         # music type is not allowed anymore
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -123,19 +117,19 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         payload["bookingContact"] = "booking@test.com"
 
         with caplog.at_level(logging.INFO):
-            response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+            response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 200
         assert not [rec for rec in caplog.records if rec.msg == "offer: using old music type"]
 
     @time_machine.travel(now_datetime_with_tz, tick=False)
-    def test_future_event(self, client):
+    def test_future_event(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         payload = self._get_base_payload(venue_provider.venueId)
         publication_date = datetime.utcnow().replace(minute=0, second=0) + timedelta(days=30)
         payload["publicationDate"] = publication_date.isoformat()
-        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
@@ -173,14 +167,14 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         ],
     )
     def test_publication_date_with_and_without_tz(
-        self, client, request_publication_date, address_tz, expected_publication_date, response_publication_date
+        self, request_publication_date, address_tz, expected_publication_date, response_publication_date
     ):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue_provider.venue.offererAddress.address.timezone = address_tz
 
         payload = self._get_base_payload(venue_provider.venueId)
         payload["publicationDate"] = request_publication_date
-        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 200
         assert response.json["publicationDatetime"] == response_publication_date
@@ -212,14 +206,14 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         ],
     )
     def test_publication_datetime_param(
-        self, client, partial_request_json, expected_publication_datetime, expected_response_publication_datetime
+        self, partial_request_json, expected_publication_datetime, expected_response_publication_datetime
     ):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         payload = self._get_base_payload(venue_provider.venueId)
         payload.update(**partial_request_json)
 
-        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 200
         assert response.json["publicationDatetime"] == expected_response_publication_datetime
@@ -243,7 +237,6 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
     )
     def test_booking_allowed_datetime_param(
         self,
-        client,
         partial_request_json,
         expected_booking_allowed_datetime,
         expected_response_booking_allowed_datetime,
@@ -253,7 +246,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         payload = self._get_base_payload(venue_provider.venueId)
         payload.update(**partial_request_json)
 
-        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 200
         assert response.json["bookingAllowedDatetime"] == expected_response_booking_allowed_datetime
@@ -262,43 +255,42 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.bookingAllowedDatetime == expected_booking_allowed_datetime
 
     @time_machine.travel(datetime(2025, 6, 25, 12, 30, tzinfo=timezone.utc), tick=False)
-    def test_event_creation_with_full_body(self, client, clear_tests_assets_bucket):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+    def test_event_creation_with_full_body(self, clear_tests_assets_bucket):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "enableDoubleBookings": True,
-                "bookingContact": "contact@example.com",
-                "bookingEmail": "nicoj@example.com",
-                "categoryRelatedFields": {
-                    "author": "Ray Charles",
-                    "category": "CONCERT",
-                    "musicType": "ELECTRO-HOUSE",
-                    "performer": "Nicolas Jaar",
-                    "stageDirector": "Alfred",  # field not applicable
-                },
-                "description": "Space is only noise if you can see",
-                "eventDuration": 120,
-                "accessibility": {
-                    "audioDisabilityCompliant": False,
-                    "mentalDisabilityCompliant": True,
-                    "motorDisabilityCompliant": True,
-                    "visualDisabilityCompliant": True,
-                },
-                "externalTicketOfficeUrl": "https://maposaic.com",
-                "image": {
-                    "credit": "Jean-Crédit Photo",
-                    "file": image_data.GOOD_IMAGE,
-                },
-                "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
-                "location": {"type": "physical", "venueId": venue_provider.venueId},
-                "name": "Nicolas Jaar dans ton salon",
-                "priceCategories": [{"price": 30000, "label": "triangle or", "idAtProvider": "gold_triangle"}],
-                "hasTicket": True,
-                "idAtProvider": "T'as un bel id tu sais",
+        payload = {
+            "enableDoubleBookings": True,
+            "bookingContact": "contact@example.com",
+            "bookingEmail": "nicoj@example.com",
+            "categoryRelatedFields": {
+                "author": "Ray Charles",
+                "category": "CONCERT",
+                "musicType": "ELECTRO-HOUSE",
+                "performer": "Nicolas Jaar",
+                "stageDirector": "Alfred",  # field not applicable
             },
-        )
+            "description": "Space is only noise if you can see",
+            "eventDuration": 120,
+            "accessibility": {
+                "audioDisabilityCompliant": False,
+                "mentalDisabilityCompliant": True,
+                "motorDisabilityCompliant": True,
+                "visualDisabilityCompliant": True,
+            },
+            "externalTicketOfficeUrl": "https://maposaic.com",
+            "image": {
+                "credit": "Jean-Crédit Photo",
+                "file": image_data.GOOD_IMAGE,
+            },
+            "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
+            "location": {"type": "physical", "venueId": venue_provider.venueId},
+            "name": "Nicolas Jaar dans ton salon",
+            "priceCategories": [{"price": 30000, "label": "triangle or", "idAtProvider": "gold_triangle"}],
+            "hasTicket": True,
+            "idAtProvider": "T'as un bel id tu sais",
+        }
+
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
@@ -387,30 +379,29 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "hasTicket": True,
         }
 
-    def test_event_creation_with_titelive_type(self, client, clear_tests_assets_bucket):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "bookingContact": "contact@example.com",
-                "categoryRelatedFields": {
-                    "author": "Ray Charles",
-                    "category": "CONCERT",
-                    "musicType": "MUSIQUE_CLASSIQUE",
-                    "performer": "Nicolas Jaar",
-                },
-                "accessibility": {
-                    "audioDisabilityCompliant": False,
-                    "mentalDisabilityCompliant": True,
-                    "motorDisabilityCompliant": True,
-                    "visualDisabilityCompliant": True,
-                },
-                "location": {"type": "physical", "venueId": venue_provider.venueId},
-                "name": "Nicolas Jaar dans ton salon",
-                "priceCategories": [{"price": 0, "label": "triangle or"}],
-                "hasTicket": False,
+    def test_event_creation_with_titelive_type(self, clear_tests_assets_bucket):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        payload = {
+            "bookingContact": "contact@example.com",
+            "categoryRelatedFields": {
+                "author": "Ray Charles",
+                "category": "CONCERT",
+                "musicType": "MUSIQUE_CLASSIQUE",
+                "performer": "Nicolas Jaar",
             },
-        )
+            "accessibility": {
+                "audioDisabilityCompliant": False,
+                "mentalDisabilityCompliant": True,
+                "motorDisabilityCompliant": True,
+                "visualDisabilityCompliant": True,
+            },
+            "location": {"type": "physical", "venueId": venue_provider.venueId},
+            "name": "Nicolas Jaar dans ton salon",
+            "priceCategories": [{"price": 0, "label": "triangle or"}],
+            "hasTicket": False,
+        }
+        response = self.make_request(plain_api_key, json_body=payload)
+
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.subcategoryId == "CONCERT"
@@ -428,36 +419,34 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "performer": "Nicolas Jaar",
         }
 
-    def test_event_creation_with_titelive_type_with_active_serialization(self, client, clear_tests_assets_bucket):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+    def test_event_creation_with_titelive_type_with_active_serialization(self, clear_tests_assets_bucket):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "bookingContact": "contact@example.com",
-                "bookingEmail": "nicoj@example.com",
-                "categoryRelatedFields": {
-                    "author": "Ray Charles",
-                    "category": "CONCERT",
-                    "musicType": "JAZZ-BLUES",
-                    "performer": "Nicolas Jaar",
-                    "stageDirector": "Alfred",  # field not applicable
-                },
-                "eventDuration": 120,
-                "accessibility": {
-                    "audioDisabilityCompliant": False,
-                    "mentalDisabilityCompliant": True,
-                    "motorDisabilityCompliant": True,
-                    "visualDisabilityCompliant": True,
-                },
-                "externalTicketOfficeUrl": "https://maposaic.com",
-                "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
-                "location": {"type": "physical", "venueId": venue_provider.venueId},
-                "name": "Nicolas Jaar dans ton salon",
-                "priceCategories": [{"price": 30000, "label": "triangle or"}],
-                "hasTicket": True,
+        payload = {
+            "bookingContact": "contact@example.com",
+            "bookingEmail": "nicoj@example.com",
+            "categoryRelatedFields": {
+                "author": "Ray Charles",
+                "category": "CONCERT",
+                "musicType": "JAZZ-BLUES",
+                "performer": "Nicolas Jaar",
+                "stageDirector": "Alfred",  # field not applicable
             },
-        )
+            "eventDuration": 120,
+            "accessibility": {
+                "audioDisabilityCompliant": False,
+                "mentalDisabilityCompliant": True,
+                "motorDisabilityCompliant": True,
+                "visualDisabilityCompliant": True,
+            },
+            "externalTicketOfficeUrl": "https://maposaic.com",
+            "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
+            "location": {"type": "physical", "venueId": venue_provider.venueId},
+            "name": "Nicolas Jaar dans ton salon",
+            "priceCategories": [{"price": 30000, "label": "triangle or"}],
+            "hasTicket": True,
+        }
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
@@ -481,20 +470,19 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         }
 
     @pytest.mark.usefixtures("db_session")
-    def test_other_music_type_serialization(self, client):
+    def test_other_music_type_serialization(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "categoryRelatedFields": {"category": "CONCERT", "musicType": "OTHER"},
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue_provider.venueId},
-                "name": "Le champ des possibles",
-                "hasTicket": False,
-                "bookingContact": "booking@conta.ct",
-            },
-        )
+        payload = {
+            "categoryRelatedFields": {"category": "CONCERT", "musicType": "OTHER"},
+            "accessibility": ACCESSIBILITY_FIELDS,
+            "location": {"type": "physical", "venueId": venue_provider.venueId},
+            "name": "Le champ des possibles",
+            "hasTicket": False,
+            "bookingContact": "booking@conta.ct",
+        }
+
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
@@ -507,7 +495,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "performer": None,
         }
 
-    def test_event_with_custom_address(self, client):
+    def test_event_with_custom_address(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
         payload = self._get_base_payload(venue_provider.venueId)
         address = geography_factories.AddressFactory()
@@ -523,14 +511,14 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "addressLabel": "My beautiful address no one knows about",
         }
 
-        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+        response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 200
         assert response.json["location"]["addressId"] == address.id
         assert response.json["location"]["addressLabel"] == "My beautiful address no one knows about"
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.offererAddress == offerer_address
 
-    def test_event_with_custom_address_should_create_offerer_address(self, client):
+    def test_event_with_custom_address_should_create_offerer_address(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
         payload = self._get_base_payload(venue_provider.venueId)
         address = geography_factories.AddressFactory()
@@ -550,7 +538,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "addressId": address.id,
             "addressLabel": "My beautiful address no one knows about",
         }
-        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+        response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
         offerer_address = (
@@ -563,7 +551,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         )
         assert created_offer.offererAddress == offerer_address
 
-    def test_event_with_custom_address_should_raiser_404_because_address_does_not_exist(self, client):
+    def test_event_with_custom_address_should_raiser_404_because_address_does_not_exist(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
         payload = self._get_base_payload(venue_provider.venueId)
         address = geography_factories.AddressFactory()
@@ -574,63 +562,61 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "venueId": venue_provider.venueId,
             "addressId": not_existing_address_id,
         }
-        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+        response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 404
         assert response.json == {
             "location.AddressLocation.addressId": [f"There is no address with id {not_existing_address_id}"]
         }
 
-    def test_event_without_ticket(self, client):
+    def test_event_without_ticket(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue_provider.venueId},
-                "name": "Le champ des possibles",
-                "hasTicket": False,
-                "bookingContact": "booking@conta.ct",
-            },
-        )
+        payload = {
+            "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
+            "accessibility": ACCESSIBILITY_FIELDS,
+            "location": {"type": "physical", "venueId": venue_provider.venueId},
+            "name": "Le champ des possibles",
+            "hasTicket": False,
+            "bookingContact": "booking@conta.ct",
+        }
+
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.NO_TICKET
 
-    def test_event_with_has_ticket_to_true_and_ticketing_service_at_provider_level(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+    def test_event_with_has_ticket_to_true_and_ticketing_service_at_provider_level(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue_provider.venueId},
-                "name": "Le champ des possibles",
-                "hasTicket": True,
-                "bookingContact": "booking@conta.ct",
-            },
-        )
+        payload = {
+            "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
+            "accessibility": ACCESSIBILITY_FIELDS,
+            "location": {"type": "physical", "venueId": venue_provider.venueId},
+            "name": "Le champ des possibles",
+            "hasTicket": True,
+            "bookingContact": "booking@conta.ct",
+        }
+
+        response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
 
-    def test_event_with_has_ticket_to_true_and_ticketing_service_at_venue_level(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+    def test_event_with_has_ticket_to_true_and_ticketing_service_at_venue_level(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue_provider.venueId},
-                "name": "Le champ des possibles",
-                "hasTicket": True,
-                "bookingContact": "booking@conta.ct",
-            },
-        )
+        payload = {
+            "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
+            "accessibility": ACCESSIBILITY_FIELDS,
+            "location": {"type": "physical", "venueId": venue_provider.venueId},
+            "name": "Le champ des possibles",
+            "hasTicket": True,
+            "bookingContact": "booking@conta.ct",
+        }
+
+        response = self.make_request(plain_api_key, json_body=payload)
+
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
@@ -760,7 +746,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             ({"tkilol": ""}, {"tkilol": ["extra fields not permitted"]}),
         ],
     )
-    def test_incorrect_payload_should_return_400(self, client, partial_request_json, expected_response_json):
+    def test_incorrect_payload_should_return_400(self, partial_request_json, expected_response_json):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         existing_offer = offers_factories.OfferFactory(venue=venue_provider.venue, idAtProvider="c'est déjà pris :'(")
 
@@ -768,7 +754,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
 
         payload.update(**partial_request_json)
 
-        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 400
         assert response.json == expected_response_json
@@ -776,27 +762,26 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert db.session.query(offers_models.Offer).filter(offers_models.Offer.id != existing_offer.id).first() is None
         assert db.session.query(offers_models.Stock).first() is None
 
-    def test_error_when_event_with_has_ticket_to_true_and_no_ticketing_service_set(self, client):
+    def test_error_when_event_with_has_ticket_to_true_and_no_ticketing_service_set(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue_provider.venueId},
-                "name": "Le champ des possibles",
-                "hasTicket": True,
-                "bookingContact": "booking@conta.ct",
-            },
-        )
+        payload = {
+            "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
+            "accessibility": ACCESSIBILITY_FIELDS,
+            "location": {"type": "physical", "venueId": venue_provider.venueId},
+            "name": "Le champ des possibles",
+            "hasTicket": True,
+            "bookingContact": "booking@conta.ct",
+        }
+
+        response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 400
         assert response.json == {
             "global": "You cannot create an event with `has_ticket=true` because you dont have a ticketing service enabled (neither at provider level nor at venue level)."
         }
 
-    def test_should_not_raise_if_id_at_provider_is_none(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+    def test_should_not_raise_if_id_at_provider_is_none(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         payload = self._get_base_payload(venue_provider.venueId)
         payload["priceCategories"] = [
@@ -804,8 +789,5 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             {"price": 15000, "label": "rond d'argent", "idAtProvider": None},
         ]
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json=payload,
-        )
+        response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 200

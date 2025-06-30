@@ -27,7 +27,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
     num_queries_success += 1  # fetch price categories
     num_queries_success += 1  # FF WIP_REFACTO_FUTURE_OFFER
 
-    def test_should_raise_404_because_has_no_access_to_venue(self, client):
+    def test_should_raise_404_because_has_no_access_to_venue(self):
         plain_api_key, _ = self.setup_provider()
         venue = self.setup_venue()
         venue_id = venue.id
@@ -40,12 +40,10 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
         )
         ean = product_offer.ean
         with testing.assert_num_queries(self.num_queries_404):
-            response = client.with_explicit_token(plain_api_key).get(
-                f"{self.endpoint_url}?eans={ean}&venueId={venue_id}"
-            )
+            response = self.make_request(plain_api_key, query_params={"eans": ean, "venueId": venue_id})
             assert response.status_code == 404
 
-    def test_should_raise_404_because_venue_provider_is_inactive(self, client):
+    def test_should_raise_404_because_venue_provider_is_inactive(self):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
         venue = venue_provider.venue
         venue_id = venue.id
@@ -58,13 +56,11 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
         )
         ean = product_offer.ean
         with testing.assert_num_queries(self.num_queries_404):
-            response = client.with_explicit_token(plain_api_key).get(
-                f"{self.endpoint_url}?eans={ean}&venueId={venue_id}"
-            )
+            response = self.make_request(plain_api_key, query_params={"eans": ean, "venueId": venue_id})
             assert response.status_code == 404
 
     @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
-    def test_valid_ean(self, client):
+    def test_valid_ean(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
         venue_id = venue.id
@@ -77,9 +73,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
         )
         ean = product_offer.ean
         with testing.assert_num_queries(self.num_queries_success):
-            response = client.with_explicit_token(plain_api_key).get(
-                f"/public/offers/v1/products/ean?eans={ean}&venueId={venue_id}"
-            )
+            response = self.make_request(plain_api_key, query_params={"eans": ean, "venueId": venue_id})
             assert response.status_code == 200
 
         assert response.json == {
@@ -115,7 +109,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
         }
 
     @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
-    def test_multiple_valid_eans(self, client):
+    def test_multiple_valid_eans(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
         venue_id = venue.id
@@ -148,8 +142,8 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
         ean_3 = product_offer_3.ean
 
         with testing.assert_num_queries(self.num_queries_success):
-            response = client.with_explicit_token(plain_api_key).get(
-                f"/public/offers/v1/products/ean?eans={ean_1},{ean_2},{ean_3}&venueId={venue_id}"
+            response = self.make_request(
+                plain_api_key, query_params={"eans": f"{ean_1},{ean_2},{ean_3}", "venueId": venue_id}
             )
             assert response.status_code == 200
 
@@ -239,7 +233,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
             ]
         }
 
-    def test_get_newest_ean_product(self, client):
+    def test_get_newest_ean_product(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
         venue_id = venue.id
@@ -248,54 +242,36 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
         ean = newest_product_offer.ean
 
         with testing.assert_num_queries(self.num_queries_success):
-            response = client.with_explicit_token(plain_api_key).get(
-                f"/public/offers/v1/products/ean?eans={ean}&venueId={venue_id}"
-            )
+            response = self.make_request(plain_api_key, query_params={"eans": ean, "venueId": venue_id})
             assert response.status_code == 200
 
         assert response.json["products"][0]["id"] == newest_product_offer.id
 
-    def test_400_when_wrong_ean_format(self, client):
+    @pytest.mark.parametrize("invalid_eans", ["123456789", "1234567891234,0123456789123,123455678,0987654321123"])
+    def test_400_when_wrong_ean_format(self, invalid_eans):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
         venue_id = venue.id
 
         with testing.assert_num_queries(self.num_queries_400):
-            response = client.with_explicit_token(plain_api_key).get(
-                f"/public/offers/v1/products/ean?eans=123456789&venueId={venue_id}"
-            )
-
+            response = self.make_request(plain_api_key, query_params={"eans": invalid_eans, "venueId": venue_id})
             assert response.status_code == 400
 
         assert response.json == {"eans": ["Only 13 characters EAN are accepted"]}
 
-    def test_400_when_one_wrong_ean_format_in_list(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        venue = venue_provider.venue
-        venue_id = venue.id
-
-        with testing.assert_num_queries(self.num_queries_400):
-            response = client.with_explicit_token(plain_api_key).get(
-                f"/public/offers/v1/products/ean?eans=1234567891234,0123456789123,123455678,0987654321123&venueId={venue_id}"
-            )
-            assert response.status_code == 400
-
-        assert response.json == {"eans": ["Only 13 characters EAN are accepted"]}
-
-    def test_400_when_missing_venue_id(self, client):
+    def test_400_when_missing_venue_id(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
         product_offer = offers_factories.ThingOfferFactory(venue=venue, ean="1234567891234")
         ean = product_offer.ean
 
         with testing.assert_num_queries(self.num_queries_400):
-            response = client.with_explicit_token(plain_api_key).get(f"/public/offers/v1/products/ean?eans={ean}")
-
+            response = self.make_request(plain_api_key, query_params={"eans": ean})
             assert response.status_code == 400
 
         assert response.json == {"venueId": ["field required"]}
 
-    def test_no_404_when_ean_not_found(self, client):
+    def test_no_404_when_ean_not_found(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
         venue_id = venue.id
@@ -306,15 +282,13 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
         )
 
         with testing.assert_num_queries(self.num_queries_404):  # + fetch offer - rollback atomic
-            response = client.with_explicit_token(plain_api_key).get(
-                f"/public/offers/v1/products/ean?eans=1234567890123&venueId={venue_id}"
-            )
+            response = self.make_request(plain_api_key, query_params={"eans": "1234567890123", "venueId": venue_id})
             assert response.status_code == 200
 
         assert response.json == {"products": []}
 
     @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
-    def test_200_when_one_ean_in_list_not_found(self, client):
+    def test_200_when_one_ean_in_list_not_found(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
         venue_id = venue.id
@@ -329,8 +303,8 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
         ean = product_offer.ean
 
         with testing.assert_num_queries(self.num_queries_success):
-            response = client.with_explicit_token(plain_api_key).get(
-                f"/public/offers/v1/products/ean?eans={ean},0123456789123&venueId={venue_id}"
+            response = self.make_request(
+                plain_api_key, query_params={"eans": f"{ean},0123456789123", "venueId": venue_id}
             )
             assert response.status_code == 200
 
@@ -366,7 +340,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
             ]
         }
 
-    def test_200_when_none_disabilities(self, client):
+    def test_200_when_none_disabilities(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
         venue_id = venue.id
@@ -382,9 +356,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
         ean = product_offer.ean
 
         with testing.assert_num_queries(self.num_queries_success):
-            response = client.with_explicit_token(plain_api_key).get(
-                f"/public/offers/v1/products/ean?eans={ean}&venueId={venue_id}"
-            )
+            response = self.make_request(plain_api_key, query_params={"eans": ean, "venueId": venue_id})
             assert response.status_code == 200
 
         assert response.json["products"][0]["accessibility"] == {
@@ -394,7 +366,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
             "visualDisabilityCompliant": None,
         }
 
-    def test_400_when_eans_list_is_empty(self, client):
+    def test_400_when_eans_list_is_empty(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
         venue_id = venue.id
@@ -402,9 +374,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
         offers_factories.OfferFactory(venue=venue)
 
         with testing.assert_num_queries(self.num_queries_400):
-            response = client.with_explicit_token(plain_api_key).get(
-                f"/public/offers/v1/products/ean?venueId={venue_id}"
-            )
+            response = self.make_request(plain_api_key, query_params={"venueId": venue_id})
             assert response.status_code == 400
 
         assert response.json == {"eans": ["field required"]}

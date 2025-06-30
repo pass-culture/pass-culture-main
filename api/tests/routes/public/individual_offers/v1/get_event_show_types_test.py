@@ -15,19 +15,19 @@ class GetShowTypesTest(PublicAPIEndpointBaseHelper):
 
     num_queries = 1  # select api_key, offerer and provider
 
-    def test_returns_all_show_types(self, client):
+    def test_returns_all_show_types(self):
         plain_api_key, _ = self.setup_provider()
         with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+            response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
         assert set(show_type["id"] for show_type in response.json) == set(show.SHOW_SUB_TYPES_BY_SLUG)
 
-    def test_show_type_serialization(self, client):
+    def test_show_type_serialization(self):
         plain_api_key, _ = self.setup_provider()
 
         with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+            response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
         assert all({"id", "label"} == set(show_type_response.keys()) for show_type_response in response.json)

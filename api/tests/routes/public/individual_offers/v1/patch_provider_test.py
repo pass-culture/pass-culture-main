@@ -5,7 +5,6 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 
-from tests.conftest import TestClient
 from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 
 
@@ -16,20 +15,12 @@ class PatchProviderTest(PublicAPIEndpointBaseHelper):
     endpoint_url = "/public/providers/v1/provider"
     endpoint_method = "patch"
 
-    def test_should_raise_401_because_api_key_is_not_linked_to_provider(self, client: TestClient):
-        old_api_key = self.setup_old_api_key()
-        response = client.with_explicit_token(old_api_key).patch(self.endpoint_url)
-        assert response.status_code == 401
-        assert response.json == {"auth": "Deprecated API key. Please contact provider support to get a new API key"}
-
-    def test_should_update_notification_url(self, client):
+    def test_should_update_notification_url(self):
         plain_api_key, provider = self.setup_provider()
         previous_booking_url = provider.bookingExternalUrl
         previous_cancel_url = provider.cancelExternalUrl
 
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url, json={"notificationUrl": "https://notifyMoi.baby"}
-        )
+        response = self.make_request(plain_api_key, json_body={"notificationUrl": "https://notifyMoi.baby"})
 
         assert response.status_code == 200
         assert response.json == {
@@ -45,15 +36,13 @@ class PatchProviderTest(PublicAPIEndpointBaseHelper):
         assert provider.bookingExternalUrl == previous_booking_url
         assert provider.cancelExternalUrl == previous_cancel_url
 
-    def test_should_update_booking_url(self, client):
+    def test_should_update_booking_url(self):
         plain_api_key, provider = self.setup_provider()
 
         previous_cancel_url = provider.cancelExternalUrl
         previous_notification_url = provider.notificationExternalUrl
 
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url, json={"bookingUrl": "https://ohouibook.moi"}
-        )
+        response = self.make_request(plain_api_key, json_body={"bookingUrl": "https://ohouibook.moi"})
 
         assert response.status_code == 200
         assert response.json == {
@@ -69,15 +58,13 @@ class PatchProviderTest(PublicAPIEndpointBaseHelper):
         assert provider.bookingExternalUrl == "https://ohouibook.moi"
         assert provider.cancelExternalUrl == previous_cancel_url
 
-    def test_should_update_cancel_url(self, client):
+    def test_should_update_cancel_url(self):
         plain_api_key, provider = self.setup_provider()
 
         previous_booking_url = provider.bookingExternalUrl
         previous_notification_url = provider.notificationExternalUrl
 
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url, json={"cancelUrl": "https://ohnoncancel.moi/pas"}
-        )
+        response = self.make_request(plain_api_key, json_body={"cancelUrl": "https://ohnoncancel.moi/pas"})
 
         assert response.status_code == 200
         assert response.json == {
@@ -93,13 +80,11 @@ class PatchProviderTest(PublicAPIEndpointBaseHelper):
         assert provider.bookingExternalUrl == previous_booking_url
         assert provider.cancelExternalUrl == "https://ohnoncancel.moi/pas"
 
-    def test_should_unset_ticketing_urls(self, client):
+    def test_should_unset_ticketing_urls(self):
         plain_api_key, provider = self.setup_provider()
         previous_notification_url = provider.notificationExternalUrl
 
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url, json={"cancelUrl": None, "bookingUrl": None}
-        )
+        response = self.make_request(plain_api_key, json_body={"cancelUrl": None, "bookingUrl": None})
 
         assert response.status_code == 200
         assert response.json == {
@@ -115,7 +100,7 @@ class PatchProviderTest(PublicAPIEndpointBaseHelper):
         assert provider.bookingExternalUrl == None
         assert provider.cancelExternalUrl == None
 
-    def test_should_return_400_because_it_is_not_possible_to_unset_ticketing_urls(self, client):
+    def test_should_return_400_because_it_is_not_possible_to_unset_ticketing_urls(self):
         plain_api_key, provider = self.setup_provider()
         previous_booking_url = provider.bookingExternalUrl
         previous_cancel_url = provider.cancelExternalUrl
@@ -127,9 +112,7 @@ class PatchProviderTest(PublicAPIEndpointBaseHelper):
         )
         offers_factories.StockFactory(offer=event_offer)
 
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url, json={"cancelUrl": None, "bookingUrl": None}
-        )
+        response = self.make_request(plain_api_key, json_body={"cancelUrl": None, "bookingUrl": None})
 
         assert response.status_code == 400
         assert response.json == {
@@ -142,14 +125,15 @@ class PatchProviderTest(PublicAPIEndpointBaseHelper):
         assert provider.bookingExternalUrl == previous_booking_url
         assert provider.cancelExternalUrl == previous_cancel_url
 
-    def test_should_return_400_because_of_incoherent_ticketing_urls(self, client):
+    @pytest.mark.parametrize("payload", [{"cancelUrl": None}, {"bookingUrl": None}])
+    def test_should_return_400_because_of_incoherent_ticketing_urls(self, payload):
         plain_api_key, provider = self.setup_provider()
 
         previous_booking_url = provider.bookingExternalUrl
         previous_cancel_url = provider.cancelExternalUrl
         previous_notification_url = provider.notificationExternalUrl
 
-        response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url, json={"cancelUrl": None})
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 400
         assert response.json == {

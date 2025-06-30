@@ -15,10 +15,10 @@ class GetAllTiteliveMusicTypesTest(PublicAPIEndpointBaseHelper):
 
     num_queries = 1  # select api_key, offerer and provider
 
-    def test_returns_all_titelive_music_types(self, client):
+    def test_returns_all_titelive_music_types(self):
         plain_api_key, _ = self.setup_provider()
         with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+            response = self.make_request(plain_api_key=plain_api_key)
             assert response.status_code == 200
 
         assert set(music_type["id"] for music_type in response.json) == set(GTL_ID_BY_TITELIVE_MUSIC_GENRE)
@@ -27,7 +27,7 @@ class GetAllTiteliveMusicTypesTest(PublicAPIEndpointBaseHelper):
         plain_api_key, _ = self.setup_provider()
 
         with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+            response = self.make_request(plain_api_key=plain_api_key)
             assert response.status_code == 200
 
         response = next(music_type for music_type in response.json if music_type["id"] == "VIDEOS_MUSICALES")

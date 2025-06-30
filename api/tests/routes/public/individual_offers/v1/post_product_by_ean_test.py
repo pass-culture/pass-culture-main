@@ -38,57 +38,55 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         return ean, product
 
-    def test_should_raise_404_because_has_no_access_to_venue(self, client):
+    def test_should_raise_404_because_has_no_access_to_venue(self):
         plain_api_key, _ = self.setup_provider()
         venue = self.setup_venue()
         in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {"type": "physical", "venueId": venue.id},
-                "products": [
-                    {
-                        "ean": "1234567890123",
-                        "stock": {
-                            "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
-                            "price": 1234,
-                            "quantity": 3,
-                        },
-                    }
-                ],
-            },
-        )
+        payload = {
+            "location": {"type": "physical", "venueId": venue.id},
+            "products": [
+                {
+                    "ean": "1234567890123",
+                    "stock": {
+                        "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
+                        "price": 1234,
+                        "quantity": 3,
+                    },
+                }
+            ],
+        }
+
+        response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 404
 
-    def test_should_raise_404_because_venue_provider_is_inactive(self, client):
+    def test_should_raise_404_because_venue_provider_is_inactive(self):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
         venue = venue_provider.venue
 
         in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {"type": "physical", "venueId": venue.id},
-                "products": [
-                    {
-                        "ean": "1234567890123",
-                        "stock": {
-                            "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
-                            "price": 1234,
-                            "quantity": 3,
-                        },
-                    }
-                ],
-            },
-        )
+        payload = {
+            "location": {"type": "physical", "venueId": venue.id},
+            "products": [
+                {
+                    "ean": "1234567890123",
+                    "stock": {
+                        "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
+                        "price": 1234,
+                        "quantity": 3,
+                    },
+                }
+            ],
+        }
+
+        response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 404
 
     @time_machine.travel(datetime.datetime(2025, 7, 15), tick=False)
-    def test_valid_ean_with_stock(self, client):
+    def test_valid_ean_with_stock(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
 
@@ -101,31 +99,29 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {"type": "physical", "venueId": venue.id},
-                "products": [
-                    {
-                        "ean": product.ean,
-                        "stock": {
-                            "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
-                            "price": 1234,
-                            "quantity": 3,
-                        },
+        payload = {
+            "location": {"type": "physical", "venueId": venue.id},
+            "products": [
+                {
+                    "ean": product.ean,
+                    "stock": {
+                        "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
+                        "price": 1234,
+                        "quantity": 3,
                     },
-                    {
-                        "ean": unknown_ean,
-                        "stock": {
-                            "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
-                            "price": 1234,
-                            "quantity": 3,
-                        },
+                },
+                {
+                    "ean": unknown_ean,
+                    "stock": {
+                        "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
+                        "price": 1234,
+                        "quantity": 3,
                     },
-                ],
-            },
-        )
+                },
+            ],
+        }
 
+        response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 204
 
         created_offer = db.session.query(offers_models.Offer).one()
@@ -182,7 +178,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             ),
         ],
     )
-    def test_publication_datetime_behavior(self, input_product_stock_dict, expected_publication_datetime, client):
+    def test_publication_datetime_behavior(self, input_product_stock_dict, expected_publication_datetime):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
 
@@ -202,12 +198,8 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             venue=venue,
             lastProvider=venue_provider.provider,
         )
-
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={"location": {"type": "physical", "venueId": venue.id}, "products": [input_product_stock_dict]},
-        )
-
+        payload = {"location": {"type": "physical", "venueId": venue.id}, "products": [input_product_stock_dict]}
+        response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 204
 
         offer_1 = db.session.query(offers_models.Offer).filter_by(ean=input_product_stock_dict["ean"]).one()
@@ -241,9 +233,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             ),
         ],
     )
-    def test_booking_allowed_datetime_behavior(
-        self, input_product_stock_dict, expected_booking_allowed_datetime, client
-    ):
+    def test_booking_allowed_datetime_behavior(self, input_product_stock_dict, expected_booking_allowed_datetime):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
 
@@ -265,17 +255,15 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             bookingAllowedDatetime=datetime.datetime(2025, 8, 15),
         )
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={"location": {"type": "physical", "venueId": venue.id}, "products": [input_product_stock_dict]},
-        )
+        payload = {"location": {"type": "physical", "venueId": venue.id}, "products": [input_product_stock_dict]}
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 204
 
         offer_1 = db.session.query(offers_models.Offer).filter_by(ean=input_product_stock_dict["ean"]).one()
         assert offer_1.bookingAllowedDatetime == expected_booking_allowed_datetime
 
-    def test_update_stock_quantity_with_previous_bookings(self, client):
+    def test_update_stock_quantity_with_previous_bookings(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         product = offers_factories.ThingProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
@@ -287,28 +275,27 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         bookings_factories.BookingFactory(stock=stock, quantity=2, user__deposit__amount=300)
 
         tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {"type": "physical", "venueId": venue_provider.venue.id},
-                "products": [
-                    {
-                        "ean": product.ean,
-                        "stock": {
-                            "bookingLimitDatetime": date_utils.format_into_utc_date(tomorrow),
-                            "price": 1234,
-                            "quantity": 3,
-                        },
-                    }
-                ],
-            },
-        )
+        payload = {
+            "location": {"type": "physical", "venueId": venue_provider.venue.id},
+            "products": [
+                {
+                    "ean": product.ean,
+                    "stock": {
+                        "bookingLimitDatetime": date_utils.format_into_utc_date(tomorrow),
+                        "price": 1234,
+                        "quantity": 3,
+                    },
+                }
+            ],
+        }
+
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 204
         assert stock.quantity == 5
         assert stock.price == decimal.Decimal("12.34")
 
-    def test_update_last_provider_for_existing_offer(self, client):
+    def test_update_last_provider_for_existing_offer(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         old_provider = providers_factories.ProviderFactory()
         product = offers_factories.ThingProductFactory(
@@ -317,18 +304,17 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         offer = offers_factories.ThingOfferFactory(
             product=product, venue=venue_provider.venue, lastProvider=old_provider, isActive=False
         )
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {"type": "physical", "venueId": venue_provider.venue.id},
-                "products": [{"ean": product.ean, "stock": {"price": 1234, "quantity": 0}}],
-            },
-        )
+        payload = {
+            "location": {"type": "physical", "venueId": venue_provider.venue.id},
+            "products": [{"ean": product.ean, "stock": {"price": 1234, "quantity": 0}}],
+        }
+
+        response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 204
         assert offer.lastProvider == venue_provider.provider
         assert offer.isActive == True
 
-    def test_no_new_offer_created_if_ean_exists(self, client):
+    def test_no_new_offer_created_if_ean_exists(self):
         """Test that no new offer is created if the ean exists either
         inside offer.ean
         """
@@ -343,14 +329,12 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             product=product, venue=venue_provider.venue, lastProvider=venue_provider.provider, ean=ean
         )
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {"type": "physical", "venueId": venue_provider.venue.id},
-                "products": [{"ean": ean, "stock": {"price": 1234, "quantity": 2}}],
-            },
-        )
+        payload = {
+            "location": {"type": "physical", "venueId": venue_provider.venue.id},
+            "products": [{"ean": ean, "stock": {"price": 1234, "quantity": 2}}],
+        }
 
+        response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 204
 
         offer = db.session.query(offers_models.Offer).one()
@@ -360,7 +344,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert stock.quantity == 2
         assert stock.price == decimal.Decimal("12.34")
 
-    def test_update_multiple_stocks_with_one_rejected(self, client, caplog):
+    def test_update_multiple_stocks_with_one_rejected(self, caplog):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
 
@@ -383,31 +367,29 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
-        with caplog.at_level(logging.INFO):
-            response = client.with_explicit_token(plain_api_key).post(
-                self.endpoint_url,
-                json={
-                    "location": {"type": "physical", "venueId": venue.id},
-                    "products": [
-                        {
-                            "ean": cd_product.ean,
-                            "stock": {
-                                "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
-                                "price": 1234,
-                                "quantity": 0,
-                            },
-                        },
-                        {
-                            "ean": book_product.ean,
-                            "stock": {
-                                "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
-                                "price": 2345,
-                                "quantity": 25,
-                            },
-                        },
-                    ],
+        payload = {
+            "location": {"type": "physical", "venueId": venue.id},
+            "products": [
+                {
+                    "ean": cd_product.ean,
+                    "stock": {
+                        "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
+                        "price": 1234,
+                        "quantity": 0,
+                    },
                 },
-            )
+                {
+                    "ean": book_product.ean,
+                    "stock": {
+                        "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
+                        "price": 2345,
+                        "quantity": 25,
+                    },
+                },
+            ],
+        }
+        with caplog.at_level(logging.INFO):
+            response = self.make_request(plain_api_key, json_body=payload)
 
         log = next(record for record in caplog.records if "Error while creating offer by ean" == record.message)
 
@@ -424,7 +406,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert book_stock.price == decimal.Decimal("100.00")
 
     @mock.patch("pcapi.tasks.sendinblue_tasks.update_sib_pro_attributes_task")
-    def test_valid_ean_without_task_autoflush(self, update_sib_pro_task_mock, client):
+    def test_valid_ean_without_task_autoflush(self, update_sib_pro_task_mock):
         product_provider = providers_factories.ProviderFactory()
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         product = offers_factories.ProductFactory(
@@ -442,22 +424,20 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "products": [
-                    {
-                        "ean": product.ean,
-                        "stock": {
-                            "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
-                            "price": 1234,
-                            "quantity": 3,
-                        },
-                    }
-                ],
-                "location": {"type": "physical", "venueId": venue_provider.venue.id},
-            },
-        )
+        payload = {
+            "products": [
+                {
+                    "ean": product.ean,
+                    "stock": {
+                        "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
+                        "price": 1234,
+                        "quantity": 3,
+                    },
+                }
+            ],
+            "location": {"type": "physical", "venueId": venue_provider.venue.id},
+        }
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 204
 
@@ -471,32 +451,29 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
         ],
     )
-    def test_does_not_create_an_offer_of_non_compatible_product(self, client, gcu_compatibility_type):
+    def test_does_not_create_an_offer_of_non_compatible_product(self, gcu_compatibility_type):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         product = offers_factories.ProductFactory(ean="1234567890123", gcuCompatibilityType=gcu_compatibility_type)
 
-        client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "products": [{"ean": product.ean, "stock": {"price": 1234, "quantity": 3}}],
-                "location": {"type": "physical", "venueId": venue_provider.venue.id},
-            },
-        )
+        payload = {
+            "products": [{"ean": product.ean, "stock": {"price": 1234, "quantity": 3}}],
+            "location": {"type": "physical", "venueId": venue_provider.venue.id},
+        }
+
+        self.make_request(plain_api_key, json_body=payload)
         assert db.session.query(offers_models.Offer).all() == []
 
-    def test_400_when_quantity_is_too_big(self, client):
+    def test_400_when_quantity_is_too_big(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         product = offers_factories.ThingProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
         )
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "products": [{"ean": product.ean, "stock": {"price": 1234, "quantity": 1_000_001}}],
-                "location": {"type": "physical", "venueId": venue_provider.venue.id},
-            },
-        )
+        payload = {
+            "products": [{"ean": product.ean, "stock": {"price": 1234, "quantity": 1_000_001}}],
+            "location": {"type": "physical", "venueId": venue_provider.venue.id},
+        }
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 400
         assert response.json == {"products.0.stock.quantity": ["Value must be less than 1000000"]}
@@ -580,52 +557,48 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             ),
         ],
     )
-    def test_400_when_dates_are_incorrect_or_incoherent(self, product_json, expected_response_json, client):
+    def test_400_when_dates_are_incorrect_or_incoherent(self, product_json, expected_response_json):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offers_factories.ThingProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
         )
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={"products": [product_json], "location": {"type": "physical", "venueId": venue_provider.venue.id}},
-        )
+        payload = {"products": [product_json], "location": {"type": "physical", "venueId": venue_provider.venue.id}}
+
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 400
         assert response.json == expected_response_json
 
-    def test_400_when_ean_wrong_format(self, client):
+    def test_400_when_ean_wrong_format(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offers_factories.ProductFactory(ean="1234567890123")
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "products": [{"ean": "123456789", "stock": {"price": 1234, "quantity": 3}}],
-                "location": {"type": "physical", "venueId": venue_provider.venue.id},
-            },
-        )
+        payload = {
+            "products": [{"ean": "123456789", "stock": {"price": 1234, "quantity": 3}}],
+            "location": {"type": "physical", "venueId": venue_provider.venue.id},
+        }
+
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 400
         assert response.json == {"products.0.ean": ["ensure this value has at least 13 characters"]}
 
-    def test_400_when_price_too_high(self, client):
+    def test_400_when_price_too_high(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
         )
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "products": [{"ean": product.ean, "stock": {"price": 300000, "quantity": 3}}],
-                "location": {"type": "physical", "venueId": venue_provider.venue.id},
-            },
-        )
+        payload = {
+            "products": [{"ean": product.ean, "stock": {"price": 300000, "quantity": 3}}],
+            "location": {"type": "physical", "venueId": venue_provider.venue.id},
+        }
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 400
 
-    def test_update_offer_when_ean_already_exists(self, client):
+    def test_update_offer_when_ean_already_exists(self):
         product_provider = providers_factories.ProviderFactory()
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -635,16 +608,16 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             lastProviderId=product_provider.id,
         )
 
-        client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
+        self.make_request(
+            plain_api_key,
+            json_body={
                 "products": [{"ean": product.ean, "stock": {"price": 1234, "quantity": 3}}],
                 "location": {"type": "physical", "venueId": venue_provider.venue.id},
             },
         )
-        client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
+        self.make_request(
+            plain_api_key,
+            json_body={
                 "products": [{"ean": product.ean, "stock": {"price": 7890, "quantity": 3}}],
                 "location": {"type": "physical", "venueId": venue_provider.venue.id},
             },
@@ -655,7 +628,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert created_stock.price == decimal.Decimal("78.90")
         assert created_stock.quantity == 3
 
-    def test_with_custom_address(self, client):
+    def test_with_custom_address(self):
         address = geography_factories.AddressFactory()
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offerer_address = offerers_factories.OffererAddressFactory(
@@ -665,39 +638,36 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         )
         ean, _ = self._get_base_product()
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {
-                    "type": "address",
-                    "venueId": venue_provider.venueId,
-                    "addressId": address.id,
-                    "addressLabel": "My beautiful address no one knows about",
-                },
-                "products": [{"ean": ean, "stock": {"price": 1234, "quantity": 3}}],
+        payload = {
+            "location": {
+                "type": "address",
+                "venueId": venue_provider.venueId,
+                "addressId": address.id,
+                "addressLabel": "My beautiful address no one knows about",
             },
-        )
+            "products": [{"ean": ean, "stock": {"price": 1234, "quantity": 3}}],
+        }
+        response = self.make_request(plain_api_key, json_body=payload)
+
         assert response.status_code == 204
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.offererAddress == offerer_address
 
-    def test_with_custom_address_should_create_offerer_address(self, client):
+    def test_with_custom_address_should_create_offerer_address(self):
         address = geography_factories.AddressFactory()
         ean, _ = self._get_base_product()
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {
-                    "type": "address",
-                    "venueId": venue_provider.venueId,
-                    "addressId": address.id,
-                    "addressLabel": "My beautiful address no one knows about",
-                },
-                "products": [{"ean": ean, "stock": {"price": 1234, "quantity": 3}}],
+        payload = {
+            "location": {
+                "type": "address",
+                "venueId": venue_provider.venueId,
+                "addressId": address.id,
+                "addressLabel": "My beautiful address no one knows about",
             },
-        )
+            "products": [{"ean": ean, "stock": {"price": 1234, "quantity": 3}}],
+        }
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 204
         created_offer = db.session.query(offers_models.Offer).one()
@@ -711,22 +681,20 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         )
         assert created_offer.offererAddress == offerer_address
 
-    def test_event_with_custom_address_should_raise_404_because_address_does_not_exist(self, client):
+    def test_event_with_custom_address_should_raise_404_because_address_does_not_exist(self):
         ean, _ = self._get_base_product()
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {"type": "address", "venueId": venue_provider.venueId, "addressId": -1},
-                "products": [{"ean": ean, "stock": {"price": 1234, "quantity": 3}}],
-            },
-        )
+        payload = {
+            "location": {"type": "address", "venueId": venue_provider.venueId, "addressId": -1},
+            "products": [{"ean": ean, "stock": {"price": 1234, "quantity": 3}}],
+        }
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 404
         assert response.json == {"location.AddressLocation.addressId": ["There is no address with id -1"]}
 
-    def test_update_offerer_address_for_existing_offer(self, client):
+    def test_update_offerer_address_for_existing_offer(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         product = offers_factories.ThingProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
@@ -738,19 +706,17 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             isActive=False,
         )
         address = geography_factories.AddressFactory()
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {"type": "address", "venueId": venue_provider.venue.id, "addressId": address.id},
-                "products": [{"ean": product.ean, "stock": {"price": 1234, "quantity": 0}}],
-            },
-        )
+        payload = {
+            "location": {"type": "address", "venueId": venue_provider.venue.id, "addressId": address.id},
+            "products": [{"ean": product.ean, "stock": {"price": 1234, "quantity": 0}}],
+        }
+        response = self.make_request(plain_api_key, json_body=payload)
+
         assert response.status_code == 204
         assert offer.offererAddress.addressId == address.id
         assert offer.isActive == True
 
-    @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_create_and_update_offer(self, async_index_offer_ids, client):
+    def test_create_and_update_offer(self):
         product_provider = providers_factories.ProviderFactory()
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         ean_to_update = "1234567890123"
@@ -766,17 +732,16 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             lastProviderId=product_provider.id,
         )
 
-        client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
+        self.make_request(
+            plain_api_key,
+            json_body={
                 "products": [{"ean": ean_to_update, "stock": {"price": 234, "quantity": 12}}],
                 "location": {"type": "physical", "venueId": venue_provider.venue.id},
             },
         )
-
-        client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
+        self.make_request(
+            plain_api_key,
+            json_body={
                 "products": [
                     {"ean": ean_to_update, "stock": {"price": 1234, "quantity": 3}},
                     {"ean": ean_to_create, "stock": {"price": 9876, "quantity": 22}},
@@ -826,62 +791,56 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert "global" in response.json
 
-    def test_valid_ean_with_missing_stock_price_returns_an_error(self, client):
+    def test_valid_ean_with_missing_stock_price_returns_an_error(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=venue_provider.venue.managingOfferer)
         ean, _ = self._get_base_product()
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {
-                    "type": "address",
-                    "venueId": venue_provider.venueId,
-                    "addressId": offerer_address.address.id,
-                },
-                "products": [{"ean": ean, "stock": {"quantity": 3}}],
+        payload = {
+            "location": {
+                "type": "address",
+                "venueId": venue_provider.venueId,
+                "addressId": offerer_address.address.id,
             },
-        )
+            "products": [{"ean": ean, "stock": {"quantity": 3}}],
+        }
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 400
         assert response.json == {"products.0.stock.price": ["field required"]}
 
-    def test_valid_ean_with_null_stock_price_returns_an_error(self, client):
+    def test_valid_ean_with_null_stock_price_returns_an_error(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=venue_provider.venue.managingOfferer)
         ean, _ = self._get_base_product()
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {
-                    "type": "address",
-                    "venueId": venue_provider.venueId,
-                    "addressId": offerer_address.address.id,
-                },
-                "products": [{"ean": ean, "stock": {"quantity": 3, "price": None}}],
+        payload = {
+            "location": {
+                "type": "address",
+                "venueId": venue_provider.venueId,
+                "addressId": offerer_address.address.id,
             },
-        )
+            "products": [{"ean": ean, "stock": {"quantity": 3, "price": None}}],
+        }
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 400
         assert response.json == {"products.0.stock.price": ["none is not an allowed value"]}
 
-    def test_valid_ean_and_free_stock_is_created(self, client):
+    def test_valid_ean_and_free_stock_is_created(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=venue_provider.venue.managingOfferer)
         ean, _ = self._get_base_product()
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {
-                    "type": "address",
-                    "venueId": venue_provider.venueId,
-                    "addressId": offerer_address.address.id,
-                },
-                "products": [{"ean": ean, "stock": {"quantity": 3, "price": 0}}],
+        payload = {
+            "location": {
+                "type": "address",
+                "venueId": venue_provider.venueId,
+                "addressId": offerer_address.address.id,
             },
-        )
+            "products": [{"ean": ean, "stock": {"quantity": 3, "price": 0}}],
+        }
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 204
 
@@ -890,7 +849,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         assert created_stock.price == 0
 
-    def test_valid_ean_and_free_stock_is_updated(self, client):
+    def test_valid_ean_and_free_stock_is_updated(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=venue_provider.venue.managingOfferer)
 
@@ -904,17 +863,15 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             price=100,
         )
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {
-                    "type": "address",
-                    "venueId": venue_provider.venueId,
-                    "addressId": offerer_address.address.id,
-                },
-                "products": [{"ean": ean, "stock": {"quantity": 3, "price": 0}}],
+        payload = {
+            "location": {
+                "type": "address",
+                "venueId": venue_provider.venueId,
+                "addressId": offerer_address.address.id,
             },
-        )
+            "products": [{"ean": ean, "stock": {"quantity": 3, "price": 0}}],
+        }
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 204
 

@@ -9,15 +9,14 @@ from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 from pcapi.utils import date as date_utils
 
-from tests.conftest import TestClient
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 
 @pytest.mark.usefixtures("db_session")
 class PostEventStocksTest(PublicAPIVenueEndpointHelper):
-    endpoint_url = "/public/offers/v1/events/{event_id}/dates"
+    endpoint_url = "/public/offers/v1/events/{offer_id}/dates"
     endpoint_method = "post"
-    default_path_params = {"event_id": 1}
+    default_path_params = {"offer_id": 1}
 
     @staticmethod
     def _get_base_date_dict(price_category_id: int, id_at_provider: str | None = None) -> dict:
@@ -46,45 +45,43 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         if booking_allowed_datetime:
             additional_offer_params["bookingAllowedDatetime"] = booking_allowed_datetime
 
-        event = offers_factories.EventOfferFactory(
+        offer = offers_factories.EventOfferFactory(
             venue=venue or self.setup_venue(),
             lastProvider=provider,
             **additional_offer_params,
         )
         price_category = offers_factories.PriceCategoryFactory(
-            offer=event,
+            offer=offer,
             price=decimal.Decimal("88.99"),
             priceCategoryLabel__label="carre or",
-            priceCategoryLabel__venue=event.venue,
+            priceCategoryLabel__venue=offer.venue,
         )
 
-        return event, price_category
+        return offer, price_category
 
-    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
+    def test_should_raise_404_because_has_no_access_to_venue(self):
         plain_api_key, _ = self.setup_provider()
-        event, category = self.setup_base_resource()
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url.format(event_id=event.id),
-            json={"dates": [self._get_base_date_dict(category.id)]},
-        )
+        offer, category = self.setup_base_resource()
+        payload = {"dates": [self._get_base_date_dict(category.id)]}
+        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=payload)
+
         assert response.status_code == 404
 
-    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
+    def test_should_raise_404_because_venue_provider_is_inactive(self):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        event, category = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url.format(event_id=event.id),
-            json={"dates": [self._get_base_date_dict(category.id)]},
-        )
+        offer, category = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        payload = {"dates": [self._get_base_date_dict(category.id)]}
+        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=payload)
+
         assert response.status_code == 404
 
-    def test_new_dates_are_added(self, client):
+    def test_new_dates_are_added(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event, carre_or_price_category = self.setup_base_resource(
+        offer, carre_or_price_category = self.setup_base_resource(
             venue=venue_provider.venue, provider=venue_provider.provider
         )
         free_price_category = offers_factories.PriceCategoryFactory(
-            offer=event,
+            offer=offer,
             price=decimal.Decimal("0"),
             priceCategoryLabel__label="gratuit",
             priceCategoryLabel__venue=venue_provider.venue,
@@ -95,29 +92,28 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
         two_months_from_now = next_month + datetime.timedelta(days=30)
         two_months_from_now_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(two_months_from_now, "972")
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url.format(event_id=event.id),
-            json={
-                "dates": [
-                    {
-                        "beginningDatetime": next_month_in_non_utc_tz.isoformat(),
-                        "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
-                        "price_category_id": carre_or_price_category.id,
-                        "quantity": 10,
-                        "id_at_provider": "id_143556",
-                    },
-                    {
-                        "beginningDatetime": two_months_from_now_in_non_utc_tz.isoformat(),
-                        "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
-                        "price_category_id": free_price_category.id,
-                        "quantity": "unlimited",
-                    },
-                ],
-            },
-        )
+
+        payload = {
+            "dates": [
+                {
+                    "beginningDatetime": next_month_in_non_utc_tz.isoformat(),
+                    "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
+                    "price_category_id": carre_or_price_category.id,
+                    "quantity": 10,
+                    "id_at_provider": "id_143556",
+                },
+                {
+                    "beginningDatetime": two_months_from_now_in_non_utc_tz.isoformat(),
+                    "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
+                    "price_category_id": free_price_category.id,
+                    "quantity": "unlimited",
+                },
+            ],
+        }
+        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=payload)
 
         assert response.status_code == 200
-        created_stocks = db.session.query(offers_models.Stock).filter(offers_models.Stock.offerId == event.id).all()
+        created_stocks = db.session.query(offers_models.Stock).filter(offers_models.Stock.offerId == offer.id).all()
         assert len(created_stocks) == 2
         first_stock = next(stock for stock in created_stocks if stock.beginningDatetime == next_month)
         assert first_stock.price == decimal.Decimal("88.99")
@@ -161,24 +157,20 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
             ],
         }
 
-    def test_should_raise_404_because_of_invalid_offer_id(self, client):
+    def test_should_raise_404_because_of_invalid_offer_id(self):
         plain_api_key, _ = self.setup_provider()
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url.format(event_id="gouzi_gouzi"),
-            json={"dates": [self._get_base_date_dict(1)]},
-        )
+        payload = {"dates": [self._get_base_date_dict(1)]}
+        response = self.make_request(plain_api_key, {"offer_id": "gouzi_gouzi"}, json_body=payload)
 
         assert response.status_code == 404
 
-    def test_should_raise_404_because_of_product_offer(self, client):
+    def test_should_raise_404_because_of_product_offer(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         product = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url.format(event_id=product.id),
-            json={"dates": [self._get_base_date_dict(1)]},
-        )
+        payload = {"dates": [self._get_base_date_dict(1)]}
+        response = self.make_request(plain_api_key, {"offer_id": product.id}, json_body=payload)
 
         assert response.status_code == 404
         assert response.json == {"event_id": ["The event could not be found"]}
@@ -248,15 +240,15 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
             ),
         ],
     )
-    def test_should_raise_400(self, client, partial_dates, expected_response_json):
+    def test_should_raise_400(self, partial_dates, expected_response_json):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event, price_category = self.setup_base_resource(
+        offer, price_category = self.setup_base_resource(
             venue=venue_provider.venue,
             provider=venue_provider.provider,
             publication_datetime=datetime.datetime(2025, 7, 2),
             booking_allowed_datetime=datetime.datetime(2025, 7, 4),
         )
-        existing_stock = offers_factories.StockFactory(offer=event, idAtProviders="c'est déjà pris :'(")
+        existing_stock = offers_factories.StockFactory(offer=offer, idAtProviders="c'est déjà pris :'(")
         dates = []
 
         for partial_date in partial_dates:
@@ -264,10 +256,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
             date_dict.update(**partial_date)
             dates.append(date_dict)
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url.format(event_id=event.id),
-            json={"dates": dates},
-        )
+        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body={"dates": dates})
 
         assert response.status_code == 400
         assert response.json == expected_response_json
