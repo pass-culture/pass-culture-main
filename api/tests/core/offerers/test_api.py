@@ -3461,9 +3461,9 @@ class AccessibilityProviderTest:
             isOpenToPublic=True,
             isVirtual=False,
             name="Un lieu",
-            postalCode="75001",
-            city="Paris",
-            street="3 Rue de Valois",
+            offererAddress__address__postalCode="75001",
+            offererAddress__address__city="Paris",
+            offererAddress__address__street="3 Rue de Valois",
         )
         venues_list.append(venue)
 
@@ -3477,9 +3477,9 @@ class AccessibilityProviderTest:
             isOpenToPublic=True,
             isVirtual=False,
             name="Un lieu",
-            postalCode="75001",
-            city="Paris",
-            street="3 Rue de Valois",
+            offererAddress__address__postalCode="75001",
+            offererAddress__address__city="Paris",
+            offererAddress__address__street="3 Rue de Valois",
         )
         venues_list.append(venue)
 

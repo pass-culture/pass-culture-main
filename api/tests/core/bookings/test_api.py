@@ -1206,7 +1206,6 @@ class CancelByBeneficiaryTest:
         providers_factories.OffererProviderFactory(provider=provider)
         stock = offers_factories.StockFactory(
             offer__lastProvider=provider,
-            offer__venue__street="1 boulevard Poissonniere",
             offer__ean="1234567890123",
             dnBookedQuantity=1,
             idAtProviders="",
@@ -1232,7 +1231,7 @@ class CancelByBeneficiaryTest:
         assert notification.stock_id == stock.id
         assert notification.booking_quantity == booking.quantity
         assert notification.booking_creation_date == booking.dateCreated
-        assert notification.venue_address == "1 boulevard Poissonniere"
+        assert notification.venue_address == stock.offer.venue.offererAddress.address.street
         assert notification.user_email == booking.user.email
         assert notification.user_first_name == booking.user.firstName
         assert notification.user_last_name == booking.user.lastName
