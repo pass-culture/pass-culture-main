@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import { AdresseData } from 'apiClient/adresse/types'
@@ -33,14 +32,13 @@ export const FormLocation = ({
 }: FormLocationProps): JSX.Element => {
   const { watch, setValue, register, getFieldState } =
     useFormContext<OfferEducationalFormValues>()
-  const [shouldShowManualAddressForm, setShouldShowManualAddressForm] =
-    useState(watch('location.address')?.isManualEdition)
+  const isManualEdition = watch('location.address.isManualEdition')
 
   const selectedVenue = venues.find((v) => v.id.toString() === watch('venueId'))
 
   const toggleManualAddressForm = () => {
-    setShouldShowManualAddressForm(!shouldShowManualAddressForm)
-    if (!shouldShowManualAddressForm) {
+    setValue('location.address.isManualEdition', !isManualEdition)
+    if (!isManualEdition) {
       setValue('location.address.isVenueAddress', false)
       setValue('location.address.isManualEdition', true)
       resetReactHookFormAddressFields((name, defaultValue) =>
@@ -132,28 +130,30 @@ export const FormLocation = ({
                     disabled={disableForm}
                   />
                   <AddressSelect
-                    disabled={disableForm || shouldShowManualAddressForm}
+                    disabled={disableForm || isManualEdition}
                     onAddressChosen={onAddressSelect}
                     label="Adresse postale"
                     {...register('addressAutocomplete')}
                     className={styles['specific-address-search']}
-                    error={getFieldState('addressAutocomplete').error?.message}
+                    error={
+                      !disableForm && !isManualEdition
+                        ? getFieldState('addressAutocomplete').error?.message
+                        : undefined
+                    }
                   />
                   <Button
                     variant={ButtonVariant.QUATERNARY}
-                    icon={
-                      shouldShowManualAddressForm ? fullBackIcon : fullNextIcon
-                    }
+                    icon={isManualEdition ? fullBackIcon : fullNextIcon}
                     onClick={toggleManualAddressForm}
                     disabled={disableForm}
                   >
-                    {shouldShowManualAddressForm ? (
+                    {isManualEdition ? (
                       <>Revenir à la sélection automatique</>
                     ) : (
                       <>Vous ne trouvez pas votre adresse ?</>
                     )}
                   </Button>
-                  {shouldShowManualAddressForm && (
+                  {isManualEdition && (
                     <AddressManual
                       gpsCalloutMessage={
                         'Les coordonnées GPS sont des informations à ne pas négliger. Elles permettent aux enseignants de trouver votre offre sur ADAGE.'
