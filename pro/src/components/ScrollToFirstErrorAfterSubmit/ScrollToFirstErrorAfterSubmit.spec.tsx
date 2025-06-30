@@ -5,7 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
 import { Button } from 'ui-kit/Button/Button'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { ScrollToFirstHookFormErrorAfterSubmit } from './ScrollToFirstErrorAfterSubmit'
 

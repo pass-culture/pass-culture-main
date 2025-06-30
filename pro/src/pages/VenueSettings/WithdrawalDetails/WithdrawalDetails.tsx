@@ -1,7 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { TextArea } from 'ui-kit/formV2/TextArea/TextArea'
+import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TipsBanner } from 'ui-kit/TipsBanner/TipsBanner'
 
 import { VenueSettingsFormValues } from '../types'

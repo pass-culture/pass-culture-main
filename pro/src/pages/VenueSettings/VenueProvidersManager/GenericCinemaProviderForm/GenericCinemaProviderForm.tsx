@@ -10,8 +10,8 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { QuantityInput } from 'ui-kit/formV2/QuantityInput/QuantityInput'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './GenericCinemaProviderForm.module.scss'
 export interface GenericCinemaProviderFormValues {

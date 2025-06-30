@@ -4,19 +4,19 @@ import { useId } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import {
+  EventStockUpdateBodyModel,
   GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
-  EventStockUpdateBodyModel,
 } from 'apiClient/v1'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { getPriceCategoryOptions } from 'components/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
-import { QuantityInput } from 'ui-kit/formV2/QuantityInput/QuantityInput'
-import { Select } from 'ui-kit/formV2/Select/Select'
-import { TimePicker } from 'ui-kit/formV2/TimePicker/TimePicker'
+import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
+import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
+import { Select } from 'ui-kit/form/Select/Select'
+import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 
 import styles from './StocksCalendarTableEditStock.module.scss'
 import {

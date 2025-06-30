@@ -6,7 +6,7 @@ import strokeAccessibilityBrainIcon from 'icons/stroke-accessibility-brain.svg'
 import strokeAccessibilityEarIcon from 'icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEyeIcon from 'icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLegIcon from 'icons/stroke-accessibility-leg.svg'
-import { CheckboxGroupProps } from 'ui-kit/formV2/CheckboxGroup/CheckboxGroup'
+import { CheckboxGroupProps } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 
 export const useAccessibilityOptions = (
   setFieldValue: ((field: string, value: any) => void) | UseFormSetValue<any>,

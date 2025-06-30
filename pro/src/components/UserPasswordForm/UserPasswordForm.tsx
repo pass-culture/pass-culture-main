@@ -8,8 +8,8 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { BoxFormLayout } from 'ui-kit/BoxFormLayout/BoxFormLayout'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { PasswordInput } from 'ui-kit/formV2/PasswordInput/PasswordInput'
-import { ValidationMessageList } from 'ui-kit/formV2/ValidationMessageList/ValidationMessageList'
+import { PasswordInput } from 'ui-kit/form/PasswordInput/PasswordInput'
+import { ValidationMessageList } from 'ui-kit/form/ValidationMessageList/ValidationMessageList'
 
 import styles from '../UserPhoneForm/UserForm.module.scss'
 

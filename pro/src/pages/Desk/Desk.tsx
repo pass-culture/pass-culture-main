@@ -8,7 +8,7 @@ import { Layout } from 'app/App/layout/Layout'
 import { HeadlineOfferContextProvider } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { Button } from 'ui-kit/Button/Button'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { BookingDetails } from './BookingDetails'
 import { ButtonInvalidateToken } from './ButtonInvalidateToken'

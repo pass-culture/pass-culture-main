@@ -15,7 +15,7 @@ import { eanSearchValidationSchema } from 'pages/IndividualOffer/IndividualOffer
 import { EanSearchCallout } from 'pages/IndividualOffer/IndividualOfferDetails/components/EanSearchCallout/EanSearchCallout'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './DetailsEanSearch.module.scss'
 

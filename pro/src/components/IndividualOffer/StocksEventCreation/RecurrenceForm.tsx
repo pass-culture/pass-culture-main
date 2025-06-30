@@ -1,8 +1,8 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Dialog from '@radix-ui/react-dialog'
 import {
-  useFieldArray,
   FormProvider,
+  useFieldArray,
   useForm,
   useFormContext,
 } from 'react-hook-form'
@@ -25,14 +25,14 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
+import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
+import { DayCheckbox } from 'ui-kit/form/DayCheckbox/DayCheckbox'
+import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
+import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
+import { Select } from 'ui-kit/form/Select/Select'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
-import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
-import { DayCheckbox } from 'ui-kit/formV2/DayCheckbox/DayCheckbox'
-import { QuantityInput } from 'ui-kit/formV2/QuantityInput/QuantityInput'
-import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
-import { Select } from 'ui-kit/formV2/Select/Select'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
-import { TimePicker } from 'ui-kit/formV2/TimePicker/TimePicker'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 

@@ -8,7 +8,7 @@ import { normalizeStrForAdressSearch } from 'commons/utils/searchPatternInOption
 import {
   type CustomEvent,
   SelectAutocomplete,
-} from 'ui-kit/formV2/SelectAutoComplete/SelectAutocomplete'
+} from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 
 const DEBOUNCE_TIME_BEFORE_REQUEST = 400
 const DEFAULT_SUGGESTION_LIMIT = 5

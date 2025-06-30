@@ -7,7 +7,7 @@ import { useIndividualOfferContext } from 'commons/context/IndividualOfferContex
 import { weekDays } from 'components/IndividualOffer/StocksEventCreation/form/constants'
 import { StocksCalendarFormValues } from 'components/IndividualOffer/StocksEventCreation/form/types'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
-import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
+import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 
 import { getWeekDaysInBetweenDates } from '../../utils'
 import { StocksCalendarFormTimeAndPrice } from '../StocksCalendarFormTimeAndPrice/StocksCalendarFormTimeAndPrice'

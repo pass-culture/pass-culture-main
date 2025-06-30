@@ -9,7 +9,7 @@ import {
 } from 'components/IndividualOffer/StocksEventCreation/form/types'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
-import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
+import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 
 import { StocksCalendarFormSpecificTimeSlots } from './StocksCalendarFormSpecificTimeSlots/StocksCalendarFormSpecificTimeSlots'
 import styles from './StocksCalendarFormTimeAndPrice.module.scss'

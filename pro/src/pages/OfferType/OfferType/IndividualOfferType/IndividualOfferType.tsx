@@ -7,7 +7,7 @@ import strokeDateIcon from 'icons/stroke-date.svg'
 import thingStrokeIcon from 'icons/stroke-thing.svg'
 import strokeVirtualEventIcon from 'icons/stroke-virtual-event.svg'
 import strokeVirtualThingIcon from 'icons/stroke-virtual-thing.svg'
-import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
+import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 
 import styles from './IndividualOfferType.module.scss'
 

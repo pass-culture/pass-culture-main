@@ -2,7 +2,7 @@ import { useFormContext } from 'react-hook-form'
 
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
-import { CheckboxGroup } from 'ui-kit/formV2/CheckboxGroup/CheckboxGroup'
+import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 
 import styles from './FormAccessibility.module.scss'
 

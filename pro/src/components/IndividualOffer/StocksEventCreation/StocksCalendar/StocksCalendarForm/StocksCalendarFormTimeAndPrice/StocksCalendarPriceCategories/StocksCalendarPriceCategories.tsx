@@ -7,8 +7,8 @@ import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
-import { QuantityInput } from 'ui-kit/formV2/QuantityInput/QuantityInput'
-import { Select } from 'ui-kit/formV2/Select/Select'
+import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
+import { Select } from 'ui-kit/form/Select/Select'
 
 import styles from './StocksCalendarPriceCategories.module.scss'
 

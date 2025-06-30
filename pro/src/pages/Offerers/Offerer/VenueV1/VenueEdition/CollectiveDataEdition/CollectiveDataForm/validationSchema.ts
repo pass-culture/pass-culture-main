@@ -2,7 +2,7 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
 import { emailSchema } from 'commons/utils/isValidEmail'
-import { extractPhoneParts } from 'ui-kit/formV2/PhoneNumberInput/PhoneNumberInput'
+import { extractPhoneParts } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 
 import { CollectiveDataFormValues } from './type'
 

@@ -1,7 +1,7 @@
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 import { AccessibilityEnum } from 'commons/core/shared/types'
 import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from 'pages/IndividualOffer/commons/constants'
-import { RadioGroupProps } from 'ui-kit/formV2/RadioGroup/RadioGroup'
+import { RadioGroupProps } from 'ui-kit/form/RadioGroup/RadioGroup'
 
 import { UsefulInformationFormValues } from './types'
 

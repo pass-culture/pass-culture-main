@@ -24,7 +24,7 @@ import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constan
 import { MAYBE_APP_USER_APE_CODE } from 'pages/Signup/SignupContainer/constants'
 import { MaybeAppUserDialog } from 'pages/Signup/SignupContainer/MaybeAppUserDialog/MaybeAppUserDialog'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 

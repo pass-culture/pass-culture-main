@@ -2,7 +2,7 @@ import * as yup from 'yup'
 
 import { isPhoneValid } from 'commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 import { emailSchema } from 'commons/utils/isValidEmail'
-import { passwordValidationStatus } from 'ui-kit/formV2/PasswordInput/validation'
+import { passwordValidationStatus } from 'ui-kit/form/PasswordInput/validation'
 
 export const validationSchema = (isNewSignupEnabled: boolean) => {
   const schemaObject = {

@@ -13,7 +13,7 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { BoxFormLayout } from 'ui-kit/BoxFormLayout/BoxFormLayout'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { PhoneNumberInput } from 'ui-kit/formV2/PhoneNumberInput/PhoneNumberInput'
+import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 
 import styles from './UserForm.module.scss'
 import { validationSchema } from './validationSchema'

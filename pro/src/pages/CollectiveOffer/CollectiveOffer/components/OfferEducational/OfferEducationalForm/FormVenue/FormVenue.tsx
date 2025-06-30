@@ -14,7 +14,7 @@ import {
 import { applyVenueDefaultsToFormValues } from 'commons/core/OfferEducational/utils/applyVenueDefaultsToFormValues'
 import { SelectOption } from 'commons/custom_types/form'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { Select } from 'ui-kit/formV2/Select/Select'
+import { Select } from 'ui-kit/form/Select/Select'
 
 import { STRUCTURE_LABEL } from '../../constants/labels'
 

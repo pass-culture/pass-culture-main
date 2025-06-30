@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useForm, useFieldArray } from 'react-hook-form'
+import { useFieldArray, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
@@ -18,11 +18,11 @@ import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { DuoCheckbox } from 'components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
-  UNIQUE_PRICE,
-  PRICE_CATEGORY_LABEL_MAX_LENGTH,
-  PRICE_CATEGORY_PRICE_MAX,
   INITIAL_PRICE_CATEGORY,
+  PRICE_CATEGORY_LABEL_MAX_LENGTH,
   PRICE_CATEGORY_MAX_LENGTH,
+  PRICE_CATEGORY_PRICE_MAX,
+  UNIQUE_PRICE,
 } from 'components/IndividualOffer/PriceCategoriesScreen/form/constants'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
@@ -32,8 +32,8 @@ import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
-import { PriceInput } from 'ui-kit/formV2/PriceInput/PriceInput'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { PriceInput } from 'ui-kit/form/PriceInput/PriceInput'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 

@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useFormContext } from 'react-hook-form'
 
 import { mapDayToFrench } from 'commons/utils/date'
-import { DayCheckbox } from 'ui-kit/formV2/DayCheckbox/DayCheckbox'
+import { DayCheckbox } from 'ui-kit/form/DayCheckbox/DayCheckbox'
 
 import { Day, VenueEditionFormValues } from '../types'
 

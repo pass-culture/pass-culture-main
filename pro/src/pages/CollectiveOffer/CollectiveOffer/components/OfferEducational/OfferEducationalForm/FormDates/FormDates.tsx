@@ -8,9 +8,9 @@ import {
 import { isDateValid } from 'commons/utils/date'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { DatePicker } from 'ui-kit/formV2/DatePicker/DatePicker'
-import { RadioGroup } from 'ui-kit/formV2/RadioGroup/RadioGroup'
-import { TimePicker } from 'ui-kit/formV2/TimePicker/TimePicker'
+import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
+import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
+import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 
 import styles from './FormDates.module.scss'
 

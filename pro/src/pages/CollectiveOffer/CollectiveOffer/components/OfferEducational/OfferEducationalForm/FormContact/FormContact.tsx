@@ -1,8 +1,8 @@
 import { useFormContext } from 'react-hook-form'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { PhoneNumberInput } from 'ui-kit/formV2/PhoneNumberInput/PhoneNumberInput'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { EMAIL_LABEL } from '../../constants/labels'
 

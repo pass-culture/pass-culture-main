@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { isPasswordValid } from 'ui-kit/formV2/PasswordInput/validation'
+import { isPasswordValid } from 'ui-kit/form/PasswordInput/validation'
 
 export const validationSchema = (is2025SignUpEnabled: boolean) => {
   // If the FF WIP_2025_SIGN_UP is enabled, we have a confirmation field

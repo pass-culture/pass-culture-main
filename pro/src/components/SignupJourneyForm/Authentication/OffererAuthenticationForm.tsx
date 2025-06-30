@@ -10,9 +10,9 @@ import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { AddressManual } from 'ui-kit/formV2/AddressManual/AddressManual'
-import { AddressSelect } from 'ui-kit/formV2/AddressSelect/AddressSelect'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { AddressManual } from 'ui-kit/form/AddressManual/AddressManual'
+import { AddressSelect } from 'ui-kit/form/AddressSelect/AddressSelect'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { OffererFormValues } from '../Offerer/Offerer'
 

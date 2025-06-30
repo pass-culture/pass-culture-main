@@ -15,7 +15,7 @@ import { type VenueSettingsFormValues } from 'pages/VenueSettings/types'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { Callout } from 'ui-kit/Callout/Callout'
-import { Select } from 'ui-kit/formV2/Select/Select'
+import { Select } from 'ui-kit/form/Select/Select'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './PricingPoint.module.scss'

@@ -1,13 +1,13 @@
 import React, {
-  useState,
-  useEffect,
-  useRef,
   ChangeEvent,
   ForwardedRef,
+  useEffect,
+  useRef,
+  useState,
 } from 'react'
 
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
-import { TextInput, TextInputProps } from 'ui-kit/formV2/TextInput/TextInput'
+import { TextInput, TextInputProps } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './PriceInput.module.scss'
 

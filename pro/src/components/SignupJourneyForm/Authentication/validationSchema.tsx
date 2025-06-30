@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { validationSchema as addressValidationSchema } from 'ui-kit/formV2/AddressSelect/validationSchema'
+import { validationSchema as addressValidationSchema } from 'ui-kit/form/AddressSelect/validationSchema'
 
 export const validationSchema = (isOpenToPublicEnabled: boolean) => {
   return yup.object().shape({

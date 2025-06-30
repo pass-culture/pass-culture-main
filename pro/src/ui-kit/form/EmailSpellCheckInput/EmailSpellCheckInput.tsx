@@ -3,8 +3,8 @@ import { ForwardedRef, forwardRef, useState } from 'react'
 import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
-import { suggestEmail } from 'ui-kit/formV2/EmailSpellCheckInput/suggestEmail'
-import { TextInput } from 'ui-kit/formV2/TextInput/TextInput'
+import { suggestEmail } from 'ui-kit/form/EmailSpellCheckInput/suggestEmail'
+import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './EmailSpellCheckInput.module.scss'
 

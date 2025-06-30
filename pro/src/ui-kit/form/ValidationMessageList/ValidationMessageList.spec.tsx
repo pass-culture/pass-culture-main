@@ -8,7 +8,7 @@ import {
 import {
   getPasswordRuleLabel,
   PasswordValidationCheck,
-} from 'ui-kit/formV2/PasswordInput/validation'
+} from 'ui-kit/form/PasswordInput/validation'
 
 import {
   ValidationMessageList,
