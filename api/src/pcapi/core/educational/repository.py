@@ -9,6 +9,7 @@ import sqlalchemy as sa
 from sqlalchemy import orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.sql.expression import extract
+from sqlalchemy.sql.selectable import ScalarSelect
 
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
@@ -626,13 +627,28 @@ def get_collective_offers_template_by_filters(
     return query
 
 
+def get_last_booking_id_subquery() -> ScalarSelect[int]:
+    # to use this subquery, a join on CollectiveStock is needed in the enclosing query
+    # so that correlate finds the correct stock
+
+    return (
+        sa.select(models.CollectiveBooking.id)
+        .where(models.CollectiveBooking.collectiveStockId == models.CollectiveStock.id)
+        .order_by(models.CollectiveBooking.dateCreated.desc())
+        .limit(1)
+        .correlate(models.CollectiveStock)
+        .scalar_subquery()
+    )
+
+
 def filter_collective_offers_by_statuses(
     query: sa_orm.Query[models.CollectiveOffer], statuses: list[models.CollectiveOfferDisplayedStatus] | None
 ) -> sa_orm.Query[models.CollectiveOffer]:
     """
     Filter a SQLAlchemy query for CollectiveOffers based on a list of statuses.
 
-    This function modifies the input query to filter CollectiveOffers based on their CollectiveOfferDisplayedStatus.
+    This function modifies the input query to filter CollectiveOffers based on their displayedStatus.
+    As displayedStatus is a (non-hybrid) python property, we generate the SQL clauses corresponding to each status.
 
     Args:
       query (sa_orm.Query): The initial query to be filtered.
@@ -648,7 +664,11 @@ def filter_collective_offers_by_statuses(
         # if statuses is empty we return all offers
         return query
 
-    offer_id_with_booking_status_subquery, query_with_booking = add_last_booking_status_to_collective_offer_query(query)
+    # to compute the status, we need information from the offer, the stock and the last booking
+    last_booking_id = get_last_booking_id_subquery()
+    query_with_booking = query.outerjoin(models.CollectiveOffer.collectiveStock).outerjoin(
+        models.CollectiveBooking, models.CollectiveBooking.id == last_booking_id
+    )
 
     if models.CollectiveOfferDisplayedStatus.ARCHIVED in statuses:
         on_collective_offer_filters.append(models.CollectiveOffer.isArchived.is_(True))
@@ -682,55 +702,55 @@ def filter_collective_offers_by_statuses(
         # otherwise we return offers depending on the other statuses in the filter
         on_collective_offer_filters.append(sa.false())
 
+    approved_and_active_filters = (
+        models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+        models.CollectiveOffer.isActive == True,
+    )
+
     if models.CollectiveOfferDisplayedStatus.PUBLISHED in statuses:
         on_booking_status_filter.append(
             sa.and_(
-                models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                models.CollectiveOffer.isActive == True,
-                offer_id_with_booking_status_subquery.c.status == None,
-                models.CollectiveOffer.hasBookingLimitDatetimesPassed == False,
+                *approved_and_active_filters,
+                models.CollectiveBooking.status == None,
+                models.CollectiveStock.hasBookingLimitDatetimePassed == False,
             )
         )
 
     if models.CollectiveOfferDisplayedStatus.PREBOOKED in statuses:
         on_booking_status_filter.append(
             sa.and_(
-                models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                models.CollectiveOffer.isActive == True,
-                offer_id_with_booking_status_subquery.c.status == models.CollectiveBookingStatus.PENDING,
-                models.CollectiveOffer.hasBookingLimitDatetimesPassed == False,
+                *approved_and_active_filters,
+                models.CollectiveBooking.status == models.CollectiveBookingStatus.PENDING,
+                models.CollectiveStock.hasBookingLimitDatetimePassed == False,
             )
         )
 
     if models.CollectiveOfferDisplayedStatus.BOOKED in statuses:
         on_booking_status_filter.append(
             sa.and_(
-                models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                models.CollectiveOffer.isActive == True,
-                offer_id_with_booking_status_subquery.c.status == models.CollectiveBookingStatus.CONFIRMED,
-                models.CollectiveOffer.hasEndDatetimePassed == False,
+                *approved_and_active_filters,
+                models.CollectiveBooking.status == models.CollectiveBookingStatus.CONFIRMED,
+                models.CollectiveStock.hasEndDatetimePassed == False,
             )
         )
 
     if models.CollectiveOfferDisplayedStatus.ENDED in statuses:
         on_booking_status_filter.append(
             sa.and_(
-                models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                models.CollectiveOffer.isActive == True,
+                *approved_and_active_filters,
                 sa.or_(
-                    offer_id_with_booking_status_subquery.c.status == models.CollectiveBookingStatus.USED,
-                    offer_id_with_booking_status_subquery.c.status == models.CollectiveBookingStatus.CONFIRMED,
+                    models.CollectiveBooking.status == models.CollectiveBookingStatus.USED,
+                    models.CollectiveBooking.status == models.CollectiveBookingStatus.CONFIRMED,
                 ),
-                models.CollectiveOffer.hasEndDatetimePassed == True,
+                models.CollectiveStock.hasEndDatetimePassed == True,
             )
         )
 
     if models.CollectiveOfferDisplayedStatus.REIMBURSED in statuses:
         on_booking_status_filter.append(
             sa.and_(
-                models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                models.CollectiveOffer.isActive == True,
-                offer_id_with_booking_status_subquery.c.status == models.CollectiveBookingStatus.REIMBURSED,
+                *approved_and_active_filters,
+                models.CollectiveBooking.status == models.CollectiveBookingStatus.REIMBURSED,
             )
         )
 
@@ -738,115 +758,69 @@ def filter_collective_offers_by_statuses(
         # expired with a pending booking or no booking
         on_booking_status_filter.append(
             sa.and_(
-                models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                models.CollectiveOffer.isActive == True,
-                models.CollectiveOffer.hasBookingLimitDatetimesPassed == True,
-                models.CollectiveOffer.hasStartDatetimePassed == False,
+                *approved_and_active_filters,
+                models.CollectiveStock.hasBookingLimitDatetimePassed == True,
+                models.CollectiveStock.hasStartDatetimePassed == False,
                 sa.or_(
-                    offer_id_with_booking_status_subquery.c.status == models.CollectiveBookingStatus.PENDING,
-                    offer_id_with_booking_status_subquery.c.status == None,
+                    models.CollectiveBooking.status == models.CollectiveBookingStatus.PENDING,
+                    models.CollectiveBooking.status == None,
                 ),
             )
         )
         # expired with a booking cancelled with reason EXPIRED
         on_booking_status_filter.append(
             sa.and_(
-                models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                models.CollectiveOffer.isActive == True,
-                models.CollectiveOffer.hasBookingLimitDatetimesPassed == True,
-                models.CollectiveOffer.hasStartDatetimePassed == False,
-                offer_id_with_booking_status_subquery.c.status == models.CollectiveBookingStatus.CANCELLED,
-                offer_id_with_booking_status_subquery.c.cancellationReason
-                == models.CollectiveBookingCancellationReasons.EXPIRED,
+                *approved_and_active_filters,
+                models.CollectiveStock.hasBookingLimitDatetimePassed == True,
+                models.CollectiveStock.hasStartDatetimePassed == False,
+                models.CollectiveBooking.status == models.CollectiveBookingStatus.CANCELLED,
+                models.CollectiveBooking.cancellationReason == models.CollectiveBookingCancellationReasons.EXPIRED,
             )
         )
 
     if models.CollectiveOfferDisplayedStatus.CANCELLED in statuses:
-        # Cancelled due to expired booking
+        # Cancelled due to expired booking and event started
         on_booking_status_filter.append(
             sa.and_(
-                models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                models.CollectiveOffer.isActive == True,
-                offer_id_with_booking_status_subquery.c.status == models.CollectiveBookingStatus.CANCELLED,
-                offer_id_with_booking_status_subquery.c.cancellationReason
-                == models.CollectiveBookingCancellationReasons.EXPIRED,
-                models.CollectiveOffer.hasStartDatetimePassed == True,
+                *approved_and_active_filters,
+                models.CollectiveBooking.status == models.CollectiveBookingStatus.CANCELLED,
+                models.CollectiveBooking.cancellationReason == models.CollectiveBookingCancellationReasons.EXPIRED,
+                models.CollectiveStock.hasStartDatetimePassed == True,
             )
         )
 
-        # Cancelled by admin / CA or on ADAGE
+        # Cancelled by admin, pro user or ADAGE
         on_booking_status_filter.append(
             sa.and_(
-                models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                models.CollectiveOffer.isActive == True,
-                offer_id_with_booking_status_subquery.c.status == models.CollectiveBookingStatus.CANCELLED,
-                offer_id_with_booking_status_subquery.c.cancellationReason
-                != models.CollectiveBookingCancellationReasons.EXPIRED,
+                *approved_and_active_filters,
+                models.CollectiveBooking.status == models.CollectiveBookingStatus.CANCELLED,
+                models.CollectiveBooking.cancellationReason != models.CollectiveBookingCancellationReasons.EXPIRED,
             ),
         )
 
         # Cancelled due to no booking when the event has started
         on_booking_status_filter.append(
             sa.and_(
-                models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                models.CollectiveOffer.isActive == True,
-                offer_id_with_booking_status_subquery.c.status == None,
-                models.CollectiveOffer.hasStartDatetimePassed == True,
+                *approved_and_active_filters,
+                models.CollectiveBooking.status == None,
+                models.CollectiveStock.hasStartDatetimePassed == True,
             ),
         )
 
-    # Add filters on `CollectiveBooking.Status`
+    # Add filters on CollectiveBooking and CollectiveStock
     if on_booking_status_filter:
-        substmt = query_with_booking.filter(sa.or_(*on_booking_status_filter)).subquery()
-        on_collective_offer_filters.append(models.CollectiveOffer.id.in_(sa.select(substmt.c.id)))
+        subquery = (
+            query_with_booking.filter(sa.or_(*on_booking_status_filter))
+            .with_entities(models.CollectiveOffer.id)
+            .subquery()
+        )
+        on_collective_offer_filters.append(models.CollectiveOffer.id.in_(sa.select(subquery.c.id)))
 
-    # Add filters on `CollectiveOffer`
+    # Add filters on CollectiveOffer
     if on_collective_offer_filters:
         query = query.filter(sa.or_(*on_collective_offer_filters))
 
     return query
-
-
-def add_last_booking_status_to_collective_offer_query(query: sa_orm.Query) -> typing.Tuple[typing.Any, sa_orm.Query]:
-    last_booking_query = (
-        db.session.query(models.CollectiveBooking)
-        .with_entities(
-            models.CollectiveBooking.collectiveStockId,
-            sa.func.max(models.CollectiveBooking.dateCreated).label("maxdate"),
-        )
-        .group_by(models.CollectiveBooking.collectiveStockId)
-        .subquery()
-    )
-
-    collective_stock_with_last_booking_status_query = (
-        db.session.query(models.CollectiveStock)
-        .with_entities(
-            models.CollectiveStock.collectiveOfferId,
-            models.CollectiveStock.bookingLimitDatetime,
-            models.CollectiveBooking.status,
-            models.CollectiveBooking.cancellationReason,
-        )
-        .outerjoin(
-            models.CollectiveBooking,
-            models.CollectiveStock.collectiveBookings,
-        )
-        .join(
-            last_booking_query,
-            sa.and_(
-                models.CollectiveBooking.collectiveStockId == last_booking_query.c.collectiveStockId,
-                models.CollectiveBooking.dateCreated == last_booking_query.c.maxdate,
-            ),
-        )
-    )
-
-    subquery = collective_stock_with_last_booking_status_query.subquery()
-
-    query_with_booking = query.outerjoin(
-        subquery,
-        subquery.c.collectiveOfferId == models.CollectiveOffer.id,
-    )
-
-    return subquery, query_with_booking
 
 
 def get_collective_offers_for_filters(
