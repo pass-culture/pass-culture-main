@@ -35,7 +35,7 @@ class AddressResponseIsLinkedToVenueModel(AddressResponseModel):
     isManualEdition: bool
 
 
-class VenueOffererAddressAddressInfoGetter(pydantic_v1.utils.GetterDict):
+class VenueAddressInfoGetter(pydantic_v1.utils.GetterDict):
     def get(self, key: str, default: typing.Any = None) -> typing.Any:
         venue = self._obj
         latitude = None
