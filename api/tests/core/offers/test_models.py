@@ -176,32 +176,10 @@ class OfferStatusTest:
 
         assert rejected_offer.status == offer_mixin.OfferStatus.REJECTED
 
-    def test_expression_rejected(self):
-        rejected_offer = factories.OfferFactory(validation=models.OfferValidationStatus.REJECTED, isActive=False)
-        approved_offer = factories.OfferFactory()
-
-        assert db.session.query(models.Offer).filter(
-            models.Offer.status == offer_mixin.OfferStatus.REJECTED.name
-        ).all() == [rejected_offer]
-        assert db.session.query(models.Offer).filter(
-            models.Offer.status != offer_mixin.OfferStatus.REJECTED.name
-        ).all() == [approved_offer]
-
     def test_pending(self):
         pending_offer = factories.OfferFactory(validation=models.OfferValidationStatus.PENDING)
 
         assert pending_offer.status == offer_mixin.OfferStatus.PENDING
-
-    def test_expression_pending(self):
-        pending_offer = factories.OfferFactory(validation=models.OfferValidationStatus.PENDING, isActive=False)
-        approved_offer = factories.OfferFactory()
-
-        assert db.session.query(models.Offer).filter(
-            models.Offer.status == offer_mixin.OfferStatus.PENDING.name
-        ).all() == [pending_offer]
-        assert db.session.query(models.Offer).filter(
-            models.Offer.status != offer_mixin.OfferStatus.PENDING.name
-        ).all() == [approved_offer]
 
     def test_active(self):
         stock = factories.StockFactory()
@@ -209,35 +187,12 @@ class OfferStatusTest:
 
         assert active_offer.status == offer_mixin.OfferStatus.ACTIVE
 
-    def test_expression_active(self):
-        stock = factories.StockFactory()
-        active_offer = stock.offer
-
-        assert db.session.query(models.Offer).filter(
-            models.Offer.status == offer_mixin.OfferStatus.ACTIVE.name
-        ).all() == [active_offer]
-        assert (
-            db.session.query(models.Offer).filter(models.Offer.status != offer_mixin.OfferStatus.ACTIVE.name).all()
-            == []
-        )
-
     def test_inactive(self):
         inactive_offer = factories.OfferFactory(
             validation=models.OfferValidationStatus.APPROVED, isActive=False, stocks=[factories.StockFactory()]
         )
 
         assert inactive_offer.status == offer_mixin.OfferStatus.INACTIVE
-
-    def test_expression_inactive(self):
-        inactive_offer = factories.OfferFactory(validation=models.OfferValidationStatus.APPROVED, isActive=False)
-        approved_offer = factories.OfferFactory()
-
-        assert db.session.query(models.Offer).filter(
-            models.Offer.status == offer_mixin.OfferStatus.INACTIVE.name
-        ).all() == [inactive_offer]
-        assert db.session.query(models.Offer).filter(
-            models.Offer.status != offer_mixin.OfferStatus.INACTIVE.name
-        ).all() == [approved_offer]
 
     def test_expired(self):
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
@@ -252,20 +207,6 @@ class OfferStatusTest:
 
         assert expired_offer.status == offer_mixin.OfferStatus.EXPIRED
 
-    def test_expression_expired(self):
-        expired_stock = factories.StockFactory(
-            bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(minutes=1),
-        )
-        expired_offer = expired_stock.offer
-        approved_offer = factories.OfferFactory()
-
-        assert db.session.query(models.Offer).filter(
-            models.Offer.status == offer_mixin.OfferStatus.EXPIRED.name
-        ).all() == [expired_offer]
-        assert db.session.query(models.Offer).filter(
-            models.Offer.status != offer_mixin.OfferStatus.EXPIRED.name
-        ).all() == [approved_offer]
-
     def test_sold_out(self):
         sold_out_offer = factories.OfferFactory(
             validation=models.OfferValidationStatus.APPROVED,
@@ -273,45 +214,6 @@ class OfferStatusTest:
         )
 
         assert sold_out_offer.status == offer_mixin.OfferStatus.SOLD_OUT
-
-    def test_expression_sold_out(self):
-        sold_out_stock = factories.StockFactory(quantity=0)
-        sold_out_offer = sold_out_stock.offer
-        not_sold_out_stock = factories.StockFactory(quantity=10)
-        not_sold_out_offer = not_sold_out_stock.offer
-
-        assert db.session.query(models.Offer).filter(
-            models.Offer.status == offer_mixin.OfferStatus.SOLD_OUT.name
-        ).all() == [sold_out_offer]
-        assert db.session.query(models.Offer).filter(
-            models.Offer.status != offer_mixin.OfferStatus.SOLD_OUT.name
-        ).all() == [not_sold_out_offer]
-
-    def test_expression_sold_out_offer_without_stock(self):
-        offer = factories.OfferFactory()
-
-        assert db.session.query(models.Offer).filter(
-            models.Offer.status == offer_mixin.OfferStatus.SOLD_OUT.name
-        ).all() == [offer]
-        assert (
-            db.session.query(models.Offer).filter(models.Offer.status != offer_mixin.OfferStatus.SOLD_OUT.name).count()
-            == 0
-        )
-
-    def test_expression_sold_out_offer_with_passed_stock(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
-        future = datetime.datetime.utcnow() + datetime.timedelta(days=2)
-        offer = factories.OfferFactory()
-        factories.StockFactory(offer=offer, quantity=10, beginningDatetime=past, bookingLimitDatetime=past)
-        factories.StockFactory(offer=offer, quantity=0, beginningDatetime=future, bookingLimitDatetime=future)
-
-        assert db.session.query(models.Offer).filter(
-            models.Offer.status == offer_mixin.OfferStatus.SOLD_OUT.name
-        ).all() == [offer]
-        assert (
-            db.session.query(models.Offer).filter(models.Offer.status != offer_mixin.OfferStatus.SOLD_OUT.name).count()
-            == 0
-        )
 
 
 @pytest.mark.features(WIP_REFACTO_FUTURE_OFFER=True)
@@ -390,7 +292,6 @@ class NewOfferStatusTest:
 
         assert inactive_offer.status == offer_mixin.OfferStatus.INACTIVE
 
-    @pytest.mark.skip(reason="We must wait for `publicationDatetime` migration to implement this new behaviour")
     def test_expression_inactive(self):
         yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
         inactive_offer = factories.OfferFactory(

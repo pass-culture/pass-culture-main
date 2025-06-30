@@ -1170,13 +1170,8 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
             (cls.validation == OfferValidationStatus.REJECTED.name, OfferStatus.REJECTED.name),
             (cls.validation == OfferValidationStatus.PENDING.name, OfferStatus.PENDING.name),
             (cls.validation == OfferValidationStatus.DRAFT.name, OfferStatus.DRAFT.name),
-            # TODO: (tcoudray-pass, 20/06/25) Replace with `cls.publicationDatetime.is_(None)` when `publicationDatetime` has been migrated
-            ((cls.isActive.is_(False)), OfferStatus.INACTIVE.name),
-            (
-                # TODO: (tcoudray-pass, 20/06/25) Remove `cls.publicationDatetime.is_not(None)` when `publicationDatetime` has been migrated
-                cls.publicationDatetime.is_not(None) & (cls.publicationDatetime > sa.func.now()),
-                OfferStatus.SCHEDULED.name,
-            ),
+            (cls.publicationDatetime.is_(None), OfferStatus.INACTIVE.name),
+            (cls.publicationDatetime > sa.func.now(), OfferStatus.SCHEDULED.name),
             (
                 cls.bookingAllowedDatetime.is_not(None) & (cls.bookingAllowedDatetime > sa.func.now()),
                 OfferStatus.PUBLISHED.name,

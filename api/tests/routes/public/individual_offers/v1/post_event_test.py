@@ -278,8 +278,6 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         }
         assert created_offer.bookingEmail == "nicoj@example.com"
 
-        # TODO : (tcoudray-pass, 12/06/25) Remove when future_offer is removed
-        assert created_offer.publicationDate == datetime(2025, 6, 25, 12, 30)
         assert created_offer.finalizationDatetime == datetime(2025, 6, 25, 12, 30)
         assert created_offer.publicationDatetime == datetime(2025, 6, 25, 12, 30)
 
