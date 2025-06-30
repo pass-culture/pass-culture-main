@@ -247,6 +247,44 @@ describe('validationSchema OfferEducational', () => {
         },
         expectedErrors: [],
       },
+      {
+        description:
+          'valid form when postalCode is not required and if locationType is not ADDRESS',
+        formValues: {
+          ...defaultValues,
+          location: {
+            locationType: CollectiveLocationType.SCHOOL,
+            address: {
+              isManualEdition: false,
+            },
+          },
+          postalCode: '',
+          interventionArea: ['45'],
+        },
+        expectedErrors: [],
+
+        isCollectiveOaActive: true,
+      },
+      {
+        description:
+          'invalid form when postalCode is required and postalCode is not 5 chars',
+        formValues: {
+          ...defaultValues,
+          location: {
+            locationType: CollectiveLocationType.ADDRESS,
+            address: {
+              id_oa: 'SPECIFIC_ADDRESS',
+              isManualEdition: true,
+            },
+          },
+          street: '1 rue du chemin',
+          city: 'Brest',
+          postalCode: '123',
+          coords: '48.853320, 2.348979',
+        },
+        expectedErrors: ['Veuillez renseigner un code postal valide'],
+        isCollectiveOaActive: true,
+      },
     ]
 
     cases.forEach(
