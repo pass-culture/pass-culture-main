@@ -69,6 +69,19 @@ jobs:
           if-no-files-found: error
           path: pro/build
 
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-buildx-
+
+      - name: Cache Poetry
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pypoetry
+          key: poetry-${{ hashFiles('**/poetry.lock') }}
+
   setup:
     name: Setup E2E 🔧
     runs-on: ubuntu-24.04
@@ -89,11 +102,18 @@ jobs:
     needs: [setup, install]
     strategy:
       # don't fail the entire matrix on failure
-      fail-fast: false
+      fail-fast: true
+      max-parallel: 4
       matrix:
         #chunk: ${{ fromJson(needs.setup.outputs['test-chunks']) }}
-        # Manually setting tests to have them have (aproximatively) the same duration
-        chunk: ["cypress/e2e/desk.cy.ts,cypress/e2e/signupJourneyCreateOfferer.cy.ts,cypress/e2e/adageConfirmation.cy.ts", "cypress/e2e/editDigitalIndividualOffer.cy.ts,cypress/e2e/searchCollectiveOffer.cy.ts,cypress/e2e/navigation.cy.ts,cypress/e2e/createIndividualOffer.cy.ts", "cypress/e2e/oaIndividualOffer.cy.ts,cypress/e2e/didacticOnboarding.cy.ts,cypress/e2e/createAccount.cy.ts,cypress/e2e/cookieBanner.cy.ts,cypress/e2e/collaborator.cy.ts", "cypress/e2e/searchIndividualOffer.cy.ts,cypress/e2e/collectiveBooking.cy.ts,cypress/e2e/createCollectiveOffer.cy.ts,cypress/e2e/adage.cy.ts,cypress/e2e/financialManagement.cy.ts"]
+        # Manually setting tests to have them have (approximatively) the same duration
+        chunk: [
+          'cypress/e2e/desk.cy.ts,cypress/e2e/signupJourneyCreateOfferer.cy.ts,cypress/e2e/adageConfirmation.cy.ts',
+          'cypress/e2e/editDigitalIndividualOffer.cy.ts,cypress/e2e/searchCollectiveOffer.cy.ts,cypress/e2e/navigation.cy.ts,cypress/e2e/createIndividualOffer.cy.ts',
+          'cypress/e2e/oaIndividualOffer.cy.ts,cypress/e2e/didacticOnboarding.cy.ts,cypress/e2e/createAccount.cy.ts,cypress/e2e/cookieBanner.cy.ts,cypress/e2e/collaborator.cy.ts',
+          'cypress/e2e/searchIndividualOffer.cy.ts,cypress/e2e/collectiveBooking.cy.ts,cypress/e2e/createCollectiveOffer.cy.ts,cypress/e2e/adage.cy.ts,cypress/e2e/financialManagement.cy.ts',
+          'cypress/e2e/oaCollectiveOffer.cy.ts'
+        ]
 
     steps:
       - name: Checkout
@@ -212,7 +232,7 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           wait-on: "http://localhost:5001/health/api,http://localhost:5001/health/database"
-          wait-on-timeout: 600
+          wait-on-timeout: 120 # 2 minutes is enough for API/DB to be ready
           working-directory: pro
           browser: chrome
           config-file: cypress/cypress.config.ts
@@ -223,7 +243,7 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ steps.secrets.outputs.CYPRESS_CLOUD_RECORD_KEY }}
           CYPRESS_PROJECT_ID: ${{ steps.secrets.outputs.CYPRESS_CLOUD_PROJECT_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEBUG: 'cypress:server:socket-base,cypress:server:socket-e2e'
+          #DEBUG: 'cypress:server:socket-base,cypress:server:socket-e2e'
           # see https://github.com/cypress-io/github-action/issues/1408#issuecomment-2744425883
           NODE_OPTIONS: "--no-experimental-require-module --no-experimental-detect-module"
 
@@ -232,7 +252,6 @@ jobs:
         run: |
           mkdir -p cypress/videos/${{ github.ref }}/${{ github.sha }} && \
           mv cypress/videos/*.mp4 cypress/videos/${{ github.ref }}/${{ github.sha }}/
-
       - name: "Archive E2E results"
         if: always() && failure() && github.ref != 'refs/heads/master' # useless on master bc Cypress Cloud
         uses: google-github-actions/upload-cloud-storage@v2

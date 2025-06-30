@@ -164,12 +164,11 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  test-pro-e2e:
-    name: "Pro E2E Tests"
+  test-pro-e2e-parallel:
+    name: "Pro E2E Tests (Parallel)"
     needs: [pcapi-init-job, build-pcapi-tests]
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
-    if: |
-      always() &&
+    if: always() &&
       !cancelled() &&
       needs.pcapi-init-job.outputs.api-changed == 'true' ||
       needs.pcapi-init-job.outputs.pro-changed == 'true'
