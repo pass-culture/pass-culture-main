@@ -3,6 +3,7 @@ import typing
 import uuid
 
 import pytest
+from werkzeug.test import TestResponse
 
 from pcapi.core import testing
 from pcapi.core.categories import subcategories
@@ -20,10 +21,15 @@ from tests.conftest import TestClient
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+@pytest.mark.usefixtures("client")
 class PublicAPIEndpointBaseHelper:
     """
     For Public API endpoints that require authentication
     """
+
+    @pytest.fixture(autouse=True)
+    def _setup(self, request):
+        self.client: TestClient = request.getfixturevalue("client")
 
     @property
     def endpoint_url(self):
@@ -46,17 +52,39 @@ class PublicAPIEndpointBaseHelper:
         """
         return {}
 
+    def make_request(
+        self,
+        plain_api_key: str | None = None,
+        path_params: dict | None = None,
+        query_params: dict | None = None,
+        json_body: dict | None = None,
+    ) -> TestResponse:
+        client_method = getattr(self.client, self.endpoint_method)
+
+        if plain_api_key is not None:
+            self.client.with_explicit_token(plain_api_key)
+
+        inputs = {}
+        url = self.endpoint_url
+        path_params = path_params or self.default_path_params
+
+        if path_params:
+            url = url.format(**path_params)
+
+        if query_params is not None:
+            inputs["params"] = query_params
+
+        if json_body is not None:
+            inputs["json"] = json_body
+
+        return client_method(url, **inputs)
+
     def test_should_raise_401_because_not_authenticated(self, client: TestClient):
         """
         Default test ensuring the API call is authenticated before proceeding
         """
-        client_method = getattr(client, self.endpoint_method)
-        url = self.endpoint_url
-
-        if self.default_path_params:
-            url = url.format(**self.default_path_params)
         with testing.assert_num_queries(0):
-            response = client_method(url)
+            response = self.make_request()
             assert response.status_code == 401
 
         assert response.json == {"auth": "API key required"}
@@ -67,17 +95,10 @@ class PublicAPIEndpointBaseHelper:
         """
         Default test ensuring the API call is authenticated and that the API key authenticates a provider
         """
-        plain_api_key = self.setup_old_api_key()
-        client_method = getattr(client.with_explicit_token(plain_api_key), self.endpoint_method)
-        url = self.endpoint_url
-
-        if self.default_path_params:
-            url = url.format(**self.default_path_params)
-
         # TODO: (tcoudray-pass, 23/06/25) Restore `testing.assert_num_queries` when all public API endpoints use `@atomic`
-        response = client_method(url)
-        assert response.status_code == 401
+        response = self.make_request(plain_api_key=self.setup_old_api_key())
 
+        assert response.status_code == 401
         assert response.json == {"auth": "Deprecated API key. Please contact provider support to get a new API key"}
 
     def _setup_api_key(self, offerer, provider=None) -> str:
