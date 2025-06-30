@@ -228,6 +228,22 @@ describe('route Offers', () => {
         expect(screen.queryByText('Lieu', { selector: 'th' })).toBeNull()
         expect(screen.queryByText('Stock', { selector: 'th' })).toBeNull()
       })
+
+      it('should show the "Programmée" status filter option when the FF WIP_REFACTO_FUTURE_OFFER is enabled', async () => {
+        await renderOffers(DEFAULT_SEARCH_FILTERS, ['WIP_REFACTO_FUTURE_OFFER'])
+
+        expect(
+          screen.getByRole('option', { name: 'Programmée' })
+        ).toBeInTheDocument()
+      })
+
+      it('should not show the "Programmée" status filter option when the FF WIP_REFACTO_FUTURE_OFFER is disabled', async () => {
+        await renderOffers()
+
+        expect(
+          screen.queryByRole('option', { name: 'Programmée' })
+        ).not.toBeInTheDocument()
+      })
     })
 
     describe('on click on search button', () => {
