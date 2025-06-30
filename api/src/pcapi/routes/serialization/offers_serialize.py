@@ -20,15 +20,13 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
-from pcapi.routes.native.v1.serialization.offers import OfferVenueResponseGetterDict
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
-from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization import collective_offers_serialize
-from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.address_serialize import AddressResponseIsLinkedToVenueModel
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
+from pcapi.routes.serialization.address_serialize import VenueOffererAddressAddressInfoGetter
 from pcapi.serialization.utils import to_camel
 from pcapi.serialization.utils import validate_datetime
 from pcapi.utils import date as date_utils
@@ -154,6 +152,9 @@ class PatchOfferPublishBodyModel(BaseModel):
     id: int
     publicationDatetime: datetime.datetime | None
     bookingAllowedDatetime: datetime.datetime | None
+
+    _validation_publication_datetime = validate_datetime("publicationDatetime")
+    _validation_bookings_allowed_datetime = validate_datetime("bookingAllowedDatetime")
 
 
 class PatchOfferActiveStatusBodyModel(BaseModel):
@@ -368,108 +369,22 @@ class GetOfferManagingOffererResponseModel(BaseModel):
         orm_mode = True
 
 
-class OfferVenueOAResponseGetterDict(GetterDict):
-    # BULLE
-    def get(self, key: str, default: Any = None) -> Any:
-        if key not in ("street", "city", "departmentCode", "departementCode", "postalCode"):
-            return super().get(key, default)
-        venue = self._obj
-        if venue.offererAddress:
-            if key == "street":
-                return venue.offererAddress.address.street
-            if key == "city":
-                return venue.offererAddress.address.city
-            if key == "departmentCode" or key == "departementCode":
-                return venue.offererAddress.address.departmentCode
-            if key == "postalCode":
-                return venue.offererAddress.address.postalCode
-        return None
-        
-        # if key == "bookingEmail":
-        #     return venue.bookingEmail
-        # if key == "id":
-        #     return venue.id
-        # if key == "isVirtual":
-        #     return venue.isVirtual
-        # if key == "managingOfferer":
-        #     return GetOfferManagingOffererResponseModel(venue)
-        # if key == "nameame":
-        #     return venue.name
-        # if key == "publicName":
-        #     return venue.publicName
-        # print(key, venue.key)
-        # return venue.key
-
-
 class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
-    # @validator("street")
-    # @classmethod
-    # def streetcheck(cls) -> str | None:
-    #     if cls.offererAddress:
-    #         return cls.offererAddress.address.street
-    #     return None
-    # @classmethod
-
-    # def getstreet(cls) -> str | None:
-    #     if cls.offererAddress:
-    #         return cls.offererAddress.address.street
-    #     return None
-    # BULLE
-    # street: str | None = venues_serialize.GetVenueOffererAddressinfoStreet.get(offerers_models.Venue)
     street: str | None
-    # street : str | None = address_serialize.retrieve_address_info_from_oa(offererAddress)["street"]
-    # street: VenueOA
-    # street: str | None = GetVenueOA.getstreet()
     bookingEmail: str | None
     city: str | None
-    departmentCode: str | None
-    # city: str | None = venues_serialize.GetVenueOffererAddressinfo(key="city")
-    # departementCode: str | None = venues_serialize.GetVenueOffererAddressinfo(key="departmentCode")
+    departementCode: str | None
     id: int
     isVirtual: bool
     managingOfferer: GetOfferManagingOffererResponseModel
     name: str
     postalCode: str | None
-    # postalCode: str | None = venues_serialize.GetVenueOffererAddressinfo(key="postalCode")
     publicName: str | None
-
-    # @classmethod
-    # def from_orm(cls, venue: offerers_models.Venue) -> "GetOfferVenueResponseModel":
-    #     if venue.offererAddress is not None:
-    #         venue_address = venue.offererAddress.address
-    #         venue.street = venue_address.street
-    #         venue.postalCode = venue_address.postalCode
-    #         venue.departementCode = venue_address.departmentCode
-    #         venue.city = venue_address.city
-    #     else:
-    #         # TODO(OA): CLEAN_OA remove this when the virtual venues are migrated
-    #         venue.street = None
-    #         venue.departementCode = None
-    #         venue.postalCode = None
-    #         venue.city = None
-    #     return super().from_orm(venue)
-    # @classmethod
-    # def from_orm(cls, venue: offerers_models.Venue) -> "GetOfferVenueResponseModel":
-    #     VenueResponseModel = super().from_orm(venue)
-    #     if venue.offererAddress is not None:
-    #         venue_address = venue.offererAddress.address
-    #         VenueResponseModel.street = venue_address.street
-    #         VenueResponseModel.postalCode = venue_address.postalCode
-    #         VenueResponseModel.departementCode = venue_address.departmentCode
-    #         VenueResponseModel.city = venue_address.city
-    #     else:
-    #         # TODO(OA): CLEAN_OA remove this when the virtual venues are migrated
-    #         VenueResponseModel.street = None
-    #         VenueResponseModel.departementCode = None
-    #         VenueResponseModel.postalCode = None
-    #         VenueResponseModel.city = None
-    # return VenueResponseModel
 
     class Config:
         orm_mode = True
         json_encoders = {datetime.datetime: format_into_utc_date}
-        # getter_dict = OfferVenueOAResponseGetterDict
-        getter_dict = OfferVenueResponseGetterDict
+        getter_dict = VenueOffererAddressAddressInfoGetter
 
 
 class GetOfferLastProviderResponseModel(BaseModel):
@@ -617,7 +532,6 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     thumbUrl: str | None
     externalTicketOfficeUrl: str | None
     url: str | None
-    # BULLE
     venue: GetOfferVenueResponseModel
     withdrawalDelay: int | None
     withdrawalDetails: str | None

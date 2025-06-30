@@ -159,31 +159,6 @@ class GetVenueDomainResponseModel(BaseModel):
         orm_mode = True
 
 
-class GetVenueOffererAddressinfoStreet(pydantic_v1.utils.GetterDict):
-    # BULLE
-    def get(self) -> typing.Any:
-        # return self._obj.offererAddress.address.street or None
-        return self.offererAddress.address.street or None
-
-    class Config:
-        orm_mode = True
-
-
-class GetVenueOffererAddressinfo(pydantic_v1.utils.GetterDict):
-    res: str | None
-
-    def __init__(self, key):
-        self.key = key
-        # def get(self, default: typing.Any = None) -> typing.Any:
-        if not self._obj.offererAddress:
-            return None
-        OA = self._obj.offererAddress.to_dict()
-        self.res = OA[self.key] or None
-
-    class Config:
-        orm_mode = True
-
-
 class LegalStatusResponseModel(BaseModel):
     id: int
     name: str
