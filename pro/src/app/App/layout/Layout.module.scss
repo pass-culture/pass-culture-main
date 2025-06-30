@@ -127,6 +127,23 @@ $connect-as-header-height: rem.torem(52px);
             position: relative;
           }
 
+          &-text-emphasis {
+            position: relative;
+
+            &::after {
+              content: "";
+              display: inline-block;
+              background-color: #794ee3; /* TODO: remove this once we have the appropriate design token */
+              width: calc(100% + 10px);
+              height: rem.torem(14px);
+              position: absolute;
+              top: rem.torem(10px);
+              left: rem.torem(-5px);
+              z-index: -1;
+              border-radius: 100px;
+            }
+          }
+
           @media (max-height: rem.torem(740px)) {
             margin: 4vh auto;
           }
