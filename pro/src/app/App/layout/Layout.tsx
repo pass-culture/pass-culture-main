@@ -182,21 +182,30 @@ export const Layout = ({
               >
                 <div className={styles['image-engagements']}>
                   <p className={styles['image-engagements-text-1']}>
-                    + de 4 millions de jeunes scolarisés ont participé à une
-                    sortie scolaire
+                    + de 4 millions de jeunes scolarisés ont participé à{' '}
+                    <span className={styles['image-engagements-text-emphasis']}>
+                      une sortie scolaire
+                    </span>
                     <span className={styles['citation-icon-1']}>
                       <CitationSVG />
                     </span>
                   </p>
                   <p className={styles['image-engagements-text-2']}>
-                    + de 36 000 acteurs culturels déjà inscrits
+                    + de{' '}
+                    <span className={styles['image-engagements-text-emphasis']}>
+                      36 000 acteurs culturels
+                    </span>{' '}
+                    déjà inscrits
                     <span className={styles['citation-icon-2']}>
                       <CitationSVG />
                     </span>
                   </p>
                   <p className={styles['image-engagements-text-3']}>
-                    + de 2 millions de jeunes ont déjà réservé une offre via
-                    l’application
+                    + de 2 millions de jeunes ont{' '}
+                    <span className={styles['image-engagements-text-emphasis']}>
+                      déjà réservé une offre
+                    </span>{' '}
+                    via l’application
                     <span className={styles['citation-icon-3']}>
                       <CitationSVG />
                     </span>
