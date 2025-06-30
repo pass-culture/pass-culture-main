@@ -12,7 +12,6 @@ from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import date as date_utils
 
-from tests.conftest import TestClient
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 
@@ -22,7 +21,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/bookings/v1/token/{token}"
     endpoint_method = "get"
-    default_path_params = {"token": "TOKEN"}
+    default_path_params = {"token": "T0K3N"}
 
     def setup_base_resource(self, venue=None):
         venue = venue or self.setup_venue()
@@ -45,7 +44,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
 
         return offer, stock, booking
 
-    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
+    def test_should_raise_404_because_has_no_access_to_venue(self):
         plain_api_key, _ = self.setup_provider()
         _, _, booking = self.setup_base_resource()
         token = booking.token
@@ -53,10 +52,10 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select booking
         num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=token))
+            response = self.make_request(plain_api_key=plain_api_key, path_params={"token": token})
             assert response.status_code == 404
 
-    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
+    def test_should_raise_404_because_venue_provider_is_inactive(self):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
         _, _, booking = self.setup_base_resource(venue=venue_provider.venue)
         token = booking.token
@@ -64,15 +63,15 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select booking
         num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=token))
+            response = self.make_request(plain_api_key=plain_api_key, path_params={"token": token})
             assert response.status_code == 404
 
-    def test_should_raise_404_because_of_missing_token(self, client):
+    def test_should_raise_404_because_of_missing_token(self):
         with testing.assert_num_queries(0):
-            response = client.get("/public/bookings/v1/token/")
+            response = self.make_request(path_params=dict(token=""))
             assert response.status_code == 404
 
-    def test_key_has_rights_and_regular_product_offer(self, client):
+    def test_key_has_rights_and_regular_product_offer(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer, stock, booking = self.setup_base_resource(venue=venue_provider.venue)
 
@@ -82,7 +81,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # check pricing exists
         num_queries += 1  # select user
         with testing.assert_num_queries(num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=token))
+            response = self.make_request(plain_api_key, path_params=dict(token=token))
             assert response.status_code == 200
 
         assert response.json == {
@@ -110,7 +109,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
             "userPostalCode": "75001",
         }
 
-    def test_key_has_rights_and_regular_event_offer(self, client):
+    def test_key_has_rights_and_regular_event_offer(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue_provider.venue,
@@ -135,7 +134,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select price_category
         num_queries += 1  # select price_category_label
         with testing.assert_num_queries(num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
+            response = self.make_request(plain_api_key=plain_api_key, path_params={"token": booking_token})
             assert response.status_code == 200
 
         assert response.json == {
@@ -177,7 +176,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # check pricing exists
         num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
+            response = self.make_request(plain_api_key=plain_api_key, path_params={"token": booking_token})
             assert response.status_code == 403
 
         cancellation_limit_date = datetime.datetime.strftime(
@@ -191,7 +190,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
             "booking": f"Vous pourrez valider cette contremarque à partir du {cancellation_limit_date}, une fois le délai d’annulation passé."
         }
 
-    def test_should_raise_403_when_booking_is_refunded(self, client):
+    def test_should_raise_403_when_booking_is_refunded(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
@@ -202,12 +201,12 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select booking
         num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
+            response = self.make_request(plain_api_key=plain_api_key, path_params={"token": booking_token})
             assert response.status_code == 403
 
         assert response.json == {"payment": "This booking has already been reimbursed"}
 
-    def test_should_raise_403_when_offerer_is_closed(self, client):
+    def test_should_raise_403_when_offerer_is_closed(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         offerer = venue_provider.venue.managingOfferer
@@ -225,41 +224,31 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # check pricing exists
         num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
+            response = self.make_request(plain_api_key=plain_api_key, path_params={"token": booking_token})
             assert response.status_code == 403
 
         assert response.json == {"booking": ["Vous ne pouvez plus valider de contremarque sur une structure fermée"]}
         assert booking.status == bookings_models.BookingStatus.CONFIRMED
 
-    def test_should_raise_410_when_booking_is_already_validated(self, client):
+    @pytest.mark.parametrize(
+        "factory, expected_response_json",
+        [
+            (bookings_factories.UsedBookingFactory, {"booking": "This booking has already been validated"}),
+            (bookings_factories.CancelledBookingFactory, {"booking": "This booking has been cancelled"}),
+        ],
+    )
+    def test_should_raise_410(self, factory, expected_response_json):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         product_offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
         product_stock = offers_factories.StockFactory(offer=product_offer)
-        booking_token = bookings_factories.UsedBookingFactory(stock=product_stock).token
+        booking_token = factory(stock=product_stock).token
 
         num_queries = 1  # select api_key
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
         num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
+            response = self.make_request(plain_api_key=plain_api_key, path_params={"token": booking_token})
             assert response.status_code == 410
 
-        assert response.json == {"booking": "This booking has already been validated"}
-
-    def test_should_raise_410_when_booking_is_cancelled(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        product_offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
-        product_stock = offers_factories.StockFactory(offer=product_offer)
-        booking = bookings_factories.CancelledBookingFactory(stock=product_stock)
-        booking_token = booking.token
-
-        num_queries = 1  # select api_key
-        num_queries += 1  # select booking
-        num_queries += 1  # check pricing exists
-        num_queries += 1  # rollback atomic
-        with testing.assert_num_queries(num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
-            assert response.status_code == 410
-
-        assert response.json == {"booking": "This booking has been cancelled"}
+        assert response.json == expected_response_json

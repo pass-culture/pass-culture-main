@@ -81,32 +81,24 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             "name": "Le champ des possibles",
         }
 
-    def test_should_raise_401_because_not_authenticated(self, client):
-        response = client.post(self.endpoint_url, json={})
-        assert response.status_code == 401
-
-    def test_should_raise_404_because_has_no_access_to_venue(self, client):
+    def test_should_raise_404_because_has_no_access_to_venue(self):
         plain_api_key, _ = self.setup_provider()
         venue = self.setup_venue()
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url, json=self._get_base_payload(venue.id)
-        )
+
+        response = self.make_request(plain_api_key, json_body=self._get_base_payload(venue.id))
         assert response.status_code == 404
 
-    def test_should_raise_404_because_venue_provider_is_inactive(self, client):
+    def test_should_raise_404_because_venue_provider_is_inactive(self):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url, json=self._get_base_payload(venue_provider.venue.id)
-        )
+        response = self.make_request(plain_api_key, json_body=self._get_base_payload(venue_provider.venue.id))
+
         assert response.status_code == 404
 
     @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
-    def test_physical_product_minimal_body(self, client):
+    def test_physical_product_minimal_body(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url, json=self._get_base_payload(venue_provider.venueId)
-        )
+        response = self.make_request(plain_api_key, json_body=self._get_base_payload(venue_provider.venue.id))
 
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
@@ -156,44 +148,43 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         }
 
     @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
-    def test_product_creation_with_full_body(self, client, clear_tests_assets_bucket):
+    def test_product_creation_with_full_body(self, clear_tests_assets_bucket):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {"type": "physical", "venueId": venue_provider.venue.id},
-                "enableDoubleBookings": False,
-                "bookingContact": "contact@example.com",
-                "bookingEmail": "spam@example.com",
-                "categoryRelatedFields": {
-                    "category": "SUPPORT_PHYSIQUE_FILM",
-                    "ean": "1234567891234",
-                },
-                "description": "Enregistrement pour la nuit des temps",
-                "accessibility": {
-                    "audioDisabilityCompliant": True,
-                    "mentalDisabilityCompliant": True,
-                    "motorDisabilityCompliant": False,
-                    "visualDisabilityCompliant": False,
-                },
-                "externalTicketOfficeUrl": "https://maposaic.com",
-                "image": {
-                    "credit": "Jean-Crédit Photo",
-                    "file": image_data.GOOD_IMAGE,
-                },
-                "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
-                "name": "Le champ des possibles",
-                "stock": {
-                    "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
-                    "price": 1234,
-                    "quantity": 3,
-                },
-                "id_at_provider": "l'id du provider",
+        payload = {
+            "location": {"type": "physical", "venueId": venue_provider.venue.id},
+            "enableDoubleBookings": False,
+            "bookingContact": "contact@example.com",
+            "bookingEmail": "spam@example.com",
+            "categoryRelatedFields": {
+                "category": "SUPPORT_PHYSIQUE_FILM",
+                "ean": "1234567891234",
             },
-        )
+            "description": "Enregistrement pour la nuit des temps",
+            "accessibility": {
+                "audioDisabilityCompliant": True,
+                "mentalDisabilityCompliant": True,
+                "motorDisabilityCompliant": False,
+                "visualDisabilityCompliant": False,
+            },
+            "externalTicketOfficeUrl": "https://maposaic.com",
+            "image": {
+                "credit": "Jean-Crédit Photo",
+                "file": image_data.GOOD_IMAGE,
+            },
+            "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
+            "name": "Le champ des possibles",
+            "stock": {
+                "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
+                "price": 1234,
+                "quantity": 3,
+            },
+            "id_at_provider": "l'id du provider",
+        }
+
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 200, response.json
 
@@ -289,14 +280,14 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         ],
     )
     def test_publication_datetime_param(
-        self, client, partial_request_json, expected_publication_datetime, expected_response_publication_datetime
+        self, partial_request_json, expected_publication_datetime, expected_response_publication_datetime
     ):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         payload = self._get_base_payload(venue_provider.venueId)
         payload.update(**partial_request_json)
 
-        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 200
         assert response.json["publicationDatetime"] == expected_response_publication_datetime
@@ -320,7 +311,6 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
     )
     def test_booking_allowed_datetime_param(
         self,
-        client,
         partial_request_json,
         expected_booking_allowed_datetime,
         expected_response_booking_allowed_datetime,
@@ -330,7 +320,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         payload = self._get_base_payload(venue_provider.venueId)
         payload.update(**partial_request_json)
 
-        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 200
         assert response.json["bookingAllowedDatetime"] == expected_response_booking_allowed_datetime
@@ -338,26 +328,24 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.bookingAllowedDatetime == expected_booking_allowed_datetime
 
-    def test_unlimited_quantity(self, client):
+    def test_unlimited_quantity(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {"type": "physical", "venueId": venue_provider.venue.id},
-                "categoryRelatedFields": {
-                    "category": "SUPPORT_PHYSIQUE_FILM",
-                    "ean": "1234567891234",
-                },
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "name": "Le champ des possibles",
-                "stock": {
-                    "bookedQuantity": 0,
-                    "price": 1,
-                    "quantity": "unlimited",
-                },
+        payload = {
+            "location": {"type": "physical", "venueId": venue_provider.venue.id},
+            "categoryRelatedFields": {
+                "category": "SUPPORT_PHYSIQUE_FILM",
+                "ean": "1234567891234",
             },
-        )
+            "accessibility": ACCESSIBILITY_FIELDS,
+            "name": "Le champ des possibles",
+            "stock": {
+                "bookedQuantity": 0,
+                "price": 1,
+                "quantity": "unlimited",
+            },
+        }
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
@@ -369,22 +357,20 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_stock.quantity is None
         assert created_stock.offer == created_offer
 
-    def test_create_allowed_product(self, client):
+    def test_create_allowed_product(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {
-                    "type": "digital",
-                    "url": "https://la-flute-en-chantier.fr",
-                    "venue_id": venue_provider.venue.id,
-                },
-                "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE", "showType": "OPERA-GRAND_OPERA"},
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "name": "La flûte en chantier",
+        payload = {
+            "location": {
+                "type": "digital",
+                "url": "https://la-flute-en-chantier.fr",
+                "venue_id": venue_provider.venue.id,
             },
-        )
+            "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE", "showType": "OPERA-GRAND_OPERA"},
+            "accessibility": ACCESSIBILITY_FIELDS,
+            "name": "La flûte en chantier",
+        }
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 200
         assert db.session.query(offers_models.Offer).count() == 1
@@ -392,18 +378,16 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
     def test_extra_data_deserialization(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {"type": "physical", "venueId": venue_provider.venue.id},
-                "categoryRelatedFields": {
-                    "category": "SUPPORT_PHYSIQUE_FILM",
-                    "ean": "1234567891234",
-                },
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "name": "Le champ des possibles",
+        payload = {
+            "location": {"type": "physical", "venueId": venue_provider.venue.id},
+            "categoryRelatedFields": {
+                "category": "SUPPORT_PHYSIQUE_FILM",
+                "ean": "1234567891234",
             },
-        )
+            "accessibility": ACCESSIBILITY_FIELDS,
+            "name": "Le champ des possibles",
+        }
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 200
         assert response.json["categoryRelatedFields"] == {"category": "SUPPORT_PHYSIQUE_FILM", "ean": "1234567891234"}
@@ -411,7 +395,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.ean == "1234567891234"
         assert "ean" not in created_offer.extraData
 
-    def test_event_with_custom_address(self, client):
+    def test_event_with_custom_address(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         payload = self._get_base_payload(venue_provider.venueId)
         address = geography_factories.AddressFactory()
@@ -426,15 +410,15 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             "addressId": address.id,
             "addressLabel": "My beautiful address no one knows about",
         }
+        response = self.make_request(plain_api_key, json_body=payload)
 
-        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
         assert response.status_code == 200
         assert response.json["location"]["addressId"] == address.id
         assert response.json["location"]["addressLabel"] == "My beautiful address no one knows about"
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.offererAddress == offerer_address
 
-    def test_event_with_custom_address_should_create_offerer_address(self, client):
+    def test_event_with_custom_address_should_create_offerer_address(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         payload = self._get_base_payload(venue_provider.venueId)
         address = geography_factories.AddressFactory()
@@ -454,7 +438,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             "addressId": address.id,
             "addressLabel": "My beautiful address no one knows about",
         }
-        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+        response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
         offerer_address = (
@@ -467,7 +451,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         )
         assert created_offer.offererAddress == offerer_address
 
-    def test_event_with_custom_address_should_raiser_404_because_address_does_not_exist(self, client):
+    def test_event_with_custom_address_should_raiser_404_because_address_does_not_exist(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
         payload = self._get_base_payload(venue_provider.venueId)
         address = geography_factories.AddressFactory()
@@ -478,7 +462,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             "venueId": venue_provider.venueId,
             "addressId": not_existing_address_id,
         }
-        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+        response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 404
         assert response.json == {
             "location.AddressLocation.addressId": [f"There is no address with id {not_existing_address_id}"]
@@ -614,14 +598,13 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             ({"tkilol": ""}, {"tkilol": ["extra fields not permitted"]}),
         ],
     )
-    def test_incorrect_payload_should_return_400(self, client, partial_request_json, expected_response_json):
+    def test_incorrect_payload_should_return_400(self, partial_request_json, expected_response_json):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         existing_offer = offers_factories.OfferFactory(venue=venue_provider.venue, idAtProvider="c'est déjà pris :'(")
 
         payload = self._get_base_payload(venue_provider.venueId)
         payload.update(**partial_request_json)
-
-        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 400
         assert response.json == expected_response_json
@@ -629,22 +612,21 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert db.session.query(offers_models.Offer).filter(offers_models.Offer.id != existing_offer.id).first() is None
         assert db.session.query(offers_models.Stock).first() is None
 
-    def test_venue_allowed_should_return_404(self, client):
+    def test_venue_allowed_should_return_404(self):
         not_allowed_venue = offerers_factories.VenueFactory()
         plain_api_key, _ = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(plain_api_key).post(
-            self.endpoint_url,
-            json={
-                "location": {"type": "physical", "venueId": not_allowed_venue.id},
-                "categoryRelatedFields": {
-                    "category": "SUPPORT_PHYSIQUE_FILM",
-                    "ean": "1234567891234",
-                },
-                "accessibility": ACCESSIBILITY_FIELDS,
-                "name": "Le champ des possibles",
+        payload = {
+            "location": {"type": "physical", "venueId": not_allowed_venue.id},
+            "categoryRelatedFields": {
+                "category": "SUPPORT_PHYSIQUE_FILM",
+                "ean": "1234567891234",
             },
-        )
+            "accessibility": ACCESSIBILITY_FIELDS,
+            "name": "Le champ des possibles",
+        }
+
+        response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 404
         assert response.json == {"global": "Venue cannot be found"}

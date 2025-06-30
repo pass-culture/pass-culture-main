@@ -7,7 +7,6 @@ from pcapi.connectors.api_adresse import InvalidFormatException
 from pcapi.connectors.api_adresse import NoResultException
 from pcapi.core.geography import factories as geography_factories
 
-from tests.conftest import TestClient
 from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 
 
@@ -67,13 +66,13 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
             ({"longitude": "hey"}, {"longitude": ["value is not a valid float"]}),
         ],
     )
-    def test_should_raise_400_because_of_bad_params(self, client: TestClient, partial_query, expected_json):
+    def test_should_raise_400_because_of_bad_params(self, partial_query, expected_json):
         plain_api_key, _ = self.setup_provider()
-        query = dict(self._get_base_query(), **partial_query)
-        result = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params=query)
+        query_params = dict(self._get_base_query(), **partial_query)
+        response = self.make_request(plain_api_key, query_params=query_params)
 
-        assert result.status_code == 400
-        assert result.json == expected_json
+        assert response.status_code == 400
+        assert response.json == expected_json
 
     @pytest.mark.parametrize(
         "missing_param,expected_json",
@@ -85,19 +84,17 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
             ("longitude", {"__root__": ["`longitude` must be set if `latitude` is provided"]}),
         ],
     )
-    def test_should_raise_400_because_of_missing_params(self, client: TestClient, missing_param, expected_json):
+    def test_should_raise_400_because_of_missing_params(self, missing_param, expected_json):
         plain_api_key, _ = self.setup_provider()
-        query = self._get_base_query()
-        query.pop(missing_param)
-        result = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params=query)
+        query_params = self._get_base_query()
+        query_params.pop(missing_param)
+        response = self.make_request(plain_api_key, query_params=query_params)
 
-        assert result.status_code == 400
-        assert result.json == expected_json
+        assert response.status_code == 400
+        assert response.json == expected_json
 
     @patch("pcapi.connectors.api_adresse.get_address")
-    def test_should_return_existing_address_based_on_address_returned_by_the_ban_api(
-        self, get_address_mock, client: TestClient
-    ):
+    def test_should_return_existing_address_based_on_address_returned_by_the_ban_api(self, get_address_mock):
         plain_api_key, _ = self.setup_provider()
         exiting_address, _ = self.set_base_resources()
         get_address_mock.return_value = AddressInfo(
@@ -110,13 +107,13 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
             city="Paris",
             street="182 Rue Saint-Honoré",
         )
-        result = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params=self._get_base_query())
+        response = self.make_request(plain_api_key, query_params=self._get_base_query())
 
         get_address_mock.assert_called_once_with(
             address="182 rue St Honoré", postcode="75001", city="Paris", strict=True
         )
-        assert result.status_code == 200
-        assert result.json == {
+        assert response.status_code == 200
+        assert response.json == {
             "addresses": [
                 {
                     "id": exiting_address.id,
@@ -133,7 +130,7 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
     @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
     @patch("pcapi.connectors.api_adresse.get_address")
     def test_should_return_existing_address_based_on_municipality(
-        self, get_address_mock, get_municipality_centroid_mock, client: TestClient
+        self, get_address_mock, get_municipality_centroid_mock
     ):
         plain_api_key, _ = self.setup_provider()
         _, manual_address = self.set_base_resources()
@@ -150,17 +147,21 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
             street="unused",
         )
 
-        result = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url,
-            params={"postalCode": "71640", "city": "St Jean de Vaux", "street": "Dans le champ derrière chez oim"},
+        response = self.make_request(
+            plain_api_key,
+            query_params={
+                "postalCode": "71640",
+                "city": "St Jean de Vaux",
+                "street": "Dans le champ derrière chez oim",
+            },
         )
 
         get_address_mock.assert_called_once_with(
             address="Dans le champ derrière chez oim", postcode="71640", city="St Jean de Vaux", strict=True
         )
         get_municipality_centroid_mock.assert_called_once_with(postcode="71640", city="St Jean de Vaux")
-        assert result.status_code == 200
-        assert result.json == {
+        assert response.status_code == 200
+        assert response.json == {
             "addresses": [
                 {
                     "id": manual_address.id,
@@ -177,7 +178,7 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
     @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
     @patch("pcapi.connectors.api_adresse.get_address")
     def test_should_return_existing_address_based_on_municipality_and_client_postal_code(
-        self, get_address_mock, get_municipality_centroid_mock, client: TestClient
+        self, get_address_mock, get_municipality_centroid_mock
     ):
         plain_api_key, _ = self.setup_provider()
 
@@ -201,13 +202,13 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
             street="unused",
         )
 
-        result = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url,
-            params={"postalCode": "75016", "city": "Paris", "street": "Carrefour des Tribunes"},
+        response = self.make_request(
+            plain_api_key,
+            query_params={"postalCode": "75016", "city": "Paris", "street": "Carrefour des Tribunes"},
         )
 
-        assert result.status_code == 200
-        assert result.json == {
+        assert response.status_code == 200
+        assert response.json == {
             "addresses": [
                 {
                     "id": manual_address.id,
@@ -231,7 +232,7 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
     @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
     @patch("pcapi.connectors.api_adresse.get_address")
     def test_should_raise_400_because_municipality_not_found_on_BAN_API(
-        self, get_address_mock, get_municipality_centroid_mock, client: TestClient, exception, error_message
+        self, get_address_mock, get_municipality_centroid_mock, exception, error_message
     ):
         plain_api_key, _ = self.setup_provider()
         self.set_base_resources()
@@ -239,9 +240,9 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
         get_address_mock.side_effect = exception()
         get_municipality_centroid_mock.side_effect = exception()
 
-        result = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url,
-            params={
+        response = self.make_request(
+            plain_api_key,
+            query_params={
                 "postalCode": "75017",
                 "city": "Parisse (comme disent les Anglais)",
                 "street": "Place Perave de ouf",
@@ -255,7 +256,7 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
             postcode="75017", city="Parisse (comme disent les Anglais)"
         )
 
-        assert result.status_code == 400
-        assert result.json == {
+        assert response.status_code == 400
+        assert response.json == {
             "__root__": [f"{error_message} for `city=Parisse (comme disent les Anglais)` and `postalCode=75017`"]
         }

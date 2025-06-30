@@ -14,15 +14,14 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.utils import date as date_utils
 
-from tests.conftest import TestClient
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 
 @pytest.mark.usefixtures("db_session")
 class PatchEventStockTest(PublicAPIVenueEndpointHelper):
-    endpoint_url = "/public/offers/v1/events/{event_id}/dates/{stock_id}"
+    endpoint_url = "/public/offers/v1/events/{offer_id}/dates/{stock_id}"
     endpoint_method = "patch"
-    default_path_params = {"event_id": 1, "stock_id": 2}
+    default_path_params = {"offer_id": 1, "stock_id": 2}
 
     @staticmethod
     def _get_base_payload(price_category_id) -> dict:
@@ -74,38 +73,40 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
 
         return offer, stock
 
-    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
+    def test_should_raise_404_because_has_no_access_to_venue(self):
         plain_api_key, _ = self.setup_provider()
-        event, stock = self.setup_base_resource()
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url.format(event_id=event.id, stock_id=stock.id),
-            json=self._get_base_payload(price_category_id=stock.priceCategoryId),
+        _, stock = self.setup_base_resource()
+
+        payload = self._get_base_payload(price_category_id=stock.priceCategoryId)
+        response = self.make_request(
+            plain_api_key, path_params={"offer_id": stock.offerId, "stock_id": stock.id}, json_body=payload
         )
         assert response.status_code == 404
 
-    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
+    def test_should_raise_404_because_venue_provider_is_inactive(self):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        event, stock = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url.format(event_id=event.id, stock_id=stock.id),
-            json=self._get_base_payload(price_category_id=stock.priceCategoryId),
+        _, stock = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        payload = self._get_base_payload(price_category_id=stock.priceCategoryId)
+        response = self.make_request(
+            plain_api_key, path_params={"offer_id": stock.offerId, "stock_id": stock.id}, json_body=payload
         )
         assert response.status_code == 404
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_update_all_fields_on_date_with_price(self, mocked_async_index_offer_ids, client, caplog):
+    def test_update_all_fields_on_date_with_price(self, mocked_async_index_offer_ids, caplog):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event, stock = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        price_category = offers_factories.PriceCategoryFactory(offer=event)
+        offer, stock = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        price_category = offers_factories.PriceCategoryFactory(offer=offer)
 
         one_week_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
         twenty_four_day_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(
             days=24
         )
         with caplog.at_level(logging.INFO):
-            response = client.with_explicit_token(plain_api_key).patch(
-                self.endpoint_url.format(event_id=event.id, stock_id=stock.id),
-                json={
+            response = self.make_request(
+                plain_api_key,
+                path_params={"offer_id": stock.offerId, "stock_id": stock.id},
+                json_body={
                     "beginningDatetime": date_utils.utc_datetime_to_department_timezone(
                         twenty_four_day_from_now, None
                     ).isoformat(),
@@ -149,9 +150,10 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         price_category = offers_factories.PriceCategoryFactory(offer=event)
         bookings_factories.BookingFactory(stock=stock, user__email="benefeciary@email.com")
 
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url.format(event_id=event.id, stock_id=stock.id),
-            json={
+        response = self.make_request(
+            plain_api_key,
+            path_params={"offer_id": stock.offerId, "stock_id": stock.id},
+            json_body={
                 "bookingLimitDatetime": date_utils.format_into_utc_date(two_days_after),
                 "beginningDatetime": date_utils.format_into_utc_date(three_days_after),
                 "priceCategoryId": price_category.id,
@@ -174,7 +176,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         )
         assert mails_testing.outbox[1]["To"] == "benefeciary@email.com"
 
-    def test_update_all_fields_on_date_with_price_category(self, client):
+    def test_update_all_fields_on_date_with_price_category(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event = offers_factories.EventOfferFactory(venue=venue_provider.venue, lastProvider=venue_provider.provider)
         now = datetime.datetime.utcnow()
@@ -192,9 +194,10 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         )
         new_price_category = offers_factories.PriceCategoryFactory(offer=event)
 
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url.format(event_id=stock.offerId, stock_id=stock.id),
-            json={
+        response = self.make_request(
+            plain_api_key,
+            path_params={"offer_id": stock.offerId, "stock_id": stock.id},
+            json_body={
                 "bookingLimitDatetime": date_utils.format_into_utc_date(two_days_after),
                 "beginningDatetime": date_utils.format_into_utc_date(three_days_after),
                 "priceCategoryId": new_price_category.id,
@@ -209,7 +212,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         assert stock.priceCategory == new_price_category
         assert stock.quantity == 24
 
-    def test_update_only_one_field(self, client):
+    def test_update_only_one_field(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event = offers_factories.EventOfferFactory(
             venue=venue_provider.venue,
@@ -227,9 +230,10 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         )
 
         eight_days_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=8)
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url.format(event_id=stock.offerId, stock_id=stock.id),
-            json={
+        response = self.make_request(
+            plain_api_key,
+            path_params={"offer_id": stock.offerId, "stock_id": stock.id},
+            json_body={
                 "bookingLimitDatetime": date_utils.utc_datetime_to_department_timezone(
                     eight_days_from_now, departement_code=None
                 ).isoformat(),
@@ -244,7 +248,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         assert stock.priceCategory == price_category
         assert stock.idAtProviders == "hoho"
 
-    def test_update_quantity(self, client):
+    def test_update_quantity(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         stock = offers_factories.EventStockFactory(
@@ -253,30 +257,24 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
             quantity=10,
             dnBookedQuantity=8,
         )
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url.format(event_id=stock.offerId, stock_id=stock.id),
-            json={"quantity": 3},
+        response = self.make_request(
+            plain_api_key, path_params={"offer_id": stock.offerId, "stock_id": stock.id}, json_body={"quantity": 3}
         )
+
         assert response.status_code == 200
         assert stock.quantity == 11
 
-    def test_update_stock_with_existing_booking(self, client):
+    def test_update_stock_with_existing_booking(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            lastProvider=venue_provider.provider,
-        )
-        price_category = offers_factories.PriceCategoryFactory(offer=event)
-        stock = offers_factories.EventStockFactory(
-            offer=event,
-            quantity=2,
-            priceCategory=price_category,
-        )
+        offer = offers_factories.EventOfferFactory(venue=venue_provider.venue, lastProvider=venue_provider.provider)
+        price_category = offers_factories.PriceCategoryFactory(offer=offer)
+        stock = offers_factories.EventStockFactory(offer=offer, quantity=2, priceCategory=price_category)
         bookings_factories.BookingFactory(stock=stock, quantity=2)
 
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url.format(event_id=stock.offerId, stock_id=stock.id),
-            json={"quantity": 10},
+        response = self.make_request(
+            plain_api_key,
+            path_params={"offer_id": stock.offerId, "stock_id": stock.id},
+            json_body={"quantity": 10},
         )
 
         assert response.status_code == 200
@@ -284,7 +282,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         assert stock.quantity == 12
         assert stock.priceCategory == price_category
 
-    def test_update_stock_quantity_0_with_existing_booking(self, client):
+    def test_update_stock_quantity_0_with_existing_booking(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event = offers_factories.EventOfferFactory(
             venue=venue_provider.venue,
@@ -298,9 +296,10 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         )
         bookings_factories.BookingFactory(stock=stock)
 
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url.format(event_id=stock.offerId, stock_id=stock.id),
-            json={"quantity": 0},
+        response = self.make_request(
+            plain_api_key,
+            path_params={"offer_id": stock.offerId, "stock_id": stock.id},
+            json_body={"quantity": 0},
         )
 
         assert response.status_code == 200
@@ -309,7 +308,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         assert stock.priceCategory == price_category
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_no_update(self, mocked_async_index_offer_ids, client):
+    def test_no_update(self, mocked_async_index_offer_ids):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event = offers_factories.EventOfferFactory(
             venue=venue_provider.venue,
@@ -322,17 +321,17 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
             priceCategory=price_category,
         )
 
-        client = client.with_explicit_token(plain_api_key)
-        response = client.patch(
-            self.endpoint_url.format(event_id=stock.offerId, stock_id=stock.id),
-            json={"quantity": stock.quantity},  # unchanged
+        response = self.make_request(
+            plain_api_key,
+            path_params={"offer_id": stock.offerId, "stock_id": stock.id},
+            json_body={"quantity": stock.quantity},  # unchanged
         )
 
         assert response.status_code == 200
         assert stock.quantity == 20
         mocked_async_index_offer_ids.assert_not_called()
 
-    def test_patch_date_with_the_same_date_should_not_trigger_any_notification(self, client):
+    def test_patch_date_with_the_same_date_should_not_trigger_any_notification(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         event = offers_factories.EventOfferFactory(
@@ -350,9 +349,10 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
             beginningDatetime=start,
         )
 
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url.format(event_id=event.id, stock_id=stock.id),
-            json={"beginningDatetime": start.isoformat()},
+        response = self.make_request(
+            plain_api_key,
+            path_params={"offer_id": stock.offerId, "stock_id": stock.id},
+            json_body={"beginningDatetime": start.isoformat()},
         )
 
         assert response.status_code == 200
@@ -442,7 +442,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
             ),
         ],
     )
-    def test_should_raise_400(self, client, request_json, expected_response_json):
+    def test_should_raise_400(self, request_json, expected_response_json):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer, stock = self.setup_base_resource(
             venue=venue_provider.venue,
@@ -452,9 +452,10 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         )
         offers_factories.StockFactory(offer=offer, idAtProviders="c'est déjà pris :'(")
 
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url.format(event_id=offer.id, stock_id=stock.id),
-            json=request_json,
+        response = self.make_request(
+            plain_api_key,
+            path_params={"offer_id": offer.id, "stock_id": stock.id},
+            json_body=request_json,
         )
 
         assert response.status_code == 400
@@ -465,23 +466,20 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         [
             ({}, {"priceCategoryId": 12}, {"priceCategoryId": ["The price category could not be found"]}),
             ({"stock_id": 45}, {}, {"stock_id": ["No stock could be found"]}),
-            ({"event_id": 45}, {}, {"event_id": ["The event could not be found"]}),
+            ({"offer_id": 45}, {}, {"event_id": ["The event could not be found"]}),
         ],
     )
     def test_should_raise_404(self, client, partial_path_params, partial_request_json, expected_response_json):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer, stock = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
 
-        path_params = dict(event_id=offer.id, stock_id=stock.id)
+        path_params = dict(offer_id=offer.id, stock_id=stock.id)
         path_params.update(**partial_path_params)
 
         payload = {"quantity": 10}
         payload.update(**partial_request_json)
 
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url.format(**path_params),
-            json=payload,
-        )
+        response = self.make_request(plain_api_key, path_params=path_params, json_body=payload)
 
         assert response.status_code == 404
         assert response.json == expected_response_json

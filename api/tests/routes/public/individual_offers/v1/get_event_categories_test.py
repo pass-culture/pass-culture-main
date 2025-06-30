@@ -16,11 +16,11 @@ class GetEventCategoriesTest(PublicAPIEndpointBaseHelper):
     endpoint_url = "/public/offers/v1/events/categories"
     endpoint_method = "get"
 
-    def test_returns_all_selectable_categories(self, client):
+    def test_returns_all_selectable_categories(self):
         plain_api_key, _ = self.setup_provider()
 
         with testing.assert_num_queries(num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+            response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
         assert set(subcategory["id"] for subcategory in response.json) == set(
@@ -29,11 +29,11 @@ class GetEventCategoriesTest(PublicAPIEndpointBaseHelper):
             if subcategory.is_selectable
         )
 
-    def test_category_serialization(self, client):
+    def test_category_serialization(self):
         plain_api_key, _ = self.setup_provider()
 
         with testing.assert_num_queries(num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+            response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
         assert all({"id", "conditionalFields"} == set(category_response.keys()) for category_response in response.json)

@@ -13,24 +13,22 @@ class GetProductCategoriesTest(PublicAPIEndpointBaseHelper):
     endpoint_url = "/public/offers/v1/products/categories"
     endpoint_method = "get"
 
-    num_queries = 1  # select api_key, offerer and provider
-
-    def test_returns_all_selectable_categories(self, client):
+    def test_returns_all_selectable_categories(self):
         plain_api_key, _ = self.setup_provider()
 
-        with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+        with testing.assert_num_queries(1):
+            response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
         assert set(subcategory["id"] for subcategory in response.json) == set(
             subcategory.id for subcategory in ALLOWED_PRODUCT_SUBCATEGORIES
         )
 
-    def test_category_serialization(self, client):
+    def test_category_serialization(self):
         plain_api_key, _ = self.setup_provider()
 
-        with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+        with testing.assert_num_queries(1):
+            response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
         assert all(
