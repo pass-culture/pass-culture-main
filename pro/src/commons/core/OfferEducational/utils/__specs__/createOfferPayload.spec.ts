@@ -284,6 +284,32 @@ describe('createOfferPayload', () => {
     )
   })
 
+  it.each([null, undefined, ''])(
+    'should create a template offer payload with location infos when OA FF is active and locationType is TO_BE_DEFINED and comment is empty',
+    (comment) => {
+      const offerPayload = createCollectiveOfferTemplatePayload(
+        {
+          ...offer,
+          location: {
+            locationType: CollectiveLocationType.TO_BE_DEFINED,
+            locationComment: comment,
+          },
+        },
+        true
+      )
+
+      expect(offerPayload).toEqual(
+        expect.objectContaining({
+          location: {
+            locationType: CollectiveLocationType.TO_BE_DEFINED,
+
+            locationComment: null,
+          },
+          interventionArea: ['44'],
+        })
+      )
+    }
+  )
   it('should create a template offer payload with offerVenue infos when OA FF is not active', () => {
     const offerPayload = createCollectiveOfferTemplatePayload(offer, false)
 

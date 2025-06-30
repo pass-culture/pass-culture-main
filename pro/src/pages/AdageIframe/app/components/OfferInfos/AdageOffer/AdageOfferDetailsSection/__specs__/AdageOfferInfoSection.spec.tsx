@@ -198,6 +198,29 @@ describe('OA feature flag', () => {
     expect(screen.getByText('Test comment section')).toBeInTheDocument()
   })
 
+  it.each([null, undefined, ''])(
+    'should not display comment section when location type is to be defined and comment is empty',
+    (comment) => {
+      renderAdageOfferInfoSection(
+        {
+          offer: {
+            ...defaultCollectiveTemplateOffer,
+            location: {
+              locationType: CollectiveLocationType.TO_BE_DEFINED,
+              locationComment: comment,
+            },
+          },
+        },
+        { features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'] }
+      )
+
+      expect(
+        screen.getByText('À déterminer avec l’enseignant')
+      ).toBeInTheDocument()
+      expect(screen.queryByText('Commentaire')).toBeNull()
+    }
+  )
+
   it('should display the right wording when location type is school', () => {
     renderAdageOfferInfoSection(
       {
