@@ -307,10 +307,13 @@ export function getOfferEducationalValidationSchema(
       .when(['location.locationType', 'location.address.isManualEdition'], {
         is: (locationType: string, isManualEdition: boolean) =>
           locationType === CollectiveLocationType.ADDRESS && isManualEdition,
-        then: (schema) => schema.required('Veuillez renseigner un code postal'),
-      })
-      .min(5, 'Veuillez renseigner un code postal valide')
-      .max(5, 'Veuillez renseigner un code postal valide'),
+        then: (schema) =>
+          schema
+            .required('Veuillez renseigner un code postal')
+            .min(5, 'Veuillez renseigner un code postal valide')
+            .max(5, 'Veuillez renseigner un code postal valide'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
     city: yup
       .string()
       .trim()
