@@ -4019,34 +4019,6 @@
                 "title": "GetEventCategoriesResponse",
                 "type": "array"
             },
-            "GetEventStocksQueryParams": {
-                "properties": {
-                    "firstIndex": {
-                        "default": 1,
-                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
-                        "minimum": 1,
-                        "title": "Firstindex",
-                        "type": "integer"
-                    },
-                    "idsAtProvider": {
-                        "description": "List of your ids to filter on (max 100)",
-                        "example": "5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443",
-                        "nullable": true,
-                        "title": "Idsatprovider",
-                        "type": "string"
-                    },
-                    "limit": {
-                        "default": 50,
-                        "description": "Maximum number of items per page.",
-                        "exclusiveMinimum": 0,
-                        "maximum": 50,
-                        "title": "Limit",
-                        "type": "integer"
-                    }
-                },
-                "title": "GetEventStocksQueryParams",
-                "type": "object"
-            },
             "GetFilteredBookingsRequest": {
                 "properties": {
                     "beginningDatetime": {
@@ -4274,34 +4246,6 @@
                     }
                 },
                 "title": "GetOffersQueryParams",
-                "type": "object"
-            },
-            "GetPriceCategoriesQueryParams": {
-                "properties": {
-                    "firstIndex": {
-                        "default": 1,
-                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
-                        "minimum": 1,
-                        "title": "Firstindex",
-                        "type": "integer"
-                    },
-                    "idsAtProvider": {
-                        "description": "List of your ids to filter on (max 100)",
-                        "example": "5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443",
-                        "nullable": true,
-                        "title": "Idsatprovider",
-                        "type": "string"
-                    },
-                    "limit": {
-                        "default": 50,
-                        "description": "Maximum number of items per page.",
-                        "exclusiveMinimum": 0,
-                        "maximum": 50,
-                        "title": "Limit",
-                        "type": "integer"
-                    }
-                },
-                "title": "GetPriceCategoriesQueryParams",
                 "type": "object"
             },
             "GetProductCategoriesResponse": {
@@ -4713,6 +4657,34 @@
                     }
                 },
                 "title": "ImageUploadFile",
+                "type": "object"
+            },
+            "IsAtProviderQueryParams": {
+                "properties": {
+                    "firstIndex": {
+                        "default": 1,
+                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
+                        "minimum": 1,
+                        "title": "Firstindex",
+                        "type": "integer"
+                    },
+                    "idsAtProvider": {
+                        "description": "List of your ids to filter on (max 100)",
+                        "example": "5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443",
+                        "nullable": true,
+                        "title": "Idsatprovider",
+                        "type": "string"
+                    },
+                    "limit": {
+                        "default": 50,
+                        "description": "Maximum number of items per page.",
+                        "exclusiveMinimum": 0,
+                        "maximum": 50,
+                        "title": "Limit",
+                        "type": "integer"
+                    }
+                },
+                "title": "IsAtProviderQueryParams",
                 "type": "object"
             },
             "JEU_EN_LIGNE_read": {

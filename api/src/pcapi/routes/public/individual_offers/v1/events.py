@@ -22,6 +22,7 @@ from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public import utils as public_utils
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
+from pcapi.routes.public.individual_offers.v1.serializers import events as events_serializers
 from pcapi.routes.public.services import authorization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
@@ -52,19 +53,19 @@ def _deserialize_has_ticket(
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFERS],
-    response_model=serialization.EventOfferResponse,
+    response_model=events_serializers.EventOfferResponse,
     resp=SpectreeResponse(
         **(
             http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_400_BAD_REQUEST
             | http_responses.HTTP_404_VENUE_NOT_FOUND
             | {
-                "HTTP_200": (serialization.EventOfferResponse, "The event offer has been created successfully"),
+                "HTTP_200": (events_serializers.EventOfferResponse, "The event offer has been created successfully"),
             }
         )
     ),
 )
-def post_event_offer(body: serialization.EventOfferCreation) -> serialization.EventOfferResponse:
+def post_event_offer(body: events_serializers.EventOfferCreation) -> events_serializers.EventOfferResponse:
     """
     Create Event Offer
     """
@@ -157,7 +158,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
 
-    return serialization.EventOfferResponse.build_event_offer(created_offer)
+    return events_serializers.EventOfferResponse.build_event_offer(created_offer)
 
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>", methods=["GET"])
@@ -166,17 +167,17 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFERS],
-    response_model=serialization.EventOfferResponse,
+    response_model=events_serializers.EventOfferResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.EventOfferResponse, "The event offer has been returned")}
+            {"HTTP_200": (events_serializers.EventOfferResponse, "The event offer has been returned")}
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_404_EVENT_NOT_FOUND
         )
     ),
 )
-def get_event(event_id: int) -> serialization.EventOfferResponse:
+def get_event(event_id: int) -> events_serializers.EventOfferResponse:
     """
     Get Event Offer
 
@@ -190,7 +191,7 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
     if not offer:
         raise api_errors.ApiErrors({"event_id": ["The event offer could not be found"]}, status_code=404)
 
-    return serialization.EventOfferResponse.build_event_offer(offer)
+    return events_serializers.EventOfferResponse.build_event_offer(offer)
 
 
 @blueprints.public_api.route("/public/offers/v1/events", methods=["GET"])
@@ -199,10 +200,10 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFERS],
-    response_model=serialization.EventOffersResponse,
+    response_model=events_serializers.EventOffersResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.EventOffersResponse, "The event offers have been returned")}
+            {"HTTP_200": (events_serializers.EventOffersResponse, "The event offers have been returned")}
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_403_UNAUTHORIZED
@@ -210,7 +211,7 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
         )
     ),
 )
-def get_events(query: serialization.GetOffersQueryParams) -> serialization.EventOffersResponse:
+def get_events(query: serialization.GetOffersQueryParams) -> events_serializers.EventOffersResponse:
     """
     Get Event Offers
 
@@ -223,8 +224,8 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
 
     total_offers_query = utils.get_filtered_offers_linked_to_provider(query, is_event=True)
 
-    return serialization.EventOffersResponse(
-        events=[serialization.EventOfferResponse.build_event_offer(offer) for offer in total_offers_query],
+    return events_serializers.EventOffersResponse(
+        events=[events_serializers.EventOfferResponse.build_event_offer(offer) for offer in total_offers_query],
     )
 
 
@@ -234,10 +235,10 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFERS],
-    response_model=serialization.EventOfferResponse,
+    response_model=events_serializers.EventOfferResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.EventOfferResponse, "The event offer has been returned")}
+            {"HTTP_200": (events_serializers.EventOfferResponse, "The event offer has been returned")}
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_400_BAD_REQUEST
@@ -245,7 +246,7 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
         )
     ),
 )
-def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serialization.EventOfferResponse:
+def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> events_serializers.EventOfferResponse:
     """
     Update Event Offer
 
@@ -305,7 +306,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
 
-    return serialization.EventOfferResponse.build_event_offer(offer)
+    return events_serializers.EventOfferResponse.build_event_offer(offer)
 
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/price_categories", methods=["POST"])
@@ -314,10 +315,15 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_PRICES],
-    response_model=serialization.PriceCategoriesResponse,
+    response_model=events_serializers.PriceCategoriesResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.PriceCategoriesResponse, "The price category has been created successfully")}
+            {
+                "HTTP_200": (
+                    events_serializers.PriceCategoriesResponse,
+                    "The price category has been created successfully",
+                )
+            }
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_400_BAD_REQUEST
@@ -326,8 +332,8 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
     ),
 )
 def post_event_price_categories(
-    event_id: int, body: serialization.PriceCategoriesCreation
-) -> serialization.PriceCategoriesResponse:
+    event_id: int, body: events_serializers.PriceCategoriesCreation
+) -> events_serializers.PriceCategoriesResponse:
     """
     Create Price Categories
 
@@ -369,7 +375,7 @@ def post_event_price_categories(
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
 
-    return serialization.PriceCategoriesResponse.build_price_categories(created_price_categories)
+    return events_serializers.PriceCategoriesResponse.build_price_categories(created_price_categories)
 
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/price_categories", methods=["GET"])
@@ -378,10 +384,15 @@ def post_event_price_categories(
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_PRICES],
-    response_model=serialization.PriceCategoriesResponse,
+    response_model=events_serializers.PriceCategoriesResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.PriceCategoriesResponse, "The price category has been created successfully")}
+            {
+                "HTTP_200": (
+                    events_serializers.PriceCategoriesResponse,
+                    "The price category has been created successfully",
+                )
+            }
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_400_BAD_REQUEST
@@ -390,8 +401,8 @@ def post_event_price_categories(
     ),
 )
 def get_event_price_categories(
-    event_id: int, query: serialization.GetPriceCategoriesQueryParams
-) -> serialization.PriceCategoriesResponse:
+    event_id: int, query: events_serializers.IsAtProviderQueryParams
+) -> events_serializers.PriceCategoriesResponse:
     """
     Get Price Categories
 
@@ -407,7 +418,7 @@ def get_event_price_categories(
         id_at_provider_list=query.ids_at_provider,  # type: ignore[arg-type]
     ).all()
 
-    return serialization.PriceCategoriesResponse.build_price_categories(price_categories)
+    return events_serializers.PriceCategoriesResponse.build_price_categories(price_categories)
 
 
 @blueprints.public_api.route(
@@ -418,10 +429,15 @@ def get_event_price_categories(
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_PRICES],
-    response_model=serialization.PriceCategoryResponse,
+    response_model=events_serializers.PriceCategoryResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.PriceCategoryResponse, "The price category has been modified successfully")}
+            {
+                "HTTP_200": (
+                    events_serializers.PriceCategoryResponse,
+                    "The price category has been modified successfully",
+                )
+            }
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_400_BAD_REQUEST
@@ -432,8 +448,8 @@ def get_event_price_categories(
 def patch_event_price_category(
     event_id: int,
     price_category_id: int,
-    body: serialization.PriceCategoryEdition,
-) -> serialization.PriceCategoryResponse:
+    body: events_serializers.PriceCategoryEdition,
+) -> events_serializers.PriceCategoryResponse:
     """
     Update Price Category
 
@@ -466,7 +482,7 @@ def patch_event_price_category(
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
 
-    return serialization.PriceCategoryResponse.from_orm(price_category_to_edit)
+    return events_serializers.PriceCategoryResponse.from_orm(price_category_to_edit)
 
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates", methods=["POST"])
@@ -475,10 +491,10 @@ def patch_event_price_category(
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_STOCKS],
-    response_model=serialization.PostDatesResponse,
+    response_model=events_serializers.PostDatesResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.PostDatesResponse, "The event dates have been created successfully")}
+            {"HTTP_200": (events_serializers.PostDatesResponse, "The event dates have been created successfully")}
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_400_BAD_REQUEST
@@ -486,7 +502,9 @@ def patch_event_price_category(
         )
     ),
 )
-def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) -> serialization.PostDatesResponse:
+def post_event_stocks(
+    event_id: int, body: events_serializers.EventStocksCreation
+) -> events_serializers.PostDatesResponse:
     """
     Add Stocks to an Event
 
@@ -546,8 +564,8 @@ def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) ->
     if errors:
         raise api_errors.ApiErrors(errors)
 
-    return serialization.PostDatesResponse(
-        dates=[serialization.DateResponse.build_date(new_date) for new_date in new_dates]
+    return events_serializers.PostDatesResponse(
+        dates=[events_serializers.DateResponse.build_date(new_date) for new_date in new_dates]
     )
 
 
@@ -557,10 +575,10 @@ def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) ->
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_STOCKS],
-    response_model=serialization.GetDatesResponse,
+    response_model=events_serializers.GetDatesResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.GetDatesResponse, "The event dates have been returned")}
+            {"HTTP_200": (events_serializers.GetDatesResponse, "The event dates have been returned")}
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_400_BAD_REQUEST
@@ -568,7 +586,9 @@ def post_event_stocks(event_id: int, body: serialization.EventStocksCreation) ->
         )
     ),
 )
-def get_event_stocks(event_id: int, query: serialization.GetEventStocksQueryParams) -> serialization.GetDatesResponse:
+def get_event_stocks(
+    event_id: int, query: events_serializers.IsAtProviderQueryParams
+) -> events_serializers.GetDatesResponse:
     """
     Get Event Stocks
 
@@ -605,8 +625,8 @@ def get_event_stocks(event_id: int, query: serialization.GetEventStocksQueryPara
         .limit(query.limit)
     )
 
-    return serialization.GetDatesResponse(
-        dates=[serialization.DateResponse.build_date(stock) for stock in stocks],
+    return events_serializers.GetDatesResponse(
+        dates=[events_serializers.DateResponse.build_date(stock) for stock in stocks],
     )
 
 
@@ -657,10 +677,10 @@ def delete_event_stock(event_id: int, stock_id: int) -> None:
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_STOCKS],
-    response_model=serialization.DateResponse,
+    response_model=events_serializers.DateResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.DateResponse, "The event date has been modified successfully")}
+            {"HTTP_200": (events_serializers.DateResponse, "The event date has been modified successfully")}
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
             | http_responses.HTTP_400_BAD_REQUEST
@@ -671,8 +691,8 @@ def delete_event_stock(event_id: int, stock_id: int) -> None:
 def patch_event_stock(
     event_id: int,
     stock_id: int,
-    body: serialization.EventStockEdition,
-) -> serialization.DateResponse:
+    body: events_serializers.EventStockEdition,
+) -> events_serializers.DateResponse:
     """
     Update Event Stock
 
@@ -722,7 +742,7 @@ def patch_event_stock(
     except booking_exceptions.BookingIsNotUsed:
         raise api_errors.ResourceGoneError({"booking": ["Cette contremarque n'a pas encore été validée"]})
     # `edited_stock` could be None if nothing was changed.
-    return serialization.DateResponse.build_date(edited_stock or stock_to_edit)
+    return events_serializers.DateResponse.build_date(edited_stock or stock_to_edit)
 
 
 @blueprints.public_api.route("/public/offers/v1/events/categories", methods=["GET"])
@@ -730,17 +750,17 @@ def patch_event_stock(
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.OFFER_ATTRIBUTES],
-    response_model=serialization.GetEventCategoriesResponse,
+    response_model=events_serializers.GetEventCategoriesResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.GetEventCategoriesResponse, "The event categories have been returned")}
+            {"HTTP_200": (events_serializers.GetEventCategoriesResponse, "The event categories have been returned")}
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
         )
     ),
 )
 @provider_api_key_required
-def get_event_categories() -> serialization.GetEventCategoriesResponse:
+def get_event_categories() -> events_serializers.GetEventCategoriesResponse:
     """
     Get Event Categories
 
@@ -749,8 +769,8 @@ def get_event_categories() -> serialization.GetEventCategoriesResponse:
     # Individual offers API only relies on subcategories, not categories.
     # To make it simpler for the provider using this API, we only expose subcategories and call them categories.
     event_categories_response = [
-        serialization.EventCategoryResponse.build_category(subcategory)
+        events_serializers.EventCategoryResponse.build_category(subcategory)
         for subcategory in subcategories.EVENT_SUBCATEGORIES.values()
         if subcategory.is_selectable
     ]
-    return serialization.GetEventCategoriesResponse(__root__=event_categories_response)
+    return events_serializers.GetEventCategoriesResponse(__root__=event_categories_response)

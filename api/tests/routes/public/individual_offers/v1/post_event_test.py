@@ -675,7 +675,11 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
                     "publicationDatetime": "2021-01-01T00:00:00+00:00",
                     "publicationDate": "2021-01-01T00:00:00+00:00",
                 },
-                {"__root__": ["You cannot set both `publicationDate` and `publicationDatetime`"]},
+                {
+                    "__root__": [
+                        "You cannot set both `publicationDate` and `publicationDatetime`. `publicationDate` is deprecated, please only use `publicationDatetime`."
+                    ]
+                },
             ),
             # errors on idAtProvider
             (

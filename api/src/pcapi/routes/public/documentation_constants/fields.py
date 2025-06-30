@@ -234,6 +234,12 @@ class _FIELDS:
         description="A list of stocks to associate with an event. Each stock represents a unique combination of a date and a price category. To add stocks for multiple price categories on the same date, you must create a separate stock entry for each category.",
         max_items=Offer.MAX_STOCKS_PER_OFFER,
     )
+    EVENT_CATEGORIES_RELATED_FIELDS = Field(
+        description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
+    )
+    EVENT_CONDITIONAL_FIELDS = Field(
+        description="The keys are fields that should be set in the category_related_fields of an event. The values indicate whether their associated field is mandatory during event creation."
+    )
 
     # Booking fields
     BOOKING_STATUS = Field(description=descriptions.BOOKING_STATUS_DESCRIPTION, example="CONFIRMED")
