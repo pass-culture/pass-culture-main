@@ -94,9 +94,9 @@ def users_one_year_with_pass_automation() -> bool:
     )
 
 
-def get_users_whose_credit_expired_today() -> list[User]:
+def get_users_whose_credit_expired_today() -> list[tuple[int]]:
     return (
-        db.session.query(User)
+        db.session.query(User.id)
         .join(User.deposits)
         .filter(
             User.is_beneficiary,
@@ -104,27 +104,32 @@ def get_users_whose_credit_expired_today() -> list[User]:
             > datetime.combine(date.today() - relativedelta(days=1), datetime.min.time()),
             finance_models.Deposit.expirationDate <= datetime.combine(date.today(), datetime.min.time()),
         )
-        .options(
-            sa_orm.selectinload(User.deposits).selectinload(finance_models.Deposit.recredits),
-        )
         .yield_per(YIELD_COUNT_PER_DB_QUERY)
     )
 
 
-def get_ex_underage_beneficiaries_who_can_no_longer_recredit() -> list[User]:
+def get_ex_underage_beneficiaries_who_can_no_longer_recredit() -> list[tuple[int]]:
     # No need to be updated on the exact birthday date, but ensure that we don't miss users born one day in leap years.
     days_19y = ceil(365.25 * 19)
     return (
-        db.session.query(User)
+        db.session.query(User.id)
         .filter(
             User.has_underage_beneficiary_role,
             User.dateOfBirth > datetime.combine(date.today() - relativedelta(days=days_19y + 1), datetime.min.time()),
             User.dateOfBirth <= datetime.combine(date.today() - relativedelta(days=days_19y), datetime.min.time()),
         )
+        .yield_per(YIELD_COUNT_PER_DB_QUERY)
+    )
+
+
+def _get_user_from_id(user_id: int) -> User:
+    return (
+        db.session.query(User)
+        .filter(User.id == user_id)
         .options(
             sa_orm.selectinload(User.deposits).selectinload(finance_models.Deposit.recredits),
         )
-        .yield_per(YIELD_COUNT_PER_DB_QUERY)
+        .one()
     )
 
 
@@ -135,7 +140,7 @@ def users_whose_credit_expired_today_automation() -> None:
     Ex underage beneficiaries who don't get 18y credit on time become former beneficiaries after their birthday.
     """
     for user in get_users_whose_credit_expired_today():
-        attributes_api.update_external_user(user)
+        attributes_api.update_external_user(_get_user_from_id(user[0]))
 
     for user in get_ex_underage_beneficiaries_who_can_no_longer_recredit():
-        attributes_api.update_external_user(user)
+        attributes_api.update_external_user(_get_user_from_id(user[0]))

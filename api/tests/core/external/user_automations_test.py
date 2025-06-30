@@ -191,11 +191,11 @@ class UserAutomationsTest:
 
         with time_machine.travel("2034-11-01 05:00:00"):
             results = list(user_automations.get_users_whose_credit_expired_today())
-            assert results == [users[1]]
+            assert results == [(users[1].id,)]
 
         with time_machine.travel("2034-11-02 05:00:00"):
             results = list(user_automations.get_users_whose_credit_expired_today())
-            assert results == [users[2]]
+            assert results == [(users[2].id,)]
 
     @patch("pcapi.core.external.attributes.api.update_batch_user")
     @patch("pcapi.core.external.attributes.api.update_sendinblue_user")
@@ -232,7 +232,7 @@ class UserAutomationsTest:
 
         with time_machine.travel("2035-08-11 05:00:00"):
             results = list(user_automations.get_ex_underage_beneficiaries_who_can_no_longer_recredit())
-            assert results == [user]
+            assert results == [(user.id,)]
 
         with time_machine.travel("2035-08-12 05:00:00"):
             results = list(user_automations.get_ex_underage_beneficiaries_who_can_no_longer_recredit())
