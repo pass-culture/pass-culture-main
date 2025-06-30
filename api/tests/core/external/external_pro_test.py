@@ -109,9 +109,9 @@ def test_update_external_pro_user_attributes(
                 ]
             )
 
-            collective_offer = educational_factories.CollectiveOfferFactory(isActive=True, institution=institution)
+            collective_offer = educational_factories.PublishedCollectiveOfferFactory(institution=institution)
         else:
-            collective_offer = educational_factories.CollectiveOfferFactory(isActive=True)
+            collective_offer = educational_factories.PublishedCollectiveOfferFactory()
 
         collective_offers.append(collective_offer)
 
