@@ -36,7 +36,7 @@ poetry env use python3.11
 poetry install --with dev
 ```
 
-L'activation de l'environnement virtuel se fait par la commande 
+L'activation de l'environnement virtuel se fait par la commande
 
 ```shell
 poetry shell
@@ -46,7 +46,7 @@ Pour un usage avancé, se référer à la [documentation de poetry](https://pyth
 
 *NOTE* : L'ajout de dépendance doit se faire par Poetry pour mettre à jour le fichier lock.
 
-#### Squawk 
+#### Squawk
 
 Le lint des migrations, effectué lors du [hook de precommit](../.githooks/pre-commit), nécessite [Squawk — a linter for Postgres migrations](https://squawkhq.com/).
 
@@ -60,7 +60,7 @@ La génération de PDF via `weasyprint` nécessite également de suivre ces [ét
 
 ### 2. Lancement de l'api
 
-Une fois installé les dépendances, on peut utiliser les commandes suivantes (qui utilisent `docker compose`) 
+Une fois installé les dépendances, on peut utiliser les commandes suivantes (qui utilisent `docker compose`)
 ```shell
 # Start api and backoffice
 pc start-backend
@@ -119,9 +119,9 @@ Il est également possible d'accéder à `stdin`/`stdout` via le paramètre  `-s
 
 ---
 
-Troubleshoot : 
+Troubleshoot :
 
-Si les tests ne se lancent pas avec Docker, il faut recréer la base de données de tests et relancer le cache redis 
+Si les tests ne se lancent pas avec Docker, il faut recréer la base de données de tests et relancer le cache redis
 
 * Soit en démarrant les conteneurs de la base de données _pc-postgres-test_ (spécifique aux tests) et du cache
   _redis_ via docker compose
@@ -143,7 +143,7 @@ docker run -d --name redis -p 6379:6379 \
     redis redis-server
   ```
 
-### 3. Ecriture des tests 
+### 3. Ecriture des tests
 
 Les tests utilisent leur propre base de données. Si un test a besoin d'accéder à la base de données, il faut décorer la
 fonction ou la classe avec :
@@ -261,12 +261,12 @@ Les infos sont dans le [README](https://github.com/pass-culture/pass-culture-dep
 
 ### Dépendances
 
-Afin de passer uniquement par les commandes flask, les dépendances suivantes doivent également être installées: 
+Afin de passer uniquement par les commandes flask, les dépendances suivantes doivent également être installées:
 
 - Postgresql
 
   Il est préférable de cibler la version utilisée en production. Celle-ci se retrouve dans le fichier `docker-compose-backend`.
-  À date de rédaction c'est la version `postgresql 15` qui est utilisé. 
+  À date de rédaction c'est la version `postgresql 15` qui est utilisé.
 
   Les informations générales sur les étapes d'installation en fonction des OS sont disponibles sur le lien https://www.postgresql.org/download/
 
@@ -281,7 +281,7 @@ Afin de passer uniquement par les commandes flask, les dépendances suivantes do
 
 - Postgis
 
-  Verifier que `PostGIS` est bien installé. Pour cela, connectez-vous à votre base de données créé ci dessus et faites: 
+  Verifier que `PostGIS` est bien installé. Pour cela, connectez-vous à votre base de données créé ci dessus et faites:
 
       ```sql
       CREATE EXTENSION IF NOT EXISTS postgis;
@@ -307,14 +307,14 @@ Afin de passer uniquement par les commandes flask, les dépendances suivantes do
 
 Pour initialiser l'application, vous devez suivre les étapes suivantes :
 
-* Soit en lançant la commande suivante qui va créer les bases de données pour l'api et pour les tests, installer les extensions postgres et jouer les migrations. 
+* Soit en lançant la commande suivante qui va créer les bases de données pour l'api et pour les tests, installer les extensions postgres et jouer les migrations.
 
   ```shell
   pc setup-no-docker
   ```
 
 * Soit en réalisant les étapes suivantes une par une :
-  
+
   - Créer les _users_ suivants depuis `psql`:
 
   ```sql
@@ -322,11 +322,11 @@ Pour initialiser l'application, vous devez suivre les étapes suivantes :
   CREATE ROLE pytest SUPERUSER LOGIN PASSWORD 'pytest';
   ```
   - Créer les _databases_ associés à ces rôles
-  
+
    (cf. les commandes `recreate_database` `recreate_database_test` dans le fichier `start_backend_no_docker`)
 
-  - Ajouter les variables suivantes au fichier `.env.local.secret` 
-  
+  - Ajouter les variables suivantes au fichier `.env.local.secret`
+
   Il se trouve la racine du dossier `api/` (*note*: modifier `<port>` avec le port de votre serveur postgresql, habituellement `5432`):
 
     ```dotenv
@@ -349,7 +349,7 @@ Pour initialiser l'application, vous devez suivre les étapes suivantes :
 
 ```shell
 python src/pcapi/app.py # pour l'API
-python src/pcapi/backofficeapp.py # pour le Backoffice 
+python src/pcapi/backofficeapp.py # pour le Backoffice
 ```
 
 - Soit via les commandes `pc`
