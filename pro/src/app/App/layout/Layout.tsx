@@ -49,6 +49,8 @@ export interface LayoutProps {
   showFooter?: boolean
 }
 
+// TODO: Remove this comment (added to trigger e2e tests on this PR)
+
 export const Layout = ({
   children,
   mainHeading,
