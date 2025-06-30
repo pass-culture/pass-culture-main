@@ -24,6 +24,7 @@ from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization.address_serialize import AddressResponseIsLinkedToVenueModel
+from pcapi.routes.serialization.address_serialize import VenueAddressInfoGetter
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
 from pcapi.serialization.utils import NOW_LITERAL
 from pcapi.serialization.utils import to_camel
@@ -382,6 +383,7 @@ class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     class Config:
         orm_mode = True
         json_encoders = {datetime.datetime: format_into_utc_date}
+        getter_dict = VenueAddressInfoGetter
 
 
 class GetOfferLastProviderResponseModel(BaseModel):

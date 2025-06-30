@@ -53,6 +53,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["id"] == offer.id
         assert response.json["venue"]["id"] == offer.venue.id
+        assert response.json["venue"]["street"] == None
 
         updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.name == "New name"
@@ -379,6 +380,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["id"] == offer.id
         assert response.json["venue"]["id"] == offer.venue.id
+        assert response.json["venue"]["street"] == offer.venue.offererAddress.address.street
 
         updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.extraData["gtl_id"] == "01010101"
