@@ -129,7 +129,7 @@ def _transfer_bookings(bookings: list[Booking], user: User) -> None:
             deposit=deposit,
             amount=booking.total_amount,
             recreditType=RecreditType.MANUAL_MODIFICATION,
-            comment=f"(PC-35266) Transfert de la réservation {booking.id} qui provient du crédit précédent",
+            comment=f"(PC-36835) Transfert de la réservation {booking.id} qui provient du crédit précédent",
         )
         deposit.amount += recredit.amount
 
