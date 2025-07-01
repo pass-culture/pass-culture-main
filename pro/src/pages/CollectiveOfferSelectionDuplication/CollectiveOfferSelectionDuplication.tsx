@@ -28,6 +28,7 @@ import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+import { useEffect } from 'react'
 import styles from './CollectiveOfferSelectionDuplication.module.scss'
 import { SkeletonLoader } from './CollectiveOfferSelectionLoaderSkeleton'
 
@@ -101,9 +102,13 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
     )
   )
 
-  const templateOfferForm = useForm<SelectionFormValues>({
-    defaultValues: { templateOfferId: String(offers?.[0]?.id) },
-  })
+  const templateOfferForm = useForm<SelectionFormValues>()
+
+  useEffect(() => {
+    if (!isLoading && offers && offers.length > 0) {
+      templateOfferForm.setValue('templateOfferId', String(offers[0].id))
+    }
+  }, [offers, isLoading, templateOfferForm])
 
   const { handleSubmit: handleSubmitSelection } = templateOfferForm
 
