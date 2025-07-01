@@ -343,14 +343,14 @@ describe('Summary', () => {
       ).toBeInTheDocument()
     })
 
-    it('should allow to publish offer later if the offer is an event', async () => {
+    it('should allow to publish offer later', async () => {
       // Mock current date to avoid DST issues
       vi.setSystemTime(new Date('2024-01-15T12:00:00.000Z'))
 
       vi.spyOn(api, 'getOfferer').mockResolvedValue(
         defaultGetOffererResponseModel
       )
-      customContext.offer = getIndividualOfferFactory({ isEvent: true })
+      customContext.offer = getIndividualOfferFactory()
 
       renderSummary(
         customContext,
@@ -403,14 +403,14 @@ describe('Summary', () => {
       vi.useRealTimers()
     })
 
-    it('should allow to maker offer bookable later if the offer is an event', async () => {
+    it('should allow to maker offer bookable later if the FF WIP_REFACTO_FUTURE_OFFER is enabled', async () => {
       // Mock current date to avoid DST issues
       vi.setSystemTime(new Date('2024-01-15T12:00:00.000Z'))
 
       vi.spyOn(api, 'getOfferer').mockResolvedValue(
         defaultGetOffererResponseModel
       )
-      customContext.offer = getIndividualOfferFactory({ isEvent: true })
+      customContext.offer = getIndividualOfferFactory()
 
       renderSummary(
         customContext,
