@@ -315,13 +315,17 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
           </div>
         </div>
       </div>
-      {offer.institution && (
-        <EducationalInstitutionDetails
-          educationalInstitution={offer.institution}
-          educationalRedactor={null}
-          newLayout
-        />
-      )}
+      <div className={styles['offer-details']}>
+        <div>Component timeline à ajouter ici</div>
+        {offer.institution && (
+          <EducationalInstitutionDetails
+            educationalInstitution={offer.institution}
+            educationalRedactor={offer.booking?.educationalRedactor}
+            teacher={offer.teacher}
+            newLayout
+          />
+        )}
+      </div>
       <ArchiveConfirmationModal
         onDismiss={() => setIsArchiveModalOpen(false)}
         onValidate={archiveOffer}
