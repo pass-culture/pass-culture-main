@@ -90,7 +90,7 @@ describe('src | components | pages | Signup | validation', () => {
     })
   })
 
-  describe('Signup with auto-login feature (under WIP_2025_SIGN_UP)', () => {
+  describe('Signup with auto-login feature (under WIP_2025_AUTOLOGIN)', () => {
     it('should verify validity of passwordless login token and redirect to pro home page', async () => {
       const validateUser = vi.spyOn(api, 'validateUser').mockResolvedValue()
       const user = sharedCurrentUserFactory()
@@ -101,7 +101,7 @@ describe('src | components | pages | Signup | validation', () => {
       }))
       vi.spyOn(reactRedux, 'useDispatch').mockReturnValue(mockDispatch)
 
-      renderSignupValidation({ features: ['WIP_2025_SIGN_UP'] })
+      renderSignupValidation({ features: ['WIP_2025_AUTOLOGIN'] })
 
       // The validity of the token is verified
       await waitFor(() =>

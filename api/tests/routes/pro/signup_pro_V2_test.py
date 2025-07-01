@@ -272,7 +272,7 @@ class Returns400Test:
         assert "phoneNumber" in error
         assert "Le numéro de téléphone est requis" in error["phoneNumber"]
 
-    @pytest.mark.features(WIP_2025_SIGN_UP=True)
+    @pytest.mark.features(WIP_2025_AUTOLOGIN=True)
     @pytest.mark.settings(
         PASSWORDLESS_LOGIN_PRIVATE_KEY=private_pem_file, PASSWORDLESS_LOGIN_PUBLIC_KEY=public_pem_file
     )
@@ -306,7 +306,7 @@ class Returns400Test:
             "subscribed_themes": [],
         }
 
-    @pytest.mark.features(WIP_2025_SIGN_UP=False)
+    @pytest.mark.features(WIP_2025_AUTOLOGIN=False)
     @mock.patch("pcapi.core.token.Token.create")
     @mock.patch("pcapi.core.token.create_passwordless_login_token")
     @mock.patch("pcapi.core.mails.transactional.send_signup_email_confirmation_to_pro")

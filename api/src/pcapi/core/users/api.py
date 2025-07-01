@@ -822,7 +822,7 @@ def get_domains_credit(
 
 
 def create_and_send_signup_email_confirmation(new_pro_user: models.User) -> None:
-    if FeatureToggle.WIP_2025_SIGN_UP.is_active():
+    if FeatureToggle.WIP_2025_AUTOLOGIN.is_active():
         token = token_utils.create_passwordless_login_token(
             user_id=new_pro_user.id, ttl=constants.PASSWORDLESS_TOKEN_LIFE_TIME
         )
