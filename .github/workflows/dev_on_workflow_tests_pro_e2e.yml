@@ -237,7 +237,7 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ steps.secrets.outputs.CYPRESS_CLOUD_RECORD_KEY }}
           CYPRESS_PROJECT_ID: ${{ steps.secrets.outputs.CYPRESS_CLOUD_PROJECT_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEBUG: 'cypress:server:socket-base,cypress:server:socket-e2e'
+          # DEBUG: 'cypress:server:socket-base,cypress:server:socket-e2e'
           # see https://github.com/cypress-io/github-action/issues/1408#issuecomment-2744425883
           NODE_OPTIONS: "--no-experimental-require-module --no-experimental-detect-module"
 
