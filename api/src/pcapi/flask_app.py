@@ -73,7 +73,7 @@ def setup_metrics(app_: Flask) -> None:
         return
 
     def get_top_level_blueprint_name() -> str | None:
-        if hasattr(request, "blueprint"):
+        if hasattr(request, "blueprint") and request.blueprint is not None:
             blueprint_list = request.blueprint.split(".")
             if blueprint_list and blueprint_list[0] is not None:
                 return blueprint_list[0]
