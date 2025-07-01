@@ -125,8 +125,20 @@ describe('BookableOfferSummary', () => {
     expect(editButton).toBeInTheDocument()
   })
 
-  it('should render the "Aperçu" action if preview is allowed', () => {
+  it('should render the "Aperçu" action', () => {
     renderBookableOfferSummary(props)
+    const previewButton = screen.getByText('Aperçu')
+    expect(previewButton).toBeInTheDocument()
+  })
+
+  it('should render the "Aperçu" action for an archived offer', () => {
+    const testProps = {
+      offer: getCollectiveOfferFactory({
+        displayedStatus: CollectiveOfferDisplayedStatus.ARCHIVED,
+      }),
+    }
+
+    renderBookableOfferSummary(testProps)
     const previewButton = screen.getByText('Aperçu')
     expect(previewButton).toBeInTheDocument()
   })
@@ -191,7 +203,7 @@ describe('BookableOfferSummary', () => {
       {
         from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_RECAP,
         offererId: '1',
-        offerId: 13,
+        offerId: props.offer.id,
         offerType: 'collective',
         offerStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
       }
