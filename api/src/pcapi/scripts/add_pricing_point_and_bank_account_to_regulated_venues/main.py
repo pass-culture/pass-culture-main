@@ -13,6 +13,7 @@ import os
 import typing
 from datetime import datetime
 
+from sqlalchemy import exc as sa_exc
 from sqlalchemy.orm import exc as orm_exc
 
 import pcapi.core.finance.models as finance_models
@@ -21,6 +22,8 @@ from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
+from pcapi.repository.session_management import atomic
+from pcapi.repository.session_management import mark_transaction_as_invalid
 
 
 logger = logging.getLogger(__name__)
@@ -98,7 +101,8 @@ def _get_offerer_active_pricing_point(venue_id: int, offerer_id: int) -> offerer
     return None
 
 
-def _add_pricing_point(rows: typing.Iterator[dict[str, str]]) -> None:
+@atomic()
+def _add_pricing_point(rows: typing.Iterator[dict[str, str]], not_dry: bool) -> None:
     logger.info("Adding pricing point to venues from pricing_point.csv")
     fails: list[tuple[int, str]] = []
     modifications: list[tuple[int, str]] = []
@@ -113,12 +117,12 @@ def _add_pricing_point(rows: typing.Iterator[dict[str, str]]) -> None:
         # First check : does this venue still exist ?
         if not db.session.query(offerers_models.Venue).filter_by(id=venue_id).one_or_none():
             logger.warning("Venue %s not found, skipping...", venue_id)
-            fails.append((venue_id, "Venue not found"))
+            # fails.append((venue_id, "Venue not found"))
             continue
 
         # If offerer has more than 1 SIRET, we don't want to proceed
         if nb_siret_offerer != 1:
-            fails.append((venue_id, "More than 1 SIRET found on this offerer"))
+            # fails.append((venue_id, "More than 1 SIRET found on this offerer"))
             continue
 
         # Get Offerer's active pricing point
@@ -134,8 +138,16 @@ def _add_pricing_point(rows: typing.Iterator[dict[str, str]]) -> None:
         new_link = offerers_models.VenuePricingPointLink(
             pricingPointId=pricing_point_id, venueId=int(venue_id), timespan=(datetime.utcnow(), None)
         )
-        db.session.add(new_link)
-        db.session.flush()
+        try:
+            with atomic():
+                db.session.add(new_link)
+                db.session.flush()
+        except sa_exc.IntegrityError as error:
+            fails.append(
+                (venue_id, f"Pricing point link already existong for venue {venue_id}, error message: {error}")
+            )
+            continue
+
         # log this into action history + csv output file
         history_api.add_action(
             venue=new_link.venue,
@@ -152,8 +164,12 @@ def _add_pricing_point(rows: typing.Iterator[dict[str, str]]) -> None:
     _write_modifications(modifications=modifications, filename="add_pricing_point.csv")
     _write_modifications(modifications=fails, filename="add_pricing_point_fails.csv")
 
+    if not not_dry:
+        mark_transaction_as_invalid()
 
-def _add_bank_account(rows: typing.Iterator[dict[str, str]]) -> None:
+
+@atomic()
+def _add_bank_account(rows: typing.Iterator[dict[str, str]], not_dry: bool) -> None:
     logger.info("Adding bank account to venues from bank_account.csv")
     modifications: list[tuple[int, str]] = []
     fails: list[tuple[int, str]] = []
@@ -165,12 +181,12 @@ def _add_bank_account(rows: typing.Iterator[dict[str, str]]) -> None:
         venue: offerers_models.Venue = db.session.query(offerers_models.Venue).filter_by(id=venue_id).one_or_none()
         if not venue:
             logger.warning("Venue %s not found, skipping...", venue_id)
-            fails.append((venue_id, "Venue not found"))
+            # fails.append((venue_id, "Venue not found"))
             continue
         offerer_id = venue.managingOffererId
         nb_activ_ba_offerer = int(row[NB_ACTIV_BA_OFFERER_HEADER])
         if nb_activ_ba_offerer != 1:
-            fails.append((venue_id, "Too many active bank accounts on Offerer"))
+            # fails.append((venue_id, "Too many active or no bank account(s) on Offerer"))
             continue
 
         try:
@@ -196,20 +212,8 @@ def _add_bank_account(rows: typing.Iterator[dict[str, str]]) -> None:
             logger.error("No valid bank account for venue %d. ", venue_id)
             fails.append((venue_id, "No valid bank account for this venue"))
 
-        # Get all venues with no active BA to link to offerer's active bank account
-        venues_to_update = (
-            db.session.query(offerers_models.Venue)
-            .outerjoin(
-                offerers_models.VenueBankAccountLink,
-            )
-            .filter(
-                offerers_models.VenueBankAccountLink.id.is_(None),
-                offerers_models.Venue.managingOffererId == offerer_id,
-            )
-        ).all()
-
-        for venue in venues_to_update:
-            data[venue.id] = bank_account.id
+        # Only add bank account for the given venue ID
+        data[venue_id] = bank_account.id
 
     logger.info("Data length for bank account: %s ", len(data))
 
@@ -218,9 +222,15 @@ def _add_bank_account(rows: typing.Iterator[dict[str, str]]) -> None:
         new_link = offerers_models.VenueBankAccountLink(
             bankAccountId=bank_account_id, venueId=venue_id, timespan=(datetime.utcnow(), None)
         )
+        try:
+            with atomic():
+                db.session.add(new_link)
+                db.session.flush()
+        except sa_exc.IntegrityError as error:
+            fails.append((venue_id, f"Bank account link already existong for venue {venue_id}, error message: {error}"))
+            continue
+
         # log this into action history + csv output file
-        db.session.add(new_link)
-        db.session.flush()
         history_api.add_action(
             venue=new_link.venue,
             author=None,
@@ -228,16 +238,19 @@ def _add_bank_account(rows: typing.Iterator[dict[str, str]]) -> None:
             bank_account=new_link.bankAccount,
             comment="Bank account added from venue with SIRET",
         )
-        modifications.append((venue_id, f"Bank account{bank_account_id} added"))
+        modifications.append((venue_id, f"Bank account {bank_account_id} added"))
         logger.info("Updating venue %d bank account id to %d", venue_id, bank_account_id)
 
     _write_modifications(modifications=modifications, filename="add_bank_account.csv")
     _write_modifications(modifications=fails, filename="add_bank_account_fails.csv")
 
+    if not not_dry:
+        mark_transaction_as_invalid()
+
 
 def main(not_dry: bool) -> None:
-    _add_pricing_point(_read_csv_file("pricing_point"))
-    _add_bank_account(_read_csv_file("bank_account"))
+    _add_pricing_point(_read_csv_file("pricing_point"), not_dry)
+    _add_bank_account(_read_csv_file("bank_account"), not_dry)
 
 
 if __name__ == "__main__":
