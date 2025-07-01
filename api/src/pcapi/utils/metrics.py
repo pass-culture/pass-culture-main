@@ -1,4 +1,16 @@
-"""Prometheus metrics utilities for HTTP requests and other operations."""
+"""
+Prometheus metrics utilities for outgoing HTTP requests.
+
+**NOTE:**
+We are using the request `host` as a label for the metrics created here.
+For webhooks this carries a risk: as the number of external vendors increase, so will the cardinality (number of different values) of this label,
+increasing Prometheus storage space and slowing down crawling.
+See https://grafana.com/blog/2022/10/20/how-to-manage-high-cardinality-metrics-in-prometheus-and-kubernetes/
+
+We made this choice because we only have ~40 external vendors and it would likely be fine up to a few hundred;
+but this decision might need to be revisited as the number increases.
+
+"""
 
 import time
 from typing import Any
