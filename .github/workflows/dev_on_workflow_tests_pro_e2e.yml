@@ -69,6 +69,19 @@ jobs:
           if-no-files-found: error
           path: pro/build
 
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-buildx-
+
+      - name: Cache Poetry
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pypoetry
+          key: poetry-${{ hashFiles('**/poetry.lock') }}
+
   setup:
     name: Setup E2E 🔧
     runs-on: ubuntu-24.04
@@ -90,10 +103,9 @@ jobs:
     strategy:
       # don't fail the entire matrix on failure
       fail-fast: false
+      max-parallel: 4
       matrix:
-        #chunk: ${{ fromJson(needs.setup.outputs['test-chunks']) }}
-        # Manually setting tests to have them have (aproximatively) the same duration
-        chunk: ["cypress/e2e/desk.cy.ts,cypress/e2e/signupJourneyCreateOfferer.cy.ts,cypress/e2e/adageConfirmation.cy.ts", "cypress/e2e/editDigitalIndividualOffer.cy.ts,cypress/e2e/searchCollectiveOffer.cy.ts,cypress/e2e/navigation.cy.ts,cypress/e2e/createIndividualOffer.cy.ts", "cypress/e2e/oaIndividualOffer.cy.ts,cypress/e2e/didacticOnboarding.cy.ts,cypress/e2e/createAccount.cy.ts,cypress/e2e/cookieBanner.cy.ts,cypress/e2e/collaborator.cy.ts", "cypress/e2e/searchIndividualOffer.cy.ts,cypress/e2e/collectiveBooking.cy.ts,cypress/e2e/createCollectiveOffer.cy.ts,cypress/e2e/adage.cy.ts,cypress/e2e/financialManagement.cy.ts"]
+        chunk: ${{ fromJson(needs.setup.outputs.test-chunks) }}
 
     steps:
       - name: Checkout
@@ -192,7 +204,7 @@ jobs:
         uses: iFaxity/wait-on-action@v1
         with:
           resource: http://localhost:5001/health/api
-          timeout: 120000
+          timeout: 300000 # 5 minutes (standard for migrations)
 
       - name: Download the build folder
         uses: actions/download-artifact@v4
@@ -212,13 +224,15 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           wait-on: "http://localhost:5001/health/api,http://localhost:5001/health/database"
-          wait-on-timeout: 600
+          wait-on-timeout: 120 # 2 minutes is enough for API/DB to be ready
           working-directory: pro
           browser: chrome
           config-file: cypress/cypress.config.ts
           env: TAGS="@P0"
           spec: ${{ matrix.chunk }}
           record: ${{ github.ref == 'refs/heads/master' }} # for Cypress
+          video: false
+          screenshot: false
         env:
           CYPRESS_RECORD_KEY: ${{ steps.secrets.outputs.CYPRESS_CLOUD_RECORD_KEY }}
           CYPRESS_PROJECT_ID: ${{ steps.secrets.outputs.CYPRESS_CLOUD_PROJECT_ID }}
