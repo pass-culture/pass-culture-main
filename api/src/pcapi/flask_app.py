@@ -74,17 +74,14 @@ def setup_metrics(app_: Flask) -> None:
 
     def get_top_level_blueprint_name() -> str | None:
         if hasattr(request, "blueprint"):
-            top_level_blueprint_name = request.blueprint.split(".")[0]
-            if top_level_blueprint_name:
-                return top_level_blueprint_name
+            blueprint_list = request.blueprint.split(".")
+            if blueprint_list and blueprint_list[0] is not None:
+                return blueprint_list[0]
         return "other"
 
     def get_url_prefix() -> str | None:
         path = request.path
-        try:
-            prefix = next((p for p in path.split("/")), None)
-        except StopIteration:
-            return "other"
+        prefix = next((p for p in path.split("/")), None)
         if prefix not in URL_PREFIX_VALUES:
             return "other"
         return prefix
