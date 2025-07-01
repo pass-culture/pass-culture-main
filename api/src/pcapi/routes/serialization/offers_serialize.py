@@ -125,7 +125,6 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     withdrawalDetails: str | None
     withdrawalType: offers_models.WithdrawalTypeEnum | None
     withdrawalDelay: int | None
-    isActive: bool | None
     isDuo: bool | None
     durationMinutes: int | None
     shouldSendMail: bool | None

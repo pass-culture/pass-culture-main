@@ -89,7 +89,7 @@ def _create_offer_from_product(
     offer.motorDisabilityCompliant = venue.motorDisabilityCompliant
     offer.visualDisabilityCompliant = venue.visualDisabilityCompliant
 
-    offer.isActive = True
+    offer.publicationDatetime = datetime.datetime.utcnow()
     offer.lastValidationDate = datetime.datetime.utcnow()
     offer.lastValidationType = OfferValidationType.AUTO
     offer.lastValidationAuthorUserId = None
@@ -245,7 +245,7 @@ def create_or_update_ean_offers(
         for offer in offers_to_update:
             try:
                 offer.lastProvider = provider
-                offer.isActive = True
+                offer.publicationDatetime = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
                 offer.offererAddress = offerer_address
 
                 ean = offer.ean

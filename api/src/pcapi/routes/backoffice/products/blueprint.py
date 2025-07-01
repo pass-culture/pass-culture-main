@@ -112,7 +112,7 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
             offers_models.Offer.id,
             offers_models.Offer.name,
             offers_models.Offer.dateCreated,
-            offers_models.Offer.isActive,
+            offers_models.Offer.publicationDatetime,
             offers_models.Offer.validation,
         ),
         sa_orm.selectinload(offers_models.Offer.stocks).options(
@@ -425,7 +425,7 @@ def get_tag_offers_form(product_id: int) -> utils.BackofficeResponse:
     linked_active_offers_count = sum(offer.isActive for offer in product.offers)
 
     unlinked_offers_query = db.session.query(offers_models.Offer).filter(
-        offers_models.Offer.productId.is_(None), offers_models.Offer.isActive.is_(True)
+        offers_models.Offer.productId.is_(None), offers_models.Offer.isActive
     )
 
     identifier_type = product.identifierType

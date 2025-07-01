@@ -102,7 +102,6 @@ def get_capped_offers_for_filters(
             sa_orm.load_only(
                 models.Offer.id,
                 models.Offer.name,
-                models.Offer.isActive,
                 models.Offer.subcategoryId,
                 models.Offer.validation,
                 models.Offer.ean,
@@ -150,7 +149,6 @@ def get_capped_offers_for_filters(
                 models.Mediation.id,
                 models.Mediation.credit,
                 models.Mediation.dateCreated,
-                models.Mediation.isActive,
                 models.Mediation.thumbCount,
             )
         )
@@ -277,7 +275,7 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
                 models.Offer.withdrawalDetails,
                 models.Offer.subcategoryId,
                 models.Offer.url,
-                models.Offer.isActive,
+                models.Offer.publicationDatetime,
                 models.Offer.lastProviderId,
                 models.Offer.audioDisabilityCompliant,
                 models.Offer.mentalDisabilityCompliant,
@@ -663,7 +661,7 @@ def get_expired_offers(interval: list[datetime.datetime]) -> BaseQuery:
         db.session.query(models.Offer)
         .join(models.Stock)
         .filter(
-            models.Offer.isActive.is_(True),
+            models.Offer.isActive,
             models.Stock.isSoftDeleted.is_(False),
             models.Stock.bookingLimitDatetime.is_not(None),
         )
@@ -852,7 +850,7 @@ def get_active_offer_by_venue_id_and_ean(venue_id: int, ean: str) -> models.Offe
         db.session.query(models.Offer)
         .filter(
             models.Offer.venueId == venue_id,
-            models.Offer.isActive.is_(True),
+            models.Offer.isActive,
             models.Offer.ean == ean,
         )
         .order_by(models.Offer.dateCreated.desc())
@@ -1111,7 +1109,7 @@ def get_paginated_active_offer_ids(batch_size: int, page: int = 1) -> list[int]:
     query = (
         db.session.query(models.Offer)
         .with_entities(models.Offer.id)
-        .filter(models.Offer.isActive.is_(True))
+        .filter(models.Offer.isActive)
         .order_by(models.Offer.id)
         .offset((page - 1) * batch_size)  # first page is 1, not 0
         .limit(batch_size)
@@ -1174,7 +1172,7 @@ def has_active_offer_with_ean(ean: str | None, venue: offerers_models.Venue, off
         logger.error("Could not search for an offer without ean")
     base_query = db.session.query(models.Offer).filter(
         models.Offer.venue == venue,
-        models.Offer.isActive.is_(True),
+        models.Offer.isActive,
         models.Offer.ean == ean,
     )
 

@@ -237,7 +237,7 @@ class ImportBankAccountMixin:
                     offers_models.Stock.offerId == offers_models.Offer.id,
                     offers_models.Stock.price > 0,
                     offers_models.Stock.isSoftDeleted.is_(False),
-                    offers_models.Offer.isActive.is_(True),
+                    offers_models.Offer.isActive,
                     offers_models.Offer.venueId == offerers_models.Venue.id,
                 ),
             )

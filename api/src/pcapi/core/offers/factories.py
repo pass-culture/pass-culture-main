@@ -242,6 +242,7 @@ class OfferFactory(BaseFactory):
             if venue:
                 kwargs["offererAddress"] = venue.offererAddress
 
+        kwargs.pop("isActive", None)
         return super()._create(model_class, *args, **kwargs)
 
 

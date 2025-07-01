@@ -569,7 +569,6 @@ def test_serialize_future_offer():
     beginning_date = datetime.datetime(2032, 1, 4, 12, 15)
 
     offer_1 = offers_factories.OfferFactory(
-        isActive=False,
         subcategoryId=subcategories.FESTIVAL_MUSIQUE.id,
         publicationDatetime=publication_date,
         bookingAllowedDatetime=booking_allowed_dt,

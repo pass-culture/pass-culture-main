@@ -1957,6 +1957,9 @@ class UpdateOfferTest:
 now_datetime_with_tz = datetime.now(timezone.utc)
 now_datetime_without_tz = now_datetime_with_tz.replace(tzinfo=None)
 
+yesterday_datetime_with_tz = now_datetime_with_tz - timedelta(days=1)
+yesterday_datetime_without_tz = yesterday_datetime_with_tz.replace(tzinfo=None)
+
 
 @pytest.mark.usefixtures("db_session")
 class BatchUpdateOffersTest:
@@ -1968,7 +1971,7 @@ class BatchUpdateOffersTest:
         query = db.session.query(models.Offer).filter(models.Offer.id.in_({pending_offer.id}))
 
         with caplog.at_level(logging.INFO):
-            api.batch_update_offers(query, {"isActive": True})
+            api.batch_update_offers(query, activate=True)
 
         db.session.refresh(pending_offer)
         assert not pending_offer.isActive
@@ -1980,13 +1983,13 @@ class BatchUpdateOffersTest:
         first_record = caplog.records[0]
 
         assert first_record.message == "Batch update of offers: start"
-        assert first_record.extra == {"updated_fields": {"isActive": True, "publicationDatetime": now_datetime_with_tz}}
+        assert first_record.extra == {"updated_fields": {"publicationDatetime": now_datetime_without_tz}}
 
         second_record = caplog.records[1]
 
         assert second_record.message == "Batch update of offers: end"
         assert second_record.extra == {
-            "updated_fields": {"isActive": True, "publicationDatetime": now_datetime_with_tz},
+            "updated_fields": {"publicationDatetime": now_datetime_without_tz},
             "nb_offers": 0,
             "nb_venues": 0,
         }
@@ -1994,10 +1997,12 @@ class BatchUpdateOffersTest:
     @time_machine.travel(now_datetime_with_tz, tick=False)
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_activate(self, mocked_async_index_offer_ids, caplog):
-        offer1 = factories.OfferFactory(isActive=False)
-        offer2 = factories.OfferFactory(isActive=False)
-        offer3 = factories.OfferFactory(isActive=False)
-        rejected_offer = factories.OfferFactory(isActive=False, validation=models.OfferValidationStatus.REJECTED)
+        offer1 = factories.OfferFactory(publicationDatetime=None)
+        offer2 = factories.OfferFactory(publicationDatetime=None)
+        offer3 = factories.OfferFactory(publicationDatetime=None)
+        rejected_offer = factories.OfferFactory(
+            publicationDatetime=None, validation=models.OfferValidationStatus.REJECTED
+        )
         pending_offer = factories.OfferFactory(validation=models.OfferValidationStatus.PENDING)
 
         query = db.session.query(models.Offer).filter(
@@ -2005,7 +2010,7 @@ class BatchUpdateOffersTest:
         )
 
         with caplog.at_level(logging.INFO):
-            api.batch_update_offers(query, {"isActive": True})
+            api.batch_update_offers(query, activate=True)
 
         db.session.refresh(offer1)
         db.session.refresh(offer2)
@@ -2037,7 +2042,9 @@ class BatchUpdateOffersTest:
         third_record = caplog.records[2]
 
         assert first_record.message == "Batch update of offers: start"
-        assert first_record.extra == {"updated_fields": {"isActive": True, "publicationDatetime": now_datetime_with_tz}}
+        assert first_record.extra == {
+            "updated_fields": {"publicationDatetime": now_datetime_with_tz.replace(tzinfo=None)}
+        }
 
         assert second_record.message == "Offers has been activated"
         assert second_record.extra.keys() == {"offer_ids", "venue_ids"}
@@ -2046,7 +2053,7 @@ class BatchUpdateOffersTest:
 
         assert third_record.message == "Batch update of offers: end"
         assert third_record.extra == {
-            "updated_fields": {"isActive": True, "publicationDatetime": now_datetime_with_tz},
+            "updated_fields": {"publicationDatetime": now_datetime_with_tz.replace(tzinfo=None)},
             "nb_offers": 2,
             "nb_venues": 2,
         }
@@ -2056,15 +2063,15 @@ class BatchUpdateOffersTest:
             publicationDatetime=now_datetime_with_tz, bookingAllowedDatetime=now_datetime_with_tz
         )
         offer2 = factories.OfferFactory(
-            publicationDatetime=now_datetime_with_tz, bookingAllowedDatetime=now_datetime_with_tz
+            publicationDatetime=now_datetime_with_tz, bookingAllowedDatetime=now_datetime_without_tz
         )
         offer3 = factories.OfferFactory(
-            publicationDatetime=now_datetime_with_tz, bookingAllowedDatetime=now_datetime_with_tz
+            publicationDatetime=now_datetime_without_tz, bookingAllowedDatetime=now_datetime_without_tz
         )
 
         query = db.session.query(models.Offer).filter(models.Offer.id.in_({offer1.id, offer2.id}))
         with caplog.at_level(logging.INFO):
-            api.batch_update_offers(query, {"isActive": False})
+            api.batch_update_offers(query, activate=False)
 
         db.session.refresh(offer1)
         db.session.refresh(offer2)
@@ -2088,7 +2095,7 @@ class BatchUpdateOffersTest:
         last_record = caplog.records[-1]
 
         assert first_record.message == "Batch update of offers: start"
-        assert first_record.extra == {"updated_fields": {"isActive": False, "publicationDatetime": None}}
+        assert first_record.extra == {"updated_fields": {"publicationDatetime": None}}
 
         assert second_record.message == "Offers has been deactivated"
         assert second_record.extra.keys() == {"offer_ids", "venue_ids"}
@@ -2097,7 +2104,7 @@ class BatchUpdateOffersTest:
 
         assert last_record.message == "Batch update of offers: end"
         assert last_record.extra == {
-            "updated_fields": {"isActive": False, "publicationDatetime": None},
+            "updated_fields": {"publicationDatetime": None},
             "nb_offers": 2,
             "nb_venues": 2,
         }
@@ -2107,7 +2114,8 @@ class BatchUpdateOffersTest:
 class ActivateFutureOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_activate_future_offers_empty(self, mocked_async_index_offer_ids):
-        offer = factories.OfferFactory(isActive=False)  # Offer not in the future, i.e. no publication_date
+        # Offer not in the future, e.g. draft or paused (no publication_date)
+        offer = factories.OfferFactory(publicationDatetime=None)
 
         offers_ids = api.activate_future_offers()
 
@@ -2118,7 +2126,7 @@ class ActivateFutureOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_activate_future_offers(self, mocked_async_index_offer_ids):
         publication_date = datetime.utcnow().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
-        offer = factories.OfferFactory(isActive=False, publicationDatetime=publication_date)
+        offer = factories.OfferFactory(publicationDatetime=publication_date)
 
         offers_ids = api.activate_future_offers(publication_date=publication_date)
 
@@ -2136,14 +2144,11 @@ class ActivateFutureOffersAndRemindUsersTest:
     def test_activate_future_offers_and_remind_users(
         self, notify_users_offer_is_bookable_mock, mocked_async_index_offer_ids
     ):
-        publication_date = datetime.utcnow() - timedelta(minutes=14)
-        offer_1 = factories.OfferFactory(isActive=False, publicationDatetime=publication_date)
+        publication_date = (now_datetime_with_tz - timedelta(minutes=10)).replace(tzinfo=None)
 
-        publication_date_2 = datetime.utcnow() - timedelta(minutes=10)
-        offer_2 = factories.OfferFactory(isActive=False, publicationDatetime=publication_date_2)
-
-        publication_date_3 = datetime.utcnow() - timedelta(minutes=15)
-        offer_3 = factories.OfferFactory(isActive=False, publicationDatetime=publication_date_3)
+        offer_1 = factories.OfferFactory(publicationDatetime=publication_date)
+        offer_2 = factories.OfferFactory(publicationDatetime=publication_date)
+        offer_3 = factories.OfferFactory(publicationDatetime=None)
 
         api.activate_future_offers_and_remind_users()
         notify_users_offer_is_bookable_mock.assert_has_calls(
@@ -2163,7 +2168,7 @@ class HeadlineOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_make_new_offer_headline(self, mocked_async_index_offer_ids):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
-        offer = factories.OfferFactory(isActive=True, venue=venue)
+        offer = factories.OfferFactory(publicationDatetime=yesterday_datetime_with_tz, venue=venue)
         factories.StockFactory(offer=offer)
         factories.MediationFactory(offer=offer)
         headline_offer = api.make_offer_headline(offer=offer)
@@ -2182,7 +2187,7 @@ class HeadlineOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_create_offer_headline_when_another_is_still_active_should_fail(self, mocked_async_index_offer_ids):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
-        offer = factories.OfferFactory(isActive=True, venue=venue)
+        offer = factories.OfferFactory(publicationDatetime=yesterday_datetime_with_tz, venue=venue)
         factories.StockFactory(offer=offer)
         factories.MediationFactory(offer=offer)
         api.make_offer_headline(offer=offer)
@@ -2196,7 +2201,7 @@ class HeadlineOfferTest:
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_remove_headline_offer(self, mocked_async_index_offer_ids):
-        offer = factories.OfferFactory(isActive=True)
+        offer = factories.OfferFactory(publicationDatetime=now_datetime_with_tz)
         headline_offer = factories.HeadlineOfferFactory(offer=offer)
 
         api.remove_headline_offer(headline_offer)
@@ -2215,7 +2220,7 @@ class HeadlineOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_make_offer_headline_again(self, mocked_async_index_offer_ids):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
-        offer = factories.OfferFactory(isActive=True, venue=venue)
+        offer = factories.OfferFactory(publicationDatetime=now_datetime_with_tz, venue=venue)
         creation_time = datetime.utcnow()
         finished_timespan = (creation_time, creation_time + timedelta(days=10))
         old_headline_offer = factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan)
@@ -2235,12 +2240,12 @@ class HeadlineOfferTest:
             reason=search.IndexationReason.OFFER_REINDEXATION,
         )
 
-    @time_machine.travel("2024-12-13 15:44:00")
+    @time_machine.travel(now_datetime_with_tz)
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_make_another_offer_headline_on_same_venue(self, mocked_async_index_offer_ids):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
-        offer_1 = factories.OfferFactory(isActive=True, venue=venue)
-        offer_2 = factories.OfferFactory(isActive=True, venue=venue)
+        offer_1 = factories.OfferFactory(publicationDatetime=yesterday_datetime_with_tz, venue=venue)
+        offer_2 = factories.OfferFactory(publicationDatetime=yesterday_datetime_with_tz, venue=venue)
         factories.StockFactory(offer=offer_2)
         factories.MediationFactory(offer=offer_2)
 
@@ -2264,13 +2269,13 @@ class HeadlineOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_headline_offer_on_offer_turned_inactive_is_inactive(self, mocked_async_index_offer_ids):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
-        active_offer = factories.OfferFactory(isActive=True, venue=venue)
+        active_offer = factories.OfferFactory(publicationDatetime=now_datetime_without_tz, venue=venue)
         factories.StockFactory(offer=active_offer)
         factories.MediationFactory(offer=active_offer)
 
         api.make_offer_headline(offer=active_offer)
 
-        active_offer.isActive = False
+        active_offer.publicationDatetime = None
         assert not active_offer.is_headline_offer
 
         mocked_async_index_offer_ids.assert_called_once_with(
@@ -2283,7 +2288,9 @@ class HeadlineOfferTest:
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
         stock = factories.StockFactory(quantity=10)
         mediation = factories.MediationFactory()
-        offer = factories.OfferFactory(isActive=True, stocks=[stock], mediations=[mediation], venue=venue)
+        offer = factories.OfferFactory(
+            publicationDatetime=yesterday_datetime_with_tz, stocks=[stock], mediations=[mediation], venue=venue
+        )
 
         api.make_offer_headline(offer=offer)
         assert offer.is_headline_offer
@@ -2304,7 +2311,7 @@ class HeadlineOfferTest:
         mediation = factories.MediationFactory()
         offer = factories.OfferFactory(
             validation=models.OfferValidationStatus.APPROVED,
-            isActive=True,
+            publicationDatetime=yesterday_datetime_with_tz,
             stocks=[
                 stock,
             ],
@@ -2324,7 +2331,7 @@ class HeadlineOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_headline_offer_on_rejected_offer_is_inactive(self, mocked_async_index_offer_ids):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.LIBRARY)
-        offer = factories.OfferFactory(isActive=True, venue=venue)
+        offer = factories.OfferFactory(publicationDatetime=yesterday_datetime_with_tz, venue=venue)
         factories.StockFactory(offer=offer)
         factories.MediationFactory(offer=offer)
 
@@ -2472,7 +2479,7 @@ class HeadlineOfferTest:
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_set_upper_timespan_of_inactive_headline_offers_without_image(self, mocked_async_index_offer_ids, caplog):
-        offer = factories.OfferFactory(isActive=True)
+        offer = factories.OfferFactory(publicationDatetime=now_datetime_with_tz)
 
         headline_offer = factories.HeadlineOfferFactory(offer=offer, without_mediation=True)
         assert not headline_offer.isActive
@@ -2580,7 +2587,7 @@ class AddCriterionToOffersTest:
         product1 = factories.ProductFactory(ean=ean1)
         offer11 = factories.OfferFactory(product=product1)
         offer12 = factories.OfferFactory(product=product1)
-        inactive_offer = factories.OfferFactory(product=product1, isActive=False)
+        inactive_offer = factories.OfferFactory(product=product1, publicationDatetime=None)
         unmatched_offer = factories.OfferFactory()
         criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
         criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
@@ -2609,7 +2616,7 @@ class AddCriterionToOffersTest:
         product1 = factories.ProductFactory(ean=ean_1)
         offer11 = factories.OfferFactory(product=product1, criteria=[criterion1])
         offer12 = factories.OfferFactory(product=product1, criteria=[criterion2])
-        inactive_offer = factories.OfferFactory(product=product1, isActive=False)
+        inactive_offer = factories.OfferFactory(product=product1, publicationDatetime=None)
         unmatched_offer = factories.OfferFactory()
 
         # When
@@ -2634,7 +2641,7 @@ class AddCriterionToOffersTest:
         product = factories.ProductFactory(extraData={"visa": visa})
         offer1 = factories.OfferFactory(product=product)
         offer2 = factories.OfferFactory(product=product)
-        inactive_offer = factories.OfferFactory(product=product, isActive=False)
+        inactive_offer = factories.OfferFactory(product=product, publicationDatetime=None)
         unmatched_offer = factories.OfferFactory()
         criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
         criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
@@ -4997,7 +5004,7 @@ class MoveOfferTest:
         if state == OfferValidationStatus.REJECTED:
             offer = factories.OfferFactory(venue=venue, validation=OfferValidationStatus.REJECTED)
         if state == OfferStatus.INACTIVE:
-            offer = factories.OfferFactory(venue=venue, isActive=False)
+            offer = factories.OfferFactory(venue=venue, publicationDatetime=None)
         if state == OfferStatus.SOLD_OUT:
             offer = factories.OfferFactory(venue=venue)
             stock = factories.StockFactory(offer=offer, quantity=1)

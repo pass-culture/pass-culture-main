@@ -359,7 +359,8 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         event_offer = offers_factories.EventOfferFactory(
             venue=venue_provider.venue,
             lastProvider=venue_provider.provider,
-            isActive=True,
+            publicationDatetime=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+            - datetime.timedelta(days=1),
         )
 
         response = client.with_explicit_token(plain_api_key).patch(
@@ -369,6 +370,7 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 200
 
+        db.session.refresh(event_offer)
         assert event_offer.isActive
 
     def test_update_location_with_physical_location(self, client):

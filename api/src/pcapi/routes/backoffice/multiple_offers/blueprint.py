@@ -73,7 +73,7 @@ def search_multiple_offers() -> utils.BackofficeResponse:
         db.session.query(offers_models.Offer)
         .filter(sa.or_(offers_models.Offer.ean == ean, offers_models.Offer.productId == product.id))
         .options(
-            sa_orm.load_only(offers_models.Offer.isActive, offers_models.Offer.validation)
+            sa_orm.load_only(offers_models.Offer.publicationDatetime, offers_models.Offer.validation)
             .joinedload(offers_models.Offer.criteria)
             .load_only(criteria_models.Criterion.name),
             sa_orm.joinedload(offers_models.Offer.product),

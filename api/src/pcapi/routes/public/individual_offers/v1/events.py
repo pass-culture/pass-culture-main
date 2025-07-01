@@ -1,4 +1,6 @@
 import copy
+from datetime import datetime
+from datetime import timezone
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -268,7 +270,15 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
         updates = body.dict(by_alias=True, exclude_unset=True)
         dc = updates.get("accessibility", {})
         extra_data = copy.deepcopy(offer.extraData)
+
+        publication_datetime = get_field(offer, updates, "publicationDatetime")
         is_active = get_field(offer, updates, "isActive")
+
+        # TODO(jbaudet): remove this part, do not use isActive once
+        # the public API does not allow it anymore
+        if "publicationDatetime" not in updates and updates.get("isActive") is not None:
+            publication_datetime = datetime.now(timezone.utc) if is_active else None
+
         offer = offers_api.update_offer(
             offer,
             offers_schemas.UpdateOffer(
@@ -288,13 +298,12 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
                     if "categoryRelatedFields" in updates
                     else extra_data
                 ),
-                isActive=is_active if is_active is not None else offer.isActive,
+                publicationDatetime=publication_datetime,
                 idAtProvider=get_field(offer, updates, "idAtProvider"),
                 isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
                 withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
                 name=get_field(offer, updates, "name"),
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
-                publicationDatetime=get_field(offer, updates, "publicationDatetime"),
                 bookingAllowedDatetime=get_field(offer, updates, "bookingAllowedDatetime"),
             ),  # type: ignore[call-arg]
             venue=venue,

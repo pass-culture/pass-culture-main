@@ -88,7 +88,7 @@ def full_index_offers(start: int, end: int) -> None:
         offers = (
             search.get_base_query_for_offer_indexation()
             .filter(
-                offers_models.Offer.isActive.is_(True),
+                offers_models.Offer.isActive,
                 offers_models.Offer.id.between(start, min(start + BATCH_SIZE, end)),
             )
             .order_by(offers_models.Offer.id)
