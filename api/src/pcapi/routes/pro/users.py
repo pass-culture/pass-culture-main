@@ -85,7 +85,7 @@ def validate_user(token: str) -> None:
         except users_exceptions.InvalidToken:
             raise ResourceNotFoundError(errors={"global": "Ce lien est invalide"})
 
-    if FeatureToggle.WIP_2025_SIGN_UP.is_active():
+    if FeatureToggle.WIP_2025_AUTOLOGIN.is_active():
         try:
             user_id = token_utils.validate_passwordless_token(token)["sub"]
             user = db.session.query(users_models.User).get_or_404(user_id)

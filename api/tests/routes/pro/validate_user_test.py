@@ -32,7 +32,7 @@ class ValidateUserTest:
 class Returns204Tests:
     @pytest.mark.usefixtures("db_session")
     @pytest.mark.usefixtures("rsa_keys")
-    @pytest.mark.features(WIP_2025_SIGN_UP=True)
+    @pytest.mark.features(WIP_2025_AUTOLOGIN=True)
     @mock.patch("pcapi.flask_app.redis.client.Pipeline.execute")
     @mock.patch("pcapi.flask_app.redis.client.Pipeline.delete")
     @mock.patch("pcapi.flask_app.redis.client.Pipeline.get")
@@ -96,7 +96,7 @@ class Returns204Tests:
         client,
         rsa_keys,
     ):
-        features.WIP_2025_SIGN_UP = False  # The user signup while the FF is still off
+        features.WIP_2025_AUTOLOGIN = False  # The user signup while the FF is still off
 
         user_data = {
             "email": "pro@example.com",
@@ -121,7 +121,7 @@ class Returns204Tests:
         private_key_pem_file, public_key_pem_file = rsa_keys
         settings.PASSWORDLESS_LOGIN_PRIVATE_KEY = private_key_pem_file
         settings.PASSWORDLESS_LOGIN_PUBLIC_KEY = public_key_pem_file
-        features.WIP_2025_SIGN_UP = True  # Oh no! We activated the FF in the mean time, we have to manage this case.
+        features.WIP_2025_AUTOLOGIN = True  # Oh no! We activated the FF in the mean time, we have to manage this case.
 
         response = client.patch(f"/users/validate_signup/{signup_confirmation_email_token}")
         assert response.status_code == 204
@@ -138,7 +138,7 @@ class Returns204Tests:
 class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     @pytest.mark.usefixtures("rsa_keys")
-    @pytest.mark.features(WIP_2025_SIGN_UP=True)
+    @pytest.mark.features(WIP_2025_AUTOLOGIN=True)
     @mock.patch("pcapi.flask_app.redis.client.Pipeline.execute")
     @mock.patch("pcapi.flask_app.redis.client.Pipeline.delete")
     @mock.patch("pcapi.flask_app.redis.client.Pipeline.get")
@@ -190,7 +190,7 @@ class Returns400Test:
 
     @pytest.mark.usefixtures("db_session")
     @pytest.mark.usefixtures("rsa_keys")
-    @pytest.mark.features(WIP_2025_SIGN_UP=True)
+    @pytest.mark.features(WIP_2025_AUTOLOGIN=True)
     @mock.patch("pcapi.flask_app.redis.client.Pipeline.execute")
     @mock.patch("pcapi.flask_app.redis.client.Pipeline.delete")
     @mock.patch("pcapi.flask_app.redis.client.Pipeline.get")
@@ -242,7 +242,7 @@ class Returns400Test:
 
     @pytest.mark.usefixtures("db_session")
     @pytest.mark.usefixtures("rsa_keys")
-    @pytest.mark.features(WIP_2025_SIGN_UP=True)
+    @pytest.mark.features(WIP_2025_AUTOLOGIN=True)
     @mock.patch("pcapi.core.mails.transactional.send_signup_email_confirmation_to_pro")
     @mock.patch("uuid.uuid4", return_value=uuid.uuid4())
     def test_already_used_token(

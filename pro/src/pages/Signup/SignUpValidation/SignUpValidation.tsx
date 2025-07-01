@@ -15,7 +15,7 @@ export const SignupValidation = (): JSX.Element | null => {
   const { token } = useParams<Params>()
   const currentUser = useSelector(selectCurrentUser)
   const [urlToRedirect, setUrlToRedirect] = useState<string>()
-  const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
+  const isAutologinEnabled = useActiveFeature('WIP_2025_AUTOLOGIN')
   const dispatch = useDispatch<AppDispatch>()
 
   const tokenConsumed = useRef(false)
@@ -29,11 +29,11 @@ export const SignupValidation = (): JSX.Element | null => {
           // Ensure that we call only 1 time the API upon different re-renders
           tokenConsumed.current = true
           await api.validateUser(token)
-          if (isNewSignupEnabled) {
+          if (isAutologinEnabled) {
             const user = await api.getProfile()
             const result = await dispatch(initializeUserThunk(user)).unwrap()
             if (result.success) {
-              setUrlToRedirect('/')
+                setUrlToRedirect('/')
             }
           } else {
             setUrlToRedirect('/connexion?accountValidation=true')
@@ -54,7 +54,7 @@ export const SignupValidation = (): JSX.Element | null => {
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     validateTokenAndRedirect()
-  }, [token, currentUser?.id, isNewSignupEnabled, dispatch])
+  }, [token, currentUser?.id, isAutologinEnabled, dispatch])
 
   return urlToRedirect ? <Navigate to={urlToRedirect} replace /> : null
 }
