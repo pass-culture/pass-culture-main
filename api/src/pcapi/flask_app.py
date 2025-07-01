@@ -73,7 +73,6 @@ def setup_metrics(app_: Flask) -> None:
         return
 
     def get_top_level_blueprint_name() -> str | None:
-        # First, try to get the metric prefix from the current blueprint
         if hasattr(request, "blueprint"):
             top_level_blueprint_name = request.blueprint.split(".")[0]
             if top_level_blueprint_name:
