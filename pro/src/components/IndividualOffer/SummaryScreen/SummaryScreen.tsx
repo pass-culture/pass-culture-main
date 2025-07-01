@@ -47,7 +47,6 @@ export const SummaryScreen = () => {
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const { offer, subCategories, publishedOfferWithSameEAN } =
     useIndividualOfferContext()
-  const showEventPublicationForm = Boolean(offer?.isEvent)
   const [searchParams, setSearchParams] = useSearchParams()
 
   const onPublish = async (values: EventPublicationFormValues) => {
@@ -118,9 +117,7 @@ export const SummaryScreen = () => {
       bookingAllowedDate: '',
       bookingAllowedTime: '',
     },
-    resolver: showEventPublicationForm
-      ? yupResolver(validationSchema)
-      : undefined,
+    resolver: yupResolver(validationSchema),
   })
 
   if (offer === null) {
@@ -179,16 +176,12 @@ export const SummaryScreen = () => {
               Vérifiez les informations ci-dessous avant de publier votre offre.
             </Callout>
 
-            {showEventPublicationForm && <EventPublicationForm />}
+            <EventPublicationForm />
           </div>
         )}
         <SummaryLayout>
           <SummaryContent>
-            <OfferSection
-              conditionalFields={conditionalFields}
-              offer={offer}
-              isEventPublicationFormShown={showEventPublicationForm}
-            />
+            <OfferSection conditionalFields={conditionalFields} offer={offer} />
 
             {mode === OFFER_WIZARD_MODE.CREATION && offer.isEvent && (
               <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />

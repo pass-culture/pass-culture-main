@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { useLocation } from 'react-router'
 import useSWR from 'swr'
 
@@ -31,13 +30,11 @@ import { humanizeDelay } from './utils'
 interface OfferSummaryProps {
   offer: GetIndividualOfferWithAddressResponseModel
   conditionalFields: string[]
-  isEventPublicationFormShown: boolean
 }
 
 export const OfferSection = ({
   conditionalFields,
   offer,
-  isEventPublicationFormShown,
 }: OfferSummaryProps): JSX.Element => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
@@ -204,9 +201,7 @@ export const OfferSection = ({
         isOnboarding,
       })}
       aria-label="Modifier les détails de l’offre"
-      className={cn({
-        [styles['cancel-title-margin']]: isEventPublicationFormShown,
-      })}
+      className={styles['cancel-title-margin']}
     >
       <SummarySubSection title="À propos de votre offre">
         <SummaryDescriptionList descriptions={aboutDescriptions} />
