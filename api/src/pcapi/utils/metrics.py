@@ -13,6 +13,7 @@ but this decision might need to be revisited as the number increases.
 """
 
 import time
+from threading import Lock
 from typing import Any
 from urllib.parse import urlparse
 
@@ -22,30 +23,37 @@ from prometheus_client import Histogram
 
 # Global metrics registry to avoid re-registering metrics
 _metrics_registry: dict[str, tuple[Histogram, Counter]] = {}
+_metrics_lock = Lock()
 
 
 def get_or_create_http_metrics(name_suffix: str) -> tuple[Histogram, Counter]:
     """Get or create Prometheus metrics for HTTP requests with the given prefix."""
+    # Check without lock first for the case where the metrics are already registered
     if name_suffix in _metrics_registry:
         return _metrics_registry[name_suffix]
 
-    # Create histogram for request duration
-    duration_histogram = Histogram(
-        name=f"http_request_duration_seconds_{name_suffix}",
-        documentation=f"Duration of HTTP requests for {name_suffix} in seconds",
-        labelnames=["method", "url_pattern", "status_code"],
-        buckets=(0.05, 0.25, 1.0, 5.0, 10.0, 60.0, float("inf")),
-    )
+    with _metrics_lock:
+        # Check again inside the lock to avoid race conditions
+        if name_suffix in _metrics_registry:
+            return _metrics_registry[name_suffix]
 
-    # Create counter for request count by status code
-    status_counter = Counter(
-        name=f"http_requests_total_{name_suffix}",
-        documentation=f"Total number of HTTP requests for {name_suffix}",
-        labelnames=["method", "url_pattern", "status_code"],
-    )
+        # Create histogram for request duration
+        duration_histogram = Histogram(
+            name=f"http_request_duration_seconds_{name_suffix}",
+            documentation=f"Duration of HTTP requests for {name_suffix} in seconds",
+            labelnames=["method", "url_pattern", "status_code"],
+            buckets=(0.05, 0.25, 1.0, 5.0, 10.0, 60.0, float("inf")),
+        )
 
-    _metrics_registry[name_suffix] = (duration_histogram, status_counter)
-    return duration_histogram, status_counter
+        # Create counter for request count by status code
+        status_counter = Counter(
+            name=f"http_requests_total_{name_suffix}",
+            documentation=f"Total number of HTTP requests for {name_suffix}",
+            labelnames=["method", "url_pattern", "status_code"],
+        )
+
+        _metrics_registry[name_suffix] = (duration_histogram, status_counter)
+        return duration_histogram, status_counter
 
 
 def get_host(url: str) -> str:
