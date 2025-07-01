@@ -41,7 +41,7 @@ def get_or_create_http_metrics(name_suffix: str) -> tuple[Histogram, Counter]:
         duration_histogram = Histogram(
             name=f"http_request_duration_seconds_{name_suffix}",
             documentation=f"Duration of HTTP requests for {name_suffix} in seconds",
-            labelnames=["method", "url_pattern", "status_code"],
+            labelnames=["method", "host", "status_code"],
             buckets=(0.05, 0.25, 1.0, 5.0, 10.0, 60.0, float("inf")),
         )
 
@@ -49,7 +49,7 @@ def get_or_create_http_metrics(name_suffix: str) -> tuple[Histogram, Counter]:
         status_counter = Counter(
             name=f"http_requests_total_{name_suffix}",
             documentation=f"Total number of HTTP requests for {name_suffix}",
-            labelnames=["method", "url_pattern", "status_code"],
+            labelnames=["method", "host", "status_code"],
         )
 
         _metrics_registry[name_suffix] = (duration_histogram, status_counter)
