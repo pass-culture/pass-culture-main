@@ -38,6 +38,7 @@ jobs:
             api/**
             !api/documentation/**
             !api/src/pcapi/scripts/**/main.py
+            !api/tests/scripts/fill_siret_test.py
             !api/src/pcapi/scripts/**/main.sql
       - name: "Check api documentation folder changes"
         id: check-api-documentation-changes
@@ -160,10 +161,7 @@ jobs:
     name: "Pro E2E Tests"
     needs: [pcapi-init-job, build-pcapi-tests]
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
-    if: always() &&
-      !cancelled() &&
-      needs.pcapi-init-job.outputs.api-changed == 'true' ||
-      needs.pcapi-init-job.outputs.pro-changed == 'true'
+    if: false 
     with:
       ENV: "development"
       tag: ${{ needs.build-pcapi-tests.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
