@@ -210,7 +210,7 @@ class Session(requests.Session):
     ) -> None:
         super().__init__(*args, **kwargs)
         self.log_info = log_info
-        if record_metrics and metric_name_suffix is not None:
+        if record_metrics and metric_name_suffix is None:
             raise ValueError("metric_name_suffix is required when record_metrics is True")
         self.record_metrics = record_metrics
         self.metric_name_suffix = metric_name_suffix
