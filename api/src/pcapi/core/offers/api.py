@@ -1137,51 +1137,76 @@ def add_criteria_to_offers(
     criterion_ids: list[int],
     ean: str | None = None,
     visa: str | None = None,
+    allocineId: int | None = None,
+    include_unlinked_offers: bool = False,
 ) -> bool:
-    if (not ean and not visa) or not criterion_ids:
+    provided_identifiers_count = sum(1 for identifier in [ean, visa, allocineId] if identifier is not None)
+    if provided_identifiers_count != 1 or not criterion_ids:
+        logger.error("add_criteria_to_offers must be called with exactly one identifier and at least one criterion.")
         return False
 
-    query = db.session.query(models.Product)
+    offer_ids_to_tag: set[int] = set()
+
+    product_query = db.session.query(models.Product)
+    # Check for EAN first, then allocineId (preferred over visa), and finally visa to identify the product.
     if ean:
         ean = ean.replace("-", "").replace(" ", "")
-        query = query.filter(models.Product.ean == ean)
-    if visa:
-        query = query.filter(models.Product.extraData["visa"].astext == visa)
+        product_query = product_query.filter(models.Product.ean == ean)
+    elif allocineId:
+        product_query = product_query.filter(models.Product.extraData["allocineId"].cast(sa.Integer) == allocineId)
+    elif visa:
+        product_query = product_query.filter(models.Product.extraData["visa"].astext == visa)
 
-    products = query.all()
-    if not products:
-        return False
+    products = product_query.all()
 
-    offer_ids_query = (
-        db.session.query(models.Offer)
-        .filter(models.Offer.productId.in_(p.id for p in products), models.Offer.isActive.is_(True))
-        .with_entities(models.Offer.id)
-    )
-    offer_ids = {offer_id for (offer_id,) in offer_ids_query.all()}
+    if products:
+        product_ids = [p.id for p in products]
+        linked_offer_ids_query = db.session.query(models.Offer.id).filter(
+            models.Offer.productId.in_(product_ids), models.Offer.isActive.is_(True)
+        )
+        offer_ids_to_tag.update(offer_id for (offer_id,) in linked_offer_ids_query.all())
 
-    if not offer_ids:
+    if include_unlinked_offers:
+        unlinked_offer_query = db.session.query(models.Offer.id).filter(
+            models.Offer.productId.is_(None), models.Offer.isActive.is_(True)
+        )
+
+        # Check for EAN first, then allocineId (preferred over visa), and finally visa to identify the product.
+        if ean:
+            unlinked_offer_query = unlinked_offer_query.filter(models.Offer.ean == ean)
+        elif allocineId:
+            unlinked_offer_query = unlinked_offer_query.filter(
+                models.Offer._extraData["allocineId"].cast(sa.Integer) == allocineId
+            )
+        elif visa:
+            unlinked_offer_query = unlinked_offer_query.filter(models.Offer._extraData["visa"].astext == visa)
+
+        offer_ids_to_tag.update(offer_id for (offer_id,) in unlinked_offer_query.all())
+
+    if not offer_ids_to_tag:
         return False
 
     values: list[dict[str, int]] = []
     for criterion_id in criterion_ids:
-        logger.info("Adding criterion %s to %d offers", criterion_id, len(offer_ids))
-        values += [{"offerId": offer_id, "criterionId": criterion_id} for offer_id in offer_ids]
+        logger.info("Adding criterion %s to %d offers", criterion_id, len(offer_ids_to_tag))
+        values += [{"offerId": offer_id, "criterionId": criterion_id} for offer_id in offer_ids_to_tag]
 
-    db.session.execute(
-        insert(criteria_models.OfferCriterion)
-        .values(values)
-        .on_conflict_do_nothing(index_elements=["offerId", "criterionId"])
-    )
-    db.session.flush()
+    if values:
+        db.session.execute(
+            insert(criteria_models.OfferCriterion)
+            .values(values)
+            .on_conflict_do_nothing(index_elements=["offerId", "criterionId"])
+        )
+        db.session.flush()
 
-    on_commit(
-        partial(
-            search.async_index_offer_ids,
-            offer_ids,
-            reason=search.IndexationReason.CRITERIA_LINK,
-            log_extra={"criterion_ids": criterion_ids},
-        ),
-    )
+        on_commit(
+            partial(
+                search.async_index_offer_ids,
+                offer_ids_to_tag,
+                reason=search.IndexationReason.CRITERIA_LINK,
+                log_extra={"criterion_ids": criterion_ids},
+            ),
+        )
 
     return True
 

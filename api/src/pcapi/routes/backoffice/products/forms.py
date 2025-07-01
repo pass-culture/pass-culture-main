@@ -14,6 +14,20 @@ class BatchLinkOfferToProductForm(empty_forms.BatchForm):
     pass
 
 
+class OfferCriteriaForm(FlaskForm):
+    criteria = fields.PCTomSelectField(
+        "Tags",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        coerce=int,
+        endpoint="backoffice_web.autocomplete_criteria",
+        validators=[
+            wtforms.validators.DataRequired(),
+        ],
+    )
+
+
 class ProductFilterTypeEnum(enum.Enum):
     EAN = "ean"
     VISA = "visa"

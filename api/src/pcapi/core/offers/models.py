@@ -157,6 +157,12 @@ class GcuCompatibilityType(enum.Enum):
     FRAUD_INCOMPATIBLE = "FRAUD_INCOMPATIBLE"
 
 
+class ProductIdentifierType(enum.Enum):
+    ALLOCINE_ID = "ALLOCINE_ID"
+    EAN = "EAN"
+    VISA = "VISA"
+
+
 class Product(PcObject, Base, Model, HasThumbMixin):
     __tablename__ = "product"
 
@@ -229,6 +235,21 @@ class Product(PcObject, Base, Model, HasThumbMixin):
         if self.productMediations:
             return {pm.imageType.value: pm.url for pm in self.productMediations if pm.imageType in ImageType}
         return {ImageType.RECTO.value: self.thumbUrl}
+
+    @property
+    def identifierType(self) -> ProductIdentifierType:
+        # We first check if the product has an EAN.
+        # Then, we check for allocineId before visa because a product can have both,
+        # but allocineId is much more common and generally more reliable than visa.
+        # Therefore, we prioritize allocineId over visa for identifying the product.
+        if self.ean:
+            return ProductIdentifierType.EAN
+        elif self.extraData and self.extraData.get("allocineId"):
+            return ProductIdentifierType.ALLOCINE_ID
+        elif self.extraData and self.extraData.get("visa"):
+            return ProductIdentifierType.VISA
+        else:
+            raise ValueError()
 
 
 class Mediation(PcObject, Base, Model, HasThumbMixin, DeactivableMixin):
