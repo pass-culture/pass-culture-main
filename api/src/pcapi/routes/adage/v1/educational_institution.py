@@ -39,8 +39,15 @@ def get_educational_institution(year_id: str, uai_code: str) -> EducationalInsti
     educational_deposit = find_educational_deposit_by_institution_id_and_year(
         educational_year_id=year_id, educational_institution_id=educational_institution.id
     )
+
+    credit_ratio = (
+        float(educational_deposit.creditRatio)
+        if educational_deposit and educational_deposit.creditRatio is not None
+        else None
+    )
     return EducationalInstitutionResponse(
         credit=educational_deposit.amount if educational_deposit else 0,  # type: ignore[arg-type]
+        creditRatio=credit_ratio,
         isFinal=educational_deposit.isFinal if educational_deposit else False,
         prebookings=prebookings,
     )
