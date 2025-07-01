@@ -275,10 +275,10 @@ class UserTest:
                 user=user,
                 type=fraud_models.FraudCheckType.DMS,
                 status=fraud_models.FraudCheckStatus.OK,
-                eligibilityType=user_models.EligibilityType.AGE18,
+                eligibilityType=user_models.EligibilityType.AGE17_18,
                 resultContent=dms_content_before_account_creation,
             )
-            assert user.eligibility is user_models.EligibilityType.AGE18
+            assert user.eligibility is user_models.EligibilityType.AGE17_18
 
     def test_full_name(self):
         # hybrid property: check both Python and SQL expressions
