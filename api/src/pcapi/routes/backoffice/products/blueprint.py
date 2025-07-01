@@ -1,5 +1,6 @@
 import dataclasses
 import enum
+from collections import defaultdict
 
 import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
@@ -17,6 +18,7 @@ from pcapi.connectors.serialization import titelive_serializers
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.connectors.titelive import get_by_ean13
 from pcapi.core.categories import subcategories
+from pcapi.core.criteria import models as criteria_models
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
@@ -48,6 +50,7 @@ class ProductDetailsActionType(enum.StrEnum):
     SYNCHRO_TITELIVE = enum.auto()
     WHITELIST = enum.auto()
     BLACKLIST = enum.auto()
+    TAG_MULTIPLE_OFFERS = enum.auto()
 
 
 @dataclasses.dataclass
@@ -87,7 +90,19 @@ def _get_product_details_actions(threshold: int) -> ProductDetailsActions:
         product_details_actions.add_action(ProductDetailsActionType.SYNCHRO_TITELIVE)
         product_details_actions.add_action(ProductDetailsActionType.WHITELIST)
         product_details_actions.add_action(ProductDetailsActionType.BLACKLIST)
+    if utils.has_current_user_permission(perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS):
+        product_details_actions.add_action(ProductDetailsActionType.TAG_MULTIPLE_OFFERS)
     return product_details_actions
+
+
+def _get_current_criteria_on_active_offers(offers: list[offers_models.Offer]) -> dict[criteria_models.Criterion, int]:
+    current_criteria_on_offers: defaultdict[criteria_models.Criterion, int] = defaultdict(int)
+    for offer in offers:
+        if offer.isActive:
+            for criterion in offer.criteria:
+                current_criteria_on_offers[criterion] += 1
+
+    return dict(current_criteria_on_offers)
 
 
 @list_products_blueprint.route("/<int:product_id>", methods=["GET"])
@@ -116,6 +131,9 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
                 offerers_models.Venue.publicName,
             )
         ),
+        sa_orm.selectinload(offers_models.Offer.criteria).options(
+            sa_orm.load_only(criteria_models.Criterion.name, criteria_models.Criterion.id)
+        ),
     ]
 
     product = (
@@ -133,26 +151,45 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
         raise NotFound()
 
     unlinked_offers = []
-    if product.ean:
-        unlinked_offers = (
+    if (
+        product.ean
+        or (product.extraData and product.extraData.get("visa"))
+        or (product.extraData and product.extraData.get("allocineId"))
+    ):
+        unlinked_offers_query = (
             db.session.query(offers_models.Offer)
-            .filter(offers_models.Offer.ean == product.ean, offers_models.Offer.productId.is_(None))
+            .filter(offers_models.Offer.productId.is_(None))
             .options(*common_options)
             .order_by(offers_models.Offer.id)
-            .all()
         )
+        identifier_type = product.identifierType
+        # Check for EAN first, then allocineId (preferred over visa), and finally visa to identify the product.
+        if identifier_type == offers_models.ProductIdentifierType.EAN:
+            unlinked_offers_query = unlinked_offers_query.filter(offers_models.Offer.ean == product.ean)
+        elif identifier_type == offers_models.ProductIdentifierType.ALLOCINE_ID:
+            unlinked_offers_query = unlinked_offers_query.filter(
+                sa.cast(offers_models.Offer._extraData["allocineId"].astext, sa.Integer)
+                == product.extraData["allocineId"]
+            )
+        elif identifier_type == offers_models.ProductIdentifierType.VISA:
+            unlinked_offers_query = unlinked_offers_query.filter(
+                offers_models.Offer._extraData["visa"].astext == product.extraData["visa"]
+            )
+        unlinked_offers = unlinked_offers_query.all()
+
+    all_offers = product.offers + unlinked_offers
 
     allowed_actions = _get_product_details_actions(threshold=4)
 
-    active_offers_count = sum(offer.isActive for offer in product.offers)
+    active_offers_count = sum(offer.isActive for offer in all_offers)
     approved_active_offers_count = sum(
-        1 for offer in product.offers if offer.validation == OfferValidationStatus.APPROVED and offer.isActive
+        1 for offer in all_offers if offer.validation == OfferValidationStatus.APPROVED and offer.isActive
     )
     approved_inactive_offers_count = sum(
-        1 for offer in product.offers if offer.validation == OfferValidationStatus.APPROVED and not offer.isActive
+        1 for offer in all_offers if offer.validation == OfferValidationStatus.APPROVED and not offer.isActive
     )
-    pending_offers_count = sum(1 for offer in product.offers if offer.validation == OfferValidationStatus.PENDING)
-    rejected_offers_count = sum(1 for offer in product.offers if offer.validation == OfferValidationStatus.REJECTED)
+    pending_offers_count = sum(1 for offer in all_offers if offer.validation == OfferValidationStatus.PENDING)
+    rejected_offers_count = sum(1 for offer in all_offers if offer.validation == OfferValidationStatus.REJECTED)
 
     titelive_data = {}
     ineligibility_reasons = None
@@ -209,6 +246,7 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
         ineligibility_reasons=ineligibility_reasons,
         product_whitelist=product_whitelist,
         music_titelive_subcategories=subcategories.MUSIC_TITELIVE_SUBCATEGORY_SEARCH_IDS,
+        current_criteria_on_offers=_get_current_criteria_on_active_offers(all_offers),
     )
 
 
@@ -373,6 +411,95 @@ def batch_link_offers_to_product(product_id: int) -> utils.BackofficeResponse:
         "success",
     )
     return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
+
+
+@list_products_blueprint.route("/<int:product_id>/tag-offers", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS)
+def get_tag_offers_form(product_id: int) -> utils.BackofficeResponse:
+    product = (
+        db.session.query(offers_models.Product)
+        .options(sa_orm.selectinload(offers_models.Product.offers))
+        .get(product_id)
+    )
+    if not product:
+        raise NotFound()
+
+    linked_active_offers_count = sum(offer.isActive for offer in product.offers)
+
+    unlinked_offers_query = db.session.query(offers_models.Offer).filter(
+        offers_models.Offer.productId.is_(None), offers_models.Offer.isActive.is_(True)
+    )
+
+    identifier_type = product.identifierType
+    # Check for EAN first, then allocineId (preferred over visa), and finally visa to identify the product.
+    if identifier_type == offers_models.ProductIdentifierType.EAN:
+        unlinked_offers_query = unlinked_offers_query.filter(offers_models.Offer.ean == product.ean)
+        identifier_string = " cet EAN-13"
+    elif identifier_type == offers_models.ProductIdentifierType.ALLOCINE_ID:
+        unlinked_offers_query = unlinked_offers_query.filter(
+            sa.cast(offers_models.Offer._extraData["allocineId"].astext, sa.Integer) == product.extraData["allocineId"]
+        )
+        identifier_string = "cet ID Allociné"
+    elif identifier_type == offers_models.ProductIdentifierType.VISA:
+        unlinked_offers_query = unlinked_offers_query.filter(
+            offers_models.Offer._extraData["visa"].astext == product.extraData["visa"]
+        )
+        identifier_string = "ce visa"
+
+    unlinked_active_offers_count = unlinked_offers_query.count()
+
+    total_active_offers_count = linked_active_offers_count + unlinked_active_offers_count
+    form = forms.OfferCriteriaForm()
+    information_message = None
+    if total_active_offers_count > 0:
+        message_part = pluralize(
+            total_active_offers_count,
+            singular=f"offre active associée à {identifier_string} sera affectée",
+            plural=f"offres actives associées à {identifier_string} seront affectées",
+        )
+        information_message = Markup("⚠️ {} {}").format(total_active_offers_count, message_part)
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for(".add_criteria_to_offers", product_id=product_id),
+        div_id=f"tag-offers-product-modal-{product.id}",
+        title="Tag des offres",
+        button_text="Enregistrer",
+        information=information_message,
+    )
+
+
+@list_products_blueprint.route("/<int:product_id>/add-criteria", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS)
+def add_criteria_to_offers(product_id: int) -> utils.BackofficeResponse:
+    product = db.session.query(offers_models.Product).get(product_id)
+    if not product:
+        raise NotFound()
+
+    form = forms.OfferCriteriaForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+
+    identifier_type = product.identifierType
+    # Check for EAN first, then allocineId (preferred over visa), and finally visa to identify the product.
+    if identifier_type == offers_models.ProductIdentifierType.EAN:
+        success = offers_api.add_criteria_to_offers(form.criteria.data, ean=product.ean, include_unlinked_offers=True)
+    elif identifier_type == offers_models.ProductIdentifierType.ALLOCINE_ID:
+        success = offers_api.add_criteria_to_offers(
+            form.criteria.data, allocineId=product.extraData["allocineId"], include_unlinked_offers=True
+        )
+    elif identifier_type == offers_models.ProductIdentifierType.VISA:
+        success = offers_api.add_criteria_to_offers(
+            form.criteria.data, visa=product.extraData["visa"], include_unlinked_offers=True
+        )
+
+    if success:
+        flash("Les offres du produit ont été taguées", "success")
+    else:
+        flash("Une erreur s'est produite lors de l'opération", "warning")
+
+    return redirect(url_for(".get_product_details", product_id=product_id), 303)
 
 
 def render_search_template(form: forms.ProductSearchForm | None = None) -> str:

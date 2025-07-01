@@ -5,10 +5,16 @@
 {% import "components/logo.html" as logo %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% from "components/generic_modal.html" import build_simple_modal_form with context %}
+{% from "components/generic_modal.html" import build_modal_form with context %}
 {% from "components/description.html" import description_detail_vertical %}
 {% from "components/description.html" import description_detail_horizontal %}
 {% from "products/titelive_information.html" import render_titelive_information %}
 {% block title %}{{ product.name }}{% endblock %}
+{% macro build_has_tag(count, total_count, criterion) %}
+  {{ count }}/{{ total_count }}
+  {{ count | pluralize('offre active a', 'offres actives ont') }}
+  déjà le tag {{ [criterion] | format_criteria }}
+{% endmacro %}
 {% block header_extra %}
   <div>
     {% call badges.badges_container() %}
@@ -26,6 +32,9 @@
   {% endif %}
   {% if action.BLACKLIST in allowed_actions.inline_actions and product.gcuCompatibilityType.value == "COMPATIBLE" %}
     {{ action_bar_button("x-circle", "Blacklist", modal_id="#blacklist-product-modal-" + product.id|string) }}
+  {% endif %}
+  {% if action.TAG_MULTIPLE_OFFERS in allowed_actions.inline_actions and (product.ean or product.extraData.visa or product.extraData.allocineId) and active_offers_count > 0 %}
+    {{ action_bar_button("tags", "Tag les offres", modal_id="#tag-offers-product-modal-" + product.id|string) }}
   {% endif %}
 {% endblock action_buttons %}
 {% block details_container %}
@@ -293,8 +302,14 @@
       {% endcall %}
     {% endif %}
     <hr />
+    {% call description_detail_vertical("Nombre d'offres") %}
+      {{ product.offers | length + unlinked_offers | length }}
+    {% endcall %}
     {% call description_detail_vertical("Nombre d'offres associées") %}
       {{ product.offers | length }}
+    {% endcall %}
+    {% call description_detail_vertical("Nombre d'offres non liées") %}
+      {{ unlinked_offers | length }}
     {% endcall %}
     {% call description_detail_vertical("Approuvées actives") %}
       {{ approved_active_offers_count }}
@@ -308,9 +323,18 @@
     {% call description_detail_vertical("Rejetées") %}
       {{ rejected_offers_count }}
     {% endcall %}
-    {% call description_detail_vertical("Offres non liées") %}
-      {{ unlinked_offers | length }}
-    {% endcall %}
+    {% if active_offers_count > 0 %}
+      <hr />
+      {% call description_detail_vertical("Tags des offres") %}
+        {% if current_criteria_on_offers.items() | length > 0 %}
+          {% for criterion, count in current_criteria_on_offers.items() %}
+            <p>{{ build_has_tag(count, active_offers_count, criterion) }}</p>
+          {% endfor %}
+        {% else %}
+          Aucun tag
+        {% endif %}
+      {% endcall %}
+    {% endif %}
   </div>
 </div>
 {% endblock side_column %}
@@ -327,5 +351,9 @@
   {% if action.BLACKLIST in allowed_actions %}
     {{ build_lazy_modal(url_for('backoffice_web.product.get_product_blacklist_form', product_id=product.id) ,
     "blacklist-product-modal-" + product.id|string) }}
+  {% endif %}
+  {% if action.TAG_MULTIPLE_OFFERS in allowed_actions %}
+    {{ build_lazy_modal(url_for('backoffice_web.product.get_tag_offers_form', product_id=product.id) ,
+    "tag-offers-product-modal-" + product.id|string) }}
   {% endif %}
 {% endblock extra_main_content %}
