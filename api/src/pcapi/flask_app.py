@@ -72,19 +72,18 @@ def setup_metrics(app_: Flask) -> None:
     if not int(os.environ.get("ENABLE_FLASK_PROMETHEUS_EXPORTER", "0")):
         return
 
-    def get_url_prefix() -> str | None:
-        path = request.path
-        prefix = next((p for p in path.split("/")), None)
-        # XXX: many routes that should be under /pro are missing that prefix; here we're adding a shim
-        # to only use "approved" prefixes and fallback to "pro", to avoid ending up with nonsensical prefixes
-        if prefix not in URL_PREFIX_VALUES:
-            return "pro"
-        return prefix
+    def get_top_level_blueprint_name() -> str | None:
+        # First, try to get the metric prefix from the current blueprint
+        if hasattr(request, "blueprint"):
+            top_level_blueprint_name = request.blueprint.split(".")[0]
+            if top_level_blueprint_name:
+                return top_level_blueprint_name
+        return "unknown"
 
     prometheus_flask_exporter.multiprocess.GunicornPrometheusMetrics(
         app_,
         group_by="url_rule",
-        default_labels={"url_prefix": get_url_prefix},
+        default_labels={"route_group": get_top_level_blueprint_name},
     )
     # An external export server is started by Gunicorn, see `gunicorn.conf.py`.
 
