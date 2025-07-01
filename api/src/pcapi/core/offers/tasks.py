@@ -1,5 +1,7 @@
 import datetime
+import decimal
 import logging
+import typing
 
 import sqlalchemy as sa
 
@@ -16,7 +18,6 @@ from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.routes.public.individual_offers.v1 import utils as individual_offers_v1_utils
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
@@ -31,9 +32,15 @@ ALLOWED_PRODUCT_SUBCATEGORIES = [
 ]
 
 
+class StockEditionDict(typing.TypedDict):
+    price: int
+    booking_limit_datetime: datetime.datetime | None
+    quantity: int | None
+
+
 def upsert_product_stock(
     offer: offers_models.Offer,
-    stock_body: individual_offers_v1_serialization.StockEdition | None,
+    stock_body: StockEditionDict | None,
     provider: providers_models.Provider,
 ) -> None:
     existing_stock = next((stock for stock in offer.activeStocks), None)
@@ -43,27 +50,30 @@ def upsert_product_stock(
         return
 
     if not existing_stock:
-        if stock_body.price is None:
+        if stock_body["price"] is None:
             raise api_errors.ApiErrors({"stock.price": ["Required"]})
         offers_api.create_stock(
             offer=offer,
-            price=finance_utils.cents_to_full_unit(stock_body.price),
-            quantity=individual_offers_v1_serialization.deserialize_quantity(stock_body.quantity),
-            booking_limit_datetime=stock_body.booking_limit_datetime,
+            price=finance_utils.cents_to_full_unit(stock_body["price"]),
+            quantity=stock_body["quantity"],
+            booking_limit_datetime=stock_body["booking_limit_datetime"],
             creating_provider=provider,
         )
         return
 
-    stock_update_body = stock_body.dict(exclude_unset=True)
-    price = stock_update_body.get("price", offers_api.UNCHANGED)
-    quantity = individual_offers_v1_serialization.deserialize_quantity(
-        stock_update_body.get("quantity", offers_api.UNCHANGED)
-    )
+    price: int | offers_api.T_UNCHANGED | decimal.Decimal = stock_body.get("price", offers_api.UNCHANGED)
+    if isinstance(price, int):
+        price = finance_utils.cents_to_full_unit(price)
+
+    quantity = stock_body.get("quantity", offers_api.UNCHANGED)
+    if isinstance(quantity, int):
+        quantity += existing_stock.dnBookedQuantity
+
     offers_api.edit_stock(
         existing_stock,
-        quantity=quantity + existing_stock.dnBookedQuantity if isinstance(quantity, int) else quantity,
-        price=finance_utils.cents_to_full_unit(price) if price != offers_api.UNCHANGED else offers_api.UNCHANGED,
-        booking_limit_datetime=stock_update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
+        quantity=quantity,
+        price=price,
+        booking_limit_datetime=stock_body.get("booking_limit_datetime", offers_api.UNCHANGED),
         editing_provider=provider,
     )
 
@@ -74,12 +84,10 @@ def _create_offer_from_product(
     provider: providers_models.Provider,
     offererAddress: offerers_models.OffererAddress,
 ) -> offers_models.Offer:
-    ean = product.ean
-
     offer = offers_api.build_new_offer_from_product(
         venue,
         product,
-        id_at_provider=ean,
+        id_at_provider=None,
         provider_id=provider.id,
         offerer_address_id=offererAddress.id,
     )
@@ -149,7 +157,7 @@ def _get_existing_offers(
 @job(worker.low_queue)
 def create_or_update_ean_offers(
     *,
-    serialized_products_stocks: dict,
+    serialized_products_stocks: dict[str, StockEditionDict],
     venue_id: int,
     provider_id: int,
     address_id: int | None = None,
@@ -195,6 +203,7 @@ def create_or_update_ean_offers(
             for product in existing_products:
                 try:
                     ean = product.ean
+                    assert ean  # to make mypy happy
                     stock_data = serialized_products_stocks[ean]
                     created_offer = _create_offer_from_product(
                         venue,
@@ -205,7 +214,7 @@ def create_or_update_ean_offers(
                     created_offers.append(created_offer)
 
                 except offers_exceptions.OfferException as exc:
-                    logger.info(
+                    logger.warning(
                         "Error while creating offer by ean",
                         extra={
                             "ean": ean,
@@ -220,6 +229,7 @@ def create_or_update_ean_offers(
             for offer in reloaded_offers:
                 try:
                     ean = offer.ean
+                    assert ean  # to make mypy happy
                     stock_data = serialized_products_stocks[ean]
                     # FIXME (mageoffray, 2023-05-26): stock saving optimisation
                     # Stocks are inserted one by one for now, we need to improve create_stock to remove the repository.session.add()
@@ -232,8 +242,8 @@ def create_or_update_ean_offers(
                         creating_provider=provider,
                     )
                 except offers_exceptions.OfferException as exc:
-                    logger.info(
-                        "Error while creating offer by ean",
+                    logger.warning(
+                        "Error while creating stock by ean",
                         extra={
                             "ean": ean,
                             "venue_id": venue_id,
@@ -247,38 +257,17 @@ def create_or_update_ean_offers(
                 offer.lastProvider = provider
                 offer.isActive = True
                 offer.offererAddress = offerer_address
-
                 ean = offer.ean
-                stock_data = serialized_products_stocks[ean]
+                assert ean  # to make mypy happy
+
                 # FIXME (mageoffray, 2023-05-26): stock upserting optimisation
                 # Stocks are edited one by one for now, we need to improve edit_stock to remove the repository.session.add()
                 # It will be done before the release of this API
-
-                # TODO(jbaudet-pass): remove call to .replace(): it should not
-                # be needed.
-                # Why? Because input checks remove the timezone information as
-                # it is not expected after... but StockEdition needs a
-                # timezone-aware datetime object.
-                # -> datetimes are not always handleded the same way.
-                # -> it can be messy.
-                booking_limit = stock_data["booking_limit_datetime"]
-                booking_limit = booking_limit.replace(tzinfo=datetime.timezone.utc) if booking_limit else None
-
-                upsert_product_stock(
-                    offer_to_update_by_ean[ean],
-                    individual_offers_v1_serialization.StockEdition(
-                        **{
-                            "price": stock_data["price"],
-                            "quantity": stock_data["quantity"],
-                            "booking_limit_datetime": booking_limit,
-                        }
-                    ),
-                    provider,
-                )
+                upsert_product_stock(offer_to_update_by_ean[ean], serialized_products_stocks[ean], provider)
                 offers_to_index.append(offer_to_update_by_ean[ean].id)
             except offers_exceptions.OfferException as exc:
-                logger.info(
-                    "Error while creating offer by ean",
+                logger.warning(
+                    "Error while updating stock by ean",
                     extra={"ean": ean, "venue_id": venue_id, "provider_id": provider_id, "exc": exc.__class__.__name__},
                 )
 
