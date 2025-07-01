@@ -37,21 +37,41 @@ ALL_DISPLAYED_STATUSES = set(CollectiveOfferDisplayedStatus)
 
 
 class EducationalDepositTest:
-    def test_should_raise_insufficient_fund(self) -> None:
-        # When
+    def test_should_raise_insufficient_fund(self):
         educational_deposit = EducationalDeposit(amount=Decimal(1000.00), isFinal=True)
 
-        # Then
         with pytest.raises(exceptions.InsufficientFund):
             educational_deposit.check_has_enough_fund(Decimal(1100.00))
 
-    def test_should_raise_insufficient_temporary_fund(self) -> None:
-        # When
+    def test_should_raise_insufficient_temporary_fund(self):
         educational_deposit = EducationalDeposit(amount=Decimal(1000.00), isFinal=False)
 
-        # Then
         with pytest.raises(exceptions.InsufficientTemporaryFund):
             educational_deposit.check_has_enough_fund(Decimal(900.00))
+
+    def test_credit_ratio(self):
+        deposit = factories.EducationalDepositFactory(creditRatio=None)
+        assert deposit.creditRatio is None
+
+        deposit = factories.EducationalDepositFactory(creditRatio=0)
+        assert deposit.creditRatio == 0
+
+        deposit = factories.EducationalDepositFactory(creditRatio=0.525)
+        assert deposit.creditRatio == Decimal("0.525")
+
+        deposit = factories.EducationalDepositFactory(creditRatio=0.52522)
+        assert deposit.creditRatio == Decimal("0.525")  # scale is 3
+
+        deposit = factories.EducationalDepositFactory(creditRatio=1)
+        assert deposit.creditRatio == 1
+
+    def test_credit_ratio_check_error_too_low(self):
+        with pytest.raises(sa_exc.IntegrityError):
+            factories.EducationalDepositFactory(creditRatio=-0.5)
+
+    def test_credit_ratio_check_error_too_high(self):
+        with pytest.raises(sa_exc.IntegrityError):
+            factories.EducationalDepositFactory(creditRatio=1.5)
 
 
 class CollectiveStockIsBookableTest:
