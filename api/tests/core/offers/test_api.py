@@ -58,6 +58,7 @@ from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.notifications.push import testing as push_testing
+from pcapi.repository.session_management import atomic
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -966,7 +967,8 @@ class DeleteStockTest:
         booking_id_3 = booking3.id
         booking_id_4 = booking4.id
 
-        api.delete_stock(stock)
+        with atomic():
+            api.delete_stock(stock)
 
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
