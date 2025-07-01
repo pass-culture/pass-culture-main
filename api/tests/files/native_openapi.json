@@ -1805,19 +1805,6 @@
                 ],
                 "title": "EmailHistoryEventTypeEnum"
             },
-            "EmailResponse": {
-                "properties": {
-                    "hasTicketEmailBeenSent": {
-                        "title": "Hasticketemailbeensent",
-                        "type": "boolean"
-                    }
-                },
-                "required": [
-                    "hasTicketEmailBeenSent"
-                ],
-                "title": "EmailResponse",
-                "type": "object"
-            },
             "EmailUpdateStatusResponse": {
                 "properties": {
                     "expired": {
@@ -4713,15 +4700,6 @@
                         "nullable": true,
                         "title": "ActivationCodeResponse"
                     },
-                    "email": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/EmailResponse"
-                            }
-                        ],
-                        "nullable": true,
-                        "title": "EmailResponse"
-                    },
                     "externalBooking": {
                         "anyOf": [
                             {
@@ -4730,10 +4708,6 @@
                         ],
                         "nullable": true,
                         "title": "ExternalBookingResponseV2"
-                    },
-                    "noTicket": {
-                        "title": "Noticket",
-                        "type": "boolean"
                     },
                     "token": {
                         "anyOf": [
@@ -4758,8 +4732,7 @@
                     }
                 },
                 "required": [
-                    "withdrawal",
-                    "noTicket"
+                    "withdrawal"
                 ],
                 "title": "TicketResponse",
                 "type": "object"

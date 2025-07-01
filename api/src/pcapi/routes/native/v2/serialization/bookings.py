@@ -1,3 +1,4 @@
+import enum
 from datetime import datetime
 from typing import Any
 
@@ -6,8 +7,10 @@ from pydantic.v1.utils import GetterDict
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.api import has_email_been_sent
+from pcapi.core.bookings.api import is_event_today
 from pcapi.core.bookings.api import is_external_event_booking_visible
 from pcapi.core.bookings.api import is_voucher_displayed
+from pcapi.core.categories.subcategories import SEANCE_CINE
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.geography.models import Address
 from pcapi.core.offerers.models import OffererAddress
@@ -19,6 +22,19 @@ from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.shared.price import convert_to_cent
+
+
+class TicketTextEnum(enum.Enum):
+    NO_TICKET = "no_ticket"
+    EMAIL_SENT_TODAY = "email_sent_today"
+    EMAIL_SENT_NOT_TODAY = "email_sent_not_today"
+    EMAIL_WILL_BE_SENT_DELAY = "email_will_be_sent_delay"
+    EMAIL_WILL_BE_SENT = "email_will_be_sent"
+    ONLINE_CODE = "online_code"
+    NOT_VISIBLE = "not_visible"
+    EVENT_ACCESS = "event_access"
+    VOUCHER = "voucher"
+    NO_VOUCHER_TICKET = "no_voucher_ticket"
 
 
 class BookingVenueResponseV2GetterDict(GetterDict):
@@ -125,10 +141,6 @@ class VoucherResponse(ConfiguredBaseModel):
     data: str | None
 
 
-class EmailResponse(ConfiguredBaseModel):
-    has_ticket_email_been_sent: bool
-
-
 class TokenResponse(ConfiguredBaseModel):
     data: str | None
 
@@ -154,13 +166,12 @@ class ExternalBookingResponseV2(ConfiguredBaseModel):
 
 
 class TicketResponse(ConfiguredBaseModel):
-    voucher: VoucherResponse | None
-    email: EmailResponse | None
-    token: TokenResponse | None
-    withdrawal: WithdrawalResponse
-    no_ticket: bool
     activation_code: ActivationCodeResponse | None
     external_booking: ExternalBookingResponseV2 | None
+    text: TicketTextEnum
+    token: TokenResponse | None
+    voucher: VoucherResponse | None
+    withdrawal: WithdrawalResponse
 
 
 class BookingResponseGetterDict(GetterDict):
@@ -185,20 +196,31 @@ class BookingResponseGetterDict(GetterDict):
         if offer.withdrawalType == WithdrawalTypeEnum.NO_TICKET:
             return TicketResponse(
                 activation_code=None,
-                email=None,
                 external_booking=None,
-                no_ticket=True,
+                text=TicketTextEnum.NO_TICKET,
                 token=None,
                 voucher=None,
                 withdrawal=withdrawal,
             )
 
         if offer.withdrawalType == WithdrawalTypeEnum.BY_EMAIL:
+            if has_email_been_sent(stock=stock, withdrawal_delay=offer.withdrawalDelay):
+                text = (
+                    TicketTextEnum.EMAIL_SENT_TODAY
+                    if is_event_today(stock=stock)
+                    else TicketTextEnum.EMAIL_SENT_NOT_TODAY
+                )
+            else:
+                text = (
+                    TicketTextEnum.EMAIL_WILL_BE_SENT_DELAY
+                    if offer.withdrawalDelay
+                    else TicketTextEnum.EMAIL_WILL_BE_SENT
+                )
+
             return TicketResponse(
                 activation_code=None,
-                email=EmailResponse(has_ticket_email_been_sent=has_email_been_sent(stock, offer.withdrawalDelay)),
                 external_booking=None,
-                no_ticket=False,
+                text=text,
                 token=None,
                 voucher=None,
                 withdrawal=withdrawal,
@@ -207,24 +229,19 @@ class BookingResponseGetterDict(GetterDict):
         if offer.isDigital:
             return TicketResponse(
                 activation_code=booking.activationCode,
-                email=None,
                 external_booking=None,
-                no_ticket=False,
-                token=None,
+                text=TicketTextEnum.ONLINE_CODE,
+                token=TokenResponse(data=booking.token) if not booking.activationCode else None,
                 voucher=None,
                 withdrawal=withdrawal,
             )
 
         if offer.isEvent and booking.isExternal:
+            booking_visible = is_external_event_booking_visible(offer=offer, stock=stock)
             return TicketResponse(
                 activation_code=None,
-                email=None,
-                external_booking=ExternalBookingResponseV2(
-                    data=booking.externalBookings
-                    if is_external_event_booking_visible(offer=offer, stock=stock)
-                    else None
-                ),
-                no_ticket=False,
+                external_booking=ExternalBookingResponseV2(data=booking.externalBookings if booking_visible else None),
+                text=TicketTextEnum.EVENT_ACCESS if booking_visible else TicketTextEnum.NOT_VISIBLE,
                 token=None,
                 voucher=None,
                 withdrawal=withdrawal,
@@ -237,13 +254,16 @@ class BookingResponseGetterDict(GetterDict):
             if is_voucher_displayed(offer=offer, isExternal=booking.isExternal)
             else None
         )
-        token = TokenResponse(data=None if booking.isExternal else booking.token)
+
+        token = TokenResponse(data=booking.token) if not booking.isExternal else None
+        text = TicketTextEnum.VOUCHER if voucher else TicketTextEnum.NO_VOUCHER_TICKET
+        if offer.subcategoryId == SEANCE_CINE.id:
+            text = TicketTextEnum.EVENT_ACCESS
 
         return TicketResponse(
             activation_code=None,
-            email=None,
             external_booking=None,
-            no_ticket=False,
+            text=text,
             token=token,
             voucher=voucher,
             withdrawal=withdrawal,
@@ -265,7 +285,7 @@ class BookingResponse(ConfiguredBaseModel):
     enable_pop_up_reaction: bool
     can_react: bool
     user_reaction: ReactionTypeEnum | None
-    ticket: TicketResponse | None
+    ticket: TicketResponse
 
     class Config:
         getter_dict = BookingResponseGetterDict
