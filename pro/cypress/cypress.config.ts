@@ -1,8 +1,17 @@
 import { defineConfig } from 'cypress'
+import cypressFailFast = require('cypress-fail-fast/plugin')
 
 // ts-unused-exports:disable-next-line
 export default defineConfig({
   e2e: {
+    setupNodeEvents(on, config) {
+      cypressFailFast(on, config)
+      // allureCypress(on, config, {
+      //   resultsDir: '../../allure-results',
+      // })
+      // Make sure to return the config object as it might have been modified by the plugin.
+      return config
+    },
     baseUrl: 'http://localhost:3001',
     experimentalRunAllSpecs: true, // Run all specs test in UI mode
   },
