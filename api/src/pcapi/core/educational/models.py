@@ -1637,6 +1637,15 @@ class EducationalDeposit(PcObject, models.Base, models.Model):
 
     amount: decimal.Decimal = sa.Column(sa.Numeric(10, 2), nullable=False)
 
+    creditRatio: sa_orm.Mapped[decimal.Decimal | None] = sa.Column(
+        sa.Numeric(10, 3),
+        sa.CheckConstraint(
+            '"creditRatio" IS NULL OR ("creditRatio" BETWEEN 0 AND 1)',
+            name="check_credit_ratio_is_a_percentage",
+        ),
+        nullable=True,
+    )
+
     dateCreated: datetime.datetime = sa.Column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
     )
