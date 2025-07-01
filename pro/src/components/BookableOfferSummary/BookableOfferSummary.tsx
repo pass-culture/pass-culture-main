@@ -132,10 +132,6 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
     CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
   )
 
-  const canPreviewOffer =
-    isCollectiveOffer(offer) &&
-    offer.displayedStatus !== CollectiveOfferDisplayedStatus.ARCHIVED
-
   const canArchiveOffer =
     isCollectiveOffer(offer) &&
     isActionAllowedOnCollectiveOffer(
@@ -259,17 +255,17 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                   </ButtonLink>
                 </li>
               )}
-              {canPreviewOffer && (
-                <li>
-                  <ButtonLink
-                    to={`/offre/${offer.id}/collectif/apercu`}
-                    icon={fullShowIcon}
-                    ref={adagePreviewButtonRef}
-                  >
-                    Aperçu
-                  </ButtonLink>
-                </li>
-              )}
+
+              <li>
+                <ButtonLink
+                  to={`/offre/${offer.id}/collectif/apercu`}
+                  icon={fullShowIcon}
+                  ref={adagePreviewButtonRef}
+                >
+                  Aperçu
+                </ButtonLink>
+              </li>
+
               {canDuplicateOffer && (
                 <li>
                   <Button
