@@ -394,7 +394,7 @@ def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBody
     if body.is_active:
         query = offers_repository.exclude_offers_from_inactive_venue_provider(query)
 
-    offers_api.batch_update_offers(query, {"isActive": body.is_active})
+    offers_api.batch_update_offers(query, activate=body.is_active)
 
 
 @private_api.route("/offers/all-active-status", methods=["PATCH"])

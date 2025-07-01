@@ -77,7 +77,7 @@ def _fill_favorite_offer(
 
 
 def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favorite]:
-    active_stock_filters = sa.and_(Offer.isActive.is_(True), Stock.isSoftDeleted.is_(False))
+    active_stock_filters = sa.and_(Offer.isActive, Stock.isSoftDeleted.is_(False))  # type: ignore[type-var]
     stock_filters = sa.and_(
         sa.not_(Stock.isEventExpired),
         sa.not_(Stock.hasBookingLimitDatetimePassed),
@@ -113,7 +113,6 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
                 Offer.externalTicketOfficeUrl,
                 Offer.url,
                 Offer.subcategoryId,
-                Offer.isActive,
                 Offer.validation,
                 Offer.publicationDatetime,
             )

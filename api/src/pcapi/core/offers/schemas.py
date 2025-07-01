@@ -152,8 +152,6 @@ class UpdateOffer(BaseModel):
     publicationDatetime: datetime.datetime | None
     bookingAllowedDatetime: datetime.datetime | None
 
-    is_active: bool | None = None
-
     # is_national must be placed after url so that the validator
     # can access the url field in the dict of values
     # (which contains only previously validated fields)

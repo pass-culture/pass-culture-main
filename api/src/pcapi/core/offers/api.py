@@ -233,7 +233,6 @@ def create_draft_offer(
     offer = models.Offer(
         **fields,
         venue=venue,
-        isActive=False,
         validation=models.OfferValidationStatus.DRAFT,
         product=product,
     )
@@ -326,8 +325,8 @@ def create_offer(
         venue=venue,
         offererAddress=offerer_address,
         lastProvider=provider,
-        isActive=False,
         validation=models.OfferValidationStatus.DRAFT,
+        publicationDatetime=None,
     )
     repository.add_to_session(offer)
     db.session.flush()
@@ -492,18 +491,25 @@ def update_offer(
     return offer
 
 
-def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notification: bool = False) -> None:
+def batch_update_offers(
+    query: BaseQuery,
+    update_fields: dict | None = None,
+    activate: bool | None = None,
+    send_email_notification: bool = False,
+) -> None:
     query = query.filter(models.Offer.validation == models.OfferValidationStatus.APPROVED)
     query = query.with_entities(models.Offer.id, models.Offer.venueId).yield_per(2_500)
 
-    if "isActive" in update_fields:
-        update_fields["publicationDatetime"] = None
-
-        if update_fields["isActive"]:
-            update_fields["publicationDatetime"] = datetime.datetime.now(datetime.timezone.utc)
-
     offers_count = 0
     found_venue_ids = set()
+
+    if update_fields is None:
+        update_fields = {}
+
+    if activate is not None:
+        update_fields["publicationDatetime"] = None
+        if activate:
+            update_fields["publicationDatetime"] = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
 
     logger.info("Batch update of offers: start", extra={"updated_fields": update_fields})
 
@@ -519,12 +525,12 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
         query_to_update.update(update_fields, synchronize_session=False)
         db.session.flush()
 
-        if "isActive" in update_fields:
+        if activate is not None:
             on_commit(
                 partial(
                     logger.info,
-                    "Offers has been activated" if update_fields["isActive"] else "Offers has been deactivated",
-                    technical_message_id="offers.activated" if update_fields["isActive"] else "offers.deactivated",
+                    "Offers has been activated" if activate else "Offers has been deactivated",
+                    technical_message_id="offers.activated" if activate else "offers.deactivated",
                     extra={"offer_ids": offer_ids, "venue_ids": venue_ids},
                 )
             )
@@ -563,7 +569,8 @@ def activate_future_offers(publication_date: datetime.datetime | None = None) ->
     offer_ids = [offer.id for offer in offer_query]
 
     with transaction():
-        batch_update_offers(offer_query, {"isActive": True})
+        updates = {"publicationDatetime": datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)}
+        batch_update_offers(offer_query, updates)
 
     return offer_ids
 
@@ -902,7 +909,6 @@ def finalize_offer(
         publication_datetime = publication_datetime.replace(second=0, microsecond=0)
         validation.check_publication_date(publication_datetime)
         offer.publicationDatetime = publication_datetime
-        offer.isActive = publication_datetime <= get_naive_utc_now()
 
     offer.bookingAllowedDatetime = booking_allowed_datetime
 
@@ -943,10 +949,8 @@ def publish_offer(
         validation.check_other_offer_with_ean_does_not_exist(ean, offer.venue, offer.id)
 
     if publication_datetime is not None:  # i.e. pro user schedules the publication in the future
-        offer.isActive = False
         offer.publicationDatetime = publication_datetime
     else:  # i.e. pro user publishes the offer right away
-        offer.isActive = True
         offer.publicationDatetime = finalization_date
 
         on_commit(partial(search.async_index_offer_ids, [offer.id], reason=search.IndexationReason.OFFER_PUBLICATION))
@@ -970,14 +974,24 @@ def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | No
     offer.lastValidationType = OfferValidationType.AUTO
     offer.lastValidationAuthorUserId = None
 
-    if offer.validation in (models.OfferValidationStatus.PENDING, models.OfferValidationStatus.REJECTED):
-        offer.isActive = False
-    else:
-        offer.isActive = True
-        if (
-            isinstance(offer, models.Offer) and offer.isThing and offer.activeStocks
-        ):  # public API may create offers without stocks
+    is_neither_pending_nor_rejected = offer.validation not in (
+        models.OfferValidationStatus.REJECTED,
+        models.OfferValidationStatus.PENDING,
+    )
+
+    if isinstance(offer, models.Offer):
+        # * PENDING offer: keep publication datetime that will be used when
+        # offer will be validated.
+        # * REJECTED offer: won't be published, publication datetime can be
+        # removed
+        # * other validation status: nothing to do.
+        if offer.validation == models.OfferValidationStatus.REJECTED:
+            offer.publicationDatetime = None
+
+        if offer.isThing and offer.activeStocks:  # public API may create offers without stocks
             offer.lastValidationPrice = offer.max_price
+    else:
+        offer.isActive = is_neither_pending_nor_rejected
 
     if (
         offer.validation == models.OfferValidationStatus.APPROVED
@@ -1174,13 +1188,13 @@ def add_criteria_to_offers(
     if products:
         product_ids = [p.id for p in products]
         linked_offer_ids_query = db.session.query(models.Offer.id).filter(
-            models.Offer.productId.in_(product_ids), models.Offer.isActive.is_(True)
+            models.Offer.productId.in_(product_ids), models.Offer.isActive
         )
         offer_ids_to_tag.update(offer_id for (offer_id,) in linked_offer_ids_query.all())
 
     if include_unlinked_offers:
         unlinked_offer_query = db.session.query(models.Offer.id).filter(
-            models.Offer.productId.is_(None), models.Offer.isActive.is_(True)
+            models.Offer.productId.is_(None), models.Offer.isActive
         )
 
         if ean:
@@ -1505,7 +1519,7 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
         venue_provider = external_bookings_api.get_active_cinema_venue_provider(offer.venueId)
         validation.check_offer_is_from_current_cinema_provider(offer)
     except (exceptions.UnexpectedCinemaProvider, providers_exceptions.InactiveProvider):
-        offer.isActive = False
+        offer.publicationDatetime = None
         db.session.add(offer)
         db.session.flush()
         search.async_index_offer_ids(

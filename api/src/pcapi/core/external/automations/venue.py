@@ -25,7 +25,7 @@ def get_inactive_venues_emails() -> Iterable[str]:
         db.session.query(offers_models.Offer)
         .filter(
             offers_models.Offer.venueId == offerers_models.Venue.id,
-            offers_models.Offer.isActive.is_(True),
+            offers_models.Offer.isActive,
             offers_models.Offer.validation == OfferValidationStatus.APPROVED,
         )
         .exists()
@@ -35,7 +35,7 @@ def get_inactive_venues_emails() -> Iterable[str]:
         db.session.query(offers_models.Offer)
         .filter(
             offers_models.Offer.venueId == offerers_models.Venue.id,
-            offers_models.Offer.isActive.is_(True),
+            offers_models.Offer.isActive,
             offers_models.Offer.validation == OfferValidationStatus.APPROVED,
         )
         .join(offers_models.Stock)

@@ -1,6 +1,3 @@
-from datetime import datetime
-from datetime import timezone
-
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.offers import api as offers_api
@@ -25,8 +22,7 @@ def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
         period_ending_date=filters["period_ending_date"],
     )
     query = offers_repository.exclude_offers_from_inactive_venue_provider(query)
-    now = datetime.now(timezone.utc)
-    offers_api.batch_update_offers(query, {"isActive": is_active, "publicationDatetime": now if is_active else None})
+    offers_api.batch_update_offers(query, activate=is_active)
 
 
 @job(worker.low_queue)
@@ -51,4 +47,4 @@ def update_venue_synchronized_offers_active_status_job(venue_id: int, provider_i
         venue_id, provider_id
     )
 
-    offers_api.batch_update_offers(venue_synchronized_offers_query, {"isActive": is_active})
+    offers_api.batch_update_offers(venue_synchronized_offers_query, activate=is_active)

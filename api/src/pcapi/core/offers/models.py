@@ -689,7 +689,7 @@ class OfferMetaData(PcObject, Base, Model):
     videoUrl: sa_orm.Mapped[str | None] = sa.Column(sa.Text, nullable=True)
 
 
-class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, AccessibilityMixin):
+class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
     __tablename__ = "offer"
 
     @declared_attr
@@ -712,6 +712,8 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     MAX_STOCKS_PER_OFFER = 2_500
     MAX_PRICE_CATEGORIES_PER_OFFER = 50
+
+    _isActive: bool = sa.Column("isActive", sa.Boolean, server_default=sa.true(), default=True, nullable=False)
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
     author: sa_orm.Mapped["User | None"] = relationship(
@@ -902,16 +904,13 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     @hybrid_property
     def _released(self) -> bool:
         now = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
-        return (
-            self.isActive
-            and self.validation == OfferValidationStatus.APPROVED
-            and (self.publicationDatetime is not None and self.publicationDatetime <= now)
+        return self.validation == OfferValidationStatus.APPROVED and (
+            self.publicationDatetime is not None and self.publicationDatetime <= now
         )
 
     @_released.expression  # type: ignore[no-redef]
     def _released(cls) -> BooleanClauseList:
         return sa.and_(
-            cls.isActive,
             cls.validation == OfferValidationStatus.APPROVED,
             sa.or_(cls.publicationDatetime != None, cls.publicationDatetime <= sa.func.now()),
         )
@@ -1222,6 +1221,26 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def is_headline_offer(cls) -> UnaryExpression:
         headline_offer_alias = sa_orm.aliased(HeadlineOffer)
         return sa.exists().where(headline_offer_alias.offerId == cls.id, headline_offer_alias.isActive)
+
+    @hybrid_property
+    def isActive(self):
+        if self.publicationDatetime is None:
+            return False
+
+        # publicationDatetime loaded from the DB won't be timezone-aware
+        # (unfortunately). However, a fresh offer object might have a
+        # timezone-aware publicationDatetime (built from python code
+        # that could have used a timezone-aware datetime object).
+        now = datetime.datetime.now(datetime.timezone.utc)
+        now = now.replace(tzinfo=None) if self.publicationDatetime.tzinfo is None else now
+        return self.publicationDatetime <= now
+
+    @isActive.expression  # type: ignore[no-redef]
+    def isActive(cls):
+        return sa.and_(
+            cls.publicationDatetime != None,
+            cls.publicationDatetime <= sa.func.now(),
+        )
 
 
 class ActivationCode(PcObject, Base, Model):

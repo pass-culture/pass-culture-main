@@ -14,7 +14,6 @@ export type PatchOfferBodyModel = {
   durationMinutes?: number | null;
   externalTicketOfficeUrl?: string | null;
   extraData?: any;
-  isActive?: boolean | null;
   isDuo?: boolean | null;
   isNational?: boolean | null;
   mentalDisabilityCompliant?: boolean | null;

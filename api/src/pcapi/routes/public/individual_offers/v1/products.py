@@ -1,5 +1,7 @@
 import copy
 import logging
+from datetime import datetime
+from datetime import timezone
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -244,11 +246,19 @@ def post_product_offer(body: products_serializers.ProductOfferCreation) -> seria
             )
 
         offers_api.update_offer_fraud_information(offer, user=None)
-        offers_api.finalize_offer(
-            offer,
-            publication_datetime=body.publication_datetime,  # type: ignore[arg-type]
-            booking_allowed_datetime=body.booking_allowed_datetime,
-        )
+
+        updates = body.dict(by_alias=True, exclude_unset=True)
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
+        publication_datetime = updates.get("publicationDatetime", now)
+
+        # if publication_datetime is explicitly set to None, the offer
+        # is a draft and it should not be finalized.
+        if publication_datetime:
+            offers_api.finalize_offer(
+                offer,
+                publication_datetime=body.publication_datetime,  # type: ignore[arg-type]
+                booking_allowed_datetime=body.booking_allowed_datetime,
+            )
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
 
@@ -571,6 +581,15 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
         updates = body.dict(by_alias=True, exclude_unset=True)
         dc = updates.get("accessibility", {})
         extra_data = copy.deepcopy(offer.extraData)
+
+        publication_datetime = get_field(offer, updates, "publicationDatetime")
+        is_active = get_field(offer, updates, "isActive")
+
+        # TODO(jbaudet): remove this part, do not use isActive once
+        # the public API does not allow it anymore
+        if "publicationDatetime" not in updates and updates.get("isActive") is not None:
+            publication_datetime = datetime.now(timezone.utc) if is_active else None
+
         offer_body = offers_schemas.UpdateOffer(
             name=get_field(offer, updates, "name"),
             audioDisabilityCompliant=get_field(offer, dc, "audioDisabilityCompliant"),
@@ -587,11 +606,10 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
                 if "categoryRelatedFields" in updates
                 else extra_data
             ),
-            isActive=get_field(offer, updates, "isActive"),
             idAtProvider=get_field(offer, updates, "idAtProvider"),
             isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
             withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
-            publicationDatetime=get_field(offer, updates, "publicationDatetime"),
+            publicationDatetime=publication_datetime,
             bookingAllowedDatetime=get_field(offer, updates, "bookingAllowedDatetime"),
         )  # type: ignore[call-arg]
         updated_offer = offers_api.update_offer(offer, offer_body, venue=venue, offerer_address=offerer_address)
