@@ -1,0 +1,11 @@
+import{j as c}from"./jsx-runtime-DF2Pcvd1.js";import{c as d}from"./index-DeARc5FM.js";import{r as l}from"./index-B2-qRKKC.js";import"./_commonjsHelpers-Cpj98o6Y.js";const y="_toggle_z16mj_1",u={toggle:y,"toggle-display":"_toggle-display_z16mj_18"},o=({isActiveByDefault:e=!1,isDisabled:m=!1,label:i,labelPosition:n="left",handleClick:t})=>{const[s,r]=l.useState(e);l.useEffect(()=>{r(e)},[e]);const b=l.useCallback(()=>{r(!s),t==null||t()},[s,t]);return c.jsxs("button",{className:d(u.toggle),type:"button",disabled:m,"aria-pressed":s,onClick:b,children:[n==="left"?i:null,c.jsx("span",{className:d(u["toggle-display"]),hidden:!0}),n==="right"?i:null]})};try{o.displayName="Toggle",o.__docgenInfo={description:`The Toggle component is used to render a button that represents an on/off state.
+It allows users to control a setting between two states (active/inactive).
+
+---
+**Important: Use \`isActiveByDefault\` to initialize the state and \`handleClick\` to handle changes in the toggle state.**
+---`,displayName:"Toggle",props:{isActiveByDefault:{defaultValue:{value:"false"},description:"Indicates if the toggle is active by default.",name:"isActiveByDefault",required:!1,type:{name:"boolean"}},isDisabled:{defaultValue:{value:"false"},description:"Indicates if the toggle is disabled.",name:"isDisabled",required:!1,type:{name:"boolean"}},label:{defaultValue:null,description:"The label text for the toggle.",name:"label",required:!0,type:{name:"string"}},labelPosition:{defaultValue:{value:"left"},description:"",name:"labelPosition",required:!1,type:{name:"enum",value:[{value:'"left"'},{value:'"right"'}]}},handleClick:{defaultValue:null,description:"Callback function triggered when the toggle is clicked.",name:"handleClick",required:!1,type:{name:"(() => void)"}}}}}catch{}const x={title:"ui-kit/Toggle",component:o},a={args:{isActiveByDefault:!1,isDisabled:!1}};var g,f,p;a.parameters={...a.parameters,docs:{...(g=a.parameters)==null?void 0:g.docs,source:{originalSource:`{
+  args: {
+    isActiveByDefault: false,
+    isDisabled: false
+  }
+}`,...(p=(f=a.parameters)==null?void 0:f.docs)==null?void 0:p.source}}};const T=["Default"];export{a as Default,T as __namedExportsOrder,x as default};
