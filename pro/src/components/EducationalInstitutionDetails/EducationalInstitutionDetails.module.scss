@@ -11,15 +11,13 @@
 .contact-details-title-newlayout {
   @include fonts.title3;
 
-  margin-bottom: rem.torem(16px);
+  margin-bottom: rem.torem(24px);
 }
 
 .contact-details-container-oldlayout,
 .contact-details-container-newlayout {
   display: flex;
   flex-direction: column;
-  gap: rem.torem(8px);
-  padding: rem.torem(8px);
   background-color: var(--color-background-default);
 }
 
@@ -40,8 +38,12 @@
     color: var(--color-icon-default);
   }
 
-  &-location-icon {
-    align-self: flex-start;
+    &:first-child {
+    margin-bottom: rem.torem(4px);
+  }
+
+  &:last-child {
+    margin-bottom: 0;
   }
 }
 

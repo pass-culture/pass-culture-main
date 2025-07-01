@@ -1,58 +1,93 @@
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
-import { Contact, EducationalRedactorDetails } from 'components/EductionalRedactorDetails/EducationalRedactorDetails'
+import {
+  Contact,
+  EducationalRedactorDetails,
+} from 'components/EductionalRedactorDetails/EducationalRedactorDetails'
 import { EducationalRedactorDetailsForBooking } from 'components/EductionalRedactorDetailsForBooking/EducationalRedactorDetailsForBooking'
-import strokeLocationIcon from 'icons/stroke-location.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './EducationalInstitutionDetails.module.scss'
 
-
 export interface EducationalInstitutionDetailsProps {
-    educationalInstitution: EducationalInstitutionResponseModel
-    educationalRedactor?: Contact | null
-    teacher?: Contact | null
-    newLayout?: boolean
+  educationalInstitution: EducationalInstitutionResponseModel
+  educationalRedactor?: Contact | null
+  teacher?: Contact | null
+  newLayout?: boolean
 }
 
-export const EducationalInstitutionDetails = ({ educationalInstitution, educationalRedactor, teacher, newLayout = false }: EducationalInstitutionDetailsProps) => {
-    return <div>
-        <div className={newLayout ? styles['contact-details-container-newlayout'] : styles['contact-details-container-oldlayout']}>
-            <div className={newLayout ? styles['contact-details-title-newlayout'] : styles['contact-details-title-oldlayout']}>
-                Contact de l’établissement {newLayout ? '' : 'scolaire'}
-            </div>
-            <dl className={newLayout ? styles['contact-details-newlayout'] : undefined}>
-                <div className={styles['contact-detail']}>
-                    <dt className={styles['contact-detail-location-icon']}>
-                        <SvgIcon
-                            className={styles['contact-detail-icon']}
-                            alt="Adresse de l’établissement"
-                            src={strokeLocationIcon} />
-                    </dt>
-                    <dd>
-                        {`${educationalInstitution.institutionType} ${educationalInstitution.name}`.trim()}
-                        <br />
-                        {`${educationalInstitution.postalCode} ${educationalInstitution.city}`}
-                    </dd>
-                </div>
-
-                <div className={styles['contact-detail']}>
-                    <dt>
-                        <SvgIcon
-                            className={styles['contact-detail-icon']}
-                            alt="Téléphone"
-                            src={strokePhoneIcon} />
-                    </dt>
-                    <dd>{educationalInstitution.phoneNumber}</dd>
-                </div>
-
-                {newLayout ? <>
-                    {teacher && <EducationalRedactorDetails contact={teacher} title="Offre destinée à :" />}
-                    {educationalRedactor && <EducationalRedactorDetails contact={educationalRedactor} title="Offre préréservée par :" />}
-                </> : <>
-                    {educationalRedactor && <EducationalRedactorDetailsForBooking contact={educationalRedactor} />}
-                </>}
-            </dl>
+export const EducationalInstitutionDetails = ({
+  educationalInstitution,
+  educationalRedactor,
+  teacher,
+  newLayout = false,
+}: EducationalInstitutionDetailsProps) => {
+  return (
+    <div
+      className={
+        newLayout
+          ? styles['contact-details-container-newlayout']
+          : styles['contact-details-container-oldlayout']
+      }
+    >
+      <div
+        className={
+          newLayout
+            ? styles['contact-details-title-newlayout']
+            : styles['contact-details-title-oldlayout']
+        }
+      >
+        Contact de l’établissement {newLayout ? '' : 'scolaire'}
+      </div>
+      <dl
+        className={newLayout ? styles['contact-details-newlayout'] : undefined}
+      >
+        <div className={styles['contact-detail']}>
+          <dd>
+            {`${educationalInstitution.institutionType} ${educationalInstitution.name}`.trim()}
+            <br />
+            {`${educationalInstitution.postalCode} ${educationalInstitution.city}`}
+            <br />
+            UAI : {educationalInstitution.institutionId}
+          </dd>
         </div>
-    </div >
+
+        <div className={styles['contact-detail']}>
+          <dt>
+            <SvgIcon
+              className={styles['contact-detail-icon']}
+              alt="Téléphone"
+              src={strokePhoneIcon}
+            />
+          </dt>
+          <dd>{educationalInstitution.phoneNumber}</dd>
+        </div>
+
+        {newLayout ? (
+          <>
+            {teacher && (
+              <EducationalRedactorDetails
+                contact={teacher}
+                title="Offre destinée à :"
+              />
+            )}
+            {educationalRedactor && (
+              <EducationalRedactorDetails
+                contact={educationalRedactor}
+                title="Offre préréservée par :"
+              />
+            )}
+          </>
+        ) : (
+          <>
+            {educationalRedactor && (
+              <EducationalRedactorDetailsForBooking
+                contact={educationalRedactor}
+              />
+            )}
+          </>
+        )}
+      </dl>
+    </div>
+  )
 }
