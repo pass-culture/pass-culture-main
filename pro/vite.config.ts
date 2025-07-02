@@ -1,7 +1,7 @@
 import { fileURLToPath, URL } from 'url'
 
 import react from '@vitejs/plugin-react'
-import * as preloads from 'design-system/dist/build/global/font-preloads'
+import { fontPreloads } from '@pass-culture/design-system/lib/global/font-preloads'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig, PluginOption } from 'vite'
 import { createHtmlPlugin } from 'vite-plugin-html'
@@ -85,7 +85,7 @@ const htmlPlugin = () => {
           `<!-- inject:preload-design-system-fonts --><!-- endinject -->`,
           'g'
         ),
-        preloads.fontPreloads
+        fontPreloads
       )
     },
   }

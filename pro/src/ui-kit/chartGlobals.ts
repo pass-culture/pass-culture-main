@@ -1,3 +1,4 @@
+import { theme } from '@pass-culture/design-system/lib/pro/light.web'
 import {
   Chart,
   LineController,
@@ -8,7 +9,6 @@ import {
   Tooltip,
 } from 'chart.js'
 import 'chartjs-adapter-date-fns'
-import * as designSystemTokens from 'design-system/dist/build/pro/index.light.web'
 
 import { FORMAT_DD_MM_YYYY } from 'commons/utils/date'
 
@@ -28,7 +28,7 @@ Chart.register(
 // We have only one chart for now so I put here all the options that I think
 // should be defaults but we can adapt these defaults when we add more charts
 Chart.defaults.locale = 'fr-FR'
-Chart.defaults.font.family = designSystemTokens.theme.typography.body.fontFamily
+Chart.defaults.font.family = theme.typography.body.fontFamily
 Chart.defaults.maintainAspectRatio = false
 
 Chart.defaults.scales.time.time.displayFormats = {
