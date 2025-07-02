@@ -27,5 +27,5 @@ class SendProUserValidationEmailTest:
         assert mails_testing.outbox[0]["To"] == user.email
         assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.SIGNUP_EMAIL_CONFIRMATION_TO_PRO.value)
         assert mails_testing.outbox[0]["params"] == {
-            "EMAIL_VALIDATION_LINK": f"{settings.PRO_URL}/inscription/validation/{token.encoded_token}",
+            "EMAIL_VALIDATION_LINK": f"{settings.PRO_URL}/inscription/compte/confirmation/{token.encoded_token}",
         }

@@ -19,7 +19,7 @@ export const findCurrentRoute = (location: Location): RouteConfig | undefined =>
     ...routesSignupJourney,
     ...routesReimbursements,
   ]
-    // This reverse is here so that subroutes (e.g. /inscription/confirmation)
+    // This reverse is here so that subroutes (e.g. /inscription/compte/confirmation)
     // are matched before their parents (e.g. /inscription/*)
     .reverse()
     .find(

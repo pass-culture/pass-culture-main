@@ -21,7 +21,7 @@ class ProOffererAttachmentInvitationTest:
         assert mail_data.template == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_NEW_USER.value
         assert mail_data.params == {
             "OFFERER_NAME": "Le Théâtre SAS",
-            "REGISTRATION_LINK": f"{settings.PRO_URL}/inscription",
+            "REGISTRATION_LINK": f"{settings.PRO_URL}/inscription/compte/creation",
         }
 
     def test_email_data_existing_validated_user(self):
@@ -50,7 +50,7 @@ class ProOffererAttachmentInvitationTest:
         )
         assert mail_data.params == {
             "OFFERER_NAME": "Le Théâtre SAS",
-            "EMAIL_VALIDATION_LINK": f"http://pcpro.com/inscription/validation/{token.encoded_token}",
+            "EMAIL_VALIDATION_LINK": f"http://pcpro.com/inscription/compte/confirmation/{token.encoded_token}",
         }
 
     def test_send_email_new_user(self):

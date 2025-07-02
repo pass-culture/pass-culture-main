@@ -1,14 +1,13 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useCallback, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useLocation, useNavigate } from 'react-router'
+import { useNavigate, useParams, Params } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { Layout } from 'app/App/layout/Layout'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
-import { parse } from 'commons/utils/query-string'
 import { Hero } from 'ui-kit/Hero/Hero'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -26,9 +25,7 @@ export const ResetPassword = (): JSX.Element => {
   const [isBadToken, setIsBadToken] = useState(false)
   const is2025SignUpEnabled = useActiveFeature('WIP_2025_SIGN_UP')
   const [isLoading, setIsLoading] = useState(is2025SignUpEnabled ? true : false)
-  const location = useLocation()
-  const { search } = location
-  const { token } = parse(search)
+  const { token } = useParams<Params>()
   const notify = useNotification()
   const navigate = useNavigate()
 
@@ -42,7 +39,7 @@ export const ResetPassword = (): JSX.Element => {
 
   // If the FF WIP_2025_SIGN_UP is enabled, we check token validity on page load
   useEffect(() => {
-    if (is2025SignUpEnabled) {
+    if (is2025SignUpEnabled && token) {
       api.postCheckToken({ token }).then(() => {
         setIsLoading(false)
       }, invalidTokenHandler)
@@ -52,7 +49,9 @@ export const ResetPassword = (): JSX.Element => {
   const submitChangePassword = async (values: ResetPasswordValues) => {
     const { newPassword } = values
     try {
-      await api.postNewPassword({ newPassword, token })
+      // `as string` is used because TS it can be undefined
+      // token is always defined as `submitChangePassword` is callable only in that case.
+      await api.postNewPassword({ newPassword, token: token as string })
 
       if (is2025SignUpEnabled) {
         notify.success('Mot de passe modifié.')

@@ -10,19 +10,19 @@ import type { RouteConfig } from './routesMap'
 export const routesSignup: RouteConfig[] = [
   {
     element: <SignupContainer />,
-    path: '/inscription',
+    path: '/inscription/compte/creation',
     title: 'Créer un compte',
     meta: { public: true },
   },
   {
     element: <SignupConfirmation />,
-    path: '/inscription/confirmation',
+    path: '/inscription/compte/confirmation',
     title: 'Confirmation de création de compte',
     meta: { public: true },
   },
   {
     element: <SignupValidation />,
-    path: '/inscription/validation/:token',
+    path: '/inscription/compte/confirmation/:token',
     title: 'Confirmation de création de compte',
     meta: { public: true },
   },

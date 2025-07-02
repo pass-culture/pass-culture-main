@@ -70,7 +70,7 @@ export const SignupContainer = (): JSX.Element => {
   const onHandleSuccess = () => {
     logEvent(Events.SIGNUP_FORM_SUCCESS, {})
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    navigate('/inscription/confirmation', {
+    navigate('/inscription/compte/confirmation', {
       replace: true,
       state: { email: getValues('email') },
     })
