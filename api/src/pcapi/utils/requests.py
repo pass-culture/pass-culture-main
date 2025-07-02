@@ -10,6 +10,14 @@ Usage:
     from pcapi.utils import requests
 
     response = requests.get("https://example.com")
+
+    # With metrics enabled:
+    response = requests.post(
+        "https://api.example.com/book",
+        json=payload,
+        record_metrics=True,
+        metric_name_suffix="external_booking"
+    )
 """
 
 import logging
@@ -23,6 +31,8 @@ import requests  # noqa: TID251
 import zeep
 from requests.adapters import HTTPAdapter  # noqa: TID251
 from urllib3.util.retry import Retry
+
+from pcapi.utils.metrics import HttpMetricsContext
 
 
 # fmt: off
@@ -65,6 +75,7 @@ def _wrapper(
 ) -> requests.Response:
     if not kwargs.get("timeout"):
         kwargs["timeout"] = REQUEST_TIMEOUT_IN_SECOND
+
     try:
         response = request_send_func(request, **kwargs)
     except Exception as exc:
@@ -77,6 +88,7 @@ def _wrapper(
             },
         )
         raise exc
+
     if log_info:
         logger.info(
             "External service called",
@@ -89,41 +101,119 @@ def _wrapper(
     return response
 
 
-def get(url: str, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any) -> requests.Response:
-    return request("GET", url, disable_synchronous_retry=disable_synchronous_retry, log_info=log_info, **kwargs)
+def get(
+    url: str,
+    disable_synchronous_retry: bool = False,
+    log_info: bool = True,
+    record_metrics: bool = False,
+    metric_name_suffix: str | None = None,
+    **kwargs: Any,
+) -> requests.Response:
+    return request(
+        "GET",
+        url,
+        disable_synchronous_retry=disable_synchronous_retry,
+        log_info=log_info,
+        record_metrics=record_metrics,
+        metric_name_suffix=metric_name_suffix,
+        **kwargs,
+    )
 
 
 def post(
-    url: str, hmac: str | None = None, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any
+    url: str,
+    hmac: str | None = None,
+    disable_synchronous_retry: bool = False,
+    log_info: bool = True,
+    record_metrics: bool = False,
+    metric_name_suffix: str | None = None,
+    **kwargs: Any,
 ) -> requests.Response:
     if hmac:
         kwargs.setdefault("headers", {}).update({"PassCulture-Signature": hmac})
-    return request("POST", url, disable_synchronous_retry=disable_synchronous_retry, log_info=log_info, **kwargs)
+    return request(
+        "POST",
+        url,
+        disable_synchronous_retry=disable_synchronous_retry,
+        log_info=log_info,
+        record_metrics=record_metrics,
+        metric_name_suffix=metric_name_suffix,
+        **kwargs,
+    )
 
 
-def put(url: str, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any) -> requests.Response:
-    return request("PUT", url, disable_synchronous_retry=disable_synchronous_retry, log_info=log_info, **kwargs)
+def put(
+    url: str,
+    disable_synchronous_retry: bool = False,
+    log_info: bool = True,
+    record_metrics: bool = False,
+    metric_name_suffix: str | None = None,
+    **kwargs: Any,
+) -> requests.Response:
+    return request(
+        "PUT",
+        url,
+        disable_synchronous_retry=disable_synchronous_retry,
+        log_info=log_info,
+        record_metrics=record_metrics,
+        metric_name_suffix=metric_name_suffix,
+        **kwargs,
+    )
 
 
 def delete(
-    url: str, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any
+    url: str,
+    disable_synchronous_retry: bool = False,
+    log_info: bool = True,
+    record_metrics: bool = False,
+    metric_name_suffix: str | None = None,
+    **kwargs: Any,
 ) -> requests.Response:
-    return request("DELETE", url, disable_synchronous_retry=disable_synchronous_retry, log_info=log_info, **kwargs)
+    return request(
+        "DELETE",
+        url,
+        disable_synchronous_retry=disable_synchronous_retry,
+        log_info=log_info,
+        record_metrics=record_metrics,
+        metric_name_suffix=metric_name_suffix,
+        **kwargs,
+    )
 
 
 def request(
-    method: str, url: str, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any
+    method: str,
+    url: str,
+    disable_synchronous_retry: bool = False,
+    log_info: bool = True,
+    record_metrics: bool = False,
+    metric_name_suffix: str | None = None,
+    **kwargs: Any,
 ) -> requests.Response:
-    with Session(disable_synchronous_retry=disable_synchronous_retry, log_info=log_info) as session:
+    with Session(
+        disable_synchronous_retry=disable_synchronous_retry,
+        log_info=log_info,
+        record_metrics=record_metrics,
+        metric_name_suffix=metric_name_suffix,
+    ) as session:
         return session.request(method=method, url=url, **kwargs)
 
 
 class Session(requests.Session):
     def __init__(
-        self, *args: Any, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any
+        self,
+        *args: Any,
+        disable_synchronous_retry: bool = False,
+        log_info: bool = True,
+        record_metrics: bool = False,
+        metric_name_suffix: str | None = None,
+        **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)
         self.log_info = log_info
+        if record_metrics and metric_name_suffix is None:
+            raise ValueError("metric_name_suffix is required when record_metrics is True")
+        self.record_metrics = record_metrics
+        self.metric_name_suffix = metric_name_suffix
 
         if disable_synchronous_retry:
             return
@@ -134,7 +224,19 @@ class Session(requests.Session):
         self.mount("http://", adapter)
 
     def send(self, request: requests.PreparedRequest, **kwargs: Any) -> requests.Response:
-        return _wrapper(super().send, request, self.log_info, **kwargs)
+        if self.record_metrics and self.metric_name_suffix is not None:
+            metrics_context = HttpMetricsContext(
+                name_suffix=self.metric_name_suffix,
+                method=request.method or "UNKNOWN",
+                url=request.url or "",
+            )
+
+            with metrics_context:
+                response = _wrapper(super().send, request, self.log_info, **kwargs)
+                metrics_context.record_response(response.status_code)
+                return response
+        else:
+            return _wrapper(super().send, request, self.log_info, **kwargs)
 
 
 class CustomZeepTransport(zeep.Transport):

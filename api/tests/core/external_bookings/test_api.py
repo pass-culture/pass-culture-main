@@ -196,6 +196,8 @@ class BookEventTicketTest:
             hmac=expected_hmac_signature,
             headers={"Content-Type": "application/json"},
             timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
+            record_metrics=True,
+            metric_name_suffix="external_booking_create",
         )
         assert remaining_quantity == 12
         assert [ticket.barcode for ticket in tickets] == ["1234567AJSQ", "1234567AJSA"]
@@ -334,6 +336,8 @@ class BookEventTicketTest:
             hmac=expected_hmac_signature,
             headers={"Content-Type": "application/json"},
             timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
+            record_metrics=True,
+            metric_name_suffix="external_booking_create",
         )
 
     @patch("pcapi.core.external_bookings.api.requests.post")
@@ -535,6 +539,8 @@ class CancelEventTicketTest:
             hmac=expected_hmac_signature,
             headers={"Content-Type": "application/json"},
             timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
+            record_metrics=True,
+            metric_name_suffix="external_booking_cancel",
         )
 
     @pytest.mark.parametrize("return_value", [{"remainingQuantity": 10}, {}])
@@ -582,6 +588,8 @@ class CancelEventTicketTest:
             hmac=expected_hmac_signature,
             headers={"Content-Type": "application/json"},
             timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
+            record_metrics=True,
+            metric_name_suffix="external_booking_cancel",
         )
 
 
