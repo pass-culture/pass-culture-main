@@ -10,6 +10,8 @@ from pathlib import Path
 import semver
 from dotenv import load_dotenv
 
+from .routes.pro.signup_keys_examples.example_passwordless_token_keys import PASSWORDLESS_PRIVATE_KEY_EXAMPLE
+from .routes.pro.signup_keys_examples.example_passwordless_token_keys import PASSWORDLESS_PUBLIC_KEY_EXAMPLE
 from .utils import secrets as secrets_utils
 from .utils import settings as utils
 from .utils.example_certificate import PRIVATE_KEY_EXAMPLE
@@ -578,8 +580,6 @@ COMPLIANCE_BACKEND = os.environ.get(
     "COMPLIANCE_BACKEND", "pcapi.core.external.compliance_backends.compliance.ComplianceBackend"
 )
 SECRET_ENCRYPTION_KEY = secrets_utils.get("SECRET_ENCRYPTION_KEY")
-PASSWORDLESS_LOGIN_PRIVATE_KEY = secrets_utils.get("PASSWORDLESS_LOGIN_PRIVATE_KEY")
-PASSWORDLESS_LOGIN_PUBLIC_KEY = os.environ.get("PASSWORDLESS_LOGIN_PUBLIC_KEY")
 ENABLE_COMMAND_CLEAN_DATABASE = bool(int(os.environ.get("ENABLE_COMMAND_CLEAN_DATABASE", 0)))
 
 # ROUTES FOR END-TO-END TESTS
@@ -654,3 +654,7 @@ PROXY_CERT_BUNDLE = os.environ.get("PROXY_CERT_BUNDLE", None)
 
 # Soft deletion
 SOFTDELETE_ENABLED = bool(int(os.environ.get("SOFTDELETE_ENABLED", 0)))
+
+# Passwordless signup
+PASSWORDLESS_LOGIN_PRIVATE_KEY = secrets_utils.get("PASSWORDLESS_LOGIN_PRIVATE_KEY", PASSWORDLESS_PRIVATE_KEY_EXAMPLE)
+PASSWORDLESS_LOGIN_PUBLIC_KEY = os.environ.get("PASSWORDLESS_LOGIN_PUBLIC_KEY", PASSWORDLESS_PUBLIC_KEY_EXAMPLE)
