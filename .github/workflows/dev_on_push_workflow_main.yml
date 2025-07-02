@@ -164,23 +164,6 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  test-pro-e2e-sequencial:
-    name: "Pro E2E Tests (Sequencial)"
-    needs: [pcapi-init-job, build-pcapi-tests]
-    uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e_sequencial.yml
-    if: |
-      always() &&
-      !cancelled() &&
-      needs.pcapi-init-job.outputs.api-changed == 'true' ||
-      needs.pcapi-init-job.outputs.pro-changed == 'true'
-    with:
-      ENV: "development"
-      tag: ${{ needs.build-pcapi-tests.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-
   test-pro-e2e-parallel:
     name: "Pro E2E Tests (Parallel)"
     needs: [pcapi-init-job, build-pcapi-tests]
