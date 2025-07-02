@@ -1675,6 +1675,18 @@ class EducationalDeposit(PcObject, models.Base, models.Model):
             if temporary_fund < total_amount_after_booking:
                 raise educational_exceptions.InsufficientTemporaryFund()
 
+    def check_has_enough_fund_with_ratio(self, total_amount_after_booking: decimal.Decimal) -> None:
+        """
+        Check that the total amount of bookings won't exceed the deposit amount with creditRatio applied, if present
+        """
+        if self.creditRatio is None:
+            return
+
+        available_amount = round(self.amount * self.creditRatio, 2)
+
+        if available_amount < total_amount_after_booking:
+            raise educational_exceptions.InsufficientFundFirstPeriod()
+
 
 class EducationalRedactor(PcObject, models.Base, models.Model):
     __tablename__ = "educational_redactor"

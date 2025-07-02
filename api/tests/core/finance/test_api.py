@@ -4421,7 +4421,11 @@ class ValidateFinanceIncidentTest:
         # before recredit
         with pytest.raises(educational_exceptions.InsufficientFund):
             check_institution_fund(
-                booking.educationalInstitution.id, booking.educationalYearId, Decimal(7800.00), deposit
+                educational_institution_id=booking.educationalInstitution.id,
+                educational_year_id=booking.educationalYearId,
+                booking_amount=Decimal(7800.00),
+                booking_date=datetime.datetime.utcnow(),
+                deposit=deposit,
             )
 
         author = users_factories.UserFactory()
@@ -4432,4 +4436,10 @@ class ValidateFinanceIncidentTest:
         assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
 
         # after recredit, it does not raise InsufficientFund
-        check_institution_fund(booking.educationalInstitution.id, booking.educationalYearId, Decimal(700.00), deposit)
+        check_institution_fund(
+            educational_institution_id=booking.educationalInstitution.id,
+            educational_year_id=booking.educationalYearId,
+            booking_amount=Decimal(700.00),
+            booking_date=datetime.datetime.utcnow(),
+            deposit=deposit,
+        )

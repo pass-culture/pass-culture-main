@@ -37,6 +37,10 @@ class InsufficientTemporaryFund(Exception):
     pass
 
 
+class InsufficientFundFirstPeriod(Exception):
+    pass
+
+
 class EducationalDepositNotFound(Exception):
     pass
 
