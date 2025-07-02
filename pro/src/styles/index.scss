@@ -1,4 +1,4 @@
 @use "global/index" as *;
 @use "components/index" as *;
-@import "design-system/build/pro/variables-light.css";
-@import "design-system/build/pro/variables-dark.css";
+@import "@pass-culture/design-system/lib/pro/light.css";
+@import "@pass-culture/design-system/lib/pro/dark.css";

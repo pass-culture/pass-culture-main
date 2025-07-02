@@ -8,7 +8,7 @@ updates:
       time: '09:00'
     open-pull-requests-limit: 10
     ignore:
-      - dependency-name: 'design-system' # Keep the design-system repo under control while it's early-stage
+      - dependency-name: '@pass-culture/design-system' # Keep the design-system repo under control while it's early-stage
       - dependency-name: '*'
         update-types: ['version-update:semver-major']
   - package-ecosystem: 'npm'

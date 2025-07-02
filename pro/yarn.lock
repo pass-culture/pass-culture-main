@@ -1439,6 +1439,11 @@
     "@parcel/watcher-win32-ia32" "2.5.1"
     "@parcel/watcher-win32-x64" "2.5.1"
 
+"@pass-culture/design-system@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@pass-culture/design-system/-/design-system-0.1.4.tgz#aac4cd8638591fbd073ffd2765c5eaba67dda77e"
+  integrity sha512-6GzM36nyc1QmRVtMnkfsVriH/PpaBOFtBU1xDfaEyWVZTGd071kUAc0/ObxoR0XXtW0pD+/Fax9EIOzUPqnCSA==
+
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
@@ -3720,10 +3725,6 @@ dequal@^2.0.2, dequal@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/dequal/-/dequal-2.0.3.tgz#2644214f1997d39ed0ee0ece72335490a7ac67be"
   integrity sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==
-
-"design-system@https://github.com/pass-culture/design-system.git#v0.0.34":
-  version "0.0.34"
-  resolved "https://github.com/pass-culture/design-system.git#879cb9a6e27fae94e87ace74342b5dd332fcc9fc"
 
 detect-libc@^1.0.3:
   version "1.0.3"
