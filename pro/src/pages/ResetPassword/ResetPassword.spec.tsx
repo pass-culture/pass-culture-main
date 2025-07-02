@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { Route, Routes } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
@@ -35,15 +36,20 @@ vi.mock('commons/hooks/useNotification', async () => ({
 }))
 
 const renderLostPassword = (url: string, features: string[] = []) => {
-  renderWithProviders(<ResetPassword />, {
-    initialRouterEntries: [url],
-    features,
-  })
+  renderWithProviders(
+    <Routes>
+      <Route path="/demande-mot-de-passe/:token" element={<ResetPassword />} />
+    </Routes>,
+    {
+      initialRouterEntries: [url],
+      features,
+    }
+  )
 }
 
 describe('ResetPassword', () => {
   it('should be able to reset the password when token is ok', async () => {
-    const url = '/mot-de-passe-perdu?token=ABC'
+    const url = '/demande-mot-de-passe/ABC'
 
     renderLostPassword(url)
 
@@ -59,7 +65,7 @@ describe('ResetPassword', () => {
 
   it('should display bad token informations', async () => {
     vi.spyOn(api, 'postNewPassword').mockRejectedValue({})
-    const url = '/mot-de-passe-perdu?token=ABC'
+    const url = '/demande-mot-de-passe/ABC'
 
     renderLostPassword(url)
 
@@ -74,7 +80,7 @@ describe('ResetPassword', () => {
 
   describe('with FF WIP_2025_SIGN_UP', () => {
     it('should be able to reset the password when token is ok', async () => {
-      const url = '/mot-de-passe-perdu?token=ABC'
+      const url = '/demande-mot-de-passe/ABC'
 
       vi.spyOn(api, 'postCheckToken').mockResolvedValue()
 
@@ -97,10 +103,10 @@ describe('ResetPassword', () => {
     })
 
     it('should immediately redirect to login page if token is missing', async () => {
-      const url = '/mot-de-passe-perdu'
+      const url = '/demande-mot-de-passe/toto'
 
       vi.spyOn(api, 'postCheckToken').mockRejectedValue({
-        token: ['Ce champ est obligatoire'],
+        token: ['Mauvais token'],
       })
 
       renderLostPassword(url, ['WIP_2025_SIGN_UP'])
@@ -114,7 +120,7 @@ describe('ResetPassword', () => {
     })
 
     it('should immediately redirect to login page if token is invalid', async () => {
-      const url = '/mot-de-passe-perdu?token=ABC'
+      const url = '/demande-mot-de-passe/ABC'
 
       vi.spyOn(api, 'postCheckToken').mockRejectedValue({
         token: ['Votre lien de changement de mot de passe est invalide.'],

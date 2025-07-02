@@ -3,7 +3,7 @@ import { logInAndGoToPage } from '../support/helpers.ts'
 
 describe('Account creation', () => {
   beforeEach(() => {
-    cy.visit('/inscription')
+    cy.visit('/inscription/compte/creation')
     cy.injectAxe(DEFAULT_AXE_CONFIG)
 
     cy.sandboxCall(
@@ -36,7 +36,7 @@ describe('Account creation', () => {
 
     cy.stepLog({ message: 'my account should be created' })
     cy.wait('@signupUser').its('response.statusCode').should('eq', 204)
-    cy.url().should('contain', '/inscription/confirmation')
+    cy.url().should('contain', '/inscription/compte/confirmation')
     cy.contains('Votre compte est en cours de création')
 
     cy.stepLog({ message: 'retrieve last email received' })

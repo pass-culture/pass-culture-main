@@ -829,7 +829,7 @@ def create_and_send_signup_email_confirmation(new_pro_user: models.User) -> None
         token = token_utils.create_passwordless_login_token(
             user_id=new_pro_user.id, ttl=constants.PASSWORDLESS_TOKEN_LIFE_TIME
         )
-        logger.info("Login Token: %s/inscription/validation/%s", settings.PRO_URL, token)
+        logger.info("Login Token: %s/inscription/compte/confirmation/%s", settings.PRO_URL, token)
     else:
         token = token_utils.Token.create(
             token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION,

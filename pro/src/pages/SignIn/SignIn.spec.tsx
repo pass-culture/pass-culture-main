@@ -49,7 +49,7 @@ const renderSignIn = (options?: RenderWithProvidersOptions) => {
           element={<span>I’m logged standard user redirect route</span>}
         />
         <Route
-          path="/inscription"
+          path="/inscription/compte/creation"
           element={<span>I’m the inscription page</span>}
         />
         <Route
@@ -158,7 +158,7 @@ describe('SignIn', () => {
 
       expect(
         screen.getByRole('link', { name: 'Créer un compte' })
-      ).toHaveAttribute('href', '/inscription')
+      ).toHaveAttribute('href', '/inscription/compte/creation')
     })
 
     it('should redirect to the unavailable error page when the API sirene feature is disabled', () => {
