@@ -40,7 +40,7 @@ const renderSignup = (options?: RenderWithProvidersOptions) =>
 describe('src | components | pages | Signup', () => {
   it('should render logo and sign-up form', () => {
     renderSignup({
-      initialRouterEntries: ['/inscription'],
+      initialRouterEntries: ['/inscription/compte/creation'],
       features: ['ENABLE_PRO_ACCOUNT_CREATION'],
     })
 
@@ -77,7 +77,7 @@ describe('src | components | pages | Signup', () => {
 
   it('should render logo and confirmation page', () => {
     renderSignup({
-      initialRouterEntries: ['/inscription/confirmation'],
+      initialRouterEntries: ['/inscription/compte/confirmation'],
       features: ['ENABLE_PRO_ACCOUNT_CREATION'],
     })
 
@@ -108,7 +108,7 @@ describe('src | components | pages | Signup', () => {
 
     const user = sharedCurrentUserFactory()
     renderSignup({
-      initialRouterEntries: ['/inscription/confirmation'],
+      initialRouterEntries: ['/inscription/compte/confirmation'],
       features: ['ENABLE_PRO_ACCOUNT_CREATION'],
       user,
       storeOverrides: {
@@ -129,7 +129,7 @@ describe('src | components | pages | Signup', () => {
   })
 
   it('should render maintenance page when signup is unavailable', () => {
-    renderSignup({ initialRouterEntries: ['/inscription'] })
+    renderSignup({ initialRouterEntries: ['/inscription/compte/creation'] })
 
     expect(
       screen.getByRole('heading', { name: /Inscription indisponible/ })

@@ -15,7 +15,7 @@ def retrieve_data_for_offerer_attachment_invitation_new_user(
         template=TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_NEW_USER.value,
         params={
             "OFFERER_NAME": offerer.name,
-            "REGISTRATION_LINK": f"{settings.PRO_URL}/inscription",
+            "REGISTRATION_LINK": f"{settings.PRO_URL}/inscription/compte/creation",
         },
     )
 
@@ -46,7 +46,7 @@ def retrieve_data_for_offerer_attachment_invitation_existing_user_with_not_valid
         template=TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_EXISTING_NOT_VALIDATED_USER_EMAIL.value,
         params={
             "OFFERER_NAME": offerer.name,
-            "EMAIL_VALIDATION_LINK": f"{settings.PRO_URL}/inscription/validation/{token.encoded_token}",
+            "EMAIL_VALIDATION_LINK": f"{settings.PRO_URL}/inscription/compte/confirmation/{token.encoded_token}",
         },
     )
 

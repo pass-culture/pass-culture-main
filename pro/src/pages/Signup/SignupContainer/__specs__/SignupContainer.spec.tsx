@@ -33,18 +33,21 @@ vi.mock('apiClient/api', () => ({
 const renderSignUp = (options?: RenderWithProvidersOptions) =>
   renderWithProviders(
     <Routes>
-      <Route path="/inscription" element={<SignupContainer />} />
+      <Route
+        path="/inscription/compte/creation"
+        element={<SignupContainer />}
+      />
       <Route
         path="/accueil"
         element={<span>I’m logged in as a pro user</span>}
       />
       <Route
-        path="/inscription/confirmation"
+        path="/inscription/compte/confirmation"
         element={<span>I’m the confirmation page</span>}
       />
     </Routes>,
     {
-      initialRouterEntries: ['/inscription'],
+      initialRouterEntries: ['/inscription/compte/creation'],
       features: ['ENABLE_PRO_ACCOUNT_CREATION'],
       ...options,
     }
