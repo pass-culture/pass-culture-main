@@ -45,29 +45,52 @@ def generate_user(user_data: GenerateUserData) -> users_models.User:
         )
         raise generation_exception
 
-    factory = users_factories.BaseUserFactory
-    match user_data.step:
-        case GeneratedSubscriptionStep.EMAIL_VALIDATION:
-            factory = users_factories.EmailValidatedUserFactory
-        case GeneratedSubscriptionStep.PHONE_VALIDATION:
-            factory = users_factories.PhoneValidatedUserFactory
-        case GeneratedSubscriptionStep.PROFILE_COMPLETION:
-            factory = users_factories.ProfileCompletedUserFactory
-        case GeneratedSubscriptionStep.IDENTITY_CHECK:
-            factory = users_factories.IdentityValidatedUserFactory
-        case GeneratedSubscriptionStep.HONOR_STATEMENT:
-            factory = users_factories.HonorStatementValidatedUserFactory
-        case GeneratedSubscriptionStep.BENEFICIARY:
-            factory = users_factories.BeneficiaryFactory
-
     if user_data.transition_17_18:
         user_data.age = 18
-        factory = users_factories.Transition1718Factory
 
-    id_provider = user_data.id_provider.value
-    return factory.create(
+    Factory = _get_user_factory(user_data)
+    return Factory.create(
         age=user_data.age,
-        beneficiaryFraudChecks__type=id_provider,
+        beneficiaryFraudChecks__type=user_data.id_provider.value,
         beneficiaryFraudChecks__dateCreated=user_data.date_created,
         dateCreated=user_data.date_created,
     )
+
+
+def _get_user_factory(user_data: GenerateUserData) -> type[users_factories.BaseUserFactory]:
+    if user_data.transition_17_18:
+        return users_factories.Transition1718Factory
+
+    Factory = users_factories.BaseUserFactory
+    if user_data.age in users_constants.ELIGIBILITY_FREE_RANGE:
+        match user_data.step:
+            case GeneratedSubscriptionStep.EMAIL_VALIDATION:
+                Factory = users_factories.EmailValidatedUserFactory
+            case GeneratedSubscriptionStep.PROFILE_COMPLETION:
+                Factory = users_factories.FreeBeneficiaryFactory
+            case GeneratedSubscriptionStep.BENEFICIARY:
+                Factory = users_factories.FreeBeneficiaryFactory
+            case _:
+                generation_exception = exceptions.InvalidSubscriptionStepException()
+                generation_exception.add_error(
+                    "step",
+                    "Only EMAIL_VALIDATION, PROFILE_COMPLETION and BENEFICIARY are allowed steps for 15-16 users",
+                )
+                raise generation_exception
+        return Factory
+
+    match user_data.step:
+        case GeneratedSubscriptionStep.EMAIL_VALIDATION:
+            Factory = users_factories.EmailValidatedUserFactory
+        case GeneratedSubscriptionStep.PHONE_VALIDATION:
+            Factory = users_factories.PhoneValidatedUserFactory
+        case GeneratedSubscriptionStep.PROFILE_COMPLETION:
+            Factory = users_factories.ProfileCompletedUserFactory
+        case GeneratedSubscriptionStep.IDENTITY_CHECK:
+            Factory = users_factories.IdentityValidatedUserFactory
+        case GeneratedSubscriptionStep.HONOR_STATEMENT:
+            Factory = users_factories.HonorStatementValidatedUserFactory
+        case GeneratedSubscriptionStep.BENEFICIARY:
+            Factory = users_factories.BeneficiaryFactory
+
+    return Factory

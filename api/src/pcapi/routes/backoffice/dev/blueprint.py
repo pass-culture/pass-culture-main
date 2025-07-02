@@ -123,6 +123,19 @@ def generate_user() -> utils.BackofficeResponse:
         flash("Un utilisateur de moins de 18 ans ne peut pas valider son numéro de téléphone", "warning")
         return redirect(url_for("backoffice_web.dev.get_generated_user"), code=303)
 
+    # 15 to 16 years old only validate their email and complete their profile
+    if age in users_constants.ELIGIBILITY_FREE_RANGE and step not in [
+        users_generator.GeneratedSubscriptionStep.EMAIL_VALIDATION.name,
+        users_generator.GeneratedSubscriptionStep.PROFILE_COMPLETION.name,
+        users_generator.GeneratedSubscriptionStep.BENEFICIARY.name,
+    ]:
+        mark_transaction_as_invalid()
+        flash(
+            "Un utilisateur de 15 à 16 ans ne peut que valider son email, compléter son profil ou être bénéficiaire",
+            "warning",
+        )
+        return redirect(url_for("backoffice_web.dev.get_generated_user"), code=303)
+
     try:
         raw_date_created = form.date_created.data
         user_data = users_generator.GenerateUserData(

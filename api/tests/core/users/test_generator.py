@@ -236,3 +236,15 @@ class UserGeneratorTest:
         )
         assert identity_fraud_check.dateCreated == date_in_the_past
         assert identity_fraud_check.source_data().get_registration_datetime().date() == date_in_the_past.date()
+
+    @pytest.mark.parametrize("age", [15, 16])
+    def test_free_beneficiary_generation(self, age):
+        user_data = users_generator.GenerateUserData(
+            age=age, step=users_generator.GeneratedSubscriptionStep.BENEFICIARY
+        )
+
+        user = users_generator.generate_user(user_data)
+
+        assert user.has_free_beneficiary_role
+        assert user.deposit.type == finance_models.DepositType.GRANT_FREE
+        assert user.deposit.amount == 0

@@ -411,6 +411,36 @@ class Transition1718Factory(BeneficiaryFactory):
         return deposit
 
 
+class FreeBeneficiaryFactory(ProfileCompletedUserFactory):
+    """
+    Generates a free beneficiary as if it had finished the deposit activation process.
+    On top of the base user form, the user went through
+    - email validation
+    - profile completion
+    - free deposit activation
+    """
+
+    class Params:
+        age = 16
+
+    roles: list[models.UserRole] = [models.UserRole.FREE_BENEFICIARY]
+
+    @factory.post_generation
+    def deposit(
+        obj,
+        create: bool,
+        extracted: finance_models.Deposit | None,
+        **kwargs: typing.Any,
+    ) -> finance_models.Deposit | None:
+        if not create:
+            return None
+
+        if "dateCreated" not in kwargs:
+            kwargs["dateCreated"] = obj.dateCreated
+
+        return DepositGrantFactory.create(user=obj, type=finance_models.DepositType.GRANT_FREE, amount=0, **kwargs)
+
+
 ####################################
 # The legacy factories are below. #
 ####################################
@@ -1048,8 +1078,13 @@ class DepositGrantFactory(BaseFactory):
         if not user.age:
             return []
 
-        if obj.type in (finance_models.DepositType.GRANT_15_17, finance_models.DepositType.GRANT_18):
+        if obj.type in (
+            finance_models.DepositType.GRANT_15_17,
+            finance_models.DepositType.GRANT_18,
+            finance_models.DepositType.GRANT_FREE,
+        ):
             return []
+
         # Immediately create the recredit that gives the first credit to the user.
         # Only for deposits of type GRANT_17_18 for now
         immediate_recredit = RecreditFactory.create(
