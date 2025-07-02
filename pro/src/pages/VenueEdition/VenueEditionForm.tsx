@@ -109,12 +109,12 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
       notify.success('Vos modifications ont été sauvegardées')
     } catch (error) {
-      let formErrors
+      let formErrors: Record<string, string> | undefined
       if (isErrorAPIError(error)) {
         formErrors = error.body
       }
 
-      const errorsKeys = Object.keys(formErrors)
+      const errorsKeys = formErrors ? Object.keys(formErrors) : []
 
       if (
         !formErrors ||
@@ -130,7 +130,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         for (const field of errorsKeys) {
           methods.setError(field as keyof VenueEditionFormValues, {
             type: field,
-            message: formErrors[field]?.toString(),
+            message: formErrors[field].toString(),
           })
         }
       }
