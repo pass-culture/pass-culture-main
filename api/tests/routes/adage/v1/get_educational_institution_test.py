@@ -27,6 +27,7 @@ class Returns200Test:
             educationalYear=educational_year,
             amount=2000,
             isFinal=True,
+            creditRatio=0.255,
         )
         EducationalInstitutionFactory()
         booking = CollectiveBookingFactory(
@@ -58,6 +59,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "credit": 2000,
+            "creditRatio": 0.255,
             "isFinal": True,
             "prebookings": [expected_serialized_prebooking(booking)],
         }
@@ -81,6 +83,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "credit": 0,
+            "creditRatio": None,
             "isFinal": False,
             "prebookings": [{**expected_serialized_prebooking(booking), "address": "Dans l'établissement scolaire"}],
         }
@@ -106,6 +109,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "credit": 0,
+            "creditRatio": None,
             "isFinal": False,
             "prebookings": [
                 {**expected_serialized_prebooking(booking), "address": "1 boulevard Poissonnière 75002 Paris"}
@@ -131,6 +135,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "credit": 0,
+            "creditRatio": None,
             "isFinal": False,
             "prebookings": [{**expected_serialized_prebooking(booking), "address": "Somewhere in Paris"}],
         }
@@ -192,6 +197,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "credit": 0,
+            "creditRatio": None,
             "isFinal": False,
             "prebookings": [],
         }
