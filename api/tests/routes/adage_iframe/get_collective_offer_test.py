@@ -53,6 +53,7 @@ class CollectiveOfferTest:
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
+            collectiveOffer__venue=venue,
         )
         offer = stock.collectiveOffer
 
@@ -80,16 +81,19 @@ class CollectiveOfferTest:
             },
             "venue": {
                 "adageId": None,
-                "address": "1 boulevard Poissonnière",
-                "city": "Paris",
-                "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
+                "address": venue.offererAddress.address.street,
+                "city": venue.offererAddress.address.city,
+                "coordinates": {
+                    "latitude": float(venue.offererAddress.address.latitude),
+                    "longitude": float(venue.offererAddress.address.longitude),
+                },
                 "distance": None,
                 "id": offer.venue.id,
                 "imgUrl": None,
                 "managingOfferer": {"name": offer.venue.managingOfferer.name},
                 "name": offer.venue.name,
-                "postalCode": "75002",
-                "departmentCode": "75",
+                "postalCode": venue.offererAddress.address.postalCode,
+                "departmentCode": venue.offererAddress.address.departmentCode,
                 "publicName": offer.venue.publicName,
             },
             "audioDisabilityCompliant": False,
@@ -101,12 +105,12 @@ class CollectiveOfferTest:
             "contactPhone": offer.contactPhone,
             "offerVenue": {
                 "addressType": "offererVenue",
-                "address": "1 boulevard Poissonnière",
-                "city": "Paris",
+                "address": venue.offererAddress.address.street,
+                "city": venue.offererAddress.address.city,
                 "distance": None,
                 "name": venue.name,
                 "otherAddress": "",
-                "postalCode": "75002",
+                "postalCode": venue.offererAddress.address.postalCode,
                 "publicName": venue.publicName,
                 "venueId": venue.id,
             },

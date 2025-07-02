@@ -141,6 +141,9 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "prebookings": [
-                {**expected_serialized_prebooking(booking), "address": "1 boulevard Poissonnière 75002 Paris"}
+                {
+                    **expected_serialized_prebooking(booking),
+                    "address": offer.offererAddress.address.fullAddress,
+                }
             ]
         }

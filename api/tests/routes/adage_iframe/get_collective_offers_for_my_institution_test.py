@@ -82,16 +82,19 @@ class CollectiveOfferTest:
         venue = stocks[0].collectiveOffer.venue
         assert response_data[0]["venue"] == {
             "adageId": None,
-            "address": "1 boulevard Poissonnière",
-            "city": "Paris",
-            "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
+            "address": venue.offererAddress.address.street,
+            "city": venue.offererAddress.address.city,
+            "coordinates": {
+                "latitude": float(venue.offererAddress.address.latitude),
+                "longitude": float(venue.offererAddress.address.longitude),
+            },
             "distance": None,
             "id": venue.id,
             "imgUrl": None,
             "managingOfferer": {"name": venue.managingOfferer.name},
             "name": venue.name,
-            "postalCode": "75002",
-            "departmentCode": "75",
+            "postalCode": venue.offererAddress.address.postalCode,
+            "departmentCode": venue.offererAddress.address.departmentCode,
             "publicName": venue.publicName,
         }
 
@@ -101,16 +104,19 @@ class CollectiveOfferTest:
         venue = stocks[1].collectiveOffer.venue
         assert response_data[1]["venue"] == {
             "adageId": None,
-            "address": "1 boulevard Poissonnière",
-            "city": "Paris",
-            "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
+            "address": venue.offererAddress.address.street,
+            "city": venue.offererAddress.address.city,
+            "coordinates": {
+                "latitude": float(venue.offererAddress.address.latitude),
+                "longitude": float(venue.offererAddress.address.longitude),
+            },
             "distance": None,
             "id": venue.id,
             "imgUrl": None,
             "managingOfferer": {"name": venue.managingOfferer.name},
             "name": venue.name,
-            "postalCode": "75002",
-            "departmentCode": "75",
+            "postalCode": venue.offererAddress.address.postalCode,
+            "departmentCode": venue.offererAddress.address.departmentCode,
             "publicName": venue.publicName,
         }
 

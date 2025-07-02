@@ -108,7 +108,10 @@ class Returns200Test:
             "credit": 0,
             "isFinal": False,
             "prebookings": [
-                {**expected_serialized_prebooking(booking), "address": "1 boulevard Poissonnière 75002 Paris"}
+                {
+                    **expected_serialized_prebooking(booking),
+                    "address": offer.offererAddress.address.fullAddress,
+                }
             ],
         }
 

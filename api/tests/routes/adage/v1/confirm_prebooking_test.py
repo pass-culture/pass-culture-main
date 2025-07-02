@@ -107,7 +107,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             **expected_serialized_prebooking(booking),
-            "address": "1 boulevard Poissonnière 75002 Paris",
+            "address": offer.offererAddress.address.fullAddress,
         }
 
     @time_machine.travel("2021-10-15 09:00:00")

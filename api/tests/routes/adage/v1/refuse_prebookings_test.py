@@ -92,7 +92,7 @@ class Returns200Test:
         response = client.with_eac_token().post(f"/adage/v1/prebookings/{collective_booking.id}/refuse")
 
         assert response.status_code == 200
-        assert response.json["address"] == "1 boulevard Poissonnière 75002 Paris"
+        assert response.json["address"] == offer.offererAddress.address.fullAddress
 
     def test_refuse_collective_booking_when_pending(self, client):
         collective_booking = CollectiveBookingFactory(
