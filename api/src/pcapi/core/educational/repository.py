@@ -147,6 +147,8 @@ def get_confirmed_collective_bookings_amount_for_ministry(
 def get_confirmed_collective_bookings_amount(
     educational_institution_id: int,
     educational_year_id: str,
+    min_end_month: int | None = None,
+    max_end_month: int | None = None,
 ) -> Decimal:
     query = db.session.query(sa.func.sum(educational_models.CollectiveStock.price).label("amount"))
     query = query.join(educational_models.CollectiveBooking, educational_models.CollectiveStock.collectiveBookings)
@@ -157,6 +159,13 @@ def get_confirmed_collective_bookings_amount(
             [educational_models.CollectiveBookingStatus.CANCELLED, educational_models.CollectiveBookingStatus.PENDING]
         ),
     )
+
+    if min_end_month is not None:
+        query = query.filter(min_end_month <= sa.extract("month", educational_models.CollectiveStock.endDatetime))
+
+    if max_end_month is not None:
+        query = query.filter(sa.extract("month", educational_models.CollectiveStock.endDatetime) <= max_end_month)
+
     return query.first().amount or Decimal(0)
 
 

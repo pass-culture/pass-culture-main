@@ -42,15 +42,37 @@ def validate_offer_venue(offer_venue: "OfferVenueModel | None") -> None:
         raise api_errors.ApiErrors(errors=errors, status_code=404)
 
 
+CREDIT_PERIOD_MONTH_MIN = 9
+CREDIT_PERIOD_MONTH_MAX = 12
+
+
 def check_institution_fund(
     educational_institution_id: int,
     educational_year_id: str,
     booking_amount: Decimal,
+    booking_date: datetime.datetime,
     deposit: models.EducationalDeposit,
 ) -> None:
-    spent_amount = repository.get_confirmed_collective_bookings_amount(educational_institution_id, educational_year_id)
+    spent_amount = repository.get_confirmed_collective_bookings_amount(
+        educational_institution_id=educational_institution_id, educational_year_id=educational_year_id
+    )
     total_amount = booking_amount + spent_amount
     deposit.check_has_enough_fund(total_amount)
+
+    if deposit.creditRatio is not None and _event_is_in_educational_year_first_period(booking_date):
+        # if the offer ends in the first period, we must check institution deposit on the period with creditRatio applied
+        spent_amount_for_first_period = repository.get_confirmed_collective_bookings_amount(
+            educational_institution_id=educational_institution_id,
+            educational_year_id=educational_year_id,
+            min_end_month=CREDIT_PERIOD_MONTH_MIN,
+            max_end_month=CREDIT_PERIOD_MONTH_MAX,
+        )
+        total_amount_for_first_period = booking_amount + spent_amount_for_first_period
+        deposit.check_has_enough_fund_with_ratio(total_amount_after_booking=total_amount_for_first_period)
+
+
+def _event_is_in_educational_year_first_period(booking_date: datetime.datetime) -> bool:
+    return CREDIT_PERIOD_MONTH_MIN <= booking_date.month <= CREDIT_PERIOD_MONTH_MAX
 
 
 def check_ministry_fund(
