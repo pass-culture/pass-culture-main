@@ -204,7 +204,7 @@ jobs:
         uses: iFaxity/wait-on-action@v1
         with:
           resource: http://localhost:5001/health/api
-          timeout: 300000 # 5 minutes (standard for migrations)
+          timeout: 120000
 
       - name: Download the build folder
         uses: actions/download-artifact@v4
@@ -219,19 +219,6 @@ jobs:
       - name: "Wait for front-end to listen"
         run: |
           timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:3001)" != "200" ]]; do sleep 5; done' || false
-
-      - name: Wait for API to be ready
-        run: |
-          for i in {1..30}; do
-            if curl -sf http://localhost:5001/health/api; then
-              echo "API is up!"
-              exit 0
-            fi
-            echo "Waiting for API..."
-            sleep 5
-          done
-          echo "API did not start in time" >&2
-          exit 1
 
       - name: "Cypress run"
         uses: cypress-io/github-action@v6
