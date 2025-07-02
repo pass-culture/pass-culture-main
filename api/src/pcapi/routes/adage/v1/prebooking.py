@@ -58,6 +58,8 @@ def confirm_prebooking(educational_booking_id: int) -> educational_schemas.Educa
         raise ApiErrors({"code": "INSUFFICIENT_MINISTRY_FUND"}, status_code=422)
     except exceptions.InsufficientTemporaryFund:
         raise ApiErrors({"code": "INSUFFICIENT_FUND_DEPOSIT_NOT_FINAL"}, status_code=422)
+    except exceptions.InsufficientFundFirstPeriod:
+        raise ApiErrors({"code": "INSUFFICIENT_FUND_FIRST_PERIOD"}, status_code=422)
     except exceptions.BookingIsCancelled:
         raise ApiErrors({"code": "EDUCATIONAL_BOOKING_IS_CANCELLED"}, status_code=422)
     except bookings_exceptions.ConfirmationLimitDateHasPassed:

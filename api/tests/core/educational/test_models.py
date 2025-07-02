@@ -73,6 +73,21 @@ class EducationalDepositTest:
         with pytest.raises(sa_exc.IntegrityError):
             factories.EducationalDepositFactory(creditRatio=1.5)
 
+    def test_check_has_enough_fund_with_ratio(self):
+        educational_deposit = EducationalDeposit(amount=Decimal(1000), creditRatio=Decimal(0.25))
+
+        educational_deposit.check_has_enough_fund_with_ratio(Decimal(249))
+        educational_deposit.check_has_enough_fund_with_ratio(Decimal(250))
+
+        with pytest.raises(exceptions.InsufficientFundFirstPeriod):
+            educational_deposit.check_has_enough_fund_with_ratio(Decimal(251))
+
+    def test_check_has_enough_fund_with_ratio_none(self):
+        educational_deposit = EducationalDeposit(amount=Decimal(1000), creditRatio=None)
+
+        educational_deposit.check_has_enough_fund_with_ratio(Decimal(999))
+        educational_deposit.check_has_enough_fund_with_ratio(Decimal(1001))
+
 
 class CollectiveStockIsBookableTest:
     def test_not_bookable_if_booking_limit_datetime_has_passed(self) -> None:

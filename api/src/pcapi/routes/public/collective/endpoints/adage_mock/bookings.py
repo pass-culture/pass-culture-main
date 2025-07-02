@@ -74,6 +74,8 @@ def confirm_collective_booking(booking_id: int) -> None:
         raise ForbiddenError({"code": "INSUFFICIENT_MINISTRY_FUND"})
     except exceptions.InsufficientTemporaryFund:
         raise ForbiddenError({"code": "INSUFFICIENT_FUND_DEPOSIT_NOT_FINAL"})
+    except exceptions.InsufficientFundFirstPeriod:
+        raise ForbiddenError({"code": "INSUFFICIENT_FUND_FIRST_PERIOD"})
     except exceptions.BookingIsCancelled:
         raise ForbiddenError({"code": "EDUCATIONAL_BOOKING_IS_CANCELLED"})
     except bookings_exceptions.ConfirmationLimitDateHasPassed:
