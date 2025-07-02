@@ -677,6 +677,15 @@ class ValidationRuleOfferLink(PcObject, Base, Model):
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
 
 
+class OfferMetaData(PcObject, Base, Model):
+    __tablename__ = "offer_meta_data"
+    offerId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
+    )
+    offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", back_populates="metaData")
+    videoUrl = sa.Column(sa.TEXT)
+
+
 class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, AccessibilityMixin):
     __tablename__ = "offer"
 
@@ -748,6 +757,9 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     isDuo: bool = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
     isNational: bool = sa.Column(sa.Boolean, default=False, nullable=False)
     lastValidationPrice: decimal.Decimal = sa.Column(sa.Numeric(10, 2), nullable=True)
+    metaData: sa_orm.Mapped["OfferMetaData"] = sa_orm.relationship(
+        "OfferMetaData", back_populates="offer", uselist=False
+    )
     name: str = sa.Column(sa.String(140), nullable=False)
     priceCategories: sa_orm.Mapped[list["PriceCategory"]] = sa_orm.relationship("PriceCategory", back_populates="offer")
     product: sa_orm.Mapped["Product | None"] = sa_orm.relationship(

@@ -123,6 +123,7 @@ class Returns200Test:
             offererAddress=None,
             publicationDatetime=datetime(year=2020, month=11, day=15),
             bookingAllowedDatetime=datetime(year=2020, month=12, day=15),
+            metaData__videoUrl="https://www.youtube.com/watch?v=WtM4OW2qVjY",
         )
 
         stock = offers_factories.EventStockFactory(
@@ -217,6 +218,7 @@ class Returns200Test:
                 "publicName": "La petite librairie",
                 "visualDisabilityCompliant": False,
             },
+            "videoUrl": "https://www.youtube.com/watch?v=WtM4OW2qVjY",
             "withdrawalDetails": "Veuillez chercher votre billet au guichet",
             "withdrawalType": "on_site",
             "withdrawalDelay": 60 * 30,

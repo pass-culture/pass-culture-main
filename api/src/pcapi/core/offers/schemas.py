@@ -13,6 +13,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization import utils as serialization_utils
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
+from pcapi.validation.routes.offers import check_video_url
 
 
 OFFER_DESCRIPTION_MAX_LENGTH = 10_000
@@ -27,11 +28,17 @@ class PostDraftOfferBodyModel(BaseModel):
     extra_data: typing.Any = None
     duration_minutes: int | None = None
     product_id: int | None
+    video_url: HttpUrl | None
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:
         check_offer_name_length_is_valid(name)
         return name
+
+    @validator("video_url")
+    def validate_video_url(cls, video_url: HttpUrl, values: dict) -> str:
+        check_video_url(video_url)
+        return video_url
 
     class Config:
         alias_generator = serialization_utils.to_camel
@@ -45,11 +52,17 @@ class PatchDraftOfferBodyModel(BaseModel):
     description: str | None = Field(max_length=OFFER_DESCRIPTION_MAX_LENGTH)
     extra_data: dict[str, typing.Any] | None = None
     duration_minutes: int | None = None
+    video_url: HttpUrl | None
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:
         check_offer_name_length_is_valid(name)
         return name
+
+    @validator("video_url")
+    def validate_video_url(cls, video_url: HttpUrl, values: dict) -> str:
+        check_video_url(video_url)
+        return video_url
 
     @validator("subcategory_id", pre=True)
     def validate_subcategory_id(cls, subcategory_id: str, values: dict) -> str:

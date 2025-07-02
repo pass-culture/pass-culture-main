@@ -1,3 +1,7 @@
+import re
+
+from pydantic.v1 import HttpUrl
+
 from pcapi.models.api_errors import ApiErrors
 
 
@@ -6,4 +10,17 @@ def check_offer_name_length_is_valid(offer_name: str) -> None:
     if len(offer_name) > max_offer_name_length:
         api_error = ApiErrors()
         api_error.add_error("name", "Le titre de l’offre doit faire au maximum 90 caractères.")
+        raise api_error
+
+
+def check_video_url(video_url: HttpUrl) -> None:
+    youtube_pattern = re.compile(
+        r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?([a-zA-Z0-9_-]{11})"
+    )
+
+    isYoutube = youtube_pattern.match(video_url)
+
+    if not isYoutube:
+        api_error = ApiErrors()
+        api_error.add_error("videoUrl", "Veuillez renseigner une url provenant de la plateforme Youtube")
         raise api_error

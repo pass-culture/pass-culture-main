@@ -1271,6 +1271,18 @@ class CreateDraftOfferTest:
 
         assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
+    def test_create_draft_offer_with_video_url(self):
+        venue = offerers_factories.VenueFactory()
+        body = offers_schemas.PostDraftOfferBodyModel(
+            name="A pretty good offer",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            venueId=venue.id,
+            videoUrl="http://example.com",
+        )
+        offer = api.create_draft_offer(body, venue=venue)
+
+        assert offer.metaData.videoUrl == "http://example.com"
+
 
 @pytest.mark.usefixtures("db_session")
 class UpdateDraftOfferTest:

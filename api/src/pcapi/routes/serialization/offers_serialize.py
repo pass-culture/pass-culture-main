@@ -415,6 +415,8 @@ def _format_time(time_to_format: datetime.time) -> str:
 
 class IndividualOfferResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
+        if key == "videoUrl":
+            return getattr(self._obj.metaData, "videoUrl", None)
         if key == "extraData" and self._obj.product:
             self._obj.ean = self._obj.product.ean
         if key == "extraData" and self._obj.ean:
@@ -470,6 +472,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     withdrawalType: offers_models.WithdrawalTypeEnum | None
     status: OfferStatus
     isNonFreeOffer: bool | None
+    videoUrl: str | None
 
     class Config:
         orm_mode = True
