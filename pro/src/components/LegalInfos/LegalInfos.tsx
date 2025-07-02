@@ -51,7 +51,7 @@ export const LegalInfos = ({
         <ButtonLink
           variant={ButtonVariant.QUATERNARY}
           icon={fullLinkIcon}
-          className={styles['legal-infos-callout-maillink']}
+          className={styles['legal-infos-callout-link']}
           to={`mailto:${DPOMail}`}
           isExternal
         >

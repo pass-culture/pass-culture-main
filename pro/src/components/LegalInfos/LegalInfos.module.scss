@@ -45,16 +45,4 @@
       text-decoration: underline;
     }
   }
-
-  &-maillink {
-    @include fonts.body-accent-s;
-
-    display: inline;
-    color: var(--color-text-subtle);
-    text-decoration: underline;
-
-    &:hover {
-      text-decoration: none;
-    }
-  }
 }
