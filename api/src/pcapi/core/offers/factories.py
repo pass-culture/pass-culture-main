@@ -100,6 +100,14 @@ class ThingProductFactory(ProductFactory):
     subcategoryId = subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id
 
 
+class OfferMetaDataFactory(BaseFactory):
+    class Meta:
+        model = offers_models.OfferMetaData
+
+    offer = factory.SubFactory("pcapi.core.offers.factories.OfferFactory")
+    videoUrl: str | None = None
+
+
 def build_extra_data_from_subcategory(
     subcategory_id: str, set_all_fields: bool, build_for_product: bool = False
 ) -> offers_models.OfferExtraData:

@@ -53,6 +53,7 @@ OFFER_LOAD_OPTIONS = typing.Iterable[
         "product",
         "stock",
         "venue",
+        "meta_data",
     ]
 ]
 
@@ -887,6 +888,8 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
             ).options(sa_orm.contains_eager(models.Offer.stocks))
         if "mediations" in load_options:
             query = query.options(sa_orm.joinedload(models.Offer.mediations))
+        if "meta_data" in load_options:
+            query = query.options(sa_orm.joinedload(models.Offer.metaData))
         if "product" in load_options:
             query = query.options(sa_orm.joinedload(models.Offer.product).joinedload(models.Product.productMediations))
         if "headline_offer" in load_options:
@@ -964,6 +967,7 @@ def get_offer_and_extradata(offer_id: int) -> models.Offer | None:
             .joinedload(offerers_models.OffererAddress.address),
         )
         .options(sa_orm.joinedload(models.Offer.venue))
+        .options(sa_orm.joinedload(models.Offer.metaData))
         .one_or_none()
     )
 

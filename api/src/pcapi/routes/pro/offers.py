@@ -80,6 +80,7 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressRe
         "future_offer",
         "pending_bookings",
         "headline_offer",
+        "meta_data",
     ]
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=load_all)
@@ -284,6 +285,7 @@ def patch_draft_offer(
             sa_orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
             sa_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
             sa_orm.joinedload(models.Offer.product),
+            sa_orm.joinedload(models.Offer.metaData),
         )
         .filter_by(id=offer_id)
         .one_or_none()
@@ -443,6 +445,7 @@ def patch_offer(
                 "product",
                 "bookings_count",
                 "is_non_free_offer",
+                "meta_data",
             ],
         )
     except exceptions.OfferNotFound:
@@ -568,6 +571,7 @@ def _get_offer_for_price_categories_upsert(
         .options(
             sa_orm.contains_eager(models.Offer.priceCategories).contains_eager(models.PriceCategory.priceCategoryLabel)
         )
+        .options(sa_orm.joinedload(models.Offer.metaData))
         .filter(models.Offer.id == offer_id)
         .one_or_none()
     )

@@ -49,6 +49,7 @@ export type GetIndividualOfferWithAddressResponseModel = {
   thumbUrl?: string | null;
   url?: string | null;
   venue: GetOfferVenueResponseModel;
+  videoUrl?: string | null;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDelay?: number | null;
   withdrawalDetails?: string | null;
