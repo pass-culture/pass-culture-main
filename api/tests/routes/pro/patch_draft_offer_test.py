@@ -34,6 +34,7 @@ class Returns200Test:
             "description": "New description",
             "subcategoryId": subcategories.ABO_PLATEFORME_VIDEO.id,
             "extraData": {"gtl_id": "07000000"},
+            "videoUrl": "https://www.youtube.com/watch?v=WtM4OW2qVjY",
         }
         response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
         assert response.status_code == 200
@@ -45,6 +46,7 @@ class Returns200Test:
         assert updated_offer.name == "New name"
         assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
         assert updated_offer.description == "New description"
+        assert updated_offer.metaData.videoUrl == "https://www.youtube.com/watch?v=WtM4OW2qVjY"
 
         assert not updated_offer.product
 
@@ -408,6 +410,14 @@ class Returns400Test:
             (
                 {"name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256"},
                 {"name": ["Le titre d'une offre ne peut contenir l'EAN"]},
+            ),
+            (
+                {"videoUrl": "coucou.com"},
+                {"videoUrl": ['L\'URL doit commencer par "http://" ou "https://"']},
+            ),
+            (
+                {"videoUrl": "http://coucou.com"},
+                {"videoUrl": ["Veuillez renseigner une url provenant de la plateforme Youtube"]},
             ),
         ],
     )

@@ -9,5 +9,6 @@ export type PatchDraftOfferBodyModel = {
   name?: string | null;
   subcategoryId?: string | null;
   url?: string | null;
+  videoUrl?: string | null;
 };
 

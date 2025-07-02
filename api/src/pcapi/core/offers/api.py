@@ -220,7 +220,9 @@ def create_draft_offer(
 
     validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
 
-    fields = {key: value for key, value in body.dict(by_alias=True).items() if key not in ("venueId", "callId")}
+    fields = {
+        key: value for key, value in body.dict(by_alias=True).items() if key not in ("venueId", "callId", "videoUrl")
+    }
     fields.update({"ean": body_ean})
     fields.update(_get_accessibility_compliance_fields(venue))
     fields.update({"withdrawalDetails": venue.withdrawalDetails})
@@ -235,7 +237,8 @@ def create_draft_offer(
         validation=models.OfferValidationStatus.DRAFT,
         product=product,
     )
-    db.session.add(offer)
+    offer_metadata = models.OfferMetaData(offer=offer, videoUrl=body.video_url)
+    db.session.add_all([offer, offer_metadata])
     db.session.flush()
 
     update_external_pro(venue.bookingEmail)
@@ -245,6 +248,14 @@ def create_draft_offer(
 
 def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOfferBodyModel) -> models.Offer:
     fields = body.dict(by_alias=True, exclude_unset=True)
+
+    new_video_url = fields.pop("videoUrl", None)
+    if new_video_url:
+        if offer.metaData:
+            offer.metaData.videoUrl = new_video_url
+        else:
+            offer.metaData = models.OfferMetaData(offer=offer, videoUrl=new_video_url)
+        db.session.add(offer.metaData)
     body_ean = body.extra_data.get("ean", None) if body.extra_data else None
     if body_ean:
         fields["ean"] = fields["extraData"].pop("ean")
