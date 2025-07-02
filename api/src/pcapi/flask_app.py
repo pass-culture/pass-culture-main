@@ -81,7 +81,8 @@ def setup_metrics(app_: Flask) -> None:
 
     def get_url_prefix() -> str | None:
         path = request.path
-        prefix = next((p for p in path.split("/")), None)
+        # Request.path always includes a leading slash
+        prefix = next((p for p in path.split("/") if p), None)
         if prefix not in URL_PREFIX_VALUES:
             return "other"
         return prefix
