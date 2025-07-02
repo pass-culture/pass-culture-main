@@ -91,6 +91,10 @@ class UserGenerationForbiddenException(UserException):
     pass
 
 
+class InvalidSubscriptionStepException(UserException):
+    pass
+
+
 class MissingLoginMethod(UserException):
     pass
 
