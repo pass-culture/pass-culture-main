@@ -862,10 +862,21 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     def canExpire(cls) -> BinaryExpression:
         return cls.subcategoryId.in_(subcategories.EXPIRABLE_SUBCATEGORIES)
 
-    @property
+    @hybrid_property
     def isReleased(self) -> bool:
         offerer = self.venue.managingOfferer
         return self._released and offerer.isActive and offerer.isValidated
+
+    @isReleased.expression  # type: ignore[no-redef]
+    def isReleased(cls):
+        from pcapi.core.offerers import models as offerers_models
+
+        # Jointure explicite sur Venue puis Offerer
+        return sa.and_(
+            cls._released,
+            offerers_models.Offerer.isActive,
+            offerers_models.Offerer.isValidated,
+        )
 
     @hybrid_property
     def _released(self) -> bool:
