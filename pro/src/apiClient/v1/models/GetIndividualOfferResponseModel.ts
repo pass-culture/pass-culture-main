@@ -24,7 +24,6 @@ export type GetIndividualOfferResponseModel = {
   hasBookingLimitDatetimesPassed: boolean;
   hasStocks: boolean;
   id: number;
-  isActivable: boolean;
   isActive: boolean;
   isDigital: boolean;
   isDuo: boolean;
