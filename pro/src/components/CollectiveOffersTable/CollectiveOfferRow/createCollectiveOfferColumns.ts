@@ -1,4 +1,3 @@
-// createCollectiveOfferColumns.ts
 import React from 'react'
 
 import {
@@ -8,13 +7,11 @@ import {
 import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { isCollectiveOfferSelectable } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { OfferVenueCell } from 'components/CollectiveOffersTable/CollectiveOfferRow/OfferVenueCell/OfferVenueCell'
-import { ThumbCell } from 'components/CollectiveOffersTable/CollectiveOfferRow/ThumbCell/ThumbCell'
+import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/CollectiveStatusLabel'
 import { Column } from 'ui-kit/ResponsiveTable/ResponsiveTable'
 
 import { CollectiveActionsCells } from './CollectiveActionsCells/CollectiveActionsCells'
-import { CollectiveOfferStatusCell } from './CollectiveOfferStatusCell/CollectiveOfferStatusCell'
 import { ExpirationCell } from './ExpirationCell/ExpirationCell'
 import { OfferEventDateCell } from './OfferEventDateCell/OfferEventDateCell'
 import { OfferInstitutionCell } from './OfferInstitutionCell/OfferInstitutionCell'
@@ -68,7 +65,7 @@ export function createCollectiveOfferColumns(
   getExpandedContent: (
     o: CollectiveOfferResponseModel,
   ) => React.ReactNode | null
-  getRowLink: (o: CollectiveOfferResponseModel) => string
+  getRowLink: string
 } {
   const { selectedIds, toggleSelect, urlSearchFilters } = params
   const newDetailPageActive = useActiveFeature(
@@ -98,38 +95,12 @@ export function createCollectiveOfferColumns(
   // ---- columns ---------------------------------------------------------------
   const columns: Column<CollectiveOfferResponseModel>[] = [
     {
-      id: 'offerHeader', // clé principale pour l’en-tête
-      label: "Nom de l'offre",
-      headerColSpan: 2, // 👈 regroupe les deux sous-colonnes
-      sortable: true,
-      accessor: 'name', // pour que le tri fonctionne
-      bodyHidden: true, // 👈 pas de cellule dans le body
-    },
-    {
-      id: 'offer-head-thumb',
-      label: '',
-      headerHidden: true, // 👈 pas de cellule dans l’en-tête
-      render: (offer) => {
-        const { id, detail } = buildLinks(offer, newDetailPageActive)
-        const selectable = isCollectiveOfferSelectable(offer)
-        return React.createElement(ThumbCell, {
-          rowId: `collective-offer-${id}`,
-          offer,
-          offerLink: detail,
-          inactive: !selectable,
-        })
-      },
-    },
-    {
       id: 'offer-head-name',
-      label: '',
-      headerHidden: true, // 👈 pas de cellule dans l’en-tête
+      label: "Nom de l'offre",
       render: (offer) => {
-        const { id, detail } = buildLinks(offer, newDetailPageActive)
         return React.createElement(OfferNameCell, {
-          rowId: `collective-offer-${id}`,
           offer,
-          offerLink: detail,
+          displayThumb: true,
         })
       },
     },    
@@ -137,14 +108,11 @@ export function createCollectiveOfferColumns(
     // 4. Event date (sortable) --------------------------------------------------
     {
       id: 'offer-head-event-date',
-      label: 'Date',
+      label: 'Date de l’évènement',
       sortable: true,
-      width: '8rem',
+      accessor: (offer) => offer.dates?.start,         
       render: offer => {
-        const { id } = buildLinks(offer, newDetailPageActive)
-
         return React.createElement(OfferEventDateCell, {
-          rowId: `collective-offer-${id}`,
           offer,
         })
       },
@@ -154,10 +122,8 @@ export function createCollectiveOfferColumns(
     {
       id: 'offer-head-structure',
       label: 'Lieu',
-      width: '14rem',
       render: offer =>
         React.createElement(OfferVenueCell, {
-          rowId: `collective-offer-${offer.id}`,
           venue: offer.venue,
         }),
     },
@@ -166,10 +132,8 @@ export function createCollectiveOfferColumns(
     {
       id: 'offer-head-institution',
       label: 'Structure',
-      width: '16rem',
       render: offer =>
         React.createElement(OfferInstitutionCell, {
-          rowId: `collective-offer-${offer.id}`,
           educationalInstitution: offer.educationalInstitution,
         }),
     },
@@ -178,11 +142,9 @@ export function createCollectiveOfferColumns(
     {
       id: 'offer-head-status',
       label: 'Statut',
-      width: '10rem',
       render: offer =>
-        React.createElement(CollectiveOfferStatusCell, {
-          rowId: `collective-offer-${offer.id}`,
-          offer,
+        React.createElement(CollectiveStatusLabel, {
+          offerDisplayedStatus: offer.displayedStatus,
         }),
     },
 
@@ -190,13 +152,11 @@ export function createCollectiveOfferColumns(
     {
       id: 'offer-head-actions',
       label: 'Actions',
-      width: '8rem',
       render: offer => {
         const { edit } = buildLinks(offer, newDetailPageActive)
         const isSelected = selectedIds.has(offer.id)
 
         return React.createElement(CollectiveActionsCells, {
-          rowId: `collective-offer-${offer.id}`,
           offer,
           editionOfferLink: edit,
           urlSearchFilters,

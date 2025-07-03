@@ -38,7 +38,6 @@ import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedO
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
-import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullCopyIcon from 'icons/full-duplicate.svg'
 import fullPenIcon from 'icons/full-edit.svg'
@@ -58,13 +57,11 @@ import { BookingLinkCell } from './BookingLinkCell'
 import { DuplicateOfferDialog } from './DuplicateOfferDialog/DuplicateOfferDialog'
 
 export interface CollectiveActionsCellsProps {
-  rowId: string
   offer: CollectiveOfferResponseModel
   editionOfferLink: string
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   deselectOffer: (offer: CollectiveOfferResponseModel) => void
   isSelected: boolean
-  className?: string
 }
 
 const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = 'DUPLICATE_OFFER_MODAL_SEEN'
@@ -82,13 +79,11 @@ function hasOfferAnyEditionActionAllowed(offer: CollectiveOfferResponseModel) {
 }
 
 export const CollectiveActionsCells = ({
-  rowId,
   offer,
   editionOfferLink,
   urlSearchFilters,
   deselectOffer,
   isSelected,
-  className,
 }: CollectiveActionsCellsProps) => {
   const navigate = useNavigate()
   const notify = useNotification()
@@ -327,177 +322,167 @@ export const CollectiveActionsCells = ({
     offer.displayedStatus === CollectiveOfferDisplayedStatus.EXPIRED
 
   return (
-    <div
-      role="cell"
-      className={cn(
-        styles['offers-table-cell'],
-        styles['actions-column'],
-        className
+    <div className={styles['actions-column-container']}>
+      {shouldDisplayBookingLink && offer.booking && (
+        <BookingLinkCell
+          bookingId={offer.booking.id}
+          bookingStatus={offer.booking.booking_status}
+          offerEventDate={offer.stocks[0].startDatetime}
+          offerId={offer.id}
+        />
       )}
-      headers={`${rowId} ${getCellsDefinition().ACTIONS.id}`}
-    >
-      <div className={styles['actions-column-container']}>
-        {shouldDisplayBookingLink && offer.booking && (
-          <BookingLinkCell
-            bookingId={offer.booking.id}
-            bookingStatus={offer.booking.booking_status}
-            offerEventDate={offer.stocks[0].startDatetime}
-            offerId={offer.id}
-          />
-        )}
-        {!noActionsAllowed && (
-          <DropdownMenuWrapper
-            title="Voir les actions"
-            triggerIcon={fullThreeDotsIcon}
-            triggerTooltip
-            dropdownTriggerRef={dropdownTriggerRef}
-          >
-            {shouldDisplayBookingLink && offer.booking && (
-              <>
-                <DropdownMenu.Item className={styles['menu-item']} asChild>
-                  <ButtonLink
-                    to={bookingLink}
-                    icon={fullNextIcon}
-                    onClick={() =>
-                      logEvent(
-                        CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
-                        {
-                          from: location.pathname,
-                          offerId: offer.id,
-                          offerType: 'collective',
-                          offererId: selectedOffererId?.toString(),
-                        }
-                      )
-                    }
-                  >
-                    Voir la{' '}
-                    {offer.booking.booking_status ===
-                    CollectiveBookingStatus.PENDING
-                      ? 'préréservation'
-                      : 'réservation'}
-                  </ButtonLink>
-                </DropdownMenu.Item>
-                <DropdownMenu.Separator
-                  className={cn(styles['separator'], styles['tablet-only'])}
-                />
-              </>
-            )}
-            {canDuplicateOffer && (
-              <DropdownMenu.Item
-                className={styles['menu-item']}
-                onSelect={handleCreateOfferClick}
-              >
-                <Button icon={fullCopyIcon} variant={ButtonVariant.TERNARY}>
-                  Dupliquer
-                </Button>
-              </DropdownMenu.Item>
-            )}
-            {canCreateBookableOffer && (
-              <DropdownMenu.Item
-                className={styles['menu-item']}
-                onSelect={handleCreateOfferClick}
-              >
-                <Button icon={fullPlusIcon} variant={ButtonVariant.TERNARY}>
-                  Créer une offre réservable
-                </Button>
-              </DropdownMenu.Item>
-            )}
-            {canEditOffer && (
+      {!noActionsAllowed && (
+        <DropdownMenuWrapper
+          title="Voir les actions"
+          triggerIcon={fullThreeDotsIcon}
+          triggerTooltip
+          dropdownTriggerRef={dropdownTriggerRef}
+        >
+          {shouldDisplayBookingLink && offer.booking && (
+            <>
               <DropdownMenu.Item className={styles['menu-item']} asChild>
                 <ButtonLink
-                  to={editionOfferLink}
-                  icon={fullPenIcon}
-                  className={styles['button']}
-                  onClick={handleEditOfferClick}
+                  to={bookingLink}
+                  icon={fullNextIcon}
+                  onClick={() =>
+                    logEvent(
+                      CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
+                      {
+                        from: location.pathname,
+                        offerId: offer.id,
+                        offerType: 'collective',
+                        offererId: selectedOffererId?.toString(),
+                      }
+                    )
+                  }
                 >
-                  Modifier
+                  Voir la{' '}
+                  {offer.booking.booking_status ===
+                  CollectiveBookingStatus.PENDING
+                    ? 'préréservation'
+                    : 'réservation'}
                 </ButtonLink>
               </DropdownMenu.Item>
-            )}
-            {canPublishOffer && (
-              <DropdownMenu.Item
-                className={styles['menu-item']}
-                onSelect={activateOffer}
+              <DropdownMenu.Separator
+                className={cn(styles['separator'], styles['tablet-only'])}
+              />
+            </>
+          )}
+          {canDuplicateOffer && (
+            <DropdownMenu.Item
+              className={styles['menu-item']}
+              onSelect={handleCreateOfferClick}
+            >
+              <Button icon={fullCopyIcon} variant={ButtonVariant.TERNARY}>
+                Dupliquer
+              </Button>
+            </DropdownMenu.Item>
+          )}
+          {canCreateBookableOffer && (
+            <DropdownMenu.Item
+              className={styles['menu-item']}
+              onSelect={handleCreateOfferClick}
+            >
+              <Button icon={fullPlusIcon} variant={ButtonVariant.TERNARY}>
+                Créer une offre réservable
+              </Button>
+            </DropdownMenu.Item>
+          )}
+          {canEditOffer && (
+            <DropdownMenu.Item className={styles['menu-item']} asChild>
+              <ButtonLink
+                to={editionOfferLink}
+                icon={fullPenIcon}
+                className={styles['button']}
+                onClick={handleEditOfferClick}
               >
-                <Button icon={strokeCheckIcon} variant={ButtonVariant.TERNARY}>
-                  Publier
-                </Button>
-              </DropdownMenu.Item>
-            )}
-            {canHideOffer && (
+                Modifier
+              </ButtonLink>
+            </DropdownMenu.Item>
+          )}
+          {canPublishOffer && (
+            <DropdownMenu.Item
+              className={styles['menu-item']}
+              onSelect={activateOffer}
+            >
+              <Button icon={strokeCheckIcon} variant={ButtonVariant.TERNARY}>
+                Publier
+              </Button>
+            </DropdownMenu.Item>
+          )}
+          {canHideOffer && (
+            <DropdownMenu.Item
+              className={styles['menu-item']}
+              onSelect={activateOffer}
+            >
+              <Button icon={fullHideIcon} variant={ButtonVariant.TERNARY}>
+                Mettre en pause
+              </Button>
+            </DropdownMenu.Item>
+          )}
+          {isBookingCancellable && (
+            <>
+              <DropdownMenu.Separator
+                className={cn(styles['separator'], styles['tablet-only'])}
+              />
               <DropdownMenu.Item
-                className={styles['menu-item']}
-                onSelect={activateOffer}
+                className={cn(styles['menu-item'])}
+                onSelect={() => setIsCancelledBookingModalOpen(true)}
+                asChild
               >
-                <Button icon={fullHideIcon} variant={ButtonVariant.TERNARY}>
-                  Mettre en pause
-                </Button>
-              </DropdownMenu.Item>
-            )}
-            {isBookingCancellable && (
-              <>
-                <DropdownMenu.Separator
-                  className={cn(styles['separator'], styles['tablet-only'])}
-                />
-                <DropdownMenu.Item
-                  className={cn(styles['menu-item'])}
-                  onSelect={() => setIsCancelledBookingModalOpen(true)}
-                  asChild
+                <Button
+                  icon={fullClearIcon}
+                  variant={ButtonVariant.TERNARYBRAND}
+                  className={styles['button-cancel-booking']}
                 >
+                  Annuler la réservation
+                </Button>
+              </DropdownMenu.Item>
+            </>
+          )}
+          {canArchiveOffer && (
+            <>
+              <DropdownMenu.Separator
+                className={cn(styles['separator'], styles['tablet-only'])}
+              />
+              <DropdownMenu.Item
+                className={cn(styles['menu-item'])}
+                onSelect={() => setIsArchivedModalOpen(true)}
+                asChild
+              >
+                <div className={styles['status-filter-label']}>
                   <Button
-                    icon={fullClearIcon}
-                    variant={ButtonVariant.TERNARYBRAND}
-                    className={styles['button-cancel-booking']}
+                    icon={strokeThingIcon}
+                    variant={ButtonVariant.TERNARY}
                   >
-                    Annuler la réservation
+                    Archiver
                   </Button>
-                </DropdownMenu.Item>
-              </>
-            )}
-            {canArchiveOffer && (
-              <>
-                <DropdownMenu.Separator
-                  className={cn(styles['separator'], styles['tablet-only'])}
-                />
-                <DropdownMenu.Item
-                  className={cn(styles['menu-item'])}
-                  onSelect={() => setIsArchivedModalOpen(true)}
-                  asChild
-                >
-                  <div className={styles['status-filter-label']}>
-                    <Button
-                      icon={strokeThingIcon}
-                      variant={ButtonVariant.TERNARY}
-                    >
-                      Archiver
-                    </Button>
-                  </div>
-                </DropdownMenu.Item>
-              </>
-            )}
-          </DropdownMenuWrapper>
-        )}
-        <DuplicateOfferDialog
-          onCancel={() => setIsModalOpen(false)}
-          onConfirm={onDialogConfirm}
-          isDialogOpen={isModalOpen && shouldDisplayModal}
-          refToFocusOnClose={dropdownTriggerRef}
-        />
-        <CancelCollectiveBookingModal
-          onDismiss={() => setIsCancelledBookingModalOpen(false)}
-          onValidate={cancelBooking}
-          isFromOffer
-          isDialogOpen={isCancelledBookingModalOpen}
-          refToFocusOnClose={dropdownTriggerRef}
-        />
-        <ArchiveConfirmationModal
-          onDismiss={() => setIsArchivedModalOpen(false)}
-          onValidate={archiveOffer}
-          offer={offer}
-          isDialogOpen={isArchivedModalOpen}
-          refToFocusOnClose={dropdownTriggerRef}
-        />
-      </div>
+                </div>
+              </DropdownMenu.Item>
+            </>
+          )}
+        </DropdownMenuWrapper>
+      )}
+      <DuplicateOfferDialog
+        onCancel={() => setIsModalOpen(false)}
+        onConfirm={onDialogConfirm}
+        isDialogOpen={isModalOpen && shouldDisplayModal}
+        refToFocusOnClose={dropdownTriggerRef}
+      />
+      <CancelCollectiveBookingModal
+        onDismiss={() => setIsCancelledBookingModalOpen(false)}
+        onValidate={cancelBooking}
+        isFromOffer
+        isDialogOpen={isCancelledBookingModalOpen}
+        refToFocusOnClose={dropdownTriggerRef}
+      />
+      <ArchiveConfirmationModal
+        onDismiss={() => setIsArchivedModalOpen(false)}
+        onValidate={archiveOffer}
+        offer={offer}
+        isDialogOpen={isArchivedModalOpen}
+        refToFocusOnClose={dropdownTriggerRef}
+      />
     </div>
   )
 }

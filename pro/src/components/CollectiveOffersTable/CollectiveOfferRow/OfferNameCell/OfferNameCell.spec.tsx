@@ -36,7 +36,6 @@ describe('OfferNameCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       offerLink: '#',
-      rowId: 'rowId',
     })
 
     expect(screen.getByText('Offre vitrine')).toBeInTheDocument()

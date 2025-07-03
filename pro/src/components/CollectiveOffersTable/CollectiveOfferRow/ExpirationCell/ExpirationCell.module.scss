@@ -13,6 +13,8 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+  border-bottom-right-radius: var(--size-border-radius-m, 8px);
+  border-bottom-left-radius: var(--size-border-radius-m, 8px);
 
   &.banner-expires-soon {
     background-color: var(--color-background-warning);

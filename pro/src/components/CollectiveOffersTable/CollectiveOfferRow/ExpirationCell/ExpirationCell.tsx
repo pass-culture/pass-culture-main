@@ -7,7 +7,6 @@ import {
 } from 'apiClient/v1'
 import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'commons/utils/date'
 import { pluralize } from 'commons/utils/pluralize'
-import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -16,16 +15,12 @@ import styles from './ExpirationCell.module.scss'
 
 type ExpirationCellProps = {
   offer: CollectiveOfferResponseModel
-  rowId: string
   bookingLimitDate: string
-  className?: string
 }
 
 export function ExpirationCell({
   offer,
-  rowId,
   bookingLimitDate,
-  className,
 }: ExpirationCellProps) {
   const daysCountBeforeExpiration = differenceInCalendarDays(
     new Date(bookingLimitDate),
@@ -34,9 +29,6 @@ export function ExpirationCell({
 
   return (
     <div
-      role="cell"
-      headers={`${rowId} ${getCellsDefinition().INFO_ON_EXPIRATION.id}`}
-      className={classNames(styles['expiration-cell'], className)}
       className={classNames(styles['banner'], {
         [styles['banner-expires-soon']]: daysCountBeforeExpiration <= 7,
       })}
