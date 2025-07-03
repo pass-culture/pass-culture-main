@@ -8,6 +8,7 @@ import { CollectiveOffersSortingColumn } from 'commons/core/OfferEducational/typ
 import {
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   DEFAULT_PAGE,
+  MAX_OFFERS_TO_DISPLAY,
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
 } from 'commons/core/Offers/constants'
@@ -17,14 +18,16 @@ import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useColumnSorting } from 'commons/hooks/useColumnSorting'
 import { usePagination } from 'commons/hooks/usePagination'
+import { getOffersCountToDisplay } from 'commons/utils/getOffersCountToDisplay'
 import { isCollectiveOfferSelectable } from 'commons/utils/isActionAllowedOnCollectiveOffer'
-import { isSameOffer } from 'commons/utils/isSameOffer'
 import { sortCollectiveOffers } from 'commons/utils/sortCollectiveOffers'
+import { createCollectiveOfferColumns } from 'components/CollectiveOffersTable/CollectiveOfferRow/createCollectiveOfferColumns'
 import { CollectiveOffersActionsBar } from 'components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
-import { CollectiveOffersTable } from 'components/CollectiveOffersTable/CollectiveOffersTable'
 import { NoData } from 'components/NoData/NoData'
 import { useStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
+import { Callout } from 'ui-kit/Callout/Callout'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
+import { ResponsiveTable } from 'ui-kit/ResponsiveTable/ResponsiveTable'
 
 import styles from './TemplateCollectiveOffersScreen.module.scss'
 import { TemplateOffersSearchFilters } from './TemplateOffersSearchFilters/TemplateOffersSearchFilters'
@@ -59,7 +62,10 @@ export const TemplateCollectiveOffersScreen = ({
     CollectiveOfferResponseModel[]
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
-  const isCollapsedMemorizedFiltersEnabled = useActiveFeature('WIP_COLLAPSED_MEMORIZED_FILTERS')
+  const isCollapsedMemorizedFiltersEnabled = useActiveFeature(
+    'WIP_COLLAPSED_MEMORIZED_FILTERS'
+  )
+  const [selected, setSelected] = useState<Set<string | number>>(new Set())
 
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -70,35 +76,33 @@ export const TemplateCollectiveOffersScreen = ({
   const hasFilters = hasCollectiveSearchFilters({
     searchFilters: initialSearchFilters,
     defaultFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-    ignore: ['nameOrIsbn']
+    ignore: ['nameOrIsbn'],
   })
   const hasFiltersOrNameSearch = hasFilters || !!initialSearchFilters.nameOrIsbn
 
-  const userHasNoOffers =
-    !isLoading &&
-    !hasOffers &&
-    !hasFiltersOrNameSearch
-
+  const userHasNoOffers = !isLoading && !hasOffers && !hasFiltersOrNameSearch
 
   const areAllOffersSelected =
     selectedOffers.length > 0 &&
-    selectedOffers.length === offers.filter((offer) => isCollectiveOfferSelectable(offer)).length
+    selectedOffers.length ===
+      offers.filter((offer) => isCollectiveOfferSelectable(offer)).length
 
   function clearSelectedOfferIds() {
     setSelectedOffers([])
   }
 
-
   function toggleSelectAllCheckboxes() {
     setSelectedOffers(
-      areAllOffersSelected ? [] : offers.filter((offer) => isCollectiveOfferSelectable(offer))
+      areAllOffersSelected
+        ? []
+        : offers.filter((offer) => isCollectiveOfferSelectable(offer))
     )
   }
 
   const numberOfPages = Math.ceil(offers.length / NUMBER_OF_OFFERS_PER_PAGE)
   const pageCount = Math.min(numberOfPages, MAX_TOTAL_PAGES)
 
-  const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
+  const { currentSortingColumn, currentSortingMode } =
     useColumnSorting<CollectiveOffersSortingColumn>()
 
   const sortedOffers = sortCollectiveOffers(
@@ -138,21 +142,16 @@ export const TemplateCollectiveOffersScreen = ({
     applyUrlFiltersAndRedirect(newFilters)
   }
 
-  function onSetSelectedOffer(offer: CollectiveOfferResponseModel) {
-    const matchingOffer = selectedOffers.find((selectedOffer) =>
-      isSameOffer(offer, selectedOffer)
-    )
-
-    if (matchingOffer) {
-      setSelectedOffers((offers) =>
-        offers.filter((collectiveOffer) => collectiveOffer !== matchingOffer)
-      )
-    } else {
-      setSelectedOffers((selectedOffers) => {
-        return [...selectedOffers, offer]
-      })
-    }
-  }
+  const { columns, getExpandedContent, getRowLink } =
+    createCollectiveOfferColumns({
+      selectedIds: selected,
+      toggleSelect: (offer) => {
+        const next = new Set(selected)
+        next.has(offer.id) ? next.delete(offer.id) : next.add(offer.id)
+        setSelected(next)
+      },
+      urlSearchFilters,
+    })
 
   return (
     <div>
@@ -171,22 +170,42 @@ export const TemplateCollectiveOffersScreen = ({
         <NoData page="offers" />
       ) : (
         <>
-          <CollectiveOffersTable
+          <div role="status">
+            {sortedOffers.length > MAX_OFFERS_TO_DISPLAY && (
+              <Callout className={styles['offers-table-callout']}>
+                L’affichage est limité à {MAX_OFFERS_TO_DISPLAY} offres.
+                Modifiez les filtres pour affiner votre recherche.
+              </Callout>
+            )}
+            {hasOffers && (
+              <div className={styles['offers-table-title']}>
+                <h2
+                  id="offers-table-title"
+                  className={styles['offers-table-title-heading']}
+                >
+                  Liste des offres
+                </h2>
+                <div>
+                  {`${getOffersCountToDisplay(sortedOffers.length)} ${
+                    sortedOffers.length <= 1 ? 'offre' : 'offres'
+                  }`}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <ResponsiveTable
+            data={currentPageItems}
+            columns={columns}
+            selectable={true}
+            getExpandedContent={getExpandedContent}
+            getRowLink={getRowLink}
+            onSelectionChange={setSelectedOffers}
             hasFiltersOrNameSearch={hasFiltersOrNameSearch}
-            areAllOffersSelected={areAllOffersSelected}
             hasOffers={hasOffers}
-            isLoading={isLoading}
-            resetFilters={resetFilters}
-            selectedOffers={selectedOffers}
-            setSelectedOffer={onSetSelectedOffer}
-            toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
-            urlSearchFilters={urlSearchFilters}
-            isAtLeastOneOfferChecked={selectedOffers.length > 1}
-            offers={sortedOffers}
-            onColumnHeaderClick={onColumnHeaderClick}
-            currentSortingColumn={currentSortingColumn}
-            currentSortingMode={currentSortingMode}
-            currentPageItems={currentPageItems}
+            resetFilters={() =>
+              resetFilters(!isCollapsedMemorizedFiltersEnabled)
+            }
           />
           {hasOffers && (
             <div className={styles['offers-pagination']}>
