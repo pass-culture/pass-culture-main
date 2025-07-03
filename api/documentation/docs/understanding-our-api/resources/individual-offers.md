@@ -22,7 +22,7 @@ To manage those offers you will be mainly using the **[product offers endpoints]
 
 There are **two methods to create a product offer** using the pass Culture API :
 
-- **if your product is a book, a CD or a Vinyl**, you must create your product offer by indicating an **[European Article Numbering code (EAN)](https://en.wikipedia.org/wiki/International_Article_Number)**, a price and a quantity. We will fill the other offer fields using external databases (provided by our partner Titelive). The dedicated endpoint to upsert (create or update) product using EANs is **[this one](/rest-api/#tag/Product-offer-bulk-operations/operation/PostProductOfferByEan)**. The EAN must exist in our product database ; you can verify its availability using **[the dedicated endpoint](/rest-api#tag/Product-Offer-Bulk-Operations/operation/CheckEansAvailability)**.
+- **if your product is a book, a CD or a Vinyl**, you must create your product offer by indicating an **[European Article Numbering code (EAN)](https://en.wikipedia.org/wiki/International_Article_Number)**, a price and a quantity. We will fill the other offer fields using external databases (provided by our partner Titelive). The dedicated endpoint to upsert (create or update) product using EANs is **[this one](/rest-api#tag/Product-Offer-Bulk-Operations/operation/PostProductOfferByEan)**. The EAN must exist in our product database ; you can verify its availability using **[the dedicated endpoint](/rest-api#tag/Product-Offer-Bulk-Operations/operation/CheckEansAvailability)**.
 - **for others products**, you create your product offer by providing all the data. The dedicated endpoint for this kind of creation is **[this one](/rest-api/#tag/Product-Offers/operation/PostProductOffer)**.
 
 :::info
@@ -33,7 +33,7 @@ To be able to create a product offer using an EAN code, **this EAN code must exi
 
 ### Update rule
 
-Regardless of how your product offer was created, you can update it using **[this endpoint](/rest-api/#tag/Product-Offers/operation/EditProduct)**. However, if you only need to update the product offer stock for a book, CD, or vinyl, you should use the **[batch upsert endpoint](/rest-api/#tag/Product-Offer-Bulk-Operations/operation/PostProductOfferByEan)**.
+Regardless of how your product offer was created, you can update it using **[this endpoint](/rest-api/#tag/Product-Offers/operation/EditProduct)**. However, if you only need to update the product offer stock for a book, CD, or vinyl, you should use the **[batch upsert endpoint](/rest-api#tag/Product-Offer-Bulk-Operations/operation/PostProductOfferByEan)**.
 
 ### Concurrent access rules: Pro interface users vs. API users
 
@@ -81,7 +81,7 @@ Therefore, you will have **`(number of performances)*(number of categories)`** s
 ### Creation rules
 
 Creating a `event` offer with its stocks is a three steps process.
-You will need to first **[create the event](/rest-api/#tag/Event-Offers/operation/PostEventOffer)**, then to **[create its price categories](/rest-api/#tag/Event-Offer-Prices/operation/PostEventPriceCategories)** and finally to **[create its stocks](/rest-api/#tag/Event-Offer-Stocks/operation/PostEventStocks)**.
+You will need to first **[create the event](/rest-api/#tag/Event-Offers/operation/PostEventOffer)**, then to **[create its price categories](/rest-api#tag/Event-Offer-Price-Categories/operation/PostEventPriceCategories)** and finally to **[create its stocks](/rest-api/#tag/Event-Offer-Stocks/operation/PostEventStocks)**.
 
 Here are the rules you should be aware of when creating an event:
 - the **number of price categories for an event** is limited to **`50`**
@@ -183,7 +183,7 @@ Example of the **`Location`** object for a **`"physical"`** type:
 #### 2. `Location` of type `"address"`
 
 :::tip
-You can manage addresses using the [**Addresses endpoints**](/rest-api#tags/Addresses)
+You can manage addresses using the [**Addresses endpoints**](/rest-api#tag/Addresses)
 :::
 
 An **`"address"`** location indicates that **the offer’s address differs from the venue’s address**. This is relevant for event organizers like concert producers managing events at various external locations.

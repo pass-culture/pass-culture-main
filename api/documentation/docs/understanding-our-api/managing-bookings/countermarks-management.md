@@ -152,7 +152,7 @@ After a given period, the pass Culture reimbursed the used bookings. The booking
 
 ## Countermark validation
 
-To validate a countermark (i.e. a booking) presented by a beneficiary, **you need to do a PATCH request [on this URL](/rest-api#tag/Booking/operation/ValidateBookingByToken)**.
+To validate a countermark (i.e. a booking) presented by a beneficiary, **you need to do a PATCH request [on this URL](/rest-api#tag/Bookings/operation/ValidateBookingByToken)**.
 
 ### ✅ Success 
 If the countermark is found, and hasn't yet been used (i.e. if its status is **`CONFIRMED`**), then **we will return a `HTTP 204` response**, indicating that **the countermark has been successfully validated**. The countermark status will then change to **`USED`**.
@@ -166,7 +166,7 @@ You can expect **three kinds of errors** when trying to validate a countermark (
 You will get an **`HTTP 403`** from our side if you try to validate a countermark (i.e. a booking):
 
 - that has the status **`REIMBURSED`**, meaning it has already been used and you have been reimbursed for it by the pass Culture.
-- **(in the case of event booking)** that can still be cancelled by the beneficiary ([**see above**](#booking-statuses-lifecycle-for-events))
+- **(in the case of event booking)** that can still be cancelled by the beneficiary ([**see above**](#booking-statuses-for--events))
 
 #### `HTTP 404` : The booking has not been found
 
@@ -185,7 +185,7 @@ You will get an **`HTTP 410`** from our side if you try to validate a countermar
 
 ## Countermark cancellation
 
-To cancel a countermark (i.e. a booking), **you need to do a PATCH request [on this URL](/rest-api#tag/Booking/operation/CancelBookingByToken)**.
+To cancel a countermark (i.e. a booking), **you need to do a PATCH request [on this URL](/rest-api#tag/Bookings/operation/CancelBookingByToken)**.
 
 ### ✅ Success 
 If the countermark is found, and hasn't yet been used (i.e. if its status is **`CONFIRMED`**), then **we will return a `HTTP 204` response**, indicating that **the countermark has been successfully cancelled**. The countermark status will then change to **`CANCELLED`**.

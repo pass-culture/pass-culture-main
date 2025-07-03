@@ -84,10 +84,10 @@ We will be calling your booking URL with the following payload :
 | **offer_name** | String | **`false`** | Offer name |
 | **offer_price** | Integer | **`false`** | Offer price in euro and in cents (*for instance 1000 = 10 €*) |
 | **price_category_id** | Integer | `true` | The price category id (cannot be null in the case of an event) |
-| **price_category_id_at_provider** | String | `true` | You own price category id that you gave us using the [**creation**](/rest-api#tag/Event-Offer-stocks/operation/PostEventStocks) or [**update**](/rest-api#tag/Event-Offer-stocks/operation/PatchEventStock) endpoint|
+| **price_category_id_at_provider** | String | `true` | You own price category id that you gave us using the [**creation**](/rest-api#tag/Event-Offer-Stocks/operation/PostEventStocks) or [**update**](/rest-api#tag/Event-Offer-Stocks/operation/PatchEventStock) endpoint|
 | **price_category_label** | String | `true` | The price category label (*for instance, "Catégorie Or"*) |
 | **stock_id** | Integer | **`false`** | The stock id on our side |
-| **stock_id_at_provider** | String | `true` | You own stock id that you gave us using the [**creation**](/rest-api#tag/Event-Offer-stocks/operation/PostEventStocks) or [**update**](/rest-api#tag/Event-Offer-stocks/operation/PatchEventStock) endpoints |
+| **stock_id_at_provider** | String | `true` | You own stock id that you gave us using the [**creation**](/rest-api#tag/Event-Offer-Stocks/operation/PostEventStocks) or [**update**](/rest-api#tag/Event-Offer-Stocks/operation/PatchEventStock) endpoints |
 | **user_birth_date** | Stringified date (format **`YYYY-MM-DD`**) | **`false`** | Beneficiary birth date |
 | **user_first_name** | String | **`false`** | Beneficiary first name |
 | **user_last_name** | String | **`false`** | Beneficiary last name |

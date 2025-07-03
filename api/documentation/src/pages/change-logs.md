@@ -37,8 +37,8 @@ title: Pass Culture API change logs
 
 - The number of price categories per offer is now limited to 50 (endpoints: [**Create Price Categories**](/rest-api#tag/Event-Offer-Price-Categories/operation/PostEventPriceCategories), [**Create Event Offer**](/rest-api#tag/Event-Offers/operation/PostEventOffer))
 - The response of the following endpoints now includes 2 new fields, `offerAddress` and `offerDepartmentCode`, that replace respectively `venueAddress` and `venueDepartementCode`. These new fields are based on the offer location, whereas the previous fields displayed informations pertaining to the offer's venue location:
-  - [**Get Booking endpoint**](/rest-api#tag/Bookings/operation/GetBooking)
-  - [**Get Offer Bookings endpoint**](/rest-api#tag/Bookings/operation/GetOfferBookings)
+  - [**Get Booking endpoint**](/rest-api#tag/Bookings/operation/GetBookingByToken)
+  - [**Get Offer Bookings endpoint**](/rest-api#tag/Bookings/operation/GetBookingsByOffer)
 
 ## May 2025
 
@@ -116,7 +116,7 @@ New endpoints allow you to specify that your offer is available at a location di
 - Your price category id is now sent in [**our ticket request message**](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system#-our-request-payload) in the `price_category_id_at_provider` key
 
 ### EANs availability check
-- You can now check if your EANs are available for bulk upsert using [**this endpoint**](/rest-api#tag/Product-offer-bulk-operations/operation/CheckEansAvailability)
+- You can now check if your EANs are available for bulk upsert using [**this endpoint**](/rest-api#tag/Product-Offer-Bulk-Operations/operation/CheckEansAvailability)
 
 ### Collective booking status (integration only)
 It is possible to change the status of collective booking into the **integration** environment. We have created new endpoints to modify these statuses and simulate the booking timeline on the Adage side. Please check [rest api documentation](/rest-api#tag/Adage-Mock-(Collective-Bookings))
