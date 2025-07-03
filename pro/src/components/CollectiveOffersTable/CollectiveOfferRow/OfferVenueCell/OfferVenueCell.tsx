@@ -20,13 +20,11 @@ export const OfferVenueCell = ({
 }: OfferVenueCellProps) => {
   return (
     <div
-      role="cell"
       className={classNames(
         styles['offers-table-cell'],
         styles['venue-column'],
         className
       )}
-      //headers={`${rowId} ${getCellsDefinition().VENUE.id}`}
     >
       {displayLabel && (
         <span

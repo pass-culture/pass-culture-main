@@ -9,8 +9,8 @@ import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isCollectiveOfferSelectable } from 'commons/utils/isActionAllowedOnCollectiveOffer'
-import { OfferVenueCell } from 'components/CollectiveOffersTable/CollectiveOfferRow/OfferVenueCell'
-import { ThumbCell } from 'components/CollectiveOffersTable/CollectiveOfferRow/ThumbCell'
+import { OfferVenueCell } from 'components/CollectiveOffersTable/CollectiveOfferRow/OfferVenueCell/OfferVenueCell'
+import { ThumbCell } from 'components/CollectiveOffersTable/CollectiveOfferRow/ThumbCell/ThumbCell'
 import { Column } from 'ui-kit/ResponsiveTable/ResponsiveTable'
 
 import { CollectiveActionsCells } from './CollectiveActionsCells/CollectiveActionsCells'
