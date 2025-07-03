@@ -1022,6 +1022,15 @@ class UserProfileUpdateTest:
         }
         assert caplog.records[0].technical_message_id == "subscription_update"
 
+    def test_address_update(self, client):
+        user = users_factories.UserFactory(email=self.identifier)
+
+        client.with_token(email=self.identifier)
+        response = client.patch("/native/v1/profile", json={"address": "new address"})
+
+        assert response.status_code == 200
+        assert user.address == "new address"
+
     def test_postal_code_update(self, client):
         user = users_factories.UserFactory(email=self.identifier)
 
@@ -1109,6 +1118,7 @@ class UserProfileUpdateTest:
         user = users_factories.UserFactory(
             email=self.identifier,
             activity=users_models.ActivityEnum.UNEMPLOYED.value,
+            address="1 boulevard de la Libération",
             city="Grenoble",
             postalCode="38000",
             notificationSubscriptions={
@@ -1125,6 +1135,7 @@ class UserProfileUpdateTest:
 
         assert response.status_code == 200
         assert user.activity == users_models.ActivityEnum.UNEMPLOYED.value
+        assert user.address == "1 boulevard de la Libération"
         assert user.city == "Grenoble"
         assert user.postalCode == "38000"
         assert user.notificationSubscriptions == {
