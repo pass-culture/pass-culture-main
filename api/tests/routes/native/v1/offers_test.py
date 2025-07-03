@@ -253,19 +253,19 @@ class OffersTest:
         assert response.json["subcategoryId"] == subcategories.SEANCE_CINE.id
         assert response.json["venue"] == {
             "id": offer.venue.id,
-            "address": "1 boulevard Poissonnière",
-            "city": "Paris",
+            "address": offer.venue.offererAddress.address.street,
+            "city": offer.venue.offererAddress.address.city,
             "coordinates": {
-                "latitude": 48.87004,
-                "longitude": 2.3785,
+                "latitude": float(offer.venue.offererAddress.address.latitude),
+                "longitude": float(offer.venue.offererAddress.address.longitude),
             },
             "name": "il est venu le temps des names",
             "offerer": {"name": offer.venue.managingOfferer.name},
-            "postalCode": "75002",
+            "postalCode": offer.venue.offererAddress.address.postalCode,
             "publicName": "il est venu le temps des names",
             "isPermanent": False,
             "isOpenToPublic": False,
-            "timezone": "Europe/Paris",
+            "timezone": offer.venue.offererAddress.address.timezone,
             "bannerUrl": offer.venue.bannerUrl,
         }
         assert response.json["withdrawalDetails"] == "modalité de retrait"
@@ -1020,19 +1020,19 @@ class OffersV2Test:
         assert response.json["subcategoryId"] == subcategories.SEANCE_CINE.id
         assert response.json["venue"] == {
             "id": offer.venue.id,
-            "address": "1 boulevard Poissonnière",
-            "city": "Paris",
+            "address": offer.venue.offererAddress.address.street,
+            "city": offer.venue.offererAddress.address.city,
             "coordinates": {
-                "latitude": 48.87004,
-                "longitude": 2.3785,
+                "latitude": float(offer.venue.offererAddress.address.latitude),
+                "longitude": float(offer.venue.offererAddress.address.longitude),
             },
             "name": "il est venu le temps des names",
             "offerer": {"name": offer.venue.managingOfferer.name},
-            "postalCode": "75002",
+            "postalCode": offer.venue.offererAddress.address.postalCode,
             "publicName": "il est venu le temps des names",
             "isPermanent": False,
             "isOpenToPublic": False,
-            "timezone": "Europe/Paris",
+            "timezone": offer.venue.offererAddress.address.timezone,
             "bannerUrl": offer.venue.bannerUrl,
         }
         assert response.json["withdrawalDetails"] == "modalité de retrait"
@@ -1689,7 +1689,7 @@ class OffersV2Test:
             "street": address.street,
             "postalCode": address.postalCode,
             "city": address.city,
-            "coordinates": {"latitude": 48.87055, "longitude": 2.34765},
+            "coordinates": {"latitude": float(address.latitude), "longitude": float(address.longitude)},
             "timezone": address.timezone,
         }
 
@@ -2110,19 +2110,19 @@ class OffersStocksV2Test:
         assert response_offer["subcategoryId"] == subcategories.SEANCE_CINE.id
         assert response_offer["venue"] == {
             "id": offer.venue.id,
-            "address": "1 boulevard Poissonnière",
-            "city": "Paris",
+            "address": offer.venue.offererAddress.address.street,
+            "city": offer.venue.offererAddress.address.city,
             "coordinates": {
-                "latitude": 48.87004,
-                "longitude": 2.3785,
+                "latitude": float(offer.venue.offererAddress.address.latitude),
+                "longitude": float(offer.venue.offererAddress.address.longitude),
             },
             "name": offer.venue.name,
             "offerer": {"name": offer.venue.managingOfferer.name},
-            "postalCode": "75002",
+            "postalCode": offer.venue.offererAddress.address.postalCode,
             "publicName": offer.venue.publicName,
             "isPermanent": False,
             "isOpenToPublic": False,
-            "timezone": "Europe/Paris",
+            "timezone": offer.venue.offererAddress.address.timezone,
             "bannerUrl": offer.venue.bannerUrl,
         }
         assert response_offer["withdrawalDetails"] is None

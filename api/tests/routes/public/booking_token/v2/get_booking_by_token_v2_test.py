@@ -77,8 +77,8 @@ class Returns200Test:
             "userName": booking.user.full_name,
             "firstName": booking.user.firstName,
             "lastName": booking.user.lastName,
-            "offerAddress": "1 boulevard Poissonnière",
-            "offerDepartmentCode": "75",
+            "offerAddress": booking.stock.offer.offererAddress.address.street,
+            "offerDepartmentCode": booking.stock.offer.offererAddress.address.departmentCode,
             "venueName": "Le Petit Rintintin",
         }
 

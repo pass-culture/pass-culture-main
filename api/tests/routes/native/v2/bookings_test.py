@@ -143,15 +143,15 @@ class GetBookingsTest:
                 "priceCategoryLabel": None,
                 "offer": {
                     "address": {
-                        "city": "Paris",
+                        "city": used2.venue.offererAddress.address.city,
                         "coordinates": {
-                            "latitude": 48.87004,
-                            "longitude": 2.3785,
+                            "latitude": float(used2.venue.offererAddress.address.latitude),
+                            "longitude": float(used2.venue.offererAddress.address.longitude),
                         },
                         "label": None,
-                        "postalCode": "75002",
-                        "street": "1 boulevard Poissonnière",
-                        "timezone": "Europe/Paris",
+                        "postalCode": used2.venue.offererAddress.address.postalCode,
+                        "street": used2.venue.offererAddress.address.street,
+                        "timezone": used2.venue.offererAddress.address.timezone,
                     },
                     "bookingContact": None,
                     "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id,

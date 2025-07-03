@@ -205,7 +205,6 @@ class PostBookingTest:
             priceCategory__price=2,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
             offer__lastProvider=provider,
-            offer__venue__street="1 boulevard Poissonniere",
             offer__ean="1234567890123",
             idAtProviders="",
             dnBookedQuantity=14,
@@ -234,7 +233,7 @@ class PostBookingTest:
         assert notification.stock_id == stock.id
         assert notification.booking_quantity == booking.quantity
         assert notification.booking_creation_date == booking.dateCreated
-        assert notification.venue_address == "1 boulevard Poissonniere"
+        assert notification.venue_address == stock.offer.venue.offererAddress.address.street
         assert notification.user_email == user.email
         assert notification.user_first_name == user.firstName
         assert notification.user_last_name == user.lastName
@@ -263,7 +262,6 @@ class PostBookingTest:
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
             offer__lastProvider=provider,
             offer__withdrawalType=offer_models.WithdrawalTypeEnum.IN_APP,
-            offer__venue__street="1 boulevard Poissonniere",
             offer__ean="1234567890123",
             idAtProviders="",
             dnBookedQuantity=14,
@@ -314,8 +312,8 @@ class PostBookingTest:
             "user_first_name": user.firstName,
             "user_last_name": user.lastName,
             "user_phone": user.phoneNumber,
-            "venue_address": "1 boulevard Poissonniere",
-            "venue_department_code": "75",
+            "venue_address": stock.offer.venue.offererAddress.address.street,
+            "venue_department_code": stock.offer.venue.offererAddress.address.departmentCode,
             "venue_id": stock.offer.venue.id,
             "venue_name": stock.offer.venue.name,
         }
@@ -345,7 +343,6 @@ class PostBookingTest:
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
             offer__lastProvider=provider,
             offer__withdrawalType=offer_models.WithdrawalTypeEnum.IN_APP,
-            offer__venue__street="1 boulevard Poissonniere",
             offer__ean="1234567890123",
             idAtProviders="",
             dnBookedQuantity=14,
@@ -390,8 +387,8 @@ class PostBookingTest:
             "user_first_name": user.firstName,
             "user_last_name": user.lastName,
             "user_phone": user.phoneNumber,
-            "venue_address": "1 boulevard Poissonniere",
-            "venue_department_code": "75",
+            "venue_address": stock.offer.venue.offererAddress.address.street,
+            "venue_department_code": stock.offer.venue.offererAddress.address.departmentCode,
             "venue_id": stock.offer.venue.id,
             "venue_name": stock.offer.venue.name,
         }
@@ -882,15 +879,15 @@ class GetBookingsTest:
                 "priceCategoryLabel": None,
                 "offer": {
                     "address": {
-                        "city": "Paris",
+                        "city": used2.venue.offererAddress.address.city,
                         "coordinates": {
-                            "latitude": 48.87004,
-                            "longitude": 2.3785,
+                            "latitude": float(used2.venue.offererAddress.address.latitude),
+                            "longitude": float(used2.venue.offererAddress.address.longitude),
                         },
                         "label": None,
-                        "postalCode": "75002",
-                        "street": "1 boulevard Poissonnière",
-                        "timezone": "Europe/Paris",
+                        "postalCode": used2.venue.offererAddress.address.postalCode,
+                        "street": used2.venue.offererAddress.address.street,
+                        "timezone": used2.venue.offererAddress.address.timezone,
                     },
                     "bookingContact": None,
                     "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id,
