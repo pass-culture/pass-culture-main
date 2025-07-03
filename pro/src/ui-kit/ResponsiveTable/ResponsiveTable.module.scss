@@ -1,0 +1,122 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_a11y.scss" as a11y;
+
+/* -------------------------------------------------------------------------
+   Example SCSS module (ResponsiveTable.module.scss)
+   Place next to ResponsiveTable.tsx and adjust variables to match your design
+-----------------------------------------------------------------------------*/
+/* eslint-disable */
+.wrapper {
+  @include fonts.body-accent-xs;
+
+  width: 100%;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  border-radius: rem.torem(8px);
+  border-style: hidden; /* hide standard table (collapsed) border */
+  box-shadow: 0 0 0 1px var(--color-background-subtle); /* this draws the table border  */ 
+}
+
+.table-header {
+  background-color: var(--color-background-subtle);
+
+  &-th {
+    text-align: left;
+    padding: rem.torem(8px);
+
+    &:first-child {
+      border-top-left-radius: rem.torem(8px);
+      padding-left: rem.torem(16px);
+    }
+
+    &:last-child {
+      border-top-right-radius: rem.torem(8px);
+      padding-right: rem.torem(16px);
+    }
+  }
+}
+
+.table-select-all {
+  margin: rem.torem(24px) 0;
+}
+
+.row {
+  &.hover:hover {
+    background-color: var(--color-background-subtle);
+  }
+
+  &.selected {
+  background-color: var(--color-background-brand-primary-selected);
+  }
+}
+
+.checkbox-label {
+  *:not(input) {
+    @include a11y.visually-hidden;
+  }
+}
+
+td {
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sortable {
+  cursor: pointer;
+}
+
+.checkboxCell,
+.expanderCell,
+.expanderPlaceholder {
+  width: 2.5rem;
+  text-align: center;
+}
+
+.checkboxCell {
+  padding: rem.torem(8px);
+}
+
+.expandedRow td {
+  background: #f9fafb;
+}
+
+/* Responsive: transform to blocks on small screens */
+@media (max-width: 640px) {
+  thead {
+    display: none;
+  }
+
+  tr,
+  a.row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    margin-bottom: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+  }
+
+  td {
+    border: none;
+    padding: 0.5rem 0.75rem;
+  }
+
+  td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    margin-right: 0.5rem;
+  }
+}
+
+.row.clickable {
+  cursor: pointer;
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
+}
