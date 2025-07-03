@@ -9,7 +9,6 @@ import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isCollectiveOfferSelectable } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { CheckboxCell } from 'components/OffersTable/Cells/CheckboxCell'
-import { OfferVenueCell } from 'components/OffersTable/Cells/OfferVenueCell'
 
 import { CollectiveActionsCells } from './CollectiveActionsCells/CollectiveActionsCells'
 import styles from './CollectiveOfferRow.module.scss'
@@ -18,6 +17,7 @@ import { ExpirationCell } from './ExpirationCell/ExpirationCell'
 import { OfferEventDateCell } from './OfferEventDateCell/OfferEventDateCell'
 import { OfferInstitutionCell } from './OfferInstitutionCell/OfferInstitutionCell'
 import { OfferNameCell } from './OfferNameCell/OfferNameCell'
+import { OfferVenueCell } from './OfferVenueCell'
 
 export type CollectiveOfferRowProps = {
   isSelected: boolean

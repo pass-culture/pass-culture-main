@@ -17,7 +17,7 @@ export const OfferInstitutionCell = ({
 }: OfferInstitutionCellProps) => {
   const { name, institutionType, city } = educationalInstitution || {}
 
-  let showEducationalInstitution = 'Tous les établissements'
+  let showEducationalInstitution = '-'
 
   if (name) {
     showEducationalInstitution = name
@@ -26,7 +26,7 @@ export const OfferInstitutionCell = ({
   }
 
   return (
-    <td
+    <div
       role="cell"
       className={classNames(
         styles['offers-table-cell'],
@@ -36,6 +36,6 @@ export const OfferInstitutionCell = ({
       headers={`${rowId} ${getCellsDefinition().INSTITUTION.id}`}
     >
       {showEducationalInstitution}
-    </td>
+    </div>
   )
 }

@@ -33,44 +33,40 @@ export function ExpirationCell({
   )
 
   return (
-    <td
+    <div
       role="cell"
-      colSpan={8}
       headers={`${rowId} ${getCellsDefinition().INFO_ON_EXPIRATION.id}`}
       className={classNames(styles['expiration-cell'], className)}
+      className={classNames(styles['banner'], {
+        [styles['banner-expires-soon']]: daysCountBeforeExpiration <= 7,
+      })}
     >
-      <div
-        className={classNames(styles['banner'], {
-          [styles['banner-expires-soon']]: daysCountBeforeExpiration <= 7,
-        })}
-      >
-        <div className={styles['banner-expiration']}>
-          {daysCountBeforeExpiration <= 7 && (
-            <div className={styles['banner-expiration-days-badge']}>
-              <SvgIcon alt="" src={fullInfoIcon} width="16" />
-              <div>
-                expire{' '}
-                {daysCountBeforeExpiration > 0
-                  ? `dans ${pluralize(daysCountBeforeExpiration, 'jour')}`
-                  : 'aujourd’hui'}
-              </div>
+      <div className={styles['banner-expiration']}>
+        {daysCountBeforeExpiration <= 7 && (
+          <div className={styles['banner-expiration-days-badge']}>
+            <SvgIcon alt="" src={fullInfoIcon} width="16" />
+            <div>
+              expire{' '}
+              {daysCountBeforeExpiration > 0
+                ? `dans ${pluralize(daysCountBeforeExpiration, 'jour')}`
+                : 'aujourd’hui'}
             </div>
-          )}
-          <div className={styles['banner-expiration-waiting']}>
-            <SvgIcon alt="" src={fullWaitIcon} width="16" /> En attente de{' '}
-            {offer.displayedStatus === CollectiveOfferDisplayedStatus.PUBLISHED
-              ? 'préréservation par l’enseignant'
-              : 'réservation par le chef d’établissement'}
           </div>
-        </div>
-        <div className={styles['banner-booking-date']}>
-          date limite de réservation :{' '}
-          {format(
-            toDateStrippedOfTimezone(bookingLimitDate.toString()),
-            FORMAT_DD_MM_YYYY
-          )}
+        )}
+        <div className={styles['banner-expiration-waiting']}>
+          <SvgIcon alt="" src={fullWaitIcon} width="16" /> En attente de{' '}
+          {offer.displayedStatus === CollectiveOfferDisplayedStatus.PUBLISHED
+            ? 'préréservation par l’enseignant'
+            : 'réservation par le chef d’établissement'}
         </div>
       </div>
-    </td>
+      <div className={styles['banner-booking-date']}>
+        date limite de réservation :{' '}
+        {format(
+          toDateStrippedOfTimezone(bookingLimitDate.toString()),
+          FORMAT_DD_MM_YYYY
+        )}
+      </div>
+    </div>
   )
 }

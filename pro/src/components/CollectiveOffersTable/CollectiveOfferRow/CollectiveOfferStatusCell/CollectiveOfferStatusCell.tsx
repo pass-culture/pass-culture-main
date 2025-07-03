@@ -16,7 +16,7 @@ export const CollectiveOfferStatusCell = ({
   offer,
   className,
 }: CollectiveOfferStatusCellProps) => (
-  <td
+  <div
     role="cell"
     className={cn(
       styles['offers-table-cell'],
@@ -26,5 +26,5 @@ export const CollectiveOfferStatusCell = ({
     headers={`${rowId} ${getCellsDefinition().COLLECTIVE_STATUS.id}`}
   >
     <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />
-  </td>
+  </div>
 )
