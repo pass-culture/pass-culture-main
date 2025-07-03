@@ -1223,10 +1223,3 @@ def has_email_been_sent(stock: offers_models.Stock, withdrawal_delay: int | None
         delta = stock.beginningDatetime - datetime.datetime.utcnow()
         return delta.total_seconds() < withdrawal_delay
     return False
-
-
-def is_event_today(stock: offers_models.Stock) -> bool:
-    if stock.beginningDatetime:
-        delta = stock.beginningDatetime - datetime.datetime.utcnow()
-        return delta.total_seconds() < 60 * 60 * 24
-    return False

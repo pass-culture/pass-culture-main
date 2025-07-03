@@ -176,14 +176,14 @@ class GetBookingsTest:
             "ticket": {
                 "activationCode": None,
                 "externalBooking": None,
-                "voucher": {"data": None},
+                "voucher": None,
                 "token": {"data": used2.token},
                 "withdrawal": {
                     "details": None,
                     "type": None,
                     "delay": None,
                 },
-                "text": "voucher",
+                "display": "online_code",
             },
             "totalAmount": 10,
         }
@@ -404,18 +404,18 @@ class GetBookingTicketTest:
             assert response.status_code == 200
 
         ticket = response.json["ongoingBookings"][0]["ticket"]
-        assert ticket["text"] == "no_ticket"
+        assert ticket["display"] == "no_ticket"
 
     @pytest.mark.parametrize(
-        "withdrawal_delay,delta,text",
+        "withdrawal_delay,delta,display",
         [
-            (60 * 60 * 25, 2, "email_will_be_sent_delay"),
+            (60 * 60 * 25, 2, "email_will_be_sent"),
             (None, 1, "email_will_be_sent"),
-            (60 * 60 * 49, 2, "email_sent_not_today"),
-            (60 * 60 * 12, 0, "email_sent_today"),
+            (60 * 60 * 49, 2, "email_sent"),
+            (60 * 60 * 12, 0, "email_sent"),
         ],
     )
-    def test_get_booking_ticket_by_email(self, client, withdrawal_delay, delta, text):
+    def test_get_booking_ticket_by_email(self, client, withdrawal_delay, delta, display):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         beginningDatetime = datetime.utcnow() + timedelta(days=delta)
         booking_factories.BookingFactory(
@@ -433,7 +433,7 @@ class GetBookingTicketTest:
         ticket = response.json["ongoingBookings"][0]["ticket"]
         assert ticket["token"] is None
         assert ticket["voucher"] is None
-        assert ticket["text"] == text
+        assert ticket["display"] == display
 
     def test_get_booking_digital_ticket_with_activation_code(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
@@ -458,7 +458,7 @@ class GetBookingTicketTest:
             "code": booking_activation_code.code,
             "expirationDate": None,
         }
-        assert ticket["text"] == "online_code"
+        assert ticket["display"] == "online_code"
 
     def test_get_booking_digital_ticket_with_token(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
@@ -479,7 +479,7 @@ class GetBookingTicketTest:
         }
         assert ticket["voucher"] is None
         assert ticket["activationCode"] == None
-        assert ticket["text"] == "online_code"
+        assert ticket["display"] == "online_code"
 
     def test_get_booking_goods(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
@@ -497,10 +497,10 @@ class GetBookingTicketTest:
             "data": booking.token,
         }
         assert ticket["voucher"] == {"data": f"PASSCULTURE:v3;TOKEN:{booking.token}"}
-        assert ticket["text"] == "voucher"
+        assert ticket["display"] == "voucher"
 
     @pytest.mark.parametrize(
-        "subcategory,withdrawal_type,voucher,text",
+        "subcategory,withdrawal_type,voucher,display",
         [
             (subcategories.CONCERT.id, offer_models.WithdrawalTypeEnum.ON_SITE, False, "no_voucher_ticket"),
             (
@@ -523,7 +523,7 @@ class GetBookingTicketTest:
             ),
         ],
     )
-    def test_get_internal_event_ticket(self, client, subcategory, withdrawal_type, voucher, text):
+    def test_get_internal_event_ticket(self, client, subcategory, withdrawal_type, voucher, display):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         booking = booking_factories.BookingFactory(
             user=user,
@@ -543,7 +543,7 @@ class GetBookingTicketTest:
         assert ticket["token"] == {
             "data": booking.token,
         }
-        assert ticket["text"] == text
+        assert ticket["display"] == display
 
     @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_get_external_event_ticket_visible(self, client):
@@ -576,7 +576,7 @@ class GetBookingTicketTest:
 
         assert ticket["token"] is None
         assert ticket["voucher"] is None
-        assert ticket["text"] == "event_access"
+        assert ticket["display"] == "event_access"
 
     @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_get_external_event_ticket_hidden(self, client):
@@ -607,4 +607,4 @@ class GetBookingTicketTest:
 
         assert ticket["token"] is None
         assert ticket["voucher"] is None
-        assert ticket["text"] == "not_visible"
+        assert ticket["display"] == "not_visible"

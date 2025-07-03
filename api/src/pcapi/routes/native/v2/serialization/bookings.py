@@ -7,7 +7,6 @@ from pydantic.v1.utils import GetterDict
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.api import has_email_been_sent
-from pcapi.core.bookings.api import is_event_today
 from pcapi.core.bookings.api import is_external_event_booking_visible
 from pcapi.core.bookings.api import is_voucher_displayed
 from pcapi.core.categories.subcategories import SEANCE_CINE
@@ -24,11 +23,9 @@ from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.shared.price import convert_to_cent
 
 
-class TicketTextEnum(enum.Enum):
+class TicketDisplayEnum(enum.Enum):
     NO_TICKET = "no_ticket"
-    EMAIL_SENT_TODAY = "email_sent_today"
-    EMAIL_SENT_NOT_TODAY = "email_sent_not_today"
-    EMAIL_WILL_BE_SENT_DELAY = "email_will_be_sent_delay"
+    EMAIL_SENT = "email_sent"
     EMAIL_WILL_BE_SENT = "email_will_be_sent"
     ONLINE_CODE = "online_code"
     NOT_VISIBLE = "not_visible"
@@ -168,7 +165,7 @@ class ExternalBookingResponseV2(ConfiguredBaseModel):
 class TicketResponse(ConfiguredBaseModel):
     activation_code: ActivationCodeResponse | None
     external_booking: ExternalBookingResponseV2 | None
-    text: TicketTextEnum
+    display: TicketDisplayEnum
     token: TokenResponse | None
     voucher: VoucherResponse | None
     withdrawal: WithdrawalResponse
@@ -197,30 +194,19 @@ class BookingResponseGetterDict(GetterDict):
             return TicketResponse(
                 activation_code=None,
                 external_booking=None,
-                text=TicketTextEnum.NO_TICKET,
+                display=TicketDisplayEnum.NO_TICKET,
                 token=None,
                 voucher=None,
                 withdrawal=withdrawal,
             )
 
         if offer.withdrawalType == WithdrawalTypeEnum.BY_EMAIL:
-            if has_email_been_sent(stock=stock, withdrawal_delay=offer.withdrawalDelay):
-                text = (
-                    TicketTextEnum.EMAIL_SENT_TODAY
-                    if is_event_today(stock=stock)
-                    else TicketTextEnum.EMAIL_SENT_NOT_TODAY
-                )
-            else:
-                text = (
-                    TicketTextEnum.EMAIL_WILL_BE_SENT_DELAY
-                    if offer.withdrawalDelay
-                    else TicketTextEnum.EMAIL_WILL_BE_SENT
-                )
-
             return TicketResponse(
                 activation_code=None,
                 external_booking=None,
-                text=text,
+                display=TicketDisplayEnum.EMAIL_SENT
+                if has_email_been_sent(stock=stock, withdrawal_delay=offer.withdrawalDelay)
+                else TicketDisplayEnum.EMAIL_WILL_BE_SENT,
                 token=None,
                 voucher=None,
                 withdrawal=withdrawal,
@@ -230,7 +216,7 @@ class BookingResponseGetterDict(GetterDict):
             return TicketResponse(
                 activation_code=booking.activationCode,
                 external_booking=None,
-                text=TicketTextEnum.ONLINE_CODE,
+                display=TicketDisplayEnum.ONLINE_CODE,
                 token=TokenResponse(data=booking.token) if not booking.activationCode else None,
                 voucher=None,
                 withdrawal=withdrawal,
@@ -241,7 +227,7 @@ class BookingResponseGetterDict(GetterDict):
             return TicketResponse(
                 activation_code=None,
                 external_booking=ExternalBookingResponseV2(data=booking.externalBookings if booking_visible else None),
-                text=TicketTextEnum.EVENT_ACCESS if booking_visible else TicketTextEnum.NOT_VISIBLE,
+                display=TicketDisplayEnum.EVENT_ACCESS if booking_visible else TicketDisplayEnum.NOT_VISIBLE,
                 token=None,
                 voucher=None,
                 withdrawal=withdrawal,
@@ -256,14 +242,14 @@ class BookingResponseGetterDict(GetterDict):
         )
 
         token = TokenResponse(data=booking.token) if not booking.isExternal else None
-        text = TicketTextEnum.VOUCHER if voucher else TicketTextEnum.NO_VOUCHER_TICKET
+        display = TicketDisplayEnum.VOUCHER if voucher else TicketDisplayEnum.NO_VOUCHER_TICKET
         if offer.subcategoryId == SEANCE_CINE.id:
-            text = TicketTextEnum.EVENT_ACCESS
+            display = TicketDisplayEnum.EVENT_ACCESS
 
         return TicketResponse(
             activation_code=None,
             external_booking=None,
-            text=text,
+            display=display,
             token=token,
             voucher=voucher,
             withdrawal=withdrawal,

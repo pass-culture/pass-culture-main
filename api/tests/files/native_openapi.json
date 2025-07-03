@@ -941,13 +941,7 @@
                         "$ref": "#/components/schemas/BookingStockResponseV2"
                     },
                     "ticket": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/TicketResponse"
-                            }
-                        ],
-                        "nullable": true,
-                        "title": "TicketResponse"
+                        "$ref": "#/components/schemas/TicketResponse"
                     },
                     "totalAmount": {
                         "title": "Totalamount",
@@ -969,7 +963,8 @@
                     "stock",
                     "totalAmount",
                     "enablePopUpReaction",
-                    "canReact"
+                    "canReact",
+                    "ticket"
                 ],
                 "title": "BookingResponse",
                 "type": "object"
@@ -4689,6 +4684,20 @@
                 "title": "SuspendAccountForSuspiciousLoginRequest",
                 "type": "object"
             },
+            "TicketDisplayEnum": {
+                "description": "An enumeration.",
+                "enum": [
+                    "no_ticket",
+                    "email_sent",
+                    "email_will_be_sent",
+                    "online_code",
+                    "not_visible",
+                    "event_access",
+                    "voucher",
+                    "no_voucher_ticket"
+                ],
+                "title": "TicketDisplayEnum"
+            },
             "TicketResponse": {
                 "properties": {
                     "activationCode": {
@@ -4699,6 +4708,9 @@
                         ],
                         "nullable": true,
                         "title": "ActivationCodeResponse"
+                    },
+                    "display": {
+                        "$ref": "#/components/schemas/TicketDisplayEnum"
                     },
                     "externalBooking": {
                         "anyOf": [
@@ -4732,6 +4744,7 @@
                     }
                 },
                 "required": [
+                    "display",
                     "withdrawal"
                 ],
                 "title": "TicketResponse",
