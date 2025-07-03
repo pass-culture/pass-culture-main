@@ -161,7 +161,6 @@ class Returns200Test:
             "hasPendingBookings": False,
             "hasStocks": True,
             "isActive": True,
-            "isActivable": True,
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,

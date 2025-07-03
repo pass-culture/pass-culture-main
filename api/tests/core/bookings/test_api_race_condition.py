@@ -11,11 +11,11 @@ from sqlalchemy.orm import sessionmaker
 
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.offers.models import VenueProvider
 from pcapi.core.providers.factories import CDSCinemaDetailsFactory
 from pcapi.core.providers.factories import CDSCinemaProviderPivotFactory
 from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.models import Provider
+from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
 from pcapi.models import db
 

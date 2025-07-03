@@ -28,7 +28,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.criteria.models import OfferCriterion
 from pcapi.core.educational.models import ValidationRuleCollectiveOfferLink
 from pcapi.core.educational.models import ValidationRuleCollectiveOfferTemplateLink
-from pcapi.core.providers.models import VenueProvider
+from pcapi.core.providers.models import Provider
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
@@ -54,7 +54,6 @@ if typing.TYPE_CHECKING:
     from pcapi.core.educational.models import CollectiveOfferTemplate
     from pcapi.core.offerers.models import OffererAddress
     from pcapi.core.offerers.models import Venue
-    from pcapi.core.providers.models import Provider
     from pcapi.core.reactions.models import Reaction
     from pcapi.core.users.models import User
 
@@ -1185,23 +1184,6 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         ]
 
         return sa.case(*cases, else_=OfferStatus.ACTIVE.name)
-
-    @property
-    def isActivable(self) -> bool:
-        if self.status == OfferStatus.REJECTED:
-            return False
-        if (
-            self.lastProviderId
-            and not db.session.query(VenueProvider)
-            .filter_by(
-                isActive=True,
-                venueId=self.venueId,
-                providerId=self.lastProviderId,
-            )
-            .one_or_none()
-        ):
-            return False
-        return True
 
     @property
     def publicationDate(self) -> datetime.datetime | None:
