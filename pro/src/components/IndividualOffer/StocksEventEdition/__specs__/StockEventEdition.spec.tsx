@@ -132,7 +132,6 @@ describe('screens:StocksEventEdition', () => {
       durationMinutes: null,
       hasStocks: true,
       isActive: true,
-      isActivable: true,
       isDigital: false,
       isDuo: false,
       isEvent: true,

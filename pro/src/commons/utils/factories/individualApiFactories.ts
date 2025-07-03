@@ -92,7 +92,6 @@ export const getIndividualOfferFactory = (
   return {
     name: `Le nom de l’offre ${currentOfferId}`,
     isActive: true,
-    isActivable: true,
     isEditable: true,
     isEvent: true,
     isHeadlineOffer: false,
@@ -383,7 +382,7 @@ export const defaultGetBookingResponse: GetBookingResponse = {
   phoneNumber: '0100000000',
   publicOfferId: 'test_public_offer_id',
   theater: { theater_any: 'theater_any' },
-  offerAddress: "5 rue des legos",
+  offerAddress: '5 rue des legos',
   venueName: 'mon lieu',
   datetime: '2001-02-01T20:00:00Z',
   ean13: 'test ean113',

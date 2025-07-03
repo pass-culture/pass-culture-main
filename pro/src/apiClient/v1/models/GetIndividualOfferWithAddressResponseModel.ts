@@ -27,7 +27,6 @@ export type GetIndividualOfferWithAddressResponseModel = {
   hasPendingBookings: boolean;
   hasStocks: boolean;
   id: number;
-  isActivable: boolean;
   isActive: boolean;
   isDigital: boolean;
   isDuo: boolean;
