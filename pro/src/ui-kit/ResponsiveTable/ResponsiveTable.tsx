@@ -23,7 +23,7 @@ export interface Column<T> {
 
 type SortDirection = 'asc' | 'desc'
 
-export interface ResponsiveTableProps<T extends { id: string | number }> {
+interface ResponsiveTableProps<T extends { id: string | number }> {
   columns: Column<T>[]
   data: T[]
   /** show row‑selection checkboxes */
