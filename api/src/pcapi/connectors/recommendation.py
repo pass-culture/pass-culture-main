@@ -101,15 +101,6 @@ class HttpBackend:
         # the Recommendation API, but let's be defensive.
         params.pop("user_id", None)
         params["userId"] = str(user.id) if user else None
-
-        # FIXME (jmontagnat, 2025-04-22) Remove this block of code once the frontend has fixed their call to the endpoint with the correct inputs
-        if params.get("categories"):
-            if params.get("search_group_names"):
-                params["search_group_names"].extend(params["categories"])
-            else:
-                params["search_group_names"] = params["categories"]
-            params["categories"] = None
-
         return self._request("get", path, params=params)
 
     def get_playlist(self, user: users_models.User, params: dict, body: dict) -> bytes:
