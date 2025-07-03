@@ -220,7 +220,7 @@ Example of the `location` field for type `ADDRESS` and `isVenueAddress = true`:
 * `"isVenueAddress" = false`
 
 :::tip
-You can manage addresses using the [**Addresses endpoints**](/rest-api#tags/Addresses)
+You can manage addresses using the [**Addresses endpoints**](/rest-api#tag/Addresses)
 :::
 
 An `ADDRESS` location with `"isVenueAddress" = false` indicates that **the offer’s address differs from the venue’s address**.

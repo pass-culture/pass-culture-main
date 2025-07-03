@@ -47,8 +47,8 @@ When building your integration, **you should pay attention** to two things:
 
 - **the two URLs (booking & cancellation) must be freely accessible** (i.e. not protected by a your own authentication system), the messages authentication being done following [**this strategy**](/docs/understanding-our-api/messaging-system/authenticating-our-messages)
 - **we expect specific response formats** : 
-  - for ticket creation, we expect this [**success response**](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system#success-response) and those [**error responses**](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system#error-responses)
-  - for ticket cancellation, we expect this [**success response**](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system#expected-response)
+  - for ticket creation, we expect this [**success response**](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system#-success-response) and those [**error responses**](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system#-error-responses)
+  - for ticket cancellation, we expect this [**success response**](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system#-expected-response)
 
 Here are some examples of what your integration could look like :
 
