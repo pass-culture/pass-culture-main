@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from collections.abc import Iterator
 from datetime import date
 from datetime import datetime
 from math import ceil
@@ -94,38 +95,50 @@ def users_one_year_with_pass_automation() -> bool:
     )
 
 
-def get_users_whose_credit_expired_today() -> list[User]:
-    return (
-        db.session.query(User)
-        .join(User.deposits)
-        .filter(
-            User.is_beneficiary,
-            finance_models.Deposit.expirationDate
-            > datetime.combine(date.today() - relativedelta(days=1), datetime.min.time()),
-            finance_models.Deposit.expirationDate <= datetime.combine(date.today(), datetime.min.time()),
+def get_users_whose_credit_expired_today() -> Iterator[User]:
+    max_id = db.session.query(sa.func.max(User.id)).scalar()
+    yesterday = datetime.combine(date.today() - relativedelta(days=1), datetime.min.time())
+    today = datetime.combine(date.today(), datetime.min.time())
+
+    for start in range(1, max_id, YIELD_COUNT_PER_DB_QUERY):
+        end = start + (YIELD_COUNT_PER_DB_QUERY - 1)
+        users = (
+            db.session.query(User)
+            .join(User.deposits)
+            .filter(
+                User.is_beneficiary,
+                finance_models.Deposit.expirationDate > yesterday,
+                finance_models.Deposit.expirationDate <= today,
+                User.id.between(start, end),
+            )
+            .options(
+                sa_orm.selectinload(User.deposits).selectinload(finance_models.Deposit.recredits),
+            )
         )
-        .options(
-            sa_orm.selectinload(User.deposits).selectinload(finance_models.Deposit.recredits),
-        )
-        .yield_per(YIELD_COUNT_PER_DB_QUERY)
-    )
+        yield from users
 
 
-def get_ex_underage_beneficiaries_who_can_no_longer_recredit() -> list[User]:
+def get_ex_underage_beneficiaries_who_can_no_longer_recredit() -> Iterator[User]:
     # No need to be updated on the exact birthday date, but ensure that we don't miss users born one day in leap years.
+    max_id = db.session.query(sa.func.max(User.id)).scalar()
     days_19y = ceil(365.25 * 19)
-    return (
-        db.session.query(User)
-        .filter(
-            User.has_underage_beneficiary_role,
-            User.dateOfBirth > datetime.combine(date.today() - relativedelta(days=days_19y + 1), datetime.min.time()),
-            User.dateOfBirth <= datetime.combine(date.today() - relativedelta(days=days_19y), datetime.min.time()),
+
+    for start in range(1, max_id, YIELD_COUNT_PER_DB_QUERY):
+        end = start + (YIELD_COUNT_PER_DB_QUERY - 1)
+        users = (
+            db.session.query(User)
+            .filter(
+                User.has_underage_beneficiary_role,
+                User.dateOfBirth
+                > datetime.combine(date.today() - relativedelta(days=days_19y + 1), datetime.min.time()),
+                User.dateOfBirth <= datetime.combine(date.today() - relativedelta(days=days_19y), datetime.min.time()),
+                User.id.between(start, end),
+            )
+            .options(
+                sa_orm.selectinload(User.deposits).selectinload(finance_models.Deposit.recredits),
+            )
         )
-        .options(
-            sa_orm.selectinload(User.deposits).selectinload(finance_models.Deposit.recredits),
-        )
-        .yield_per(YIELD_COUNT_PER_DB_QUERY)
-    )
+        yield from users
 
 
 def users_whose_credit_expired_today_automation() -> None:
