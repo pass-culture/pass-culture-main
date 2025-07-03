@@ -121,9 +121,23 @@ describe('IndividualOfferLayout', () => {
     expect(screen.getByText('publiée')).toBeInTheDocument()
   })
 
-  it('should display status but not let activate offer when offer is not activable', () => {
+  it('should display status but not let activate offer when offer is synchronized with a provider', () => {
     const offer = getIndividualOfferFactory({
-      isActivable: false,
+      lastProvider: { name: 'Boost' },
+    })
+
+    renderIndividualOfferLayout({
+      offer,
+    })
+
+    expect(screen.getByTestId('status')).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Mettre en pause' })
+    ).not.toBeInTheDocument()
+  })
+  it('should display status but not let activate offer when offer is rejected', () => {
+    const offer = getIndividualOfferFactory({
+      status: OfferStatus.REJECTED,
     })
 
     renderIndividualOfferLayout({
