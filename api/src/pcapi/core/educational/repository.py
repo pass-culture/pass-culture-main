@@ -9,6 +9,7 @@ import sqlalchemy as sa
 from sqlalchemy import orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.sql.expression import extract
+from sqlalchemy.sql.selectable import ScalarSelect
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import exceptions as educational_exceptions
@@ -686,6 +687,20 @@ def get_collective_offers_template_by_filters(
     return query
 
 
+def get_last_booking_id_subquery() -> ScalarSelect:
+    # to use this subquery, a join on CollectiveStock is needed in the enclosing query
+    # so that correlate finds the correct stock
+
+    return (
+        sa.select(educational_models.CollectiveBooking.id)
+        .where(educational_models.CollectiveBooking.collectiveStockId == educational_models.CollectiveStock.id)
+        .order_by(educational_models.CollectiveBooking.dateCreated.desc())
+        .limit(1)
+        .correlate(educational_models.CollectiveStock)
+        .scalar_subquery()
+    )
+
+
 def _filter_collective_offers_by_statuses(
     query: BaseQuery,
     statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None,
@@ -709,7 +724,10 @@ def _filter_collective_offers_by_statuses(
         # if statuses is empty we return all offers
         return query
 
-    offer_id_with_booking_status_subquery, query_with_booking = add_last_booking_status_to_collective_offer_query(query)
+    last_booking_id = get_last_booking_id_subquery()
+    query_with_booking = query.outerjoin(educational_models.CollectiveOffer.collectiveStock).outerjoin(
+        educational_models.CollectiveBooking, educational_models.CollectiveBooking.id == last_booking_id
+    )
 
     if educational_models.CollectiveOfferDisplayedStatus.ARCHIVED in statuses:
         on_collective_offer_filters.append(educational_models.CollectiveOffer.isArchived == True)
@@ -748,8 +766,8 @@ def _filter_collective_offers_by_statuses(
             sa.and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
                 educational_models.CollectiveOffer.isActive == True,
-                offer_id_with_booking_status_subquery.c.status == None,
-                educational_models.CollectiveOffer.hasBookingLimitDatetimesPassed == False,
+                educational_models.CollectiveBooking.status == None,
+                educational_models.CollectiveStock.hasBookingLimitDatetimePassed == False,
             )
         )
 
@@ -758,8 +776,8 @@ def _filter_collective_offers_by_statuses(
             sa.and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
                 educational_models.CollectiveOffer.isActive == True,
-                offer_id_with_booking_status_subquery.c.status == educational_models.CollectiveBookingStatus.PENDING,
-                educational_models.CollectiveOffer.hasBookingLimitDatetimesPassed == False,
+                educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.PENDING,
+                educational_models.CollectiveStock.hasBookingLimitDatetimePassed == False,
             )
         )
 
@@ -768,8 +786,8 @@ def _filter_collective_offers_by_statuses(
             sa.and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
                 educational_models.CollectiveOffer.isActive == True,
-                offer_id_with_booking_status_subquery.c.status == educational_models.CollectiveBookingStatus.CONFIRMED,
-                educational_models.CollectiveOffer.hasEndDatetimePassed == False,
+                educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.CONFIRMED,
+                educational_models.CollectiveStock.hasEndDatetimePassed == False,
             )
         )
 
@@ -779,11 +797,10 @@ def _filter_collective_offers_by_statuses(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
                 educational_models.CollectiveOffer.isActive == True,
                 sa.or_(
-                    offer_id_with_booking_status_subquery.c.status == educational_models.CollectiveBookingStatus.USED,
-                    offer_id_with_booking_status_subquery.c.status
-                    == educational_models.CollectiveBookingStatus.CONFIRMED,
+                    educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.USED,
+                    educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.CONFIRMED,
                 ),
-                educational_models.CollectiveOffer.hasEndDatetimePassed == True,
+                educational_models.CollectiveStock.hasEndDatetimePassed == True,
             )
         )
 
@@ -792,7 +809,7 @@ def _filter_collective_offers_by_statuses(
             sa.and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
                 educational_models.CollectiveOffer.isActive == True,
-                offer_id_with_booking_status_subquery.c.status == educational_models.CollectiveBookingStatus.REIMBURSED,
+                educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.REIMBURSED,
             )
         )
 
@@ -802,12 +819,11 @@ def _filter_collective_offers_by_statuses(
             sa.and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
                 educational_models.CollectiveOffer.isActive == True,
-                educational_models.CollectiveOffer.hasBookingLimitDatetimesPassed == True,
-                educational_models.CollectiveOffer.hasStartDatetimePassed == False,
+                educational_models.CollectiveStock.hasBookingLimitDatetimePassed == True,
+                educational_models.CollectiveStock.hasStartDatetimePassed == False,
                 sa.or_(
-                    offer_id_with_booking_status_subquery.c.status
-                    == educational_models.CollectiveBookingStatus.PENDING,
-                    offer_id_with_booking_status_subquery.c.status == None,
+                    educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.PENDING,
+                    educational_models.CollectiveBooking.status == None,
                 ),
             )
         )
@@ -816,10 +832,10 @@ def _filter_collective_offers_by_statuses(
             sa.and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
                 educational_models.CollectiveOffer.isActive == True,
-                educational_models.CollectiveOffer.hasBookingLimitDatetimesPassed == True,
-                educational_models.CollectiveOffer.hasStartDatetimePassed == False,
-                offer_id_with_booking_status_subquery.c.status == educational_models.CollectiveBookingStatus.CANCELLED,
-                offer_id_with_booking_status_subquery.c.cancellationReason
+                educational_models.CollectiveStock.hasBookingLimitDatetimePassed == True,
+                educational_models.CollectiveStock.hasStartDatetimePassed == False,
+                educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.CANCELLED,
+                educational_models.CollectiveBooking.cancellationReason
                 == educational_models.CollectiveBookingCancellationReasons.EXPIRED,
             )
         )
@@ -830,10 +846,10 @@ def _filter_collective_offers_by_statuses(
             sa.and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
                 educational_models.CollectiveOffer.isActive == True,
-                offer_id_with_booking_status_subquery.c.status == educational_models.CollectiveBookingStatus.CANCELLED,
-                offer_id_with_booking_status_subquery.c.cancellationReason
+                educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.CANCELLED,
+                educational_models.CollectiveBooking.cancellationReason
                 == educational_models.CollectiveBookingCancellationReasons.EXPIRED,
-                educational_models.CollectiveOffer.hasStartDatetimePassed == True,
+                educational_models.CollectiveStock.hasStartDatetimePassed == True,
             )
         )
 
@@ -842,8 +858,8 @@ def _filter_collective_offers_by_statuses(
             sa.and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
                 educational_models.CollectiveOffer.isActive == True,
-                offer_id_with_booking_status_subquery.c.status == educational_models.CollectiveBookingStatus.CANCELLED,
-                offer_id_with_booking_status_subquery.c.cancellationReason
+                educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.CANCELLED,
+                educational_models.CollectiveBooking.cancellationReason
                 != educational_models.CollectiveBookingCancellationReasons.EXPIRED,
             ),
         )
@@ -853,23 +869,28 @@ def _filter_collective_offers_by_statuses(
             sa.and_(
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
                 educational_models.CollectiveOffer.isActive == True,
-                offer_id_with_booking_status_subquery.c.status == None,
-                educational_models.CollectiveOffer.hasStartDatetimePassed == True,
+                educational_models.CollectiveBooking.status == None,
+                educational_models.CollectiveStock.hasStartDatetimePassed == True,
             ),
         )
 
-    # Add filters on `CollectiveBooking.Status`
+    # Add filters on CollectiveBooking and CollectiveStock
     if on_booking_status_filter:
-        substmt = query_with_booking.filter(sa.or_(*on_booking_status_filter)).subquery()
-        on_collective_offer_filters.append(educational_models.CollectiveOffer.id.in_(sa.select(substmt.c.id)))
+        subquery = (
+            query_with_booking.filter(sa.or_(*on_booking_status_filter))
+            .with_entities(educational_models.CollectiveOffer.id)
+            .subquery()
+        )
+        on_collective_offer_filters.append(educational_models.CollectiveOffer.id.in_(sa.select(subquery.c.id)))
 
-    # Add filters on `CollectiveOffer`
+    # Add filters on CollectiveOffer
     if on_collective_offer_filters:
         query = query.filter(sa.or_(*on_collective_offer_filters))
 
     return query
 
 
+# TODO: remove this
 def add_last_booking_status_to_collective_offer_query(
     query: BaseQuery,
 ) -> typing.Tuple[typing.Any, BaseQuery]:
