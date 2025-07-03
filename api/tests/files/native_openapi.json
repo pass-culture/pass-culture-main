@@ -4819,6 +4819,11 @@
                         ],
                         "nullable": true
                     },
+                    "address": {
+                        "nullable": true,
+                        "title": "Address",
+                        "type": "string"
+                    },
                     "city": {
                         "nullable": true,
                         "title": "City",
