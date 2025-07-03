@@ -60,9 +60,9 @@ class GetVenueTest(PublicAPIVenueEndpointHelper):
             "id": venue_provider.venue.id,
             "legalName": venue_provider.venue.name,
             "location": {
-                "address": "1 boulevard Poissonnière",
-                "city": "Paris",
-                "postalCode": "75002",
+                "address": venue_provider.venue.offererAddress.address.street,
+                "city": venue_provider.venue.offererAddress.address.city,
+                "postalCode": venue_provider.venue.offererAddress.address.postalCode,
                 "type": "physical",
             },
             "publicName": venue_provider.venue.publicName,
