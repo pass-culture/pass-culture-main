@@ -22,8 +22,8 @@ import {
   listOffersVenueFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 
@@ -159,12 +159,12 @@ describe('ollectiveOfferRow', () => {
   })
 
   describe('offer institution', () => {
-    it('should display "Tous les établissements" when offer is not assigned to a specific institution', () => {
+    it('should display "-" when offer is not assigned to a specific institution', () => {
       props.offer = collectiveOfferFactory({ booking: null, stocks })
 
       renderOfferItem(props)
 
-      expect(screen.queryByText('Tous les établissements')).toBeInTheDocument()
+      expect(screen.queryByText('-')).toBeInTheDocument()
     })
 
     it('should display institution name when offer is assigned to a specific institution', () => {

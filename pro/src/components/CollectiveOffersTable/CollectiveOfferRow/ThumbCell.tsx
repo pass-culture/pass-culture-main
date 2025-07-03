@@ -9,8 +9,6 @@ import { isOfferEducational } from 'commons/core/OfferEducational/types'
 import styles from 'styles/components/Cells.module.scss'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 
-import { getCellsDefinition } from '../../OffersTable/utils/cellDefinitions'
-
 export const ThumbCell = ({
   offer,
   offerLink,
@@ -25,13 +23,10 @@ export const ThumbCell = ({
   className?: string
 }) => {
   return (
-    <td
+    <div
       role="cell"
-      className={classNames(
-        styles['offers-table-cell'],
-        styles['thumb-column']
-      )}
-      headers={`${rowId} ${getCellsDefinition().THUMB.id}`}
+      className={classNames(styles['offers-table-cell'])}
+      // headers={`${rowId} ${getCellsDefinition().THUMB.id}`}
     >
       <Link to={offerLink}>
         <Thumb
@@ -45,6 +40,6 @@ export const ThumbCell = ({
           )}
         />
       </Link>
-    </td>
+    </div>
   )
 }

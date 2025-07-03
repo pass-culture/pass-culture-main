@@ -89,7 +89,7 @@ export const OfferEventDateCell = ({
   }
 
   return (
-    <td
+    <div
       role="cell"
       className={classNames(
         styles['offers-table-cell'],
@@ -108,6 +108,6 @@ export const OfferEventDateCell = ({
           {formattedTime(offer.dates?.start)}
         </span>
       </div>
-    </td>
+    </div>
   )
 }

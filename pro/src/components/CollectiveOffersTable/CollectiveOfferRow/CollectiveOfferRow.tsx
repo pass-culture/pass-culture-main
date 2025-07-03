@@ -8,10 +8,10 @@ import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isCollectiveOfferSelectable } from 'commons/utils/isActionAllowedOnCollectiveOffer'
+import { OfferVenueCell } from 'components/CollectiveOffersTable/CollectiveOfferRow/OfferVenueCell'
 import { ThumbCell } from 'components/CollectiveOffersTable/CollectiveOfferRow/ThumbCell'
 import { CheckboxCell } from 'components/OffersTable/Cells/CheckboxCell'
 import { OfferNameCell } from 'components/OffersTable/Cells/OfferNameCell/OfferNameCell'
-import { OfferVenueCell } from 'components/OffersTable/Cells/OfferVenueCell'
 
 import { CollectiveActionsCells } from './CollectiveActionsCells/CollectiveActionsCells'
 import styles from './CollectiveOfferRow.module.scss'
