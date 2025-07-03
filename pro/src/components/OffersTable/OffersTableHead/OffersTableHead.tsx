@@ -8,7 +8,7 @@ import { CellDefinition, getCellsDefinition } from '../utils/cellDefinitions'
 
 import styles from './OffersTableHead.module.scss'
 
-export type Columns = CellDefinition & {
+type Columns = CellDefinition & {
   isVisuallyHidden?: boolean
   sortableProps?: {
     onColumnHeaderClick: (

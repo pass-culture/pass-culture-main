@@ -1,7 +1,6 @@
 import classNames from 'classnames'
 
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
-import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import styles from 'styles/components/Cells.module.scss'
 
 interface OfferInstitutionCellProps {
@@ -27,13 +26,11 @@ export const OfferInstitutionCell = ({
 
   return (
     <div
-      role="cell"
       className={classNames(
         styles['offers-table-cell'],
         styles['institution-column'],
         className
       )}
-      headers={`${rowId} ${getCellsDefinition().INSTITUTION.id}`}
     >
       {showEducationalInstitution}
     </div>
