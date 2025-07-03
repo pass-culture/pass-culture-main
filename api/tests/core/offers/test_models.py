@@ -786,58 +786,6 @@ class OfferMinPriceTest:
         assert offer.min_price == 10
 
 
-class OfferIsActivableTest:
-    def test_not_activable_if_status_is_rejected(self):
-        rejected_offer = factories.OfferFactory(validation=models.OfferValidationStatus.REJECTED)
-        assert not rejected_offer.isActivable
-
-    def test_not_activable_if_no_venue_provider(self):
-        inactive_providers = providers_factories.ProviderFactory(isActive=False)
-        offer_from_inactive_provider = factories.OfferFactory(
-            lastProvider=inactive_providers,
-        )
-        assert not offer_from_inactive_provider.isActivable
-
-    def test_not_activable_if_venue_provider_is_inactive(self):
-        inactive_providers = providers_factories.ProviderFactory(isActive=False)
-        inactive_venue_provider = providers_factories.VenueProviderFactory(
-            providerId=inactive_providers.id,
-            isActive=False,
-        )
-        offer_from_inactive_venue_provider = factories.OfferFactory(
-            lastProvider=inactive_providers,
-            venue=inactive_venue_provider.venue,
-        )
-        assert not offer_from_inactive_venue_provider.isActivable
-
-    def test_offer_is_activable(self):
-        active_provider = providers_factories.ProviderFactory()
-        active_venue_provider = providers_factories.VenueProviderFactory(
-            provider=active_provider,
-        )
-        offer_from_active_venue_provider = factories.OfferFactory(
-            validation=models.OfferValidationStatus.APPROVED,
-            lastProvider=active_provider,
-            venue=active_venue_provider.venue,
-        )
-        factories.StockFactory(offer=offer_from_active_venue_provider)
-        assert offer_from_active_venue_provider.isActivable
-
-    def test_can_activate_inactive_offer_if_venue_is_active_and_provider_is_not_null(self):
-        active_provider = providers_factories.ProviderFactory()
-        active_venue_provider = providers_factories.VenueProviderFactory(
-            provider=active_provider,
-        )
-        offer_from_active_venue_provider = factories.OfferFactory(
-            validation=models.OfferValidationStatus.APPROVED,
-            isActive=False,
-            lastProvider=active_provider,
-            venue=active_venue_provider.venue,
-        )
-        factories.StockFactory(offer=offer_from_active_venue_provider)
-        assert offer_from_active_venue_provider.isActivable
-
-
 class OfferfullAddressTest:
     @pytest.mark.parametrize(
         "label,street,expected_full_address",
