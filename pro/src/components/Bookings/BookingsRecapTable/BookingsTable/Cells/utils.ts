@@ -1,8 +1,8 @@
 import { format } from 'date-fns-tz'
 
 import {
-  CollectiveBookingCollectiveStockResponseModel,
-  CollectiveOffersStockResponseModel,
+    CollectiveBookingCollectiveStockResponseModel,
+    CollectiveOffersStockResponseModel,
 } from 'apiClient/v1'
 import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'commons/utils/date'
 

@@ -127,7 +127,6 @@ export const CollectiveOffersScreen = ({
   }
 
   const resetFilters = (resetNameOrIsbn = true) => {
-    console.log('resetFilters', resetNameOrIsbn)
     onResetFilters(resetNameOrIsbn)
     const newFilters = {
       ...defaultCollectiveFilters,
@@ -204,6 +203,8 @@ export const CollectiveOffersScreen = ({
             resetFilters={() =>
               resetFilters(!isCollapsedMemorizedFiltersEnabled)
             }
+            isRowSelectable={(row) => isCollectiveOfferSelectable(row)}
+            isLoading={isLoading}
           />
 
           {hasOffers && (

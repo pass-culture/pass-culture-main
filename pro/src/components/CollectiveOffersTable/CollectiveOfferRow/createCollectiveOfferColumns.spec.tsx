@@ -39,7 +39,7 @@ const createOffer = (
     id: 1,
     name: 'My little offer',
     isShowcase: false,
-    displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
+    displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
     imageUrl: null,
     stocks: [],
     venue: {
@@ -93,7 +93,7 @@ describe('createCollectiveOfferColumns()', () => {
       })
       const { getRowLink } = createCollectiveOfferColumns(factoryParams)
 
-      expect(getRowLink(offer)).toBe('/offre/1/collectif/recapitulatif')
+      expect(getRowLink(offer).detail).toBe('/offre/1/collectif/recapitulatif')
     })
 
     it('points to the creation flow for a draft offer', () => {
@@ -102,7 +102,7 @@ describe('createCollectiveOfferColumns()', () => {
       })
       const { getRowLink } = createCollectiveOfferColumns(factoryParams)
 
-      expect(getRowLink(offer)).toBe('/offre/collectif/1/creation')
+      expect(getRowLink(offer).edit).toBe('/offre/collectif/1/creation')
     })
   })
 
@@ -112,8 +112,9 @@ describe('createCollectiveOfferColumns()', () => {
         displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
         stocks: [
           {
-            // @ts-expect-error – we only need the field used by the component
             bookingLimitDatetime: new Date().toISOString(),
+            hasBookingLimitDatetimePassed: false,
+            remainingQuantity: '',
           },
         ],
       })

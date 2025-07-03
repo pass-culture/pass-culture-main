@@ -91,14 +91,6 @@ export const TemplateCollectiveOffersScreen = ({
     setSelectedOffers([])
   }
 
-  function toggleSelectAllCheckboxes() {
-    setSelectedOffers(
-      areAllOffersSelected
-        ? []
-        : offers.filter((offer) => isCollectiveOfferSelectable(offer))
-    )
-  }
-
   const numberOfPages = Math.ceil(offers.length / NUMBER_OF_OFFERS_PER_PAGE)
   const pageCount = Math.min(numberOfPages, MAX_TOTAL_PAGES)
 
@@ -206,6 +198,8 @@ export const TemplateCollectiveOffersScreen = ({
             resetFilters={() =>
               resetFilters(!isCollapsedMemorizedFiltersEnabled)
             }
+            isRowSelectable={(row) => isCollectiveOfferSelectable(row)}
+            isLoading={isLoading}
           />
           {hasOffers && (
             <div className={styles['offers-pagination']}>

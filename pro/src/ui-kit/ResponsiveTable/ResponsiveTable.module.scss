@@ -3,56 +3,60 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_a11y.scss" as a11y;
 
-/* -------------------------------------------------------------------------
-   Example SCSS module (ResponsiveTable.module.scss)
-   Place next to ResponsiveTable.tsx and adjust variables to match your design
------------------------------------------------------------------------------*/
-/* eslint-disable */
 .wrapper {
-  @include fonts.body-accent-xs;
-
   width: 100%;
 }
 
 .table {
+  @include fonts.body;
+
   width: 100%;
-  border-collapse: collapse;
-  font-size: 0.875rem;
-  border-radius: rem.torem(8px);
-  border-style: hidden; /* hide standard table (collapsed) border */
-  box-shadow: 0 0 0 1px var(--color-background-subtle); /* this draws the table border  */ 
+  border-collapse: separate;
+  border-spacing: 0 rem.torem(24px);
 }
 
 .table-header {
-  background-color: var(--color-background-subtle);
+  @include fonts.body-accent-xs;
+
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: var(--color-background-default);
 
   &-th {
     text-align: left;
     padding: rem.torem(8px);
+    color: var(--color-text-subtle);
 
     &:first-child {
-      border-top-left-radius: rem.torem(8px);
       padding-left: rem.torem(16px);
     }
 
     &:last-child {
-      border-top-right-radius: rem.torem(8px);
       padding-right: rem.torem(16px);
     }
   }
 }
 
 .table-select-all {
-  margin: rem.torem(24px) 0;
+  margin-top: rem.torem(24px);
 }
 
 .row {
+  position: relative;
+  border-bottom: 1px solid var(--color-border-subtle);
+
   &.hover:hover {
     background-color: var(--color-background-subtle);
   }
 
   &.selected {
   background-color: var(--color-background-brand-primary-selected);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-background-brand-primary-selected); // focus ring
+    outline-offset: -1px;
   }
 }
 
@@ -62,55 +66,29 @@
   }
 }
 
-td {
+.table-cell {
+  padding: rem.torem(8px);
   text-align: left;
-  border-bottom: 1px solid #e5e7eb;
+
+  // Add visible border
+  border-top: 1px solid var(--color-border-subtle);
+  border-bottom: 1px solid var(--color-border-subtle);
+
+  &:first-child {
+    border-left: 1px solid var(--color-border-subtle);
+    border-top-left-radius: var(--size-border-radius-m, 8px);
+    border-bottom-left-radius: var(--size-border-radius-m, 8px);
+  }
+
+  &:last-child {
+    border-right: 1px solid var(--color-border-subtle);
+    border-top-right-radius: var(--size-border-radius-m, 8px);
+    border-bottom-right-radius: var(--size-border-radius-m, 8px);
+  }
 }
 
 .sortable {
   cursor: pointer;
-}
-
-.checkboxCell,
-.expanderCell,
-.expanderPlaceholder {
-  width: 2.5rem;
-  text-align: center;
-}
-
-.checkboxCell {
-  padding: rem.torem(8px);
-}
-
-.expandedRow td {
-  background: #f9fafb;
-}
-
-/* Responsive: transform to blocks on small screens */
-@media (max-width: 640px) {
-  thead {
-    display: none;
-  }
-
-  tr,
-  a.row {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    margin-bottom: 0.5rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-  }
-
-  td {
-    border: none;
-    padding: 0.5rem 0.75rem;
-  }
-
-  td::before {
-    content: attr(data-label);
-    font-weight: 600;
-    margin-right: 0.5rem;
-  }
 }
 
 .row.clickable {
@@ -119,4 +97,51 @@ td {
 
 .visually-hidden {
   @include a11y.visually-hidden;
+}
+
+.expanded-inside {
+  position: absolute;
+  bottom: 0;
+  left: rem.torem(1px);
+  right: rem.torem(1px);
+}
+
+.cell-main {
+  padding-bottom: rem.torem(43px);
+}
+
+/* Responsive: transform to blocks on small screens */
+@media (max-width: size.$tablet) {
+  .table {
+    box-shadow: none;
+  }
+
+  .table-header {
+    display: none;
+  }
+
+  .table-select-all {
+    margin: rem.torem(8px) 0;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border: 1px solid var(--color-background-subtle);
+    margin-top: rem.torem(8px);
+  }
+
+  .table-cell {
+    border: none;
+    padding: rem.torem(8px);
+  }
+
+  .table-cell::before {
+    content: attr(data-label);
+    color: var(--color-text-secondary);
+  }
+
+  .expandedRow {
+    margin-bottom: rem.torem(8px);
+  }
 }

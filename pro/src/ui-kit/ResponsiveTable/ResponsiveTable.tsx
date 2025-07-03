@@ -1,11 +1,10 @@
 import classNames from 'classnames'
-import React, { useMemo, useState } from 'react'
+import React, { KeyboardEvent, useMemo, useState } from 'react'
 
 import { SortingMode } from 'commons/hooks/useColumnSorting'
-import { NoResults } from 'components/NoResults/NoResults'
-import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
+import { Skeleton } from 'ui-kit/Skeleton/Skeleton'
 
 import styles from './ResponsiveTable.module.scss'
 
@@ -19,53 +18,70 @@ export interface Column<T> {
   headerColSpan?: number
   bodyHidden?: boolean
   headerHidden?: boolean
+  isRowSelectable?: (row: T) => boolean
 }
 
-type SortDirection = 'asc' | 'desc'
+type SortDirection = SortingMode.ASC | SortingMode.DESC | SortingMode.NONE
 
-interface ResponsiveTableProps<T extends { id: string | number }> {
+export interface ResponsiveTableProps<T extends { id: string | number }> {
+  title?: string
   columns: Column<T>[]
   data: T[]
-  /** show row‑selection checkboxes */
   selectable?: boolean
-  /** callback fired whenever the set of selected rows changes */
   onSelectionChange?: (rows: T[]) => void
-  /** return link (href) for a row – row becomes clickable */
-  getRowLink?: (row: T) => string
-  /** return expanded area content for a row (optional) */
+  getRowLink?: (row: T) => string | undefined | null
   getExpandedContent?: (row: T) => React.ReactNode | null
-  /** enable row hover styling (default true) */
   hover?: boolean
-  hasFiltersOrNameSearch?: boolean
-  hasOffers?: boolean
-  resetFilters: () => void
   className?: string
+  isRowSelectable?: (row: T) => boolean
+  isLoading: boolean
+}
+
+function getValue<T>(
+  row: T,
+  accessor?: keyof T | string | ((r: T) => unknown)
+) {
+  if (!accessor) {
+    return undefined
+  }
+  if (typeof accessor === 'function') {
+    return accessor(row)
+  }
+  if (typeof accessor === 'string') {
+    return accessor.split('.').reduce<any>((obj, key) => obj?.[key], row)
+  }
+  return (row as any)[accessor]
 }
 
 export function ResponsiveTable<
   T extends {
-    name: string
+    name?: string
     id: string | number
   },
 >({
+  title = 'Tableau de données',
   columns,
   data,
   selectable = false,
   onSelectionChange,
+  getRowLink,
   getExpandedContent,
   hover = true,
-  hasFiltersOrNameSearch = false,
-  hasOffers = false,
-  resetFilters,
   className,
+  isRowSelectable,
+  isLoading,
 }: ResponsiveTableProps<T>) {
   const [sortKey, setSortKey] = useState<string | null>(null)
-  const [sortDir, setSortDir] = useState<SortDirection>(SortingMode.ASC)
+  const [sortDir, setSortDir] = useState<SortDirection>(SortingMode.NONE)
   const [selectedIds, setSelectedIds] = useState<Set<string | number>>(
     new Set()
   )
 
-  // sort handler
+  const selectableRows = useMemo(
+    () => (isRowSelectable ? data.filter(isRowSelectable) : data),
+    [data, isRowSelectable]
+  )
+
   const sortedData = useMemo(() => {
     if (!sortKey) {
       return data
@@ -75,20 +91,20 @@ export function ResponsiveTable<
       return data
     }
 
-    const accessor = col.accessor as keyof T | ((row: T) => any)
     const copy = [...data]
     copy.sort((a, b) => {
-      const va =
-        typeof accessor === 'function' ? accessor(a) : (a as any)[accessor]
-      const vb =
-        typeof accessor === 'function' ? accessor(b) : (b as any)[accessor]
-      if (va < vb) {
-        return sortDir === SortingMode.ASC ? -1 : 1
+      const va = getValue(a, col.accessor)
+      const vb = getValue(b, col.accessor)
+      if (va === vb) {
+        return 0
       }
-      if (va > vb) {
-        return sortDir === SortingMode.ASC ? 1 : -1
-      }
-      return 0
+      return (va as any) < (vb as any)
+        ? sortDir === SortingMode.ASC
+          ? -1
+          : 1
+        : sortDir === SortingMode.ASC
+          ? 1
+          : -1
     })
     return copy
   }, [data, sortKey, sortDir, columns])
@@ -108,13 +124,13 @@ export function ResponsiveTable<
   }
 
   const toggleSelectAll = () => {
-    if (selectedIds.size === data.length) {
+    if (selectedIds.size === selectableRows.length) {
       setSelectedIds(new Set())
       onSelectionChange?.([])
     } else {
-      const all = new Set(data.map((r) => r.id))
+      const all = new Set(selectableRows.map((r) => r.id))
       setSelectedIds(all)
-      onSelectionChange?.(data)
+      onSelectionChange?.(selectableRows)
     }
   }
 
@@ -129,24 +145,47 @@ export function ResponsiveTable<
     onSelectionChange?.(data.filter((r) => newSet.has(r.id)))
   }
 
-  if (!hasOffers && hasFiltersOrNameSearch) {
-    return <NoResults resetFilters={resetFilters} />
+  const handleRowNavigation = (row: T) => {
+    const href = getRowLink?.(row)
+    if (!href) {
+      return
+    }
+    window.location.assign(href)
   }
 
+  const handleRowKeyDown =
+    (row: T) => (e: KeyboardEvent<HTMLTableRowElement>) => {
+      if (!getRowLink) {
+        return
+      }
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        handleRowNavigation(row)
+      }
+    }
+
   return (
-    <div className={classNames(styles.wrapper, className)}>
+    <div
+      role="region"
+      aria-label={title}
+      className={classNames(styles.wrapper, className)}
+      tabIndex={0}
+    >
       {selectable && (
         <div className={styles['table-select-all']}>
           <Checkbox
             label={
-              selectedIds.size < data.length
+              selectedIds.size < selectableRows.length
                 ? 'Tout sélectionner'
                 : 'Tout désélectionner'
             }
-            checked={selectedIds.size === data.length && data.length > 0}
+            checked={
+              selectedIds.size === selectableRows.length &&
+              selectableRows.length > 0
+            }
             onChange={toggleSelectAll}
             indeterminate={
-              selectedIds.size > 0 && selectedIds.size < data.length
+              selectedIds.size > 0 && selectedIds.size < selectableRows.length
             }
           />
           <span className={styles['visually-hidden']}>
@@ -154,20 +193,28 @@ export function ResponsiveTable<
           </span>
         </div>
       )}
-      <table role="table" className={styles['table']}>
-        <thead role="rowgroup">
-          <tr role="row" className={styles['table-header']}>
-            {selectable && <th className={styles['table-header-th']}></th>}
+
+      <table role="table" aria-label={title} className={styles.table}>
+        <caption className={styles['visually-hidden']}>{title}</caption>
+        <thead>
+          <tr className={styles['table-header']}>
+            {selectable && (
+              <th scope="col" className={styles['table-header-th']}>
+                <span className={styles['visually-hidden']}>
+                  Sélectionner les lignes
+                </span>
+              </th>
+            )}
+
             {columns.map((col) => {
               if (col.headerHidden) {
-                // Header‑only column: skip rendering any <td>
-                return
+                return null
               }
               return (
                 <th
                   id={col.id}
+                  scope="col"
                   colSpan={col.headerColSpan || 1}
-                  role="columnheader"
                   key={col.id}
                   className={classNames(
                     styles.columnWidth,
@@ -176,81 +223,115 @@ export function ResponsiveTable<
                       [styles.sortable]: col.sortable,
                     }
                   )}
-                  onClick={() => toggleSort(col.id, col.sortable)}
+                  style={{ width: col.width }}
                 >
                   {col.label}
-                  {sortKey === col.id && (
+                  {col.sortable && (
                     <SortArrow
                       onClick={() => toggleSort(col.id, col.sortable)}
-                      sortingMode={
-                        sortDir === SortingMode.ASC
-                          ? SortingMode.ASC
-                          : SortingMode.DESC
-                      }
-                    ></SortArrow>
+                      sortingMode={sortDir}
+                    />
                   )}
                 </th>
               )
             })}
           </tr>
         </thead>
-        <tbody>
+
+        <tbody role="rowgroup">
+          {isLoading &&
+            Array.from({ length: 8 }).map((_, index) => (
+              <tr key={`loading-row-${index}`}>
+                <td colSpan={columns.length + 1}>
+                  <Skeleton height="7rem" width="100%" margin="0" />
+                </td>
+              </tr>
+            ))}
+
           {sortedData.map((row) => {
             const isSelected = selectedIds.has(row.id)
+            const expandedContent = getExpandedContent?.(row)
+            const hasNavigation = Boolean(getRowLink?.(row))
 
             return (
               <React.Fragment key={row.id}>
                 <tr
+                  role="row"
+                  tabIndex={hasNavigation ? 0 : undefined}
+                  onClick={() => handleRowNavigation(row)}
+                  onKeyDown={handleRowKeyDown(row)}
                   className={classNames(styles.row, {
-                    [styles.hover]: hover,
+                    [styles.hover]: hover && hasNavigation,
                     [styles.selected]: isSelected,
+                    [styles.clickable]: hasNavigation,
+                    [styles['interactive-row']]: hasNavigation,
                   })}
                 >
                   {selectable && (
                     <td
-                      className={styles.checkboxCell}
+                      className={classNames(
+                        styles.checkboxCell,
+                        styles['table-cell']
+                      )}
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Checkbox
-                        label={row.name || `Offre ${row.id}`}
+                        label={
+                          Object.prototype.hasOwnProperty.call(row, 'name')
+                            ? (row as any).name
+                            : `Offre ${row.id}`
+                        }
                         checked={isSelected}
                         onChange={() => toggleSelectRow(row)}
                         className={styles['checkbox-label']}
+                        disabled={
+                          isRowSelectable ? !isRowSelectable(row) : false
+                        }
                       />
                       <span className={styles['visually-hidden']}>
-                        Selectionner l’offre {row.name}
+                        Selectionner l’offre {(row as any).name || row.id}
                       </span>
                     </td>
                   )}
+
                   {columns.map((col) => {
                     if (col.bodyHidden) {
-                      // Header‑only column: skip rendering any <td>
-                      return
+                      return null
                     }
                     const value = col.render
                       ? col.render(row)
-                      : typeof col.accessor === 'function'
-                        ? col.accessor(row)
-                        : (row as any)[col.accessor as keyof T]
+                      : getValue(row, col.accessor)
                     return (
                       <td
+                        className={styles['table-cell']}
                         key={col.id}
                         data-label={col.label}
-                        headers={`row-${value.id} ${getCellsDefinition().CHECKBOX.id}`}
+                        onClick={(e) => {
+                          if (
+                            (e.target as HTMLElement).closest(
+                              'button, a, input, [data-stop-propagation]'
+                            )
+                          ) {
+                            e.stopPropagation()
+                          }
+                        }}
                       >
-                        {value}
+                        <div
+                          className={classNames({
+                            [styles['cell-main']]: expandedContent,
+                          })}
+                        >
+                          {value}
+                        </div>
+                        {col.id === columns[1].id && expandedContent && (
+                          <div className={styles['expanded-inside']}>
+                            {expandedContent}
+                          </div>
+                        )}
                       </td>
                     )
                   })}
                 </tr>
-
-                {getExpandedContent && (
-                  <tr className={styles.expandedRow}>
-                    <td colSpan={(selectable ? 1 : 0) + columns.length}>
-                      {getExpandedContent(row)}
-                    </td>
-                  </tr>
-                )}
               </React.Fragment>
             )
           })}
