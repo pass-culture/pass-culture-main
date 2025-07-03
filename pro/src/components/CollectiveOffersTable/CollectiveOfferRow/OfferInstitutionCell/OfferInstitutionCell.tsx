@@ -1,7 +1,4 @@
-import classNames from 'classnames'
-
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
-import styles from 'styles/components/Cells.module.scss'
 
 interface OfferInstitutionCellProps {
   rowId: string
@@ -10,9 +7,7 @@ interface OfferInstitutionCellProps {
 }
 
 export const OfferInstitutionCell = ({
-  rowId,
   educationalInstitution,
-  className,
 }: OfferInstitutionCellProps) => {
   const { name, institutionType, city } = educationalInstitution || {}
 
@@ -24,15 +19,5 @@ export const OfferInstitutionCell = ({
     showEducationalInstitution = `${institutionType} ${city}`
   }
 
-  return (
-    <div
-      className={classNames(
-        styles['offers-table-cell'],
-        styles['institution-column'],
-        className
-      )}
-    >
-      {showEducationalInstitution}
-    </div>
-  )
+  return <div>{showEducationalInstitution}</div>
 }

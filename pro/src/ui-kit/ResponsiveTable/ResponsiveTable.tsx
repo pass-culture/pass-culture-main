@@ -3,7 +3,6 @@ import React, { useMemo, useState } from 'react'
 
 import { SortingMode } from 'commons/hooks/useColumnSorting'
 import { NoResults } from 'components/NoResults/NoResults'
-import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
 
@@ -19,9 +18,10 @@ export interface Column<T> {
   headerColSpan?: number
   bodyHidden?: boolean
   headerHidden?: boolean
+  isRowSelectable?: (row: T) => boolean
 }
 
-type SortDirection = 'asc' | 'desc'
+type SortDirection = SortingMode.ASC | SortingMode.DESC | SortingMode.NONE
 
 interface ResponsiveTableProps<T extends { id: string | number }> {
   columns: Column<T>[]
@@ -40,6 +40,24 @@ interface ResponsiveTableProps<T extends { id: string | number }> {
   hasOffers?: boolean
   resetFilters: () => void
   className?: string
+  isRowSelectable?: (row: T) => boolean
+}
+
+function getValue<T>(
+  row: T,
+  accessor?: keyof T | string | ((r: T) => unknown)
+) {
+  if (!accessor) {
+    return undefined
+  }
+  if (typeof accessor === 'function') {
+    return accessor(row)
+  }
+  if (typeof accessor === 'string') {
+    // support “a.b.c” paths
+    return accessor.split('.').reduce<any>((obj, key) => obj?.[key], row)
+  }
+  return (row as any)[accessor]
 }
 
 export function ResponsiveTable<
@@ -58,14 +76,15 @@ export function ResponsiveTable<
   hasOffers = false,
   resetFilters,
   className,
+  isRowSelectable,
 }: ResponsiveTableProps<T>) {
   const [sortKey, setSortKey] = useState<string | null>(null)
-  const [sortDir, setSortDir] = useState<SortDirection>(SortingMode.ASC)
+  const [sortDir, setSortDir] = useState<SortDirection>(SortingMode.NONE)
   const [selectedIds, setSelectedIds] = useState<Set<string | number>>(
     new Set()
   )
 
-  // sort handler
+  // ---- sorting -------------------------------------------------
   const sortedData = useMemo(() => {
     if (!sortKey) {
       return data
@@ -75,20 +94,21 @@ export function ResponsiveTable<
       return data
     }
 
-    const accessor = col.accessor as keyof T | ((row: T) => any)
     const copy = [...data]
     copy.sort((a, b) => {
-      const va =
-        typeof accessor === 'function' ? accessor(a) : (a as any)[accessor]
-      const vb =
-        typeof accessor === 'function' ? accessor(b) : (b as any)[accessor]
-      if (va < vb) {
-        return sortDir === SortingMode.ASC ? -1 : 1
+      const va = getValue(a, col.accessor)
+      const vb = getValue(b, col.accessor)
+
+      if (va === vb) {
+        return 0
       }
-      if (va > vb) {
-        return sortDir === SortingMode.ASC ? 1 : -1
-      }
-      return 0
+      return (va as any) < (vb as any)
+        ? sortDir === SortingMode.ASC
+          ? -1
+          : 1
+        : sortDir === SortingMode.ASC
+          ? 1
+          : -1
     })
     return copy
   }, [data, sortKey, sortDir, columns])
@@ -107,14 +127,20 @@ export function ResponsiveTable<
     }
   }
 
+  // rows that MAY be selected (respect the isRowSelectable guard)
+  const selectableRows = useMemo(
+    () => (isRowSelectable ? data.filter(isRowSelectable) : data),
+    [data, isRowSelectable]
+  )
+
   const toggleSelectAll = () => {
-    if (selectedIds.size === data.length) {
+    if (selectedIds.size === selectableRows.length) {
       setSelectedIds(new Set())
       onSelectionChange?.([])
     } else {
-      const all = new Set(data.map((r) => r.id))
+      const all = new Set(selectableRows.map((r) => r.id))
       setSelectedIds(all)
-      onSelectionChange?.(data)
+      onSelectionChange?.(selectableRows)
     }
   }
 
@@ -134,19 +160,22 @@ export function ResponsiveTable<
   }
 
   return (
-    <div className={classNames(styles.wrapper, className)}>
+    <div className={classNames(styles.wrapper, className)} tabIndex={0}>
       {selectable && (
         <div className={styles['table-select-all']}>
           <Checkbox
             label={
-              selectedIds.size < data.length
+              selectedIds.size < selectableRows.length
                 ? 'Tout sélectionner'
                 : 'Tout désélectionner'
             }
-            checked={selectedIds.size === data.length && data.length > 0}
+            checked={
+              selectedIds.size === selectableRows.length &&
+              selectableRows.length > 0
+            }
             onChange={toggleSelectAll}
             indeterminate={
-              selectedIds.size > 0 && selectedIds.size < data.length
+              selectedIds.size > 0 && selectedIds.size < selectableRows.length
             }
           />
           <span className={styles['visually-hidden']}>
@@ -155,8 +184,9 @@ export function ResponsiveTable<
         </div>
       )}
       <table role="table" className={styles['table']}>
-        <thead role="rowgroup">
-          <tr role="row" className={styles['table-header']}>
+        <caption>Titre du tableau</caption>
+        <thead>
+          <tr className={styles['table-header']}>
             {selectable && <th className={styles['table-header-th']}></th>}
             {columns.map((col) => {
               if (col.headerHidden) {
@@ -166,8 +196,8 @@ export function ResponsiveTable<
               return (
                 <th
                   id={col.id}
+                  scope="col"
                   colSpan={col.headerColSpan || 1}
-                  role="columnheader"
                   key={col.id}
                   className={classNames(
                     styles.columnWidth,
@@ -176,17 +206,13 @@ export function ResponsiveTable<
                       [styles.sortable]: col.sortable,
                     }
                   )}
-                  onClick={() => toggleSort(col.id, col.sortable)}
+                  style={{ width: col.width }}
                 >
                   {col.label}
-                  {sortKey === col.id && (
+                  {col.sortable && (
                     <SortArrow
                       onClick={() => toggleSort(col.id, col.sortable)}
-                      sortingMode={
-                        sortDir === SortingMode.ASC
-                          ? SortingMode.ASC
-                          : SortingMode.DESC
-                      }
+                      sortingMode={sortDir}
                     ></SortArrow>
                   )}
                 </th>
@@ -194,13 +220,14 @@ export function ResponsiveTable<
             })}
           </tr>
         </thead>
-        <tbody>
+        <tbody role="rowgroup">
           {sortedData.map((row) => {
             const isSelected = selectedIds.has(row.id)
 
             return (
               <React.Fragment key={row.id}>
                 <tr
+                  role="row"
                   className={classNames(styles.row, {
                     [styles.hover]: hover,
                     [styles.selected]: isSelected,
@@ -216,6 +243,9 @@ export function ResponsiveTable<
                         checked={isSelected}
                         onChange={() => toggleSelectRow(row)}
                         className={styles['checkbox-label']}
+                        disabled={
+                          isRowSelectable ? !isRowSelectable(row) : false
+                        }
                       />
                       <span className={styles['visually-hidden']}>
                         Selectionner l’offre {row.name}
@@ -229,14 +259,13 @@ export function ResponsiveTable<
                     }
                     const value = col.render
                       ? col.render(row)
-                      : typeof col.accessor === 'function'
-                        ? col.accessor(row)
-                        : (row as any)[col.accessor as keyof T]
+                      : getValue(row, col.accessor)
+
                     return (
                       <td
+                        className={styles['table-cell']}
                         key={col.id}
                         data-label={col.label}
-                        headers={`row-${value.id} ${getCellsDefinition().CHECKBOX.id}`}
                       >
                         {value}
                       </td>

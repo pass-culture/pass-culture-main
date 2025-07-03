@@ -8,7 +8,6 @@ import {
 import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { isCollectiveOfferSelectable } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { OfferVenueCell } from 'components/CollectiveOffersTable/CollectiveOfferRow/OfferVenueCell/OfferVenueCell'
 import { ThumbCell } from 'components/CollectiveOffersTable/CollectiveOfferRow/ThumbCell/ThumbCell'
 import { Column } from 'ui-kit/ResponsiveTable/ResponsiveTable'
@@ -101,8 +100,6 @@ export function createCollectiveOfferColumns(
       id: 'offerHeader', // clé principale pour l’en-tête
       label: "Nom de l'offre",
       headerColSpan: 2, // 👈 regroupe les deux sous-colonnes
-      sortable: true,
-      accessor: 'name', // pour que le tri fonctionne
       bodyHidden: true, // 👈 pas de cellule dans le body
     },
     {
@@ -111,12 +108,10 @@ export function createCollectiveOfferColumns(
       headerHidden: true, // 👈 pas de cellule dans l’en-tête
       render: (offer) => {
         const { id, detail } = buildLinks(offer, newDetailPageActive)
-        const selectable = isCollectiveOfferSelectable(offer)
         return React.createElement(ThumbCell, {
           rowId: `collective-offer-${id}`,
           offer,
           offerLink: detail,
-          inactive: !selectable,
         })
       },
     },
@@ -137,9 +132,10 @@ export function createCollectiveOfferColumns(
     // 4. Event date (sortable) --------------------------------------------------
     {
       id: 'offer-head-event-date',
-      label: 'Date',
+      label: 'Date de l’évènement',
       sortable: true,
-      width: '8rem',
+      accessor: 'dates.start',         
+      width: '12rem',
       render: offer => {
         const { id } = buildLinks(offer, newDetailPageActive)
 

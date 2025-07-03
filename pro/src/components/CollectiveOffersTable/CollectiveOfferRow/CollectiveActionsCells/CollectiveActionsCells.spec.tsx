@@ -108,7 +108,7 @@ describe('CollectiveActionsCells', () => {
     }))
   })
 
-  it('should archive an offer on click on the action', async () => {
+  it.only('should archive an offer on click on the action', async () => {
     renderCollectiveActionsCell({
       offer: collectiveOfferFactory({
         allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],

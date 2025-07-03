@@ -39,7 +39,7 @@ const createOffer = (
     id: 1,
     name: 'My little offer',
     isShowcase: false,
-    displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
+    displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
     imageUrl: null,
     stocks: [],
     venue: {

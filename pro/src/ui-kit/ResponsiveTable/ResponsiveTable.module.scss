@@ -62,7 +62,8 @@
   }
 }
 
-td {
+.table-cell {
+  padding: rem.torem(8px);
   text-align: left;
   border-bottom: 1px solid #e5e7eb;
 }
