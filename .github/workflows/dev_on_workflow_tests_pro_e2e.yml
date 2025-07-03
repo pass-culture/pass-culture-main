@@ -90,11 +90,24 @@ jobs:
       test-chunks: ${{ steps['set-test-chunks'].outputs['test-chunks'] }}
     steps:
       - uses: actions/checkout@v4
-      - id: set-test-chunks
-        name: Set Chunks
-        # get all spec files from the e2e directory, group them to be at most 3 at a time and transform them to json
-        # this will output something like ["cypress/integration/test1.spec.ts, cypress/integration/test2.spec.ts, cypress/integration/test3.spec.ts", "cypress/integration/test4.spec.ts,etc.."]
-        run: echo "test-chunks=$(find cypress/e2e -type f -name "*.cy.ts" | xargs -n4 | tr ' ' ',' | jq -R . | jq -s -cM .)" >> $GITHUB_OUTPUT
+      - name: Download previous timings artifact
+        id: download-timings
+        uses: actions/download-artifact@v4
+        with:
+          name: cypress-timings
+          path: ./cypress-timings
+        continue-on-error: true
+      - name: Detect new/removed test files
+        id: detect-changes
+        run: |
+          echo "new_or_removed=$(git status --porcelain cypress/e2e | grep '^[AMUDR]' | wc -l)" >> $GITHUB_OUTPUT
+      - name: Generate balanced chunks
+        id: set-test-chunks
+        run: |
+          node ./scripts/split-specs.js ./cypress-timings/results.json > chunks.json
+          echo "test-chunks=$(cat chunks.json)" >> $GITHUB_OUTPUT
+        env:
+          NEW_OR_REMOVED: ${{ steps.detect-changes.outputs.new_or_removed }}
 
   cypress-run:
     name: "Run E2E"
@@ -223,6 +236,8 @@ jobs:
       - name: "Cypress run"
         uses: cypress-io/github-action@v6
         with:
+          reporter: json
+          reporter-options: output=results.json
           wait-on: "http://localhost:5001/health/api,http://localhost:5001/health/database"
           wait-on-timeout: 120 # 2 minutes is enough for API/DB to be ready
           working-directory: pro
@@ -254,6 +269,14 @@ jobs:
       - name: "Show pcapi log when it fails"
         if: failure()
         run: docker logs pc-api
+
+      - name: Upload timings artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-timings
+          path: pro/results.json
+          retention-days: 1
 
   notify-cypress-failure:
     name: "Notification of Cypress tests failure"
