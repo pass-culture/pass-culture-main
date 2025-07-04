@@ -101,28 +101,24 @@
   }
 }
 
-.definition-item {
-  @include fonts.body-xs;
-
-  display: flex;
-  gap: rem.torem(8px);
-  align-items: center;
-  margin-bottom: rem.torem(8px);
-  line-height: rem.torem(16px);
-
-  &:first-child {
-    margin-bottom: rem.torem(16px);
-  }
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-
 .button-cancel-booking {
   color: var(--color-text-error);
+  text-align: left;
 }
 
 .banner-container {
   margin-bottom: rem.torem(24px);
+}
+
+.offer-details {
+  display: flex;
+  flex-direction: row;
+  gap: rem.torem(24px);
+  margin-top: rem.torem(32px);
+  justify-content: space-between;
+
+  @media (max-width: size.$tablet) {
+    margin-top: rem.torem(24px);
+    flex-direction: column;
+  }
 }

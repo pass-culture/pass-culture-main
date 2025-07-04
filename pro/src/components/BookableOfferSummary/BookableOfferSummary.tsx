@@ -30,6 +30,7 @@ import { pluralizeString } from 'commons/utils/pluralize'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { BackToNavLink } from 'components/BackToNavLink/BackToNavLink'
 import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/CollectiveStatusLabel'
+import { EducationalInstitutionDetails } from 'components/EducationalInstitutionDetails/EducationalInstititutionDetails'
 import { SynchronizedProviderInformation } from 'components/IndividualOffer/SynchronisedProviderInfos/SynchronizedProviderInformation'
 import fullArchiveIcon from 'icons/full-archive.svg'
 import fullClearIcon from 'icons/full-clear.svg'
@@ -313,6 +314,17 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
             </ul>
           </div>
         </div>
+      </div>
+      <div className={styles['offer-details']}>
+        <div>Component timeline à ajouter ici</div>
+        {offer.institution && (
+          <EducationalInstitutionDetails
+            educationalInstitution={offer.institution}
+            educationalRedactor={offer.booking?.educationalRedactor}
+            teacher={offer.teacher}
+            newLayout
+          />
+        )}
       </div>
       <ArchiveConfirmationModal
         onDismiss={() => setIsArchiveModalOpen(false)}
