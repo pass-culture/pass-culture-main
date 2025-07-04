@@ -263,6 +263,7 @@ def _is_cultural_survey_active() -> bool:
 
 class UserProfilePatchRequest(ConfiguredBaseModel):
     activity_id: profile_options.ActivityIdEnum | None
+    address: str | None
     city: str | None
     postal_code: str | None
     phone_number: str | None
