@@ -3,11 +3,13 @@ import logging
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
 
 
+@log_func_duration
 def create_industrial_offerer_addresses() -> None:
     logger.info("create_industrial_offerer_addresses")
     offerer_with_addresses = offerers_factories.OffererFactory.create(name="2 - Structure avec plusieurs adresses")

@@ -9,6 +9,7 @@ from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.utils import siren as siren_utils
 
 
@@ -20,6 +21,7 @@ VENUE_EDUCATIONAL_STATUS = {
 }
 
 
+@log_func_duration
 def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
     create_venue_educational_status()
     offerer_iterator = iter(offerer_list)

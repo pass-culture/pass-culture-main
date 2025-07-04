@@ -15,11 +15,13 @@ from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
 
 
+@log_func_duration
 def create_offers_with_status(offerer: Offerer) -> None:
     venue = VenueFactory.create(
         name="Lieu avec offres spécifiques",

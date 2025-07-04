@@ -2,6 +2,7 @@ import logging
 
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import User
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
@@ -11,6 +12,7 @@ ADMINS_COUNT = 1
 departement_codes = ["93", "97"]
 
 
+@log_func_duration
 def create_industrial_admin_users() -> dict[str, User]:
     logger.info("create_industrial_admin_users")
 

@@ -7,8 +7,10 @@ from pcapi.core.geography import api as geography_api
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
+@log_func_duration
 def fill_adage_playlists() -> None:
     institutions: list[educational_models.EducationalInstitution] = db.session.query(
         educational_models.EducationalInstitution

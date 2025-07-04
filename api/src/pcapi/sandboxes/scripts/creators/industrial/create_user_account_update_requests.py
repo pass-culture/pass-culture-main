@@ -9,11 +9,13 @@ from pcapi.core.history import models as history_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.repository import find_user_by_email
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
 
 
+@log_func_duration
 def create_user_account_update_requests() -> None:
     logger.info("create_user_account_update_requests")
 

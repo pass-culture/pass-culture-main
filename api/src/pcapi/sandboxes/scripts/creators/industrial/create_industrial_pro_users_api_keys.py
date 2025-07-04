@@ -3,11 +3,13 @@ import logging
 from pcapi import settings
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.models import Offerer
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
 
 
+@log_func_duration
 def create_industrial_pro_users_api_keys(offerers_by_name: dict[str, Offerer]) -> None:
     """Create api_keys with shape : {env}_{offererId}_clearSecret{offererId} ex: 'testing_12_clearSecret12'"""
     logger.info("create_industrial_pro_users_api_keys")

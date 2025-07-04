@@ -8,6 +8,7 @@ from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.educational_siren_mocks import MOCK_ADAGE_ELIGIBLE_SIREN
 from pcapi.sandboxes.scripts.mocks.offerer_mocks import MOCK_NAMES
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
@@ -47,6 +48,7 @@ OFFERER_LOCATIONS = [
 ]
 
 
+@log_func_duration
 def create_industrial_offerers() -> dict[str, Offerer]:
     logger.info("create_industrial_offerers")
 

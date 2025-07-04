@@ -13,6 +13,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
 from pcapi.repository import repository
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
@@ -24,6 +25,7 @@ OFFER_WITH_SEVERAL_STOCKS_REMOVE_MODULO = 2
 BOOKINGS_USED_REMOVE_MODULO = 5
 
 
+@log_func_duration
 def create_industrial_bookings(offers_by_name: dict[str, Offer], users_by_name: dict[str, User]) -> None:
     logger.info("create_industrial_bookings")
 

@@ -5,11 +5,13 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.educational_siren_mocks import MOCK_ADAGE_ELIGIBLE_SIREN
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
 
 
+@log_func_duration
 def create_industrial_pro_users(offerers_by_name: dict) -> dict[str, User]:
     logger.info("create_industrial_pro_users")
 

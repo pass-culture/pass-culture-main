@@ -4,11 +4,13 @@ from datetime import datetime
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
 
 
+@log_func_duration
 def create_gdpr_user_extract_data() -> None:
     logger.info("create_gdpr_user_extract_data")
 

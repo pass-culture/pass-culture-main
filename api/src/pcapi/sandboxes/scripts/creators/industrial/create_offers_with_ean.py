@@ -9,11 +9,13 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
 
 
+@log_func_duration
 def create_offers_with_ean() -> None:
     ean_criteria = criteria_factories.CriterionFactory.create(name="Livre avec EAN")
     odd_criteria = criteria_factories.CriterionFactory.create(name="Librairie impaire")

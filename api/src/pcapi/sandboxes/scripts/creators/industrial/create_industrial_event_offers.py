@@ -6,6 +6,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.categories import subcategories
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_NAMES
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
@@ -15,6 +16,7 @@ DEACTIVATED_OFFERS_PICK_MODULO = 3
 EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE = 5
 
 
+@log_func_duration
 def create_industrial_event_offers(
     offerers_by_name: dict[str, offerers_models.Offerer],
 ) -> dict[str, offers_models.Offer]:

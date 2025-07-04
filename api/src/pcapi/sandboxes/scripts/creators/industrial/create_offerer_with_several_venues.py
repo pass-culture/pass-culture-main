@@ -6,11 +6,13 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
 
 
+@log_func_duration
 def create_offerer_with_several_venues() -> offerers_models.Offerer:
     user_offerer = offerers_factories.UserOffererFactory.create(offerer__name="Structure avec plusieurs lieux")
     venue1 = offerers_factories.VenueFactory.create(

@@ -1,11 +1,13 @@
 import logging
 
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
 
 
+@log_func_duration
 def create_industrial_non_payment_notices() -> None:
     logger.info("create_industrial_non_payment_notices")
     offerer = offerers_factories.OffererFactory(name="Entité avec avis d'impayé")

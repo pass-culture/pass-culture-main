@@ -1,7 +1,9 @@
 from pcapi.core.offerers.models import Venue
 from pcapi.repository import db
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
+@log_func_duration
 def add_accessibility_compliance_to_venues() -> None:
     venues = db.session.query(Venue).all()
     for i, venue in enumerate(venues):

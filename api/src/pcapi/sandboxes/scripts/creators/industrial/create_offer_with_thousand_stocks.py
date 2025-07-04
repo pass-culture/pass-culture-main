@@ -7,11 +7,13 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import PriceCategoryFactory
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
 
 
+@log_func_duration
 def create_offer_with_thousand_stocks(offerer: Offerer) -> None:
     venue = VenueFactory.create(
         name="Lieu avec offre pleine de stocks",

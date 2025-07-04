@@ -96,8 +96,10 @@ from pcapi.sandboxes.scripts.creators.industrial.create_user_account_update_requ
     create_user_account_update_requests,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_user_offerers import create_user_offerers
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
+@log_func_duration
 def save_industrial_sandbox() -> None:
     create_iris()
     offerers_by_name = create_industrial_offerers()
@@ -201,12 +203,12 @@ def save_industrial_sandbox() -> None:
 
     create_closed_offerers()
 
+    create_industrial_products()
+
+    create_industrial_non_payment_notices()
+
     # should be the last function called to create invoices
     build_many_extra_invoices()
 
     # run this last as we fill out missing user offerers
     create_user_offerers()
-
-    create_industrial_products()
-
-    create_industrial_non_payment_notices()

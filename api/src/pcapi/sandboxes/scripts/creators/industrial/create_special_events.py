@@ -4,11 +4,13 @@ import logging
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.operations import factories as operations_factories
 from pcapi.core.users import factories as users_factories
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
 
 
+@log_func_duration
 def create_special_events() -> None:
     logger.info("create_special_events")
 

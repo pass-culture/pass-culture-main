@@ -7,8 +7,10 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data.crea
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data.create_venues import create_venues
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data.fill import fill_adage_playlists
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
+@log_func_duration
 def create_eac_data() -> None:
     institutions = create_institutions()
     offerers = create_users_offerers()

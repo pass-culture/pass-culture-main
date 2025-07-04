@@ -4,6 +4,7 @@ import logging
 import pcapi.core.offers.factories as offer_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.models import Subcategory
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
@@ -29,6 +30,7 @@ def _create_future_offer_factory(
     )
 
 
+@log_func_duration
 def create_future_offers() -> None:
     # Create future Offers not active, i.e. proper coming soon offers
     for i in range(5):

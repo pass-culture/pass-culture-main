@@ -19,6 +19,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice.finance import validation
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
@@ -325,6 +326,7 @@ def _create_one_collective_incident(
     finance_api.generate_invoices_and_debit_notes_legacy(batch)
 
 
+@log_func_duration
 def create_industrial_incidents() -> None:
     offerer = offerers_factories.OffererFactory.create(name="Structure avec beaucoup d'incidents")
     pro = users_factories.ProFactory.create(email="pctest.pro.incidents@example.com")

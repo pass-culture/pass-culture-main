@@ -12,6 +12,7 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.sandboxes.scripts.mocks.accessibility_mocks import ACCESSIBILITY_MOCK
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
@@ -39,6 +40,7 @@ def add_default_image_to_venue(image_venue_counter: int, offerer: Offerer, venue
         )
 
 
+@log_func_duration
 def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
     logger.info("create_industrial_venues")
 

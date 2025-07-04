@@ -2,11 +2,13 @@ import logging
 
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.routes.backoffice.home import CONFORMITE_TAG_NAME
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
 
 
+@log_func_duration
 def create_industrial_offerer_tags() -> None:
     logger.info("create_industrial_offerer_tags")
 

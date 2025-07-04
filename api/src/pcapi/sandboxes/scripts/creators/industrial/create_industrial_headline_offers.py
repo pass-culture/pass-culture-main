@@ -3,6 +3,7 @@ import logging
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.models.offer_mixin import OfferStatus
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
@@ -10,6 +11,7 @@ logger = logging.getLogger(__name__)
 HEADLINE_OFFER_LIMIT_PER_OFFERER = 1
 
 
+@log_func_duration
 def create_industrial_headline_offers(offers_by_name: dict[str, Offer]) -> None:
     logger.info("create_industrial_headline_offers")
 

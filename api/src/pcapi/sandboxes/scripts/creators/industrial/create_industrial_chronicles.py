@@ -8,6 +8,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
@@ -23,6 +24,7 @@ def allocine_id_generator(factor: int) -> str:
     return str((seed * (factor + 1)))[:10]
 
 
+@log_func_duration
 def create_industrial_chronicles() -> None:
     logger.info("create_industrial_chronicles")
     users = (
