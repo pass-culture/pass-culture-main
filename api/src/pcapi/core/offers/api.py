@@ -1,6 +1,7 @@
 import dataclasses
 import datetime
 import decimal
+import difflib
 import enum
 import functools
 import logging
@@ -2110,6 +2111,78 @@ def update_used_stock_price(
         )
 
 
+def _should_merge_product(
+    product_with_allocine_id: offers_models.Product,
+    product_with_visa: offers_models.Product,
+) -> bool:
+    """
+    Check that the 2 products are actually similar.
+
+    Similarity checks are performed on their names, and, if defined, on their descriptions.
+    """
+    if product_with_allocine_id.id == product_with_visa.id:
+        return False
+
+    allocine_name = product_with_allocine_id.name.lower()
+    visa_name = product_with_visa.name.lower()
+
+    names_are_similar = (
+        (visa_name in allocine_name)
+        or (allocine_name in visa_name)
+        or (difflib.SequenceMatcher(None, visa_name, allocine_name).ratio() >= 0.6)
+    )
+
+    descriptions_are_similar = None
+    if product_with_visa.description and product_with_allocine_id.description:
+        allocine_description = product_with_allocine_id.description.lower()
+        visa_description = product_with_visa.description.lower()
+
+        descriptions_are_similar = (
+            (visa_description in allocine_description)
+            or (allocine_description in visa_description)
+            or (difflib.SequenceMatcher(None, visa_description, allocine_description).ratio() >= 0.6)
+        )
+
+    if descriptions_are_similar is not None:
+        return names_are_similar and descriptions_are_similar
+
+    return names_are_similar
+
+
+def _select_matching_product(
+    movie: offers_models.Movie,
+    product_with_allocine_id: offers_models.Product,
+    product_with_visa: offers_models.Product,
+) -> offers_models.Product:
+    """
+    Return the most coherent product based on a comparison on the movie title and on the movie description
+    """
+    movie_name = movie.title.lower()
+    allocine_name = product_with_allocine_id.name.lower()
+    visa_name = product_with_visa.name.lower()
+
+    similarity_ratio_to_allocine_product = difflib.SequenceMatcher(None, movie_name, allocine_name).ratio()
+    similarity_ratio_to_visa_product = difflib.SequenceMatcher(None, movie_name, visa_name).ratio()
+
+    if movie.description:
+        movie_description = movie.description.lower()
+        allocine_description = (product_with_allocine_id.description or "").lower()
+        visa_description = (product_with_visa.description or "").lower()
+        similarity_ratio_to_allocine_product = (
+            similarity_ratio_to_allocine_product
+            + difflib.SequenceMatcher(None, movie_description, allocine_description).ratio()
+        ) / 2
+        similarity_ratio_to_visa_product = (
+            similarity_ratio_to_visa_product
+            + difflib.SequenceMatcher(None, movie_description, visa_description).ratio()
+        ) / 2
+
+    if similarity_ratio_to_allocine_product < similarity_ratio_to_visa_product:
+        return product_with_visa
+
+    return product_with_allocine_id
+
+
 def upsert_movie_product_from_provider(
     movie: offers_models.Movie, provider: providers_models.Provider, id_at_providers: str
 ) -> offers_models.Product | None:
@@ -2117,45 +2190,84 @@ def upsert_movie_product_from_provider(
         logger.warning("Cannot create a movie product without allocineId nor visa")
         return None
 
-    existing_product_with_allocine_id = (
-        offers_repository.get_movie_product_by_allocine_id(movie.allocine_id) if movie.allocine_id else None
-    )
-    existing_product_with_visa = offers_repository.get_movie_product_by_visa(movie.visa) if movie.visa else None
-
+    # (tcoudray-pass, 04/07/25) TODO: Move truncation outside this function
     if len(movie.title) > 140:
         movie.title = movie.title[0:139] + "…"
 
+    products = offers_repository.get_movie_products_matching_allocine_id_or_film_visa(movie.allocine_id, movie.visa)
+
+    # Case 1: Creation of a new a product
+    if not products:
+        with transaction():
+            product = offers_models.Product(
+                description=movie.description,
+                durationMinutes=movie.duration,
+                extraData=None,
+                lastProviderId=provider.id,
+                name=movie.title,
+                subcategoryId=subcategories.SEANCE_CINE.id,
+            )
+            _update_product_extra_data(product, movie)
+            db.session.add(product)
+        return product
+
+    # Case 2: Update of one existing product
+    if len(products) == 1:
+        product = products[0]
+        if _is_allocine(provider.id) or provider.id == product.lastProviderId:
+            with transaction():
+                _update_movie_product(product, movie, provider.id, id_at_providers)
+        return product
+
+    # Case 3: 2 products were returned
+    if products[0].extraData.get("allocineId"):
+        product_with_allocine_id, product_with_visa = products
+    else:
+        product_with_visa, product_with_allocine_id = products
+
     with transaction():
-        existing_product = existing_product_with_allocine_id or existing_product_with_visa
-        if (
-            existing_product_with_allocine_id
-            and existing_product_with_visa
-            and existing_product_with_allocine_id.id != existing_product_with_visa.id
-        ):
+        if _should_merge_product(product_with_visa, product_with_allocine_id):
+            # Case 3.1: the 2 products should be merged into one
             logger.info(
                 "Merging movie products %d (to keep) and %d (to delete)",
-                existing_product_with_allocine_id.id,
-                existing_product_with_visa.id,
-                extra={"allocine_id": movie.allocine_id, "visa": movie.visa},
+                product_with_allocine_id.id,
+                product_with_visa.id,
+                extra={
+                    "allocine_id": movie.allocine_id,
+                    "visa": movie.visa,
+                    "provider_id": provider.id,
+                    "deleted": {
+                        "name": product_with_visa.name,
+                        "description": product_with_visa.description,
+                    },
+                    "kept": {
+                        "name": product_with_allocine_id.name,
+                        "description": product_with_allocine_id.description,
+                    },
+                },
             )
-            existing_product = offers_repository.merge_products(
-                existing_product_with_allocine_id, existing_product_with_visa
+            product = offers_repository.merge_products(product_with_allocine_id, product_with_visa)
+            if _is_allocine(provider.id) or provider.id == product.lastProviderId:
+                _update_movie_product(product, movie, provider.id, id_at_providers)
+        else:
+            # Case 3.2: the 2 products are DIFFERENT -> selection of the most coherent one
+            # we do NOT update the product because if we reached this step, it means
+            # the provider has sent us incoherent visa and allocineId
+            product = _select_matching_product(movie, product_with_allocine_id, product_with_visa)
+            logger.warning(
+                "Provider sent incoherent visa and allocineId",
+                extra={
+                    "movie": {
+                        "allocine_id": movie.allocine_id,
+                        "visa": movie.visa,
+                        "title": movie.title,
+                        "description": movie.description,
+                    },
+                    "provider_id": provider.id,
+                    "product_id": product.id,
+                },
             )
-        if existing_product:
-            if _is_allocine(provider.id) or provider.id == existing_product.lastProviderId:
-                _update_movie_product(existing_product, movie, provider.id, id_at_providers)
-            return existing_product
 
-        product = offers_models.Product(
-            description=movie.description,
-            durationMinutes=movie.duration,
-            extraData=None,
-            lastProviderId=provider.id,
-            name=movie.title,
-            subcategoryId=subcategories.SEANCE_CINE.id,
-        )
-        _update_product_extra_data(product, movie)
-        db.session.add(product)
     return product
 
 

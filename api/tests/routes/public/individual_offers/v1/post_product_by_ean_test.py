@@ -258,7 +258,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
-        with caplog.at_level(logging.INFO):
+        with caplog.at_level(logging.WARNING):
             response = client.with_explicit_token(plain_api_key).post(
                 self.endpoint_url,
                 json={

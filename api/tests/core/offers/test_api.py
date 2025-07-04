@@ -4526,7 +4526,7 @@ class UpdateUsedStockPriceTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class CreateMovieProductFromProviderTest:
+class UpsertMovieProductFromProviderTest:
     @classmethod
     def setup_class(cls):
         cls.allocine_provider = get_allocine_products_provider()
@@ -4551,13 +4551,10 @@ class CreateMovieProductFromProviderTest:
         )
 
     def test_creates_allocine_product_without_visa_if_does_not_exist(self):
-        # Given
         movie = self._get_movie(allocine_id="12345")
 
-        # When
         product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
 
-        # Then
         assert product.extraData["allocineId"] == 12345
         assert product.extraData.get("visa") is None
 
@@ -4574,29 +4571,22 @@ class CreateMovieProductFromProviderTest:
         )
 
     def test_do_nothing_if_no_allocine_id_and_no_visa(self):
-        # Given
         movie = self._get_movie(allocine_id=None, visa=None)
 
-        # When
         with assert_num_queries(0):
             product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
 
-        # Then
         assert product is None
 
     def test_does_not_create_product_if_exists(self):
-        # Given
         product = factories.ProductFactory(extraData={"allocineId": 12345})
         movie = self._get_movie(allocine_id="12345")
 
-        # When
         new_product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
 
-        # Then
         assert product.id == new_product.id
 
     def test_updates_product_if_exists(self):
-        # Given
         allocine_id = 12345
         visa = "67890"
 
@@ -4638,7 +4628,6 @@ class CreateMovieProductFromProviderTest:
         )
 
     def test_does_not_update_allocine_product_from_non_allocine_synchro(self):
-        # Given
         product = factories.ProductFactory(lastProviderId=self.allocine_provider.id, extraData={"allocineId": 12345})
         movie = self._get_movie(allocine_id="12345")
 
@@ -4649,70 +4638,54 @@ class CreateMovieProductFromProviderTest:
         assert product.lastProvider.id == self.allocine_provider.id
 
     def test_updates_allocine_product_from_allocine_stocks_synchro(self):
-        # Given
         product = factories.ProductFactory(lastProviderId=self.allocine_provider.id, extraData={"allocineId": 12345})
         movie = self._get_movie(allocine_id="12345")
 
-        # When
         api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocineStocks")
 
-        # Then
         assert product.lastProvider.id == self.allocine_stocks_provider.id
 
     def test_updates_product_from_same_synchro(self):
-        # Given
         product = factories.ProductFactory(lastProviderId=self.boost_provider.id, extraData={"allocineId": 12345})
         movie = self._get_movie(allocine_id="12345")
 
-        # When
         api.upsert_movie_product_from_provider(movie, self.boost_provider, "idBoost2")
 
-        # Then
         assert product.lastProvider.id == self.boost_provider.id
 
     def test_updates_allocine_id_when_updates_product_by_visa(self):
-        # Given
         product = factories.ProductFactory(lastProviderId=self.boost_provider.id, extraData={"visa": "54321"})
         movie = self._get_movie(allocine_id="12345", visa="54321")
 
-        # When
         api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
 
-        # Then
         assert product.extraData["allocineId"] == 12345
 
     def test_updates_visa_when_updating_with_visa_provided(self):
-        # Given
         product = factories.ProductFactory(
             lastProviderId=self.boost_provider.id,
             extraData={"allocineId": 12345, "visa": "54321"},
         )
         movie = self._get_movie(allocine_id="12345", visa="54322")
 
-        # When
         api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
 
-        # Then
         assert product.extraData["allocineId"] == 12345
         assert product.extraData["visa"] == "54322"
 
     def test_keep_visa_when_updating_with_no_visa_provided(self):
-        # Given
         product = factories.ProductFactory(
             lastProviderId=self.boost_provider.id,
             extraData={"allocineId": 12345, "visa": "54321"},
         )
         movie = self._get_movie(allocine_id="12345", visa=None)
 
-        # When
         api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
 
-        # Then
         assert product.extraData["allocineId"] == 12345
         assert product.extraData["visa"] == "54321"
 
     def test_does_not_update_data_when_provided_data_is_none(self):
-        # Given
         product = factories.ProductFactory(
             lastProviderId=self.boost_provider.id,
             extraData={"allocineId": 12345, "title": "Mon vieux film"},
@@ -4720,34 +4693,45 @@ class CreateMovieProductFromProviderTest:
         movie = self._get_movie(allocine_id="12345", visa=None)
         movie.extra_data = None
 
-        # When
         api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
 
-        # Then
         assert product.extraData == {"allocineId": 12345, "title": "Mon vieux film"}
 
     def test_handles_coexisting_incomplete_movies(self, caplog):
-        # Given
         boost_product = factories.ProductFactory(
             lastProviderId=self.boost_provider.id,
-            extraData={"visa": "54321", "title": "Mon vieux film Boost"},
+            name="MON VIEUX FILM D'EPOQUE",
+            description="Vieux film des années 50",
+            extraData={"visa": "54321", "title": "MON VIEUX FILM D'EPOQUE"},
         )
         boost_product_id = boost_product.id
         allocine_product = factories.ProductFactory(
             lastProviderId=self.boost_provider.id,
-            extraData={"allocineId": 12345, "title": "Mon vieux film Allociné"},
+            name="Mon vieux film d'époque",
+            description="Vieux film des années cinquante",
+            extraData={"allocineId": 12345, "title": "Mon vieux film d'époque"},
         )
         offer = factories.OfferFactory(product=boost_product)
         reaction = reactions_factories.ReactionFactory(product=boost_product)
         factories.ProductMediationFactory(product=boost_product)
         movie = self._get_movie(allocine_id="12345", visa="54321")
 
-        # When
         with caplog.at_level(logging.INFO):
             api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocineProducts")
 
-        # Then
-        assert caplog.records[0].extra == {"allocine_id": "12345", "visa": "54321"}
+        assert caplog.records[0].extra == {
+            "allocine_id": "12345",
+            "visa": "54321",
+            "provider_id": self.allocine_stocks_provider.id,
+            "deleted": {
+                "name": "MON VIEUX FILM D'EPOQUE",
+                "description": "Vieux film des années 50",
+            },
+            "kept": {
+                "name": "Mon vieux film d'époque",
+                "description": "Vieux film des années cinquante",
+            },
+        }
         assert offer.product == allocine_product
         assert reaction.product == allocine_product
         assert (
@@ -4757,7 +4741,49 @@ class CreateMovieProductFromProviderTest:
             == 0
         )
         assert db.session.query(models.Product).filter(models.Product.id == boost_product_id).count() == 0
-        assert allocine_product.extraData == {"allocineId": 12345, "visa": "54321", "title": "Mon vieux film Allociné"}
+        assert allocine_product.extraData == {"allocineId": 12345, "visa": "54321", "title": "Mon vieux film d'époque"}
+
+    def test_should_not_merge_when_visa_and_allocineId_sent_by_provider_are_incoherent(self, caplog):
+        movie = models.Movie(
+            allocine_id="1000006691",  # allocine_id pointing to "L'Accident de piano"
+            visa="164773",  # pointing to "F1 Film"
+            title="F1 : LE FILM",
+            description="Sonny Hayes était le prodige de la F1 des années 90 jusqu’à son terrible accident. Trente ans plus tard, devenu un pilote indépendant, il est contacté par Ruben Cervantes, patron d’une écurie en faillite qui le convainc de revenir pour sauver l’équipe et prouver qu’il est toujours le meilleur. Aux côtés de Joshua Pearce, diamant brut prêt à devenir le numéro 1, Sonny réalise vite qu'en F1, son coéquipier est aussi son plus grand rival, que le danger est partout et qu'il risque de tout perdre.",
+            duration=None,
+            poster_url=None,
+            extra_data={},
+        )
+
+        f1_movie_product = factories.ProductFactory(
+            lastProviderId=self.boost_provider.id,
+            name="F1® LE FILM",
+            description="Sonny Hayes était le prodige de la F1 des années 90 jusqu’à son terrible accident. Trente ans plus tard, devenu un pilote indépendant, il est contacté par Ruben Cervantes, patron d’une écurie en faillite qui le convainc de revenir pour sauver l’équipe et prouver qu’il est toujours le meilleur. Aux côtés de Joshua Pearce, diamant brut prêt à devenir le numéro 1, Sonny réalise vite qu'en F1, son coéquipier est aussi son plus grand rival, que le danger est partout et qu'il risque de tout perdre.",
+            extraData={"visa": "164773", "title": "F1® LE FILM"},
+        )
+        accident_piano_movie_product = factories.ProductFactory(
+            lastProviderId=self.allocine_provider.id,
+            name="L'Accident de piano",
+            description="Magalie est une star du web hors sol et sans morale qui gagne des fortunes en postant des contenus choc sur les réseaux. Après un accident grave survenu sur le tournage d'une de ses vidéos, Magalie s'isole à la montagne avec Patrick, son assistant personnel, pour faire un break. Une journaliste détenant une information sensible commence à lui faire du chantage… La vie de Magalie bascule.",
+            extraData={"allocineId": 1000006691, "title": "L'Accident de piano"},
+        )
+        accident_piano_movie_product_id = accident_piano_movie_product.id
+
+        with caplog.at_level(logging.WARNING):
+            product = api.upsert_movie_product_from_provider(movie, self.boost_provider, "idBoostProducts")
+
+        assert caplog.records[0].message == "Provider sent incoherent visa and allocineId"
+        assert caplog.records[0].extra == {
+            "movie": {
+                "allocine_id": "1000006691",
+                "visa": "164773",
+                "title": "F1 : LE FILM",
+                "description": "Sonny Hayes était le prodige de la F1 des années 90 jusqu’à son terrible accident. Trente ans plus tard, devenu un pilote indépendant, il est contacté par Ruben Cervantes, patron d’une écurie en faillite qui le convainc de revenir pour sauver l’équipe et prouver qu’il est toujours le meilleur. Aux côtés de Joshua Pearce, diamant brut prêt à devenir le numéro 1, Sonny réalise vite qu'en F1, son coéquipier est aussi son plus grand rival, que le danger est partout et qu'il risque de tout perdre.",
+            },
+            "provider_id": self.boost_provider.id,
+            "product_id": f1_movie_product.id,
+        }
+        assert product == f1_movie_product
+        assert db.session.query(models.Product).filter_by(id=accident_piano_movie_product_id).one_or_none()
 
 
 @pytest.mark.usefixtures("db_session")
