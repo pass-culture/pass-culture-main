@@ -206,7 +206,7 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
     def test_search_by_allocine_id_existing_product(self, authenticated_client):
         product = offers_factories.ProductFactory.create(
             description="Une offre pour tester",
-            extraData={"allocineId": "123456"},
+            extraData={"allocineId": 123456},
         )
 
         with assert_num_queries(self.expected_num_queries):

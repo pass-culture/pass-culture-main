@@ -73,7 +73,7 @@ class ListChroniclesTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(chronicle_with_product.id)
 
     def test_search_by_allocine_id(self, authenticated_client):
-        allocine_id = "1000013191"
+        allocine_id = 1000013191
         product = offers_factories.ProductFactory(extraData={"allocineId": allocine_id})
         chronicle_with_product = chronicles_factories.ChronicleFactory(products=[product])
         chronicles_factories.ChronicleFactory()
@@ -231,7 +231,7 @@ class GetChronicleDetailsTest(GetEndpointHelper):
     ):
         products = [
             offers_factories.ProductFactory(ean="1235467890123"),
-            offers_factories.ProductFactory(extraData={"allocineId": "1000013191"}),
+            offers_factories.ProductFactory(extraData={"allocineId": 1000013191}),
             offers_factories.ProductFactory(extraData={"visa": "1000013192"}),
             offers_factories.ProductFactory(),
         ]
@@ -473,7 +473,7 @@ class AttachProductTest(PostEndpointHelper):
         if product_identifier_type == chronicles_models.ChronicleProductIdentifierType.EAN:
             product = offers_factories.ProductFactory(ean=product_identifier)
         elif product_identifier_type == chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID:
-            product = offers_factories.ProductFactory(extraData={"allocineId": product_identifier})
+            product = offers_factories.ProductFactory(extraData={"allocineId": int(product_identifier)})
         else:
             product = offers_factories.ProductFactory(extraData={"visa": product_identifier})
         chronicle = chronicles_factories.ChronicleFactory(
@@ -522,7 +522,7 @@ class AttachProductTest(PostEndpointHelper):
         if product_identifier_type == chronicles_models.ChronicleProductIdentifierType.EAN:
             product = offers_factories.ProductFactory(ean=product_identifier)
         elif product_identifier_type == chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID:
-            product = offers_factories.ProductFactory(extraData={"allocineId": product_identifier})
+            product = offers_factories.ProductFactory(extraData={"allocineId": int(product_identifier)})
         else:
             product = offers_factories.ProductFactory(extraData={"visa": product_identifier})
 

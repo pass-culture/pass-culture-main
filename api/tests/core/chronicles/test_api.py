@@ -808,7 +808,7 @@ class SaveCineClubChronicleTest:
         assert not chronicle.isSocialMediaDiffusible
 
     def test_save_cine_club_chronicle_link_to_product(self):
-        product = offers_factories.ProductFactory(extraData={"allocineId": "1000013191"})
+        product = offers_factories.ProductFactory(extraData={"allocineId": 1000013191})
         form = typeform.TypeformResponse(
             response_id=random_string(),
             date_submitted=datetime.datetime(2024, 10, 24),
