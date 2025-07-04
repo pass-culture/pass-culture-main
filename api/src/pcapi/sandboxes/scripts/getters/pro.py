@@ -3,6 +3,7 @@ import datetime
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
+import pcapi.core.geography.factories as geography_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.bookings import models as bookings_models
@@ -41,7 +42,10 @@ def create_regular_pro_user() -> dict:
     pro_user = users_factories.ProFactory.create()
     offerer = offerers_factories.OffererFactory.create(allowedOnAdage=False)
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
-    venue = offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
+    address = geography_factories.AddressFactory(street="1 boulevard Poissonnière", postalCode="75002", city="Paris")
+    venue = offerers_factories.VenueFactory.create(
+        name="Mon Lieu", managingOfferer=offerer, isPermanent=True, offererAddress__adress=address
+    )
     offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer)
     offerers_factories.VenueLabelFactory.create(label="Musée de France")
 
@@ -209,21 +213,28 @@ def create_pro_user_with_individual_offers() -> dict:
     pro_user = users_factories.ProFactory.create()
     offerer = offerers_factories.OffererFactory.create()
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
-    venue = offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
+    address = geography_factories.AddressFactory(street="1 boulevard Poissonnière", postalCode="75002", city="Paris")
+    venue = offerers_factories.VenueFactory.create(
+        name="Mon Lieu", managingOfferer=offerer, isPermanent=True, offererAddress__address=address
+    )
     offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer)
-    offer1 = offers_factories.ThingOfferFactory.create(venue=venue, name="Une super offre")
+    offer1 = offers_factories.ThingOfferFactory.create(
+        venue=venue, name="Une super offre", offererAddress__address=address
+    )
     offers_factories.StockFactory.create(offer=offer1)
     offer2 = offers_factories.ThingOfferFactory.create(
         venue=venue,
         name="Une offre avec ean",
         ean="1234567891234",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
+        offererAddress__address=address,
     )
     offers_factories.StockFactory.create(offer=offer2)
     offer3 = offers_factories.ThingOfferFactory.create(
         venue=venue,
         name="Une flûte traversière",
         subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+        offererAddress__address=address,
     )
     offers_factories.StockFactory.create(offer=offer3)
 
@@ -232,6 +243,7 @@ def create_pro_user_with_individual_offers() -> dict:
         name="Un concert d'electro inoubliable",
         subcategoryId=subcategories.CONCERT.id,
         extraData={"gtl_id": "04000000"},
+        offererAddress__address=address,
     )
     offers_factories.StockFactory.create(offer=offer4)
 
@@ -239,18 +251,21 @@ def create_pro_user_with_individual_offers() -> dict:
         venue=venue,
         name="Une autre offre incroyable",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
+        offererAddress__address=address,
     )
     offers_factories.StockFactory.create(offer=offer5)
     offer6 = offers_factories.ThingOfferFactory.create(
         venue=venue,
         name="Encore une offre incroyable",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
+        offererAddress__address=address,
     )
     offers_factories.StockFactory.create(offer=offer6)
     offer7 = offers_factories.ThingOfferFactory.create(
         venue=venue,
         name="Une offre épuisée",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
+        offererAddress__address=address,
     )
     return {
         "user": get_pro_user_helper(pro_user),
