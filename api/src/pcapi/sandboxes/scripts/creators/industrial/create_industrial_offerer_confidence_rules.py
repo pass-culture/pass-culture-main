@@ -2,8 +2,10 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
+@log_func_duration
 def create_industrial_offerer_confidence_rules() -> None:
     rule1 = offerers_factories.ManualReviewOffererConfidenceRuleFactory.create(
         offerer__name="Structure en validation manuelle",

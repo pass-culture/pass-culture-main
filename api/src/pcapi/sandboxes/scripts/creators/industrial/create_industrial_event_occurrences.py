@@ -10,6 +10,7 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.models.event_occurence import EventOccurrence
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.sandboxes.scripts.utils.select import remove_every
 
 from . import utils
@@ -28,6 +29,7 @@ EVENT_OCCURRENCE_BEGINNING_DATETIMES = [
 EVENT_OFFERS_WITH_OCCURRENCES_REMOVE_MODULO = 3
 
 
+@log_func_duration
 def create_industrial_event_occurrences(
     event_offers_by_name: dict[str, offers_models.Offer],
 ) -> dict[str, EventOccurrence]:

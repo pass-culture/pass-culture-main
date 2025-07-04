@@ -4,8 +4,10 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
+@log_func_duration
 def create_complex_offers(offerers_by_name: dict[str, offerers_models.Offerer]) -> None:
     offerers_iterator = iter(offerers_by_name.values())
     movie_product = offers_factories.ProductFactory.create(

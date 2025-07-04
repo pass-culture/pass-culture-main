@@ -22,6 +22,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.models import User
 from pcapi.models import db
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
@@ -48,6 +49,7 @@ AGE_TAGS = ["age-more-than-18yo", "age-less-than-18yo", "age-18yo"]
 GRANT_18_DEPOSIT_VERSIONS = [1, 2]
 
 
+@log_func_duration
 def create_industrial_app_users() -> dict[str, User]:
     beneficiaries = create_industrial_app_beneficiaries()
     underage_beneficiaries = create_industrial_app_underage_beneficiaries()

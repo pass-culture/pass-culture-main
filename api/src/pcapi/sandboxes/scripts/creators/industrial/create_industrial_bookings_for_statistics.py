@@ -12,11 +12,13 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.offers import models as offers_models
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
 
 
+@log_func_duration
 def create_industrial_bookings_for_statistics() -> None:
     logger.info("create_industrial_bookings_for_statistics")
     _create_booking_for_statistics_offerer_multiple_venues()

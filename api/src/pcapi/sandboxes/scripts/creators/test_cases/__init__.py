@@ -1,11 +1,8 @@
 import datetime
 import itertools
-import logging
 import pathlib
 import random
-import time
 import typing
-from functools import wraps
 
 from dateutil.relativedelta import relativedelta
 from factory.faker import faker
@@ -56,6 +53,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_with_
 from pcapi.sandboxes.scripts.creators.industrial.create_role_permissions import create_roles_with_permissions
 from pcapi.sandboxes.scripts.creators.industrial.create_venue_labels import create_venue_labels
 from pcapi.sandboxes.scripts.creators.test_cases import venues_mock
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 
 
@@ -64,20 +62,6 @@ if typing.TYPE_CHECKING:
 
 
 Fake = faker.Faker(locale="fr_FR")
-
-logger = logging.getLogger(__name__)
-
-
-def log_func_duration(func: typing.Callable) -> typing.Callable:
-    @wraps(func)
-    def wrapper(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
-        start_time = time.time()
-        result = func(*args, **kwargs)
-        logger.info("Executed %s in %.2fs", func.__name__, time.time() - start_time)
-
-        return result
-
-    return wrapper
 
 
 @log_func_duration

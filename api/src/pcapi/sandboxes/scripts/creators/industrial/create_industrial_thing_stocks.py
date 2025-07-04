@@ -3,6 +3,7 @@ import logging
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.repository import repository
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.sandboxes.scripts.utils.select import remove_every
 
 from .utils import get_occurrence_short_name_or_none
@@ -15,6 +16,7 @@ logger = logging.getLogger(__name__)
 THING_OFFERS_WITH_STOCK_REMOVE_MODULO = 3
 
 
+@log_func_duration
 def create_industrial_thing_stocks(thing_offers_by_name: dict[str, Offer]) -> None:
     logger.info("create_industrial_thing_stocks")
 

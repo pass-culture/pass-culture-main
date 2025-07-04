@@ -16,6 +16,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import factories as users_factories
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
@@ -167,6 +168,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
     )
 
 
+@log_func_duration
 def create_offerer_providers_for_apis() -> None:
     create_offerer_provider("TicketBusters")
     create_offerer_provider("MangaMania")

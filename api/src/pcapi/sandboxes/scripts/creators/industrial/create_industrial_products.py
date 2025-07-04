@@ -4,11 +4,13 @@ import random
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.providers import factories as providers_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
 
 
+@log_func_duration
 def create_industrial_products() -> None:
     logger.info("create_industrial_products")
 

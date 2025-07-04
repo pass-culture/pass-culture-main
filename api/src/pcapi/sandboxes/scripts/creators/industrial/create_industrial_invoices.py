@@ -25,11 +25,13 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.models import db
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
 
 
+@log_func_duration
 def create_industrial_invoices() -> None:
     logger.info("create_industrial_invoices")
 

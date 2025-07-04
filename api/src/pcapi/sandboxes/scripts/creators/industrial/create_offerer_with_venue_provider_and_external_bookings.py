@@ -17,6 +17,7 @@ from pcapi.core.providers.models import Provider
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.models import db
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
@@ -33,6 +34,7 @@ def _cinema_stock_features(provider: Provider) -> list[str]:
     return features
 
 
+@log_func_duration
 def create_industrial_provider_external_bookings() -> None:
     logger.info("create_industrial_provider_external_bookings")
     create_offerers_with_cinema_venue_providers_and_external_bookings()

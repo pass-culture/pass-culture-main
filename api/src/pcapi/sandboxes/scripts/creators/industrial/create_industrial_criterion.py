@@ -3,11 +3,13 @@ import logging
 import pcapi.core.criteria.factories as criteria_factories
 from pcapi.core.criteria.models import Criterion
 from pcapi.core.offers.models import Offer
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
 
 
+@log_func_duration
 def create_industrial_criteria() -> dict[str, Criterion]:
     logger.info("create_industrial_criteria")
 
@@ -33,6 +35,7 @@ def create_industrial_criteria() -> dict[str, Criterion]:
     return criteria_by_name
 
 
+@log_func_duration
 def associate_criterion_to_one_offer_with_mediation(
     offers_by_name: dict[str, Offer], criteria_by_name: dict[str, Criterion]
 ) -> None:

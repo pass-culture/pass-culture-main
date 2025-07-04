@@ -7,6 +7,7 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_NAMES
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
@@ -16,6 +17,7 @@ DEACTIVATED_OFFERS_PICK_MODULO = 3
 THINGS_PER_OFFERER = 5
 
 
+@log_func_duration
 def create_industrial_thing_offers(
     offerers_by_name: dict[str, offerers_models.Offerer],
     venues_by_name: dict[str, offerers_models.Venue],

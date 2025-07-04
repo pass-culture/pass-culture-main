@@ -6,11 +6,13 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import PriceCategoryFactory
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 logger = logging.getLogger(__name__)
 
 
+@log_func_duration
 def create_offers_with_price_categories(offerer: Offerer) -> None:
     venue = VenueFactory.create(
         name="Lieu avec tarif",

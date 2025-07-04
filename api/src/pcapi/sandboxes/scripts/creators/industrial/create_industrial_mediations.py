@@ -11,6 +11,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.object_storage import delete_public_object_recursively
 from pcapi.core.offers.models import Offer
 from pcapi.repository import repository
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.sandboxes.scripts.utils.select import remove_every
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 
@@ -21,6 +22,7 @@ logger = logging.getLogger(__name__)
 OFFERS_WITH_MEDIATION_REMOVE_MODULO = 5
 
 
+@log_func_duration
 def prepare_mediations_folders() -> None:
     logger.info("prepare_mediations_folders")
 
@@ -41,6 +43,7 @@ def prepare_mediations_folders() -> None:
         )
 
 
+@log_func_duration
 def create_industrial_mediations(offers_by_name: dict[str, Offer]) -> None:
     logger.info("create_industrial_mediations")
 

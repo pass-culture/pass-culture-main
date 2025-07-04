@@ -3,6 +3,7 @@ import datetime
 from pcapi import settings
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 # store here UAIs with a ministry that is not EDUCATION_NATIONALE
@@ -17,6 +18,7 @@ MINISTRY_BY_UAI = {
 }
 
 
+@log_func_duration
 def create_institutions() -> list[educational_models.EducationalInstitution]:
     program = educational_factories.EducationalInstitutionProgramFactory.create(
         name="marseille_en_grand", label="Marseille en grand"

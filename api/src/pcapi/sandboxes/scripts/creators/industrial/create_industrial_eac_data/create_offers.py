@@ -24,6 +24,7 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data.create_collective_api_provider import (
     create_collective_api_provider,
 )
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.utils import db as db_utils
 from pcapi.utils.image_conversion import DO_NOT_CROP
 
@@ -153,6 +154,7 @@ def _get_or_create_offerer_address(
     return offerer_address
 
 
+@log_func_duration
 def create_offers(
     offerers: list[offerers_models.Offerer], institutions: list[educational_models.EducationalInstitution]
 ) -> None:

@@ -16,6 +16,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice.finance import validation
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.utils.chunks import get_chunks
 
 
@@ -370,6 +371,7 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
         )
 
 
+@log_func_duration
 def create_industrial_commercial_gestures() -> None:
     author_user = users_factories.UserFactory.create()
     offerer = offerers_factories.OffererFactory.create(name="Structure pour geste commerciaux")

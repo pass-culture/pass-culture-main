@@ -20,12 +20,14 @@ from pcapi.models import db
 from pcapi.routes.backoffice.finance import validation
 from pcapi.sandboxes.scripts.creators.test_cases import create_movie_products
 from pcapi.sandboxes.scripts.creators.test_cases import create_offer_and_stocks_for_cinemas
+from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.utils import siren as siren_utils
 
 
 logger = logging.getLogger(__name__)
 
 
+@log_func_duration
 def create_new_caledonia_objects() -> None:
     logger.info("create_new_caledonia_objects")
 
