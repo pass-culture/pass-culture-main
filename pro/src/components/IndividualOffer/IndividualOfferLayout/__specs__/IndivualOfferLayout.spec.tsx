@@ -121,6 +121,27 @@ describe('IndividualOfferLayout', () => {
     expect(screen.getByText('publiée')).toBeInTheDocument()
   })
 
+  it('should not allow access to publication dates edition when offer is synchronized with a provider', () => {
+    const offer = getIndividualOfferFactory({
+      lastProvider: { name: 'Boost' },
+    })
+
+    renderIndividualOfferLayout(
+      {
+        offer,
+      },
+      {
+        features: ['WIP_REFACTO_FUTURE_OFFER'],
+        initialRouterEntries: ['/offre/creation'],
+      }
+    )
+
+    expect(screen.getByText('publiée')).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Modifier' })
+    ).not.toBeInTheDocument()
+  })
+
   it('should display status but not let activate offer when offer is synchronized with a provider', () => {
     const offer = getIndividualOfferFactory({
       lastProvider: { name: 'Boost' },
