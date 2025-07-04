@@ -271,8 +271,16 @@ class ListVenuesTest(GetEndpointHelper):
     def test_list_venues_by_only_validated_offerer(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
         not_validated_offerer = offerers_factories.NewOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer, postalCode="62000", departementCode="62")
-        offerers_factories.VenueFactory(managingOfferer=not_validated_offerer, postalCode="62000", departementCode="62")
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            offererAddress__address__postalCode="62000",
+            offererAddress__address__departmentCode="62",
+        )
+        offerers_factories.VenueFactory(
+            managingOfferer=not_validated_offerer,
+            offererAddress__address__postalCode="62000",
+            offererAddress__address__departmentCode="62",
+        )
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, only_validated_offerers="on", department="62"))
@@ -499,8 +507,8 @@ class GetVenueTest(GetEndpointHelper):
         assert venue.siret not in response_text
         assert f"RIDET : {venue.ridet} " in response_text
         assert "Région : Nouvelle-Calédonie " in response_text
-        assert f"Ville : {venue.city} " in response_text
-        assert f"Code postal : {venue.postalCode} " in response_text
+        assert f"Ville : {venue.offererAddress.address.city} " in response_text
+        assert f"Code postal : {venue.offererAddress.address.postalCode} " in response_text
         assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
         assert "Peut créer une offre EAC : Non" in response_text
         assert "Cartographié sur ADAGE" not in response_text
@@ -1447,28 +1455,28 @@ class UpdateVenueTest(PostEndpointHelper):
     ):
         venue = offerers_factories.VenueFactory()
         other_venue = offerers_factories.VenueFactory(
-            street="1 Rue Poivre",
-            postalCode="97400",
-            city="97411",
-            latitude=-20.88756,
-            longitude=55.451442,
-            banId="97411_1120_00001",
+            offererAddress__address__street="1 Rue Poivre",
+            offererAddress__address__postalCode="97400",
+            offererAddress__address__city="Saint-Denis",
+            offererAddress__address__latitude=-20.88756,
+            offererAddress__address__longitude=55.451442,
+            offererAddress__address__banId="97411_1120_00001",
         )
 
         data = {
             "name": venue.name,
             "public_name": venue.publicName,
             "siret": venue.siret,
-            "city": other_venue.city,
-            "postal_code": other_venue.postalCode,
-            "street": other_venue.street,
-            "ban_id": other_venue.banId,
+            "city": other_venue.offererAddress.address.city,
+            "postal_code": other_venue.offererAddress.address.postalCode,
+            "street": other_venue.offererAddress.address.street,
+            "ban_id": other_venue.offererAddress.address.banId,
             "is_manual_address": "on",
             "booking_email": venue.bookingEmail,
             "phone_number": venue.contact.phone_number,
             "is_permanent": venue.isPermanent,
-            "latitude": other_venue.latitude,
-            "longitude": other_venue.longitude,
+            "latitude": other_venue.offererAddress.address.latitude,
+            "longitude": other_venue.offererAddress.address.longitude,
             "venue_type_code": venue.venueTypeCode.name,
             "acceslibre_url": "",
         }
@@ -1478,14 +1486,13 @@ class UpdateVenueTest(PostEndpointHelper):
 
         db.session.refresh(venue)
 
-        assert venue.banId == other_venue.banId
-        assert venue.timezone == "Indian/Reunion"
-
+        assert venue.offererAddressId != other_venue.offererAddressId
         assert venue.offererAddress.addressId != other_venue.offererAddress.addressId
-        assert venue.offererAddress.address.isManualEdition is True
-        assert venue.offererAddress.address.street == other_venue.offererAddress.address.street
-        assert venue.offererAddress.address.city == other_venue.offererAddress.address.city
-        assert venue.offererAddress.address.banId is None
+        address = venue.offererAddress.address
+        assert address.isManualEdition is True
+        assert address.street == other_venue.offererAddress.address.street
+        assert address.city == other_venue.offererAddress.address.city
+        assert address.banId is None
 
         update_snapshot = venue.action_history[0].extraData["modified_info"]
         assert not update_snapshot.get("offererAddress.address.banId")
@@ -1508,12 +1515,12 @@ class UpdateVenueTest(PostEndpointHelper):
         self, mock_get_municipality_centroid, authenticated_client
     ):
         venue = offerers_factories.VenueFactory(
-            street="1 Rue Poivre",
-            postalCode="97400",
-            city="97411",
-            latitude=-20.88756,
-            longitude=55.451442,
-            banId="97411_1120_00001",
+            offererAddress__address__street="1 Rue Poivre",
+            offererAddress__address__postalCode="97400",
+            offererAddress__address__city="Saint-Denis",
+            offererAddress__address__latitude=-20.88756,
+            offererAddress__address__longitude=55.451442,
+            offererAddress__address__banId="97411_1120_00001",
         )
         original_offerer_address_id = venue.offererAddressId
         original_address_id = venue.offererAddress.addressId
@@ -1553,12 +1560,12 @@ class UpdateVenueTest(PostEndpointHelper):
         venue = offerers_factories.VenueFactory()
         offerer_address_id = venue.offererAddressId
         other_venue = offerers_factories.VenueFactory(
-            street="1 Rue Poivre",
-            postalCode="97400",
-            city="97411",
-            latitude=-20.88756,
-            longitude=55.451442,
-            banId=None,
+            offererAddress__address__street="1 Rue Poivre",
+            offererAddress__address__postalCode="97400",
+            offererAddress__address__city="Saint-Denis",
+            offererAddress__address__latitude=-20.88756,
+            offererAddress__address__longitude=55.451442,
+            offererAddress__address__banId=None,
             offererAddress__address__isManualEdition=True,
             offererAddress__address__inseeCode="97411",
         )
@@ -1567,16 +1574,16 @@ class UpdateVenueTest(PostEndpointHelper):
             "name": venue.name,
             "public_name": venue.publicName,
             "siret": venue.siret,
-            "city": other_venue.city,
-            "postal_code": other_venue.postalCode,
-            "street": other_venue.street,
-            "banId": venue.banId,
+            "city": other_venue.offererAddress.address.city,
+            "postal_code": other_venue.offererAddress.address.postalCode,
+            "street": other_venue.offererAddress.address.street,
+            "ban_id": venue.offererAddress.address.banId,
             "is_manual_address": "on",
             "booking_email": venue.bookingEmail,
             "phone_number": venue.contact.phone_number,
             "is_permanent": venue.isPermanent,
-            "latitude": other_venue.latitude,
-            "longitude": other_venue.longitude,
+            "latitude": other_venue.offererAddress.address.latitude,
+            "longitude": other_venue.offererAddress.address.longitude,
             "venue_type_code": venue.venueTypeCode.name,
             "acceslibre_url": "",
         }
@@ -1586,12 +1593,11 @@ class UpdateVenueTest(PostEndpointHelper):
 
         db.session.refresh(venue)
 
-        assert venue.banId == other_venue.banId
-        assert venue.timezone == "Indian/Reunion"
-
         assert venue.offererAddressId != offerer_address_id
         assert venue.offererAddress.addressId == other_venue.offererAddress.addressId
-        assert venue.offererAddress.address.isManualEdition is True
+        address = venue.offererAddress.address
+        assert address.isManualEdition is True
+        assert address.banId == other_venue.offererAddress.address.banId
 
     @patch(
         "pcapi.connectors.api_adresse.get_municipality_centroid",
@@ -1613,12 +1619,12 @@ class UpdateVenueTest(PostEndpointHelper):
         venue = offerers_factories.VenueFactory()
         offerer_address_id = venue.offererAddressId
         other_venue = offerers_factories.VenueFactory(
-            street="1 Rue Poivre",
-            postalCode="97400",
-            city="97411",
-            latitude=-20.88756,
-            longitude=55.451442,
-            banId=None,
+            offererAddress__address__street="1 Rue Poivre",
+            offererAddress__address__postalCode="97400",
+            offererAddress__address__city="Saint-Denis",
+            offererAddress__address__latitude=-20.88756,
+            offererAddress__address__longitude=55.451442,
+            offererAddress__address__banId=None,
             offererAddress__address__isManualEdition=True,
             offererAddress__address__inseeCode="97411",
         )
@@ -1627,16 +1633,16 @@ class UpdateVenueTest(PostEndpointHelper):
             "name": venue.name,
             "public_name": venue.publicName,
             "siret": venue.siret,
-            "city": other_venue.city,
-            "postal_code": other_venue.postalCode,
-            "street": other_venue.street,
+            "city": other_venue.offererAddress.address.city,
+            "postal_code": other_venue.offererAddress.address.postalCode,
+            "street": other_venue.offererAddress.address.street,
             "banId": "",
             "is_manual_address": "on",
             "booking_email": venue.bookingEmail,
             "phone_number": venue.contact.phone_number,
             "is_permanent": venue.isPermanent,
-            "latitude": other_venue.latitude,
-            "longitude": other_venue.longitude,
+            "latitude": other_venue.offererAddress.address.latitude,
+            "longitude": other_venue.offererAddress.address.longitude,
             "venue_type_code": venue.venueTypeCode.name,
             "acceslibre_url": "",
         }
@@ -1646,12 +1652,10 @@ class UpdateVenueTest(PostEndpointHelper):
 
         db.session.refresh(venue)
 
-        assert venue.banId == other_venue.banId
-        assert venue.timezone == "Indian/Reunion"
-
         assert venue.offererAddressId != offerer_address_id
         assert venue.offererAddress.addressId == other_venue.offererAddress.addressId
         assert venue.offererAddress.address.isManualEdition is True
+        assert venue.offererAddress.address.banId is None
 
     @patch(
         "pcapi.connectors.api_adresse.get_municipality_centroid",
@@ -1673,22 +1677,22 @@ class UpdateVenueTest(PostEndpointHelper):
         venue = offerers_factories.VenueFactory()
         offerer_address_id = venue.offererAddressId
         other_venue = offerers_factories.VenueFactory(
-            street="1 Rue Poivre",
-            postalCode="97400",
-            city="97411",
-            latitude=-20.88756,
-            longitude=55.451442,
-            banId="97411_1120_00001",
+            offererAddress__address__street="1 Rue Poivre",
+            offererAddress__address__postalCode="97400",
+            offererAddress__address__city="Saint-Denis",
+            offererAddress__address__latitude=-20.88756,
+            offererAddress__address__longitude=55.451442,
+            offererAddress__address__banId="97411_1120_00001",
         )
 
         data = {
             "name": venue.name,
             "public_name": venue.publicName,
             "siret": venue.siret,
-            "city": other_venue.city,
-            "postal_code": other_venue.postalCode,
-            "street": other_venue.street,
-            "ban_id": other_venue.banId,
+            "city": other_venue.offererAddress.address.city,
+            "postal_code": other_venue.offererAddress.address.postalCode,
+            "street": other_venue.offererAddress.address.street,
+            "ban_id": other_venue.offererAddress.address.banId,
             "is_manual_address": "on",
             "booking_email": venue.bookingEmail,
             "phone_number": venue.contact.phone_number,
@@ -1704,9 +1708,6 @@ class UpdateVenueTest(PostEndpointHelper):
 
         db.session.refresh(venue)
 
-        assert venue.banId == other_venue.banId
-        assert venue.timezone == "Indian/Reunion"
-
         assert venue.offererAddressId != offerer_address_id  # changed
         # same street and Insee code but different GPS position: new row because of manual edition
         assert venue.offererAddress.addressId != other_venue.offererAddress.addressId
@@ -1714,6 +1715,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert address.latitude == Decimal("-20.88754")
         assert address.longitude == Decimal("55.45101")
         assert address.isManualEdition is True
+        assert address.banId is None
 
     def test_update_venue_contact_only(self, authenticated_client, offerer):
         contact_email = "contact.venue@example.com"
@@ -2073,7 +2075,9 @@ class UpdateVenueTest(PostEndpointHelper):
         }
 
     def test_update_venue_latitude_longitude_precision(self, authenticated_client):
-        venue = offerers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory(
+            offererAddress__address__latitude=48.87004, offererAddress__address__longitude=2.37850
+        )
 
         data = self._get_current_data(venue)
         data["latitude"] = "48.870037"

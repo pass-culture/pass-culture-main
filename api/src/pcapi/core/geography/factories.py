@@ -48,3 +48,14 @@ class ManualAddressFactory(AddressFactory):
     banId = None
     inseeCode = None
     isManualEdition = True
+
+
+class CaledonianAddressFactory(AddressFactory):
+    street: str | factory.declarations.BaseDeclaration | None = factory.Sequence(
+        "{} Avenue James Cook".format
+    )  # sequence avoids UniqueViolation (street+inseeCode)
+    postalCode: str = "98800"
+    city: str = "Nouméa"
+    latitude: float | None = -22.26355
+    longitude: float | None = 166.4146
+    banId: str = "98818_w65mkd"

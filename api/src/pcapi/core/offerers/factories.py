@@ -199,18 +199,20 @@ def _get_department_code(postal_code: str | None) -> str | None:
 
 class CaledonianVenueFactory(VenueFactory):
     name = factory.Sequence("Partenaire culturel calédonien {}".format)
-    latitude: float | None = -22.26355
-    longitude: float | None = 166.4146
     managingOfferer = factory.SubFactory(CaledonianOffererFactory)
-    street = factory.LazyAttribute(lambda o: None if o.isVirtual else "Avenue James Cook")
-    banId = factory.LazyAttribute(lambda o: None if o.isVirtual else "98818_w65mkd")
-    postalCode = factory.LazyAttribute(lambda o: None if o.isVirtual else "98800")
-    city = factory.LazyAttribute(lambda o: None if o.isVirtual else "Nouméa")
     siret = factory.LazyAttributeSequence(
         lambda o, n: siren_utils.ridet_to_siret(f"{siren_utils.siren_to_rid7(o.managingOfferer.siren)}{n % 100:03}")
     )
     venueTypeCode = models.VenueTypeCode.BOOKSTORE
     adageId = None
+
+    offererAddress: factory.declarations.BaseDeclaration | None = factory.SubFactory(
+        "pcapi.core.offerers.factories.OffererAddressOfVenueFactory",
+        address=factory.SubFactory(
+            "pcapi.core.geography.factories.CaledonianAddressFactory",
+        ),
+        offerer=factory.SelfAttribute("..managingOfferer"),
+    )
 
 
 class CollectiveVenueFactory(VenueFactory):
