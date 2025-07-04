@@ -13,6 +13,7 @@ import os
 
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
+import sqlalchemy.orm as sa_orm
 
 from pcapi.app import app
 from pcapi.core.history import api as history_api
@@ -44,7 +45,6 @@ def _write_modifications(modifications: list[tuple[int, str]], filename: str) ->
 def main(not_dry: bool) -> None:
     log_modifications: list[tuple[int, str]] = []
     log_fails: list[tuple[int, str]] = []
-    print("Starting script")
     venues_without_siret_with_providers: list[Venue] = (
         db.session.query(Venue)
         .join(Venue.venueProviders)
@@ -52,36 +52,43 @@ def main(not_dry: bool) -> None:
             Venue.siret.is_(None),
             sa.exists().where(VenueProvider.venueId == Venue.id).correlate(Venue),
         )
+        .options(
+            sa_orm.load_only(Venue.id, Venue.siret, Venue.managingOffererId),
+            sa_orm.joinedload(Venue.venueProviders).load_only(
+                VenueProvider.venueId,
+                VenueProvider.providerId,
+            ),
+        )
         .all()
     )
 
-    venues_with_siret: list[Venue] = db.session.query(Venue).filter(Venue.siret.is_not(None)).all()
-
-    venues_with_siret_by_offerer: dict[int, list] = {}
-    for venue in venues_with_siret:
-        venues_with_siret_by_offerer.setdefault(venue.managingOffererId, []).append(venue)
+    venues_with_siret_by_offerer_query = (
+        db.session.query(sa.func.min(Venue.id))
+        .filter(Venue.siret.is_not(None))
+        # .options(sa_orm.load_only(Venue.managingOffererId))
+        .having(sa.func.count(Venue.id) == 1)
+        .group_by(Venue.managingOffererId)
+    )
 
     for venue in venues_without_siret_with_providers:
-        venues_with_siret_on_offerer = venues_with_siret_by_offerer.get(venue.managingOffererId)
-        if not venues_with_siret_on_offerer or len(venues_with_siret_on_offerer) != 1:
-            log_fails.append((venue.id, "Offerer has either 0 or more than 1 venue with siret"))
-            continue
-
-        venue_with_siret: Venue = venues_with_siret_on_offerer[0]
+        venue_id_with_siret = venues_with_siret_by_offerer_query.filter(
+            Venue.managingOffererId == venue.managingOffererId
+        ).scalar()
 
         new_providers: list[VenueProvider] = [
-            VenueProvider(venueId=venue_with_siret.id, providerId=provider.id) for provider in venue.venueProviders
+            VenueProvider(venueId=venue_id_with_siret, providerId=venue_provider.providerId)
+            for venue_provider in venue.venueProviders
         ]
         print(f"Venue {venue.id} will be synch. with those providers {new_providers}")
         try:
             with atomic():
-                db.session.bulk_save_objects(new_providers)
+                db.session.add_all(new_providers)
                 db.session.flush()
         except sa_exc.IntegrityError as error:
             log_fails.append((venue.id, f"Provider already exists on venue. \n {error}"))
             continue
 
-        log_modifications.append((venue_with_siret, f"Adding providers {new_providers}"))
+        log_modifications.append((venue_id_with_siret, f"Adding providers {new_providers}"))
         for venue_provider in new_providers:
             history_api.add_action(
                 history_models.ActionType.SYNC_VENUE_TO_PROVIDER,
