@@ -109,7 +109,7 @@ class UpdateRoleTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, role_id=role_to_edit.id, form=base_form)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.get_roles", active_tab="management", _external=True)
+        expected_url = url_for("backoffice_web.get_roles", active_tab="management")
         assert response.location == expected_url
 
         role_to_edit = db.session.query(perm_models.Role).filter_by(id=role_to_edit.id).one()

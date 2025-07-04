@@ -2,6 +2,7 @@ from flask import Blueprint
 from flask import request
 from flask_cors import CORS
 from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import UnsupportedMediaType
 
 from pcapi.models import api_errors
 
@@ -18,10 +19,12 @@ DEPRECATED_PUBLIC_API_URL_PREFIX = "/v2"
 def _check_api_is_enabled_and_json_valid() -> None:
     # We test the json validity because pydantic will not raise an error if the json is not valid.
     # Pydantic will then try to apply the validation schema and throws unintelligible errors.
-    try:
-        _ = request.get_json()
-    except BadRequest as e:
-        raise api_errors.ApiErrors({"global": [e.description]}, status_code=400)
+    if request.content_length:
+        # only test if data are present
+        try:
+            _ = request.get_json()
+        except (BadRequest, UnsupportedMediaType) as e:
+            raise api_errors.ApiErrors({"global": [e.description]}, status_code=400)
 
 
 public_api = Blueprint("public_api", __name__, url_prefix="/")  # we must add `url_prefix="/"` for spectree to work

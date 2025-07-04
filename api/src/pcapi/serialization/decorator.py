@@ -8,6 +8,7 @@ import pydantic.v1
 import spectree
 from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import UnsupportedMediaType
 
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
@@ -155,6 +156,11 @@ def spectree_serialize(
             if body_in_kwargs:
                 try:
                     body_params = flask.request.get_json()
+                except UnsupportedMediaType:
+                    return flask.make_response(
+                        'Please send a "Content-Type: application/json" HTTP header',
+                        400,
+                    )
                 except BadRequest:
                     # Since pydantic validator is applied before this method and use a silent json parser,
                     # the only case we should end here is with an PATCH/POST with no validator for body params

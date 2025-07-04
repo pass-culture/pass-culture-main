@@ -60,6 +60,7 @@ def update_role(
 
 def get_concrete_roles(roles: typing.Collection[perm_models.Roles]) -> list[perm_models.Role]:
     names = [role.value for role in roles]
+    print(id(db.session.get_bind()))
     return db.session.query(perm_models.Role).filter(perm_models.Role.name.in_(names)).all()
 
 
