@@ -529,12 +529,11 @@ def search_product() -> utils.BackofficeResponse:
     product = None
     FILTER_MAP = {
         forms.ProductFilterTypeEnum.VISA: offers_models.Product.extraData["visa"].astext,
-        forms.ProductFilterTypeEnum.ALLOCINE_ID: offers_models.Product.extraData["allocineId"].astext,
+        forms.ProductFilterTypeEnum.ALLOCINE_ID: offers_models.Product.extraData["allocineId"],
     }
     if result_type in FILTER_MAP:
         field_to_filter = FILTER_MAP[result_type]
         product = db.session.query(offers_models.Product).filter(field_to_filter == search_query).one_or_none()
-
     elif result_type == forms.ProductFilterTypeEnum.EAN:
         ean = search_query
         product = db.session.query(offers_models.Product).filter_by(ean=ean).one_or_none()

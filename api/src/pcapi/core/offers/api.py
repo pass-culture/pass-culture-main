@@ -1154,7 +1154,7 @@ def add_criteria_to_offers(
         ean = ean.replace("-", "").replace(" ", "")
         product_query = product_query.filter(models.Product.ean == ean)
     elif allocineId:
-        product_query = product_query.filter(models.Product.extraData["allocineId"].cast(sa.Integer) == allocineId)
+        product_query = product_query.filter(models.Product.extraData["allocineId"] == str(allocineId))
     elif visa:
         product_query = product_query.filter(models.Product.extraData["visa"].astext == visa)
 
