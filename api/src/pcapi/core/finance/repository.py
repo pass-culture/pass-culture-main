@@ -192,20 +192,11 @@ def _get_sent_pricings_for_collective_bookings(
         sa.true().label("offer_is_educational"),
         offerers_models.Venue.name.label("venue_name"),
         offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
-        sa_func.coalesce(
-            offerers_models.Venue.street,
-            offerers_models.Offerer.street,
-        ).label("venue_address"),
-        sa_func.coalesce(
-            offerers_models.Venue.postalCode,
-            offerers_models.Offerer.postalCode,
-        ).label("venue_postal_code"),
-        sa_func.coalesce(
-            offerers_models.Venue.city,
-            offerers_models.Offerer.city,
-        ).label("venue_city"),
+        geography_models.Address.street.label("venue_address"),
+        geography_models.Address.postalCode.label("venue_postal_code"),
+        geography_models.Address.city.label("venue_city"),
+        geography_models.Address.departmentCode.label("venue_departement_code"),
         offerers_models.Venue.siret.label("venue_siret"),
-        offerers_models.Venue.departementCode.label("venue_departement_code"),
         pricing_sub_query.c.amount.label("amount"),
         pricing_sub_query.c.rule_name.label("rule_name"),
         pricing_sub_query.c.rule_id.label("rule_id"),
@@ -227,6 +218,8 @@ def _get_sent_pricings_for_collective_bookings(
         .join(educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock)
         .join(educational_models.CollectiveOffer, educational_models.CollectiveStock.collectiveOffer)
         .join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
+        .join(offerers_models.OffererAddress, offerers_models.Venue.offererAddress)
+        .join(geography_models.Address, offerers_models.OffererAddress.address)
         .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
         .join(
             educational_models.EducationalRedactor,
@@ -269,18 +262,6 @@ def _get_sent_pricings_for_individual_bookings(
         offers_models.Offer.name.label("offer_name"),
         offerers_models.Venue.name.label("venue_name"),
         offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
-        sa_func.coalesce(
-            offerers_models.Venue.street,
-            offerers_models.Offerer.street,
-        ).label("venue_address"),
-        sa_func.coalesce(
-            offerers_models.Venue.postalCode,
-            offerers_models.Offerer.postalCode,
-        ).label("venue_postal_code"),
-        sa_func.coalesce(
-            offerers_models.Venue.city,
-            offerers_models.Offerer.city,
-        ).label("venue_city"),
         offerers_models.Venue.siret.label("venue_siret"),
         # See note about `amount` in `core/finance/models.py`.
         (-models.Pricing.amount).label("amount"),
@@ -324,6 +305,7 @@ def _get_sent_pricings_for_individual_bookings(
         .join(bookings_models.Booking.venue)
     )
 
+    # TODO bdalbianco 06/06/2025 CLEAN_OA ne garder que venue/offer apres la regul
     sub = sa.select(
         offerers_models.OffererAddress.id,
         geography_models.Address.street,
@@ -338,9 +320,13 @@ def _get_sent_pricings_for_individual_bookings(
     sub_offer = sub.subquery("addresses_offer")
     columns.extend(
         [
-            sa_func.coalesce(sub_offer.c.street, sub_venue.c.street).label("address_street"),
-            sa_func.coalesce(sub_offer.c.postalCode, sub_venue.c.postalCode).label("address_postal_code"),
-            sa_func.coalesce(sub_offer.c.city, sub_venue.c.city).label("address_city"),
+            sa_func.coalesce(sub_offer.c.street, sub_venue.c.street, offerers_models.Offerer.street).label(
+                "address_street"
+            ),
+            sa_func.coalesce(sub_offer.c.postalCode, sub_venue.c.postalCode, offerers_models.Offerer.postalCode).label(
+                "address_postal_code"
+            ),
+            sa_func.coalesce(sub_offer.c.city, sub_venue.c.city, offerers_models.Offerer.city).label("address_city"),
         ]
     )
     query = query.join(sub_venue, sub_venue.c.id == offerers_models.Venue.offererAddressId, isouter=True).join(
@@ -387,6 +373,8 @@ def _get_collective_booking_reimbursement_data(query: BaseQuery) -> list[tuple]:
         .join(educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock)
         .join(educational_models.CollectiveOffer, educational_models.CollectiveStock.collectiveOffer)
         .join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
+        .join(offerers_models.OffererAddress, offerers_models.Venue.offererAddress)
+        .join(geography_models.Address, offerers_models.OffererAddress.address)
         .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
         .join(
             educational_models.EducationalRedactor,
@@ -410,23 +398,11 @@ def _get_collective_booking_reimbursement_data(query: BaseQuery) -> list[tuple]:
             educational_models.CollectiveOffer.name.label("offer_name"),
             offerers_models.Venue.name.label("venue_name"),
             offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
-            # Sometimes, a venue has a postal code and a city, but no address, and the offerer's address
-            # is in another city. Now, we only check the postal code to keep either the venue's full address
-            # or the offerer's one
-            sa.case(
-                (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.street),
-                else_=offerers_models.Offerer.street,
-            ).label("venue_address"),
-            sa.case(
-                (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.postalCode),
-                else_=offerers_models.Offerer.postalCode,
-            ).label("venue_postal_code"),
-            sa.case(
-                (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.city),
-                else_=offerers_models.Offerer.city,
-            ).label("venue_city"),
             offerers_models.Venue.siret.label("venue_siret"),
-            offerers_models.Venue.departementCode.label("venue_departement_code"),
+            geography_models.Address.street.label("venue_address"),
+            geography_models.Address.postalCode.label("venue_postal_code"),
+            geography_models.Address.city.label("venue_city"),
+            geography_models.Address.departmentCode.label("venue_departement_code"),
             # See note about `amount` in `core/finance/models.py`.
             (-models.Pricing.amount).label("amount"),
             models.Pricing.standardRule.label("rule_name"),
@@ -471,21 +447,6 @@ def _get_individual_booking_reimbursement_data(query: BaseQuery) -> list[tuple]:
         offers_models.Offer.name.label("offer_name"),
         offerers_models.Venue.name.label("venue_name"),
         offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
-        # Sometimes, a venue has a postal code and a city, but no address, and the offerer's address
-        # is in another city. Now, we only check the postal code to keep either the venue's full address
-        # or the offerer's one
-        sa.case(
-            (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.street),
-            else_=offerers_models.Offerer.street,
-        ).label("venue_address"),
-        sa.case(
-            (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.postalCode),
-            else_=offerers_models.Offerer.postalCode,
-        ).label("venue_postal_code"),
-        sa.case(
-            (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.city),
-            else_=offerers_models.Offerer.city,
-        ).label("venue_city"),
         offerers_models.Venue.siret.label("venue_siret"),
         # See note about `amount` in `core/finance/models.py`.
         (-models.Pricing.amount).label("amount"),
@@ -508,6 +469,7 @@ def _get_individual_booking_reimbursement_data(query: BaseQuery) -> list[tuple]:
         .join(bookings_models.Booking.venue)
         .order_by(bookings_models.Booking.dateUsed.desc(), bookings_models.Booking.id.desc())
     )
+    # TODO bdalbianco 06/06/2025 CLEAN_OA retirer offerer après la regul
     sub = sa.select(
         offerers_models.OffererAddress.id,
         geography_models.Address.street,
@@ -522,9 +484,13 @@ def _get_individual_booking_reimbursement_data(query: BaseQuery) -> list[tuple]:
     sub_offer = sub.subquery("addresses_offer")
     columns.extend(
         [
-            sa_func.coalesce(sub_offer.c.street, sub_venue.c.street).label("address_street"),
-            sa_func.coalesce(sub_offer.c.postalCode, sub_venue.c.postalCode).label("address_postal_code"),
-            sa_func.coalesce(sub_offer.c.city, sub_venue.c.city).label("address_city"),
+            sa_func.coalesce(sub_offer.c.street, sub_venue.c.street, offerers_models.Offerer.street).label(
+                "address_street"
+            ),
+            sa_func.coalesce(sub_offer.c.postalCode, sub_venue.c.postalCode, offerers_models.Offerer.postalCode).label(
+                "address_postal_code"
+            ),
+            sa_func.coalesce(sub_offer.c.city, sub_venue.c.city, offerers_models.Offerer.city).label("address_city"),
         ]
     )
     query = (
