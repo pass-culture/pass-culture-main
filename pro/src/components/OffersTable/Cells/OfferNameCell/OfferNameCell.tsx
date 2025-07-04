@@ -19,8 +19,7 @@ import { Thumb } from 'ui-kit/Thumb/Thumb'
 import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 
 import { getCellsDefinition } from '../../utils/cellDefinitions'
-
-export interface OfferNameCellProps {
+interface OfferNameCellProps {
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
   offerLink: string
   rowId: string

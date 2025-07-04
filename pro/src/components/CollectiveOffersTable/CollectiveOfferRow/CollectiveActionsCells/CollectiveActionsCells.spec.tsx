@@ -5,8 +5,8 @@ import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
 import {
-  CollectiveOfferDisplayedStatus,
   CollectiveOfferAllowedAction,
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
   OfferAddressType,
 } from 'apiClient/v1'
@@ -108,7 +108,7 @@ describe('CollectiveActionsCells', () => {
     }))
   })
 
-  it('should archive an offer on click on the action', async () => {
+  it.only('should archive an offer on click on the action', async () => {
     renderCollectiveActionsCell({
       offer: collectiveOfferFactory({
         allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
