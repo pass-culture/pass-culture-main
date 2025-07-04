@@ -1180,12 +1180,28 @@ def has_active_offer_with_ean(ean: str | None, venue: offerers_models.Venue, off
     return db.session.query(base_query.exists()).scalar()
 
 
-def get_movie_product_by_allocine_id(allocine_id: str) -> models.Product | None:
-    return db.session.query(models.Product).filter(models.Product.extraData["allocineId"] == allocine_id).one_or_none()
+def get_movie_products_matching_allocine_id_or_film_visa(
+    allocine_id: str | None,
+    visa: str | None,
+) -> list[models.Product]:
+    """
+    One of the two parameters must be defined.
 
+    As there are unique indexes on `extraData["allocineId"]` and `extraData["visa"]`,
+    this function can return at most 2 products.
+    """
+    filters = []
 
-def get_movie_product_by_visa(visa: str) -> models.Product | None:
-    return db.session.query(models.Product).filter(models.Product.extraData["visa"].astext == visa).one_or_none()
+    if not allocine_id and not visa:
+        raise ValueError("`allocine_id` or `visa` must be defined")
+
+    if allocine_id:
+        filters.append((models.Product.extraData["allocineId"] == str(allocine_id)))
+
+    if visa:
+        filters.append((models.Product.extraData["visa"].astext == visa))
+
+    return db.session.query(models.Product).filter(sa.or_(*filters)).all()
 
 
 def _log_deletion_error(_to_keep: models.Product, to_delete: models.Product) -> None:
