@@ -3,7 +3,9 @@ import logging
 
 from flask import Response
 from flask import current_app as app
+from flask import flash
 from flask import request
+from flask import session
 from sqlalchemy.exc import DatabaseError
 from werkzeug import exceptions as werkzeug_exceptions
 from werkzeug.exceptions import HTTPException
@@ -31,6 +33,15 @@ ApiErrorResponse = tuple[dict | Response, int]
 
 @app.errorhandler(NotFound)
 def restize_not_found_route_errors(error: NotFound) -> ApiErrorResponse | HtmlErrorResponse:
+    from pcapi.routes.backoffice import utils
+
+    if utils.is_request_from_htmx():
+        # TODO use flask.g.request_ctx.flashes instead once flask is upgraded
+        flashes = session.get("_flashes")
+        if not flashes:
+            flash("Objet non trouvé !", "warning")
+        return "", 404
+
     return app.generate_error_response({}, backoffice_template_name="errors/not_found.html"), 404
 
 
@@ -53,7 +64,7 @@ def internal_error(error: Exception) -> ApiErrorResponse | HTTPException:
     mark_transaction_as_invalid()
     logger.exception("Unexpected error on method=%s url=%s: %s", request.method, request.url, error)
     errors = ApiErrors()
-    errors.add_error("global", "Il semble que nous ayons des problèmes techniques :(" + " On répare ça au plus vite.")
+    errors.add_error("global", "Il semble que nous ayons des problèmes techniques :( On répare ça au plus vite.")
     return app.generate_error_response(errors.errors), 500
 
 

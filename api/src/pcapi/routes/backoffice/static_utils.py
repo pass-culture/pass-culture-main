@@ -25,6 +25,7 @@ JS_FILES = [
     Path(
         "src/pcapi/static/backoffice/js/libs/vanilla-datetimerange-picker@latest/dist/vanilla-datetimerange-picker.js"
     ),
+    Path("src/pcapi/static/backoffice/js/libs/htmx.2.0.4.min.js"),
     # Our core libs,
     Path("src/pcapi/static/backoffice/js/core/pc-utils.js"),
     Path("src/pcapi/static/backoffice/js/core/pc-event-handler.js"),
@@ -58,6 +59,7 @@ JS_FILES = [
     Path("src/pcapi/static/backoffice/js/addons/pc-section-focus-onload.js"),
     Path("src/pcapi/static/backoffice/js/addons/pc-table-paginator.js"),
     Path("src/pcapi/static/backoffice/js/addons/pc-fill-to-bottom.js"),
+    Path("src/pcapi/static/backoffice/js/addons/pc-htmx-manager.js"),
 ]
 CSS_BUNDLE = Path("src/pcapi/static/backoffice/css/bundle.css")
 CSS_FILES = [

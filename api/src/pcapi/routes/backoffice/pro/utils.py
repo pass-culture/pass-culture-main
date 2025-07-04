@@ -7,8 +7,6 @@ from pcapi import settings
 from pcapi.core.permissions import models as perm_models
 from pcapi.routes.backoffice import utils
 
-from . import forms
-
 
 CONNECT_AS_OBJECT_TYPES = frozenset(
     (
@@ -31,6 +29,8 @@ class ConnectAs:
 
 
 def get_connect_as(object_type: str, object_id: int, pc_pro_path: str) -> ConnectAs | None:
+    from pcapi.routes.backoffice.pro import forms
+
     if object_type not in CONNECT_AS_OBJECT_TYPES:
         raise ValueError("Only types defined in CONNECT_AS_OBJECT_TYPES are accepted")
 

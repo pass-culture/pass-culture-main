@@ -7,10 +7,10 @@ import typing
 from collections import defaultdict
 from functools import wraps
 
-import werkzeug
 from flask import Blueprint
 from flask import Response as FlaskResponse
 from flask import flash
+from flask import redirect
 from flask import request
 from flask import url_for
 from flask_login import current_user
@@ -197,7 +197,7 @@ def custom_login_required(redirect_to: str) -> typing.Callable:
         @wraps(function)
         def wrapped(*args: typing.Any, **kwargs: typing.Any) -> tuple[FlaskResponse, int] | typing.Callable:
             if not current_user.is_authenticated:
-                return werkzeug.utils.redirect(url_for(redirect_to))
+                return redirect(url_for(redirect_to))
 
             return function(*args, **kwargs)
 
@@ -458,3 +458,18 @@ def generate_algolia_search_string(
             filter_dict["facetFilters"].extend(result)
 
     return filter_dict, warnings
+
+
+def format_response_error_messages(errors: dict) -> list[str]:
+    """
+    Format unhandled errors. It's used in generate_error_response for htmx requests
+    """
+    lines = []
+    for error_key, error_details in errors.items():
+        for error_detail in error_details:
+            lines.append(f"[{error_key}] {error_detail}")
+    return lines
+
+
+def is_request_from_htmx() -> bool:
+    return request.headers.get("hx-request") == "true"
