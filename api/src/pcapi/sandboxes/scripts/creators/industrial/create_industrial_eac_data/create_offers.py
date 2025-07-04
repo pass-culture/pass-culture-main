@@ -670,6 +670,7 @@ def create_collective_offers_with_different_displayed_status(
             "startDatetime": yesterday,
             "endDatetime": yesterday,
             "bookingFactory": educational_factories.ConfirmedCollectiveBookingFactory,
+            "confirmationDate": yesterday - timedelta(hours=1),
         },
         # with a used booking
         "Ljubljana": {
@@ -677,12 +678,14 @@ def create_collective_offers_with_different_displayed_status(
             "startDatetime": four_weeks_ago,
             "endDatetime": four_weeks_ago,
             "bookingFactory": educational_factories.UsedCollectiveBookingFactory,
+            "confirmationDate": four_weeks_ago - timedelta(hours=1),
         },
         "Luxembourg": {
             "bookingLimitDatetime": four_weeks_ago,
             "startDatetime": four_weeks_ago,
             "endDatetime": four_weeks_ago,
             "bookingFactory": educational_factories.ReimbursedCollectiveBookingFactory,
+            "confirmationDate": four_weeks_ago - timedelta(hours=1),
         },
         # with a cancelled booking
         "Madrid": {
@@ -782,17 +785,27 @@ def create_collective_offers_with_different_displayed_status(
             priceDetail="Some details",
         )
 
+        before_limit = booking_limit_datetime - timedelta(days=1)
+
+        if booking_limit_datetime < today:
+            # if booking limit is in the past, adapt other dates to have a coherent timeline
+            stock.collectiveOffer.dateCreated = before_limit - timedelta(days=3)
+            stock.dateCreated = stock.collectiveOffer.dateCreated + timedelta(days=2)
+            stock.collectiveOffer.lastValidationDate = stock.dateCreated + timedelta(minutes=10)
+
         if booking_factory:
             booking_attributes = {
                 key: attributes[key] for key in ("cancellationReason", "confirmationDate") if key in attributes
             }
+
+            if booking_limit_datetime < today:
+                booking_attributes["dateCreated"] = before_limit
 
             booking_factory(
                 collectiveStock=stock,
                 educationalYear=current_ansco,
                 educationalInstitution=institution,
                 confirmationLimitDate=booking_limit_datetime,
-                dateCreated=min(datetime.utcnow(), booking_limit_datetime - timedelta(days=1)),
                 **booking_attributes,
             )
 
