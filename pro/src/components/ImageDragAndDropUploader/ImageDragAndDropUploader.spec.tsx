@@ -183,11 +183,11 @@ describe('ImageDragAndDropUploader', () => {
       )
     ).toBeInTheDocument()
 
-    await userEvent.click(screen.getByText('Enregistrer'))
+    await userEvent.click(screen.getByText('Importer'))
 
     expect(mockUpload).toHaveBeenCalled()
     expect(mockNotifySuccess).toHaveBeenCalledWith(
-      'Votre image a bien été enregistrée'
+      'Votre image a bien été importée'
     )
 
     expect(screen.queryByText('Modifier une image')).not.toBeInTheDocument()

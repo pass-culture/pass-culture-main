@@ -122,7 +122,7 @@ describe('ImageUploader', () => {
     const inputField = screen.getByLabelText('Importez une image')
     await userEvent.upload(inputField, mockFile)
 
-    await userEvent.click(screen.getByText('Enregistrer'))
+    await userEvent.click(screen.getByText('Importer'))
 
     expect(mockUpload).toHaveBeenCalled()
   })
