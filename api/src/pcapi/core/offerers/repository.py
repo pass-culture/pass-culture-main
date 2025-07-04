@@ -503,7 +503,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
                 offers_models.Stock.offerId == offers_models.Offer.id,
                 offers_models.Stock.price > 0,
                 offers_models.Stock.isSoftDeleted.is_(False),
-                offers_models.Offer.isActive.is_(True),
+                offers_models.Offer.isActive,
                 offers_models.Offer.venueId == models.Venue.id,
             ),
         )
@@ -551,7 +551,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
             sa.and_(
                 offers_models.Stock.offerId == offers_models.Offer.id,
                 offers_models.Stock.isSoftDeleted.is_(False),
-                offers_models.Offer.isActive.is_(True),
+                offers_models.Offer.isActive,
                 offers_models.Offer.venueId == models.Venue.id,
             ),
         )
@@ -698,7 +698,7 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
         .select_from(offers_models.Offer)
         .where(
             offers_models.Offer.venueId == models.Venue.id,
-            offers_models.Offer.isActive.is_(True),
+            offers_models.Offer.isActive,
         )
         .correlate(models.Venue)
         .exists()
@@ -784,12 +784,12 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
                 db.session.query(offers_models.Stock)
                 .join(
                     offers_models.Offer,
-                    sa.and_(
+                    sa.and_(  # type: ignore[type-var]
                         offers_models.Stock.offerId == offers_models.Offer.id,
                         offers_models.Offer.venueId == models.Venue.id,
                         offers_models.Stock.price > 0,
                         offers_models.Stock.isSoftDeleted.is_(False),
-                        offers_models.Offer.isActive.is_(True),
+                        offers_models.Offer.isActive,
                     ),
                 )
                 .exists(),

@@ -2043,7 +2043,7 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
         return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
             sa.select(
                 sa.case(
-                    (sa.and_(offer_class.isActive, sa.not_(offer_class.is_expired)), "active"),
+                    (sa.and_(offer_class.isActive, sa.not_(offer_class.is_expired)), "active"),  # type: ignore[type-var]
                     else_="inactive",
                 ).label("status"),
                 sa.func.count(offer_class.id).label("number"),
@@ -2139,7 +2139,7 @@ def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
         return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
             sa.select(
                 sa.case(
-                    (sa.and_(offer_class.isActive, sa.not_(offer_class.is_expired)), "active"),
+                    (sa.and_(offer_class.isActive, sa.not_(offer_class.is_expired)), "active"),  # type: ignore[type-var]
                     else_="inactive",
                 ).label("status"),
                 sa.func.count(offer_class.id).label("number"),

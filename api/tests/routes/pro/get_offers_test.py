@@ -388,7 +388,7 @@ class Returns200Test:
             {
                 "hasBookingLimitDatetimesPassed": True,
                 "id": event_offer.id,
-                "isActive": True,
+                "isActive": False,
                 "isDigital": False,
                 "isEditable": True,
                 "isHeadlineOffer": False,

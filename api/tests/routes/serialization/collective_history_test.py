@@ -192,7 +192,7 @@ class HistoryCancelledTest:
 
 
 def _archive_offer(offer: models.CollectiveOffer):
-    offer.isActive = False
+    offer.publicationDatetime = None
     offer.dateArchived = datetime.datetime.utcnow()
 
 

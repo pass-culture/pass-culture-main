@@ -27,13 +27,12 @@ class IndexAllOffersTest:
         # published with a booking date in the future, but inactive
         # -> should not be indexed
         offers_factories.StockFactory(
-            offer__isActive=False,
-            offer__publicationDatetime=publication_date,
+            offer__publicationDatetime=None,
             offer__bookingAllowedDatetime=booking_allowed_date,
         ).offer
 
         # inactive or without any bookable stock -> should not indexed
-        offers_factories.StockFactory(offer__isActive=False).offer
+        offers_factories.StockFactory(offer__publicationDatetime=None).offer
         offers_factories.OfferFactory(isActive=False)
         offers_factories.OfferFactory(isActive=True)
 

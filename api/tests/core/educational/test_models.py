@@ -290,7 +290,7 @@ class CollectiveOfferIsArchiveTest:
 
         assert offer.isArchived == False
 
-        offer.isActive = False
+        offer.publicationDatetime = None
         offer.dateArchived = datetime.datetime.utcnow()
 
         assert offer.isArchived == True

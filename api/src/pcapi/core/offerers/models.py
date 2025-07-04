@@ -479,7 +479,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
             .where(
                 offers_models.Stock.offerId == offers_models.Offer.id,
                 offers_models.Stock.isSoftDeleted.is_(False),
-                offers_models.Offer.isActive.is_(True),
+                offers_models.Offer.isActive,
                 Venue.id == self.id,
             )
             .exists()

@@ -572,7 +572,7 @@ def _get_offers_by_ids(
                 offers_models.Offer.validation,
                 offers_models.Offer.lastValidationDate,
                 offers_models.Offer.lastValidationType,
-                offers_models.Offer.isActive,
+                offers_models.Offer.publicationDatetime,
                 offers_models.Offer._extraData,
                 offers_models.Offer.lastProviderId,
             ),
@@ -1027,7 +1027,7 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
                 or offer.publicationDatetime <= datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
             )
             if is_not_a_future_offer:
-                offer.isActive = True
+                offer.publicationDatetime = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
             if offer.isThing:
                 offer.lastValidationPrice = max_price
 
@@ -1063,7 +1063,7 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
             offer.lastValidationDate = datetime.datetime.utcnow()
             offer.lastValidationType = OfferValidationType.MANUAL
             offer.lastValidationAuthorUserId = current_user.id
-            offer.isActive = False
+            offer.publicationDatetime = None
 
             # cancel_bookings_from_rejected_offer can raise handled exceptions that drop the
             # modifications of the offer; we save them here first
@@ -1727,7 +1727,7 @@ def get_batch_deactivate_offers_form() -> utils.BackofficeResponse:
 
 def _batch_update_activation_offers(offer_ids: list[int], *, is_active: bool) -> None:
     query = db.session.query(offers_models.Offer).filter(offers_models.Offer.id.in_(offer_ids))
-    offers_api.batch_update_offers(query, {"isActive": is_active})
+    offers_api.batch_update_offers(query, activate=is_active)
 
 
 @list_offers_blueprint.route("/<int:offer_id>/activate", methods=["POST"])

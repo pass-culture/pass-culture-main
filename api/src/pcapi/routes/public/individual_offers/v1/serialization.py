@@ -531,6 +531,7 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
     )
     booking_email: pydantic_v1.EmailStr | None = fields.OFFER_BOOKING_EMAIL
     booking_contact: pydantic_v1.EmailStr | None = fields.OFFER_BOOKING_CONTACT
+    # TODO(jbaudet): deprecated, use publicationDatetime instead
     is_active: bool | None = pydantic_v1.Field(
         description="Set to `false` if you want to deactivate the offer. This will not cancel former bookings. "
     )
