@@ -183,6 +183,21 @@ class ListChroniclesTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(chronicle_to_find.id)
 
+    def test_search_by_club_type(self, authenticated_client):
+        chronicle_to_find = chronicles_factories.ChronicleFactory(
+            clubType=chronicles_models.ChronicleClubType.CINE_CLUB
+        )
+        chronicles_factories.ChronicleFactory(clubType=chronicles_models.ChronicleClubType.BOOK_CLUB)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(self.endpoint, category=[chronicles_models.ChronicleClubType.CINE_CLUB.name]),
+            )
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(chronicle_to_find.id)
+
 
 class GetChronicleDetailsTest(GetEndpointHelper):
     endpoint = "backoffice_web.chronicles.details"
