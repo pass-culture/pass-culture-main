@@ -32,7 +32,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
   const isLaptopScreenAtLeast = useMediaQuery('(min-width: 64rem)')
 
   const accountCreationUrl = isAccountCreationAvailable
-    ? '/inscription'
+    ? '/inscription/compte/creation'
     : UNAVAILABLE_ERROR_PAGE
 
   const { formState, register } = useFormContext<SigninFormValues>()

@@ -339,7 +339,7 @@ export const routes: RouteConfig[] = [
   },
   {
     lazy: () => import('pages/ResetPassword/ResetPassword'),
-    path: '/mot-de-passe-perdu',
+    path: '/demande-mot-de-passe/:token',
     title: 'Définir un nouveau mot de passe',
     meta: { public: true },
   },

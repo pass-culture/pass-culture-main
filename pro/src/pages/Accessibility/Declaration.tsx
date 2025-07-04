@@ -264,10 +264,10 @@ export const Declaration = () => {
             <td className={styles['td']}>Inscription</td>
             <td className={styles['td']}>
               <ButtonLink
-                to="https://integration.passculture.pro/inscription"
+                to="https://integration.passculture.pro/inscription/compte/creation"
                 isExternal
               >
-                https://integration.passculture.pro/inscription
+                https://integration.passculture.pro/inscription/compte/creation
               </ButtonLink>
             </td>
           </tr>
@@ -276,9 +276,9 @@ export const Declaration = () => {
             <td className={styles['td']}>
               <ButtonLink
                 isExternal
-                to="https://integration.passculture.pro/inscription/confirmation"
+                to="https://integration.passculture.pro/inscription/compte/confirmation"
               >
-                https://integration.passculture.pro/inscription/confirmation
+                https://integration.passculture.pro/inscription/compte/confirmation
               </ButtonLink>
             </td>
           </tr>
@@ -511,7 +511,8 @@ export const Declaration = () => {
       <p className={styles['paragraph']}>
         Vous avez signalé au responsable du site internet un défaut
         d’accessibilité qui vous empêche d’accéder à un contenu ou à un des
-        services du portail et vous n’avez pas obtenu de réponse satisfaisante.{' '}
+        services du portail et vous n’avez pas obtenu de réponse
+        satisfaisante.{' '}
       </p>
       <ul>
         <li className={styles['list-item']}>

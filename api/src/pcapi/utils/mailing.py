@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 def build_pc_pro_reset_password_link(token_value: str) -> str:
-    return f"{settings.PRO_URL}/mot-de-passe-perdu?token={token_value}"
+    return f"{settings.PRO_URL}/demande-mot-de-passe/{token_value}"
 
 
 def get_event_datetime(stock: CollectiveStock | Stock) -> datetime:

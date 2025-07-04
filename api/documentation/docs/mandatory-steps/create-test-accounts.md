@@ -11,7 +11,7 @@ In this section, you will learn how to create an account on this test environmen
 In the **test environment**, the account you are going to create will enable to log yourself as **a *cultural player* on the [PRO interface](https://integration.passculture.pro/connexion?de=%2F)** and to log yourself as **a *beneficiary* on the [app interface](https://integration.passculture.app/accueil)**.
 :::
 
-1. **Create an account** as a cultural player on the [integration test environment](https://integration.passculture.pro/inscription)
+1. **Create an account** as a cultural player on the [integration test environment](https://integration.passculture.pro/inscription/compte/creation)
 
 ![Create account step 1](./img/create_account_step_1.png)
 
