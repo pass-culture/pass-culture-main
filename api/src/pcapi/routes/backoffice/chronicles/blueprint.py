@@ -70,7 +70,7 @@ def list_chronicles() -> utils.BackofficeResponse:
         q_filters.append(
             sa.or_(
                 offers_models.Product.ean == product_identifier,
-                offers_models.Product.extraData["allocineId"].astext == product_identifier,
+                offers_models.Product.extraData["allocineId"] == product_identifier,
                 offers_models.Product.extraData["visa"].astext == product_identifier,
             )
         )
@@ -281,7 +281,7 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
         case chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID:
             products = (
                 db.session.query(offers_models.Product)
-                .filter(offers_models.Product.extraData["allocineId"].astext == form.product_identifier.data)
+                .filter(offers_models.Product.extraData["allocineId"] == form.product_identifier.data)
                 .all()
             )
         case chronicles_models.ChronicleProductIdentifierType.EAN:
