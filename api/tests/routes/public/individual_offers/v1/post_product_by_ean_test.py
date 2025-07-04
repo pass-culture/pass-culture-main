@@ -258,7 +258,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
-        with caplog.at_level(logging.INFO):
+        with caplog.at_level(logging.WARNING):
             response = client.with_explicit_token(plain_api_key).post(
                 self.endpoint_url,
                 json={
@@ -284,7 +284,16 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
                 },
             )
 
-        log = next(record for record in caplog.records if "Error while creating offer by ean" == record.message)
+        log = next(
+            record
+            for record in caplog.records
+            if record.message
+            in [
+                "Error while creating offer by ean",
+                "Error while creating stock by ean",
+                "Error while updating stock by ean",
+            ]
+        )
 
         assert log.extra == {
             "ean": book_product.ean,

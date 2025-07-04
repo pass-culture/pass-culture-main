@@ -312,11 +312,11 @@ def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) ->
 
 def _serialize_products_from_body(
     products: list[serialization.ProductOfferByEanCreation],
-) -> dict:
-    stock_details = {}
+) -> dict[str, offers_tasks.StockEditionDict]:
+    stock_details: dict[str, offers_tasks.StockEditionDict] = {}
     for product in products:
         stock_details[product.ean] = {
-            "quantity": product.stock.quantity,
+            "quantity": serialization.deserialize_quantity(product.stock.quantity),
             "price": product.stock.price,
             "booking_limit_datetime": product.stock.booking_limit_datetime,
         }
@@ -601,7 +601,12 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
             utils.save_image(body.image, updated_offer)
 
         if "stock" in updates:
-            offers_tasks.upsert_product_stock(updated_offer, body.stock, current_api_key.provider)
+            assert body.stock
+            offers_tasks.upsert_product_stock(
+                updated_offer,
+                body.stock.dict(exclude_unset=True),  # type: ignore[arg-type]
+                current_api_key.provider,
+            )
             db.session.refresh(offer)  # to ensure that `offer.activeStocks` is correctly populated
     except offers_exceptions.OfferException as e:
         raise api_errors.ApiErrors(e.errors)
