@@ -56,9 +56,16 @@ export const IndividualOfferLayout = ({
     'WIP_REFACTO_FUTURE_OFFER'
   )
 
+  // All offer's publication dates can be manually edited except for:
+  // - rejected offers
+  // - offers synchronized with a provider
+  const canEditPublicationDates =
+    !!offer && offer.status !== OfferStatus.REJECTED && !offer.lastProvider
+
   const displayUpdatePublicationAndBookingDates =
-    isRefactoFutureOfferEnabled &&
     offer &&
+    isRefactoFutureOfferEnabled &&
+    canEditPublicationDates &&
     [
       OfferStatus.ACTIVE,
       OfferStatus.INACTIVE,
@@ -120,7 +127,12 @@ export const IndividualOfferLayout = ({
             <>
               {shouldDisplayActionOnStatus && (
                 <span className={styles['status']}>
-                  {<Status offer={offer} />}
+                  {
+                    <Status
+                      offer={offer}
+                      canEditPublicationDates={canEditPublicationDates}
+                    />
+                  }
                 </span>
               )}
               {displayUpdatePublicationAndBookingDates && (
