@@ -167,7 +167,7 @@ class Product(PcObject, Base, Model, HasThumbMixin):
     __tablename__ = "product"
 
     dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
-    description = sa.Column(sa.Text, nullable=True)
+    description: sa_orm.Mapped[str | None] = sa.Column(sa.Text, nullable=True)
     durationMinutes = sa.Column(sa.Integer, nullable=True)
     extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
     gcuCompatibilityType = sa.Column(
