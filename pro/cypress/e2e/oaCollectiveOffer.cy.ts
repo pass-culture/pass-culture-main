@@ -9,6 +9,7 @@ describe('Create collective offers with OA', () => {
   let login: string
   const newOfferName = 'Ma nouvelle offre collective créée'
   const venueName = 'Mon Lieu 1'
+  const venueFullAddress = '1 boulevard Poissonnière, 75002, Paris'
   const defaultDate = addDays(new Date(), 2)
   const defaultBookingLimitDate = addDays(new Date(), 1)
 
@@ -152,7 +153,7 @@ describe('Create collective offers with OA', () => {
     fillOfferDetails()
     fillDatesAndPrice()
     fillInstitution()
-    cy.contains('Adresse : 1 boulevard Poissonnière, 75002, Paris')
+    cy.contains(`Adresse : ${venueFullAddress}`)
     verifyAndPublishOffer()
   })
 
@@ -244,7 +245,7 @@ describe('Create collective offers with OA', () => {
     cy.findByLabelText('Via un formulaire').click()
     cy.findByText('Enregistrer et continuer').click()
     cy.contains('Intitulé : Mon Lieu 1')
-    cy.contains('Adresse : 1 boulevard Poissonnière, 75002, Paris')
+    cy.contains(`Adresse : ${venueFullAddress}`)
     cy.findByText('Enregistrer et continuer').click()
     cy.findByText('Publier l’offre').click()
     cy.findByText('Voir mes offres').click()
@@ -303,7 +304,7 @@ describe('Create collective offers with OA', () => {
     fillDatesAndPrice()
     fillInstitution()
     cy.contains('Intitulé : Mon Lieu 1')
-    cy.contains('Adresse : 1 boulevard Poissonnière, 75002, Paris')
+    cy.contains(`Adresse : ${venueFullAddress}`)
     verifyAndPublishOffer({ ...commonOfferData, title: 'Offre dupliquée OA' })
   })
 
@@ -314,7 +315,7 @@ describe('Create collective offers with OA', () => {
     fillOfferDetails()
     fillDatesAndPrice()
     fillInstitution()
-    cy.contains('Adresse : 1 boulevard Poissonnière, 75002, Paris')
+    cy.contains(`Adresse : ${venueFullAddress}`)
     verifyAndPublishOffer()
     cy.findAllByTestId('offer-item-row')
       .eq(0)

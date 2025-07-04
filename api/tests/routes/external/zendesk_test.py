@@ -180,7 +180,9 @@ class ZendeskWebhookTest:
     @pytest.mark.parametrize("pro_factory", [users_factories.ProFactory, users_factories.NonAttachedProFactory])
     def test_webhook_update_pro_by_user_email(self, client, pro_factory):
         pro_user = pro_factory(email="pro@example.com")
-        venue = offerers_factories.VenueFactory(bookingEmail=pro_user.email, postalCode="75018")
+        venue = offerers_factories.VenueFactory(
+            bookingEmail=pro_user.email, offererAddress__address__postalCode="75018"
+        )
 
         response = client.post(
             "/webhooks/zendesk/ticket_notification",
@@ -205,7 +207,7 @@ class ZendeskWebhookTest:
                     "user_id": pro_user.id,
                     "first_name": pro_user.firstName,
                     "last_name": pro_user.lastName,
-                    "postal_code": venue.postalCode,
+                    "postal_code": venue.offererAddress.address.postalCode,
                     "offerer_name": venue.managingOfferer.name,
                     "venue_name": venue.name,
                     "dms_application": "Aucun",
@@ -218,7 +220,11 @@ class ZendeskWebhookTest:
         assert users_testing.zendesk_requests[1]["data"]["ticket"]["comment"]["public"] is False
 
     def test_webhook_update_pro_by_booking_email(self, client):
-        venue = offerers_factories.VenueFactory(bookingEmail="venue@example.com", postalCode="06600")
+        venue = offerers_factories.VenueFactory(
+            bookingEmail="venue@example.com",
+            offererAddress__address__postalCode="06600",
+            offererAddress__address__departmentCode="06",
+        )
         offerers_factories.VenueBankAccountLinkFactory(
             venue=venue,
             bankAccount=finance_factories.BankAccountFactory(status=BankAccountApplicationStatus.ACCEPTED),
@@ -247,7 +253,7 @@ class ZendeskWebhookTest:
                     "user_id": None,
                     "first_name": None,
                     "last_name": None,
-                    "postal_code": venue.postalCode,
+                    "postal_code": venue.offererAddress.address.postalCode,
                     "offerer_name": venue.managingOfferer.name,
                     "venue_name": venue.name,
                     "dms_application": "Approuvé",

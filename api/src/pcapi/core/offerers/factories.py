@@ -13,7 +13,6 @@ from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
 from pcapi.utils import siren as siren_utils
-from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import timespan_str_to_numrange
 
 from . import api
@@ -82,16 +81,7 @@ class VenueFactory(BaseFactory):
         model = models.Venue
 
     name = factory.Sequence("Le Petit Rintintin {}".format)
-    latitude: float | None = 48.87004
-    longitude: float | None = 2.37850
     managingOfferer = factory.SubFactory(OffererFactory)
-    street: factory.declarations.BaseDeclaration | str | None = "1 boulevard Poissonnière"
-    banId: factory.declarations.BaseDeclaration | str | None = "75102_7560_00001"
-    postalCode: factory.declarations.BaseDeclaration | str | None = "75002"
-    departementCode: factory.declarations.BaseDeclaration | None = factory.LazyAttribute(
-        lambda o: _get_department_code(o.postalCode)
-    )
-    city: factory.declarations.BaseDeclaration | str | None = "Paris"
     publicName = factory.SelfAttribute("name")
     siret: factory.declarations.BaseDeclaration | None = factory.LazyAttributeSequence(
         lambda o, n: siren_utils.complete_siren_or_siret(f"{o.managingOfferer.siren}{n:04}")
@@ -110,7 +100,6 @@ class VenueFactory(BaseFactory):
     contact = factory.RelatedFactory("pcapi.core.offerers.factories.VenueContactFactory", factory_related_name="venue")
     bookingEmail = factory.Sequence("venue{}@example.net".format)
     dmsToken = factory.LazyFunction(api.generate_dms_token)
-    timezone = factory.LazyAttribute(lambda venue: get_department_timezone(venue.departementCode))
     _bannerUrl: str | None = None
     adageId: str | factory.declarations.BaseDeclaration | None = None
 
@@ -118,18 +107,36 @@ class VenueFactory(BaseFactory):
         "pcapi.core.offerers.factories.OffererAddressOfVenueFactory",
         address=factory.SubFactory(
             "pcapi.core.geography.factories.AddressFactory",
-            banId=factory.SelfAttribute("...banId"),
-            street=factory.SelfAttribute("...street"),
-            postalCode=factory.SelfAttribute("...postalCode"),
-            inseeCode="75102",
-            city=factory.SelfAttribute("...city"),
-            latitude=factory.SelfAttribute("...latitude"),
-            longitude=factory.SelfAttribute("...longitude"),
-            timezone=factory.SelfAttribute("...timezone"),
-            departmentCode=factory.SelfAttribute("...departementCode"),
         ),
         offerer=factory.SelfAttribute("..managingOfferer"),
     )
+
+    # TODO: CLEAN_OA - section to be deleted - once these attributes are removed from Venue model, we can add abstraction to allow VenueFactory.create(address=...) or VenueFactory.create(street=...)
+    latitude: float | None | factory.LazyAttribute = factory.LazyAttribute(
+        lambda o: o.offererAddress.address.latitude if o.offererAddress and not o.isVirtual else None
+    )
+    longitude: float | None | factory.LazyAttribute = factory.LazyAttribute(
+        lambda o: o.offererAddress.address.longitude if o.offererAddress and not o.isVirtual else None
+    )
+    street: str | None | factory.LazyAttribute = factory.LazyAttribute(
+        lambda o: o.offererAddress.address.street if o.offererAddress and not o.isVirtual else None
+    )
+    banId: str | None | factory.LazyAttribute = factory.LazyAttribute(
+        lambda o: o.offererAddress.address.banId if o.offererAddress and not o.isVirtual else None
+    )
+    postalCode: str | None | factory.LazyAttribute = factory.LazyAttribute(
+        lambda o: o.offererAddress.address.postalCode if o.offererAddress and not o.isVirtual else "01000"
+    )
+    departementCode: str | None | factory.LazyAttribute = factory.LazyAttribute(
+        lambda o: o.offererAddress.address.departmentCode if o.offererAddress and not o.isVirtual else None
+    )
+    city: str | None | factory.LazyAttribute = factory.LazyAttribute(
+        lambda o: o.offererAddress.address.city if o.offererAddress and not o.isVirtual else None
+    )
+    timezone: str | None | factory.LazyAttribute = factory.LazyAttribute(
+        lambda o: o.offererAddress.address.timezone if o.offererAddress and not o.isVirtual else None
+    )
+    # TODO: CLEAN_OA - end of section to be deleted
 
     @factory.post_generation
     def pricing_point(
