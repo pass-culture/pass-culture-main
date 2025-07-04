@@ -29,9 +29,9 @@ class TicketDisplayEnum(enum.Enum):
     EMAIL_WILL_BE_SENT = "email_will_be_sent"
     ONLINE_CODE = "online_code"
     NOT_VISIBLE = "not_visible"
-    EVENT_ACCESS = "event_access"
+    QR_CODE = "qr_code"
     VOUCHER = "voucher"
-    NO_VOUCHER_TICKET = "no_voucher_ticket"
+    TICKET = "ticket"
 
 
 class BookingVenueResponseV2GetterDict(GetterDict):
@@ -227,7 +227,7 @@ class BookingResponseGetterDict(GetterDict):
             return TicketResponse(
                 activation_code=None,
                 external_booking=ExternalBookingResponseV2(data=booking.externalBookings if booking_visible else None),
-                display=TicketDisplayEnum.EVENT_ACCESS if booking_visible else TicketDisplayEnum.NOT_VISIBLE,
+                display=TicketDisplayEnum.QR_CODE if booking_visible else TicketDisplayEnum.NOT_VISIBLE,
                 token=None,
                 voucher=None,
                 withdrawal=withdrawal,
@@ -242,9 +242,9 @@ class BookingResponseGetterDict(GetterDict):
         )
 
         token = TokenResponse(data=booking.token) if not booking.isExternal else None
-        display = TicketDisplayEnum.VOUCHER if voucher else TicketDisplayEnum.NO_VOUCHER_TICKET
+        display = TicketDisplayEnum.VOUCHER if voucher else TicketDisplayEnum.TICKET
         if offer.subcategoryId == SEANCE_CINE.id:
-            display = TicketDisplayEnum.EVENT_ACCESS
+            display = TicketDisplayEnum.QR_CODE
 
         return TicketResponse(
             activation_code=None,

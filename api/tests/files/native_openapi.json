@@ -4692,9 +4692,9 @@
                     "email_will_be_sent",
                     "online_code",
                     "not_visible",
-                    "event_access",
+                    "qr_code",
                     "voucher",
-                    "no_voucher_ticket"
+                    "ticket"
                 ],
                 "title": "TicketDisplayEnum"
             },

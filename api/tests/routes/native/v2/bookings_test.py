@@ -502,24 +502,24 @@ class GetBookingTicketTest:
     @pytest.mark.parametrize(
         "subcategory,withdrawal_type,voucher,display",
         [
-            (subcategories.CONCERT.id, offer_models.WithdrawalTypeEnum.ON_SITE, False, "no_voucher_ticket"),
+            (subcategories.CONCERT.id, offer_models.WithdrawalTypeEnum.ON_SITE, False, "ticket"),
             (
                 subcategories.EVENEMENT_CINE.id,
                 offer_models.WithdrawalTypeEnum.ON_SITE,
                 False,
-                "no_voucher_ticket",
+                "ticket",
             ),
             (
                 subcategories.SEANCE_CINE.id,
                 offer_models.WithdrawalTypeEnum.ON_SITE,
                 True,
-                "event_access",
+                "qr_code",
             ),
             (
                 subcategories.FESTIVAL_MUSIQUE.id,
                 offer_models.WithdrawalTypeEnum.ON_SITE,
                 False,
-                "no_voucher_ticket",
+                "ticket",
             ),
         ],
     )
@@ -576,7 +576,7 @@ class GetBookingTicketTest:
 
         assert ticket["token"] is None
         assert ticket["voucher"] is None
-        assert ticket["display"] == "event_access"
+        assert ticket["display"] == "qr_code"
 
     @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_get_external_event_ticket_hidden(self, client):
