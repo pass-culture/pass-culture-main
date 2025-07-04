@@ -41,11 +41,23 @@ def create_regular_pro_user() -> dict:
     pro_user = users_factories.ProFactory.create()
     offerer = offerers_factories.OffererFactory.create(allowedOnAdage=False)
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
-    venue = offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
+    venue = offerers_factories.VenueFactory.create(
+        name="Mon Lieu",
+        managingOfferer=offerer,
+        isPermanent=True,
+        offererAddress__address__street="1 boulevard Poissonnière",
+        offererAddress__address__postalCode="75002",
+        offererAddress__address__city="Paris",
+    )
     offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer)
     offerers_factories.VenueLabelFactory.create(label="Musée de France")
 
-    return {"user": get_pro_user_helper(pro_user), "siren": offerer.siren, "venueName": venue.name}
+    return {
+        "user": get_pro_user_helper(pro_user),
+        "siren": offerer.siren,
+        "venueName": venue.name,
+        "venueFullAddress": venue.offererAddress.address.fullAddress,
+    }
 
 
 def create_regular_pro_user_already_onboarded() -> dict:
@@ -254,7 +266,7 @@ def create_pro_user_with_individual_offers() -> dict:
     )
     return {
         "user": get_pro_user_helper(pro_user),
-        "venue": {"name": venue.name},
+        "venue": {"name": venue.name, "fullAddress": venue.offererAddress.address.fullAddress},
         "offer1": {"name": offer1.name},
         "offer2": {"name": offer2.name},
         "offer3": {"name": offer3.name},
@@ -269,8 +281,20 @@ def create_pro_user_with_collective_offers() -> dict:
     pro_user = users_factories.ProFactory.create()
     offerer = offerers_factories.OffererFactory.create()
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
-    venue1 = offerers_factories.CollectiveVenueFactory.create(name="Mon Lieu 1", managingOfferer=offerer)
-    venue2 = offerers_factories.CollectiveVenueFactory.create(name="Mon Lieu 2", managingOfferer=offerer)
+    venue1 = offerers_factories.CollectiveVenueFactory.create(
+        name="Mon Lieu 1",
+        managingOfferer=offerer,
+        offererAddress__address__street="1 boulevard Poissonnière",
+        offererAddress__address__postalCode="75002",
+        offererAddress__address__city="Paris",
+    )
+    venue2 = offerers_factories.CollectiveVenueFactory.create(
+        name="Mon Lieu 2",
+        managingOfferer=offerer,
+        offererAddress__address__street="1 boulevard Poissonnière",
+        offererAddress__address__postalCode="75002",
+        offererAddress__address__city="Paris",
+    )
     offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer)
 
     offerPublishedTemplate = educational_factories.CollectiveOfferTemplateFactory.create(
@@ -327,24 +351,33 @@ def create_pro_user_with_collective_offers() -> dict:
         "offerPublishedTemplate": {
             "name": offerPublishedTemplate.name,
             "venueName": offerPublishedTemplate.venue.name,
+            "venueFullAddress": offerPublishedTemplate.venue.offererAddress.address.fullAddress,
         },
         "offerPublished": {
             "name": offerPublished.collectiveOffer.name,
             "venueName": offerPublished.collectiveOffer.venue.name,
+            "venueFullAddress": offerPublished.collectiveOffer.venue.offererAddress.address.fullAddress,
         },
         "offerDraft": {
             "name": offerDraft.name,
             "venueName": offerDraft.venue.name,
+            "venueFullAddress": offerDraft.venue.offererAddress.address.fullAddress,
         },
         "offerInInstruction": {
             "name": offerInInstruction.name,
             "venueName": offerInInstruction.venue.name,
+            "venueFullAddress": offerInInstruction.venue.offererAddress.address.fullAddress,
         },
         "offerNotConform": {
             "name": offerNotConform.name,
             "venueName": offerNotConform.venue.name,
+            "venueFullAddress": offerNotConform.venue.offererAddress.address.fullAddress,
         },
-        "offerArchived": {"name": offerArchived.name, "venueName": offerArchived.venue.name},
+        "offerArchived": {
+            "name": offerArchived.name,
+            "venueName": offerArchived.venue.name,
+            "venueFullAddress": offerArchived.venue.offererAddress.address.fullAddress,
+        },
     }
 
 

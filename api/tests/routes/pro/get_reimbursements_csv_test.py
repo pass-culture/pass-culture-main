@@ -638,7 +638,13 @@ def test_with_offer_address_and_venue_address(client, offer_has_oa, len_offerer_
     ending_date_iso_format = (cutoff + datetime.timedelta(days=2)).isoformat()
     ending_date_iso_format = datetime.date(year=2023, month=1, day=16).isoformat()
     offerer = offerers_factories.OffererFactory()
-    venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
+    venue = offerers_factories.VenueFactory(
+        managingOfferer=offerer,
+        pricing_point="self",
+        offererAddress__address__street="1 boulevard Poissonnière",
+        offererAddress__address__postalCode="75002",
+        offererAddress__address__city="Paris",
+    )
     bank_account = finance_factories.BankAccountFactory(offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory(
         venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
@@ -653,6 +659,7 @@ def test_with_offer_address_and_venue_address(client, offer_has_oa, len_offerer_
         oa = offerers_factories.OffererAddressFactory(
             address__street="1 rue de la paix",
             address__postalCode="75002",
+            address__city="Paris",
         )
         finance_factories.PricingFactory(  # the offer is created in  PricingFactory->booking( UsedBookingFactory)->stock(StockFactory)->offer(OfferFactory)
             booking__stock__offer__venue=venue,

@@ -7,6 +7,7 @@ import {
 
 describe('Search individual offers', () => {
   let venueName: string
+  let venueFullAddress: string
   let offerName1: string
   let offerName2: string
   let offerName3: string
@@ -24,6 +25,7 @@ describe('Search individual offers', () => {
       (response) => {
         logInAndGoToPage(response.body.user.email, '/offres')
         venueName = response.body.venue.name
+        venueFullAddress = response.body.venue.fullAddress
         offerName1 = response.body.offer1.name
         offerName2 = response.body.offer2.name
         offerName3 = response.body.offer3.name
@@ -53,7 +55,7 @@ describe('Search individual offers', () => {
       [
         '',
         offerName1,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :1 000',
         'Statut :publiée',
       ],
@@ -78,7 +80,7 @@ describe('Search individual offers', () => {
       [
         '',
         offerName2 + ean,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :1 000',
         'Statut :publiée',
       ],
@@ -108,7 +110,7 @@ describe('Search individual offers', () => {
       [
         '',
         offerName3,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :1 000',
         'Statut :publiée',
       ],
@@ -138,42 +140,42 @@ describe('Search individual offers', () => {
       [
         '',
         offerName6,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :1 000',
         'Statut :publiée',
       ],
       [
         '',
         offerName5,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :1 000',
         'Statut :publiée',
       ],
       [
         '',
         offerName4,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :1 000',
         'Statut :publiée',
       ],
       [
         '',
         offerName3,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :1 000',
         'Statut :publiée',
       ],
       [
         '',
         offerName2,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :1 000',
         'Statut :publiée',
       ],
       [
         '',
         offerName1,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :1 000',
         'Statut :publiée',
       ],
@@ -201,7 +203,7 @@ describe('Search individual offers', () => {
       [
         '',
         offerName4,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :1 000',
         'Statut :publiée',
       ],
@@ -226,7 +228,7 @@ describe('Search individual offers', () => {
 
     cy.stepLog({ message: 'I select "Mon lieu" in "Localisation"' })
     cy.findByLabelText('Localisation').select(
-      `${venueName} - 1 boulevard Poissonnière 75002 Paris`
+      `${venueName} - ${venueFullAddress}`
     )
 
     cy.stepLog({ message: 'I select "Publiée" in offer status' })
@@ -244,14 +246,14 @@ describe('Search individual offers', () => {
       [
         '',
         offerName6,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :1 000',
         'Statut :publiée',
       ],
       [
         '',
         offerName5,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :1 000',
         'Statut :publiée',
       ],
@@ -292,49 +294,49 @@ describe('Search individual offers', () => {
       [
         '',
         offerName7,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :0',
         'Statut :épuisée',
       ],
       [
         '',
         offerName6,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :1 000',
         'Statut :publiée',
       ],
       [
         '',
         offerName5,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :1 000',
         'Statut :publiée',
       ],
       [
         '',
         offerName4,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :1 000',
         'Statut :publiée',
       ],
       [
         '',
         offerName3,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :1 000',
         'Statut :publiée',
       ],
       [
         '',
         offerName2,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :1 000',
         'Statut :publiée',
       ],
       [
         '',
         offerName1,
-        `Localisation :${venueName} - 1 boulevard Poissonnière 75002 Paris`,
+        `Localisation :${venueName} - ${venueFullAddress}`,
         'Stocks :1 000',
         'Statut :publiée',
       ],

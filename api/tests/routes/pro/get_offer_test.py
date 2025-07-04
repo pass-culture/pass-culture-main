@@ -199,11 +199,11 @@ class Returns200Test:
                 "isManualEdition": venue.offererAddress.address.isManualEdition,
             },
             "venue": {
-                "street": "1 boulevard Poissonnière",
+                "street": venue.offererAddress.address.street,
                 "audioDisabilityCompliant": False,
                 "bookingEmail": "test@test.com",
-                "city": "Paris",
-                "departementCode": "75",
+                "city": venue.offererAddress.address.city,
+                "departementCode": venue.offererAddress.address.departmentCode,
                 "id": venue.id,
                 "isVirtual": False,
                 "managingOfferer": {
@@ -214,7 +214,7 @@ class Returns200Test:
                 "mentalDisabilityCompliant": False,
                 "motorDisabilityCompliant": False,
                 "name": "La petite librairie",
-                "postalCode": "75002",
+                "postalCode": venue.offererAddress.address.postalCode,
                 "publicName": "La petite librairie",
                 "visualDisabilityCompliant": False,
             },

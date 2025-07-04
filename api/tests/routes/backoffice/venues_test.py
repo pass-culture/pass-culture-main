@@ -1121,14 +1121,11 @@ class UpdateVenueTest(PostEndpointHelper):
     ) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         address = geography_factories.AddressFactory(
-            street="2 Rue de Valois", postalCode="75000", city="Paris", latitude=48.870, longitude=2.307
+            street="2 Rue de Valois", postalCode="75000", city="Paris", latitude=48.87055, longitude=2.34765
         )
         offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer, address=address)
         venue = offerers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
-            street=address.street,
-            postalCode=address.postalCode,
-            city=address.city,
             offererAddress=offerer_address,
             isPermanent=True,
         )
@@ -1206,11 +1203,11 @@ class UpdateVenueTest(PostEndpointHelper):
         }
         assert actions_history[0].extraData["modified_info"]["latitude"] == {
             "new_info": "48.87171",
-            "old_info": "48.87004",
+            "old_info": "48.87055",
         }
         assert actions_history[0].extraData["modified_info"]["longitude"] == {
             "new_info": "2.30829",
-            "old_info": "2.3785",
+            "old_info": "2.34765",
         }
         assert actions_history[0].extraData["modified_info"]["postalCode"] == {
             "new_info": "75001",

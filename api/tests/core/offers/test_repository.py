@@ -1554,7 +1554,11 @@ class GetStocksListFiltersTest:
         same_day_other_hour = datetime.datetime(2020, 10, 15, 0, 0, 0)
         same_day_same_hour_other_minutes = datetime.datetime(2020, 10, 15, 12, 45, 0)
 
-        venue = offerers_factories.VenueFactory(timezone="Pacific/Tahiti", departementCode="987", postalCode="98700")
+        venue = offerers_factories.VenueFactory(
+            offererAddress__address__timezone="Pacific/Tahiti",
+            offererAddress__address__departmentCode="987",
+            offererAddress__address__postalCode="98700",
+        )
         offer = factories.OfferFactory(venue=venue)
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
         factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_day)
@@ -1572,7 +1576,9 @@ class GetStocksListFiltersTest:
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
         venue = offerers_factories.VenueFactory(
-            timezone="America/Martinique", departementCode="972", postalCode="97200"
+            offererAddress__address__timezone="America/Martinique",
+            offererAddress__address__departmentCode="972",
+            offererAddress__address__postalCode="97200",
         )
         offer = factories.OfferFactory(venue=venue)
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
@@ -1598,7 +1604,11 @@ class GetStocksListFiltersTest:
     def test_filtered_stock_by_seconds(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 20, 1, 0, 0)
-        venue = offerers_factories.VenueFactory(timezone="Indian/Reunion", departementCode="974", postalCode="97400")
+        venue = offerers_factories.VenueFactory(
+            offererAddress__address__timezone="Indian/Reunion",
+            offererAddress__address__departmentCode="974",
+            offererAddress__address__postalCode="97400",
+        )
         offer = factories.OfferFactory(venue=venue)
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
         factories.EventStockFactory(
@@ -1629,7 +1639,11 @@ class GetStocksListFiltersTest:
         beginning_datetime_2 = datetime.datetime(2021, 3, 28, 1, 0, 0)
         beginning_datetime_3 = datetime.datetime(2021, 3, 29, 1, 0, 0)
 
-        venue = offerers_factories.VenueFactory(timezone="Europe/Paris", departementCode="78", postalCode="78220")
+        venue = offerers_factories.VenueFactory(
+            offererAddress__address__timezone="Europe/Paris",
+            offererAddress__address__departmentCode="78",
+            offererAddress__address__postalCode="78220",
+        )
 
         offer = factories.OfferFactory(venue=venue)
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime_1)
@@ -1661,7 +1675,11 @@ class GetStocksListFiltersTest:
         beginning_datetime_2 = datetime.datetime(2021, 3, 14, 10, 0, 0)
         beginning_datetime_3 = datetime.datetime(2021, 3, 15, 10, 0, 0)
 
-        venue = offerers_factories.VenueFactory(timezone="America/Miquelon", departementCode="97", postalCode="97500")
+        venue = offerers_factories.VenueFactory(
+            offererAddress__address__timezone="America/Miquelon",
+            offererAddress__address__departmentCode="97",
+            offererAddress__address__postalCode="97500",
+        )
 
         offer = factories.OfferFactory(venue=venue)
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime_1)
