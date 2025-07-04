@@ -1,3 +1,4 @@
+import enum
 from datetime import datetime
 from typing import Any
 
@@ -8,6 +9,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.api import has_email_been_sent
 from pcapi.core.bookings.api import is_external_event_booking_visible
 from pcapi.core.bookings.api import is_voucher_displayed
+from pcapi.core.categories.subcategories import SEANCE_CINE
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.geography.models import Address
 from pcapi.core.offerers.models import OffererAddress
@@ -19,6 +21,17 @@ from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.shared.price import convert_to_cent
+
+
+class TicketDisplayEnum(enum.Enum):
+    NO_TICKET = "no_ticket"
+    EMAIL_SENT = "email_sent"
+    EMAIL_WILL_BE_SENT = "email_will_be_sent"
+    ONLINE_CODE = "online_code"
+    NOT_VISIBLE = "not_visible"
+    QR_CODE = "qr_code"
+    VOUCHER = "voucher"
+    TICKET = "ticket"
 
 
 class BookingVenueResponseV2GetterDict(GetterDict):
@@ -125,10 +138,6 @@ class VoucherResponse(ConfiguredBaseModel):
     data: str | None
 
 
-class EmailResponse(ConfiguredBaseModel):
-    has_ticket_email_been_sent: bool
-
-
 class TokenResponse(ConfiguredBaseModel):
     data: str | None
 
@@ -154,13 +163,12 @@ class ExternalBookingResponseV2(ConfiguredBaseModel):
 
 
 class TicketResponse(ConfiguredBaseModel):
-    voucher: VoucherResponse | None
-    email: EmailResponse | None
-    token: TokenResponse | None
-    withdrawal: WithdrawalResponse
-    no_ticket: bool
     activation_code: ActivationCodeResponse | None
     external_booking: ExternalBookingResponseV2 | None
+    display: TicketDisplayEnum
+    token: TokenResponse | None
+    voucher: VoucherResponse | None
+    withdrawal: WithdrawalResponse
 
 
 class BookingResponseGetterDict(GetterDict):
@@ -185,9 +193,8 @@ class BookingResponseGetterDict(GetterDict):
         if offer.withdrawalType == WithdrawalTypeEnum.NO_TICKET:
             return TicketResponse(
                 activation_code=None,
-                email=None,
                 external_booking=None,
-                no_ticket=True,
+                display=TicketDisplayEnum.NO_TICKET,
                 token=None,
                 voucher=None,
                 withdrawal=withdrawal,
@@ -196,9 +203,10 @@ class BookingResponseGetterDict(GetterDict):
         if offer.withdrawalType == WithdrawalTypeEnum.BY_EMAIL:
             return TicketResponse(
                 activation_code=None,
-                email=EmailResponse(has_ticket_email_been_sent=has_email_been_sent(stock, offer.withdrawalDelay)),
                 external_booking=None,
-                no_ticket=False,
+                display=TicketDisplayEnum.EMAIL_SENT
+                if has_email_been_sent(stock=stock, withdrawal_delay=offer.withdrawalDelay)
+                else TicketDisplayEnum.EMAIL_WILL_BE_SENT,
                 token=None,
                 voucher=None,
                 withdrawal=withdrawal,
@@ -207,24 +215,19 @@ class BookingResponseGetterDict(GetterDict):
         if offer.isDigital:
             return TicketResponse(
                 activation_code=booking.activationCode,
-                email=None,
                 external_booking=None,
-                no_ticket=False,
-                token=None,
+                display=TicketDisplayEnum.ONLINE_CODE,
+                token=TokenResponse(data=booking.token) if not booking.activationCode else None,
                 voucher=None,
                 withdrawal=withdrawal,
             )
 
         if offer.isEvent and booking.isExternal:
+            booking_visible = is_external_event_booking_visible(offer=offer, stock=stock)
             return TicketResponse(
                 activation_code=None,
-                email=None,
-                external_booking=ExternalBookingResponseV2(
-                    data=booking.externalBookings
-                    if is_external_event_booking_visible(offer=offer, stock=stock)
-                    else None
-                ),
-                no_ticket=False,
+                external_booking=ExternalBookingResponseV2(data=booking.externalBookings if booking_visible else None),
+                display=TicketDisplayEnum.QR_CODE if booking_visible else TicketDisplayEnum.NOT_VISIBLE,
                 token=None,
                 voucher=None,
                 withdrawal=withdrawal,
@@ -237,13 +240,16 @@ class BookingResponseGetterDict(GetterDict):
             if is_voucher_displayed(offer=offer, isExternal=booking.isExternal)
             else None
         )
-        token = TokenResponse(data=None if booking.isExternal else booking.token)
+
+        token = TokenResponse(data=booking.token) if not booking.isExternal else None
+        display = TicketDisplayEnum.VOUCHER if voucher else TicketDisplayEnum.TICKET
+        if offer.subcategoryId == SEANCE_CINE.id:
+            display = TicketDisplayEnum.QR_CODE
 
         return TicketResponse(
             activation_code=None,
-            email=None,
             external_booking=None,
-            no_ticket=False,
+            display=display,
             token=token,
             voucher=voucher,
             withdrawal=withdrawal,
@@ -265,7 +271,7 @@ class BookingResponse(ConfiguredBaseModel):
     enable_pop_up_reaction: bool
     can_react: bool
     user_reaction: ReactionTypeEnum | None
-    ticket: TicketResponse | None
+    ticket: TicketResponse
 
     class Config:
         getter_dict = BookingResponseGetterDict
