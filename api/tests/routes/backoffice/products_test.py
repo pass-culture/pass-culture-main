@@ -575,7 +575,7 @@ class GetTagOffersFormTest(GetEndpointHelper):
         [
             ({"ean": "1234567891234"}, "cet EAN-13"),
             ({"extraData": {"visa": "123456"}, "ean": None}, "ce visa"),
-            ({"extraData": {"allocineId": 98765}, "ean": None}, "cet ID Allociné"),
+            ({"extraData": {"allocineId": 98765, "visa": "123456"}, "ean": None}, "cet ID Allociné"),
         ],
     )
     def test_get_tag_offers_form_with_active_offers(self, authenticated_client, identifier_props, identifier_string):
@@ -614,7 +614,7 @@ class AddCriteriaToOffersTest(PostEndpointHelper):
         [
             {"ean": "1234567890123"},
             {"extraData": {"visa": "123456"}, "ean": None},
-            {"extraData": {"allocineId": 98765}, "ean": None},
+            {"extraData": {"allocineId": 98765, "visa": "123456"}, "ean": None},
         ],
     )
     def test_add_criteria_to_offers_success(self, db_session, authenticated_client, identifier_props):
