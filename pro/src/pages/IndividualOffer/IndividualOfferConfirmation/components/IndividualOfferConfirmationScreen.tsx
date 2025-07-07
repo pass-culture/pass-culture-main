@@ -47,7 +47,7 @@ export const IndividualOfferConfirmationScreen = ({
             ? isPublishedInTheFuture
               ? `Offre programmée en cours de validation`
               : `Offre en cours de validation`
-            : `Offre créée avec succès`}
+            : `Offre créée avec succès !`}
         </h2>
 
         {isPendingOffer && (

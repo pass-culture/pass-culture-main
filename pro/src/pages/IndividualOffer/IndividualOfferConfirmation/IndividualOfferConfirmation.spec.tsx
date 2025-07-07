@@ -125,7 +125,7 @@ describe('IndividualOfferConfirmation', () => {
 
   it('should display a success message when offer is accepted', () => {
     renderOffer(contextOverride)
-    expect(screen.getByText('Offre créée avec succès')).toBeInTheDocument()
+    expect(screen.getByText('Offre créée avec succès !')).toBeInTheDocument()
     expect(
       screen.getByText('Visualiser l’offre dans l’application', {
         selector: 'a',
