@@ -229,6 +229,7 @@ def create_specific_invoice() -> None:
     logger.info("Created specific Invoice")
 
 
+@log_func_duration
 def build_many_extra_invoices(count: int = 2) -> None:
     """Build a bank account, a venue and many invoices.
 
