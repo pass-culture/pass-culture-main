@@ -325,17 +325,6 @@ class BatchCommentAndTagOffererForm(empty_forms.BatchForm, CommentAndTagOffererF
     pass
 
 
-class AddProUserForm(FlaskForm):
-    pro_user_id = fields.PCSelectField("Compte pro", choices=[], validate_choice=False, coerce=int)
-    comment = fields.PCCommentField("Commentaire interne")
-
-    # Empty choice is proposed to avoid select first user by default, but empty choice is not allowed
-    def validate_pro_user_id(self, pro_user_id: fields.PCSelectField) -> fields.PCSelectField:
-        if not pro_user_id.data:
-            raise wtforms.validators.ValidationError("Aucun compte pro n'est sélectionné")
-        return pro_user_id
-
-
 class InviteUserForm(FlaskForm):
     email = fields.PCEmailField("Adresse email")
 

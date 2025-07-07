@@ -4,16 +4,6 @@
 {% import "components/clipboard.html" as clipboard %}
 {% from "components/connect_as.html" import build_connect_as_link %}
 <turbo-frame id="offerer_users_frame">
-{% if has_permission("VALIDATE_OFFERER") %}
-  {% if add_user_form %}
-    {% set add_pro_user_modal_label_id = random_hash() %}
-    {{ build_modal_form("add-pro-user", add_user_dst, add_user_form, "Récupérer un compte pro rejeté", "Récupérer un compte pro rejeté", "Valider le rattachement", "Veuillez sélectionner le compte pro à rattacher à cette entité juridique") }}
-  {% else %}
-    <button class="btn lead fw-bold mt-2"
-            type="button"
-            disabled>Récupérer un compte pro rejeté</button>
-  {% endif %}
-{% endif %}
 {% if invite_user_form %}
   {{ build_modal_form("invite-email", invite_user_dst, invite_user_form, "Inviter un collaborateur", "Inviter un collaborateur", "Inviter", "Vous pouvez inviter des collaborateurs à rejoindre cette entité juridique. Une invitation leur sera envoyée par email. Vous serez notifié quand ils auront rejoint l’espace.") }}
 {% endif %}
