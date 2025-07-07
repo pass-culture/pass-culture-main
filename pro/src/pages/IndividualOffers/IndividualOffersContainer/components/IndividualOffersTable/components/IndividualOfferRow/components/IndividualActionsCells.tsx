@@ -126,6 +126,21 @@ export const IndividualActionsCells = ({
     setIsConfirmDialogReplaceHeadlineOfferOpen(false)
   }
 
+  const isActive = offer.status === OfferStatus.ACTIVE
+  const isDigital = offer.isDigital
+  const isProduct = !!offer.productId
+  const hasImage = !!offer.thumbUrl
+  // If an offer without an image is product-based, it cannot become
+  // a headline offer since product-based offers cannot have their images
+  // updated & headline offers without images are prohibited.
+  const isNotAProductWithoutImage = !isProduct || hasImage
+
+  const isHeadlineActionDisplayed =
+    isHeadlineOfferAllowedForOfferer &&
+    isActive &&
+    !isDigital &&
+    isNotAProductWithoutImage
+
   return (
     <>
       <td
@@ -156,19 +171,17 @@ export const IndividualActionsCells = ({
                   editionStockLink={editionStockLink}
                 />
               )}{' '}
-              {isHeadlineOfferAllowedForOfferer &&
-                offer.status === OfferStatus.ACTIVE &&
-                !offer.isDigital && (
-                  <HeadlineOfferCell
-                    offer={offer}
-                    setIsConfirmReplacementDialogOpen={
-                      setIsConfirmDialogReplaceHeadlineOfferOpen
-                    }
-                    setIsOfferWithoutImageDialogOpen={
-                      setIsDialogForHeadlineOfferWithoutImageOpen
-                    }
-                  />
-                )}
+              {isHeadlineActionDisplayed && (
+                <HeadlineOfferCell
+                  offer={offer}
+                  setIsConfirmReplacementDialogOpen={
+                    setIsConfirmDialogReplaceHeadlineOfferOpen
+                  }
+                  setIsOfferWithoutImageDialogOpen={
+                    setIsDialogForHeadlineOfferWithoutImageOpen
+                  }
+                />
+              )}
             </>
           </DropdownMenuWrapper>
         </div>

@@ -108,6 +108,7 @@ def get_capped_offers_for_filters(
                 models.Offer._extraData,
                 models.Offer.lastProviderId,
                 models.Offer.offererAddressId,
+                models.Offer.productId,
                 models.Offer.url,
                 models.Offer.publicationDatetime,
                 models.Offer.bookingAllowedDatetime,

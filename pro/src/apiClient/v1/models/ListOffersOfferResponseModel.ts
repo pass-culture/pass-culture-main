@@ -22,6 +22,7 @@ export type ListOffersOfferResponseModel = {
   isShowcase?: boolean | null;
   isThing: boolean;
   name: string;
+  productId?: number | null;
   productIsbn?: string | null;
   publicationDatetime?: string | null;
   status: OfferStatus;
