@@ -24,22 +24,13 @@ const accessibilityTestAndShape = (schema: any) => {
     })
 }
 
-export const getValidationSchema = ({
-  mandatoryFields,
-}: {
-  mandatoryFields: {
-    accessibility: boolean
-    isOpenToPublic: boolean
-  }
-}) =>
+export const getValidationSchema = () =>
   yup.object().shape({
-    accessibility: mandatoryFields.accessibility
-      ? accessibilityTestAndShape(yup.object())
-      : yup.object().when('isOpenToPublic', {
-          is: 'true',
-          then: (schema) => accessibilityTestAndShape(schema),
-          otherwise: (schema) => schema,
-        }),
+    accessibility: yup.object().when('isOpenToPublic', {
+      is: 'true',
+      then: (schema) => accessibilityTestAndShape(schema),
+      otherwise: (schema) => schema,
+    }),
     email: yup.string().nullable().test(emailSchema),
     phoneNumber: yup
       .string()
@@ -53,9 +44,10 @@ export const getValidationSchema = ({
           return phone ? isPhoneValid(phone) : true
         },
       }),
-    isOpenToPublic: mandatoryFields.isOpenToPublic
-      ? yup.string().nullable().required('Veuillez renseigner ce champ')
-      : yup.string().nullable(),
+    isOpenToPublic: yup
+      .string()
+      .nullable()
+      .required('Veuillez renseigner ce champ'),
     webSite: yup
       .string()
       .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')

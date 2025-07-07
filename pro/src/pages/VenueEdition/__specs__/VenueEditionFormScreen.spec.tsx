@@ -200,12 +200,6 @@ describe('VenueEditionFormScreen', () => {
       expect(screen.getByText('site.web')).toBeInTheDocument()
     })
 
-    it('should display a "Horaires d’ouverture" section', () => {
-      renderForm(baseVenue, { initialRouterEntries: ['/'] })
-
-      expect(screen.getByText(/Horaires d'ouverture/)).toBeInTheDocument()
-    })
-
     it('should dispaly an accessibility section', () => {
       renderForm(baseVenue, { initialRouterEntries: ['/'] })
 
@@ -237,112 +231,103 @@ describe('VenueEditionFormScreen', () => {
       ).toBeInTheDocument()
     })
 
-    describe('when open to public feature is enabled', () => {
-      it('should always display an "Accueil du public"', () => {
-        renderForm(baseVenue, {
-          initialRouterEntries: ['/'],
-          features: ['WIP_IS_OPEN_TO_PUBLIC'],
-        })
-        expect(screen.getByText('Accueil du public')).toBeInTheDocument()
+    it('should always display an "Accueil du public"', () => {
+      renderForm(baseVenue, {
+        initialRouterEntries: ['/'],
+      })
+      expect(screen.getByText('Accueil du public')).toBeInTheDocument()
+    })
+
+    describe('when the venue is not open to public', () => {
+      it('should not display any address and hours subsection', () => {
+        renderForm(
+          { ...baseVenue, isOpenToPublic: false },
+          {
+            initialRouterEntries: ['/'],
+          }
+        )
+
+        expect(
+          screen.queryByText('Adresse et horaires')
+        ).not.toBeInTheDocument()
       })
 
-      describe('when the venue is not open to public', () => {
-        it('should not display any address and hours subsection', () => {
-          renderForm(
-            { ...baseVenue, isOpenToPublic: false },
-            {
-              initialRouterEntries: ['/'],
-              features: ['WIP_IS_OPEN_TO_PUBLIC'],
-            }
-          )
+      it('should not display any accessibility subsection', () => {
+        renderForm(
+          { ...baseVenue, isOpenToPublic: false },
+          {
+            initialRouterEntries: ['/'],
+          }
+        )
 
-          expect(
-            screen.queryByText('Adresse et horaires')
-          ).not.toBeInTheDocument()
-        })
-
-        it('should not display any accessibility subsection', () => {
-          renderForm(
-            { ...baseVenue, isOpenToPublic: false },
-            {
-              initialRouterEntries: ['/'],
-              features: ['WIP_IS_OPEN_TO_PUBLIC'],
-            }
-          )
-
-          expect(
-            screen.queryByText(/Modalités d’accessibilité/)
-          ).not.toBeInTheDocument()
-        })
-
-        it('should display a message indicating the venue is not open to public', () => {
-          renderForm(
-            { ...baseVenue, isOpenToPublic: false },
-            {
-              initialRouterEntries: ['/'],
-              features: ['WIP_IS_OPEN_TO_PUBLIC'],
-            }
-          )
-
-          expect(
-            screen.getByText('Accueil du public dans la structure : Non')
-          ).toBeInTheDocument()
-        })
+        expect(
+          screen.queryByText(/Modalités d’accessibilité/)
+        ).not.toBeInTheDocument()
       })
 
-      describe('when the venue is open to public', () => {
-        it('should display an "Addresse et horaires" subsection', () => {
-          renderForm(
-            { ...baseVenue, isOpenToPublic: true },
-            {
-              initialRouterEntries: ['/'],
-              features: ['WIP_IS_OPEN_TO_PUBLIC'],
-            }
-          )
+      it('should display a message indicating the venue is not open to public', () => {
+        renderForm(
+          { ...baseVenue, isOpenToPublic: false },
+          {
+            initialRouterEntries: ['/'],
+          }
+        )
 
-          expect(screen.getByText('Adresse et horaires')).toBeInTheDocument()
-        })
+        expect(
+          screen.getByText('Accueil du public dans la structure : Non')
+        ).toBeInTheDocument()
+      })
+    })
 
-        it('should display an accessibility subsection', () => {
-          renderForm(
-            { ...baseVenue, isOpenToPublic: true },
-            {
-              initialRouterEntries: ['/'],
-              features: ['WIP_IS_OPEN_TO_PUBLIC'],
-            }
-          )
-          expect(
-            screen.queryByText(/Modalités d’accessibilité/)
-          ).toBeInTheDocument()
-        })
+    describe('when the venue is open to public', () => {
+      it('should display an "Addresse et horaires" subsection', () => {
+        renderForm(
+          { ...baseVenue, isOpenToPublic: true },
+          {
+            initialRouterEntries: ['/'],
+          }
+        )
 
-        it('should display the acceslibre section as an accessibility sub section when accessibility is externally defined', () => {
-          renderForm(
-            {
-              ...baseVenue,
-              isOpenToPublic: true,
-              externalAccessibilityData: {
-                isAccessibleAudioDisability: true,
-                isAccessibleMentalDisability: false,
-                isAccessibleMotorDisability: true,
-                isAccessibleVisualDisability: true,
-              },
+        expect(screen.getByText('Adresse et horaires')).toBeInTheDocument()
+      })
+
+      it('should display an accessibility subsection', () => {
+        renderForm(
+          { ...baseVenue, isOpenToPublic: true },
+          {
+            initialRouterEntries: ['/'],
+          }
+        )
+        expect(
+          screen.queryByText(/Modalités d’accessibilité/)
+        ).toBeInTheDocument()
+      })
+
+      it('should display the acceslibre section as an accessibility sub section when accessibility is externally defined', () => {
+        renderForm(
+          {
+            ...baseVenue,
+            isOpenToPublic: true,
+            externalAccessibilityData: {
+              isAccessibleAudioDisability: true,
+              isAccessibleMentalDisability: false,
+              isAccessibleMotorDisability: true,
+              isAccessibleVisualDisability: true,
             },
-            {
-              initialRouterEntries: ['/'],
-              features: ['WIP_IS_OPEN_TO_PUBLIC'],
-            }
-          )
+          },
+          {
+            initialRouterEntries: ['/'],
+          }
+        )
 
-          expect(
-            screen.queryByText(
-              /Votre établissement est accessible aux publics en situation de handicap/
-            )
-          ).not.toBeInTheDocument()
-          expect(
-            screen.getByText('Modalités d’accessibilité via acceslibre')
-          ).toBeInTheDocument()
-        })
+        expect(
+          screen.queryByText(
+            /Votre établissement est accessible aux publics en situation de handicap/
+          )
+        ).not.toBeInTheDocument()
+        expect(
+          screen.getByText('Modalités d’accessibilité via acceslibre')
+        ).toBeInTheDocument()
       })
     })
   })
@@ -519,16 +504,6 @@ describe('VenueEditionFormScreen', () => {
       })
     })
 
-    describe('when the venue is permanent', () => {
-      it('should display a "Horaires d\'ouverture" section', async () => {
-        renderForm(baseVenue)
-
-        await waitFor(() => {
-          expect(screen.getByText(/Horaires d'ouverture/)).toBeInTheDocument()
-        })
-      })
-    })
-
     describe('when the venue is not permanent', () => {
       it('should not display any "Horaires d\'ouverture" section', async () => {
         renderForm({ ...baseVenue, isPermanent: false })
@@ -541,225 +516,171 @@ describe('VenueEditionFormScreen', () => {
       })
     })
 
-    describe('when open to public feature is enabled', () => {
-      it('should display an "Accueil du public section"', async () => {
-        renderForm(baseVenue, {
-          features: ['WIP_IS_OPEN_TO_PUBLIC'],
-        })
+    it('should display an "Accueil du public section"', async () => {
+      renderForm(baseVenue)
+
+      await waitFor(() => {
+        expect(screen.getByText('Accueil du public')).toBeInTheDocument
+      })
+    })
+
+    it('should display a mandatory toggle to define isOpenToPublic', async () => {
+      renderForm({ ...baseVenue, isOpenToPublic: false })
+
+      const toggle = screen.getByRole('group', {
+        name: 'Accueillez-vous du public dans votre structure ?',
+      })
+
+      await waitFor(() => {
+        expect(toggle).toBeInTheDocument()
+      })
+    })
+
+    it('should pass the isOpenToPublic value to the API', async () => {
+      const editVenueSpy = vi.spyOn(api, 'editVenue')
+
+      renderForm({
+        ...baseVenue,
+        isOpenToPublic: false,
+      })
+
+      await userEvent.click(screen.getByRole('radio', { name: 'Oui' }))
+      await userEvent.click(screen.getByText(/Enregistrer/))
+
+      expect(editVenueSpy).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({ isOpenToPublic: true })
+      )
+    })
+
+    describe('when the venue is not open to public', () => {
+      it('should not display any "Addresse et horaires" subsection', async () => {
+        renderForm({ ...baseVenue, isOpenToPublic: false })
 
         await waitFor(() => {
-          expect(screen.getByText('Accueil du public')).toBeInTheDocument
+          expect(
+            screen.queryByText('Adresse et horaires')
+          ).not.toBeInTheDocument()
         })
       })
 
-      it('should display a mandatory toggle to define isOpenToPublic', async () => {
-        renderForm(
-          { ...baseVenue, isOpenToPublic: false },
-          {
-            features: ['WIP_IS_OPEN_TO_PUBLIC'],
-          }
-        )
-
-        const toggle = screen.getByRole('group', {
-          name: 'Accueillez-vous du public dans votre structure ?',
-        })
+      it('should not display any accessibility subsection', async () => {
+        renderForm({ ...baseVenue, isOpenToPublic: false })
 
         await waitFor(() => {
-          expect(toggle).toBeInTheDocument()
+          expect(
+            screen.queryByText('Modalités d’accessibilité')
+          ).not.toBeInTheDocument()
         })
       })
 
-      it('should pass the isOpenToPublic value to the API', async () => {
+      it('should not produce an error when accessibility is not filled nor externally defined on submit form', async () => {
         const editVenueSpy = vi.spyOn(api, 'editVenue')
+        renderForm({
+          ...baseVenue,
+          audioDisabilityCompliant: null,
+          mentalDisabilityCompliant: null,
+          visualDisabilityCompliant: null,
+          motorDisabilityCompliant: null,
+          isOpenToPublic: false,
+        })
 
-        renderForm(
-          {
-            ...baseVenue,
-            isOpenToPublic: false,
-          },
-          {
-            features: ['WIP_IS_OPEN_TO_PUBLIC'],
-          }
-        )
-
-        await userEvent.click(screen.getByRole('radio', { name: 'Oui' }))
+        // If the user tries to submit the form without filling the accessibility section
+        // no error should be displayed. We edit the description to trigger the form dirty state.
+        await userEvent.type(screen.getByLabelText('Description'), '…')
         await userEvent.click(screen.getByText(/Enregistrer/))
 
-        expect(editVenueSpy).toHaveBeenCalledWith(
-          expect.anything(),
-          expect.objectContaining({ isOpenToPublic: true })
-        )
+        expect(editVenueSpy).toHaveBeenCalled()
       })
+    })
 
-      describe('when the venue is not open to public', () => {
-        it('should not display any "Addresse et horaires" subsection', async () => {
-          renderForm(
-            { ...baseVenue, isOpenToPublic: false },
-            {
-              features: ['WIP_IS_OPEN_TO_PUBLIC'],
-            }
-          )
+    describe('when the venue is open to public', () => {
+      it('should display an "Addresse et horaires" subsection', async () => {
+        renderForm({ ...baseVenue, isOpenToPublic: true })
 
-          await waitFor(() => {
-            expect(
-              screen.queryByText('Adresse et horaires')
-            ).not.toBeInTheDocument()
-          })
-        })
-
-        it('should not display any accessibility subsection', async () => {
-          renderForm(
-            { ...baseVenue, isOpenToPublic: false },
-            {
-              features: ['WIP_IS_OPEN_TO_PUBLIC'],
-            }
-          )
-
-          await waitFor(() => {
-            expect(
-              screen.queryByText('Modalités d’accessibilité')
-            ).not.toBeInTheDocument()
-          })
-        })
-
-        it('should not produce an error when accessibility is not filled nor externally defined on submit form', async () => {
-          const editVenueSpy = vi.spyOn(api, 'editVenue')
-          renderForm(
-            {
-              ...baseVenue,
-              audioDisabilityCompliant: null,
-              mentalDisabilityCompliant: null,
-              visualDisabilityCompliant: null,
-              motorDisabilityCompliant: null,
-              isOpenToPublic: false,
-            },
-            {
-              features: ['WIP_IS_OPEN_TO_PUBLIC'],
-            }
-          )
-
-          // If the user tries to submit the form without filling the accessibility section
-          // no error should be displayed. We edit the description to trigger the form dirty state.
-          await userEvent.type(screen.getByLabelText('Description'), '…')
-          await userEvent.click(screen.getByText(/Enregistrer/))
-
-          expect(editVenueSpy).toHaveBeenCalled()
+        await waitFor(() => {
+          expect(screen.getByText('Adresse et horaires')).toBeInTheDocument()
         })
       })
 
-      describe('when the venue is open to public', () => {
-        it('should display an "Addresse et horaires" subsection', async () => {
-          renderForm(
-            { ...baseVenue, isOpenToPublic: true },
-            {
-              features: ['WIP_IS_OPEN_TO_PUBLIC'],
-            }
-          )
+      it('should display a mandatory accessibility subsection when internally defined', async () => {
+        renderForm({ ...baseVenue, isOpenToPublic: true })
 
-          await waitFor(() => {
-            expect(screen.getByText('Adresse et horaires')).toBeInTheDocument()
-          })
-        })
-
-        it('should display a mandatory accessibility subsection when internally defined', async () => {
-          renderForm(
-            { ...baseVenue, isOpenToPublic: true },
-            {
-              features: ['WIP_IS_OPEN_TO_PUBLIC'],
-            }
-          )
-
-          await waitFor(() => {
-            expect(
-              screen.getByText('Modalités d’accessibilité')
-            ).toBeInTheDocument()
-            expect(
-              screen.getByText(
-                'Votre établissement est accessible au public en situation de handicap : *'
-              )
-            ).toBeInTheDocument()
-          })
-        })
-
-        it('should produce an error when accessibility is neither filled nor externally defined on submit form', async () => {
-          renderForm(
-            {
-              ...baseVenue,
-              audioDisabilityCompliant: null,
-              mentalDisabilityCompliant: null,
-              visualDisabilityCompliant: null,
-              motorDisabilityCompliant: null,
-              isOpenToPublic: true,
-            },
-            {
-              features: ['WIP_IS_OPEN_TO_PUBLIC'],
-            }
-          )
-
-          // If the user tries to submit the form without filling the accessibility section
-          // an error should be displayed. We edit the description to trigger the form dirty state.
-          await userEvent.type(screen.getByLabelText('Description'), '…')
-          await userEvent.click(screen.getByText(/Enregistrer/))
-          await waitFor(() => {
-            expect(
-              screen.getByText(
-                'Veuillez sélectionner au moins un critère d’accessibilité'
-              )
-            ).toBeInTheDocument()
-          })
-        })
-
-        it('should display an acceslibre accessibility subsection when externally defined', async () => {
-          renderForm(
-            {
-              ...baseVenue,
-              isOpenToPublic: true,
-              externalAccessibilityData: {
-                isAccessibleAudioDisability: true,
-                isAccessibleMentalDisability: false,
-                isAccessibleMotorDisability: true,
-                isAccessibleVisualDisability: true,
-              },
-            },
-            {
-              features: ['WIP_IS_OPEN_TO_PUBLIC'],
-            }
-          )
-
-          await waitFor(() => {
-            expect(
-              screen.queryByText('Modalités d’accessibilité')
-            ).not.toBeInTheDocument()
-            expect(
-              screen.getByText('Modalités d’accessibilité via acceslibre')
-            ).toBeInTheDocument()
-          })
+        await waitFor(() => {
+          expect(
+            screen.getByText('Modalités d’accessibilité')
+          ).toBeInTheDocument()
+          expect(
+            screen.getByText(
+              'Votre établissement est accessible au public en situation de handicap : *'
+            )
+          ).toBeInTheDocument()
         })
       })
 
-      describe('when days/hours or accessibility have been updated', () => {
-        it('should be reset to initial values if user set isOpenToPublic to false', async () => {
-          renderForm(
-            { ...baseVenue, isOpenToPublic: true },
-            {
-              features: ['WIP_IS_OPEN_TO_PUBLIC'],
-            }
-          )
-          expect(baseVenue.motorDisabilityCompliant).toBe(false)
-          let visualAccessibilityCheckbox = screen.getByRole('checkbox', {
-            name: 'Moteur',
-          })
-          await userEvent.click(visualAccessibilityCheckbox)
-          expect(visualAccessibilityCheckbox).toBeChecked()
-          const noRadio = await screen.findByRole('radio', { name: 'Non' })
-          await userEvent.click(noRadio)
-          const yesRadio = await screen.findByRole('radio', { name: 'Oui' })
-          await userEvent.click(yesRadio)
-          visualAccessibilityCheckbox = screen.getByRole('checkbox', {
-            name: 'Moteur',
-          })
-          expect(visualAccessibilityCheckbox).not.toBeChecked()
+      it('should produce an error when accessibility is neither filled nor externally defined on submit form', async () => {
+        renderForm({
+          ...baseVenue,
+          audioDisabilityCompliant: null,
+          mentalDisabilityCompliant: null,
+          visualDisabilityCompliant: null,
+          motorDisabilityCompliant: null,
+          isOpenToPublic: true,
         })
+
+        // If the user tries to submit the form without filling the accessibility section
+        // an error should be displayed. We edit the description to trigger the form dirty state.
+        await userEvent.type(screen.getByLabelText('Description'), '…')
+        await userEvent.click(screen.getByText(/Enregistrer/))
+        await waitFor(() => {
+          expect(
+            screen.getByText(
+              'Veuillez sélectionner au moins un critère d’accessibilité'
+            )
+          ).toBeInTheDocument()
+        })
+      })
+
+      it('should display an acceslibre accessibility subsection when externally defined', async () => {
+        renderForm({
+          ...baseVenue,
+          isOpenToPublic: true,
+          externalAccessibilityData: {
+            isAccessibleAudioDisability: true,
+            isAccessibleMentalDisability: false,
+            isAccessibleMotorDisability: true,
+            isAccessibleVisualDisability: true,
+          },
+        })
+
+        await waitFor(() => {
+          expect(
+            screen.queryByText('Modalités d’accessibilité')
+          ).not.toBeInTheDocument()
+          expect(
+            screen.getByText('Modalités d’accessibilité via acceslibre')
+          ).toBeInTheDocument()
+        })
+      })
+    })
+
+    describe('when days/hours or accessibility have been updated', () => {
+      it('should be reset to initial values if user set isOpenToPublic to false', async () => {
+        renderForm({ ...baseVenue, isOpenToPublic: true })
+        expect(baseVenue.motorDisabilityCompliant).toBe(false)
+        let visualAccessibilityCheckbox = screen.getByRole('checkbox', {
+          name: 'Moteur',
+        })
+        await userEvent.click(visualAccessibilityCheckbox)
+        expect(visualAccessibilityCheckbox).toBeChecked()
+        const noRadio = await screen.findByRole('radio', { name: 'Non' })
+        await userEvent.click(noRadio)
+        const yesRadio = await screen.findByRole('radio', { name: 'Oui' })
+        await userEvent.click(yesRadio)
+        visualAccessibilityCheckbox = screen.getByRole('checkbox', {
+          name: 'Moteur',
+        })
+        expect(visualAccessibilityCheckbox).not.toBeChecked()
       })
     })
   })

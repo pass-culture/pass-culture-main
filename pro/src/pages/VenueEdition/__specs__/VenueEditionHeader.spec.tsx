@@ -5,7 +5,6 @@ import { VenueTypeCode } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
-import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
@@ -101,45 +100,16 @@ describe('VenueEditionHeader', () => {
     )
   })
 
-  it('should display a preview link when venue is permanent and is open to public feature enabled', () => {
-    renderPartnerPages(
-      {
-        venue: {
-          ...defaultGetVenue,
-          venueTypeCode: VenueTypeCode.FESTIVAL,
-          isPermanent: true,
-        },
-      },
-      {
-        features: ['WIP_IS_OPEN_TO_PUBLIC'],
-      }
-    )
-
-    expect(screen.getByText('Visualiser votre page')).toBeInTheDocument()
-  })
-
-  it('should display the address if present', () => {
+  it('should display a preview link when venue is permanent', () => {
     renderPartnerPages({
       venue: {
         ...defaultGetVenue,
         venueTypeCode: VenueTypeCode.FESTIVAL,
         isPermanent: true,
-        address: getAddressResponseIsLinkedToVenueModelFactory(),
       },
     })
 
-    expect(screen.getByTestId('venue-address')).toBeInTheDocument()
-    expect(screen.getByText(/ma super rue, 75008/)).toBeInTheDocument()
-  })
-
-  it('should not display the address if not present', () => {
-    renderPartnerPages({
-      venue: {
-        ...defaultGetVenue,
-      },
-    })
-
-    expect(screen.queryByTestId('venue-address')).not.toBeInTheDocument()
+    expect(screen.getByText('Visualiser votre page')).toBeInTheDocument()
   })
 
   it('should not display new offer button in new nav', () => {

@@ -1,5 +1,4 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { getVenuePagePathToNavigateTo } from 'commons/utils/getVenuePagePathToNavigateTo'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
@@ -29,7 +28,7 @@ const PublicWelcomeSection = ({
 }
 
 export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
-  const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
+  const isOpenToPublicEnabled = true
 
   return (
     <SummarySection
@@ -54,10 +53,10 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         />
       </SummarySubSection>
       <PublicWelcomeSection isOpenToPublicEnabled={isOpenToPublicEnabled}>
-        {isOpenToPublicEnabled && !venue.isOpenToPublic && (
+        {!venue.isOpenToPublic && (
           <span>Accueil du public dans la structure : Non</span>
         )}
-        {(!isOpenToPublicEnabled || venue.isOpenToPublic) && (
+        {venue.isOpenToPublic && (
           <>
             <OpeningHoursReadOnly
               isOpenToPublicEnabled={isOpenToPublicEnabled}
