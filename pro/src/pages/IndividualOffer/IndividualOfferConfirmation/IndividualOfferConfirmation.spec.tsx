@@ -102,9 +102,30 @@ describe('IndividualOfferConfirmation', () => {
     ).toHaveAttribute('href', `/offres`)
   })
 
+  it('should display a pending message when offer is scheduled and pending for validation', () => {
+    offer.publicationDate = new Date(Date.now() + 3600).toISOString()
+    offer.status = OfferStatus.PENDING
+    renderOffer(contextOverride)
+    expect(screen.getByText('Offre programmée en cours de validation')).toBeInTheDocument()
+    expect(
+      screen.queryByText('Visualiser l’offre dans l’application', {
+        selector: 'a',
+      })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByText('Créer une nouvelle offre', { selector: 'a' })
+    ).toHaveAttribute(
+      'href',
+      `/offre/creation?structure=${offererId}&lieu=${venueId}`
+    )
+    expect(
+      screen.getByText('Voir la liste des offres', { selector: 'a' })
+    ).toHaveAttribute('href', `/offres`)
+  })
+
   it('should display a success message when offer is accepted', () => {
     renderOffer(contextOverride)
-    expect(screen.getByText('Offre publiée !')).toBeInTheDocument()
+    expect(screen.getByText('Offre créée avec succès')).toBeInTheDocument()
     expect(
       screen.getByText('Visualiser l’offre dans l’application', {
         selector: 'a',
