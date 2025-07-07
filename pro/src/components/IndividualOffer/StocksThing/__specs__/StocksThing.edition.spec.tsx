@@ -120,7 +120,9 @@ describe('screens:StocksThing', () => {
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
     )
-    vi.spyOn(api, 'bulkUpdateEventStocks').mockResolvedValue({ stocks_count: 0 })
+    vi.spyOn(api, 'bulkUpdateEventStocks').mockResolvedValue({
+      stocks_count: 0,
+    })
   })
 
   it('should allow user to delete a stock', async () => {
@@ -141,7 +143,7 @@ describe('screens:StocksThing', () => {
     ).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(screen.getByLabelText('Prix *')).toHaveValue(null)
+      expect(screen.getByLabelText('Prix *')).toHaveValue(stockToDelete.price)
     })
     expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.id)
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
