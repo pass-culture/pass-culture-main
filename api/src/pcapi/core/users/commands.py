@@ -42,10 +42,12 @@ def delete_suspended_accounts_after_withdrawal_period() -> None:
 @blueprint.cli.command("anonymize_inactive_users")
 @click.option(
     "--category",
-    type=click.Choice(("pro", "beneficiary", "neither", "all"), case_sensitive=False),
+    type=click.Choice(("pro", "notify_pro", "beneficiary", "internal", "neither", "all"), case_sensitive=False),
     help="""Choose which users to anonymize:
-    pro: anonymize pro users afer X years [not implemented]
+    pro: anonymize pro users 3 years after their last connexion
+    notify_pro: notify pro 30 days before their anonymization
     beneficiary: anonymize beneficiary users 3 years after their last connection, starting from the 5 years after the expiration of their deposits; also anonymize deposits 10 years after their expiration
+    internal: anonymize people who use to work for the compagny 1 year after their account has been suspended
     neither: anonymize users that have never been pro or beneficiaries 3 years after their last connection
     all: anonymize all the users respecting their time rules
     """,
@@ -67,6 +69,9 @@ def anonymize_inactive_users(category: str) -> None:
     if category in ("pro", "all"):
         print("Anonymizing pro users 3 years after their last connection")
         users_api.anonymize_pro_users()
+    if category in ("internal", "all"):
+        print("Anonymizing internal users 1 year after their user was suspended")
+        users_api.anonymize_internal_users()
 
 
 @blueprint.cli.command("execute_gdpr_extract")
