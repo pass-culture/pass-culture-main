@@ -1,9 +1,9 @@
 /* istanbul ignore file: DEBT, TO FIX */
 import {
+  logEvent as analyticsLogEvent,
   getAnalytics,
   initializeAnalytics,
   isSupported,
-  logEvent as analyticsLogEvent,
   setUserId,
   setUserProperties,
 } from '@firebase/analytics'
@@ -17,6 +17,7 @@ import {
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
+import { isError } from 'apiClient/helpers'
 import { firebaseConfig } from 'commons/config/firebase'
 import { useUtmQueryParams } from 'commons/hooks/useUtmQueryParams'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
@@ -63,9 +64,16 @@ export const useFirebase = (consentedToFirebase: boolean) => {
       firebaseApp = firebase.initializeApp(firebaseConfig)
       setIsFirebaseInitialized(true)
 
-      initializeAnalytics(firebaseApp, { config: { send_page_view: false } })
-      firebaseRemoteConfig = getRemoteConfig(firebaseApp)
-      await fetchAndActivate(firebaseRemoteConfig)
+      try {
+        initializeAnalytics(firebaseApp, { config: { send_page_view: false } })
+        firebaseRemoteConfig = getRemoteConfig(firebaseApp)
+        await fetchAndActivate(firebaseRemoteConfig)
+      } catch (err) {
+        // Failed to execute 'transaction' on 'IDBDatabase': The database connection is closing (https://pass-culture.sentry.io/issues/37336598)
+        if (isError(err) && err.name === 'InvalidStateError') {
+          /* do nothing */
+        }
+      }
     }
 
     if (consentedToFirebase) {
