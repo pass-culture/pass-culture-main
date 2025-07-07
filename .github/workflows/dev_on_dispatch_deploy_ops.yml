@@ -1,3 +1,5 @@
+name: "[DEVOPS][TEST][on_dispatch] Deploy OPS"
+
 on:
   workflow_dispatch:
     inputs:
