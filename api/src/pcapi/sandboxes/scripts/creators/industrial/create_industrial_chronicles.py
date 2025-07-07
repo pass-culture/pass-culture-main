@@ -2,6 +2,7 @@ import hashlib
 import itertools
 import logging
 
+from pcapi.core.categories import subcategories
 from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.offers import factories as offers_factories
@@ -57,9 +58,15 @@ def create_industrial_chronicles() -> None:
         .limit(9)
     )
 
-    products_with_allocine_id = []
+    products_with_allocine_id: list[offers_models.Product] = []
     for allocineId in (1000002449, 1000007194, 1000004644):
-        products_with_allocine_id.append(offers_factories.ProductFactory.create(extraData={"allocineId": allocineId}))
+        product = offers_factories.ProductFactory.create(
+            name=f"Film avec chronique {len(products_with_allocine_id) + 1}",
+            extraData={"allocineId": allocineId},
+            subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+        products_with_allocine_id.append(product)
+        offers_factories.OfferFactory(product=product)
 
     logger.info("Creating 'BOOK' type chronicles with all fields")
     for user, product, i in zip(itertools.cycle(users), itertools.cycle(products_with_ean), range(30)):
