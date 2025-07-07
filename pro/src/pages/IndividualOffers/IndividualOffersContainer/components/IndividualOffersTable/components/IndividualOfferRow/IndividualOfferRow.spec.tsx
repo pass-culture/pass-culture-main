@@ -554,11 +554,29 @@ describe('IndividualOfferRow', () => {
         expect(makeHeadlineOfferButton).not.toBeInTheDocument()
       })
 
-      it('should not render headline actions if healine offer is not enabled for offerer', async () => {
+      it('should not render headline actions if headline offer is not enabled for offerer', async () => {
         renderOfferItem({
           props,
           isHeadlineOfferAllowedForOfferer: false,
         })
+
+        const openActionsButton = screen.getByRole('button', {
+          name: LABELS.openActions,
+        })
+        await userEvent.click(openActionsButton)
+
+        const makeHeadlineOfferButton = screen.queryByRole('menuitem', {
+          name: LABELS.makeHeadlineOffer,
+        })
+
+        expect(makeHeadlineOfferButton).not.toBeInTheDocument()
+      })
+
+      it('should not render headline actions if the offer is product-based, and has no image', async () => {
+        props.offer.productId = 10
+        props.offer.thumbUrl = null
+
+        renderOfferItem({ props })
 
         const openActionsButton = screen.getByRole('button', {
           name: LABELS.openActions,

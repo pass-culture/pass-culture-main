@@ -259,6 +259,7 @@ class ListOffersOfferResponseModel(BaseModel):
     publicationDatetime: datetime.datetime | None
     bookingAllowedDatetime: datetime.datetime | None
     bookingsCount: int | None
+    productId: int | None
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}

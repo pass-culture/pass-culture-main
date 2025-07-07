@@ -290,11 +290,13 @@ class Returns200Test:
             address__street="8 Boulevard de Bercy",
             address__banId="75112_0877_00008",
         )
+        product = offers_factories.EventProductFactory()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             offererAddress=offerer_address1,
             publicationDatetime=datetime.datetime(2022, 10, 21, 13, 19),
             bookingAllowedDatetime=datetime.datetime(2022, 11, 21, 13, 19),
+            product=product,
         )
         event_stock = offers_factories.EventStockFactory(
             offer=event_offer,
@@ -358,6 +360,7 @@ class Returns200Test:
                 "publicationDatetime": "2022-10-21T13:19:00Z",
                 "bookingAllowedDatetime": "2022-11-21T13:19:00Z",
                 "bookingsCount": 50,
+                "productId": product.id,
             }
         ]
 
@@ -422,6 +425,7 @@ class Returns200Test:
                 "publicationDatetime": None,
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
+                "productId": None,
             }
         ]
 
@@ -491,6 +495,7 @@ class Returns200Test:
                 "publicationDatetime": "2022-10-21T13:19:00Z",
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
+                "productId": None,
             }
         ]
 
@@ -602,6 +607,7 @@ class Returns200Test:
                 "publicationDatetime": "2022-11-21T13:19:00Z",
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
+                "productId": None,
             },
             {
                 "hasBookingLimitDatetimesPassed": False,
@@ -646,6 +652,7 @@ class Returns200Test:
                 "publicationDatetime": "2022-10-21T13:19:00Z",
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
+                "productId": None,
             },
         ]
 
@@ -719,6 +726,7 @@ class Returns200Test:
                 "publicationDatetime": "2022-11-21T13:19:00Z",
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
+                "productId": None,
             }
         ]
 
@@ -794,6 +802,7 @@ class Returns200Test:
                 "publicationDatetime": "2022-11-21T13:19:00Z",
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
+                "productId": None,
             }
         ]
 
