@@ -31,6 +31,7 @@ import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
+import pcapi.core.permissions.models as permissions_models
 import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.ds as users_ds
@@ -75,6 +76,7 @@ from pcapi.repository import transaction
 from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.clean_accents import clean_accents
+from pcapi.utils.date import get_naive_utc_now
 from pcapi.utils.pdf import generate_pdf_from_html
 from pcapi.utils.requests import ExternalAPIException
 
@@ -1519,6 +1521,11 @@ def anonymize_user(user: models.User, *, author: models.User | None = None) -> b
         history_models.ActionHistory.userId == user.id,
         history_models.ActionHistory.offererId.is_(None),
     ).delete()
+    db.session.query(
+        permissions_models.BackOfficeUserProfile,
+    ).filter(
+        permissions_models.BackOfficeUserProfile.userId == user.id,
+    ).delete()
 
     if external_email_anonymized:
         user.replace_roles_by_anonymized_role()
@@ -1778,6 +1785,41 @@ def anonymize_pro_users() -> None:
                 delete_beamer_user(user.id)
             except BeamerException:
                 pass
+
+
+@session_management.atomic()
+def anonymize_internal_users() -> None:
+    """Anonymize user who use to work for the company
+
+    As old suspended internal users do not have a role, we discriminate on the email address
+    """
+    suspended_subquery = (
+        db.session.query(
+            history_models.ActionHistory.actionDate,
+        )
+        .filter(
+            history_models.ActionHistory.userId == models.User.id,
+            history_models.ActionHistory.actionType == history_models.ActionType.USER_SUSPENDED,
+        )
+        .correlate(
+            models.User,
+        )
+        .order_by(history_models.ActionHistory.id.desc())
+        .limit(1)
+        .scalar_subquery()
+    )
+
+    users = db.session.query(
+        models.User,
+        suspended_subquery.label("last_suspended_date"),
+    ).filter(
+        models.User.email.ilike("%@passculture.app"),
+        models.User.isActive.is_(False),
+    )
+    for user, last_suspended in users:
+        # USER_SUSPENDED before 2022-02-21 may have an null actionDate
+        if (not last_suspended) or (last_suspended < get_naive_utc_now() - relativedelta(years=1)):
+            anonymize_user(user)
 
 
 def anonymize_user_deposits() -> None:

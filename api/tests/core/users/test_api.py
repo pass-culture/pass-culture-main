@@ -102,6 +102,7 @@ def _assert_user_is_anonymized(user):
     assert len(user.action_history) == 1
     assert user.action_history[0].actionType == history_models.ActionType.USER_ANONYMIZED
     assert user.action_history[0].authorUserId is None
+    assert user.backoffice_profile is None
 
 
 @pytest.mark.usefixtures("db_session")
@@ -2641,6 +2642,105 @@ class AnonymizeProUserTest:
 
         assert user.has_any_pro_role
         assert user.email == "test@example.com"
+
+
+class AnonymizeInternalUserTest:
+    @pytest.mark.parametrize(
+        "factory",
+        [
+            users_factories.AdminFactory,
+            users_factories.BeneficiaryFactory,
+            users_factories.ProFactory,
+        ],
+    )
+    def test_anonymize_internal_user(self, factory):
+        # check independance with the user role
+        user_to_anonymize = factory(
+            email="user_to_anonymize@passculture.app",
+            isActive=False,
+        )
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user_to_anonymize,
+            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=367),
+        )
+
+        users_api.anonymize_internal_users()
+
+        _assert_user_is_anonymized(user_to_anonymize)
+
+    def test_anonymize_internal_user_without_action_date(self):
+        user_to_anonymize = users_factories.AdminFactory(
+            email="user_to_anonymize@passculture.app",
+            isActive=False,
+        )
+        action_history = history_factories.SuspendedUserActionHistoryFactory(
+            user=user_to_anonymize,
+        )
+        action_history.actionDate = None
+        db.session.flush()
+
+        users_api.anonymize_internal_users()
+
+        _assert_user_is_anonymized(user_to_anonymize)
+
+    def test_keep_recent_internal_user(self):
+        user_to_anonymize = users_factories.AdminFactory(
+            email="user_to_anonymize@passculture.app",
+            isActive=False,
+        )
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user_to_anonymize,
+            actionDate=datetime.datetime.utcnow(),
+        )
+
+        users_api.anonymize_internal_users()
+
+        assert user_to_anonymize.email == "user_to_anonymize@passculture.app"
+
+    def test_keep_recent_internal_user_with_old_suspension(self):
+        user_to_anonymize = users_factories.AdminFactory(
+            email="user_to_anonymize@passculture.app",
+            isActive=False,
+        )
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user_to_anonymize,
+            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=367),
+        )
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user_to_anonymize,
+            actionDate=datetime.datetime.utcnow(),
+        )
+
+        users_api.anonymize_internal_users()
+
+        assert user_to_anonymize.email == "user_to_anonymize@passculture.app"
+
+    def test_keep_active_internal_user(self):
+        user_to_anonymize = users_factories.AdminFactory(
+            email="user_to_anonymize@passculture.app",
+            isActive=True,
+        )
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user_to_anonymize,
+            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=367),
+        )
+
+        users_api.anonymize_internal_users()
+
+        assert user_to_anonymize.email == "user_to_anonymize@passculture.app"
+
+    def test_keep_external_admin(self):
+        user_to_anonymize = users_factories.AdminFactory(
+            isActive=False,
+        )
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user_to_anonymize,
+            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=367),
+        )
+
+        users_api.anonymize_internal_users()
+
+        assert user_to_anonymize.email.endswith("@example.com")
 
 
 class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
