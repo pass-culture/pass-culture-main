@@ -33,7 +33,7 @@
   {% if action.BLACKLIST in allowed_actions.inline_actions and product.gcuCompatibilityType.value == "COMPATIBLE" %}
     {{ action_bar_button("x-circle", "Blacklist", modal_id="#blacklist-product-modal-" + product.id|string) }}
   {% endif %}
-  {% if action.TAG_MULTIPLE_OFFERS in allowed_actions.inline_actions and (product.ean or product.extraData.visa or product.extraData.allocineId) and active_offers_count > 0 %}
+  {% if action.TAG_MULTIPLE_OFFERS in allowed_actions.inline_actions and (product.ean or product.extraData.visa) and active_offers_count > 0 %}
     {{ action_bar_button("tags", "Tag les offres", modal_id="#tag-offers-product-modal-" + product.id|string) }}
   {% endif %}
 {% endblock action_buttons %}

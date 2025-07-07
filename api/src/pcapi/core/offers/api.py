@@ -1172,17 +1172,13 @@ def add_criteria_to_offers(
             models.Offer.productId.is_(None), models.Offer.isActive.is_(True)
         )
 
-        # Check for EAN first, then allocineId (preferred over visa), and finally visa to identify the product.
         if ean:
             unlinked_offer_query = unlinked_offer_query.filter(models.Offer.ean == ean)
-        elif allocineId:
-            unlinked_offer_query = unlinked_offer_query.filter(
-                models.Offer._extraData["allocineId"].cast(sa.Integer) == allocineId
-            )
-        elif visa:
+            offer_ids_to_tag.update(offer_id for (offer_id,) in unlinked_offer_query.all())
+        # The allocineId data exists only for products. We need to find offers that have the visa of this product.
+        elif (allocineId and products.extraData.get("visa")) or visa:
             unlinked_offer_query = unlinked_offer_query.filter(models.Offer._extraData["visa"].astext == visa)
-
-        offer_ids_to_tag.update(offer_id for (offer_id,) in unlinked_offer_query.all())
+            offer_ids_to_tag.update(offer_id for (offer_id,) in unlinked_offer_query.all())
 
     if not offer_ids_to_tag:
         return False
