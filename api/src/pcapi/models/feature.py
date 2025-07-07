@@ -158,6 +158,7 @@ class FeatureToggle(enum.Enum):
     WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY = (
         "Autoriser l'ajout de nouvelle structure seulement pour les collectivités"
     )
+    WIP_ENABLE_NEW_OFFER_CREATION_FLOW = "Activer le nouveau parcours de création d'offre"
     WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = "Utiliser les OffererAddress comme source de données"
 
     def is_active(self) -> bool:
@@ -232,6 +233,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE,
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
+    FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW,  # Not implemented yet
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API,
     FeatureToggle.WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST,
