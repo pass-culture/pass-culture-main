@@ -38,7 +38,6 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.repository.session_management import on_commit
 from pcapi.routes.backoffice.bookings import forms as bookings_forms
@@ -746,22 +745,6 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
 
     kwargs = {}
 
-    can_add_user = utils.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
-    if can_add_user:
-        # Users whose association to the offerer has been removed, for which relationship is only from history
-        removed_users = [row for row in rows if row.UserOfferer is None]
-        if removed_users:
-            add_user_form = offerer_forms.AddProUserForm()
-            add_user_form.pro_user_id.choices = [(user.id, f"{user.full_name} ({user.id})") for user in removed_users]
-            kwargs.update(
-                {
-                    "add_user_form": add_user_form,
-                    "add_user_dst": url_for(
-                        "backoffice_web.offerer.add_user_offerer_and_validate", offerer_id=offerer_id
-                    ),
-                }
-            )
-
     if utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY):
         kwargs.update(
             {
@@ -880,60 +863,6 @@ def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> utils.Backoffi
         "success",
     )
     return _self_redirect(offerer_id, active_tab="users", anchor="offerer_details_frame")
-
-
-@offerer_blueprint.route("/add-user", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
-def add_user_offerer_and_validate(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = db.session.query(offerers_models.Offerer).filter_by(id=offerer_id).one_or_none()
-    if not offerer:
-        raise NotFound()
-
-    form = offerer_forms.AddProUserForm()
-    if not form.validate():
-        mark_transaction_as_invalid()
-        flash(utils.build_form_error_msg(form), "warning")
-        return _self_redirect(offerer.id, active_tab="users", anchor="offerer_details_frame")
-
-    # Single request to get User object and check that the id is within the list of previously attached users, which
-    # ensures that:
-    # - user exists with given id
-    # - user_offerer entry does not exist with same ids
-    user = (
-        db.session.query(users_models.User)
-        .join(
-            history_models.ActionHistory,
-            sa.and_(
-                history_models.ActionHistory.userId == users_models.User.id,
-                history_models.ActionHistory.offererId == offerer_id,
-            ),
-        )
-        .filter(
-            users_models.User.id == form.pro_user_id.data,
-            users_models.User.id.not_in(
-                db.session.query(offerers_models.UserOfferer.userId).filter(
-                    offerers_models.UserOfferer.offererId == offerer_id
-                )
-            ),
-        )
-        .limit(1)
-    ).one_or_none()
-
-    if not user:
-        mark_transaction_as_invalid()
-        flash("L'ID ne correspond pas à un ancien rattachement à l'entité juridique", "warning")
-        return _self_redirect(offerer.id, active_tab="users", anchor="offerer_details_frame")
-
-    new_user_offerer = offerers_models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.NEW)
-    offerers_api.validate_offerer_attachment(new_user_offerer, current_user, form.comment.data)
-
-    flash(
-        Markup("Le rattachement de <b>{email}</b> à l'entité juridique <b>{offerer_name}</b> a été ajouté").format(
-            email=user.email, offerer_name=offerer.name
-        ),
-        "success",
-    )
-    return _self_redirect(offerer.id, active_tab="users", anchor="offerer_details_frame")
 
 
 @offerer_blueprint.route("/invite-user", methods=["POST"])
