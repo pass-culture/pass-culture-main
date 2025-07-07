@@ -160,9 +160,8 @@ jobs:
     name: "Pro E2E Tests"
     needs: [pcapi-init-job, build-pcapi-tests]
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
-    if: always() &&
-      !cancelled() &&
-      needs.pcapi-init-job.outputs.api-changed == 'true' ||
+    if:
+      always() && !cancelled() && needs.pcapi-init-job.outputs.api-changed == 'true' ||
       needs.pcapi-init-job.outputs.pro-changed == 'true'
     with:
       ENV: "development"
