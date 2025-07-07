@@ -9,7 +9,6 @@ import { GetVenueResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { getFormattedAddress } from 'commons/utils/getFormattedAddress'
 import { getVenuePagePathToNavigateTo } from 'commons/utils/getVenuePagePathToNavigateTo'
@@ -42,26 +41,12 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
-  const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
 
   const initialValues = setInitialFormValues(venue)
 
-  const isAccessibilityDefinedViaAccesLibre = !!venue.externalAccessibilityData
-  const mandatoryFields = {
-    isOpenToPublic: isOpenToPublicEnabled,
-    // If FF is enabled, acccessibility is mandatory depending on
-    // isOpenToPublic value / toggle, which is managed within yup validation schema instead.
-    accessibility:
-      !isOpenToPublicEnabled &&
-      !venue.isVirtual &&
-      !isAccessibilityDefinedViaAccesLibre,
-  }
-  const hasMandatoryInfo =
-    mandatoryFields.accessibility || mandatoryFields.isOpenToPublic
-
   const methods = useForm<VenueEditionFormValues>({
     defaultValues: initialValues,
-    resolver: yupResolver(getValidationSchema({ mandatoryFields }) as any),
+    resolver: yupResolver(getValidationSchema() as any),
     mode: 'onBlur',
   })
 
@@ -151,7 +136,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         <ScrollToFirstHookFormErrorAfterSubmit />
         <FormLayout fullWidthActions>
           <FormLayout.Section title="Vos informations pour le grand public">
-            {hasMandatoryInfo && <MandatoryInfo />}
+            <MandatoryInfo />
             <FormLayout.SubSection
               title="À propos de votre activité"
               description={
@@ -170,80 +155,63 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                 />
               </FormLayout.Row>
             </FormLayout.SubSection>
-            {isOpenToPublicEnabled ? (
-              <FormLayout.SubSection title="Accueil du public">
-                <FormLayout.Row>
-                  <OpenToPublicToggle
-                    onChange={(e) => {
-                      methods.setValue(
-                        'isOpenToPublic',
-                        e.target.value.toString()
-                      )
-                      if (e.target.value === 'false') {
-                        resetOpeningHoursAndAccessibility()
-                      }
-                    }}
-                    radioDescriptions={{
-                      yes: "Votre adresse postale sera visible, veuillez renseigner vos horaires d'ouvertures et vos modalités d'accessibilité.",
-                    }}
-                    isOpenToPublic={methods.watch('isOpenToPublic')}
-                  />
-                </FormLayout.Row>
-                {methods.watch('isOpenToPublic') === 'true' && (
-                  <>
-                    <FormLayout.SubSubSection
-                      title="Adresse et horaires"
-                      className={styles['opening-hours-subsubsection']}
-                    >
-                      <FormLayout.Row>
-                        <TextInput
-                          name="street"
-                          label="Adresse postale"
-                          className={
-                            styles['opening-hours-subsubsection-address-input']
-                          }
-                          disabled
-                          value={getFormattedAddress(venue.address)}
-                        />
-                        <Callout
-                          testId="address-callout"
-                          className={
-                            styles['opening-hours-subsubsection-callout']
-                          }
-                        >
-                          Pour modifier l’adresse de votre structure,
-                          rendez-vous dans votre page Paramètres généraux.
-                        </Callout>
-                      </FormLayout.Row>
-                      <FormLayout.Row>
-                        <OpeningHoursForm />
-                      </FormLayout.Row>
-                    </FormLayout.SubSubSection>
-                    <AccessibilityForm
-                      isVenuePermanent={true}
-                      externalAccessibilityId={venue.externalAccessibilityId}
-                      externalAccessibilityData={
-                        venue.externalAccessibilityData
-                      }
-                      isSubSubSection
-                    />
-                  </>
-                )}
-              </FormLayout.SubSection>
-            ) : (
-              <>
-                {venue.isPermanent && (
-                  <FormLayout.SubSection title="Horaires d'ouverture">
-                    <OpeningHoursForm />
-                  </FormLayout.SubSection>
-                )}
-                <AccessibilityForm
-                  isVenuePermanent={Boolean(venue.isPermanent)}
-                  externalAccessibilityId={venue.externalAccessibilityId}
-                  externalAccessibilityData={venue.externalAccessibilityData}
+            <FormLayout.SubSection title="Accueil du public">
+              <FormLayout.Row>
+                <OpenToPublicToggle
+                  onChange={(e) => {
+                    methods.setValue(
+                      'isOpenToPublic',
+                      e.target.value.toString()
+                    )
+                    if (e.target.value === 'false') {
+                      resetOpeningHoursAndAccessibility()
+                    }
+                  }}
+                  radioDescriptions={{
+                    yes: "Votre adresse postale sera visible, veuillez renseigner vos horaires d'ouvertures et vos modalités d'accessibilité.",
+                  }}
+                  isOpenToPublic={methods.watch('isOpenToPublic')}
                 />
-              </>
-            )}
+              </FormLayout.Row>
+              {methods.watch('isOpenToPublic') === 'true' && (
+                <>
+                  <FormLayout.SubSubSection
+                    title="Adresse et horaires"
+                    className={styles['opening-hours-subsubsection']}
+                  >
+                    <FormLayout.Row>
+                      <TextInput
+                        name="street"
+                        label="Adresse postale"
+                        className={
+                          styles['opening-hours-subsubsection-address-input']
+                        }
+                        disabled
+                        value={getFormattedAddress(venue.address)}
+                      />
+                      <Callout
+                        testId="address-callout"
+                        className={
+                          styles['opening-hours-subsubsection-callout']
+                        }
+                      >
+                        Pour modifier l’adresse de votre structure, rendez-vous
+                        dans votre page Paramètres généraux.
+                      </Callout>
+                    </FormLayout.Row>
+                    <FormLayout.Row>
+                      <OpeningHoursForm />
+                    </FormLayout.Row>
+                  </FormLayout.SubSubSection>
+                  <AccessibilityForm
+                    isVenuePermanent={!!venue.isPermanent}
+                    externalAccessibilityId={venue.externalAccessibilityId}
+                    externalAccessibilityData={venue.externalAccessibilityData}
+                    isSubSubSection
+                  />
+                </>
+              )}
+            </FormLayout.SubSection>
             <FormLayout.SubSection
               title="Contact"
               description="Ces informations permettront aux bénéficiaires de vous contacter en cas de besoin."

@@ -136,33 +136,25 @@ describe('PartnerPages', () => {
     ).toBeInTheDocument()
   })
 
-  describe('when open to public feature is enabled', () => {
-    it('should display the "Grand public" section when the venue has a partner page', () => {
-      renderPartnerPages(
-        {
-          venue: {
-            ...defaultGetVenue,
-          },
-          venueHasPartnerPage: true,
-        },
-        ['WIP_IS_OPEN_TO_PUBLIC']
-      )
-
-      expect(screen.getByText('Grand public')).toBeInTheDocument()
+  it('should display the "Grand public" section when the venue has a partner page', () => {
+    renderPartnerPages({
+      venue: {
+        ...defaultGetVenue,
+      },
+      venueHasPartnerPage: true,
     })
 
-    it('should not display the "Grand public" section when the venue does not have a partner page', () => {
-      renderPartnerPages(
-        {
-          venue: {
-            ...defaultGetVenue,
-          },
-          venueHasPartnerPage: false,
-        },
-        ['WIP_IS_OPEN_TO_PUBLIC']
-      )
+    expect(screen.getByText('Grand public')).toBeInTheDocument()
+  })
 
-      expect(screen.queryByText('Grand public')).not.toBeInTheDocument()
+  it('should not display the "Grand public" section when the venue does not have a partner page', () => {
+    renderPartnerPages({
+      venue: {
+        ...defaultGetVenue,
+      },
+      venueHasPartnerPage: false,
     })
+
+    expect(screen.queryByText('Grand public')).not.toBeInTheDocument()
   })
 })
