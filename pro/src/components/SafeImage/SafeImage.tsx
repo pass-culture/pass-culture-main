@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+
+import { usePrevious } from 'commons/hooks/usePrevious'
 
 type SafeImageProps = {
   src: string
@@ -16,6 +18,13 @@ export function SafeImage({
   placeholder,
 }: SafeImageProps) {
   const [error, setError] = useState(false)
+  const previousSrc = usePrevious(src)
+
+  useEffect(() => {
+    if (src !== previousSrc) {
+      setError(false)
+    }
+  }, [src, previousSrc])
 
   if (error) {
     return placeholder
