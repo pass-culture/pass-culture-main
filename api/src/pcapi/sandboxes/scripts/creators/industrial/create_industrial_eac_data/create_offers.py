@@ -69,7 +69,6 @@ def get_location_options(venue: offerers_models.Venue, other_venue: offerers_mod
                 "venueId": None,
                 "otherAddress": "35 Bd de Sébastopol, 75001 Paris",
             },
-            "interventionArea": ["75", "92", "93", "94", "95"],
             "locationType": educational_models.CollectiveLocationType.ADDRESS,
             "isManualEdition": True,
             "street": "35 Bd de Sébastopol",
@@ -81,7 +80,6 @@ def get_location_options(venue: offerers_models.Venue, other_venue: offerers_mod
                 "venueId": None,
                 "otherAddress": "35 Bd de Sébastopol, 75001 Paris",
             },
-            "interventionArea": ["75", "92", "93", "94", "95"],
             "locationType": educational_models.CollectiveLocationType.ADDRESS,
             "street": "35 Bd de Sébastopol",
         },
@@ -103,7 +101,6 @@ def get_location_options(venue: offerers_models.Venue, other_venue: offerers_mod
                 "venueId": other_venue.id,
                 "otherAddress": "",
             },
-            "interventionArea": ["75", "92", "93", "94", "95"],
             "locationType": educational_models.CollectiveLocationType.ADDRESS,
             "isLocatedAtVenue": False,
         },
@@ -155,7 +152,7 @@ def _get_or_create_offerer_address(
 
 
 @log_func_duration
-def create_offers(
+def create_eac_offers(
     offerers: list[offerers_models.Offerer], institutions: list[educational_models.EducationalInstitution]
 ) -> None:
     reset_offer_id_seq()
@@ -264,20 +261,9 @@ def create_offers(
         other_venue=other_venue,
         provider=None,
     )
-    create_collective_offers_with_different_locations(
-        institutions=institutions,
-        domains=domains,
-        venue=venue_pc_pro_for_addresses,
-        other_venue=other_venue,
-        provider=None,
-        with_new_format=True,
-    )
 
     create_collective_offer_templates_with_different_locations(
         domains=domains, venue=venue_pc_pro_for_addresses, other_venue=other_venue
-    )
-    create_collective_offer_templates_with_different_locations(
-        domains=domains, venue=venue_pc_pro_for_addresses, other_venue=other_venue, with_new_format=True
     )
 
     venue_public_api_for_addresses = next(v for v in offerer_for_addresses.managedVenues if "PUBLIC_API" in v.name)
@@ -287,15 +273,6 @@ def create_offers(
         venue=venue_public_api_for_addresses,
         other_venue=other_venue,
         provider=provider_for_addresses,
-    )
-
-    create_collective_offers_with_different_locations(
-        institutions=institutions,
-        domains=domains,
-        venue=venue_public_api_for_addresses,
-        other_venue=other_venue,
-        provider=provider_for_addresses,
-        with_new_format=True,
     )
 
     search.index_all_collective_offers_and_templates()
@@ -858,14 +835,11 @@ def create_collective_offer_templates_with_different_displayed_status(
         )
 
 
-def _set_offer_location_columns(
+def _set_offerer_address(
     offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
     location_option: LocationOption,
     offerer: offerers_models.Offerer,
 ) -> None:
-    offer.locationType = location_option.get("locationType")
-    offer.locationComment = location_option.get("locationComment")
-
     oa_label = f"OA pour l'offre {offer.name}"
     if isinstance(offer, educational_models.CollectiveOfferTemplate):
         oa_label += " (template)"
@@ -882,16 +856,12 @@ def create_collective_offers_with_different_locations(
     venue: offerers_models.Venue,
     other_venue: offerers_models.Venue,
     provider: providers_models.Provider | None,
-    with_new_format: bool = False,
 ) -> None:
     domains_iterator = cycle(domains)
     institution_iterator = cycle(institutions)
 
     for location_option in get_location_options(venue=venue, other_venue=other_venue):
-        name = location_option["name"]
-        name = f"{name}{' (avec OA)' if with_new_format else ''}{' (public api)' if provider is not None else ''}"
-
-        offer_venue = location_option["offerVenue"]
+        name = f"{location_option['name']}{' (public api)' if provider is not None else ''}"
 
         collective_stock = educational_factories.CollectiveStockFactory.create(
             collectiveOffer__name=name,
@@ -901,14 +871,15 @@ def create_collective_offers_with_different_locations(
             collectiveOffer__institution=next(institution_iterator),
             collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
             collectiveOffer__provider=provider,
-            collectiveOffer__offerVenue=offer_venue,
+            collectiveOffer__offerVenue=location_option["offerVenue"],
             collectiveOffer__interventionArea=location_option.get("interventionArea", []),
+            collectiveOffer__locationType=location_option["locationType"],
+            collectiveOffer__locationComment=location_option.get("locationComment"),
         )
 
-        if with_new_format:
-            _set_offer_location_columns(
-                offer=collective_stock.collectiveOffer, location_option=location_option, offerer=venue.managingOfferer
-            )
+        _set_offerer_address(
+            offer=collective_stock.collectiveOffer, location_option=location_option, offerer=venue.managingOfferer
+        )
 
 
 def create_collective_offer_templates_with_different_locations(
@@ -916,29 +887,25 @@ def create_collective_offer_templates_with_different_locations(
     domains: list[educational_models.EducationalDomain],
     venue: offerers_models.Venue,
     other_venue: offerers_models.Venue,
-    with_new_format: bool = False,
 ) -> None:
     domains_iterator = cycle(domains)
 
     for location_option in get_location_options(venue=venue, other_venue=other_venue):
-        name = location_option["name"]
-        name = f"{name}{' (avec OA)' if with_new_format else ''}"
-
-        offer_venue = location_option["offerVenue"]
         collective_offer_template = educational_factories.CollectiveOfferTemplateFactory.create(
-            name=name,
+            name=location_option["name"],
             venue=venue,
             educational_domains=[next(domains_iterator)],
             bookingEmails=["toto@totoland.com"],
             formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
-            offerVenue=offer_venue,
+            offerVenue=location_option["offerVenue"],
             interventionArea=location_option.get("interventionArea", []),
+            locationType=location_option["locationType"],
+            locationComment=location_option.get("locationComment"),
         )
 
-        if with_new_format:
-            _set_offer_location_columns(
-                offer=collective_offer_template, location_option=location_option, offerer=venue.managingOfferer
-            )
+        _set_offerer_address(
+            offer=collective_offer_template, location_option=location_option, offerer=venue.managingOfferer
+        )
 
 
 def create_booking_base_list(

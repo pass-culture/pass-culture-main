@@ -857,16 +857,26 @@ class OfferVenueByOfferIdTest:
         venue_1 = offerers_factories.VenueFactory()
         venue_2 = offerers_factories.VenueFactory()
         offer_1 = educational_factories.CollectiveOfferFactory(
-            offerVenue={"addressType": "offererVenue", "otherAddress": "", "venueId": venue_1.id}
+            offerVenue={"addressType": "offererVenue", "otherAddress": "", "venueId": venue_1.id},
+            venue=venue_1,
+            locationType=educational_models.CollectiveLocationType.ADDRESS,
+            offererAddress=venue_1.offererAddress,
         )
         offer_2 = educational_factories.CollectiveOfferFactory(
-            offerVenue={"addressType": "offererVenue", "otherAddress": "", "venueId": venue_1.id}
+            offerVenue={"addressType": "offererVenue", "otherAddress": "", "venueId": venue_1.id},
+            venue=venue_1,
+            locationType=educational_models.CollectiveLocationType.ADDRESS,
+            offererAddress=venue_1.offererAddress,
         )
         offer_3 = educational_factories.CollectiveOfferFactory(
-            offerVenue={"addressType": "offererVenue", "otherAddress": "", "venueId": venue_2.id}
+            offerVenue={"addressType": "offererVenue", "otherAddress": "", "venueId": venue_2.id},
+            venue=venue_2,
+            locationType=educational_models.CollectiveLocationType.ADDRESS,
+            offererAddress=venue_2.offererAddress,
         )
         offer_4 = educational_factories.CollectiveOfferFactory(
-            offerVenue={"addressType": "other", "otherAddress": "here", "venueId": None}
+            offerVenue={"addressType": "other", "otherAddress": "here", "venueId": None},
+            locationType=educational_models.CollectiveLocationType.TO_BE_DEFINED,
         )
 
         result = educational_api_offer.get_collective_offer_venue_by_offer_id(

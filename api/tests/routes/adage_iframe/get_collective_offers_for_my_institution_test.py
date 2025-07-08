@@ -50,6 +50,8 @@ class CollectiveOfferTest:
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
+            collectiveOffer__locationType=models.CollectiveLocationType.ADDRESS,
+            collectiveOffer__offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
         )
         # this archived offer should not appear in the result
         stocks[2].collectiveOffer.dateArchived = datetime.utcnow() - timedelta(days=1)
@@ -64,6 +66,8 @@ class CollectiveOfferTest:
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
+            collectiveOffer__locationType=models.CollectiveLocationType.ADDRESS,
+            collectiveOffer__offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
         )
         educational_factories.CancelledCollectiveBookingFactory(collectiveStock=stock_with_cancelled_booking)
 

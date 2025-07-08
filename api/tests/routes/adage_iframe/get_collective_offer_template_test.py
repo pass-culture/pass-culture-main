@@ -49,6 +49,8 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
         "longitude": float(venue_address.longitude),
         "latitude": float(venue_address.latitude),
     }
+    oa = offer.offererAddress
+    address = oa.address if oa else None
 
     return {
         "description": offer.description,
@@ -91,7 +93,27 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
             "postalCode": offer_venue_address.postalCode if offer_venue_address else None,
             "publicName": offer_venue.publicName if offer_venue else None,
         },
-        "location": None,
+        "location": {
+            "locationType": offer.locationType.value,
+            "locationComment": offer.locationComment,
+            "address": {
+                "banId": address.banId,
+                "city": address.city,
+                "departmentCode": address.departmentCode,
+                "id": address.id,
+                "id_oa": oa.id,
+                "inseeCode": address.inseeCode,
+                "isLinkedToVenue": False,
+                "isManualEdition": address.isManualEdition,
+                "label": oa.label,
+                "latitude": float(address.latitude),
+                "longitude": float(address.longitude),
+                "postalCode": address.postalCode,
+                "street": address.street,
+            }
+            if address
+            else None,
+        },
         "students": [student.value for student in offer.students],
         "educationalPriceDetail": offer.priceDetail,
         "domains": [{"id": domain.id, "name": domain.name} for domain in offer.domains],
@@ -127,6 +149,8 @@ class CollectiveOfferTemplateTest:
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
+            locationType=educational_models.CollectiveLocationType.ADDRESS,
+            offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
             nationalProgramId=educational_factories.NationalProgramFactory().id,
         )
 
@@ -140,18 +164,7 @@ class CollectiveOfferTemplateTest:
         assert response.json == expected_serialized_offer(offer, redactor, venue)
 
     def test_get_collective_offer_template_if_inactive(self, eac_client, redactor):
-        venue = offerers_factories.VenueFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory(
-            name="offer name",
-            description="offer description",
-            priceDetail="détail du prix",
-            students=[StudentLevels.GENERAL2],
-            offerVenue={
-                "venueId": venue.id,
-                "addressType": "offererVenue",
-                "otherAddress": "",
-            },
-            nationalProgramId=educational_factories.NationalProgramFactory().id,
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
             dateRange=db_utils.make_timerange(
                 start=datetime.datetime.utcnow() - datetime.timedelta(days=7),
@@ -161,32 +174,21 @@ class CollectiveOfferTemplateTest:
 
         url = url_for("adage_iframe.get_collective_offer_template", offer_id=offer.id)
 
-        with assert_num_queries(self.num_queries_with_venue):
+        with assert_num_queries(self.num_queries):
             response = eac_client.get(url)
 
         assert response.status_code == 200
         assert offer.status == offer_mixin.CollectiveOfferStatus.INACTIVE.value
 
     def test_get_collective_offer_template_without_date_range(self, eac_client, redactor):
-        venue = offerers_factories.VenueFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory(
-            name="offer name",
-            description="offer description",
-            priceDetail="détail du prix",
-            students=[StudentLevels.GENERAL2],
-            offerVenue={
-                "venueId": venue.id,
-                "addressType": "offererVenue",
-                "otherAddress": "",
-            },
-            nationalProgramId=educational_factories.NationalProgramFactory().id,
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
             dateRange=None,
         )
 
         url = url_for("adage_iframe.get_collective_offer_template", offer_id=offer.id)
 
-        with assert_num_queries(self.num_queries_with_venue):
+        with assert_num_queries(self.num_queries):
             response = eac_client.get(url)
 
         assert response.status_code == 200
@@ -292,8 +294,11 @@ class GetCollectiveOfferTemplatesTest:
 
         offers = []
         for venue in venues:
-            offer_venue = {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}
-            offer = educational_factories.CollectiveOfferTemplateFactory(offerVenue=offer_venue)
+            offer = educational_factories.CollectiveOfferTemplateFactory(
+                offerVenue={"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id},
+                locationType=educational_models.CollectiveLocationType.ADDRESS,
+                offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
+            )
 
             offers.append(offer)
             venues_from_offer_ids[offer.id] = venue
@@ -373,8 +378,11 @@ class GetCollectiveOfferTemplatesTest:
     def test_get_one_template(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
 
-        offer_venue = {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}
-        offer = educational_factories.CollectiveOfferTemplateFactory(offerVenue=offer_venue)
+        offer = educational_factories.CollectiveOfferTemplateFactory(
+            offerVenue={"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id},
+            locationType=educational_models.CollectiveLocationType.ADDRESS,
+            offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
+        )
 
         url = url_for(self.endpoint, ids=offer.id)
 

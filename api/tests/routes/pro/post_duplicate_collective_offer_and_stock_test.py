@@ -167,7 +167,11 @@ class Returns200Test:
                 "CAN_EDIT_DISCOUNT",
                 "CAN_ARCHIVE",
             ],
-            "location": None,
+            "location": {
+                "address": None,
+                "locationComment": None,
+                "locationType": "TO_BE_DEFINED",
+            },
             "history": {
                 "future": [
                     "PUBLISHED",

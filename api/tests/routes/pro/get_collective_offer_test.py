@@ -99,7 +99,11 @@ class Returns200Test:
             "isNonFreeOffer": None,
             "isPublicApi": True,
             "isTemplate": False,
-            "location": None,
+            "location": {
+                "address": None,
+                "locationComment": None,
+                "locationType": "TO_BE_DEFINED",
+            },
             "mentalDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
             "name": offer.name,

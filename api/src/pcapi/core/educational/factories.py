@@ -71,6 +71,7 @@ class CollectiveOfferFactory(BaseFactory[models.CollectiveOffer]):
         "otherAddress": "1 rue des polissons, Paris 75017",
         "venueId": None,
     }
+    locationType = models.CollectiveLocationType.TO_BE_DEFINED
     interventionArea = ["93", "94", "95"]
     formats = [EacFormat.PROJECTION_AUDIOVISUELLE]
 
@@ -136,6 +137,7 @@ class CollectiveOfferTemplateFactory(BaseFactory[models.CollectiveOfferTemplate]
         "otherAddress": "1 rue des polissons, Paris 75017",
         "venueId": None,
     }
+    locationType = models.CollectiveLocationType.TO_BE_DEFINED
     interventionArea = ["2A", "2B"]
     dateRange = db_utils.make_timerange(
         start=datetime.datetime.utcnow() + datetime.timedelta(days=1),

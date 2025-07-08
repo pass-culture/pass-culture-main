@@ -64,7 +64,11 @@ class Returns200Test:
             "CAN_HIDE",
         ]
 
-        assert response_json["location"] is None
+        assert response_json["location"] == {
+            "address": None,
+            "locationComment": None,
+            "locationType": "TO_BE_DEFINED",
+        }
 
     def test_location_address_venue(self, client):
         venue = offerers_factories.VenueFactory()

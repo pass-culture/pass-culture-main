@@ -76,7 +76,11 @@ class GetFavoriteOfferTest:
                         "postalCode": None,
                         "city": None,
                     },
-                    "location": None,
+                    "location": {
+                        "address": None,
+                        "locationComment": None,
+                        "locationType": "TO_BE_DEFINED",
+                    },
                     "contactEmail": "collectiveofferfactory+contact@example.com",
                     "contactPhone": collective_offer_template.contactPhone,
                     "contactUrl": collective_offer_template.contactUrl,

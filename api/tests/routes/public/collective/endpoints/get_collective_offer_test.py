@@ -290,5 +290,5 @@ def expected_serialized_offer(offer):
         "nationalProgram": {"id": offer.nationalProgram.id, "name": offer.nationalProgram.name},
         "bookings": bookings,
         "formats": [fmt.value for fmt in offer.formats],
-        "location": None,
+        "location": {"type": "TO_BE_DEFINED", "comment": None},
     }

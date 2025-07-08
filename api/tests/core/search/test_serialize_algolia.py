@@ -613,6 +613,7 @@ def test_serialize_collective_offer_template_offerer_venue():
             "otherAddress": "",
         },
         locationType=educational_models.CollectiveLocationType.ADDRESS,
+        offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(offer_venue),
     )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
@@ -657,6 +658,7 @@ def test_serialize_collective_offer_template_school():
             "venueId": None,
             "otherAddress": "",
         },
+        locationType=educational_models.CollectiveLocationType.SCHOOL,
     )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
@@ -674,6 +676,7 @@ def test_serialize_collective_offer_template_other():
             "venueId": None,
             "otherAddress": "Here",
         },
+        locationType=educational_models.CollectiveLocationType.TO_BE_DEFINED,
     )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
@@ -776,8 +779,8 @@ def test_serialize_collective_offer_template_legacy():
             "venueId": venue.id,
             "otherAddress": "",
         },
-        locationType=None,
-        offererAddress=None,
+        locationType=educational_models.CollectiveLocationType.ADDRESS,
+        offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
     )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
@@ -791,7 +794,7 @@ def test_serialize_collective_offer_template_legacy():
             "interventionArea": [],
             "schoolInterventionArea": None,
             "eventAddressType": educational_models.OfferAddressType.OFFERER_VENUE.value,
-            "locationType": None,
+            "locationType": educational_models.CollectiveLocationType.ADDRESS.value,
             "beginningDatetime": 1641031200.0,
             "description": collective_offer_template.description,
         },
