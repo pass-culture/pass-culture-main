@@ -159,6 +159,7 @@
     border: rem.torem(1px) solid black;
     border-color: var(--color-border-default);
     border-radius: rem.torem(8px);
+    width: 100%;
 
     > .radio-button-label {
       padding: rem.torem(16px);
