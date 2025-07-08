@@ -1,0 +1,11 @@
+@use "styles/mixins/_size.scss" as size;
+
+.individual-tbody {
+  display: block;
+}
+
+@media (min-width: size.$tablet) {
+  .individual-tbody {
+    display: table-row-group;
+  }
+}

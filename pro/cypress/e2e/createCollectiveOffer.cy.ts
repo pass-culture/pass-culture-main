@@ -127,7 +127,6 @@ describe('Create collective offers', () => {
       [
         '',
         '',
-        '',
         'Titre',
         'Date de l’évènement',
         'Lieu',
@@ -137,7 +136,6 @@ describe('Create collective offers', () => {
       [
         '',
         '',
-        '',
         newOfferName,
         `${format(dayAfterTomorrow, 'dd/MM/yyyy')}18h30`,
         venueName,
@@ -145,7 +143,6 @@ describe('Create collective offers', () => {
         'brouillon',
       ],
       [
-        '',
         '',
         '',
         offerDraft.name,
@@ -182,7 +179,6 @@ describe('Create collective offers', () => {
       [
         '',
         '',
-        '',
         'Titre',
         'Date de l’évènement',
         'Lieu',
@@ -190,7 +186,6 @@ describe('Create collective offers', () => {
         'Statut',
       ],
       [
-        '',
         '',
         '',
         newOfferName,
@@ -300,7 +295,6 @@ describe('Create collective offers', () => {
       [
         '',
         '',
-        '',
         'Titre',
         'Date de l’évènement',
         'Lieu',
@@ -310,7 +304,6 @@ describe('Create collective offers', () => {
       [
         '',
         '',
-        '',
         newOfferName,
         `${format(dayAfterTomorrow, 'dd/MM/yyyy')}18h30`,
         venueName,
@@ -318,7 +311,6 @@ describe('Create collective offers', () => {
         'brouillon',
       ],
       [
-        '',
         '',
         '',
         offerDraft.name,
@@ -355,7 +347,6 @@ describe('Create collective offers', () => {
       [
         '',
         '',
-        '',
         'Titre',
         'Date de l’évènement',
         'Lieu',
@@ -363,7 +354,6 @@ describe('Create collective offers', () => {
         'Statut',
       ],
       [
-        '',
         '',
         '',
         newOfferName,
