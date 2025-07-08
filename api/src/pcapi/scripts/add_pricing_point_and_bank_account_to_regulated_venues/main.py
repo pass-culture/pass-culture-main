@@ -14,7 +14,6 @@ import typing
 from datetime import datetime
 
 from sqlalchemy import exc as sa_exc
-from sqlalchemy.orm import exc as orm_exc
 
 import pcapi.core.finance.models as finance_models
 from pcapi.app import app
@@ -53,11 +52,11 @@ def mock_csv(venues: list[offerers_models.Venue]) -> typing.Iterator[dict[str, s
         )
 
         nb_activ_ba_offerer = (
-            db.session.query(offerers_models.VenueBankAccountLink)
-            .join(offerers_models.Venue, offerers_models.VenueBankAccountLink.venue)
+            db.session.query(finance_models.BankAccount)
             .filter(
-                offerers_models.Venue.managingOfferer == venue.managingOfferer,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                finance_models.BankAccount.offerer == venue.managingOfferer,
+                finance_models.BankAccount.isActive.is_(True),
+                finance_models.BankAccount.status == finance_models.BankAccountApplicationStatus.ACCEPTED,
             )
             .count()
         )
@@ -101,6 +100,17 @@ def _get_offerer_active_pricing_point(venue_id: int, offerer_id: int) -> offerer
     return None
 
 
+def _get_offerer_active_bank_account(offerer_id: int) -> finance_models.BankAccount | None:
+    active_bank_account = db.session.query(finance_models.BankAccount).filter(
+        finance_models.BankAccount.offererId == offerer_id,
+        finance_models.BankAccount.isActive.is_(True),
+        finance_models.BankAccount.status == finance_models.BankAccountApplicationStatus.ACCEPTED,
+    )
+    if len(active_bank_account.all()) == 1:
+        return active_bank_account.one()
+    return None
+
+
 @atomic()
 def _add_pricing_point(rows: typing.Iterator[dict[str, str]], not_dry: bool) -> None:
     logger.info("Adding pricing point to venues from pricing_point.csv")
@@ -108,6 +118,7 @@ def _add_pricing_point(rows: typing.Iterator[dict[str, str]], not_dry: bool) -> 
     modifications: list[tuple[int, str]] = []
     data: dict[int, int] = {}
 
+    venue_query = db.session.query(offerers_models.Venue)
     # For each venue ids, we try to fetch the valid pricing point to link it to
     for row in rows:
         venue_id = int(row[VENUE_ID_HEADER])
@@ -115,7 +126,7 @@ def _add_pricing_point(rows: typing.Iterator[dict[str, str]], not_dry: bool) -> 
         nb_siret_offerer = int(row[NB_SIRET_OFFERER_HEADER])
 
         # First check : does this venue still exist ?
-        if not db.session.query(offerers_models.Venue).filter_by(id=venue_id).one_or_none():
+        if not venue_query.filter_by(id=venue_id).one_or_none():
             logger.warning("Venue %s not found, skipping...", venue_id)
             # fails.append((venue_id, "Venue not found"))
             continue
@@ -180,10 +191,12 @@ def _add_bank_account(rows: typing.Iterator[dict[str, str]], not_dry: bool) -> N
     fails: list[tuple[int, str]] = []
     data: dict[int, int] = {}
 
+    venue_query = db.session.query(offerers_models.Venue)
+
     # For each venue, we try to fetch the valid bank account to link it to
     for row in rows:
         venue_id = int(row[VENUE_ID_HEADER])
-        venue: offerers_models.Venue = db.session.query(offerers_models.Venue).filter_by(id=venue_id).one_or_none()
+        venue: offerers_models.Venue = venue_query.filter_by(id=venue_id).one_or_none()
         if not venue:
             logger.warning("Venue %s not found, skipping...", venue_id)
             # fails.append((venue_id, "Venue not found"))
@@ -194,33 +207,12 @@ def _add_bank_account(rows: typing.Iterator[dict[str, str]], not_dry: bool) -> N
             # fails.append((venue_id, "Too many active or no bank account(s) on Offerer"))
             continue
 
-        try:
-            # Get Offerer's active bank account
-            bank_account: finance_models.BankAccount = (
-                db.session.query(finance_models.BankAccount)
-                .join(
-                    offerers_models.VenueBankAccountLink,
-                    finance_models.BankAccount.id == offerers_models.VenueBankAccountLink.bankAccountId,
-                )
-                .join(
-                    offerers_models.Venue,
-                    offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
-                )
-                .filter(
-                    offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
-                    offerers_models.Venue.managingOffererId == offerer_id,
-                    offerers_models.Venue.id != venue_id,
-                )
-            ).one()  # should just be one given the above condition
-
-        except orm_exc.NoResultFound:
-            logger.error("No valid bank account for venue %d. ", venue_id)
-            fails.append((venue_id, "No valid bank account for this venue"))
-
-        # Only add bank account for the given venue ID
-        data[venue_id] = bank_account.id
-
-    logger.info("Data length for bank account: %s ", len(data))
+        if bank_account := _get_offerer_active_bank_account(offerer_id=offerer_id):
+            data[venue_id] = bank_account.id
+        else:
+            fails.append(
+                (venue_id, "Aucun (ou plus d'un seul) compte bancaire actif trouvé sur l'Offerer lié à cet venue ")
+            )
 
     for venue_id, bank_account_id in data.items():
         # Create bank account link
