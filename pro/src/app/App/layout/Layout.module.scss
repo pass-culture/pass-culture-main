@@ -133,7 +133,7 @@ $connect-as-header-height: rem.torem(52px);
             &::after {
               content: "";
               display: inline-block;
-              background-color: #794ee3; /* TODO: remove this once we have the appropriate design token */
+              background-color: var(--color-background-brand-secondary);
               width: calc(100% + 10px);
               height: rem.torem(14px);
               position: absolute;
