@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { updateSelectedOffererId } from 'commons/store/offerer/reducer'
 import { updateUser } from 'commons/store/user/reducer'
 import { selectCurrentUser } from 'commons/store/user/selectors'
@@ -12,6 +13,7 @@ import { storageAvailable } from 'commons/utils/storageAvailable'
 export const useRedirectLoggedUser = () => {
   const navigate = useNavigate()
   const currentUser = useSelector(selectCurrentUser)
+  const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
   const dispatch = useDispatch()
 
   const [searchParams] = useSearchParams()
@@ -30,7 +32,11 @@ export const useRedirectLoggedUser = () => {
       const { offerersNames } = await api.listOfferersNames()
       if (offerersNames.length === 0) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        navigate('/parcours-inscription')
+        navigate(
+          isNewSignupEnabled
+            ? '/parcours-inscription/structure'
+            : '/parcours-inscription'
+        )
       } else {
         redirectToUrl()
       }
