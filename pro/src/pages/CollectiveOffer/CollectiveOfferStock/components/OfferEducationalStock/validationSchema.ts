@@ -126,20 +126,25 @@ export const generateValidationSchema = (
     bookingLimitDatetime: yup
       .string()
       .required('La date limite de réservation est obligatoire')
-      .test(
-        'is-before-event',
-        'La date limite de réservation doit être fixée au plus tard le jour de l’évènement',
-        function (bookingDate) {
-          return isBookingDateBeforeStartDate(new Date(bookingDate), this)
-        }
-      )
-      .test(
-        'is-after-today',
-        'La date limite de réservation doit être égale ou postérieure à la date actuelle',
-        function (endDate) {
-          return isReadOnly || isBookingDateAfterNow(endDate)
-        }
-      ),
+      .when([], {
+        is: () => !preventPriceIncrease,
+        then: (schema) =>
+          schema
+            .test(
+              'is-before-event',
+              'La date limite de réservation doit être fixée au plus tard le jour de l’évènement',
+              function (bookingDate) {
+                return isBookingDateBeforeStartDate(new Date(bookingDate), this)
+              }
+            )
+            .test(
+              'is-after-today',
+              'La date limite de réservation doit être égale ou postérieure à la date actuelle',
+              function (endDate) {
+                return isReadOnly || isBookingDateAfterNow(endDate)
+              }
+            ),
+      }),
     priceDetail: yup
       .string()
       .required('L’information sur le prix est obligatoire')
