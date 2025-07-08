@@ -16,12 +16,12 @@ import {
 } from 'commons/utils/date'
 import { formatPrice } from 'commons/utils/formatPrice'
 import { pluralize } from 'commons/utils/pluralize'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import {
   getDate,
   getRemainingTime,
   shouldDisplayWarning,
-} from 'components/OffersTable/Cells/OfferNameCell/utils'
+} from 'components/Bookings/BookingsRecapTable/utils/utils'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import fullErrorIcon from 'icons/full-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
