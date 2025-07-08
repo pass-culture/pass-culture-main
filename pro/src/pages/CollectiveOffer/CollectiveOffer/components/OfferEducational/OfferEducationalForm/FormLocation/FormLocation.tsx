@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import { AdresseData } from 'apiClient/adresse/types'
@@ -225,21 +226,42 @@ export const FormLocation = ({
         setValue(name, defaultValue)
       )
     }
+
+    setTimeout(() => {
+      const el = radioGroupRef.current
+      if (!el) {
+        return
+      }
+      const rect = el.getBoundingClientRect()
+      const isVisible =
+        rect.top >= 0 &&
+        rect.bottom <=
+          (window.innerHeight || document.documentElement.clientHeight)
+      if (!isVisible) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+    }, 0)
   }
+
+  const radioGroupRef = useRef<HTMLDivElement>(null)
 
   return (
     <FormLayout.Row>
-      <RadioGroup
-        onChange={handleLocationTypeChange}
-        group={locationTypeRadios}
-        variant="detailed"
-        legend={
-          <h2 className={styles['subtitle']}>Où se déroule votre offre ? *</h2>
-        }
-        name="location.locationType"
-        disabled={disableForm}
-        checkedOption={watch('location.locationType')}
-      />
+      <div ref={radioGroupRef}>
+        <RadioGroup
+          onChange={handleLocationTypeChange}
+          group={locationTypeRadios}
+          variant="detailed"
+          legend={
+            <h2 className={styles['subtitle']}>
+              Où se déroule votre offre ? *
+            </h2>
+          }
+          name="location.locationType"
+          disabled={disableForm}
+          checkedOption={watch('location.locationType')}
+        />
+      </div>
     </FormLayout.Row>
   )
 }
