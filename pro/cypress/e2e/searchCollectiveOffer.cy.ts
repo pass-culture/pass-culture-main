@@ -53,9 +53,8 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
-      ['', '', '', 'Titre', '', 'Adresse', 'Établissement', 'Statut'],
+      ['', '', 'Titre', '', 'Adresse', 'Établissement', 'Statut'],
       [
-        '',
         '',
         '',
         offerPublished.name,
@@ -84,9 +83,8 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '3 results should be displayed' })
     const expectedResults = [
-      ['', '', '', 'Titre', '', 'Adresse', 'Établissement', 'Statut'],
+      ['', '', 'Titre', '', 'Adresse', 'Établissement', 'Statut'],
       [
-        '',
         '',
         '',
         offerNotConform.name,
@@ -98,7 +96,6 @@ describe('Search collective offers', () => {
       [
         '',
         '',
-        '',
         offerInInstruction.name,
         '',
         offerInInstruction.venueName,
@@ -106,7 +103,6 @@ describe('Search collective offers', () => {
         'en instruction',
       ],
       [
-        '',
         '',
         '',
         offerArchived.name,
@@ -137,7 +133,6 @@ describe('Search collective offers', () => {
       [
         '',
         '',
-        '',
         offerPublished.name,
         '',
         offerPublished.venueName,
@@ -145,7 +140,6 @@ describe('Search collective offers', () => {
         'publiée',
       ],
       [
-        '',
         '',
         '',
         offerPublishedTemplate.name,
@@ -172,9 +166,8 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '5 results should be displayed' })
     const expectedResults = [
-      ['', '', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      ['', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
       [
-        '',
         '',
         '',
         offerArchived.name,
@@ -186,7 +179,6 @@ describe('Search collective offers', () => {
       [
         '',
         '',
-        '',
         offerNotConform.name,
         '',
         offerNotConform.venueName,
@@ -196,16 +188,14 @@ describe('Search collective offers', () => {
       [
         '',
         '',
-        '',
         offerInInstruction.name,
         '',
         offerInInstruction.venueName,
         '',
         'en instruction',
       ],
-      ['', '', '', offerDraft.name, '', offerDraft.venueName, '', 'brouillon'],
+      ['', '', offerDraft.name, '', offerDraft.venueName, '', 'brouillon'],
       [
-        '',
         '',
         '',
         offerPublished.name,
@@ -234,9 +224,8 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
-      ['', '', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      ['', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
       [
-        '',
         '',
         '',
         offerPublished.name,
@@ -266,9 +255,8 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
-      ['', '', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      ['', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
       [
-        '',
         '',
         '',
         offerInInstruction.name,
@@ -310,8 +298,8 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
-      ['', '', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
-      ['', '', '', offerDraft.name, '', offerDraft.venueName, '', 'brouillon'],
+      ['', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      ['', '', offerDraft.name, '', offerDraft.venueName, '', 'brouillon'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -339,9 +327,8 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '6 results should be displayed' })
     const expectedResults2 = [
-      ['', '', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      ['', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
       [
-        '',
         '',
         '',
         offerNotConform.name,
@@ -353,16 +340,14 @@ describe('Search collective offers', () => {
       [
         '',
         '',
-        '',
         offerInInstruction.name,
         '',
         offerInInstruction.venueName,
         '',
         'en instruction',
       ],
-      ['', '', '', offerDraft.name, '', offerDraft.venueName, '', 'brouillon'],
+      ['', '', offerDraft.name, '', offerDraft.venueName, '', 'brouillon'],
       [
-        '',
         '',
         '',
         offerPublished.name,
@@ -374,7 +359,6 @@ describe('Search collective offers', () => {
       [
         '',
         '',
-        '',
         offerPublishedTemplate.name,
         '',
         offerPublishedTemplate.venueName,
@@ -382,7 +366,6 @@ describe('Search collective offers', () => {
         'publiée',
       ],
       [
-        '',
         '',
         '',
         offerArchived.name,
