@@ -25,8 +25,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 # 2 extra SQL queries: select exists on offer and booking tables
 # 1 extra query to check if the venue has any related collective offer with 'marseille en grand'
 # 1 check if the venue is concerned with marseille_en_grand
-# 1 check if FF WIP_IS_OPEN_TO_PUBLIC is active
-EXPECTED_PRO_ATTR_NUM_QUERIES = 7
+EXPECTED_PRO_ATTR_NUM_QUERIES = 6
 
 
 def _build_params(subs, virt, perman, draft, accep, offer, book, attach, colloff, tploff, megoff):

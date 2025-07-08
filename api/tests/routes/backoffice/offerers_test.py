@@ -1724,8 +1724,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
     # - session + authenticated user (2 queries)
     # - venues with joined data (1 query)
     # - venue providers (selectinload: 1 query)
-    # - WIP_IS_OPEN_TO_PUBLIC feature flag (1 query)
-    expected_num_queries = 5
+    expected_num_queries = 4
 
     def test_get_managed_venues(self, authenticated_client, offerer):
         now = datetime.datetime.utcnow()

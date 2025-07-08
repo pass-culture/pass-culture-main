@@ -9,13 +9,11 @@ import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
-from pcapi.core import search
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository.session_management import on_commit
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
@@ -47,25 +45,6 @@ def create_venue_provider(
         new_venue_provider = connect_venue_to_cinema_provider(venue, provider, payload)
     else:
         new_venue_provider = connect_venue_to_provider(venue, provider)
-
-    if (
-        provider.isActive
-        and provider.enabledForPro
-        and venue.venueTypeCode
-        in (
-            offerers_models.VenueTypeCode.BOOKSTORE,
-            offerers_models.VenueTypeCode.MOVIE,
-        )
-        and not venue.isPermanent
-        and not FeatureToggle.WIP_IS_OPEN_TO_PUBLIC.is_active()
-    ):
-        venue.isPermanent = True
-        db.session.add(venue)
-        on_commit(
-            functools.partial(
-                search.async_index_venue_ids, [venue.id], reason=search.IndexationReason.VENUE_PROVIDER_CREATION
-            )
-        )
 
     history_api.add_action(
         history_models.ActionType.SYNC_VENUE_TO_PROVIDER,
