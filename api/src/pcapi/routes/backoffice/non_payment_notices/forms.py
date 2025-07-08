@@ -157,3 +157,43 @@ class CreateNonPaymentNoticeForm(FlaskForm):
 
 class EditNonPaymentNoticeForm(CreateNonPaymentNoticeForm):
     pass
+
+
+class SetPendingForm(FlaskForm):
+    motivation = fields.PCSelectField(
+        "Motif",
+        choices=forms_utils.choices_from_enum(
+            offerers_models.NoticeStatusMotivation,
+            formatter=filters.format_notice_status_motivation,
+            exclude_opts=(
+                offerers_models.NoticeStatusMotivation.ALREADY_PAID,
+                offerers_models.NoticeStatusMotivation.REJECTED,
+                offerers_models.NoticeStatusMotivation.NO_LINKED_BANK_ACCOUNT,
+            ),
+        ),
+    )
+
+
+class NoContinuationForm(FlaskForm):
+    pass
+
+
+class CloseForm(FlaskForm):
+    motivation = fields.PCSelectField(
+        "Motif",
+        choices=forms_utils.choices_from_enum(
+            offerers_models.NoticeStatusMotivation,
+            formatter=filters.format_notice_status_motivation,
+            exclude_opts=(
+                offerers_models.NoticeStatusMotivation.OFFERER_NOT_FOUND,
+                offerers_models.NoticeStatusMotivation.PRICE_NOT_FOUND,
+            ),
+        ),
+    )
+    batch = fields.PCTomSelectField(
+        "N° de virement",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_cashflow_batches",
+    )
