@@ -3,6 +3,7 @@ import * as reactRedux from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import { api } from 'apiClient/api'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 
 import { useRedirectLoggedUser } from '../useRedirectLoggedUser'
 
@@ -28,6 +29,7 @@ vi.mock('apiClient/api', () => ({
     listOfferersNames: vi.fn(),
   },
 }))
+vi.mock('commons/hooks/useActiveFeature', () => ({ useActiveFeature: vi.fn() }))
 
 const renderUseRedirectLoggedUser = (url: string) => {
   const wrapper = ({ children }: { children: any }) => (
@@ -43,9 +45,26 @@ describe('useRedirectLoggedUser', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.mocked(reactRedux.useSelector).mockReturnValue({ id: 123 }) // mock logged in user
+    vi.mocked(useActiveFeature).mockReturnValue(false)
   })
 
-  it('should redirect to /parcours-inscription page if user has no offerer names', async () => {
+  it('should redirect to /parcours-inscription/structure page if user has no offerer names with WIP_2025_SIGN_UP FF', async () => {
+    // Mock empty offerer names array
+    vi.mocked(useActiveFeature).mockReturnValueOnce(true)
+    vi.mocked(api.listOfferersNames).mockResolvedValue({ offerersNames: [] })
+
+    renderUseRedirectLoggedUser('/')
+
+    // Wait for the effect to run
+    await vi.waitFor(() => {
+      expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
+      expect(mockNavigate).toHaveBeenCalledWith(
+        '/parcours-inscription/structure'
+      )
+    })
+  })
+
+  it('should redirect to /parcours-inscription page if user has no offerer names without WIP_2025_SIGN_UP FF', async () => {
     // Mock empty offerer names array
     vi.mocked(api.listOfferersNames).mockResolvedValue({ offerersNames: [] })
 
