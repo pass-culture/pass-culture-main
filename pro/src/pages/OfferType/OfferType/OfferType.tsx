@@ -15,6 +15,7 @@ import {
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -34,6 +35,7 @@ export const OfferTypeScreen = () => {
   const queryParams = new URLSearchParams(location.search)
   const queryOffererId = useSelector(selectCurrentOffererId)?.toString()
   const queryVenueId = queryParams.get('lieu')
+  const isNewOfferCreationFlowFeatureActive = useActiveFeature('WIP_ENABLE_NEW_OFFER_CREATION_FLOW')
 
   const notify = useNotification()
 
@@ -63,7 +65,9 @@ export const OfferTypeScreen = () => {
   const onSubmit = async ({ offer }: OfferTypeFormValues) => {
     if (offer.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
       const params = new URLSearchParams(location.search)
-      params.append('offer-type', offer.individualOfferSubtype)
+      if (!isNewOfferCreationFlowFeatureActive) {
+        params.append('offer-type', offer.individualOfferSubtype)
+      }
 
       return navigate({
         pathname: getIndividualOfferUrl({
@@ -174,7 +178,7 @@ export const OfferTypeScreen = () => {
                 />
               )}
 
-              {offer.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
+              {!isNewOfferCreationFlowFeatureActive && offer.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
                 <IndividualOfferType />
               )}
 
