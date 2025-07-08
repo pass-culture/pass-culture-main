@@ -308,7 +308,6 @@ describe('Create collective offers with OA', () => {
     fillInstitution()
     cy.contains('Intitulé : Mon Lieu 1')
     cy.contains('Adresse : 1 boulevard Poissonnière, 75002, Paris')
-    cy.findByText('Enregistrer et continuer').click()
     verifyAndPublishOffer({ ...commonOfferData, title: 'Offre dupliquée OA' })
   })
 
