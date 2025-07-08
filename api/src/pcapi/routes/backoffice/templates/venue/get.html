@@ -122,12 +122,10 @@
                   {{ venue.adageId }}
                 </p>
               {% endif %}
-              {% if is_feature_active("WIP_IS_OPEN_TO_PUBLIC") %}
-                <p class="mb-1">
-                  <span class="fw-bold">Ouvert au public :</span>
-                  {{ venue.isOpenToPublic | format_bool_badge }}
-                </p>
-              {% endif %}
+              <p class="mb-1">
+                <span class="fw-bold">Ouvert au public :</span>
+                {{ venue.isOpenToPublic | format_bool_badge }}
+              </p>
               <p class="mb-1">
                 <span class="fw-bold">Activité principale :</span>
                 {{ venue.venueTypeCode.value }}
