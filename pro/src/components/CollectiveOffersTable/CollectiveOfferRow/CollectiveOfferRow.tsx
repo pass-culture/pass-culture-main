@@ -8,9 +8,7 @@ import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { isCollectiveOfferSelectable } from 'commons/utils/isActionAllowedOnCollectiveOffer'
-import { ThumbCell } from 'components/CollectiveOffersTable/CollectiveOfferRow/ThumbCell'
 import { CheckboxCell } from 'components/OffersTable/Cells/CheckboxCell'
-import { OfferNameCell } from 'components/OffersTable/Cells/OfferNameCell/OfferNameCell'
 import { OfferVenueCell } from 'components/OffersTable/Cells/OfferVenueCell'
 
 import { CollectiveActionsCells } from './CollectiveActionsCells/CollectiveActionsCells'
@@ -19,6 +17,7 @@ import { CollectiveOfferStatusCell } from './CollectiveOfferStatusCell/Collectiv
 import { ExpirationCell } from './ExpirationCell/ExpirationCell'
 import { OfferEventDateCell } from './OfferEventDateCell/OfferEventDateCell'
 import { OfferInstitutionCell } from './OfferInstitutionCell/OfferInstitutionCell'
+import { OfferNameCell } from './OfferNameCell/OfferNameCell'
 
 export type CollectiveOfferRowProps = {
   isSelected: boolean
@@ -89,18 +88,12 @@ export const CollectiveOfferRow = ({
           className={styles['collective-cell-checkbox']}
         />
         <td className={styles['expiration-date-cell']} />
-        <ThumbCell
-          rowId={rowId}
-          offer={offer}
-          offerLink={offerLink}
-          inactive={!isSelectable}
-          className={styles['collective-cell-thumb']}
-        />
         <OfferNameCell
           rowId={rowId}
           offer={offer}
           offerLink={offerLink}
           className={styles['collective-cell-name']}
+          displayThumb={true}
         />
         <OfferEventDateCell
           rowId={rowId}

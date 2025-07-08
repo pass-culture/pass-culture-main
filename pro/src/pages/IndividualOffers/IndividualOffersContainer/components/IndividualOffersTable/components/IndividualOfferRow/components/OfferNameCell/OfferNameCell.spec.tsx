@@ -3,7 +3,6 @@ import { userEvent } from '@testing-library/user-event'
 
 import { OfferStatus } from 'apiClient/v1'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
-import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
   listOffersOfferFactory,
@@ -15,7 +14,7 @@ import {
 } from 'commons/utils/renderWithProviders'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 
-import { OfferNameCell, OfferNameCellProps } from '../OfferNameCell'
+import { OfferNameCell, OfferNameCellProps } from './OfferNameCell'
 
 const renderOfferNameCell = (
   props: OfferNameCellProps,
@@ -37,7 +36,7 @@ const renderOfferNameCell = (
 
 describe('OfferNameCell', () => {
   it('should display a tag for offer template', () => {
-    const eventOffer = collectiveOfferFactory({
+    const eventOffer = listOffersOfferFactory({
       isShowcase: true,
       name: 'Offre nom',
     })

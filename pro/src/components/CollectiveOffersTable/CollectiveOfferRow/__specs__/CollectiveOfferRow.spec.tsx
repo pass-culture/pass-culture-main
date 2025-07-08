@@ -22,8 +22,8 @@ import {
   listOffersVenueFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 
@@ -89,7 +89,10 @@ describe('ollectiveOfferRow', () => {
     it('should render an image with url from offer when offer has a thumb url', () => {
       renderOfferItem(props)
 
-      expect(screen.getByRole('img')).toHaveAttribute('src', '/my-fake-thumb')
+      expect(screen.getByRole('presentation')).toHaveAttribute(
+        'src',
+        '/my-fake-thumb'
+      )
     })
 
     it('should render an image with an empty url when offer does not have a thumb url', () => {
@@ -208,9 +211,10 @@ describe('ollectiveOfferRow', () => {
 
   it('should display inactive thumb when offer is not editable', () => {
     props.offer.allowedActions = []
+    props.offer.imageUrl = null
     renderOfferItem(props)
 
-    expect(screen.getByRole('img')).toHaveClass('thumb-column-inactive')
+    expect(screen.getByTestId('thumb-icon')).toHaveClass('default-thumb')
   })
 
   it('should display disabled checkbox when offer is the offer cannot be archived', () => {
@@ -225,7 +229,7 @@ describe('ollectiveOfferRow', () => {
     renderOfferItem(props)
 
     expect(
-      within(screen.getAllByRole('cell')[3]).getByText('Offre vitrine')
+      within(screen.getAllByRole('cell')[2]).getByText('Offre vitrine')
     ).toBeInTheDocument()
   })
 

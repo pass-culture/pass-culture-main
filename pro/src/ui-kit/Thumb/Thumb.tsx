@@ -42,6 +42,7 @@ export const Thumb = ({
           alt={alt}
           src={strokeOfferIcon}
           width="48"
+          data-testid="thumb-icon"
           className={cn(styles['default-thumb'], className)}
         />
       )}

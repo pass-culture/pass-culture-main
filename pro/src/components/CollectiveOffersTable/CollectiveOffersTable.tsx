@@ -50,8 +50,7 @@ export const CollectiveOffersTable = ({
 }: CollectiveOffersTableProps) => {
   const columns: Columns[] = [
     { ...getCellsDefinition().INFO_ON_EXPIRATION, isVisuallyHidden: true },
-    { ...getCellsDefinition().THUMB, isVisuallyHidden: true },
-    { ...getCellsDefinition().NAME, isVisuallyHidden: true },
+    { ...getCellsDefinition().NAME, isVisuallyHidden: false },
     {
       ...getCellsDefinition().EVENT_DATE,
       sortableProps: {
