@@ -42,7 +42,6 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.pc_object import PcObject
@@ -487,9 +486,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
 
     @property
     def is_eligible_for_search(self) -> bool:
-        can_be_searched = bool(self.isPermanent)
-        if FeatureToggle.WIP_IS_OPEN_TO_PUBLIC.is_active():
-            can_be_searched = bool(self.isOpenToPublic)
+        can_be_searched = bool(self.isOpenToPublic)
         return can_be_searched and self.managingOfferer.isActive and self.managingOfferer.isValidated and self.hasOffers
 
     def store_departement_code(self) -> None:

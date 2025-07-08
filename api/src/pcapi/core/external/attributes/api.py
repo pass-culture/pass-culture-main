@@ -310,10 +310,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         has_collective_offers = offerers_repository.venues_have_collective_offers(*venues)
         has_individual_offers = offerers_repository.venues_have_individual_offers(*venues)
 
-        if FeatureToggle.WIP_IS_OPEN_TO_PUBLIC.is_active():
-            has_banner_url = all(venue._bannerUrl for venue in venues if venue.isOpenToPublic)
-        else:
-            has_banner_url = all(venue._bannerUrl for venue in venues if venue.isPermanent)
+        has_banner_url = all(venue._bannerUrl for venue in venues if venue.isOpenToPublic)
         attributes.update(
             {
                 "dms_application_submitted": any(venue.hasPendingBankAccountApplication for venue in venues),

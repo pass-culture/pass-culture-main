@@ -150,7 +150,6 @@ class FeatureToggle(enum.Enum):
     WIP_FREE_ELIGIBILITY = (
         "Activer la nouvelle éligibilité qui permet aux jeunes de 15 à 16 ans de réserver des offres gratuites"
     )
-    WIP_IS_OPEN_TO_PUBLIC = "Activer l'utilisation du critère 'ouvert au public' pour les synchro"
     WIP_REFACTO_FUTURE_OFFER = "Activer la nouvelle gestion des publications dans le futur"
     WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY = "Autoriser le rattachement seulement pour les collectivités"
     WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY = (

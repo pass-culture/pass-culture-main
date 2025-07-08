@@ -302,10 +302,9 @@ class ReindexVenueIdsTest:
         assert search_testing.search_store["venues"] == {}
 
         # load venues (1 query)
-        # load FF (1 query)
         # find whether venue has at least one bookable offer (1 query per venue)
         # TODO(atrancart): the query to find bookable offers is duplicated, we might want fix this N+1 problem
-        with assert_num_queries(5):
+        with assert_num_queries(4):
             search.reindex_venue_ids(venue_ids)
 
     def test_unindex_ineligible_venues(self):
