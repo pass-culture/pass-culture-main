@@ -16,6 +16,8 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
+window.HTMLElement.prototype.scrollIntoView = vi.fn()
+
 function renderComponent(props: OfferEducationalProps) {
   const user = sharedCurrentUserFactory()
   renderWithProviders(<OfferEducational {...props} />, {

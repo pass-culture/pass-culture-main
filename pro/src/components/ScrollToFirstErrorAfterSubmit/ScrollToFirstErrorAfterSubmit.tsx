@@ -4,21 +4,23 @@ import { useFormContext } from 'react-hook-form'
 import { doesUserPreferReducedMotion } from 'commons/utils/windowMatchMedia'
 
 const scrollToFirstError = () => {
-  const firstErrorElement = document.querySelector<
-    HTMLInputElement | HTMLElement
-  >('[aria-invalid="true"], [data-error="true"]')
-
   const scrollBehavior = doesUserPreferReducedMotion() ? 'auto' : 'smooth'
 
   // Without the setTimeout, the smooth behavior isn't working
   // cf https://github.com/iamdustan/smoothscroll/issues/28#issuecomment-630722825
   setTimeout(() => {
-    firstErrorElement?.focus()
-    firstErrorElement?.scrollIntoView({
-      behavior: scrollBehavior,
-      block: 'center',
-      inline: 'center',
-    })
+    const firstErrorElement = document.querySelector<
+      HTMLInputElement | HTMLElement
+    >('[aria-invalid="true"], [data-error="true"]')
+
+    if (firstErrorElement) {
+      firstErrorElement.focus()
+      firstErrorElement.scrollIntoView({
+        behavior: scrollBehavior,
+        block: 'center',
+        inline: 'center',
+      })
+    }
   })
 }
 
