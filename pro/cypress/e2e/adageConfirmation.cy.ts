@@ -113,7 +113,6 @@ describe('Adage confirmation', () => {
         [
           '',
           '',
-          '',
           'Titre',
           'Date de l’évènement',
           'Lieu',
@@ -121,7 +120,6 @@ describe('Adage confirmation', () => {
           'Statut',
         ],
         [
-          '',
           '',
           '',
           offer.name,
@@ -195,7 +193,6 @@ describe('Adage confirmation', () => {
         [
           '',
           '',
-          '',
           'Titre',
           'Date de l’évènement',
           'Lieu',
@@ -203,7 +200,6 @@ describe('Adage confirmation', () => {
           'Statut',
         ],
         [
-          '',
           '',
           '',
           offer.name,
@@ -260,7 +256,6 @@ describe('Adage confirmation', () => {
         [
           '',
           '',
-          '',
           'Titre',
           "Date de l'événement",
           'Lieu',
@@ -268,7 +263,6 @@ describe('Adage confirmation', () => {
           'Statut',
         ],
         [
-          '',
           '',
           '',
           offer.name,
