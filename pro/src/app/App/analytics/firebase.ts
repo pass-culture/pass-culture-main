@@ -69,9 +69,9 @@ export const useFirebase = (consentedToFirebase: boolean) => {
         firebaseRemoteConfig = getRemoteConfig(firebaseApp)
         await fetchAndActivate(firebaseRemoteConfig)
       } catch (err) {
-        // Failed to execute 'transaction' on 'IDBDatabase': The database connection is closing (https://pass-culture.sentry.io/issues/37336598)
-        if (isError(err) && err.name === 'InvalidStateError') {
-          /* do nothing */
+        // Throws in any error case that is NOT an "InvalidStateError" (Failed to execute 'transaction' on 'IDBDatabase': The database connection is closing (https://pass-culture.sentry.io/issues/37336598))
+        if (!isError(err) || err.name !== 'InvalidStateError') {
+          throw err
         }
       }
     }
