@@ -125,7 +125,6 @@ describe('Create collective offers with OA', () => {
       [
         '',
         '',
-        '',
         'Titre',
         'Date de l’évènement',
         'Lieu',
@@ -133,7 +132,6 @@ describe('Create collective offers with OA', () => {
         'Statut',
       ],
       [
-        '',
         '',
         '',
         data.title,
@@ -269,7 +267,6 @@ describe('Create collective offers with OA', () => {
       [
         '',
         '',
-        '',
         'Titre',
         'Date de l’évènement',
         'Lieu',
@@ -277,7 +274,6 @@ describe('Create collective offers with OA', () => {
         'Statut',
       ],
       [
-        '',
         '',
         '',
         commonOfferData.title,
