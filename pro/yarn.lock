@@ -979,6 +979,14 @@
     "@firebase/util" "1.12.0"
     tslib "^2.1.0"
 
+"@firebase/component@0.6.18":
+  version "0.6.18"
+  resolved "https://registry.yarnpkg.com/@firebase/component/-/component-0.6.18.tgz#df6d66b686bef287d472352afc67f17b7856e73d"
+  integrity sha512-n28kPCkE2dL2U28fSxZJjzPPVpKsQminJ6NrzcKXAI0E/lYC8YhfwpyllScqVEvAI3J2QgJZWYgrX+1qGI+SQQ==
+  dependencies:
+    "@firebase/util" "1.12.1"
+    tslib "^2.1.0"
+
 "@firebase/installations@0.6.17":
   version "0.6.17"
   resolved "https://registry.yarnpkg.com/@firebase/installations/-/installations-0.6.17.tgz#f184e49fcf3053ba25015b0509d9de28db99db77"
@@ -989,6 +997,16 @@
     idb "7.1.1"
     tslib "^2.1.0"
 
+"@firebase/installations@0.6.18":
+  version "0.6.18"
+  resolved "https://registry.yarnpkg.com/@firebase/installations/-/installations-0.6.18.tgz#24d1d7c87719a702ba214a5df7ae42208de64569"
+  integrity sha512-NQ86uGAcvO8nBRwVltRL9QQ4Reidc/3whdAasgeWCPIcrhOKDuNpAALa6eCVryLnK14ua2DqekCOX5uC9XbU/A==
+  dependencies:
+    "@firebase/component" "0.6.18"
+    "@firebase/util" "1.12.1"
+    idb "7.1.1"
+    tslib "^2.1.0"
+
 "@firebase/logger@0.4.4":
   version "0.4.4"
   resolved "https://registry.yarnpkg.com/@firebase/logger/-/logger-0.4.4.tgz#29e8379d20fd1149349a195ee6deee4573a86f48"
@@ -996,21 +1014,28 @@
   dependencies:
     tslib "^2.1.0"
 
-"@firebase/remote-config@0.6.4":
-  version "0.6.4"
-  resolved "https://registry.yarnpkg.com/@firebase/remote-config/-/remote-config-0.6.4.tgz#30610bf52452639a127f1b40a94de096ac6cf43a"
-  integrity sha512-ZyLJRT46wtycyz2+opEkGaoFUOqRQjt/0NX1WfUISOMCI/PuVoyDjqGpq24uK+e8D5NknyTpiXCVq5dowhScmg==
+"@firebase/remote-config@0.6.5":
+  version "0.6.5"
+  resolved "https://registry.yarnpkg.com/@firebase/remote-config/-/remote-config-0.6.5.tgz#02e2b51dc4816dba69897f6dd368af7314af2e65"
+  integrity sha512-fU0c8HY0vrVHwC+zQ/fpXSqHyDMuuuglV94VF6Yonhz8Fg2J+KOowPGANM0SZkLvVOYpTeWp3ZmM+F6NjwWLnw==
   dependencies:
-    "@firebase/component" "0.6.17"
-    "@firebase/installations" "0.6.17"
+    "@firebase/component" "0.6.18"
+    "@firebase/installations" "0.6.18"
     "@firebase/logger" "0.4.4"
-    "@firebase/util" "1.12.0"
+    "@firebase/util" "1.12.1"
     tslib "^2.1.0"
 
 "@firebase/util@1.12.0":
   version "1.12.0"
   resolved "https://registry.yarnpkg.com/@firebase/util/-/util-1.12.0.tgz#202e96cfd832f8dde551232e4868861681b8b89a"
   integrity sha512-Z4rK23xBCwgKDqmzGVMef+Vb4xso2j5Q8OG0vVL4m4fA5ZjPMYQazu8OJJC3vtQRC3SQ/Pgx/6TPNVsCd70QRw==
+  dependencies:
+    tslib "^2.1.0"
+
+"@firebase/util@1.12.1":
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/@firebase/util/-/util-1.12.1.tgz#158521a84a3f9fa23a841a29502df9b4ecd1174d"
+  integrity sha512-zGlBn/9Dnya5ta9bX/fgEoNC3Cp8s6h+uYPYaDieZsFOAdHP/ExzQ/eaDgxD3GOROdPkLKpvKY0iIzr9adle0w==
   dependencies:
     tslib "^2.1.0"
 
