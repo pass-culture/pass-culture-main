@@ -54,6 +54,8 @@ class CollectiveOfferTest:
                 "otherAddress": "",
             },
             collectiveOffer__venue=venue,
+            collectiveOffer__locationType=models.CollectiveLocationType.ADDRESS,
+            collectiveOffer__offererAddress=venue.offererAddress,
         )
         offer = stock.collectiveOffer
 
@@ -61,6 +63,9 @@ class CollectiveOfferTest:
         num_queries = self.num_queries + 1  # fetch offerVenue venue details
         with assert_num_queries(num_queries):
             response = eac_client.get(dst)
+
+        oa = offer.offererAddress
+        address = oa.address
 
         assert response.status_code == 200
         assert response.json == {
@@ -114,7 +119,25 @@ class CollectiveOfferTest:
                 "publicName": venue.publicName,
                 "venueId": venue.id,
             },
-            "location": None,
+            "location": {
+                "locationType": offer.locationType.value,
+                "locationComment": offer.locationComment,
+                "address": {
+                    "banId": address.banId,
+                    "city": address.city,
+                    "departmentCode": address.departmentCode,
+                    "id": address.id,
+                    "id_oa": oa.id,
+                    "inseeCode": address.inseeCode,
+                    "isLinkedToVenue": True,
+                    "isManualEdition": address.isManualEdition,
+                    "label": venue.common_name,
+                    "latitude": float(address.latitude),
+                    "longitude": float(address.longitude),
+                    "postalCode": address.postalCode,
+                    "street": address.street,
+                },
+            },
             "students": ["Lycée - Seconde"],
             "educationalPriceDetail": stock.priceDetail,
             "domains": [{"id": offer.domains[0].id, "name": offer.domains[0].name}],
@@ -184,7 +207,8 @@ class CollectiveOfferTest:
         # string stored as a venueId
         redactor = educational_factories.EducationalRedactorFactory()
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__offerVenue={"venueId": "", "addressType": "other", "otherAddress": "REDACTED"}
+            collectiveOffer__offerVenue={"venueId": "", "addressType": "other", "otherAddress": "REDACTED"},
+            collectiveOffer__locationType=models.CollectiveLocationType.TO_BE_DEFINED,
         )
 
         eac_client = client.with_adage_token(email=redactor.email, uai="1234UAI")

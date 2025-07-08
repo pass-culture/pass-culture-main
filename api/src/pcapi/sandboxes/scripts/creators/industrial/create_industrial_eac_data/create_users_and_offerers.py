@@ -4,7 +4,7 @@ from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
 @log_func_duration
-def create_users_offerers() -> list[offerers_models.Offerer]:
+def create_eac_users_offerers() -> list[offerers_models.Offerer]:
     # WARNING: please add offerers only at the end, because the order in the returned list is important to keep
     # consistency in create_industrial_eac_data.create_venues.create_venues
     offerers = []

@@ -9,6 +9,7 @@ import pcapi.core.users.factories as users_factories
 import pcapi.utils.postal_code as postal_code_utils
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core.factories import BaseFactory
+from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
 from pcapi.utils import siren as siren_utils
@@ -495,6 +496,23 @@ class OffererAddressFactory(BaseFactory):
 
 class OffererAddressOfVenueFactory(OffererAddressFactory):
     label = None
+
+
+def get_offerer_address_with_label_from_venue(venue: models.Venue) -> models.OffererAddress | None:
+    if venue.offererAddress is None:
+        return None
+
+    oa = (
+        db.session.query(models.OffererAddress)
+        .filter_by(address=venue.offererAddress.address, offerer=venue.managingOfferer, label=venue.common_name)
+        .one_or_none()
+    )
+    if oa:
+        return oa
+
+    return OffererAddressFactory.create(
+        address=venue.offererAddress.address, offerer=venue.managingOfferer, label=venue.common_name
+    )
 
 
 class OffererConfidenceRuleFactory(BaseFactory):

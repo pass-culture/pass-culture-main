@@ -1318,8 +1318,21 @@ class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
         pass  # Check does not exist for now
 
     def setup_and_send_request(self, client, api_key, src, payload, venue_provider):
+        location_type = None
+        oa = None
+        match src["addressType"]:
+            case educational_models.OfferAddressType.OFFERER_VENUE.value:
+                location_type = educational_models.CollectiveLocationType.ADDRESS
+                oa = venue_provider.venue.offererAddress
+            case educational_models.OfferAddressType.SCHOOL.value:
+                location_type = educational_models.CollectiveLocationType.SCHOOL
+            case educational_models.OfferAddressType.OTHER.value:
+                location_type = educational_models.CollectiveLocationType.TO_BE_DEFINED
+
         offer = educational_factories.CollectiveStockFactory(
             collectiveOffer__offerVenue=src,
+            collectiveOffer__locationType=location_type,
+            collectiveOffer__offererAddress=oa,
             collectiveOffer__venue=venue_provider.venue,
             collectiveOffer__provider=venue_provider.provider,
         ).collectiveOffer

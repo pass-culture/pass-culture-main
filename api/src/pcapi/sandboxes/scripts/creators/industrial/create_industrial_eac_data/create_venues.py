@@ -22,7 +22,7 @@ VENUE_EDUCATIONAL_STATUS = {
 
 
 @log_func_duration
-def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
+def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
     create_venue_educational_status()
     offerer_iterator = iter(offerer_list)
     educational_status_iterator = cycle(VENUE_EDUCATIONAL_STATUS.keys())

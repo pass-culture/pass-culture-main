@@ -254,8 +254,9 @@ class Returns200Test:
         assert offer.offerVenue == data["offerVenue"]
         assert offer.interventionArea == []
 
+        # OA fields are not updated
         assert offer.offererAddressId == None
-        assert offer.locationType == None
+        assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
         assert offer.locationComment == None
 
     def test_offer_venue_school(self, client):
@@ -274,8 +275,9 @@ class Returns200Test:
         assert offer.offerVenue == data["offerVenue"]
         assert offer.interventionArea == initial_intervention_area
 
+        # OA fields are not updated
         assert offer.offererAddressId == None
-        assert offer.locationType == None
+        assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
         assert offer.locationComment == None
 
     def test_offer_venue_other(self, client):
@@ -294,8 +296,9 @@ class Returns200Test:
         assert offer.offerVenue == data["offerVenue"]
         assert offer.interventionArea == initial_intervention_area
 
+        # OA fields are not updated
         assert offer.offererAddressId == None
-        assert offer.locationType == None
+        assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
         assert offer.locationComment == None
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
