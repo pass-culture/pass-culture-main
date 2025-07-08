@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
@@ -28,7 +29,6 @@ import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { useEffect } from 'react'
 import styles from './CollectiveOfferSelectionDuplication.module.scss'
 import { SkeletonLoader } from './CollectiveOfferSelectionLoaderSkeleton'
 

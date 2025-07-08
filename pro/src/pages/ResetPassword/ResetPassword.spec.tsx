@@ -85,10 +85,10 @@ describe('ResetPassword', () => {
         'MyN3wP4$$w0rd'
       )
       await userEvent.type(
-        await screen.findByLabelText(/Confirmation mot de passe/),
+        await screen.findByLabelText(/Confirmer votre nouveau mot de passe/),
         'MyN3wP4$$w0rd'
       )
-      await userEvent.click(screen.getByText(/Confirmer/))
+      await userEvent.click(screen.getByText('Confirmer'))
 
       expect(mockUseNotification.success).toHaveBeenCalledWith(
         'Mot de passe modifié.'
@@ -107,7 +107,7 @@ describe('ResetPassword', () => {
 
       await vi.waitFor(() => {
         expect(mockUseNotification.error).toHaveBeenCalledWith(
-          'Le lien a expiré ou est invalide. Veuillez recommencer.'
+          'Le lien est invalide ou a expiré. Veuillez recommencer.'
         )
         expect(mockUseNavigate).toHaveBeenCalledWith('/demande-mot-de-passe')
       })
@@ -124,7 +124,7 @@ describe('ResetPassword', () => {
 
       await vi.waitFor(() => {
         expect(mockUseNotification.error).toHaveBeenCalledWith(
-          'Le lien a expiré ou est invalide. Veuillez recommencer.'
+          'Le lien est invalide ou a expiré. Veuillez recommencer.'
         )
         expect(mockUseNavigate).toHaveBeenCalledWith('/demande-mot-de-passe')
       })

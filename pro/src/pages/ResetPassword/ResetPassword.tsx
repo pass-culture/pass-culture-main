@@ -35,7 +35,7 @@ export const ResetPassword = (): JSX.Element => {
   useRedirectLoggedUser()
 
   const invalidTokenHandler = useCallback(() => {
-    notify.error('Le lien a expiré ou est invalide. Veuillez recommencer.')
+    notify.error('Le lien est invalide ou a expiré. Veuillez recommencer.')
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/demande-mot-de-passe')
   }, [navigate, notify])
