@@ -16,6 +16,7 @@ import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
 import styles from './ActivityForm.module.scss'
+
 interface SocialUrl {
   url: string
 }
@@ -75,6 +76,7 @@ export const ActivityForm = ({
             {...register('phoneNumber')}
             error={formState.errors.phoneNumber?.message}
             label={'Téléphone (utilisé uniquement par le pass Culture)'}
+            required
           />
         </FormLayout.Row>
       )}

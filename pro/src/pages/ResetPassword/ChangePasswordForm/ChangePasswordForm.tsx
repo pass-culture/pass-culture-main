@@ -56,7 +56,7 @@ export const ChangePasswordForm = ({
           <>
             <div className={styles['text-input']}>
               <PasswordInput
-                label="Confirmation mot de passe"
+                label="Confirmer votre nouveau mot de passe"
                 error={errors.newConfirmationPassword?.message}
                 {...register('newConfirmationPassword')}
               />
