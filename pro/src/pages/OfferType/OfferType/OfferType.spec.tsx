@@ -4,7 +4,11 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { OfferTypeScreen } from './OfferType'
 
-const renderOfferTypeScreen = (isNewOfferCreationFlowFeatureActive: boolean) => {
+const renderOfferTypeScreen = ({
+  isNewOfferCreationFlowFeatureActive
+}: {
+  isNewOfferCreationFlowFeatureActive?: boolean
+} = {}) => {
   renderWithProviders(
     <OfferTypeScreen />,
     {
@@ -15,13 +19,13 @@ const renderOfferTypeScreen = (isNewOfferCreationFlowFeatureActive: boolean) => 
 
 describe('OfferType', () => {
   it('should display the offer subtype options', () => {
-    renderOfferTypeScreen(false)
+    renderOfferTypeScreen()
 
     expect(screen.getByTestId('wrapper-individualOfferSubtype')).toBeInTheDocument()
   })
 
   it('should NOT display the offer subtype options', () => {
-    renderOfferTypeScreen(true)
+    renderOfferTypeScreen({isNewOfferCreationFlowFeatureActive: true})
 
     expect(screen.queryByTestId('wrapper-individualOfferSubtype')).not.toBeInTheDocument()
   })
