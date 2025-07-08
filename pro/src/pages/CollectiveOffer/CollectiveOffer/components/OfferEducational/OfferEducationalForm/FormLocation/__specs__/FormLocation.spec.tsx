@@ -358,4 +358,58 @@ describe('FormLocation', () => {
 
     expect(screen.getByLabelText('Ville *')).toHaveValue('')
   })
+
+  it('should call scrollIntoView onclick if radio selected is out of screen', async () => {
+    const scrollIntoViewMock = vi.fn()
+    window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock
+
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+      top: -100,
+      bottom: -50,
+      left: 0,
+      right: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    })
+
+    renderFormLocation(props, initialValues)
+
+    const schoolRadio = screen.getByLabelText('En établissement scolaire')
+    await userEvent.click(schoolRadio)
+    await new Promise((r) => setTimeout(r, 10))
+
+    expect(scrollIntoViewMock).toHaveBeenCalledWith({
+      behavior: 'smooth',
+      block: 'center',
+    })
+  })
+
+  it('should not call scrollIntoView onclick if radio selected is out of screen', async () => {
+    const scrollIntoViewMock = vi.fn()
+    window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock
+
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+      top: 10,
+      bottom: window.innerHeight - 10,
+      left: 0,
+      right: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    })
+
+    renderFormLocation(props, initialValues)
+
+    const schoolRadio = screen.getByLabelText('En établissement scolaire')
+    await userEvent.click(schoolRadio)
+
+    await new Promise((r) => setTimeout(r, 10))
+
+    expect(scrollIntoViewMock).not.toHaveBeenCalled()
+  })
 })
