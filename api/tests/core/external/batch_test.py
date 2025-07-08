@@ -102,3 +102,13 @@ class FormatUserAttributesTest:
 
         # A Batch tag can't be an empty list, otherwise the API returns an error
         assert "ut.intended_categories" not in formatted_attributes
+
+    def test_format_user_attributes_with_achievements(self):
+        attributes = deepcopy(common_user_attributes)
+        attributes.achievements = ["FIRST_MOVIE_BOOKING"]
+
+        formatted = format_user_attributes(attributes)
+
+        assert "ut.achievements" in formatted
+        assert isinstance(formatted["ut.achievements"], list)
+        assert formatted["ut.achievements"] == ["FIRST_MOVIE_BOOKING"]

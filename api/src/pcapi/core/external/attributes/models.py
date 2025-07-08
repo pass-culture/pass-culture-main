@@ -9,6 +9,7 @@ from pcapi.core.users import models as users_models
 
 @dataclass
 class UserAttributes:
+    achievements: list[str]
     booking_categories: list[str]
     booking_count: int  # count non-canceled bookings from user
     booking_subcategories: list[str]
