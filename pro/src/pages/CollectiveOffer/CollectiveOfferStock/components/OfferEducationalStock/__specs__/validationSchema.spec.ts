@@ -21,6 +21,7 @@ describe('validationSchema', () => {
     formValues: Partial<OfferEducationalStockFormValues>
     expectedErrors: string[]
     isReadOnly?: boolean
+    preventPriceIncrease?: boolean
   }[] = [
     {
       description: 'start and end date should be on same school year',
@@ -117,14 +118,36 @@ describe('validationSchema', () => {
       },
       expectedErrors: [],
       isReadOnly: true,
-    },
+      },
+    {
+  description: 'bookingLimitDatetime: la règle ne s’applique pas si preventPriceIncrease=true',
+  formValues: {
+    ...values,
+    bookingLimitDatetime: '2000-01-01',
+  },
+  expectedErrors: [],
+  isReadOnly: false,
+  preventPriceIncrease: true,
+},
+{
+  description: 'bookingLimitDatetime: la règle s’applique si preventPriceIncrease=false',
+  formValues: {
+    ...values,
+    bookingLimitDatetime: '2000-01-01',
+  },
+  expectedErrors: [
+    'La date limite de réservation doit être égale ou postérieure à la date actuelle',
+  ],
+  isReadOnly: false,
+  preventPriceIncrease: false,
+},
   ]
 
   cases.forEach(
-    ({ description, formValues, expectedErrors, isReadOnly = false }) => {
+    ({ description, formValues, expectedErrors, isReadOnly = false, preventPriceIncrease = false }) => {
       it(`should validate the form for case: ${description}`, async () => {
         const errors = await getYupValidationSchemaErrors(
-          generateValidationSchema(false, 0, isReadOnly),
+          generateValidationSchema(preventPriceIncrease, 0, isReadOnly),
           formValues
         )
         expect(errors).toEqual(expectedErrors)
