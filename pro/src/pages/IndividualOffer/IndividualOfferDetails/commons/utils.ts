@@ -180,6 +180,7 @@ export function getInitialValuesFromOffer({
     productId:
       offer.productId?.toString() ?? DEFAULT_DETAILS_FORM_VALUES.productId,
     url: offer.url,
+    videoUrl: offer.videoUrl,
     ...maybeAccessibility,
   }
 }

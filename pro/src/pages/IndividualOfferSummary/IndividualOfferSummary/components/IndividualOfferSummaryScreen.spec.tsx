@@ -50,14 +50,6 @@ import { Notification } from 'components/Notification/Notification'
 
 import { IndividualOfferSummaryScreen } from './IndividualOfferSummaryScreen'
 
-// vi.mock('apiClient/api', () => ({
-//   api: {
-//     getMusicTypes: vi.fn(),
-//     getOfferer: vi.fn(),
-//     patchPublishOffer: vi.fn(),
-//   },
-// }))
-
 const LABELS = {
   publicationModeNowRadio: /Publier maintenant/,
   publicationModeLaterRadio: /Publier plus tard/,
@@ -301,6 +293,31 @@ describe('IndividualOfferSummaryScreen', () => {
       expect(
         await screen.findByText('À propos de votre offre')
       ).toBeInTheDocument()
+    })
+
+    it('should render component with video', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(
+        defaultGetOffererResponseModel
+      )
+      customContext.offer = getIndividualOfferFactory({
+        isEvent: true,
+        videoUrl: 'my video',
+      })
+
+      renderIndividualOfferSummaryScreen({
+        contextValue: customContext,
+        mode: OFFER_WIZARD_MODE.CREATION,
+        path: generatePath(
+          getIndividualOfferPath({
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        ),
+        options: { features: ['WIP_ADD_VIDEO'] },
+      })
+
+      expect(await screen.findByText('my video')).toBeInTheDocument()
     })
 
     it('should render component with right buttons', () => {
