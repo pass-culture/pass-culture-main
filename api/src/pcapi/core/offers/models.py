@@ -212,6 +212,7 @@ class Product(PcObject, Base, Model, HasThumbMixin):
     sa.Index("product_allocineId_idx", extraData["allocineId"].cast(sa.Integer))
     sa.Index("product_visa_idx", extraData["visa"].astext)
     sa.Index("unique_ix_product_ean", ean, unique=True)
+    sa.Index("idx_product_trgm_name", name, postgresql_using="gin")
 
     @property
     def subcategory(self) -> subcategories.Subcategory:
