@@ -154,9 +154,11 @@ export const FormOfferType = ({
             searchLabel="Recherche"
             name="formats"
             onSelectedOptionsChanged={(selectedOptions) =>
-              setValue('formats', [
-                ...selectedOptions.map((elm) => elm.id),
-              ] as EacFormat[])
+              setValue(
+                'formats',
+                [...selectedOptions.map((elm) => elm.id)] as EacFormat[],
+                { shouldValidate: true }
+              )
             }
             required
             disabled={disableForm}
