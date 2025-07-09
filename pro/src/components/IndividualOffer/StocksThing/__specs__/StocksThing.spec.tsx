@@ -248,6 +248,27 @@ describe('screens:StocksThing', () => {
     expect(api.getOffer).toHaveBeenCalledWith(offer.id)
   })
 
+  it('should submit stock form when clicking on unlimited button "', async () => {
+    vi.spyOn(api, 'createThingStock').mockResolvedValue({
+      id: 12,
+    })
+    await renderStockThingScreen([], props, contextValue)
+    const nextButton = screen.getByRole('button', {
+      name: 'Enregistrer et continuer',
+    })
+    await userEvent.type(screen.getByLabelText('Prix *'), '20')
+    await userEvent.type(screen.getByLabelText('Quantité'), '20')
+
+    await userEvent.click(screen.getByLabelText(/Illimité/))
+    await userEvent.click(nextButton)
+
+    await waitFor(() => {
+      expect(api.createThingStock).toHaveBeenCalledWith(
+        expect.objectContaining({ quantity: null })
+      )
+    })
+  })
+
   it('should not submit stock form when click on "Retour"', async () => {
     vi.spyOn(api, 'createThingStock').mockResolvedValue({
       id: 12,
