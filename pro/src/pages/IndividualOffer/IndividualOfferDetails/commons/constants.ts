@@ -17,4 +17,5 @@ export const DEFAULT_DETAILS_FORM_VALUES = {
   subcategoryConditionalFields: [],
   productId: '',
   url: null,
+  videoUrl: null,
 }

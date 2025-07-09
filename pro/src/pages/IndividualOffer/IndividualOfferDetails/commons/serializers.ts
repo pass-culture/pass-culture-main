@@ -52,6 +52,7 @@ export function serializeDetailsPostData(
     extraData: serializeExtraData(formValues),
     productId: formValues.productId ? Number(formValues.productId) : undefined,
     url: formValues.url,
+    videoUrl: formValues.videoUrl,
 
     ...(isNewOfferCreationFlowFeatureActive
       ? {
@@ -75,6 +76,7 @@ export function serializeDetailsPatchData(
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
     extraData: serializeExtraData(formValues),
     url: formValues.url,
+    videoUrl: formValues.videoUrl,
 
     ...(isNewOfferCreationFlowFeatureActive
       ? {

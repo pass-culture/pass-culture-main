@@ -9,6 +9,7 @@ import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { DisplayOfferInAppLink } from 'components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { Markdown } from 'components/Markdown/Markdown'
@@ -39,6 +40,7 @@ export function IndividualOfferSummaryDetailsScreen({
 }: Readonly<IndividualOfferSummaryDetailsScreenProps>) {
   const mode = useOfferWizardMode()
   const { categories, subCategories } = useIndividualOfferContext()
+  const isVideoEnabled = useActiveFeature('WIP_ADD_VIDEO')
 
   const musicTypesQuery = useSWR(
     GET_MUSIC_TYPES_QUERY_KEY,
@@ -79,6 +81,10 @@ export function IndividualOfferSummaryDetailsScreen({
         }
       : []
   )
+
+  if (offer.videoUrl && isVideoEnabled) {
+    aboutDescriptions.push({ title: 'Vidéo', text: offer.videoUrl })
+  }
 
   const typeDescriptions: Description[] = [
     { title: 'Catégorie', text: offerData.categoryName },

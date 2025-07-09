@@ -11,6 +11,7 @@ import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { getDelayToFrenchText } from 'commons/utils/date'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
@@ -40,6 +41,8 @@ export const OfferSection = ({
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const mode = useOfferWizardMode()
   const { categories, subCategories } = useIndividualOfferContext()
+  const isVideoEnabled = useActiveFeature('WIP_ADD_VIDEO')
+
   const musicTypesQuery = useSWR(
     GET_MUSIC_TYPES_QUERY_KEY,
     () => api.getMusicTypes(),
@@ -85,6 +88,10 @@ export const OfferSection = ({
         }
       : []
   )
+
+  if (offer.videoUrl && isVideoEnabled) {
+    aboutDescriptions.push({ title: 'Vidéo', text: offer.videoUrl })
+  }
 
   const artisticInfoDescriptions: Description[] = []
   if (conditionalFields.includes('musicType')) {

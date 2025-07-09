@@ -24,7 +24,7 @@ export const ImageUploaderOffer = ({
   hideActionButtons,
   isDisabled = false,
 }: ImageUploaderOfferProps) => (
-  <FormLayout.Section title="Illustrez votre offre">
+  <FormLayout.Section title="Ajoutez une image">
     <FormLayout.Row>
       <p>
         Ajoutez une image pour que votre offre ait 2 fois plus de chances d’être

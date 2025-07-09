@@ -31,6 +31,7 @@ import styles from './DetailsForm.module.scss'
 import { DetailsSubForm } from './DetailsSubForm/DetailsSubForm'
 import { ImageUploaderOffer } from './ImageUploaderOffer/ImageUploaderOffer'
 import { Subcategories } from './Subcategories/Subcategories'
+import { VideoUploader } from './VideoUploader/VideoUploader'
 
 type DetailsFormProps = {
   isEanSearchDisplayed: boolean
@@ -60,6 +61,7 @@ export const DetailsForm = ({
   withUrlInput,
 }: DetailsFormProps): JSX.Element => {
   const { logEvent } = useAnalytics()
+  const isVideoEnabled = useActiveFeature('WIP_ADD_VIDEO')
   const {
     formState: { errors },
     register,
@@ -206,6 +208,7 @@ export const DetailsForm = ({
         hideActionButtons={hasSelectedProduct}
         isDisabled={hasSelectedProduct}
       />
+      {isVideoEnabled && <VideoUploader />}
       {!showAddVenueBanner && (
         <Subcategories
           readOnlyFields={readOnlyFields}

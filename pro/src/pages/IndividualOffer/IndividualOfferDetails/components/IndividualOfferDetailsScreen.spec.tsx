@@ -134,6 +134,7 @@ const MOCK_DATA = {
   showType: 'Cirque',
   showSubType: 'Clown',
   musicType: 'Pop',
+  video: 'https://www.youtube.com/watch?v=D2SoGHFM18I',
 }
 
 const LABELS = {
@@ -146,6 +147,7 @@ const LABELS = {
   showType: /Type de spectacle/,
   showSubType: /Sous-type/,
   musicType: /Genre musical/,
+  video: /Lien URL Youtube/,
 }
 
 const renderDetailsScreen = ({
@@ -200,6 +202,7 @@ const renderDetailsScreen = ({
         user: { currentUser: sharedCurrentUserFactory() },
         offerer: currentOffererFactory(),
       },
+      features: ['WIP_ADD_VIDEO'],
     }
   )
 }
@@ -234,6 +237,7 @@ const userFillsEverything = async () => {
   )
 
   await userEvent.type(screen.getByLabelText(LABELS.ean), MOCK_DATA.ean)
+  await userEvent.type(screen.getByLabelText(LABELS.video), MOCK_DATA.video)
   await userEvent.selectOptions(
     await screen.findByLabelText(LABELS.showType),
     MOCK_DATA.showType
@@ -286,7 +290,10 @@ describe('IndividualOfferDetailsScreen', () => {
       await screen.findByRole('heading', { name: 'Type d’offre' })
     ).toBeInTheDocument()
     expect(
-      await screen.findByRole('heading', { name: 'Illustrez votre offre' })
+      await screen.findByRole('heading', { name: 'Ajoutez une image' })
+    ).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { name: 'Ajoutez une vidéo' })
     ).toBeInTheDocument()
     expect(screen.getByText(DEFAULTS.submitButtonLabel)).toBeInTheDocument()
   })
@@ -545,6 +552,7 @@ describe('IndividualOfferDetailsScreen', () => {
       subcategoryId: 'physical',
       venueId: 189,
       url: null,
+      videoUrl: 'https://www.youtube.com/watch?v=D2SoGHFM18I',
     })
     expect(mockNavigate).toHaveBeenCalledWith(
       '/offre/individuelle/12/creation/details',
@@ -587,6 +595,10 @@ describe('IndividualOfferDetailsScreen', () => {
       screen.getByLabelText(/Description/),
       'My super description'
     )
+    await userEvent.type(
+      screen.getByLabelText(LABELS.video),
+      'https://www.youtube.com/watch?v=D2SoGHFM18I'
+    )
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
@@ -607,6 +619,7 @@ describe('IndividualOfferDetailsScreen', () => {
       },
       name: 'My super offer',
       subcategoryId: 'physicalBis',
+      videoUrl: 'https://www.youtube.com/watch?v=D2SoGHFM18I',
     })
   })
 
