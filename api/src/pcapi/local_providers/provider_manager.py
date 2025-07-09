@@ -3,14 +3,13 @@ from csv import DictWriter
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
-from typing import Callable
+from typing import Type
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from urllib3 import exceptions as urllib3_exceptions
 
 import pcapi.connectors.ems as ems_connectors
-import pcapi.local_providers
 from pcapi import settings
 from pcapi.connectors.googledrive import get_backend
 from pcapi.core.history import api as history_api
@@ -19,8 +18,12 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.providers import models as provider_models
 from pcapi.core.providers import repository as providers_repository
 from pcapi.core.providers.api import update_venue_synchronized_offers_active_status_job
-from pcapi.core.providers.constants import CINEMA_PROVIDER_NAMES
+from pcapi.local_providers.allocine.allocine_stocks import AllocineStocks
+from pcapi.local_providers.cinema_providers.boost.boost_stocks import BoostStocks
+from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
+from pcapi.local_providers.cinema_providers.cgr.cgr_stocks import CGRStocks
 from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
+from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
@@ -34,9 +37,16 @@ if TYPE_CHECKING:
     from pcapi.connectors.serialization.ems_serializers import Site
 logger = logging.getLogger(__name__)
 
+_NAME_TO_LOCAL_PROVIDER_CLASS: dict[str, Type[LocalProvider]] = {
+    "AllocineStocks": AllocineStocks,
+    "BoostStocks": BoostStocks,
+    "CDSStocks": CDSStocks,
+    "CGRStocks": CGRStocks,
+}
+
 
 def synchronize_data_for_provider(provider_name: str, limit: int | None = None) -> None:
-    provider_class = get_local_provider_class_by_name(provider_name)
+    provider_class = _NAME_TO_LOCAL_PROVIDER_CLASS[provider_name]
     try:
         provider = provider_class()
         provider.updateObjects(limit)
@@ -61,19 +71,11 @@ def synchronize_venue_providers(venue_providers: list[provider_models.VenueProvi
             logger.exception("Unexpected error while synchronizing venue provider", extra=log_data)
 
 
-def get_local_provider_class_by_name(class_name: str) -> Callable:
-    return getattr(pcapi.local_providers, class_name)
-
-
 def synchronize_venue_provider(venue_provider: provider_models.VenueProvider, limit: int | None = None) -> None:
-    assert (
-        venue_provider.provider.localClass
-        in [
-            "AllocineStocks",
-        ]
-        + CINEMA_PROVIDER_NAMES
-    ), f"Only {', '.join(CINEMA_PROVIDER_NAMES)} or AllocineStocks should reach this code"
-    provider_class = get_local_provider_class_by_name(venue_provider.provider.localClass)
+    assert venue_provider.provider.localClass in _NAME_TO_LOCAL_PROVIDER_CLASS.keys(), (
+        f"Only {', '.join(_NAME_TO_LOCAL_PROVIDER_CLASS.keys())} should reach this code"
+    )
+    provider_class = _NAME_TO_LOCAL_PROVIDER_CLASS[venue_provider.provider.localClass]
 
     logger.info(
         "Starting synchronization of venue_provider=%s with provider=%s",
