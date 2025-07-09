@@ -21,6 +21,8 @@ from pcapi.core.offers import validation
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models.utils import first_or_404
+from pcapi.models.utils import get_or_404
 from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
@@ -245,13 +247,12 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
 def post_draft_offer(
     body: offers_schemas.PostDraftOfferBodyModel,
 ) -> offers_serialize.GetIndividualOfferResponseModel:
-    venue: offerers_models.Venue = (
+    venue: offerers_models.Venue = first_or_404(
         db.session.query(offerers_models.Venue)
         .filter(offerers_models.Venue.id == body.venue_id)
         .options(
             sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
         )
-        .first_or_404()
     )
 
     ean_code = body.extra_data.get("ean", None) if body.extra_data is not None else None
@@ -317,13 +318,12 @@ def patch_draft_offer(
 )
 @atomic()
 def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.GetIndividualOfferResponseModel:
-    venue: offerers_models.Venue = (
+    venue: offerers_models.Venue = first_or_404(
         db.session.query(offerers_models.Venue)
         .filter(offerers_models.Venue.id == body.venue_id)
         .options(
             sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
         )
-        .first_or_404()
     )
     offerer_address: offerers_models.OffererAddress | None = None
     offerer_address = (
@@ -517,7 +517,7 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
 )
 @atomic()
 def delete_thumbnail(offer_id: int) -> None:
-    offer = db.session.query(models.Offer).get_or_404(offer_id)
+    offer = get_or_404(models.Offer, offer_id)
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
@@ -646,10 +646,10 @@ def post_price_categories(
 @spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
 @atomic()
 def delete_price_category(offer_id: int, price_category_id: int) -> None:
-    offer = db.session.query(models.Offer).get_or_404(offer_id)
+    offer = get_or_404(models.Offer, offer_id)
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    price_category = db.session.query(models.PriceCategory).get_or_404(price_category_id)
+    price_category = get_or_404(models.PriceCategory, price_category_id)
     offers_api.delete_price_category(offer, price_category)
 
 

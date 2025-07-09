@@ -15,6 +15,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.models.utils import get_or_404
 from pcapi.routes.backoffice.filters import format_titelive_id_lectorat
 
 from ...connectors.titelive import fixtures
@@ -235,13 +236,13 @@ class AddProductWhitelistTest(PostEndpointHelper):
         mock_whitelist_product.assert_called_with(self.endpoint_kwargs["ean"])
 
         for offer in offers_to_restore:
-            offer = db.session.query(offers_models.Offer).get_or_404(offer.id)
+            offer = get_or_404(offers_models.Offer, offer.id)
             assert offer.validation == offers_models.OfferValidationStatus.APPROVED
             assert offer.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime("%d/%m/%Y")
             assert offer.lastValidationType == OfferValidationType.MANUAL
 
         for offer in offers_not_to_restore:
-            offer = db.session.query(offers_models.Offer).get_or_404(offer.id)
+            offer = get_or_404(offers_models.Offer, offer.id)
             assert not offer.validation == offers_models.OfferValidationStatus.APPROVED
             assert offer.lastValidationDate.strftime("%d/%m/%Y") == (
                 datetime.date.today() - datetime.timedelta(days=2)
@@ -366,7 +367,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
 
         self.post_to_endpoint(authenticated_client, form=self.form_data, **self.endpoint_kwargs)
 
-        offer = db.session.query(offers_models.Offer).get_or_404(offer.id)
+        offer = get_or_404(offers_models.Offer, offer.id)
         assert offer.validation == offers_models.OfferValidationStatus.APPROVED
         assert offer.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime("%d/%m/%Y")
         assert offer.lastValidationType == OfferValidationType.MANUAL

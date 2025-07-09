@@ -13,7 +13,6 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
-from pcapi.models.pc_object import BaseQuery
 
 from . import exceptions
 from . import models
@@ -232,7 +231,7 @@ def find_virtual_venue_by_offerer_id(offerer_id: int) -> models.Venue | None:
 
 def find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_validated_x_days_ago(
     days: int,
-) -> BaseQuery:
+) -> sa_orm.Query:
     validated_x_days_ago_with_physical_venue_offerers_ids_subquery = (
         sa.select(models.Offerer.id)
         .join(models.Venue, models.Offerer.id == models.Venue.managingOffererId)
@@ -1027,7 +1026,7 @@ def get_revenues_per_year(
     }
 
 
-def get_offerer_addresses(offerer_id: int, only_with_offers: bool = False) -> BaseQuery:
+def get_offerer_addresses(offerer_id: int, only_with_offers: bool = False) -> sa_orm.Query:
     query = (
         db.session.query(models.OffererAddress)
         .filter(models.OffererAddress.offererId == offerer_id)

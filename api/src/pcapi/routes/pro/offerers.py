@@ -22,6 +22,7 @@ from pcapi.core.offerers import repository
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.utils import get_or_404
 from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import headline_offer_serialize
@@ -107,7 +108,7 @@ def get_offerer(offerer_id: int) -> offerers_serialize.GetOffererResponseModel:
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def invite_member(offerer_id: int, body: offerers_serialize.InviteMemberQueryModel) -> None:
     check_user_has_access_to_offerer(current_user, offerer_id)
-    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
+    offerer = get_or_404(offerers_models.Offerer, offerer_id)
     try:
         api.invite_member(offerer, body.email, current_user)
     except offerers_exceptions.EmailAlreadyInvitedException:
@@ -122,7 +123,7 @@ def invite_member(offerer_id: int, body: offerers_serialize.InviteMemberQueryMod
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def invite_member_again(offerer_id: int, body: offerers_serialize.InviteMemberQueryModel) -> None:
     check_user_has_access_to_offerer(current_user, offerer_id)
-    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
+    offerer = get_or_404(offerers_models.Offerer, offerer_id)
     try:
         api.invite_member_again(offerer, body.email)
     except offerers_exceptions.InviteAgainImpossibleException:
@@ -135,7 +136,7 @@ def invite_member_again(offerer_id: int, body: offerers_serialize.InviteMemberQu
 @spectree_serialize(response_model=offerers_serialize.GetOffererMembersResponseModel, api=blueprint.pro_private_schema)
 def get_offerer_members(offerer_id: int) -> offerers_serialize.GetOffererMembersResponseModel:
     check_user_has_access_to_offerer(current_user, offerer_id)
-    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
+    offerer = get_or_404(offerers_models.Offerer, offerer_id)
     members = api.get_offerer_members(offerer)
     return offerers_serialize.GetOffererMembersResponseModel(
         members=[
@@ -178,7 +179,7 @@ def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers
 def get_offerer_stats_dashboard_url(
     offerer_id: int,
 ) -> offerers_serialize.OffererStatsResponseModel:
-    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
+    offerer = get_or_404(offerers_models.Offerer, offerer_id)
     check_user_has_access_to_offerer(current_user, offerer.id)
     url = api.get_metabase_stats_iframe_url(offerer, venues=offerer.managedVenues)
     return offerers_serialize.OffererStatsResponseModel(dashboardUrl=url)

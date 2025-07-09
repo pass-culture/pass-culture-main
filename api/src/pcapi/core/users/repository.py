@@ -12,7 +12,6 @@ from sqlalchemy.sql.functions import func
 import pcapi.core.offerers.models as offerers_models
 import pcapi.utils.email as email_utils
 from pcapi.models import db
-from pcapi.models.pc_object import BaseQuery
 from pcapi.utils import crypto
 
 from . import exceptions
@@ -63,7 +62,7 @@ def get_user_with_credentials(identifier: str, password: str, allow_inactive: bo
     return typing.cast(models.User, user)
 
 
-def _find_user_by_email_query(email: str) -> BaseQuery:
+def _find_user_by_email_query(email: str) -> sa_orm.Query:
     return db.session.query(models.User).filter(func.lower(models.User.email) == email_utils.sanitize_email(email))
 
 
@@ -71,7 +70,7 @@ def find_user_by_email(email: str) -> models.User | None:
     return _find_user_by_email_query(email).one_or_none()
 
 
-def find_pro_or_non_attached_pro_user_by_email_query(email: str) -> BaseQuery:
+def find_pro_or_non_attached_pro_user_by_email_query(email: str) -> sa_orm.Query:
     return _find_user_by_email_query(email).filter(models.User.has_any_pro_role)
 
 

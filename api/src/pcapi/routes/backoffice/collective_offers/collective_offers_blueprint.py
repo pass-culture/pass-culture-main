@@ -33,7 +33,6 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
-from pcapi.models.pc_object import BaseQuery
 from pcapi.repository.session_management import atomic
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import utils
@@ -246,7 +245,7 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
 }
 
 
-def _get_collective_offer_ids_query(form: forms.GetCollectiveOfferAdvancedSearchForm) -> BaseQuery:
+def _get_collective_offer_ids_query(form: forms.GetCollectiveOfferAdvancedSearchForm) -> sa_orm.Query:
     base_query, _, _, warnings = utils.generate_search_query(
         query=db.session.query(educational_models.CollectiveOffer.id),
         search_parameters=form.search.data,

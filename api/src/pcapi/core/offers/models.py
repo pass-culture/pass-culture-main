@@ -39,7 +39,6 @@ from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import ValidationMixin
-from pcapi.models.pc_object import BaseQuery
 from pcapi.models.pc_object import PcObject
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
 from pcapi.utils import db as db_utils
@@ -438,7 +437,7 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
         )
 
     @classmethod
-    def queryNotSoftDeleted(cls) -> BaseQuery:
+    def queryNotSoftDeleted(cls) -> sa_orm.Query:
         return db.session.query(Stock).filter_by(isSoftDeleted=False)
 
     @staticmethod
