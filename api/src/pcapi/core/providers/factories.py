@@ -37,7 +37,7 @@ class AllocineTheaterFactory(BaseFactory):
     )
 
 
-class ProviderFactory(BaseFactory):
+class ProviderFactory(BaseFactory[models.Provider]):
     class Meta:
         model = models.Provider
 
@@ -48,7 +48,7 @@ class ProviderFactory(BaseFactory):
     isActive = True
 
 
-class PublicApiProviderFactory(BaseFactory):
+class PublicApiProviderFactory(BaseFactory[models.Provider]):
     class Meta:
         model = models.Provider
         sqlalchemy_get_or_create = ["name"]

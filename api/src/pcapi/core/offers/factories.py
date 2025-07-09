@@ -169,7 +169,7 @@ def build_extra_data_from_subcategory(
     return offers_models.OfferExtraData(**extradata)
 
 
-class OfferFactory(BaseFactory):
+class OfferFactory(BaseFactory[models.Offer]):
     class Meta:
         model = models.Offer
 
@@ -363,7 +363,7 @@ _DAY_TO_WEEKDAY = {
 }
 
 
-class StockFactory(BaseFactory):
+class StockFactory(BaseFactory[models.Stock]):
     class Meta:
         model = models.Stock
 
