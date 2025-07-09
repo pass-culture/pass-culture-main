@@ -8,7 +8,7 @@ import { getDefaultEducationalValues } from 'commons/core/OfferEducational/const
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { FormOfferType, FormTypeProps } from '../FormOfferType'
+import { FormOfferType, FormTypeProps } from './FormOfferType'
 
 const mockLogEvent = vi.fn()
 
@@ -22,6 +22,7 @@ function renderFormOfferType({
   function FormOfferTypeWrapper() {
     const form = useForm({
       defaultValues: initialValues,
+      mode: 'onBlur',
     })
 
     return (

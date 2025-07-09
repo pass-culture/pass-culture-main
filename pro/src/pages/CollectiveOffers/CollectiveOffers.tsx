@@ -5,9 +5,7 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { CollectiveOfferType } from 'apiClient/v1'
 import { Layout } from 'app/App/layout/Layout'
-import {
-  GET_VENUES_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
+import { GET_VENUES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { DEFAULT_PAGE } from 'commons/core/Offers/constants'
 import { useDefaultCollectiveSearchFilters } from 'commons/core/Offers/hooks/useDefaultCollectiveSearchFilters'
 import { useQueryCollectiveSearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
@@ -20,7 +18,6 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { formatAndOrderVenues } from 'repository/venuesService'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'
 
@@ -48,7 +45,11 @@ export const CollectiveOffers = (): JSX.Element => {
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
 
-  const { data: offerer, isLoading: isOffererLoading, isValidating: isOffererValidating } = useOfferer(
+  const {
+    data: offerer,
+    isLoading: isOffererLoading,
+    isValidating: isOffererValidating,
+  } = useOfferer(
     offererId !== defaultCollectiveFilters.offererId ? offererId : null,
     true
   )
@@ -126,25 +127,22 @@ export const CollectiveOffers = (): JSX.Element => {
 
   return (
     <Layout mainHeading="Offres collectives">
-      {/* When the venues are cached for a given offerer, we still need to reset the Screen component.
-      SWR isLoading is only true when the data is not cached, while isValidating is always set to true when the key is updated */}
-      {isOffererLoading ||
-        isOffererValidating ||
-        isVenuesLoading ||
-        isVenuesValidating ? (
-        <Spinner />
-      ) : (
-        <CollectiveOffersScreen
-          currentPageNumber={currentPageNumber}
-          initialSearchFilters={apiFilters}
-          isLoading={offersQuery.isLoading}
-          offerer={offerer}
-          offers={offersQuery.data}
-          redirectWithUrlFilters={redirectWithUrlFilters}
-          urlSearchFilters={urlSearchFilters}
-          venues={venues}
-        />
-      )}
+      <CollectiveOffersScreen
+        currentPageNumber={currentPageNumber}
+        initialSearchFilters={apiFilters}
+        isLoading={
+          isOffererLoading ||
+          isOffererValidating ||
+          isVenuesLoading ||
+          isVenuesValidating ||
+          offersQuery.isLoading
+        }
+        offerer={offerer}
+        offers={offersQuery.data}
+        redirectWithUrlFilters={redirectWithUrlFilters}
+        urlSearchFilters={urlSearchFilters}
+        venues={venues}
+      />
     </Layout>
   )
 }
