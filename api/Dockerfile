@@ -39,7 +39,7 @@ ENV VIRTUAL_ENV=/home/pcapi/.local
 
 RUN python -m venv $VIRTUAL_ENV
 
-RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem poetry install --without dev --no-root
+RUN SSL_CERT_FILE=/cacert.pem REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem poetry install --without dev --no-root
 
 ########## BUILDER DEFAULT ##########
 
