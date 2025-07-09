@@ -47,7 +47,7 @@ class TiteliveTest:
         oeuvre = json["oeuvre"]
         article = oeuvre["article"][0]
 
-        product = titelive.get_new_product_from_ean13(ean)
+        product, _ = titelive.get_new_product_from_ean13(ean)
 
         assert product.ean == ean
         assert product.description == html.unescape(article["resume"])
@@ -74,7 +74,7 @@ class TiteliveTest:
         del json["oeuvre"]["article"][0]["resume"]
         self._configure_mock(requests_mock, ean=ean, fixture=json)
 
-        product = titelive.get_new_product_from_ean13(ean)
+        product, _ = titelive.get_new_product_from_ean13(ean)
 
         assert product.ean == ean
         assert product.description is None

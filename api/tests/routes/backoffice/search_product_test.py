@@ -1,3 +1,5 @@
+import pathlib
+import re
 from unittest.mock import patch
 
 import pytest
@@ -18,6 +20,7 @@ from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_titelive_id_lectorat
 from pcapi.routes.backoffice.products.forms import ProductFilterTypeEnum
 
+import tests
 from tests.connectors.titelive import fixtures
 
 from .helpers import button as button_helpers
@@ -304,7 +307,11 @@ class PostImportProductFromTiteliveTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     @patch("pcapi.connectors.titelive.get_by_ean13")
-    def test_import_eligible_product_from_titelive(self, mock_get_by_ean13, authenticated_client):
+    def test_import_eligible_product_from_titelive(self, mock_get_by_ean13, requests_mock, authenticated_client):
+        image_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
+        with open(image_path, "rb") as thumb_file:
+            requests_mock.get(re.compile("image"), content=thumb_file.read())
+
         mock_get_by_ean13.return_value = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE
         oeuvre = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]
         article = oeuvre["article"][0]
@@ -335,6 +342,7 @@ class PostImportProductFromTiteliveTest(PostEndpointHelper):
             "num_in_collection": "5833",
         }
         assert product.gcuCompatibilityType == offer_models.GcuCompatibilityType.COMPATIBLE
+        assert len(product.productMediations) == 2
 
         whitelist_product = db.session.query(fraud_models.ProductWhitelist).filter_by(ean=ean).one_or_none()
         assert not whitelist_product
@@ -346,7 +354,11 @@ class PostImportProductFromTiteliveTest(PostEndpointHelper):
         assert f"Le produit {product.name} a été créé" in html_parser.extract_alerts(redirection.data)
 
     @patch("pcapi.connectors.titelive.get_by_ean13")
-    def test_import_uneligible_product_from_titelive(self, mock_get_by_ean13, authenticated_client):
+    def test_import_uneligible_product_from_titelive(self, mock_get_by_ean13, requests_mock, authenticated_client):
+        image_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
+        with open(image_path, "rb") as thumb_file:
+            requests_mock.get(re.compile("image"), content=thumb_file.read())
+
         mock_get_by_ean13.return_value = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE
         oeuvre = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]
         article = oeuvre["article"][0]
@@ -384,6 +396,7 @@ class PostImportProductFromTiteliveTest(PostEndpointHelper):
             "num_in_collection": "5833",
         }
         assert product.gcuCompatibilityType == offer_models.GcuCompatibilityType.COMPATIBLE
+        assert len(product.productMediations) == 2
 
         whitelist_product = db.session.query(fraud_models.ProductWhitelist).filter_by(ean=ean).one_or_none()
         assert whitelist_product

@@ -7,9 +7,11 @@ import functools
 import logging
 import time
 import typing
+import uuid
 from contextlib import suppress
 from functools import partial
 
+import PIL
 import sentry_sdk
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
@@ -30,13 +32,18 @@ import pcapi.core.finance.conf as finance_conf
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.repository as offerers_repository
+import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.validation as offers_validation
+import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
+import pcapi.core.providers.repository as providers_repository
 import pcapi.core.reactions.models as reactions_models
 import pcapi.core.users.models as users_models
 import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi import settings
+from pcapi.connectors import thumb_storage
+from pcapi.connectors import titelive
 from pcapi.connectors.ems import EMSAPIException
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.connectors.thumb_storage import create_thumb
@@ -80,6 +87,7 @@ from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.repository.session_management import on_commit
 from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
+from pcapi.utils import requests
 from pcapi.utils.chunks import get_chunks
 from pcapi.utils.custom_keys import get_field
 from pcapi.utils.custom_logic import OPERATIONS
@@ -1614,8 +1622,69 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
     return
 
 
+def create_or_update_product_mediations_from_article(product: models.Product, titelive_article: dict) -> None:
+    provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+
+    image_urls = {
+        models.ImageType.RECTO: titelive_article.get("imagesUrl", {}).get("recto"),
+        models.ImageType.VERSO: titelive_article.get("imagesUrl", {}).get("verso"),
+    }
+    if not any(image_urls.values()):
+        return
+
+    # delete previous ProductMediation
+    (
+        db.session.query(models.ProductMediation)
+        .filter(
+            models.ProductMediation.productId == product.id,
+            models.ProductMediation.lastProvider == provider,
+        )
+        .delete()
+    )
+
+    for image_type, image_url in image_urls.items():
+        if not image_url:
+            continue
+
+        try:
+            image_id = str(uuid.uuid4())
+            mediation = models.ProductMediation(
+                productId=product.id,
+                lastProvider=provider,
+                imageType=image_type,
+                uuid=image_id,
+            )
+            db.session.add(mediation)
+
+            image_bytes = titelive.download_titelive_image(image_url)
+            thumb_storage.create_thumb(
+                product,
+                image_bytes,
+                keep_ratio=True,
+                object_id=image_id,
+            )
+
+        except (
+            requests.ExternalAPIException,
+            PIL.UnidentifiedImageError,
+            OSError,
+            offers_exceptions.ImageValidationError,
+        ) as err:
+            logger.error(
+                "Error downloading Titelive image for product %s",
+                product.id,
+                extra={
+                    "exception": err,
+                    "ean": product.ean,
+                    "image_url": image_url,
+                    "image_type": image_type.value,
+                },
+            )
+            db.session.rollback()
+
+
 def whitelist_product(idAtProviders: str) -> models.Product:
-    titelive_product = get_new_product_from_ean13(idAtProviders)
+    titelive_product, titelive_article = get_new_product_from_ean13(idAtProviders)
 
     product = fetch_or_update_product_with_titelive_data(titelive_product)
 

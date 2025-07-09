@@ -169,7 +169,7 @@ class GtlIdError(Exception):
     """Exception when GTL is not found."""
 
 
-def get_new_product_from_ean13(ean: str) -> offers_models.Product:
+def get_new_product_from_ean13(ean: str) -> typing.Tuple[offers_models.Product, dict]:
     json = get_by_ean13(ean)
     oeuvre = json["oeuvre"]
     article = oeuvre["article"][0]
@@ -197,7 +197,8 @@ def get_new_product_from_ean13(ean: str) -> offers_models.Product:
     csr = get_closest_csr(gtl_id)
 
     provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
-    return offers_models.Product(
+
+    product = offers_models.Product(
         lastProvider=provider,
         description=html.unescape(article["resume"]) if "resume" in article else None,
         name=html.unescape(oeuvre["titre"]) if len(oeuvre["titre"]) <= 140 else oeuvre["titre"][:139] + "…",
@@ -225,6 +226,8 @@ def get_new_product_from_ean13(ean: str) -> offers_models.Product:
             rayon=csr["label"] if csr else None,
         ),
     )
+
+    return product, article
 
 
 class TiteliveBase(enum.Enum):
