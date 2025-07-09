@@ -665,7 +665,7 @@ def format_offer_status(status: offer_mixin.OfferStatus) -> str:
         case offer_mixin.OfferStatus.SCHEDULED:
             return "Programmée"
         case offer_mixin.OfferStatus.PUBLISHED:
-            return "Publiée"
+            return "Publiée non réservable"
         case offer_mixin.CollectiveOfferStatus.ACTIVE:
             return "Publiée"
         case offer_mixin.OfferStatus.ACTIVE:
