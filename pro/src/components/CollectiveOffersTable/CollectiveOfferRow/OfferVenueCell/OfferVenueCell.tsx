@@ -1,33 +1,19 @@
-import classNames from 'classnames'
-
-import { ListOffersVenueResponseModel } from 'apiClient/v1'
+import { CollectiveOfferOfferVenue } from 'apiClient/adage'
 import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import { computeVenueDisplayName } from 'repository/venuesService'
 import styles from 'styles/components/Cells.module.scss'
 
 interface OfferVenueCellProps {
-  venue: ListOffersVenueResponseModel
-  rowId: string
-  className?: string
+  venue: CollectiveOfferOfferVenue
   displayLabel?: boolean
 }
 
 export const OfferVenueCell = ({
   venue,
-  rowId,
-  className,
   displayLabel,
 }: OfferVenueCellProps) => {
   return (
-    <td
-      role="cell"
-      className={classNames(
-        styles['offers-table-cell'],
-        styles['venue-column'],
-        className
-      )}
-      headers={`${rowId} ${getCellsDefinition().VENUE.id}`}
-    >
+    <div>
       {displayLabel && (
         <span
           className={styles['offers-table-cell-mobile-label']}
@@ -37,6 +23,6 @@ export const OfferVenueCell = ({
         </span>
       )}
       {computeVenueDisplayName(venue)}
-    </td>
+    </div>
   )
 }

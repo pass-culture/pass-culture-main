@@ -4,8 +4,8 @@ import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFac
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
-  OfferEventDateCellProps,
   OfferEventDateCell,
+  OfferEventDateCellProps,
 } from './OfferEventDateCell'
 
 const renderOfferNameCell = (props: OfferEventDateCellProps) =>
@@ -22,7 +22,7 @@ const renderOfferNameCell = (props: OfferEventDateCellProps) =>
     }
   )
 
-describe('OfferNameCell', () => {
+describe('OfferEventDateCell', () => {
   it('should display 1 date and time when dates are the same', () => {
     const eventOffer = collectiveOfferFactory({
       isShowcase: false,
@@ -35,7 +35,6 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      rowId: 'rowId',
     })
 
     expect(screen.getByText('04/08/2024')).toBeInTheDocument()
@@ -54,7 +53,6 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      rowId: 'rowId',
     })
 
     expect(screen.getByText('du 05/08/2024')).toBeInTheDocument()
@@ -71,7 +69,6 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      rowId: 'rowId',
     })
 
     expect(screen.getByText('Toute l’année scolaire')).toBeInTheDocument()
@@ -89,7 +86,6 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      rowId: 'rowId',
     })
 
     expect(screen.getByText('du 04/08/2024')).toBeInTheDocument()
@@ -108,7 +104,6 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      rowId: 'rowId',
     })
 
     expect(screen.getByText('04/08/2024')).toBeInTheDocument()
@@ -126,7 +121,6 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      rowId: 'rowId',
     })
 
     expect(screen.getByText('04/09/2024')).toBeInTheDocument()
