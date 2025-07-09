@@ -5,7 +5,7 @@ import typing
 from collections import abc
 
 import sqlalchemy as sa
-from sqlalchemy import orm as sa_orm
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.connectors.big_query import queries as big_query_queries
@@ -21,7 +21,6 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.core.search.backends import base
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.pc_object import BaseQuery
 from pcapi.repository.session_management import atomic
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.utils import requests
@@ -458,7 +457,7 @@ def get_base_query_for_collective_template_offer_indexation() -> (
     )
 
 
-def get_base_query_for_offer_indexation() -> BaseQuery:
+def get_base_query_for_offer_indexation() -> sa_orm.Query:
     return (
         # We are only interested in bookable stocks, which means that
         # we can exclude past stocks (which are numerous for recurrent

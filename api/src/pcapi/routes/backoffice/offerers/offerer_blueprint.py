@@ -38,6 +38,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
+from pcapi.models.utils import get_or_404
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.repository.session_management import on_commit
 from pcapi.routes.backoffice.bookings import forms as bookings_forms
@@ -417,7 +418,7 @@ def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/api-keys", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
 def generate_api_key(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
+    offerer = get_or_404(offerers_models.Offerer, offerer_id)
     if offerer.isRejected or offerer.isClosed:
         raise BadRequest()  # No need for a user-friendly message since button is not available
     try:
@@ -1341,7 +1342,7 @@ def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/api-entreprise", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
 def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
+    offerer = get_or_404(offerers_models.Offerer, offerer_id)
 
     if not siren_utils.is_valid_siren(offerer.siren):
         mark_transaction_as_invalid()
@@ -1377,7 +1378,7 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/api-entreprise/rcs", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
 def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
+    offerer = get_or_404(offerers_models.Offerer, offerer_id)
 
     if not siren_utils.is_valid_siren(offerer.siren):
         raise NotFound()
@@ -1396,7 +1397,7 @@ def get_entreprise_rcs_info(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/api-entreprise/urssaf", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_PRO_SENSITIVE_INFO)
 def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
+    offerer = get_or_404(offerers_models.Offerer, offerer_id)
 
     if not siren_utils.is_valid_siren(offerer.siren):
         raise NotFound()
@@ -1423,7 +1424,7 @@ def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/api-entreprise/dgfip", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_PRO_SENSITIVE_INFO)
 def get_entreprise_dgfip_info(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
+    offerer = get_or_404(offerers_models.Offerer, offerer_id)
 
     if not siren_utils.is_valid_siren(offerer.siren):
         raise NotFound()
@@ -1450,7 +1451,7 @@ def get_entreprise_dgfip_info(offerer_id: int) -> utils.BackofficeResponse:
 @offerer_blueprint.route("/close", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.CLOSE_OFFERER)
 def get_close_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
+    offerer = get_or_404(offerers_models.Offerer, offerer_id)
 
     form = offerer_forms.OffererClosureForm()
     info = None

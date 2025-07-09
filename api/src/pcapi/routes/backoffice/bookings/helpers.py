@@ -2,6 +2,7 @@ import datetime
 import typing
 
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
@@ -9,7 +10,6 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
-from pcapi.models.pc_object import BaseQuery
 from pcapi.routes.backoffice.bookings.forms import BaseBookingListForm
 from pcapi.routes.backoffice.bookings.forms import BookingStatus
 from pcapi.utils import date as date_utils
@@ -19,7 +19,7 @@ from pcapi.utils import string as string_utils
 
 def get_bookings(
     *,
-    base_query: BaseQuery,
+    base_query: sa_orm.Query,
     form: BaseBookingListForm,
     stock_class: type[educational_models.CollectiveStock | offers_models.Stock],
     booking_class: type[educational_models.CollectiveBooking | bookings_models.Booking],

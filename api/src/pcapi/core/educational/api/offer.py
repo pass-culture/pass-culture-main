@@ -42,7 +42,7 @@ from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
-from pcapi.models.pc_object import BaseQuery
+from pcapi.models.utils import get_or_404
 from pcapi.repository.session_management import is_managed_transaction
 from pcapi.repository.session_management import on_commit
 from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequestBodyModel
@@ -456,7 +456,8 @@ def get_venue_and_check_access_for_offer_creation(
     if offer_data.template_id is not None:
         template = educational_repository.get_collective_offer_template_by_id(offer_data.template_id)
         rest.check_user_has_access_to_offerer(user, offerer_id=template.venue.managingOffererId)
-    venue: offerers_models.Venue = db.session.query(offerers_models.Venue).get_or_404(offer_data.venue_id)
+    venue: offerers_models.Venue = get_or_404(offerers_models.Venue, offer_data.venue_id)
+
     rest.check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
     if not offerers_api.can_offerer_create_educational_offer(venue.managingOffererId):
         raise exceptions.CulturalPartnerNotFoundException("No venue has been found for the selected siren")
@@ -1152,7 +1153,7 @@ def archive_collective_offers_template(
     )
 
 
-def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> None:
+def batch_update_collective_offers(query: sa_orm.Query, update_fields: dict) -> None:
     allowed_validation_status = {offers_models.OfferValidationStatus.APPROVED}
     if "dateArchived" in update_fields:
         allowed_validation_status.update(
@@ -1183,7 +1184,7 @@ def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> Non
             db.session.commit()
 
 
-def batch_update_collective_offers_template(query: BaseQuery, update_fields: dict) -> None:
+def batch_update_collective_offers_template(query: sa_orm.Query, update_fields: dict) -> None:
     allowed_validation_status = {offers_models.OfferValidationStatus.APPROVED}
     if "dateArchived" in update_fields:
         allowed_validation_status.update(

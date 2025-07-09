@@ -68,7 +68,6 @@ from pcapi.core.object_storage import store_public_object
 from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models import feature
-from pcapi.models.pc_object import BaseQuery
 from pcapi.repository import transaction
 from pcapi.repository.session_management import is_managed_transaction
 from pcapi.repository.session_management import mark_transaction_as_invalid
@@ -290,9 +289,9 @@ def price_events(
     loops = math.ceil(event_query.count() / batch_size)
 
     def _get_loop_query(
-        query: BaseQuery,
+        query: sa_orm.Query,
         last_event: models.FinanceEvent | None,
-    ) -> BaseQuery:
+    ) -> sa_orm.Query:
         # We cannot use OFFSET and LIMIT because the loop "consumes"
         # events that have been priced (so the query will not return
         # them in the next loop), but keeps events that cannot be
@@ -372,7 +371,7 @@ def get_pricing_point_link(
     raise ValueError(f"Could not find pricing point for booking {booking.id}")
 
 
-def _get_events_to_price(window: tuple[datetime.datetime, datetime.datetime]) -> BaseQuery:
+def _get_events_to_price(window: tuple[datetime.datetime, datetime.datetime]) -> sa_orm.Query:
     return (
         db.session.query(models.FinanceEvent)
         .filter(
@@ -1468,7 +1467,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
         "Montant net offreur",
     ]
 
-    def get_individual_data(query: BaseQuery) -> BaseQuery:
+    def get_individual_data(query: sa_orm.Query) -> sa_orm.Query:
         individual_data_query = (
             query.filter(bookings_models.Booking.amount != 0)
             .join(bookings_models.Booking.deposit)
@@ -1500,7 +1499,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
 
         return individual_data_query
 
-    def get_collective_data(query: BaseQuery) -> BaseQuery:
+    def get_collective_data(query: sa_orm.Query) -> sa_orm.Query:
         return (
             query.join(educational_models.CollectiveBooking.collectiveStock)
             .join(models.Pricing.cashflows)
@@ -1729,7 +1728,7 @@ def _make_invoice_lines(
     return lines
 
 
-def _filter_invoiceable_cashflows(query: BaseQuery) -> BaseQuery:
+def _filter_invoiceable_cashflows(query: sa_orm.Query) -> sa_orm.Query:
     return (
         query.filter(models.Cashflow.status == models.CashflowStatus.UNDER_REVIEW)
         .outerjoin(
@@ -1940,7 +1939,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
         "Somme des tickets de facturation",
     ]
 
-    def get_data(query: BaseQuery, bank_accounts: typing.Iterable[int]) -> BaseQuery:
+    def get_data(query: sa_orm.Query, bank_accounts: typing.Iterable[int]) -> sa_orm.Query:
         return (
             query.join(models.Pricing.lines)
             .join(bookings_models.Booking.deposit)
@@ -1971,7 +1970,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
             )
         )
 
-    def get_collective_data(query: BaseQuery, bank_accounts: typing.Iterable[int]) -> BaseQuery:
+    def get_collective_data(query: sa_orm.Query, bank_accounts: typing.Iterable[int]) -> sa_orm.Query:
         return (
             query.join(models.Pricing.lines)
             .join(educational_models.CollectiveBooking.collectiveStock)

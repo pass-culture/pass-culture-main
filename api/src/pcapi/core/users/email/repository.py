@@ -1,14 +1,15 @@
 from datetime import datetime
 
+import sqlalchemy.orm as sa_orm
+
 from pcapi.core.users import constants
 from pcapi.core.users.models import EmailHistoryEventTypeEnum
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserEmailHistory
 from pcapi.models import db
-from pcapi.models.pc_object import BaseQuery
 
 
-def _query_ordered_email_update_entry(user: User) -> BaseQuery:
+def _query_ordered_email_update_entry(user: User) -> sa_orm.Query:
     latest_entries = (
         db.session.query(UserEmailHistory).filter_by(user=user).order_by(UserEmailHistory.creationDate.desc())
     )

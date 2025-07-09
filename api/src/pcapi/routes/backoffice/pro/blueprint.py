@@ -1,6 +1,7 @@
 import typing
 from functools import partial
 
+import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -26,7 +27,6 @@ from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models.pc_object import BaseQuery
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
@@ -51,8 +51,8 @@ class Context:
     and venues. Each one has its own context to handle its specificities
     """
 
-    fetch_rows_func: typing.Callable[[str, list[str]], BaseQuery]
-    get_item_base_query: typing.Callable[[int], BaseQuery]
+    fetch_rows_func: typing.Callable[[str, list[str]], sa_orm.Query]
+    get_item_base_query: typing.Callable[[int], sa_orm.Query]
     endpoint: str
     row_id_name: str
 
@@ -289,7 +289,7 @@ def create_offerer() -> utils.BackofficeResponse:
     return redirect(url_for("backoffice_web.offerer.get", offerer_id=user_offerer.offererId), code=303)
 
 
-def _get_connect_as_base_query() -> BaseQuery:
+def _get_connect_as_base_query() -> sa_orm.Query:
     """Returns all user_id to be used as a subquery."""
     return (
         db.session.query(users_models.User)
@@ -304,7 +304,7 @@ def _get_connect_as_base_query() -> BaseQuery:
     )
 
 
-def _get_best_user_id_for_connect_as(query: BaseQuery) -> int | None:
+def _get_best_user_id_for_connect_as(query: sa_orm.Query) -> int | None:
     """Partial workaround to fix connect as when a user as multiple offerers.
 
     The workaround is to try to always select a user with only one offerer when we can

@@ -19,6 +19,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
+from pcapi.models.utils import get_or_404
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
@@ -192,7 +193,7 @@ def details(chronicle_id: int) -> utils.BackofficeResponse:
 @chronicles_blueprint.route("/<int:chronicle_id>/update-content", methods=["GET"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def get_update_chronicle_content_form(chronicle_id: int) -> utils.BackofficeResponse:
-    chronicle = db.session.query(chronicles_models.Chronicle).get_or_404(chronicle_id)
+    chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
     form = forms.UpdateContentForm(content=chronicle.content)
 
     return render_template(
@@ -216,7 +217,7 @@ def update_chronicle_content(chronicle_id: int) -> utils.BackofficeResponse:
             url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="content"), code=303
         )
 
-    chronicle = db.session.query(chronicles_models.Chronicle).get_or_404(chronicle_id)
+    chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
     chronicle.content = form.content.data
     db.session.add(chronicle)
     db.session.flush()
@@ -235,7 +236,7 @@ def update_chronicle_content(chronicle_id: int) -> utils.BackofficeResponse:
 @chronicles_blueprint.route("/<int:chronicle_id>/publish", methods=["POST"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def publish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
-    chronicle = db.session.query(chronicles_models.Chronicle).get_or_404(chronicle_id)
+    chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
     chronicle.isActive = True
     db.session.add(chronicle)
     db.session.flush()
@@ -251,7 +252,7 @@ def publish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
 @chronicles_blueprint.route("/<int:chronicle_id>/unpublish", methods=["POST"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def unpublish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
-    chronicle = db.session.query(chronicles_models.Chronicle).get_or_404(chronicle_id)
+    chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
     chronicle.isActive = False
     db.session.add(chronicle)
     db.session.flush()
@@ -267,7 +268,7 @@ def unpublish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
 @chronicles_blueprint.route("/<int:chronicle_id>/attach-product", methods=["POST"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
-    selected_chronicle = db.session.query(chronicles_models.Chronicle).get_or_404(chronicle_id)
+    selected_chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
 
     form = (
         forms.AttachBookProductForm()
@@ -343,7 +344,7 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
 @chronicles_blueprint.route("/<int:chronicle_id>/detach-product/<int:product_id>", methods=["POST"])
 @permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
 def detach_product(chronicle_id: int, product_id: int) -> utils.BackofficeResponse:
-    selected_chronicle = db.session.query(chronicles_models.Chronicle).get_or_404(chronicle_id)
+    selected_chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
     chronicles_subquery = (
         db.session.query(chronicles_models.Chronicle)
         .filter(
@@ -388,7 +389,7 @@ def comment_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
             url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="history"), code=303
         )
 
-    chronicle = db.session.query(chronicles_models.Chronicle).get_or_404(chronicle_id)
+    chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
 
     history_api.add_action(
         history_models.ActionType.COMMENT, author=current_user, chronicle=chronicle, comment=form.comment.data

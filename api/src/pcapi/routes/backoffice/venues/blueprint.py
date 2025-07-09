@@ -42,6 +42,7 @@ from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
+from pcapi.models.utils import get_or_404
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.repository.session_management import on_commit
 from pcapi.routes.backoffice import autocomplete
@@ -587,7 +588,7 @@ def get_history(venue_id: int) -> utils.BackofficeResponse:
 @venue_blueprint.route("/<int:venue_id>/protected-info", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_PRO_ENTREPRISE_INFO)
 def get_entreprise_info(venue_id: int) -> utils.BackofficeResponse:
-    venue = db.session.query(offerers_models.Venue).get_or_404(venue_id)
+    venue = get_or_404(offerers_models.Venue, venue_id)
 
     if not venue.siret:
         raise NotFound()

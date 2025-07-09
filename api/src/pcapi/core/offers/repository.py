@@ -23,7 +23,6 @@ from pcapi.core.reactions import models as reactions_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
-from pcapi.models.pc_object import BaseQuery
 from pcapi.utils import custom_keys
 from pcapi.utils import string as string_utils
 from pcapi.utils.decorators import retry
@@ -184,7 +183,7 @@ def get_capped_offers_for_filters(
 
 def get_offers_by_publication_date(
     publication_date: datetime.datetime | None = None,
-) -> BaseQuery:
+) -> sa_orm.Query:
     if publication_date is None:
         publication_date = datetime.datetime.utcnow()
 
@@ -198,7 +197,7 @@ def get_offers_by_publication_date(
     )
 
 
-def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> BaseQuery:
+def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> sa_orm.Query:
     query = db.session.query(models.Offer)
     if not user.has_admin_role:
         query = (
@@ -265,7 +264,7 @@ def get_offers_data_from_top_offers(top_offers: list[dict]) -> list[dict]:
     return sorted_data_list
 
 
-def get_offers_details(offer_ids: list[int]) -> BaseQuery:
+def get_offers_details(offer_ids: list[int]) -> sa_orm.Query:
     return (
         db.session.query(models.Offer)
         .options(
@@ -372,7 +371,7 @@ def get_offers_by_filters(
     creation_mode: str | None = None,
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
-) -> BaseQuery:
+) -> sa_orm.Query:
     query = db.session.query(models.Offer)
 
     if not user_is_admin:
@@ -448,7 +447,7 @@ def get_offers_by_filters(
     return query
 
 
-def _filter_by_creation_mode(query: BaseQuery, creation_mode: str) -> BaseQuery:
+def _filter_by_creation_mode(query: sa_orm.Query, creation_mode: str) -> sa_orm.Query:
     if creation_mode == MANUAL_CREATION_MODE:
         query = query.filter(models.Offer.lastProviderId.is_(None))
     if creation_mode == IMPORTED_CREATION_MODE:
@@ -457,7 +456,7 @@ def _filter_by_creation_mode(query: BaseQuery, creation_mode: str) -> BaseQuery:
     return query
 
 
-def _filter_by_status(query: BaseQuery, status: str) -> BaseQuery:
+def _filter_by_status(query: sa_orm.Query, status: str) -> sa_orm.Query:
     return query.filter(models.Offer.status == offer_mixin.OfferStatus[status].name)
 
 
@@ -637,7 +636,7 @@ def check_stock_consistency() -> list[int]:
     ]
 
 
-def find_event_stocks_happening_in_x_days(number_of_days: int) -> BaseQuery:
+def find_event_stocks_happening_in_x_days(number_of_days: int) -> sa_orm.Query:
     target_day = datetime.datetime.utcnow() + datetime.timedelta(days=number_of_days)
     start = datetime.datetime.combine(target_day, datetime.time.min)
     end = datetime.datetime.combine(target_day, datetime.time.max)
@@ -645,7 +644,7 @@ def find_event_stocks_happening_in_x_days(number_of_days: int) -> BaseQuery:
     return find_event_stocks_day(start, end)
 
 
-def find_event_stocks_day(start: datetime.datetime, end: datetime.datetime) -> BaseQuery:
+def find_event_stocks_day(start: datetime.datetime, end: datetime.datetime) -> sa_orm.Query:
     return (
         db.session.query(models.Stock)
         .filter(models.Stock.beginningDatetime.between(start, end))
@@ -655,7 +654,7 @@ def find_event_stocks_day(start: datetime.datetime, end: datetime.datetime) -> B
     )
 
 
-def get_expired_offers(interval: list[datetime.datetime]) -> BaseQuery:
+def get_expired_offers(interval: list[datetime.datetime]) -> sa_orm.Query:
     """Return a query of offers whose latest booking limit occurs within
     the given interval.
 
@@ -998,7 +997,7 @@ def offer_has_bookable_stocks(offer_id: int) -> bool:
     ).scalar()
 
 
-def _order_stocks_by(query: BaseQuery, order_by: StocksOrderedBy, order_by_desc: bool) -> BaseQuery:
+def _order_stocks_by(query: sa_orm.Query, order_by: StocksOrderedBy, order_by_desc: bool) -> sa_orm.Query:
     column: sa_orm.Mapped[int] | sa.cast[sa.Date | sa.Time, sa_orm.Mapped[datetime.datetime | None]]
     match order_by:
         case StocksOrderedBy.DATE:
@@ -1029,7 +1028,7 @@ def get_filtered_stocks(
     price_category_id: int | None = None,
     order_by: StocksOrderedBy = StocksOrderedBy.BEGINNING_DATETIME,
     order_by_desc: bool = False,
-) -> BaseQuery:
+) -> sa_orm.Query:
     query = (
         db.session.query(models.Stock)
         .join(models.Offer)
@@ -1095,14 +1094,14 @@ def hard_delete_filtered_stocks(
 
 
 def get_paginated_stocks(
-    stocks_query: BaseQuery,
+    stocks_query: sa_orm.Query,
     stocks_limit_per_page: int = LIMIT_STOCKS_PER_PAGE,
     page: int = 1,
-) -> BaseQuery:
+) -> sa_orm.Query:
     return stocks_query.offset((page - 1) * stocks_limit_per_page).limit(stocks_limit_per_page)
 
 
-def get_synchronized_offers_with_provider_for_venue(venue_id: int, provider_id: int) -> BaseQuery:
+def get_synchronized_offers_with_provider_for_venue(venue_id: int, provider_id: int) -> sa_orm.Query:
     return (
         db.session.query(models.Offer)
         .filter(models.Offer.venueId == venue_id)
@@ -1143,7 +1142,7 @@ def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int = 0
     return [offer_id for (offer_id,) in query]
 
 
-def get_offer_price_categories(offer_id: int, id_at_provider_list: list[str] | None = None) -> BaseQuery:
+def get_offer_price_categories(offer_id: int, id_at_provider_list: list[str] | None = None) -> sa_orm.Query:
     """Return price categories for given offer, with the possibility to filter on `idAtProvider`"""
     query = db.session.query(models.PriceCategory).filter(
         models.PriceCategory.offerId == offer_id,
@@ -1155,7 +1154,7 @@ def get_offer_price_categories(offer_id: int, id_at_provider_list: list[str] | N
     return query
 
 
-def exclude_offers_from_inactive_venue_provider(query: BaseQuery) -> BaseQuery:
+def exclude_offers_from_inactive_venue_provider(query: sa_orm.Query) -> sa_orm.Query:
     return (
         query.outerjoin(models.Offer.lastProvider)
         .outerjoin(

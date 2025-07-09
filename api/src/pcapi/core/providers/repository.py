@@ -10,7 +10,6 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
 from pcapi.models import db
-from pcapi.models.pc_object import BaseQuery
 
 from . import constants
 from . import models
@@ -53,7 +52,7 @@ def get_provider_by_name(name: str) -> models.Provider:
     return db.session.query(models.Provider).filter_by(name=name).one()
 
 
-def get_available_providers(venue: Venue) -> BaseQuery:
+def get_available_providers(venue: Venue) -> sa_orm.Query:
     from pcapi.local_providers import AllocineStocks
 
     query = (
@@ -101,7 +100,7 @@ def get_cds_cinema_details(cinema_id: str) -> models.CDSCinemaDetails:
     return cinema_details
 
 
-def get_cinema_venue_provider_query(venue_id: int) -> BaseQuery:
+def get_cinema_venue_provider_query(venue_id: int) -> sa_orm.Query:
     return db.session.query(models.VenueProvider).filter(
         models.VenueProvider.venueId == venue_id,
         models.VenueProvider.isFromCinemaProvider,
@@ -197,7 +196,7 @@ def is_cinema_external_ticket_applicable(offer: offers_models.Offer) -> bool:
     )
 
 
-def get_providers_venues(provider_id: int) -> BaseQuery:
+def get_providers_venues(provider_id: int) -> sa_orm.Query:
     return (
         db.session.query(Venue)
         .join(models.VenueProvider)
@@ -209,7 +208,7 @@ def get_providers_venues(provider_id: int) -> BaseQuery:
 
 def _get_future_provider_events_requiring_a_ticketing_system_query(
     provider: models.Provider,
-) -> BaseQuery:
+) -> sa_orm.Query:
     # base query
     events_query = (
         db.session.query(offers_models.Offer)

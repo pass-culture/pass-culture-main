@@ -17,6 +17,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
+from pcapi.models.utils import get_or_404
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
@@ -219,7 +220,7 @@ def create_non_payment_notice() -> utils.BackofficeResponse:
 @non_payment_notices_blueprint.route("/<int:notice_id>/edit", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
 def get_edit_form(notice_id: int) -> utils.BackofficeResponse:
-    notice: offerers_models.NonPaymentNotice = db.session.query(offerers_models.NonPaymentNotice).get_or_404(notice_id)
+    notice: offerers_models.NonPaymentNotice = get_or_404(offerers_models.NonPaymentNotice, notice_id)
 
     form = forms.EditNonPaymentNoticeForm(
         date_received=notice.dateReceived,
@@ -251,7 +252,7 @@ def get_edit_form(notice_id: int) -> utils.BackofficeResponse:
 @non_payment_notices_blueprint.route("/<int:notice_id>/edit", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
 def edit(notice_id: int) -> utils.BackofficeResponse:
-    notice: offerers_models.NonPaymentNotice = db.session.query(offerers_models.NonPaymentNotice).get_or_404(notice_id)
+    notice: offerers_models.NonPaymentNotice = get_or_404(offerers_models.NonPaymentNotice, notice_id)
 
     form = forms.EditNonPaymentNoticeForm()
     return _create_or_update_non_payment_notice(form, notice)

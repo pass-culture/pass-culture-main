@@ -36,7 +36,6 @@ from pcapi.core.users import ds as users_ds
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
 from pcapi.models import db
-from pcapi.models.pc_object import BaseQuery
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import search_utils
@@ -60,7 +59,7 @@ account_update_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _get_filtered_account_update_requests(form: account_forms.AccountUpdateRequestSearchForm) -> BaseQuery:
+def _get_filtered_account_update_requests(form: account_forms.AccountUpdateRequestSearchForm) -> sa_orm.Query:
     aliased_instructor = sa_orm.aliased(users_models.User)
 
     query = (

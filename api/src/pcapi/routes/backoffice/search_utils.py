@@ -4,11 +4,11 @@ import re
 import typing
 
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.finance import models as finance_models
 from pcapi.core.users import models as users_models
-from pcapi.models.pc_object import BaseQuery
 from pcapi.models.pc_object import PcObject
 from pcapi.routes.backoffice.forms import search as search_forms
 
@@ -46,7 +46,7 @@ def pagination_links(partial_func: UrlForPartial, current_page: int, pages_total
     return [(page, partial_func(page=page)) for page in range(start_page, end_page + 1)]
 
 
-def paginate(query: BaseQuery, page: int = 1, per_page: int = 20) -> PaginatedQuery:
+def paginate(query: sa_orm.Query, page: int = 1, per_page: int = 20) -> PaginatedQuery:
     if page < 1:
         raise NotFound()
 
@@ -73,7 +73,7 @@ def split_terms(search_query: str) -> list[str]:
     return re.split(r"[,;\s]+", search_query)
 
 
-def apply_filter_on_beneficiary_status(query: BaseQuery, account_search_filters: list[str]) -> BaseQuery:
+def apply_filter_on_beneficiary_status(query: sa_orm.Query, account_search_filters: list[str]) -> sa_orm.Query:
     query = query.outerjoin(
         finance_models.Deposit,
         sa.and_(

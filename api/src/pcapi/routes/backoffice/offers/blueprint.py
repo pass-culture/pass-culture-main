@@ -45,7 +45,6 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.models.pc_object import BaseQuery
 from pcapi.repository import repository
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.repository.session_management import on_commit
@@ -342,7 +341,7 @@ def _get_offer_ids_algolia(form: forms.GetOfferAlgoliaSearchForm) -> list[int]:
     return ids
 
 
-def _get_offer_ids_query(form: forms.GetOfferAdvancedSearchForm) -> BaseQuery:
+def _get_offer_ids_query(form: forms.GetOfferAdvancedSearchForm) -> sa_orm.Query:
     query, _, _, warnings = utils.generate_search_query(
         query=db.session.query(offers_models.Offer),
         search_parameters=form.search.data,
@@ -360,7 +359,7 @@ def _get_offer_ids_query(form: forms.GetOfferAdvancedSearchForm) -> BaseQuery:
 
 
 def _get_offers_by_ids(
-    offer_ids: list[int] | BaseQuery, *, sort: str | None = None, order: str | None = None
+    offer_ids: list[int] | sa_orm.Query, *, sort: str | None = None, order: str | None = None
 ) -> list[offers_models.Offer]:
     if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         # Those columns are not shown to fraud pro users

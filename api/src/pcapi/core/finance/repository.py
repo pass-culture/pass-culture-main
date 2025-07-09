@@ -16,7 +16,6 @@ import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
 from pcapi.core.geography import models as geography_models
 from pcapi.models import db
-from pcapi.models.pc_object import BaseQuery
 
 from . import models
 from . import utils
@@ -340,7 +339,7 @@ def _get_sent_pricings_for_individual_bookings(
     ).all()
 
 
-def _get_reimbursement_details_from_invoices_base_query(invoice_ids: list[int]) -> BaseQuery:
+def _get_reimbursement_details_from_invoices_base_query(invoice_ids: list[int]) -> sa_orm.Query:
     return (
         db.session.query(models.Invoice)
         .filter(
@@ -367,7 +366,7 @@ def _get_reimbursement_details_from_invoices_base_query(invoice_ids: list[int]) 
     )
 
 
-def _get_collective_booking_reimbursement_data(query: BaseQuery) -> list[tuple]:
+def _get_collective_booking_reimbursement_data(query: sa_orm.Query) -> list[tuple]:
     return (
         query.join(models.Pricing.event)
         .join(educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock)
@@ -437,7 +436,7 @@ def _get_collective_reimbursement_details_from_invoices(invoice_ids: list[int]) 
     return collective_details
 
 
-def _get_individual_booking_reimbursement_data(query: BaseQuery) -> list[tuple]:
+def _get_individual_booking_reimbursement_data(query: sa_orm.Query) -> list[tuple]:
     columns = [
         bookings_models.Booking.token.label("booking_token"),
         _truncate_milliseconds(bookings_models.Booking.dateUsed).label("booking_used_date"),
