@@ -778,13 +778,15 @@ export const StocksEventEdition = ({
                               watch('stocks')[index].remainingQuantity ??
                               undefined
                             }
-                            onChange={(event) =>
+                            onChange={(event) => {
+                              const value = event.target.value
+
                               setValue(
                                 `stocks.${index}.remainingQuantity`,
-                                Number(event.target.value),
+                                value === '' ? null : Number(value),
                                 { shouldDirty: true }
                               )
-                            }
+                            }}
                             ariaLabel="Quantité restante"
                           />
                         </td>

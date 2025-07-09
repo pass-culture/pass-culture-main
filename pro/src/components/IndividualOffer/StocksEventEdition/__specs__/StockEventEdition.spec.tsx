@@ -358,17 +358,119 @@ describe('screens:StocksEventEdition', () => {
       ...apiOffer.lastProvider,
       name: 'ciné office',
     }
+
     await renderStockEventScreen(apiOffer, apiStocks)
     vi.spyOn(api, 'bulkUpdateEventStocks').mockResolvedValue({
       stocks_count: apiStocks.length,
     })
 
     await userEvent.type(screen.getByLabelText('Quantité restante'), '30')
+
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
     expect(await screen.findByText(PATCH_SUCCESS_MESSAGE)).toBeInTheDocument()
     expect(api.bulkUpdateEventStocks).toHaveBeenCalledTimes(1)
+  })
+
+  it('should let edit quantity', async () => {
+    const myStocks = [
+      getOfferStockFactory({
+        bookingsQuantity: 0,
+        quantity: 0,
+        remainingQuantity: 0,
+      }),
+    ]
+
+    await renderStockEventScreen(apiOffer, myStocks)
+    vi.spyOn(api, 'bulkUpdateEventStocks').mockResolvedValue({
+      stocks_count: apiStocks.length,
+    })
+
+    await userEvent.type(screen.getByLabelText('Quantité restante'), '17')
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Enregistrer les modifications' })
+    )
+    expect(await screen.findByText(PATCH_SUCCESS_MESSAGE)).toBeInTheDocument()
+    expect(api.bulkUpdateEventStocks).toHaveBeenNthCalledWith(1, {
+      offerId: 12,
+      stocks: [
+        {
+          beginningDatetime: '2021-10-15T12:00:00Z',
+          bookingLimitDatetime: '2021-09-15T21:59:59Z',
+          id: expect.any(Number),
+          priceCategoryId: 2,
+          quantity: 17,
+        },
+      ],
+    })
+  })
+
+  it('should allow user to edit quantity with 0', async () => {
+    const myStocks = [
+      getOfferStockFactory({
+        bookingsQuantity: 0,
+        quantity: 1,
+        remainingQuantity: 0,
+      }),
+    ]
+
+    await renderStockEventScreen(apiOffer, myStocks)
+    vi.spyOn(api, 'bulkUpdateEventStocks').mockResolvedValue({
+      stocks_count: apiStocks.length,
+    })
+
+    await userEvent.clear(screen.getByLabelText('Quantité restante'))
+    await userEvent.type(screen.getByLabelText('Quantité restante'), '0')
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Enregistrer les modifications' })
+    )
+    expect(await screen.findByText(PATCH_SUCCESS_MESSAGE)).toBeInTheDocument()
+    expect(api.bulkUpdateEventStocks).toHaveBeenNthCalledWith(1, {
+      offerId: 12,
+      stocks: [
+        {
+          beginningDatetime: '2021-10-15T12:00:00Z',
+          bookingLimitDatetime: '2021-09-15T21:59:59Z',
+          id: expect.any(Number),
+          priceCategoryId: 2,
+          quantity: 0,
+        },
+      ],
+    })
+  })
+
+  it('should let edit quantity with unlimited', async () => {
+    const myStocks = [
+      getOfferStockFactory({
+        bookingsQuantity: 0,
+        quantity: 1,
+        remainingQuantity: 0,
+      }),
+    ]
+
+    await renderStockEventScreen(apiOffer, myStocks)
+    vi.spyOn(api, 'bulkUpdateEventStocks').mockResolvedValue({
+      stocks_count: apiStocks.length,
+    })
+
+    await userEvent.clear(screen.getByLabelText('Quantité restante'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Enregistrer les modifications' })
+    )
+    expect(await screen.findByText(PATCH_SUCCESS_MESSAGE)).toBeInTheDocument()
+    expect(api.bulkUpdateEventStocks).toHaveBeenNthCalledWith(1, {
+      offerId: 12,
+      stocks: [
+        {
+          beginningDatetime: '2021-10-15T12:00:00Z',
+          bookingLimitDatetime: '2021-09-15T21:59:59Z',
+          id: expect.any(Number),
+          priceCategoryId: 2,
+          quantity: null,
+        },
+      ],
+    })
   })
 
   it('should display an error message when there is an api error', async () => {
