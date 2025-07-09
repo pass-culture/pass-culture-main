@@ -1,3 +1,4 @@
+import dataclasses
 import datetime
 import enum
 import html
@@ -10,8 +11,10 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.repository as providers_repository
 from pcapi import settings
+from pcapi.connectors.serialization.titelive_serializers import TiteliveImage
 from pcapi.core.categories import subcategories
 from pcapi.core.offers import exceptions as offers_exceptions
+from pcapi.core.offers import models as offer_models
 from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils.cache import get_from_cache
@@ -169,7 +172,13 @@ class GtlIdError(Exception):
     """Exception when GTL is not found."""
 
 
-def get_new_product_from_ean13(ean: str) -> offers_models.Product:
+@dataclasses.dataclass
+class TiteliveProductData:
+    product: offer_models.Product
+    images: TiteliveImage | None
+
+
+def get_new_product_from_ean13(ean: str) -> TiteliveProductData:
     json = get_by_ean13(ean)
     oeuvre = json["oeuvre"]
     article = oeuvre["article"][0]
@@ -197,7 +206,8 @@ def get_new_product_from_ean13(ean: str) -> offers_models.Product:
     csr = get_closest_csr(gtl_id)
 
     provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
-    return offers_models.Product(
+
+    product = offers_models.Product(
         lastProvider=provider,
         description=html.unescape(article["resume"]) if "resume" in article else None,
         name=html.unescape(oeuvre["titre"]) if len(oeuvre["titre"]) <= 140 else oeuvre["titre"][:139] + "…",
@@ -225,6 +235,13 @@ def get_new_product_from_ean13(ean: str) -> offers_models.Product:
             rayon=csr["label"] if csr else None,
         ),
     )
+
+    images = None
+    titelive_images_data = article.get("imagesUrl")
+    if titelive_images_data:
+        images = TiteliveImage(**titelive_images_data)
+
+    return TiteliveProductData(product=product, images=images)
 
 
 class TiteliveBase(enum.Enum):
