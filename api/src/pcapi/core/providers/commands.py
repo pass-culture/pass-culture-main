@@ -3,9 +3,11 @@ from time import time
 
 import click
 
+import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.providers import allocine
 from pcapi.local_providers import provider_manager
+from pcapi.models import db
 from pcapi.utils.blueprint import Blueprint
 
 from .titelive_utils import generate_titelive_gtl_from_file
@@ -18,6 +20,18 @@ logger = logging.getLogger(__name__)
 @blueprint.cli.command("synchronize_allocine_products")
 def synchronize_allocine_products() -> None:
     allocine.synchronize_products()
+
+
+@blueprint.cli.command("debug_synchronize_venue_provider")
+@click.option("-vp", "--venue-provider-id", required=True, help="Venue provider id", type=int)
+def debug_synchronize_venue_provider(venue_provider_id: int) -> None:
+    """
+    Start synchronize_venue_provider with `enable_debug=True` to log all the calls made to the external provider API
+
+    /!\ For now, it only works with CGR & CDS providers
+    """
+    venue_provider = db.session.query(providers_models.VenueProvider).filter_by(id=venue_provider_id).one()
+    provider_manager.synchronize_venue_provider(venue_provider=venue_provider, enable_debug=True)
 
 
 @blueprint.cli.command("update_providables")
