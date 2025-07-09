@@ -223,9 +223,10 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     if (newQuantity === '') {
       remainingQuantity = 'unlimited'
     }
-
     setValue(`remainingQuantity`, remainingQuantity)
-    setValue(`quantity`, Number(newQuantity || 0), { shouldDirty: true })
+    setValue(`quantity`, newQuantity !== '' ? Number(newQuantity) : undefined, {
+      shouldDirty: true,
+    })
   }
 
   const getMaximumBookingDatetime = (date: Date | undefined) => {
