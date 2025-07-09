@@ -1212,9 +1212,6 @@ def is_external_event_booking_visible(offer: offers_models.Offer, stock: offers_
 
 
 def is_voucher_displayed(offer: offers_models.Offer, isExternal: bool) -> bool:
-    if offer.isDigital:
-        return False
-
     if offer.subcategoryId == SEANCE_CINE.id:
         return not isExternal
 

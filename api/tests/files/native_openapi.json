@@ -941,13 +941,7 @@
                         "$ref": "#/components/schemas/BookingStockResponseV2"
                     },
                     "ticket": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/TicketResponse"
-                            }
-                        ],
-                        "nullable": true,
-                        "title": "TicketResponse"
+                        "$ref": "#/components/schemas/TicketResponse"
                     },
                     "totalAmount": {
                         "title": "Totalamount",
@@ -969,7 +963,8 @@
                     "stock",
                     "totalAmount",
                     "enablePopUpReaction",
-                    "canReact"
+                    "canReact",
+                    "ticket"
                 ],
                 "title": "BookingResponse",
                 "type": "object"
@@ -1804,19 +1799,6 @@
                     "ADMIN_UPDATE"
                 ],
                 "title": "EmailHistoryEventTypeEnum"
-            },
-            "EmailResponse": {
-                "properties": {
-                    "hasTicketEmailBeenSent": {
-                        "title": "Hasticketemailbeensent",
-                        "type": "boolean"
-                    }
-                },
-                "required": [
-                    "hasTicketEmailBeenSent"
-                ],
-                "title": "EmailResponse",
-                "type": "object"
             },
             "EmailUpdateStatusResponse": {
                 "properties": {
@@ -4702,6 +4684,20 @@
                 "title": "SuspendAccountForSuspiciousLoginRequest",
                 "type": "object"
             },
+            "TicketDisplayEnum": {
+                "description": "An enumeration.",
+                "enum": [
+                    "no_ticket",
+                    "email_sent",
+                    "email_will_be_sent",
+                    "online_code",
+                    "not_visible",
+                    "qr_code",
+                    "voucher",
+                    "ticket"
+                ],
+                "title": "TicketDisplayEnum"
+            },
             "TicketResponse": {
                 "properties": {
                     "activationCode": {
@@ -4713,14 +4709,8 @@
                         "nullable": true,
                         "title": "ActivationCodeResponse"
                     },
-                    "email": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/EmailResponse"
-                            }
-                        ],
-                        "nullable": true,
-                        "title": "EmailResponse"
+                    "display": {
+                        "$ref": "#/components/schemas/TicketDisplayEnum"
                     },
                     "externalBooking": {
                         "anyOf": [
@@ -4730,10 +4720,6 @@
                         ],
                         "nullable": true,
                         "title": "ExternalBookingResponseV2"
-                    },
-                    "noTicket": {
-                        "title": "Noticket",
-                        "type": "boolean"
                     },
                     "token": {
                         "anyOf": [
@@ -4758,8 +4744,8 @@
                     }
                 },
                 "required": [
-                    "withdrawal",
-                    "noTicket"
+                    "display",
+                    "withdrawal"
                 ],
                 "title": "TicketResponse",
                 "type": "object"

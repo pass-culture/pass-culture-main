@@ -2272,6 +2272,7 @@ class PopBarcodesFromQueueAndCancelWastedExternalBookingTest:
     "is_digital,is_external,subcategory_id,expected",
     (
         (True, False, subcategories.LIVESTREAM_MUSIQUE.id, False),
+        (True, True, subcategories.LIVESTREAM_MUSIQUE.id, False),
         (False, False, subcategories.SEANCE_CINE.id, True),
         (False, True, subcategories.SEANCE_CINE.id, False),
         (False, False, subcategories.CONCERT.id, False),
