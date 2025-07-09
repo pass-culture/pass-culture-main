@@ -1,22 +1,52 @@
-@use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
 
 .pagination {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: rem.torem(16px);
-
-  @include fonts.body-accent-xs;
+  margin-bottom: rem.torem(32px);
 }
 
-.button {
-  background: none;
-  border: none;
-  height: rem.torem(24px);
+.list {
+  display: flex;
+  gap: rem.torem(8px);
+}
+
+.link {
+  @include fonts.body-accent-xs;
+
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-border-subtle);
+  padding: rem.torem(8px) rem.torem(16px);
+  background: white;
   cursor: pointer;
+  border-radius: var(--size-border-radius-s);
 
   &:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
   }
 }
+
+.current {
+  background-color: var(--color-background-brand-primary);
+  color: white;
+}
+
+.ellipsis {
+  display: inline-block;
+  padding: rem.torem(8px)
+}
+
+.label {
+  display: none;
+  margin: 0 rem.torem(8px);
+}
+
+@media screen and (min-width: size.$tablet) {
+  .label {
+    display: block;
+  }
+ }

@@ -1,83 +1,131 @@
+import classNames from 'classnames'
+
 import strokeLeftIcon from 'icons/stroke-left.svg'
 import strokeRightIcon from 'icons/stroke-right.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Pagination.module.scss'
 
-/**
- * Props for the Pagination component.
- */
 export type PaginationProps = {
-  /**
-   * The current page number.
-   */
   currentPage: number
-  /**
-   * The total number of pages.
-   */
   pageCount: number
-  /**
-   * Callback function triggered when the previous page button is clicked.
-   */
   onPreviousPageClick: () => void
-  /**
-   * Callback function triggered when the next page button is clicked.
-   */
   onNextPageClick: () => void
+  onPageClick: (page: number) => void
 }
 
-/**
- * The Pagination component allows navigation between different pages of content.
- * It includes buttons to move to the previous or next page, as well as an indicator for the current page.
- *
- * ---
- * **Important: Make sure to handle the `onPreviousPageClick` and `onNextPageClick` callbacks to update the page correctly.**
- * ---
- *
- * @param {PaginationProps} props - The props for the Pagination component.
- * @returns {JSX.Element | null} The rendered Pagination component, or null if there is only one page.
- *
- * @example
- * <Pagination
- *   currentPage={1}
- *   pageCount={5}
- *   onPreviousPageClick={() => console.log('Previous page clicked')}
- *   onNextPageClick={() => console.log('Next page clicked')}
- * />
- *
- * @accessibility
- * - **Button Labels**: The previous and next buttons have descriptive `alt` text, such as "Page précédente" and "Page suivante", to ensure they are accessible to screen readers.
- * - **Disabled State**: Buttons are disabled when the current page is the first or last page to prevent unnecessary navigation.
- */
+const range = (start: number, end: number) => {
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i)
+}
+
 export const Pagination = ({
   currentPage,
+  pageCount,
   onPreviousPageClick,
   onNextPageClick,
-  pageCount,
-}: PaginationProps) =>
-  pageCount > 1 ? (
-    <div className={styles['pagination']}>
-      <button
-        disabled={currentPage === 1}
-        onClick={onPreviousPageClick}
-        type="button"
-        className={styles['button']}
-      >
-        <SvgIcon src={strokeLeftIcon} alt="Page précédente" width="16" />
-      </button>
+  onPageClick,
+}: PaginationProps) => {
+  if (pageCount <= 1) {
+    return null
+  }
 
-      <span>
-        Page {currentPage}/{pageCount}
-      </span>
+  const siblingCount = 1
+  const firstPage = 1
+  const lastPage = pageCount
 
-      <button
-        disabled={currentPage >= pageCount}
-        onClick={onNextPageClick}
-        type="button"
-        className={styles['button']}
-        data-testid="next-page-button"
-      >
-        <SvgIcon src={strokeRightIcon} alt="Page suivante" width="16" />
-      </button>
-    </div>
-  ) : null
+  const startPages = range(firstPage, Math.min(firstPage + 1, pageCount))
+  const endPages = range(Math.max(lastPage - 1, firstPage), lastPage)
+
+  const siblingsStart = Math.max(
+    Math.min(currentPage - siblingCount, pageCount - siblingCount * 2 - 1),
+    firstPage + 2
+  )
+
+  const siblingsEnd = Math.min(
+    Math.max(currentPage + siblingCount, siblingCount * 2 + 2),
+    lastPage - 2
+  )
+
+  const pages = [
+    ...startPages,
+    ...(siblingsStart > firstPage + 2 ? ['ellipsis-start'] : []),
+    ...range(siblingsStart, siblingsEnd),
+    ...(siblingsEnd < lastPage - 2 ? ['ellipsis-end'] : []),
+    ...endPages,
+  ]
+
+  return (
+    <nav
+      className={styles.pagination}
+      role="navigation"
+      aria-label="Pagination"
+    >
+      <ul className={styles.list}>
+        <li>
+          <button
+            className={styles.link}
+            onClick={() => onPageClick(1)}
+            disabled={currentPage === 1}
+            aria-label="Première page"
+          >
+            {'|<'}
+          </button>
+        </li>
+        <li>
+          <button
+            className={styles.link}
+            onClick={onPreviousPageClick}
+            disabled={currentPage === 1}
+            aria-label="Page précédente"
+          >
+            <SvgIcon src={strokeLeftIcon} alt="Page précédente" width="16" />
+            <span className={styles.label}>Précédent</span>
+          </button>
+        </li>
+
+        {pages.map((page, index) => (
+          <li key={index}>
+            {typeof page === 'number' ? (
+              <button
+                className={classNames(styles.link, {
+                  [styles.current]: page === currentPage,
+                })}
+                onClick={() => onPageClick(page)}
+                aria-label={`Page ${page}`}
+                aria-current={page === currentPage ? 'page' : undefined}
+              >
+                {page}
+              </button>
+            ) : (
+              <span className={styles.ellipsis} aria-hidden="true">
+                …
+              </span>
+            )}
+          </li>
+        ))}
+
+        <li>
+          <button
+            className={styles.link}
+            onClick={onNextPageClick}
+            disabled={currentPage === pageCount}
+            aria-label="Page suivante"
+          >
+            <span className={styles.label}>Suivant</span>
+            <SvgIcon src={strokeRightIcon} alt="Page suivante" width="16" />
+          </button>
+        </li>
+        <li>
+          <button
+            className={styles.link}
+            onClick={() => onPageClick(pageCount)}
+            disabled={currentPage === pageCount}
+            aria-label="Dernière page"
+          >
+            {'>|'}
+          </button>
+        </li>
+      </ul>
+    </nav>
+  )
+}
