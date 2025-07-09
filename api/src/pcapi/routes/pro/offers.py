@@ -264,11 +264,8 @@ def post_draft_offer(
     )
 
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    offer = offers_api.create_draft_offer(body, venue, product)
 
-    try:
-        offer = offers_api.create_draft_offer(body, venue, product)
-    except exceptions.OfferException as error:
-        raise api_errors.ApiErrors(error.errors)
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
@@ -300,12 +297,11 @@ def patch_draft_offer(
         raise api_errors.ResourceNotFoundError
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    try:
-        if body_extra_data := offers_api.deserialize_extra_data(body.extra_data, offer.subcategoryId):
-            body.extra_data = body_extra_data
-        offer = offers_api.update_draft_offer(offer, body)
-    except exceptions.OfferException as error:
-        raise api_errors.ApiErrors(error.errors)
+
+    if body_extra_data := offers_api.deserialize_extra_data(body.extra_data, offer.subcategoryId):
+        body.extra_data = body_extra_data
+    offer = offers_api.update_draft_offer(offer, body)
+
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
@@ -332,18 +328,18 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
         else venue.offererAddress
     )
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
-    try:
-        fields = body.dict(by_alias=True)
-        fields.pop("venueId")
-        fields.pop("address")
-        fields["extraData"] = offers_api.deserialize_extra_data(fields["extraData"], fields["subcategoryId"])
 
-        offer_body = offers_schemas.CreateOffer(**fields)
-        offer = offers_api.create_offer(
-            offer_body, venue=venue, offerer_address=offerer_address, is_from_private_api=True
-        )
-    except exceptions.OfferException as error:
-        raise api_errors.ApiErrors(error.errors)
+    fields = body.dict(by_alias=True)
+    fields.pop("venueId")
+    fields.pop("address")
+    fields["extraData"] = offers_api.deserialize_extra_data(fields["extraData"], fields["subcategoryId"])
+
+    offer = offers_api.create_offer(
+        offers_schemas.CreateOffer(**fields),
+        venue=venue,
+        offerer_address=offerer_address,
+        is_from_private_api=True,
+    )
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
@@ -373,15 +369,12 @@ def patch_publish_offer(
     if not offers_repository.offer_has_bookable_stocks(offer.id):
         raise api_errors.ApiErrors({"offer": "Cette offre n’a pas de stock réservable"}, 400)
 
-    try:
-        offers_api.update_offer_fraud_information(offer, user=current_user)
-        offers_api.publish_offer(
-            offer,
-            publication_datetime=body.publicationDatetime,
-            booking_allowed_datetime=body.bookingAllowedDatetime,
-        )
-    except exceptions.OfferException as exc:
-        raise api_errors.ApiErrors(exc.errors)
+    offers_api.update_offer_fraud_information(offer, user=current_user)
+    offers_api.publish_offer(
+        offer,
+        publication_datetime=body.publicationDatetime,
+        booking_allowed_datetime=body.bookingAllowedDatetime,
+    )
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
@@ -458,18 +451,14 @@ def patch_offer(
         raise api_errors.ResourceNotFoundError()
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    try:
-        updates = body.dict(by_alias=True, exclude_unset=True)
-        if body_extra_data := offers_api.deserialize_extra_data(body.extraData, offer.subcategoryId):
-            if "ean" in body_extra_data:
-                updates["ean"] = body_extra_data.pop("ean")
-            updates["extraData"] = body_extra_data
 
-        offer_body = offers_schemas.UpdateOffer(**updates)
+    updates = body.dict(by_alias=True, exclude_unset=True)
+    if body_extra_data := offers_api.deserialize_extra_data(body.extraData, offer.subcategoryId):
+        if "ean" in body_extra_data:
+            updates["ean"] = body_extra_data.pop("ean")
+        updates["extraData"] = body_extra_data
 
-        offer = offers_api.update_offer(offer, offer_body, is_from_private_api=True)
-    except exceptions.OfferException as error:
-        raise api_errors.ApiErrors(error.errors)
+    offer = offers_api.update_offer(offer, offers_schemas.UpdateOffer(**updates), is_from_private_api=True)
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
@@ -486,11 +475,8 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
     try:
         offer = offers_repository.get_offer_by_id(form.offer_id)
     except exceptions.OfferNotFound:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
-            },
-            status_code=404,
+        raise api_errors.ResourceNotFoundError(
+            errors={"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]}
         )
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
@@ -520,7 +506,6 @@ def delete_thumbnail(offer_id: int) -> None:
     offer = get_or_404(models.Offer, offer_id)
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-
     offers_api.delete_mediations([offer_id])
 
 
@@ -620,19 +605,16 @@ def post_price_categories(
     for price_category_to_edit in price_categories_to_edit:
         if price_category_to_edit.id not in existing_price_categories_by_id:
             raise api_errors.ApiErrors(
-                {"price_category_id": ["Le tarif avec l'id %s n'existe pas" % price_category_to_edit.id]},
-                status_code=400,
+                {"price_category_id": ["Le tarif avec l'id %s n'existe pas" % price_category_to_edit.id]}
             )
         data = price_category_to_edit.dict(exclude_unset=True)
-        try:
-            offers_api.edit_price_category(
-                offer,
-                price_category=existing_price_categories_by_id[data["id"]],
-                label=data.get("label", offers_api.UNCHANGED),
-                price=data.get("price", offers_api.UNCHANGED),
-            )
-        except exceptions.OfferException as exc:
-            raise api_errors.ApiErrors(exc.errors)
+
+        offers_api.edit_price_category(
+            offer,
+            price_category=existing_price_categories_by_id[data["id"]],
+            label=data.get("label", offers_api.UNCHANGED),
+            price=data.get("price", offers_api.UNCHANGED),
+        )
 
     # Since we modified the price categories, we need to push the changes to the database
     # so that the response does include them
@@ -666,11 +648,8 @@ def get_active_venue_offer_by_ean(venue_id: int, ean: str) -> offers_serialize.G
         rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
         offer = offers_repository.get_active_offer_by_venue_id_and_ean(venue_id, ean)
     except exceptions.OfferNotFound:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
-            },
-            status_code=404,
+        raise api_errors.ResourceNotFoundError(
+            errors={"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]}
         )
 
     return offers_serialize.GetActiveEANOfferResponseModel.from_orm(offer)

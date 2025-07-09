@@ -245,10 +245,6 @@ def delete_stock(stock_id: int) -> stock_serialize.StockIdResponseModel:
 
     offerer_id = stock.offer.venue.managingOffererId
     check_user_has_access_to_offerer(current_user, offerer_id)
-
-    try:
-        offers_api.delete_stock(stock, current_user.real_user.id, current_user.is_impersonated)
-    except offers_exceptions.OfferException as error:
-        raise api_errors.ApiErrors(error.errors)
+    offers_api.delete_stock(stock, current_user.real_user.id, current_user.is_impersonated)
 
     return stock_serialize.StockIdResponseModel.from_orm(stock)

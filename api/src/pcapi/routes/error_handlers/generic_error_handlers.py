@@ -13,8 +13,8 @@ from werkzeug.exceptions import MethodNotAllowed
 from werkzeug.exceptions import NotFound
 
 import pcapi.core.finance.exceptions as finance_exceptions
-import pcapi.core.offers.exceptions as offers_exceptions
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
+from pcapi.core import core_exception
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
@@ -50,8 +50,8 @@ def restize_api_errors(error: ApiErrors) -> ApiErrorResponse:
     return app.generate_error_response(error.errors), error.status_code or 400
 
 
-@app.errorhandler(offers_exceptions.OfferException)
-def restize_offer_exception(error: offers_exceptions.OfferException) -> ApiErrorResponse:
+@app.errorhandler(core_exception.CoreException)
+def restize_core_exception(error: core_exception.CoreException) -> ApiErrorResponse:
     mark_transaction_as_invalid()
     return app.generate_error_response(error.errors), 400
 

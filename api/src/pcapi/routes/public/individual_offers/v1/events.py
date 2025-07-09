@@ -371,18 +371,16 @@ def post_event_price_categories(
         )
 
     created_price_categories: list[offers_models.PriceCategory] = []
-    try:
-        for price_category in body.price_categories:
-            created_price_categories.append(
-                offers_api.create_price_category(
-                    offer,
-                    label=price_category.label,
-                    price=finance_utils.cents_to_full_unit(price_category.price),
-                    id_at_provider=price_category.id_at_provider,
-                )
+
+    for price_category in body.price_categories:
+        created_price_categories.append(
+            offers_api.create_price_category(
+                offer,
+                label=price_category.label,
+                price=finance_utils.cents_to_full_unit(price_category.price),
+                id_at_provider=price_category.id_at_provider,
             )
-    except offers_exceptions.OfferException as error:
-        raise api_errors.ApiErrors(error.errors)
+        )
 
     return events_serializers.PriceCategoriesResponse.build_price_categories(created_price_categories)
 
@@ -474,22 +472,20 @@ def patch_event_price_category(
         raise api_errors.ApiErrors({"price_category_id": ["No price category could be found"]}, status_code=404)
 
     update_body = body.dict(exclude_unset=True)
-    try:
-        eurocent_price = update_body.get("price", offers_api.UNCHANGED)
-        offers_api.edit_price_category(
-            event_offer,
-            price_category=price_category_to_edit,
-            label=update_body.get("label", offers_api.UNCHANGED),
-            price=(
-                finance_utils.cents_to_full_unit(eurocent_price)
-                if eurocent_price != offers_api.UNCHANGED
-                else offers_api.UNCHANGED
-            ),
-            id_at_provider=update_body.get("id_at_provider", offers_api.UNCHANGED),
-            editing_provider=current_api_key.provider,
-        )
-    except offers_exceptions.OfferException as error:
-        raise api_errors.ApiErrors(error.errors)
+
+    eurocent_price = update_body.get("price", offers_api.UNCHANGED)
+    offers_api.edit_price_category(
+        event_offer,
+        price_category=price_category_to_edit,
+        label=update_body.get("label", offers_api.UNCHANGED),
+        price=(
+            finance_utils.cents_to_full_unit(eurocent_price)
+            if eurocent_price != offers_api.UNCHANGED
+            else offers_api.UNCHANGED
+        ),
+        id_at_provider=update_body.get("id_at_provider", offers_api.UNCHANGED),
+        editing_provider=current_api_key.provider,
+    )
 
     return events_serializers.PriceCategoryResponse.from_orm(price_category_to_edit)
 
