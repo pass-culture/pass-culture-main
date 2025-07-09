@@ -209,6 +209,7 @@ class Product(PcObject, Base, Model, HasThumbMixin):
         server_default=sa.text("0"),
     )
 
+    sa.Index("product_trgm_name_idx", name, postgresql_using="gin")
     sa.Index("product_allocineId_idx", extraData["allocineId"].cast(sa.Integer))
     sa.Index("product_visa_idx", extraData["visa"].astext)
     sa.Index("unique_ix_product_ean", ean, unique=True)
