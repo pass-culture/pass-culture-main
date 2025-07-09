@@ -53,7 +53,6 @@ from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import DisabledFeatureError
-from pcapi.models.pc_object import BaseQuery
 from pcapi.repository.session_management import atomic
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
@@ -74,7 +73,7 @@ public_accounts_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _load_suspension_info(query: BaseQuery) -> BaseQuery:
+def _load_suspension_info(query: sa_orm.Query) -> sa_orm.Query:
     # Partial joined load with ActionHistory avoids N+1 query to show suspension reason, but the number of fetched rows
     # would be greater than the number of results when a single user has several suspension actions.
     # So these expressions use a subquery so that result count is accurate, and the redirection well forced when a
@@ -91,7 +90,7 @@ def _load_suspension_info(query: BaseQuery) -> BaseQuery:
     )
 
 
-def _load_current_deposit_data(query: BaseQuery, join_needed: bool = True) -> BaseQuery:
+def _load_current_deposit_data(query: sa_orm.Query, join_needed: bool = True) -> sa_orm.Query:
     # partial joined load with Deposit and Recredit to avoid N+1, show the version of the current
     # deposit and not mess with the pagination as a beneficiary cannot have multiple deposits active
     # at the same time

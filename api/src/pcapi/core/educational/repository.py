@@ -23,7 +23,6 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
-from pcapi.models.pc_object import BaseQuery
 from pcapi.repository import repository
 from pcapi.utils.clean_accents import clean_accents
 
@@ -440,7 +439,7 @@ def get_paginated_collective_bookings_for_educational_year(
     return query.all()
 
 
-def get_expired_or_archived_collective_offers_template() -> BaseQuery:
+def get_expired_or_archived_collective_offers_template() -> sa_orm.Query:
     """Return a query of collective offer templates that are either expired (end date has passed)
     or archived.
     """
@@ -456,7 +455,7 @@ def get_expired_or_archived_collective_offers_template() -> BaseQuery:
     )
 
 
-def find_expiring_collective_bookings_query() -> BaseQuery:
+def find_expiring_collective_bookings_query() -> sa_orm.Query:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
 
     return db.session.query(educational_models.CollectiveBooking).filter(
@@ -550,7 +549,7 @@ def get_collective_offers_by_filters(
     period_beginning_date: date | None = None,
     period_ending_date: date | None = None,
     formats: list[EacFormat] | None = None,
-) -> BaseQuery:
+) -> sa_orm.Query:
     query = db.session.query(educational_models.CollectiveOffer)
 
     if not user_is_admin:
@@ -646,7 +645,7 @@ def get_collective_offers_template_by_filters(
     period_beginning_date: date | None = None,
     period_ending_date: date | None = None,
     formats: list[EacFormat] | None = None,
-) -> BaseQuery:
+) -> sa_orm.Query:
     query = db.session.query(educational_models.CollectiveOfferTemplate)
 
     if period_beginning_date is not None or period_ending_date is not None:
@@ -696,20 +695,20 @@ def get_collective_offers_template_by_filters(
 
 
 def _filter_collective_offers_by_statuses(
-    query: BaseQuery,
+    query: sa_orm.Query,
     statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None,
-) -> BaseQuery:
+) -> sa_orm.Query:
     """
     Filter a SQLAlchemy query for CollectiveOffers based on a list of statuses.
 
     This function modifies the input query to filter CollectiveOffers based on their CollectiveOfferDisplayedStatus.
 
     Args:
-      query (BaseQuery): The initial query to be filtered.
+      query (sa_orm.Query): The initial query to be filtered.
       statuses (list[CollectiveOfferDisplayedStatus]): A list of status strings to filter by.
 
     Returns:
-      BaseQuery: The modified query with applied filters.
+      sa_orm.Query: The modified query with applied filters.
     """
     on_collective_offer_filters: list = []
     on_booking_status_filter: list = []
@@ -880,8 +879,8 @@ def _filter_collective_offers_by_statuses(
 
 
 def add_last_booking_status_to_collective_offer_query(
-    query: BaseQuery,
-) -> typing.Tuple[typing.Any, BaseQuery]:
+    query: sa_orm.Query,
+) -> typing.Tuple[typing.Any, sa_orm.Query]:
     last_booking_query = (
         db.session.query(educational_models.CollectiveBooking)
         .with_entities(
@@ -1023,7 +1022,7 @@ def _get_filtered_collective_bookings_query(
     venue_id: int | None = None,
     *,
     extra_joins: tuple[tuple[typing.Any, ...], ...] = (),
-) -> BaseQuery:
+) -> sa_orm.Query:
     collective_bookings_query = (
         db.session.query(educational_models.CollectiveBooking)
         .join(educational_models.CollectiveBooking.offerer)
@@ -1215,7 +1214,7 @@ def get_filtered_collective_booking_report(
     status_filter: educational_models.CollectiveBookingStatusFilter | None,
     event_date: datetime | None = None,
     venue_id: int | None = None,
-) -> BaseQuery:
+) -> sa_orm.Query:
     with_entities: tuple[typing.Any, ...] = (
         offerers_models.Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
         offerers_models.Offerer.postalCode.label("offererPostalCode"),
@@ -1461,7 +1460,7 @@ def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.Co
     return query.filter(educational_models.CollectiveOffer.id == offer_id).populate_existing().one()
 
 
-def _get_collective_offer_template_by_id_for_adage_base_query() -> BaseQuery:
+def _get_collective_offer_template_by_id_for_adage_base_query() -> sa_orm.Query:
     return (
         db.session.query(educational_models.CollectiveOfferTemplate)
         .filter(
@@ -1491,7 +1490,7 @@ def get_collective_offer_template_by_id_for_adage(offer_id: int) -> educational_
     return query.filter(educational_models.CollectiveOfferTemplate.id == offer_id).populate_existing().one()
 
 
-def get_collective_offer_templates_by_ids_for_adage(offer_ids: typing.Collection[int]) -> BaseQuery:
+def get_collective_offer_templates_by_ids_for_adage(offer_ids: typing.Collection[int]) -> sa_orm.Query:
     query = _get_collective_offer_template_by_id_for_adage_base_query()
     # Filter out the archived offers
     query = query.filter(educational_models.CollectiveOfferTemplate.isArchived == False)
@@ -1504,7 +1503,7 @@ def get_collective_offer_templates_by_ids_for_adage(offer_ids: typing.Collection
     return query.filter(educational_models.CollectiveOfferTemplate.id.in_(offer_ids)).populate_existing()
 
 
-def get_query_for_collective_offers_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> BaseQuery:
+def get_query_for_collective_offers_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> sa_orm.Query:
     query = db.session.query(educational_models.CollectiveOffer)
 
     if not user.has_admin_role:
@@ -1522,7 +1521,7 @@ def get_query_for_collective_offers_by_ids_for_user(user: User, ids: typing.Iter
     return query
 
 
-def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> BaseQuery:
+def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> sa_orm.Query:
     query = db.session.query(educational_models.CollectiveOfferTemplate)
     if not user.has_admin_role:
         query = query.join(offerers_models.Venue, educational_models.CollectiveOfferTemplate.venue)
@@ -1738,7 +1737,7 @@ def get_all_offer_template_by_redactor_id(redactor_id: int) -> list[educational_
     )
 
 
-def get_venue_base_query() -> BaseQuery:
+def get_venue_base_query() -> sa_orm.Query:
     return (
         db.session.query(offerers_models.Venue)
         .filter(

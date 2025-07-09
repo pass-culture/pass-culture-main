@@ -26,7 +26,6 @@ from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
 from pcapi.models import db
-from pcapi.models.pc_object import BaseQuery
 from pcapi.utils.token import random_token
 
 
@@ -88,7 +87,7 @@ def find_by_pro_user(
     offerer_address_id: int | None = None,
     page: int = 1,
     per_page_limit: int = 1000,
-) -> tuple[BaseQuery, int]:
+) -> tuple[sa_orm.Query, int]:
     total_bookings_recap = _get_filtered_bookings_count(
         user,
         period=booking_period,
@@ -157,7 +156,7 @@ def get_booking_by_token(token: str, load_options: BOOKING_LOAD_OPTIONS = ()) ->
     return query.one_or_none()
 
 
-def find_expiring_individual_bookings_query() -> BaseQuery:
+def find_expiring_individual_bookings_query() -> sa_orm.Query:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
     return (
         db.session.query(models.Booking)
@@ -177,7 +176,7 @@ def find_expiring_individual_bookings_query() -> BaseQuery:
     )
 
 
-def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: date | None = None) -> BaseQuery:
+def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: date | None = None) -> sa_orm.Query:
     given_date = given_date or date.today()
     books_expiring_date = datetime.combine(given_date, time(0, 0)) + constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY
     other_expiring_date = datetime.combine(given_date, time(0, 0)) + constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY
@@ -288,7 +287,7 @@ def get_bookings_from_deposit(deposit_id: int) -> list[models.Booking]:
     )
 
 
-def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery:
+def _create_export_query(offer_id: int, event_beginning_date: date) -> sa_orm.Query:
     VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
     VenueAddress = sa_orm.aliased(Address)
 
@@ -457,7 +456,7 @@ def _get_filtered_bookings_query(
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
     extra_joins: tuple[tuple[typing.Any, ...], ...] = (),
-) -> BaseQuery:
+) -> sa_orm.Query:
     VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
     VenueAddress = sa_orm.aliased(Address)
     bookings_query = (
@@ -659,7 +658,7 @@ def _get_filtered_booking_report(
     venue_id: int | None = None,
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
-) -> BaseQuery:
+) -> sa_orm.Query:
     VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
     VenueAddress = sa_orm.aliased(Address)
 
@@ -737,7 +736,7 @@ def _get_filtered_booking_pro(
     offer_id: int | None = None,
     offerer_id: int | None = None,
     offerer_address_id: int | None = None,
-) -> BaseQuery:
+) -> sa_orm.Query:
     VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
     VenueAddress = sa_orm.aliased(Address)
 
@@ -794,7 +793,7 @@ def _get_filtered_booking_pro(
     return bookings_query
 
 
-def _duplicate_booking_when_quantity_is_two(bookings_recap_query: BaseQuery) -> BaseQuery:
+def _duplicate_booking_when_quantity_is_two(bookings_recap_query: sa_orm.Query) -> sa_orm.Query:
     return bookings_recap_query.union_all(bookings_recap_query.filter(models.Booking.quantity == DUO_QUANTITY))
 
 
@@ -805,7 +804,7 @@ def _get_booking_status(status: models.BookingStatus, is_confirmed: bool) -> str
     return BOOKING_STATUS_LABELS[status]
 
 
-def _write_bookings_to_csv(query: BaseQuery) -> str:
+def _write_bookings_to_csv(query: sa_orm.Query) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(booking_export_header())
@@ -849,7 +848,7 @@ def _write_csv_row(csv_writer: typing.Any, booking: models.Booking, booking_duo_
     csv_writer.writerow(row)
 
 
-def _write_bookings_to_excel(query: BaseQuery) -> bytes:
+def _write_bookings_to_excel(query: sa_orm.Query) -> bytes:
     output = BytesIO()
     workbook = xlsxwriter.Workbook(output)
 
@@ -915,7 +914,7 @@ def _write_excel_row(
     )
 
 
-def _serialize_csv_report(query: BaseQuery) -> str:
+def _serialize_csv_report(query: sa_orm.Query) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(booking_export_header())
@@ -952,7 +951,7 @@ def _serialize_csv_report(query: BaseQuery) -> str:
     return output.getvalue()
 
 
-def _serialize_excel_report(query: BaseQuery) -> bytes:
+def _serialize_excel_report(query: sa_orm.Query) -> bytes:
     output = BytesIO()
     workbook = xlsxwriter.Workbook(output)
 

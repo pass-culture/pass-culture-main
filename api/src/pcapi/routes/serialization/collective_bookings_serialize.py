@@ -6,6 +6,7 @@ from enum import Enum
 from io import BytesIO
 from io import StringIO
 
+import sqlalchemy.orm as sa_orm
 import xlsxwriter
 from pydantic.v1 import root_validator
 
@@ -15,7 +16,6 @@ from pcapi.core.educational import models
 from pcapi.core.educational import repository
 from pcapi.core.finance.models import BankAccountApplicationStatus
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.pc_object import BaseQuery
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.collective_offers_serialize import CollectiveOfferOfferVenueResponseModel
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
@@ -344,7 +344,7 @@ COLLECTIVE_BOOKING_EXPORT_HEADER = [
 ]
 
 
-def serialize_collective_booking_csv_report(query: BaseQuery) -> str:
+def serialize_collective_booking_csv_report(query: sa_orm.Query) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(COLLECTIVE_BOOKING_EXPORT_HEADER)
@@ -374,7 +374,7 @@ def serialize_collective_booking_csv_report(query: BaseQuery) -> str:
     return output.getvalue()
 
 
-def serialize_collective_booking_excel_report(query: BaseQuery) -> bytes:
+def serialize_collective_booking_excel_report(query: sa_orm.Query) -> bytes:
     output = BytesIO()
     workbook = xlsxwriter.Workbook(output)
 

@@ -3,6 +3,8 @@ import logging
 from itertools import groupby
 from operator import attrgetter
 
+from sqlalchemy import orm as sa_orm
+
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.educational.repository as educational_repository
 import pcapi.core.mails.transactional as transactional_mails
@@ -15,7 +17,6 @@ from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.users.models import User
 from pcapi.models import db
-from pcapi.models.pc_object import BaseQuery
 
 
 logger = logging.getLogger(__name__)
@@ -59,7 +60,7 @@ def cancel_expired_individual_bookings(batch_size: int = 500) -> None:
     logger.info("[cancel_expired_individual_bookings] End")
 
 
-def cancel_expired_bookings(query: BaseQuery, batch_size: int = 500) -> None:
+def cancel_expired_bookings(query: sa_orm.Query, batch_size: int = 500) -> None:
     updated_total = 0
     expiring_booking_ids = [b[0] for b in query.with_entities(Booking.id).all()]
 

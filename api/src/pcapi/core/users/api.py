@@ -67,7 +67,6 @@ from pcapi.domain.password import random_password
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.pc_object import BaseQuery
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
 from pcapi.repository import repository
@@ -990,7 +989,7 @@ def reset_recredit_amount_to_show(user: models.User) -> None:
     repository.save(user)
 
 
-def _filter_user_accounts(accounts: BaseQuery, search_term: str) -> BaseQuery:
+def _filter_user_accounts(accounts: sa_orm.Query, search_term: str) -> sa_orm.Query:
     filters = []
     name_term = None
 
@@ -1058,7 +1057,7 @@ def _filter_user_accounts(accounts: BaseQuery, search_term: str) -> BaseQuery:
     return accounts
 
 
-def search_public_account(search_query: str) -> BaseQuery:
+def search_public_account(search_query: str) -> sa_orm.Query:
     public_accounts = get_public_account_base_query()
     public_accounts = public_accounts.options(
         sa_orm.joinedload(models.User.tags).load_only(models.UserTag.id, models.UserTag.name, models.UserTag.label),
@@ -1067,7 +1066,7 @@ def search_public_account(search_query: str) -> BaseQuery:
     return _filter_user_accounts(public_accounts, search_query)
 
 
-def search_public_account_in_history_email(search_query: str) -> BaseQuery:
+def search_public_account_in_history_email(search_query: str) -> sa_orm.Query:
     sanitized_term = email_utils.sanitize_email(search_query)
     if not email_utils.is_valid_email(sanitized_term):
         raise ValueError(f"Unsupported email search on invalid email: {search_query}")
@@ -1095,7 +1094,7 @@ def search_public_account_in_history_email(search_query: str) -> BaseQuery:
     )
 
 
-def get_public_account_base_query() -> BaseQuery:
+def get_public_account_base_query() -> sa_orm.Query:
     # There is no fully reliable condition to be sure that a user account is used as a public account (vs only pro).
     # In Flask-Admin backoffice, the difference was made from user_offerer table, which turns the user into a "pro"
     # account ; the same filter is kept here.
@@ -1120,7 +1119,7 @@ def get_public_account_base_query() -> BaseQuery:
 
 
 # TODO (prouzet, 2023-11-02) This function should be moved in backoffice and use common _join_suspension_history()
-def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
+def search_pro_account(search_query: str, *_: typing.Any) -> sa_orm.Query:
     pro_accounts = (
         db.session.query(models.User)
         .filter(models.User.has_any_pro_role)
@@ -1142,14 +1141,14 @@ def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
     )
 
 
-def get_pro_account_base_query(pro_id: int) -> BaseQuery:
+def get_pro_account_base_query(pro_id: int) -> sa_orm.Query:
     return db.session.query(models.User).filter(
         models.User.id == pro_id,
         models.User.has_any_pro_role,
     )
 
 
-def search_backoffice_accounts(search_query: str) -> BaseQuery:
+def search_backoffice_accounts(search_query: str) -> sa_orm.Query:
     bo_accounts = (
         db.session.query(models.User)
         .join(models.User.backoffice_profile)
@@ -2282,5 +2281,5 @@ def extract_beneficiary_data_command() -> bool:
     return True
 
 
-def apply_filter_on_beneficiary_tag(query: BaseQuery, tag_ids: list[int]) -> BaseQuery:
+def apply_filter_on_beneficiary_tag(query: sa_orm.Query, tag_ids: list[int]) -> sa_orm.Query:
     return query.join(models.User.tags).filter(models.UserTag.id.in_(tag_ids)) if tag_ids else query

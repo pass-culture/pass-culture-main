@@ -11,6 +11,7 @@ from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.pc_object import PcObject
+from pcapi.models.pc_object import first_or_404
 
 
 class TimeInterval(PcObject, Base, Model):
@@ -42,7 +43,7 @@ class FirstOr404Test:
         obj_3 = users_factories.UserFactory(firstName="Bob")
         db.session.add_all([obj_1, obj_2, obj_3])
 
-        first_object = db.session.query(users_models.User).filter(users_models.User.firstName == "Alice").first_or_404()
+        first_object = first_or_404(db.session.query(users_models.User).filter(users_models.User.firstName == "Alice"))
 
         assert first_object in (obj_1, obj_2)
 
@@ -51,4 +52,4 @@ class FirstOr404Test:
         db.session.add(obj)
 
         with pytest.raises(NotFound):
-            db.session.query(users_models.User).filter(users_models.User.firstName == "Bob").first_or_404()
+            first_or_404(db.session.query(users_models.User).filter(users_models.User.firstName == "Bob"))

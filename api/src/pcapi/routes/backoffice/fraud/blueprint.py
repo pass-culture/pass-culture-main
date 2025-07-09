@@ -19,7 +19,6 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users.api import suspend_account
 from pcapi.models import db
-from pcapi.models.pc_object import BaseQuery
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import utils
 
@@ -71,7 +70,7 @@ def list_blacklisted_domain_names() -> utils.BackofficeResponse:
     return render_domain_names_list()
 
 
-def _filter_non_pro_by_domain_name_query(domain_name: str) -> BaseQuery:
+def _filter_non_pro_by_domain_name_query(domain_name: str) -> sa_orm.Query:
     return db.session.query(users_models.User).filter(
         sa.not_(users_models.User.isActive.is_(False)),
         sa.not_(users_models.User.has_pro_role),

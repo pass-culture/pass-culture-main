@@ -2,13 +2,13 @@ import calendar
 import datetime
 
 import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 import sqlalchemy.sql.functions as sa_func
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.models import db
-from pcapi.models.pc_object import BaseQuery
 
 
 INVOICE_LINE_INDIV_DICT = {
@@ -145,7 +145,7 @@ class BaseFinanceBackend:
 
         return indiv_data + indiv_incident_data + collective_data + collective_incident_data
 
-    def _get_indiv_data(self, invoice_id: int, query: BaseQuery) -> list[dict]:
+    def _get_indiv_data(self, invoice_id: int, query: sa_orm.Query) -> list[dict]:
         res = []
         data = (
             query.join(bookings_models.Booking.deposit)
@@ -181,7 +181,7 @@ class BaseFinanceBackend:
             )
         return res
 
-    def _get_collective_data(self, invoice_id: int, query: BaseQuery) -> list[dict]:
+    def _get_collective_data(self, invoice_id: int, query: sa_orm.Query) -> list[dict]:
         res = []
         data = (
             query.join(educational_models.CollectiveBooking.collectiveStock)
