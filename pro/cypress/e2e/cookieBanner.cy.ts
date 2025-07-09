@@ -24,7 +24,7 @@ describe('Cookie management with no login', () => {
     cy.contains('Respect de votre vie privée').should('be.visible')
 
     cy.stepLog({ message: 'I accept all cookies' })
-    cy.findByText('Tout accepter').click()
+    cy.findByText('Tout accepter').should('be.enabled').click()
 
     cy.stepLog({ message: 'the cookie banner should not be displayed' })
     cy.contains('Respect de votre vie privée').should('not.exist')
