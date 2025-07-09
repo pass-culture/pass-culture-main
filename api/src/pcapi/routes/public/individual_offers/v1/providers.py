@@ -1,5 +1,4 @@
 from pcapi.core.providers import api as providers_api
-from pcapi.core.providers import exceptions as providers_exceptions
 from pcapi.core.providers import repository as providers_repository
 from pcapi.models import api_errors
 from pcapi.repository.session_management import atomic
@@ -64,15 +63,12 @@ def update_provider(body: providers_serialization.ProviderUpdate) -> providers_s
     provider = current_api_key.provider
     update_body = body.dict(exclude_unset=True)
 
-    try:
-        provider = providers_api.update_provider_external_urls(
-            provider,
-            notification_external_url=update_body.get("notification_url", providers_api.UNCHANGED),
-            booking_external_url=update_body.get("booking_url", providers_api.UNCHANGED),
-            cancel_external_url=update_body.get("cancel_url", providers_api.UNCHANGED),
-        )
-    except providers_exceptions.ProviderException as e:
-        raise api_errors.ApiErrors(e.errors)
+    provider = providers_api.update_provider_external_urls(
+        provider,
+        notification_external_url=update_body.get("notification_url", providers_api.UNCHANGED),
+        booking_external_url=update_body.get("booking_url", providers_api.UNCHANGED),
+        cancel_external_url=update_body.get("cancel_url", providers_api.UNCHANGED),
+    )
 
     return providers_serialization.ProviderResponse.build_model(provider)
 
@@ -114,12 +110,9 @@ def update_venue_external_urls(
 
     update_body = body.dict(exclude_unset=True)
 
-    try:
-        providers_api.update_venue_provider_external_urls(
-            venue_provider,
-            notification_external_url=update_body.get("notification_url", providers_api.UNCHANGED),
-            booking_external_url=update_body.get("booking_url", providers_api.UNCHANGED),
-            cancel_external_url=update_body.get("cancel_url", providers_api.UNCHANGED),
-        )
-    except providers_exceptions.ProviderException as e:
-        raise api_errors.ApiErrors(e.errors)
+    providers_api.update_venue_provider_external_urls(
+        venue_provider,
+        notification_external_url=update_body.get("notification_url", providers_api.UNCHANGED),
+        booking_external_url=update_body.get("booking_url", providers_api.UNCHANGED),
+        cancel_external_url=update_body.get("cancel_url", providers_api.UNCHANGED),
+    )
