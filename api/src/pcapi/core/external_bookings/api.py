@@ -23,6 +23,7 @@ from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.external_bookings.cgr.client import CGRClientAPI
 from pcapi.core.external_bookings.ems.client import EMSClientAPI
 from pcapi.core.external_bookings.models import Ticket
+from pcapi.core.external_bookings.monitoring import log_provider_timeout
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.feature import FeatureToggle
@@ -31,6 +32,7 @@ from pcapi.tasks.serialization.external_api_booking_notification_tasks import Bo
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import ExternalApiBookingNotificationRequest
 from pcapi.utils import requests
 from pcapi.utils.queue import add_to_queue
+from pcapi.utils.requests import exceptions as requests_exception
 
 from . import exceptions
 from . import serialize
@@ -65,7 +67,11 @@ def cancel_booking(venue_id: int, barcodes: list[str]) -> None:
 
 
 def book_cinema_ticket(
-    venue_id: int, stock_id_at_providers: str | None, booking: bookings_models.Booking, beneficiary: users_models.User
+    venue_id: int,
+    stock_id_at_providers: str | None,
+    booking: bookings_models.Booking,
+    beneficiary: users_models.User,
+    provider: providers_models.Provider | None,
 ) -> list[external_bookings_models.Ticket]:
     local_class, _ = _get_cinema_local_class_and_id(venue_id)
     _check_cinema_booking_is_enabled(local_class)
@@ -78,7 +84,11 @@ def book_cinema_ticket(
 
     try:
         return client.book_ticket(show_id, booking, beneficiary)
-    except (exceptions.ExternalBookingSoldOutError, exceptions.ExternalBookingTimeoutException):
+    except exceptions.ExternalBookingSoldOutError:
+        raise
+    except exceptions.ExternalBookingTimeoutException:
+        if provider:
+            log_provider_timeout(provider)
         raise
     except Exception as exc:
         logger.warning("Could not book external ticket: %s", exc)
@@ -195,15 +205,19 @@ def book_event_ticket(
     if venue_provider and venue_provider.externalUrls and venue_provider.externalUrls.bookingExternalUrl:
         booking_url = venue_provider.externalUrls.bookingExternalUrl
 
-    response = requests.post(
-        booking_url,
-        json=json_payload,
-        hmac=hmac_signature,
-        headers={"Content-Type": "application/json"},
-        timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
-        record_metrics=True,
-        metric_name_suffix="external_booking_create",
-    )
+    try:
+        response = requests.post(
+            booking_url,
+            json=json_payload,
+            hmac=hmac_signature,
+            headers={"Content-Type": "application/json"},
+            timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
+            record_metrics=True,
+            metric_name_suffix="external_booking_create",
+        )
+    except (requests_exception.Timeout, requests_exception.ReadTimeout):
+        log_provider_timeout(provider)
+        raise exceptions.ExternalBookingTimeoutException()
     _check_external_booking_response_is_ok(response)
 
     try:
