@@ -43,7 +43,11 @@ class CDSStocks(LocalProvider):
     name = "Ciné Office"
     can_create = True
 
-    def __init__(self, venue_provider: VenueProvider):
+    def __init__(
+        self,
+        venue_provider: VenueProvider,
+        enable_debug: bool = False,
+    ):
         super().__init__(venue_provider)
         self.apiUrl = settings.CDS_API_URL
         if not self.apiUrl:

@@ -40,12 +40,18 @@ class CGRStocks(LocalProvider):
     name = "CGR"
     can_create = True
 
-    def __init__(self, venue_provider: providers_models.VenueProvider):
+    def __init__(
+        self,
+        venue_provider: providers_models.VenueProvider,
+        enable_debug: bool = False,
+    ):
         super().__init__(venue_provider)
         self.venue = venue_provider.venue
         self.cinema_id = venue_provider.venueIdAtOfferProvider
         self.cgr_client_api = CGRClientAPI(
-            self.cinema_id, request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS
+            self.cinema_id,
+            request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
+            enable_debug=enable_debug,
         )
         self.isDuo = bool(venue_provider.isDuoOffers)
         self.films: Iterator[cgr_serializers.Film] = iter(self.cgr_client_api.get_films())

@@ -71,7 +71,11 @@ def synchronize_venue_providers(venue_providers: list[provider_models.VenueProvi
             logger.exception("Unexpected error while synchronizing venue provider", extra=log_data)
 
 
-def synchronize_venue_provider(venue_provider: provider_models.VenueProvider, limit: int | None = None) -> None:
+def synchronize_venue_provider(
+    venue_provider: provider_models.VenueProvider,
+    limit: int | None = None,
+    enable_debug: bool = False,
+) -> None:
     assert venue_provider.provider.localClass in _NAME_TO_LOCAL_PROVIDER_CLASS.keys(), (
         f"Only {', '.join(_NAME_TO_LOCAL_PROVIDER_CLASS.keys())} should reach this code"
     )
@@ -82,7 +86,7 @@ def synchronize_venue_provider(venue_provider: provider_models.VenueProvider, li
         venue_provider.id,
         venue_provider.provider.localClass,
     )
-    provider = provider_class(venue_provider)
+    provider = provider_class(venue_provider, enable_debug=enable_debug)
     provider.updateObjects(limit)
     logger.info(
         "Ended synchronization of venue_provider=%s with provider=%s",

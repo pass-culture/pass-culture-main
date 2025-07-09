@@ -42,7 +42,11 @@ class AllocineStocks(LocalProvider):
     name = "Allociné"
     can_create = True
 
-    def __init__(self, allocine_venue_provider: providers_models.AllocineVenueProvider):
+    def __init__(
+        self,
+        allocine_venue_provider: providers_models.AllocineVenueProvider,
+        enable_debug: bool = False,
+    ):
         super().__init__(allocine_venue_provider)
         self.venue = allocine_venue_provider.venue
         self.theater_id = allocine_venue_provider.venueIdAtOfferProvider
