@@ -483,6 +483,16 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
             )
         )
         .options(sa_orm.joinedload(offers_models.Offer.headlineOffers))
+        .options(
+            sa_orm.with_expression(
+                offers_models.Offer.chroniclesCount, offers_repository.get_offer_chronicles_count_subquery()
+            )
+        )
+        .options(
+            sa_orm.with_expression(
+                offers_models.Offer.likesCount, offers_repository.get_offer_reaction_count_subquery()
+            )
+        )
         .options(sa_orm.joinedload(offers_models.Offer.criteria).load_only(criteria_models.Criterion.id))
         .options(sa_orm.joinedload(offers_models.Offer.mediations).load_only(offers_models.Mediation.id))
         .options(

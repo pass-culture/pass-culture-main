@@ -485,10 +485,30 @@ def test_serialize_product_likes_count():
     assert serialized["offer"]["likes"] == 1
 
 
-def test_serialize_product_chronicles_count():
+def test_serialize_offer_likes_count():
+    offer = offers_factories.OfferFactory()
+    reactions_factories.ReactionFactory(reactionType=ReactionTypeEnum.LIKE, offer=offer)
+    reactions_factories.ReactionFactory(reactionType=ReactionTypeEnum.DISLIKE, offer=offer)
+    reactions_factories.ReactionFactory(reactionType=ReactionTypeEnum.NO_REACTION, offer=offer)
+
+    offer = get_base_query_for_offer_indexation().filter(offers_models.Offer.id == offer.id).one()
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
+    assert serialized["offer"]["likes"] == 1
+
+
+def test_serialize_offer_chronicles_count():
+    offer = offers_factories.OfferFactory()
+    chronicles_factories.ChronicleFactory(offers=[offer])
+
+    offer = get_base_query_for_offer_indexation().filter(offers_models.Offer.id == offer.id).one()
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
+    assert serialized["offer"]["chroniclesCount"] == 1
+
+
+def test_serialize_offer_with_product_chronicles_count():
     product = offers_factories.ProductFactory()
     offer = offers_factories.OfferFactory(product=product)
-    chronicles_factories.ChronicleFactory.create(products=[product])
+    chronicles_factories.ChronicleFactory(products=[product])
 
     offer = get_base_query_for_offer_indexation().filter(offers_models.Offer.id == offer.id).one()
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
