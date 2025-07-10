@@ -38,12 +38,21 @@ class BookingVenueResponseV2GetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "name":
             return self._obj.common_name
+        if key == "address":
+            return BookingVenueAddressResponseV2(
+                id=self._obj.offererAddress.address.id if self._obj.offererAddress else None
+            )
 
         return super().get(key, default)
 
 
+class BookingVenueAddressResponseV2(ConfiguredBaseModel):
+    id: int | None
+
+
 class BookingVenueResponseV2(ConfiguredBaseModel):
     id: int
+    address: BookingVenueAddressResponseV2
     name: str
     publicName: str | None
     timezone: str
@@ -59,6 +68,7 @@ class BookingOfferExtraDataV2(ConfiguredBaseModel):
 
 
 class BookingOfferResponseAddressV2(ConfiguredBaseModel):
+    id: int
     street: str | None
     postal_code: str
     city: str
@@ -83,6 +93,7 @@ class BookingOfferResponseV2GetterDict(GetterDict):
             label = offerer_address.label
 
             return BookingOfferResponseAddressV2(
+                id=address.id,
                 street=address.street,
                 postal_code=address.postalCode,
                 city=address.city,

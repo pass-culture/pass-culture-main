@@ -143,6 +143,7 @@ class GetBookingsTest:
                 "priceCategoryLabel": None,
                 "offer": {
                     "address": {
+                        "id": used2.venue.offererAddress.address.id,
                         "city": used2.venue.offererAddress.address.city,
                         "coordinates": {
                             "latitude": float(used2.venue.offererAddress.address.latitude),
@@ -164,6 +165,9 @@ class GetBookingsTest:
                     "url": "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}",
                     "venue": {
                         "id": used2.venue.id,
+                        "address": {
+                            "id": used2.venue.offererAddress.address.id,
+                        },
                         "name": used2.venue.name,
                         "publicName": used2.venue.publicName,
                         # FIXME bdalbianco 28/04/2025 CLEAN_OA: check timezone relevance after regul venue
@@ -326,6 +330,30 @@ class GetBookingsTest:
         assert response.status_code == 200
         assert response.json["ongoingBookings"][0]["stock"]["offer"]["address"]["label"] == venue.offererAddress.label
         assert response.json["ongoingBookings"][0]["stock"]["offer"]["address"]["city"] == address.city
+        assert response.json["ongoingBookings"][0]["stock"]["offer"]["address"]["id"] == address.id
+        assert response.json["ongoingBookings"][0]["stock"]["offer"]["venue"]["address"]["id"] == address.id
+
+    def test_get_bookings_with_address_on_venue_and_offer(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+
+        address_on_venue = AddressFactory()
+        address_on_offer = AddressFactory()
+        venue = offerers_factories.VenueFactory(
+            offererAddress=offerers_factories.OffererAddressFactory(address=address_on_venue)
+        )
+        offer = offers_factories.OfferFactory(
+            venue=venue, offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer)
+        )
+        booking_factories.BookingFactory(stock__offer=offer, user=user)
+
+        with assert_num_queries(2):  # user + booking
+            response = client.with_token(self.identifier).get("/native/v2/bookings")
+
+        assert response.status_code == 200
+        assert response.json["ongoingBookings"][0]["stock"]["offer"]["address"]["label"] == offer.offererAddress.label
+        assert response.json["ongoingBookings"][0]["stock"]["offer"]["address"]["city"] == address_on_venue.city
+        assert response.json["ongoingBookings"][0]["stock"]["offer"]["address"]["id"] == address_on_offer.id
+        assert response.json["ongoingBookings"][0]["stock"]["offer"]["venue"]["address"]["id"] == address_on_venue.id
 
     def test_get_bookings_user_19_yo(self, client):
         user = users_factories.BeneficiaryFactory(age=19)
