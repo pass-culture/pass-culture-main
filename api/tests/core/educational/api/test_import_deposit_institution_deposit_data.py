@@ -104,7 +104,7 @@ class ImportDepositInstitutionDataTest:
         assert db.session.query(educational_models.EducationalDeposit).count() == 0
         assert str(exception.value) == "UAIs not found in adage: ['pouet']"
 
-    def test_deposit_alread_in_ministry_replace(self) -> None:
+    def test_deposit_already_in_ministry_replace(self) -> None:
         ansco = educational_factories.EducationalYearFactory()
         old_institution = educational_factories.EducationalInstitutionFactory(institutionId="0470010E")
         educational_factories.EducationalDepositFactory(
@@ -144,9 +144,11 @@ class ImportDepositInstitutionDataTest:
         assert institution.isActive is True
         assert deposit.amount == Decimal(1250)
         assert deposit.isFinal is False
+
+        # The value is replaced by the new one
         assert deposit.ministry == educational_models.Ministry.EDUCATION_NATIONALE
 
-    def test_deposit_alread_in_ministry_keep(self) -> None:
+    def test_deposit_already_in_ministry_keep(self) -> None:
         ansco = educational_factories.EducationalYearFactory()
         old_institution = educational_factories.EducationalInstitutionFactory(institutionId="0470010E")
         educational_factories.EducationalDepositFactory(
@@ -186,4 +188,31 @@ class ImportDepositInstitutionDataTest:
         assert institution.isActive is True
         assert deposit.amount == Decimal(1250)
         assert deposit.isFinal is False
+
+        # The value is not replaced by the new one
         assert deposit.ministry == educational_models.Ministry.AGRICULTURE
+
+    def test_deposit_already_in_ministry_error(self) -> None:
+        ansco = educational_factories.EducationalYearFactory()
+        old_institution = educational_factories.EducationalInstitutionFactory(institutionId="0470010E")
+        deposit = educational_factories.EducationalDepositFactory(
+            educationalInstitution=old_institution,
+            educationalYear=ansco,
+            isFinal=False,
+            ministry=educational_models.Ministry.AGRICULTURE,
+        )
+        data = {"0470010E": 1250}
+
+        with pytest.raises(ValueError) as exception:
+            import_deposit_institution_data(
+                data=data,
+                educational_year=ansco,
+                ministry=educational_models.Ministry.EDUCATION_NATIONALE,
+                final=False,
+                conflict="error",
+            )
+
+        assert (
+            str(exception.value)
+            == f"Ministry changed for uai 0470010E from 'AGRICULTURE' to 'EDUCATION_NATIONALE' for deposit {deposit.id}"
+        )

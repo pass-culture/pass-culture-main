@@ -59,11 +59,17 @@ def search_educational_institution(
 
 
 def import_deposit_institution_csv(
-    *, path: str, year: int, ministry: str, conflict: str, final: bool, program_name: str | None
-) -> Decimal:
+    *,
+    path: str,
+    year: int,
+    ministry: str,
+    conflict: typing.Literal["keep", "replace", "error"],
+    final: bool,
+    program_name: str | None,
+) -> tuple[Decimal, list[str]]:
     """
     Import deposits from csv file and update institutions according to adage data
-    Return the total imported amount
+    Return the total imported amount and the list of uais that were found in adage
     """
 
     if not os.path.exists(path):
@@ -109,16 +115,60 @@ def import_deposit_institution_csv(
             final=final,
         )
 
+        uais_from_adage = list(data.keys())
+
         if program_name is not None:
             educational_program = (
                 db.session.query(educational_models.EducationalInstitutionProgram).filter_by(name=program_name).one()
             )
             logger.info("Updating institutions with program %s", program_name)
             _update_institutions_educational_program(
-                educational_program=educational_program, uais=data.keys(), start=educational_year.beginningDate
+                educational_program=educational_program, uais=uais_from_adage, start=educational_year.beginningDate
             )
 
-        return total_amount
+        return total_amount, uais_from_adage
+
+
+def update_deposit_credit_ratio(
+    uais: list[str],
+    credit_ratio: Decimal,
+    year: int,
+    final: bool,
+    conflict: typing.Literal["keep", "replace", "error"],
+) -> None:
+    educational_year = educational_repository.get_educational_year_beginning_at_given_year(year)
+
+    deposits = (
+        db.session.query(educational_models.EducationalDeposit)
+        .filter(
+            educational_models.EducationalDeposit.educationalYearId == educational_year.id,
+            educational_models.EducationalDeposit.isFinal == final,
+            educational_models.EducationalDeposit.educationalInstitution.institutionId.in_(uais),
+        )
+        .all()
+    )
+
+    deposits_per_uai = {deposit.educationalInstitution.institutionId: deposit for deposit in deposits}
+
+    for uai in uais:
+        deposit = deposits_per_uai.get(uai)
+        if not deposit:
+            raise ValueError(f"Deposit not found for uai: {uai}")
+
+        uais_in_error = []
+        match conflict:
+            case "error":
+                if deposit.creditRatio is not None:
+                    uais_in_error.append(uai)
+            case "replace":
+                deposit.creditRatio = credit_ratio
+            case "keep":
+                logger.info(f"Credit ratio not set for uai: {uai}, setting it to {credit_ratio}")
+
+    if uais_in_error:
+        raise ValueError(f"Credit ratio already set for uais: {uais_in_error}")
+
+    db.session.flush()
 
 
 def import_deposit_institution_data(
@@ -126,8 +176,8 @@ def import_deposit_institution_data(
     data: dict[str, Decimal],
     educational_year: educational_models.EducationalYear,
     ministry: educational_models.Ministry,
+    conflict: typing.Literal["keep", "replace", "error"],
     final: bool,
-    conflict: str,
 ) -> Decimal:
     adage_institutions = {
         i.uai: i for i in adage_client.get_adage_educational_institutions(ansco=educational_year.adageId)
@@ -182,14 +232,25 @@ def import_deposit_institution_data(
             )
 
         if deposit:
-            if deposit.ministry != ministry and conflict == "replace":
-                logger.warning(
-                    "Ministry changed from '%s' to '%s' for deposit %s",
-                    deposit.ministry.name,
-                    ministry.name,
-                    deposit.id,
-                )
-                deposit.ministry = ministry
+            if deposit.ministry != ministry:
+                if conflict == "replace":
+                    logger.warning(
+                        "Ministry changed from '%s' to '%s' for deposit %s",
+                        deposit.ministry.name,
+                        ministry.name,
+                        deposit.id,
+                    )
+                    deposit.ministry = ministry
+                elif conflict == "keep":
+                    logger.info(
+                        "Ministry not set for deposit %s, keeping it as '%s'",
+                        deposit.id,
+                        ministry.name,
+                    )
+                else:
+                    raise ValueError(
+                        f"Ministry changed for uai {uai} from '{deposit.ministry.name}' to '{ministry.name}' for deposit {deposit.id}"
+                    )
             deposit.amount = amount
             deposit.isFinal = final
         else:

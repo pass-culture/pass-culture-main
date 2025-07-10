@@ -1,5 +1,6 @@
 import datetime
 import logging
+import typing
 from decimal import Decimal
 
 import click
@@ -60,23 +61,41 @@ def generate_fake_adage_token(readonly: bool, cannot_prebook: bool) -> None:
 @click.option("--path", type=str, required=True, help="Path to the CSV to import.")
 @click.option(
     "--conflict",
-    type=click.Choice(("keep", "replace"), case_sensitive=False),
+    type=click.Choice(("keep", "replace", "error"), case_sensitive=False),
     default="keep",
-    help="Overide previous ministry if needed.",
+    help="Overide previous ministry if needed. If error, it will raise an error.",
+)
+@click.option(
+    "--credit-ratio",
+    type=Decimal,
+    default=None,
+    help="Credit ratio for this deposit.",
 )
 @click.option("--final", is_flag=True, help="Flag deposits as final.")
 @click.option("--not-dry", is_flag=True, help="Do not commit the changes.")
 def import_deposit_csv(
-    *, path: str, year: int, ministry: str, conflict: str, final: bool, not_dry: bool = False
+    *,
+    path: str,
+    year: int,
+    ministry: str,
+    conflict: typing.Literal["keep", "replace", "error"],
+    final: bool,
+    not_dry: bool = False,
+    credit_ratio: Decimal | None = None,
 ) -> None:
     """
     import CSV deposits and update institution according to adage data.
 
     CSV format change every time we try to work with it.
     """
-    institution_api.import_deposit_institution_csv(
+    _, uais = institution_api.import_deposit_institution_csv(
         path=path, year=year, ministry=ministry, conflict=conflict, final=final, program_name=None
     )
+    if credit_ratio is not None:
+        institution_api.update_deposit_credit_ratio(
+            uais=uais, credit_ratio=credit_ratio, year=year, final=final, conflict=conflict
+        )
+
     if not_dry:
         db.session.commit()
 
