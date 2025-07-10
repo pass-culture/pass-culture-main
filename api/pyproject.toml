@@ -125,7 +125,6 @@ types-urllib3 = "^1.26.25.14"
 python_version = "3.11"
 mypy_path = "stubs/"
 disallow_untyped_defs = true
-follow_imports = "silent"
 # The following line solves the internal mypy (v>1.4) error due to
 # the usage of @declared_attr. See github issue here:
 # https://github.com/sqlalchemy/sqlalchemy/issues/10282
