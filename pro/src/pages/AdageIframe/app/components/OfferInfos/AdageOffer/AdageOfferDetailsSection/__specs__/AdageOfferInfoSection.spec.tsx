@@ -90,6 +90,24 @@ describe('AdageOfferInfoSection', () => {
     expect(screen.getByText('The detail of the price')).toBeInTheDocument()
   })
 
+  it('should display the offer price details for a bookable offer', () => {
+    renderAdageOfferInfoSection({
+      offer: {
+        ...defaultCollectiveOffer,
+        educationalPriceDetail: 'The detail of the price',
+        stock: {
+          ...defaultCollectiveOffer.stock,
+          educationalPriceDetail: 'Price details for bookable offer',
+        },
+      },
+    })
+
+    expect(screen.getByRole('heading', { name: 'Prix' })).toBeInTheDocument()
+    expect(
+      screen.getByText('Price details for bookable offer')
+    ).toBeInTheDocument()
+  })
+
   it('should not display the price details section if the offer has no price details', () => {
     renderAdageOfferInfoSection({
       offer: {
