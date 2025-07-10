@@ -22,6 +22,7 @@ import pathlib
 import string
 import subprocess
 import sys
+from typing import Any
 
 import alembic.util as alembic_util
 
@@ -35,7 +36,7 @@ ALEMBIC_TEMPLATE = ALEMBIC_DIR / "script.py.mako"
 ALEMBIC_VERSION_DIR = ALEMBIC_DIR / "versions"
 
 
-def _get_alembic_version_filename_template():
+def _get_alembic_version_filename_template() -> str:
     parser = configparser.ConfigParser()
     with open(ALEMBIC_INI_FILE) as fp:
         parser.read_file(fp)
@@ -111,7 +112,7 @@ STEP_4 = {
 STEPS = (STEP_1, STEP_2, STEP_3, STEP_4)
 
 
-def main():
+def main() -> None:
     args = parse_args()
 
     bindings = {
@@ -164,7 +165,7 @@ def main():
         down_revision = rev_id
 
 
-def get_current_post_head():
+def get_current_post_head() -> str:
     command = "alembic show post@head"
     result = subprocess.run(
         command.split(" "),
@@ -192,7 +193,7 @@ def get_current_post_head():
     sys.exit(message)
 
 
-def fake_alembic_config_for_template():
+def fake_alembic_config_for_template() -> Any:
     # The template needs an Alembic config object to populate
     # `${config.cmd_opts.head.split("@")[0]}`. We know we want to
     # replace that by "post".
@@ -205,7 +206,7 @@ def fake_alembic_config_for_template():
     return Config()
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--table", required=True)
     parser.add_argument("--column", required=True)
