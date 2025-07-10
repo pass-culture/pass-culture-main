@@ -376,6 +376,40 @@ class Returns200Test:
         assert response.json["address"]["id_oa"] == updated_draft_offer.offererAddressId
         assert response.json["address"]["label"] == venue.common_name if is_venue_address else "Librairie des mangas"
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
+    def test_update_offer_draft_with_new_offer_creation_flow(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(
+            name="Name",
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=venue,
+            url="http://example.com/offer",
+            audioDisabilityCompliant=False,
+            mentalDisabilityCompliant=False,
+            motorDisabilityCompliant=False,
+            visualDisabilityCompliant=False,
+        )
+
+        data = {
+            "name": "New name",
+            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "audioDisabilityCompliant": True,
+        }
+        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+
+        assert response.status_code == 200
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.name == "New name"
+        assert updated_offer.subcategoryId == subcategories.LIVRE_PAPIER.id
+        assert updated_offer.audioDisabilityCompliant is True
+        assert updated_offer.mentalDisabilityCompliant is False
+        assert updated_offer.motorDisabilityCompliant is False
+        assert updated_offer.visualDisabilityCompliant is False
+
+        assert not updated_offer.product
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
@@ -453,6 +487,30 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les extraData des offres avec produit ne sont pas modifiables"]
+
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
+    def test_fail_when_body_has_null_disability_props_with_new_offer_creation_flow(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(
+            name="Name",
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=venue,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=False,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=False,
+        )
+
+        data = {
+            "name": "Name",
+            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "audioDisabilityCompliant": None,
+        }
+        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json["global"][0] == "L’accessibilité de l’offre doit être définie"
 
 
 @pytest.mark.usefixtures("db_session")
