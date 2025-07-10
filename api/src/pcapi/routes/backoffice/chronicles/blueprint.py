@@ -19,7 +19,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
-from pcapi.models.pc_object import get_or_404
+from pcapi.models.utils import get_or_404
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils

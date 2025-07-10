@@ -38,7 +38,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.pc_object import get_or_404
+from pcapi.models.utils import get_or_404
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.repository.session_management import on_commit
 from pcapi.routes.backoffice.bookings import forms as bookings_forms

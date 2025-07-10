@@ -12,9 +12,9 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models import api_errors
 from pcapi.models import db
-from pcapi.models.pc_object import first_or_404
-from pcapi.models.pc_object import get_or_404
-from pcapi.models.pc_object import get_or_404_from_query
+from pcapi.models.utils import first_or_404
+from pcapi.models.utils import get_or_404
+from pcapi.models.utils import get_or_404_from_query
 from pcapi.repository import transaction
 from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api

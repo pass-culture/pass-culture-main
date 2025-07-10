@@ -34,7 +34,7 @@ from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.api_errors import UnauthorizedError
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.pc_object import get_or_404
+from pcapi.models.utils import get_or_404
 from pcapi.repository.session_management import atomic
 from pcapi.routes.serialization import users as users_serializers
 from pcapi.routes.shared.cookies_consent import CookieConsentRequest

@@ -21,7 +21,7 @@ from pcapi.core.offerers.models import Venue
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.pc_object import get_or_404
+from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
@@ -143,7 +143,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
     location_modifications = {
         field: value
         for field, value in update_location_attrs.items()
-        if venue.offererAddress.address.field_exists_and_has_changed(field, value)
+        if venue.offererAddress and venue.offererAddress.address.field_exists_and_has_changed(field, value)
     }
     validation.check_venue_edition(modifications, venue)
 

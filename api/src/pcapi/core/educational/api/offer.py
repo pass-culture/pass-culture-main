@@ -42,7 +42,7 @@ from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
-from pcapi.models.pc_object import get_or_404
+from pcapi.models.utils import get_or_404
 from pcapi.repository.session_management import is_managed_transaction
 from pcapi.repository.session_management import on_commit
 from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequestBodyModel

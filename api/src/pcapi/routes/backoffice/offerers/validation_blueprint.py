@@ -22,7 +22,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models.pc_object import get_or_404
+from pcapi.models.utils import get_or_404
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete

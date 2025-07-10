@@ -21,8 +21,8 @@ from pcapi.core.offers import validation
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.models import api_errors
 from pcapi.models import db
-from pcapi.models.pc_object import first_or_404
-from pcapi.models.pc_object import get_or_404
+from pcapi.models.utils import first_or_404
+from pcapi.models.utils import get_or_404
 from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize

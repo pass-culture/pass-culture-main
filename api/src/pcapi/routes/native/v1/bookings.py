@@ -11,7 +11,7 @@ from pcapi.core.providers.exceptions import InactiveProvider
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.pc_object import first_or_404
+from pcapi.models.utils import first_or_404
 from pcapi.repository import repository
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.serialization.bookings import BookOfferRequest

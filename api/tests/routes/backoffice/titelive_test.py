@@ -15,7 +15,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.models.pc_object import get_or_404
+from pcapi.models.utils import get_or_404
 from pcapi.routes.backoffice.filters import format_titelive_id_lectorat
 
 from ...connectors.titelive import fixtures

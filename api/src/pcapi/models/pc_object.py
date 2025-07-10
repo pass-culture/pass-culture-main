@@ -6,10 +6,6 @@ from pprint import pprint
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
-from werkzeug.exceptions import NotFound
-
-from pcapi import models
-from pcapi.models import db
 
 
 logger = logging.getLogger(__name__)
@@ -20,30 +16,12 @@ NOT_FOUND_KEY_ERROR_CODE = "23503"
 OBLIGATORY_FIELD_ERROR_CODE = "23502"
 
 
-def get_or_404_from_query(query: sa_orm.Query, obj_id: int | str) -> typing.Any:
-    obj = query.filter_by(id=obj_id).one_or_none()
-    if not obj:
-        raise NotFound()
-    return obj
-
-
-def get_or_404(model: type[models.Model], obj_id: int | str) -> typing.Any:
-    return get_or_404_from_query(db.session.query(model), obj_id)
-
-
-def first_or_404(query: sa_orm.Query) -> typing.Any:
-    obj = query.first()
-    if not obj:
-        raise NotFound()
-    return obj
-
-
 class DeletedRecordException(Exception):
     pass
 
 
 class PcObject:
-    id: sa_orm.Mapped[int] = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: sa_orm.Mapped[int] = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)  # type: ignore
 
     def __init__(self, **kwargs: typing.Any) -> None:
         from_dict = kwargs.pop("from_dict", None)
