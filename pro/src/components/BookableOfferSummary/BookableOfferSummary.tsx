@@ -49,7 +49,7 @@ import {
   getLocation,
   getLocationForOfferVenue,
 } from 'pages/AdageIframe/app/components/OfferInfos/AdageOffer/AdageOfferDetailsSection/AdageOfferInfoSection'
-import { BookableOfferTimeline } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/BookableOfferTimeline'
+import { BookableOfferTimeline } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/BookableOfferTimeline/BookableOfferTimeline'
 import { DEFAULT_RECAP_VALUE } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/constants'
 import { formatDateTime } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/utils/formatDatetime'
 import { Button } from 'ui-kit/Button/Button'
