@@ -5,9 +5,7 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { CollectiveOfferType } from 'apiClient/v1'
 import { Layout } from 'app/App/layout/Layout'
-import {
-  GET_VENUES_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
+import { GET_VENUES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { DEFAULT_PAGE } from 'commons/core/Offers/constants'
 import { useDefaultCollectiveSearchFilters } from 'commons/core/Offers/hooks/useDefaultCollectiveSearchFilters'
 import { useQueryCollectiveSearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
@@ -31,10 +29,10 @@ export const CollectiveOffers = (): JSX.Element => {
   const urlSearchFilters = useQueryCollectiveSearchFilters()
   const { storedFilters } = getStoredFilterConfig('collective')
   const finalSearchFilters = {
-    ...urlSearchFilters,
     ...(isToggleAndMemorizeFiltersEnabled
       ? (storedFilters as Partial<CollectiveSearchFiltersParams>)
       : {}),
+    ...urlSearchFilters,
   }
 
   const isNewOffersAndBookingsActive = useActiveFeature(
@@ -48,7 +46,11 @@ export const CollectiveOffers = (): JSX.Element => {
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
 
-  const { data: offerer, isLoading: isOffererLoading, isValidating: isOffererValidating } = useOfferer(
+  const {
+    data: offerer,
+    isLoading: isOffererLoading,
+    isValidating: isOffererValidating,
+  } = useOfferer(
     offererId !== defaultCollectiveFilters.offererId ? offererId : null,
     true
   )
@@ -129,9 +131,9 @@ export const CollectiveOffers = (): JSX.Element => {
       {/* When the venues are cached for a given offerer, we still need to reset the Screen component.
       SWR isLoading is only true when the data is not cached, while isValidating is always set to true when the key is updated */}
       {isOffererLoading ||
-        isOffererValidating ||
-        isVenuesLoading ||
-        isVenuesValidating ? (
+      isOffererValidating ||
+      isVenuesLoading ||
+      isVenuesValidating ? (
         <Spinner />
       ) : (
         <CollectiveOffersScreen
