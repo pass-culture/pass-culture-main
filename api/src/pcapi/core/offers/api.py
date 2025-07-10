@@ -210,21 +210,30 @@ def create_draft_offer(
     is_from_private_api: bool = True,
 ) -> models.Offer:
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
+    validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
     validation.check_url_is_coherent_with_subcategory(subcategory, body.url)
-    validation.check_offer_name_does_not_contain_ean(body.name)
 
     body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
+
+    validation.check_offer_name_does_not_contain_ean(body.name)
     body_ean = body.extra_data.pop("ean", None)
     validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api, ean=body_ean)
 
-    validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
+    if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
+        validation.check_accessibility_compliance(
+            audio_disability_compliant=body.audio_disability_compliant,
+            mental_disability_compliant=body.mental_disability_compliant,
+            motor_disability_compliant=body.motor_disability_compliant,
+            visual_disability_compliant=body.visual_disability_compliant,
+        )
 
     fields = {
         key: value for key, value in body.dict(by_alias=True).items() if key not in ("venueId", "callId", "videoUrl")
     }
     fields.update({"ean": body_ean})
-    fields.update(_get_accessibility_compliance_fields(venue))
+    if not feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
+        fields.update(_get_accessibility_compliance_fields(venue))
     fields.update({"withdrawalDetails": venue.withdrawalDetails})
     fields.update({"isDuo": bool(subcategory and subcategory.is_event and subcategory.can_be_duo)})
     if product:
@@ -247,6 +256,7 @@ def create_draft_offer(
 
 
 def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOfferBodyModel) -> models.Offer:
+    aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
 
     new_video_url = fields.pop("videoUrl", None)
@@ -256,6 +266,7 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
         else:
             offer.metaData = models.OfferMetaData(offer=offer, videoUrl=new_video_url)
         db.session.add(offer.metaData)
+
     body_ean = body.extra_data.get("ean", None) if body.extra_data else None
     if body_ean:
         fields["ean"] = fields["extraData"].pop("ean")
@@ -263,6 +274,19 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
     if not updates:
         return offer
+
+    if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active() and (
+        "audioDisabilityCompliant" in updates
+        or "mentalDisabilityCompliant" in updates
+        or "motorDisabilityCompliant" in updates
+        or "visualDisabilityCompliant" in updates
+    ):
+        validation.check_accessibility_compliance(
+            audio_disability_compliant=get_field(offer, updates, "audioDisabilityCompliant", aliases=aliases),
+            mental_disability_compliant=get_field(offer, updates, "mentalDisabilityCompliant", aliases=aliases),
+            motor_disability_compliant=get_field(offer, updates, "motorDisabilityCompliant", aliases=aliases),
+            visual_disability_compliant=get_field(offer, updates, "visualDisabilityCompliant", aliases=aliases),
+        )
 
     if body.name:
         validation.check_offer_name_does_not_contain_ean(body.name)

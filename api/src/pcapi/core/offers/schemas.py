@@ -29,6 +29,12 @@ class PostDraftOfferBodyModel(BaseModel):
     duration_minutes: int | None = None
     product_id: int | None
     video_url: HttpUrl | None
+    # These props become mandatory when `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` feature flag is enabled.
+    # They are optional here in order to not break the existing POST `/offers/drafts` route while both flows coexist.
+    audio_disability_compliant: bool | None
+    mental_disability_compliant: bool | None
+    motor_disability_compliant: bool | None
+    visual_disability_compliant: bool | None
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:
@@ -53,6 +59,12 @@ class PatchDraftOfferBodyModel(BaseModel):
     extra_data: dict[str, typing.Any] | None = None
     duration_minutes: int | None = None
     video_url: HttpUrl | None
+    # These props become mandatory when `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` feature flag is enabled.
+    # They are optional here in order to not break the existing POST `/offers/drafts` route while both flows coexist.
+    audio_disability_compliant: bool | None
+    mental_disability_compliant: bool | None
+    motor_disability_compliant: bool | None
+    visual_disability_compliant: bool | None
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:

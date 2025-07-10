@@ -286,6 +286,36 @@ class Returns201Test:
         assert offer.motorDisabilityCompliant == True
         assert offer.visualDisabilityCompliant == True
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
+    def test_create_offer_with_new_offer_creation_flow(self, client):
+        venue = offerers_factories.VenueFactory(
+            audioDisabilityCompliant=False,
+            mentalDisabilityCompliant=False,
+            motorDisabilityCompliant=False,
+            visualDisabilityCompliant=False,
+        )
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        data = {
+            "name": "New Offer",
+            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "venueId": venue.id,
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": True,
+        }
+        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+
+        assert response.status_code == 201
+
+        offer = db.session.get(Offer, response.json["id"])
+        assert offer.audioDisabilityCompliant == True
+        assert offer.mentalDisabilityCompliant == True
+        assert offer.motorDisabilityCompliant == True
+        assert offer.visualDisabilityCompliant == True
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
@@ -408,6 +438,22 @@ class Returns400Test:
         assert response.status_code == 400
         msg = "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
         assert response.json["subcategory"] == [msg]
+
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
+    def test_fail_when_body_is_missing_disability_props_with_new_offer_creation_flow(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        data = {
+            "name": "New Offer",
+            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "venueId": venue.id,
+        }
+        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+
+        assert response.status_code == 400
+        assert response.json["global"][0] == "L’accessibilité de l’offre doit être définie"
 
 
 @pytest.mark.usefixtures("db_session")
