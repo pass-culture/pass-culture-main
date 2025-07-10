@@ -1,12 +1,16 @@
 from decimal import Decimal
 
+import flask
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
 from pcapi.core.categories import subcategories
+from pcapi.core.offers import factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import WithdrawalTypeEnum
+from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 
@@ -438,3 +442,155 @@ class Returns403Test:
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
         ]
+
+
+@pytest.fixture(name="venue")
+def venue_fixture():
+    return offerers_factories.VenueFactory()
+
+
+@pytest.fixture(name="offer")
+def offer_fixture(venue):
+    return factories.ThingOfferFactory(venue=venue)
+
+
+@pytest.fixture(name="user")
+def user_fixture(venue):
+    offerer = venue.managingOfferer
+    return offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
+
+
+@pytest.fixture(name="auth_client")
+def auth_client_fixture(client, user):
+    return client.with_session_auth(user.email)
+
+
+@pytest.mark.usefixtures("db_session")
+class CreateOfferOpeningHoursTest:
+    """Check that one client can create an offer's opening hours
+
+    This should only test some relatively basic behaviour:
+        * all more complex opening hours creation tests should be done
+        by the opening hours api test module
+        * all the complex input validation tests should be done by the model
+        test module
+
+    -> Check that every part seems to work together, there is no need to
+    go any further.
+    """
+
+    endpoint = "Private API.create_offer_opening_hours"
+
+    def test_create_simple_opening_hours_works(self, auth_client, offer):
+        data = {"openingHours": {"MONDAY": [["10:00", "18:00"]]}}
+        url = flask.url_for(self.endpoint, offer_id=offer.id)
+
+        # fetch user_session
+        # fetch user
+        # fetch offer with its venue
+        # check user has access to offer
+        # insert opening hours
+        # reload offer (with its opening hours)
+        with assert_num_queries(6):
+            response = auth_client.post(url, json=data)
+
+        assert response.status_code == 201
+        assert response.json == {
+            "openingHours": {
+                **{weekday.value: None for weekday in offerers_models.Weekday},
+                **data["openingHours"],
+            }
+        }
+
+        db.session.refresh(offer)
+
+        assert offer.openingHours
+        assert len(offer.openingHours) == 1
+        assert offer.openingHours[0].weekday == offerers_models.Weekday.MONDAY
+
+        assert len(offer.openingHours[0].timespan) == 1
+        timespan = offer.openingHours[0].timespan[0]
+
+        assert timespan.lower == 10 * 60
+        assert timespan.upper == 18 * 60
+
+    @pytest.mark.parametrize("opening_hours", [{}, {"MONDAY": None, "TUESDAY": None}])
+    def test_empty_opening_hours_is_ok_and_creates_nothing(self, auth_client, offer, opening_hours):
+        data = {"openingHours": opening_hours}
+        url = flask.url_for(self.endpoint, offer_id=offer.id)
+
+        # fetch user_session
+        # fetch user
+        # fetch offer with its venue
+        # check user has access to offer
+        # reload offer (with its opening hours)
+        with assert_num_queries(5):
+            response = auth_client.post(url, json=data)
+
+        assert response.status_code == 201
+        assert response.json == {"openingHours": {weekday.value: None for weekday in offerers_models.Weekday}}
+
+    def test_missing_opening_hours_returns_an_error(self, auth_client, offer):
+        url = flask.url_for(self.endpoint, offer_id=offer.id)
+        response = auth_client.post(url, json=None)
+
+        assert response.status_code == 400
+        assert not response.json
+
+    def test_too_many_opening_hours_for_one_day_returns_an_error(self, auth_client, offer):
+        data = {"openingHours": {"MONDAY": [["10:00", "18:00", "21:00"]]}}
+        url = flask.url_for(self.endpoint, offer_id=offer.id)
+
+        response = auth_client.post(url, json=data)
+        assert response.status_code == 400
+        assert response.json == {"openingHours.MONDAY.0": ["ensure this value has at most 2 items"]}
+
+    def test_starting_opening_hour_without_an_end_returns_an_error(self, auth_client, offer):
+        data = {"openingHours": {"MONDAY": [["10:00"]]}}
+        url = flask.url_for(self.endpoint, offer_id=offer.id)
+
+        response = auth_client.post(url, json=data)
+        assert response.status_code == 400
+        assert response.json == {"openingHours.MONDAY.0": ["ensure this value has at least 2 items"]}
+
+    def test_overlapping_timespans_returns_an_error(self, auth_client, offer):
+        data = {"openingHours": {"MONDAY": [["10:00", "18:00"], ["12:00", "19:00"]]}}
+        url = flask.url_for(self.endpoint, offer_id=offer.id)
+
+        response = auth_client.post(url, json=data)
+        assert response.status_code == 400
+        assert "MONDAY -> overlapping opening hours" in response.json["openingHours"][0]
+
+    def test_unknown_weekday_returns_an_error(self, auth_client, offer):
+        data = {"openingHours": {"OOPS": [["10:00", "18:00"]]}}
+        url = flask.url_for(self.endpoint, offer_id=offer.id)
+
+        response = auth_client.post(url, json=data)
+        assert response.status_code == 400
+        assert "openingHours.__key__" in response.json
+
+    def test_unknown_offer_returns_an_error(self, auth_client):
+        data = {"openingHours": {"MONDAY": [["10:00", "18:00"]]}}
+        url = flask.url_for(self.endpoint, offer_id=-1)
+        assert auth_client.post(url, json=data).status_code == 404
+
+    def test_unauthenticated_user_gets_an_error(self, client, offer):
+        data = {"openingHours": {"MONDAY": [["10:00", "18:00"]]}}
+        url = flask.url_for(self.endpoint, offer_id=offer.id)
+        assert client.post(url, json=data).status_code == 401
+
+    def test_authenticated_user_but_with_no_rights_on_offer_gets_an_error(self, auth_client):
+        offer = factories.ThingOfferFactory()
+
+        data = {"openingHours": {"MONDAY": [["10:00", "18:00"]]}}
+        url = flask.url_for(self.endpoint, offer_id=offer.id)
+
+        # fetch user session
+        # fetch user
+        # fetch offer with venue
+        # check if user has access to offer
+        # rollback
+        with assert_num_queries(5):
+            response = auth_client.post(url, json=data)
+
+        assert response.status_code == 403

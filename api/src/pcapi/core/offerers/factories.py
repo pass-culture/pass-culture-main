@@ -301,6 +301,7 @@ class OpeningHoursFactory(BaseFactory):
         model = models.OpeningHours
 
     venue = factory.SubFactory(VenueFactory)
+    offer = factory.SubFactory("pcapi.core.offers.factories.OfferFactory")
     weekday = models.Weekday.MONDAY
     timespan = timespan_str_to_numrange(OPENING_HOURS)
 

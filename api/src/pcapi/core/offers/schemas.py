@@ -1,9 +1,12 @@
 import datetime
+import re
 import typing
 
+from psycopg2.extras import NumericRange
 from pydantic.v1 import EmailStr
 from pydantic.v1 import Field
 from pydantic.v1 import HttpUrl
+from pydantic.v1 import conlist
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
@@ -175,3 +178,115 @@ class UpdateOffer(BaseModel):
         arbitrary_types_allowed = True
         alias_generator = serialization_utils.to_camel
         extra = "forbid"
+
+
+class StartEndOpeningHours(BaseModel):
+    start: datetime.time
+    end: datetime.time
+
+    @root_validator
+    def validate_order(cls, values: dict) -> dict:
+        start = values["start"]
+        end = values["end"]
+
+        if start >= end:
+            raise ValueError(f"opening hours start ({start}) cannot be after end ({end})")
+        return values
+
+
+# defines start and end opening hours
+# eg. ["10:00", "18:00"] (from 10:00 to 18:00)
+OpeningHours = conlist(item_type=datetime.time, min_items=2, max_items=2, unique_items=True)
+
+
+# defines a whole day's opening hours
+# eg. [["10:00", "13:00"], ["14:00", "18:00"]]
+OpeningHoursTimespans = conlist(item_type=OpeningHours, min_items=1, max_items=2, unique_items=True)
+
+
+WeekdayOpeningHoursTimespans = dict[offers_models.Weekday, OpeningHoursTimespans | None]  # type: ignore[valid-type]
+
+
+class OfferOpeningHoursSchema(BaseModel):
+    openingHours: WeekdayOpeningHoursTimespans
+
+    @root_validator(pre=True)
+    def validate_input_time_objects(cls, values: dict) -> dict:
+        """Strangely pydantic accepts some invalid time formats
+
+        Doc says that strings like "HH:MM[:SS[.ffffff]][Z or [±]HH[:]MM]"
+        are accepted... but, reality is a little bit different. If the
+        input is not valid but could be parsed as an integer, it is
+        interpreted as 00:00 + N seconds.
+
+        This validation function ensures that only HH:MM time strings
+        are accepted. Time objects will be (obviously) ignored.
+        """
+        times = []
+        try:
+            opening_hours = values["openingHours"]
+            for day_timespans in opening_hours.values():
+                if not day_timespans:
+                    continue
+
+                for timespan in day_timespans:
+                    for hour in timespan:
+                        if isinstance(hour, str):
+                            times.append(hour)
+        except Exception:
+            # some unexpected error occurred: let pydantic handle it,
+            # the general input data strucure is not the expected one.
+            return values
+
+        # no need to be more specific, pydantic's serialization will
+        # take care of others errors like hours > 23 or minutes > 59.
+        # the goal for now is only to have a less permissive time
+        # serialization.
+        regexp = re.compile(r"^\d\d:\d\d$")
+        for t in times:
+            if isinstance(t, str):
+                if not regexp.match(t):
+                    raise ValueError(f"invalid time format: {t}")
+        return values
+
+    @validator("openingHours")
+    def validate_timespans(cls, opening_hours: OpeningHoursTimespans | None) -> OpeningHoursTimespans | None:  # type: ignore[valid-type]
+        """Check that timespans are well-formed (if any)
+
+        -> Each timespan is a (start, end) pair.
+        -> Check that start is always before end.
+        -> Check that there is no overlapping pair, eg. from 10:00 to
+        14:00 and from 13:00 to 17:00.
+        """
+        if opening_hours is None:
+            return None
+
+        for weekday, timespans in opening_hours.items():
+            if not timespans:
+                continue
+
+            # check that start and end pairs are well ordered
+            ranges = cls._parse_timespans(timespans)
+
+            # check that there is no overlapping (start, end) pair
+            ranges = sorted(ranges, key=lambda oh: oh.start)
+            previous_end = ranges[0].end
+
+            for oh in ranges[1:]:
+                if oh.start < previous_end:
+                    raise ValueError(f"{weekday} -> overlapping opening hours: {oh.start} <> {previous_end}")
+                previous_end = oh.end
+
+        return opening_hours
+
+    @classmethod
+    def _parse_timespans(cls, timespans: OpeningHoursTimespans) -> list[NumericRange]:  # type: ignore[valid-type]
+        def unpack_and_parse(ts: OpeningHours) -> StartEndOpeningHours:  # type: ignore[valid-type]
+            start, end = ts  # type: ignore[misc]
+            return StartEndOpeningHours(start=start, end=end)  # type: ignore[has-type]
+
+        return [unpack_and_parse(ts) for ts in timespans]  # type: ignore[attr-defined]
+
+    class Config:
+        use_enum_values = True
+        json_encoders = {datetime.time: lambda t: t.isoformat(timespec="minutes")}

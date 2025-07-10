@@ -1,4 +1,5 @@
 import logging
+from datetime import time
 
 import sqlalchemy as sqla
 import sqlalchemy.orm as sa_orm
@@ -8,6 +9,7 @@ from flask_login import login_required
 
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offers.api as offers_api
+import pcapi.core.offers.opening_hours.api as opening_hours_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
@@ -708,3 +710,67 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
     )
     validation.check_product_cgu_and_offerer(product, ean, offerer)
     return offers_serialize.GetProductInformations.from_orm(product=product)
+
+
+def _format_offer_opening_hours(
+    opening_hours: list[offerers_models.OpeningHours] | None,
+) -> offers_schemas.WeekdayOpeningHoursTimespans | None:
+    """Format DB data to the expected pydantic model format
+
+    From: [NumericRange(600, 720), NumericRange(780, 1200)]
+    To: [[time(10), time(12)], [time(13), time(20)]]
+    """
+    if opening_hours is None:
+        return None
+
+    formatted: dict[str, list | None] = {weekday.value: None for weekday in offerers_models.Weekday}
+    for weekday_opening_hours in opening_hours:
+        weekday = weekday_opening_hours.weekday.value
+        timespan = weekday_opening_hours.timespan
+
+        formatted[weekday] = []
+        for ts in timespan:
+            lower = int(ts.lower)
+            upper = int(ts.upper)
+
+            start = time(lower // 60, lower % 60)
+            end = time(upper // 60, upper % 60)
+
+            formatted[weekday].append([start, end])  # type: ignore[union-attr]
+
+    return offers_schemas.WeekdayOpeningHoursTimespans(formatted)  # type: ignore[return-value]
+
+
+@private_api.route("/offers/<int:offer_id>/opening-hours", methods=["POST"])
+@login_required
+@spectree_serialize(
+    response_model=offers_schemas.OfferOpeningHoursSchema,
+    on_success_status=201,
+    api=blueprint.pro_private_schema,
+)
+@atomic()
+def create_offer_opening_hours(
+    offer_id: int,
+    body: offers_schemas.OfferOpeningHoursSchema,
+) -> offers_schemas.OfferOpeningHoursSchema:
+    """Create an offer's opening hours (erase existing if any).
+
+    For each day of the week, there can be at most two pairs of
+    timespans (opening hours start and end).
+
+    Week days might have null/empty opening hours: in that case, no
+    data will be inserted. This allows a more flexible way to send data.
+
+    The output data will always contain every week day. If no opening
+    hours has been set, the timespan data will be null.
+    """
+    offer = offers_repository.get_offer_by_id(offer_id, load_options={"venue", "openingHours"})
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    opening_hours_api.create_opening_hours(offer, body.openingHours)
+
+    db.session.flush()
+
+    offer = offers_repository.get_offer_by_id(offer.id, load_options={"openingHours"})
+    opening_hours = _format_offer_opening_hours(offer.openingHours)
+    return offers_schemas.OfferOpeningHoursSchema(openingHours=opening_hours)
