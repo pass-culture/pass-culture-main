@@ -269,7 +269,8 @@ class OffersTest:
             "bannerUrl": offer.venue.bannerUrl,
         }
         assert response.json["withdrawalDetails"] == "modalité de retrait"
-        assert response.json["publicationDate"] == "2019-12-31T23:55:00Z"
+        assert response.json["publicationDate"] == None
+        assert response.json["bookingAllowedDatetime"] == None
 
     def test_get_offer_with_unlimited_stock(self, client):
         product = offers_factories.ProductFactory(thumbCount=1)
@@ -1036,7 +1037,8 @@ class OffersV2Test:
             "bannerUrl": offer.venue.bannerUrl,
         }
         assert response.json["withdrawalDetails"] == "modalité de retrait"
-        assert response.json["publicationDate"] == "2019-12-31T23:55:00Z"
+        assert response.json["publicationDate"] == None
+        assert response.json["bookingAllowedDatetime"] == None
 
     def test_get_offer_with_unlimited_stock(self, client):
         product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
@@ -1824,8 +1826,8 @@ class OffersV2Test:
         assert chronicle["author"] is None
 
     def test_future_offer(self, client):
-        publication_date = datetime(2050, 1, 1)
-        offer = offers_factories.OfferFactory(publicationDatetime=publication_date)
+        booking_allowed_datetime = datetime(2050, 1, 1)
+        offer = offers_factories.OfferFactory(bookingAllowedDatetime=booking_allowed_datetime)
 
         offer_id = offer.id
         with assert_num_queries(self.base_num_queries):
@@ -1833,6 +1835,7 @@ class OffersV2Test:
 
         assert response.status_code == 200
         assert response.json["publicationDate"] == "2050-01-01T00:00:00Z"
+        assert response.json["bookingAllowedDatetime"] == "2050-01-01T00:00:00Z"
 
     def test_get_offer_with_artists(self, client):
         product = offers_factories.ProductFactory()
@@ -2127,7 +2130,8 @@ class OffersStocksV2Test:
         }
         assert response_offer["withdrawalDetails"] is None
 
-        assert response_offer["publicationDate"] == "2019-12-31T23:55:00Z"
+        assert response_offer["publicationDate"] == None
+        assert response_offer["bookingAllowedDatetime"] == None
 
 
 class SendOfferWebAppLinkTest:

@@ -338,11 +338,6 @@ class AlgoliaSerializationMixin:
         if artists:
             object_to_index["artists"] = artists
 
-        now = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
-        booking_datetime_set_in_the_future = offer.bookingAllowedDatetime and offer.bookingAllowedDatetime >= now
-        if booking_datetime_set_in_the_future:
-            object_to_index["_tags"] = ["is_future"]
-
         for section in ("offer", "offerer", "venue"):
             object_to_index[section] = {
                 key: value for key, value in object_to_index[section].items() if value is not None

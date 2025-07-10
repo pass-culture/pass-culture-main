@@ -347,6 +347,9 @@ class BaseOfferResponseGetterDict(GetterDict):
             published_chronicles = get_offer_published_chronicles(offer)
             return published_chronicles[:MAX_PREVIEW_CHRONICLES]
 
+        if key == "publicationDate":
+            return offer.bookingAllowedDatetime  # FIXME: to be removed when min app version stop using publicationDate
+
         return super().get(key, default)
 
 
@@ -435,6 +438,7 @@ class BaseOfferResponse(ConfiguredBaseModel):
     metadata: offer_metadata.Metadata
     name: str
     publicationDate: datetime | None
+    bookingAllowedDatetime: datetime | None
     reactions_count: ReactionCount
     stocks: list[OfferStockResponse]
     subcategoryId: subcategories.SubcategoryIdEnum
