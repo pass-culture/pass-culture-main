@@ -113,7 +113,7 @@ describe('route CollectiveOffers', () => {
             2,
             undefined,
             '1',
-            CollectiveOfferDisplayedStatus.EXPIRED,
+            [CollectiveOfferDisplayedStatus.EXPIRED],
             undefined,
             undefined,
             undefined,

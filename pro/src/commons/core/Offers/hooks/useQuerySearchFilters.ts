@@ -14,12 +14,13 @@ export const useQuerySearchFilters = (): Partial<SearchFiltersParams> => {
     const urlParams = new URLSearchParams(search)
     const queryParams = parseUrlParams(urlParams)
 
-    const urlFilters: Partial<SearchFiltersParams> = translateQueryParamsToApiParams(
-      {
-        ...queryParams,
-      },
-      Audience.INDIVIDUAL
-    )
+    const urlFilters: Partial<SearchFiltersParams> =
+      translateQueryParamsToApiParams(
+        {
+          ...queryParams,
+        },
+        Audience.INDIVIDUAL
+      )
 
     // Convert page type to number
     urlFilters.page =
@@ -33,24 +34,30 @@ export const useQuerySearchFilters = (): Partial<SearchFiltersParams> => {
   return urlSearchFilters
 }
 
-export const useQueryCollectiveSearchFilters = (): Partial<CollectiveSearchFiltersParams> => {
-  const { search } = useLocation()
+export const useQueryCollectiveSearchFilters =
+  (): Partial<CollectiveSearchFiltersParams> => {
+    const { search } = useLocation()
 
-  const urlParams = new URLSearchParams(search)
-  const queryParams = parseUrlParams(urlParams)
+    const urlParams = new URLSearchParams(search)
+    const queryParams = parseUrlParams(urlParams)
 
-  const urlFilters: Partial<CollectiveSearchFiltersParams> = translateQueryParamsToApiParams(
-    {
-      ...queryParams,
-    },
-    Audience.COLLECTIVE
-  )
+    const urlFilters: Partial<CollectiveSearchFiltersParams> =
+      translateQueryParamsToApiParams(
+        {
+          ...queryParams,
+        },
+        Audience.COLLECTIVE
+      )
 
-  // Convert page type to number
-  urlFilters.page =
-    typeof urlFilters.page === 'string'
-      ? parseInt(urlFilters.page)
-      : urlFilters.page
+    // Convert page type to number
+    urlFilters.page =
+      typeof urlFilters.page === 'string'
+        ? parseInt(urlFilters.page)
+        : urlFilters.page
 
-  return urlFilters
-}
+    if (urlFilters.status && !Array.isArray(urlFilters.status)) {
+      urlFilters.status = [urlFilters.status]
+    }
+
+    return urlFilters
+  }
