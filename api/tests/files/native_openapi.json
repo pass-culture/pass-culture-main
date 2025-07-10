@@ -2963,6 +2963,12 @@
                         "title": "Artists",
                         "type": "array"
                     },
+                    "bookingAllowedDatetime": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Bookingalloweddatetime",
+                        "type": "string"
+                    },
                     "chronicles": {
                         "items": {
                             "$ref": "#/components/schemas/ChroniclePreview"
@@ -3130,6 +3136,12 @@
                         },
                         "title": "Artists",
                         "type": "array"
+                    },
+                    "bookingAllowedDatetime": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Bookingalloweddatetime",
+                        "type": "string"
                     },
                     "chronicles": {
                         "items": {
