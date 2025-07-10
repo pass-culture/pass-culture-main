@@ -2,10 +2,10 @@ import classNames from 'classnames'
 import React, { KeyboardEvent, useMemo, useState } from 'react'
 
 import { SortingMode } from 'commons/hooks/useColumnSorting'
-import { SortArrow } from 'components/StocksEventList/SortArrow'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { Skeleton } from 'ui-kit/Skeleton/Skeleton'
 
+import { SortColumn } from './SortColumn/SortColumn'
 import styles from './Table.module.scss'
 
 export interface Column<T> {
@@ -109,8 +109,8 @@ export function Table<
 
   const toggleSort = (id: string) => {
     if (sortKey === id) {
-      setSortDir((d) =>
-        d === SortingMode.ASC ? SortingMode.DESC : SortingMode.ASC
+      setSortDir((prev) =>
+        prev === SortingMode.ASC ? SortingMode.DESC : SortingMode.ASC
       )
     } else {
       setSortKey(id)
@@ -217,16 +217,19 @@ export function Table<
                     styles.columnWidth,
                     styles['table-header-th'],
                     {
-                      [styles['table-sortable']]: col.sortable,
+                      [styles['table-header-th-sortable']]: col.sortable,
                     }
                   )}
                 >
-                  {col.label}
-                  {col.sortable && (
-                    <SortArrow
+                  {col.sortable ? (
+                    <SortColumn
                       onClick={() => toggleSort(col.id)}
                       sortingMode={sortDir}
-                    />
+                    >
+                      {col.label}
+                    </SortColumn>
+                  ) : (
+                    col.label
                   )}
                 </th>
               )
