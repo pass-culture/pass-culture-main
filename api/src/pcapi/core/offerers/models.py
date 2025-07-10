@@ -816,12 +816,28 @@ class AccessibilityProvider(PcObject, Base, Model):
 
 class OpeningHours(PcObject, Base, Model):
     __tablename__ = "opening_hours"
-    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True)
+
+    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=True, index=True)
     venue: sa_orm.Mapped[Venue] = sa_orm.relationship("Venue", foreign_keys=[venueId], back_populates="openingHours")
+
+    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=True, index=True)
+    offer: sa_orm.Mapped["offers_models.Offer"] = sa_orm.relationship(
+        "Offer", foreign_keys=[offerId], back_populates="openingHours"
+    )
+
     weekday: Weekday = sa.Column(db_utils.MagicEnum(Weekday), nullable=False, default=Weekday.MONDAY)
     timespan: list[psycopg2.extras.NumericRange] = sa.Column(sa_psql.ARRAY(sa_psql.ranges.NUMRANGE), nullable=True)
 
-    __table_args__ = ((sa.CheckConstraint(sa.func.cardinality(timespan) <= 2, name="max_timespan_is_2")),)
+    __table_args__ = (
+        (sa.CheckConstraint(sa.func.cardinality(timespan) <= 2, name="max_timespan_is_2")),
+        (
+            sa.CheckConstraint(
+                sa.text(
+                    '("venueId" IS NULL AND "offerId" IS NOT NULL) OR ("venueId" IS NOT NULL AND "offerId" IS NULL)'
+                )
+            )
+        ),
+    )
 
     def field_exists_and_has_changed(self, field: str, value: typing.Any) -> typing.Any:
         if field not in type(self).__table__.columns:

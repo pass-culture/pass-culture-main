@@ -52,6 +52,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.criteria.models import Criterion
     from pcapi.core.educational.models import CollectiveOffer
     from pcapi.core.educational.models import CollectiveOfferTemplate
+    from pcapi.core.offerers import models as offerers_models
     from pcapi.core.offerers.models import OffererAddress
     from pcapi.core.offerers.models import Venue
     from pcapi.core.reactions.models import Reaction
@@ -774,6 +775,10 @@ class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
     )
     headlineOffers: sa_orm.Mapped[list["HeadlineOffer"]] = sa_orm.relationship(
         "HeadlineOffer", back_populates="offer", uselist=True, cascade="all, delete-orphan", passive_deletes=True
+    )
+
+    openingHours: sa_orm.Mapped[list["offerers_models.OpeningHours"]] = sa_orm.relationship(
+        "OpeningHours", back_populates="offer", passive_deletes=True
     )
 
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")

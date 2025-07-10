@@ -1,4 +1,5 @@
 import logging
+from datetime import time
 
 import sqlalchemy as sqla
 import sqlalchemy.orm as sa_orm
@@ -8,6 +9,7 @@ from flask_login import login_required
 
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offers.api as offers_api
+import pcapi.core.offers.opening_hours.api as opening_hours_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
@@ -693,3 +695,79 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
     )
     validation.check_product_cgu_and_offerer(product, ean, offerer)
     return offers_serialize.GetProductInformations.from_orm(product=product)
+
+
+def _format_offer_opening_hours(
+    opening_hours: list[offerers_models.OpeningHours] | None,
+) -> offers_schemas.WeekdayOpeningHoursTimespans:
+    """Format DB data to the expected pydantic model format
+
+    From: [NumericRange(600, 720), NumericRange(780, 1200)]
+    To: [["10:00", "12:00"], ["13:00", "20:00"]]
+    """
+    formatted: dict[str, list[tuple[str, str]] | None] = {weekday.value: None for weekday in offerers_models.Weekday}
+    for oh in opening_hours or []:
+        timespans = []
+        for ts in oh.timespan:
+            lower = int(ts.lower)
+            upper = int(ts.upper)
+
+            start = time(lower // 60, lower % 60).isoformat(timespec="minutes")
+            end = time(upper // 60, upper % 60).isoformat(timespec="minutes")
+
+            timespans.append((start, end))
+        formatted[oh.weekday.value] = timespans
+
+    return offers_schemas.WeekdayOpeningHoursTimespans(**formatted)  # type: ignore[arg-type]
+
+
+@private_api.route("/offers/<int:offer_id>/opening-hours", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    response_model=offers_schemas.OfferOpeningHoursSchema,
+    on_success_status=200,
+    api=blueprint.pro_private_schema,
+)
+@atomic()
+def upsert_offer_opening_hours(
+    offer_id: int,
+    body: offers_schemas.OfferOpeningHoursSchema,
+) -> offers_schemas.OfferOpeningHoursSchema:
+    """Create or update an offer's opening hours (erase existing if any)
+
+    For each day of the week, there can be at most two pairs of
+    timespans (opening hours start and end).
+
+    Week days might have null/empty opening hours: in that case, no
+    data will be inserted. This allows a more flexible way to send data.
+
+    The output data will always contain every week day. If no opening
+    hours has been set, the timespan data will be null.
+
+    Note: since opening hours should always be erased before any new
+    data is inserted, this route can also be used as a DELETE one.
+    """
+    offer = offers_repository.get_offer_by_id(offer_id, load_options={"venue", "openingHours"})
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    opening_hours_api.upsert_opening_hours(offer, body.openingHours)
+
+    offer = offers_repository.get_offer_by_id(offer.id, load_options={"openingHours"})
+    opening_hours = _format_offer_opening_hours(offer.openingHours)
+    return offers_schemas.OfferOpeningHoursSchema(openingHours=opening_hours)
+
+
+@private_api.route("/offers/<int:offer_id>/opening-hours", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offers_schemas.OfferOpeningHoursSchema,
+    on_success_status=200,
+    api=blueprint.pro_private_schema,
+)
+@atomic()
+def get_offer_opening_hours(offer_id: int) -> offers_schemas.OfferOpeningHoursSchema:
+    offer = offers_repository.get_offer_by_id(offer_id, load_options={"venue", "openingHours"})
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    opening_hours = _format_offer_opening_hours(offer.openingHours)
+    return offers_schemas.OfferOpeningHoursSchema(openingHours=opening_hours)
