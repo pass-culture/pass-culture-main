@@ -202,12 +202,11 @@ jobs:
             --tty \
             --detach \
             --network pass-culture-main_db_nw \
-            --restart on-failure \
             --publish 5001:5001 \
             --publish 10002:10002 \
             --entrypoint bash \
             ${{ steps.compute-image-name.outputs.image_name }} \
-            -c "set -e ; flask install_postgres_extensions ; alembic upgrade pre@head ; alembic upgrade post@head ; flask install_data ; python src/pcapi/app.py"
+            -c "set -e ; flask install_postgres_extensions ; alembic upgrade pre@head ; alembic upgrade post@head ; flask install_data ; FLASK_USE_RELOADER=0 python src/pcapi/app.py"
 
       - name: "Wait for migrations to be run"
         uses: iFaxity/wait-on-action@v1
