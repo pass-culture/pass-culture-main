@@ -66,7 +66,7 @@ def create_industrial_chronicles() -> None:
             subcategoryId=subcategories.SEANCE_CINE.id,
         )
         products_with_allocine_id.append(product)
-        offers_factories.OfferFactory(product=product)
+        offers_factories.StockFactory(offer__product=product)
 
     logger.info("Creating 'BOOK' type chronicles with all fields")
     for user, product, i in zip(itertools.cycle(users), itertools.cycle(products_with_ean), range(30)):
