@@ -4,7 +4,6 @@ import logging
 import statistics
 import time
 
-import psycopg2.errors
 import pytz
 import sqlalchemy as sa
 
@@ -31,28 +30,55 @@ def _get_max_id() -> int:
     return result[0] if result and result[0] is not None else 0
 
 
-def execute_query(i: int, batch_size: int) -> None:
-    nb_retry = 3
+def run_batch(start: int, end: int, attempt_size: int) -> int:
+    nb_retry = 10
     while nb_retry > 0:
         try:
             db.session.execute(
                 sa.text(
                     """
-                    UPDATE offer
-                    SET "jsonData" = '{}'::jsonb,
-                        "durationMinutes" = NULL
-                    WHERE "productId" is not null AND id BETWEEN :start AND :end;
-                    """
+                        UPDATE offer
+                        SET "jsonData" = '{}'::jsonb,
+                            "durationMinutes" = NULL
+                        WHERE "productId" is not null AND id BETWEEN :start AND :end;
+                        """
                 ),
-                params={"start": i, "end": i + batch_size},
+                params={"start": start, "end": start + attempt_size},
             )
-            return
-        except psycopg2.errors.OperationalError as e:
-            logger.info("Erreur de type %s sur les lignes entre %s et %s", type(e).__name__, i, i + batch_size)
+            return attempt_size
+        except sa.exc.OperationalError as e:
+            logger.info(
+                "Erreur de type %s sur les lignes entre %s et %s (batch_size=%s)",
+                type(e).__name__,
+                start,
+                start + attempt_size,
+                attempt_size,
+            )
             db.session.rollback()
             nb_retry -= 1
+
+            if attempt_size > 1:
+                attempt_size = max(1, attempt_size // 5)
+
             if nb_retry == 0:
-                raise
+                raise RuntimeError(f"Failuring start:{start} end:{end} batch_size:{attempt_size}") from e
+
+    return attempt_size
+
+
+def execute_query(i: int, batch_size: int) -> None:
+    current = i
+    end = current + batch_size
+
+    while current < end:
+        remaining = end - current
+        attempt_size = min(batch_size, remaining)
+        try:
+            attempt_size = run_batch(current, current + attempt_size, attempt_size)
+        except RuntimeError as e:
+            logger.error("Fatal error during sub-batch : %s", e)
+            raise
+        current += attempt_size
 
 
 def remove_offer_extraData_if_offer_linked_to_product(
