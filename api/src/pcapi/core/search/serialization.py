@@ -236,9 +236,11 @@ class AlgoliaSerializationMixin:
             (headline_offer for headline_offer in offer.headlineOffers if headline_offer.isActive), None
         )
 
-        chronicles_count = offer.product.chroniclesCount if offer.product and offer.product.chroniclesCount else None
+        chronicles_count = (
+            offer.product.chroniclesCount if offer.product and offer.product.chroniclesCount else offer.chroniclesCount
+        )
         headlines_count = offer.product.headlinesCount if offer.product and offer.product.headlinesCount else None
-        likes_count = offer.product.likesCount if offer.product and offer.product.likesCount else None
+        likes_count = offer.product.likesCount if offer.product and offer.product.likesCount else offer.likesCount
 
         # If you update this dictionary, please check whether you need to
         # also update `core.offerers.api.VENUE_ALGOLIA_INDEXED_FIELDS`.
