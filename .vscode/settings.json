@@ -3,7 +3,6 @@
   "mypy-type-checker.importStrategy": "fromEnvironment",
   "mypy-type-checker.preferDaemon": true,
   "mypy-type-checker.reportingScope": "workspace",
-  "python.formatting.provider": "black",
   "python.testing.cwd": "${workspaceFolder}/api",
   "python.testing.pytestEnabled": true,
     "python.testing.pytestArgs": [
