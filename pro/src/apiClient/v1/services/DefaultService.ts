@@ -77,6 +77,7 @@ import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
 import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
 import type { OffererEligibilityResponseModel } from '../models/OffererEligibilityResponseModel';
 import type { OffererStatsResponseModel } from '../models/OffererStatsResponseModel';
+import type { OfferOpeningHoursSchema } from '../models/OfferOpeningHoursSchema';
 import type { OfferStatus } from '../models/OfferStatus';
 import type { PatchAllOffersActiveStatusBodyModel } from '../models/PatchAllOffersActiveStatusBodyModel';
 import type { PatchCollectiveOfferActiveStatusBodyModel } from '../models/PatchCollectiveOfferActiveStatusBodyModel';
@@ -1971,6 +1972,59 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/offers/{offer_id}',
+      path: {
+        'offer_id': offerId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_offer_opening_hours <GET>
+   * @param offerId
+   * @returns OfferOpeningHoursSchema OK
+   * @throws ApiError
+   */
+  public getOfferOpeningHours(
+    offerId: number,
+  ): CancelablePromise<OfferOpeningHoursSchema> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offers/{offer_id}/opening-hours',
+      path: {
+        'offer_id': offerId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * Create or update an offer's opening hours (erase existing if any)
+   * For each day of the week, there can be at most two pairs of timespans (opening hours start and end).
+   *
+   * Week days might have null/empty opening hours: in that case, no data will be inserted. This allows a more flexible way to send data.
+   *
+   * The output data will always contain every week day. If no opening hours has been set, the timespan data will be null.
+   *
+   * Note: since opening hours should always be erased before any new data is inserted, this route can also be used as a DELETE one.
+   * @param offerId
+   * @param requestBody
+   * @returns OfferOpeningHoursSchema OK
+   * @throws ApiError
+   */
+  public upsertOfferOpeningHours(
+    offerId: number,
+    requestBody?: OfferOpeningHoursSchema,
+  ): CancelablePromise<OfferOpeningHoursSchema> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/offers/{offer_id}/opening-hours',
       path: {
         'offer_id': offerId,
       },
