@@ -2996,6 +2996,11 @@
                         "title": "Chronicles",
                         "type": "array"
                     },
+                    "chroniclesCount": {
+                        "nullable": true,
+                        "title": "Chroniclescount",
+                        "type": "integer"
+                    },
                     "description": {
                         "nullable": true,
                         "title": "Description",
@@ -3169,6 +3174,11 @@
                         },
                         "title": "Chronicles",
                         "type": "array"
+                    },
+                    "chroniclesCount": {
+                        "nullable": true,
+                        "title": "Chroniclescount",
+                        "type": "integer"
                     },
                     "description": {
                         "nullable": true,
