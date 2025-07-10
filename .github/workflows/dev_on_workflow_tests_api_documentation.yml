@@ -54,7 +54,7 @@ jobs:
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
       - name: "Slack Notification"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
-        uses: slackapi/slack-github-action@v2.1.0
+        uses: slackapi/slack-github-action@v2.1.1
         with:
           method: chat.postMessage
           token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
