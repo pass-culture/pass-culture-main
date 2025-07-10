@@ -809,6 +809,7 @@ class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
     isNonFreeOffer: sa_orm.Mapped["bool"] = sa_orm.query_expression()
     bookingsCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
     hasPendingBookings: sa_orm.Mapped["bool"] = sa_orm.query_expression()
+    chroniclesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
     likesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
 
     @property
