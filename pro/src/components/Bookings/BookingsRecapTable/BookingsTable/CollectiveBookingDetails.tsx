@@ -8,7 +8,7 @@ import {
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
-import { EducationalInstitutionDetails } from 'components/EducationalInstitutionDetails/EducationalInstititutionDetails'
+import { EducationalInstitutionDetails } from 'components/EducationalInstitutionDetails/EducationalInstitutionDetails'
 
 import { CollectiveActionButtons } from './CollectiveActionButtons'
 import styles from './CollectiveBookingDetails.module.scss'
@@ -54,7 +54,10 @@ export const CollectiveBookingDetails = ({
             bookingDetails={bookingDetails}
           />
         </div>
-        <EducationalInstitutionDetails educationalInstitution={educationalInstitution} educationalRedactor={educationalRedactor} />
+        <EducationalInstitutionDetails
+          educationalInstitution={educationalInstitution}
+          educationalRedactor={educationalRedactor}
+        />
       </div>
 
       <CollectiveActionButtons
@@ -64,4 +67,3 @@ export const CollectiveBookingDetails = ({
     </>
   )
 }
-
