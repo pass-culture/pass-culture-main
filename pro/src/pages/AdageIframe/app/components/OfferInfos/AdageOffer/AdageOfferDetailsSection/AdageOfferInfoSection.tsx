@@ -144,7 +144,9 @@ export const AdageOfferInfoSection = ({
             {isOfferBookable ? 'Prix' : 'Information sur le prix'}
           </h3>
           {isOfferBookable && <p>{getBookableOfferStockPrice(offer)}</p>}
-          {offer.educationalPriceDetail}
+          {isOfferBookable
+            ? offer.stock.educationalPriceDetail
+            : offer.educationalPriceDetail}
         </div>
       )}
     </>
