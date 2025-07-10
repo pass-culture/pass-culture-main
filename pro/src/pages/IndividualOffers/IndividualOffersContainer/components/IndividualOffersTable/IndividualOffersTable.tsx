@@ -62,12 +62,16 @@ export const IndividualOffersTable = ({
       false
     )
 
+  const onPageClick = (page: number) =>
+    applySelectedFiltersAndRedirect({ ...selectedFilters, page }, false)
+
   const pagination = (
     <Pagination
       currentPage={currentPageNumber}
       pageCount={pageCount}
       onPreviousPageClick={onPreviousPageClick}
       onNextPageClick={onNextPageClick}
+      onPageClick={onPageClick}
     />
   )
 
