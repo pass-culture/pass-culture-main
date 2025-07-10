@@ -2,11 +2,11 @@ import cn from 'classnames'
 import { ReactNode } from 'react'
 
 import fullClearIcon from 'icons/full-clear.svg'
+import fullEllipseIcon from 'icons/full-ellipse.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import strokeWrongIcon from 'icons/stroke-wrong.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import emptyCircle from './empty-circle.svg'
 import styles from './Timeline.module.scss'
 
 /**
@@ -49,22 +49,16 @@ interface TimelineProps {
  * Gets the appropriate icon component for a given timeline step type.
  *
  * @param {TimelineStepType} type - The type of the timeline step.
- * @param {boolean} hasErrorSteps - Indicates if there are error steps in the timeline.
  * @returns {JSX.Element} The icon component for the timeline step.
  */
-const getIconComponent = (type: TimelineStepType, hasErrorSteps: boolean) => {
+const getIconComponent = (type: TimelineStepType) => {
   switch (type) {
     case TimelineStepType.SUCCESS:
       return (
         <SvgIcon
           src={fullValidateIcon}
           alt="Étape en succès"
-          className={cn(
-            styles.icon,
-            hasErrorSteps
-              ? styles['icon-success-disabled']
-              : styles['icon-success']
-          )}
+          className={cn(styles.icon, styles['icon-success'])}
         />
       )
     case TimelineStepType.ERROR:
@@ -78,19 +72,17 @@ const getIconComponent = (type: TimelineStepType, hasErrorSteps: boolean) => {
     case TimelineStepType.WAITING:
       return (
         <SvgIcon
-          src={emptyCircle}
+          src={fullEllipseIcon}
           alt="Étape en attente"
           className={cn(styles.icon, styles['icon-waiting'])}
-          viewBox="0 0 21 20"
         />
       )
     case TimelineStepType.DISABLED:
       return (
         <SvgIcon
-          src={emptyCircle}
+          src={fullEllipseIcon}
           alt="Étape non disponible"
           className={cn(styles.icon, styles['icon-disabled'])}
-          viewBox="0 0 21 20"
         />
       )
     case TimelineStepType.CANCELLED:
@@ -119,38 +111,40 @@ const getIconComponent = (type: TimelineStepType, hasErrorSteps: boolean) => {
  *
  * @param {TimelineStepType} stepType - The type of the current step.
  * @param {TimelineStepType} [nextStepType] - The type of the next step.
- * @param {boolean} [hasErrorSteps] - Indicates if there are error steps in the timeline.
  * @returns {string | null} The line style for the timeline step.
  */
 const getLineStyle = (
   stepType: TimelineStepType,
-  nextStepType?: TimelineStepType,
-  hasErrorSteps?: boolean
+  nextStepType?: TimelineStepType
 ) => {
   // No line if last step
   if (nextStepType === undefined) {
-    return null
+    return undefined
+  }
+
+  if (stepType === TimelineStepType.SUCCESS) {
+    return cn(styles['line'], styles['line-success'])
   }
 
   // The type of the line is always the type of the 2nd step, with one exception:
   // the "waiting" type has always "waiting" lines around it on both sides
   if (stepType === TimelineStepType.WAITING) {
-    return styles['line-waiting']
+    return cn(styles['line'], styles['line-waiting'])
   }
 
   switch (nextStepType) {
     case TimelineStepType.SUCCESS:
-      return hasErrorSteps ? styles['line-error'] : styles['line-success']
+      return cn(styles['line'], styles['line-success'])
     case TimelineStepType.ERROR:
-      return styles['line-error']
+      return cn(styles['line'], styles['line-error'])
     case TimelineStepType.WAITING:
-      return styles['line-waiting']
+      return cn(styles['line'], styles['line-waiting'])
     case TimelineStepType.DISABLED:
-      return styles['line-disabled']
+      return cn(styles['line'], styles['line-disabled'])
     case TimelineStepType.CANCELLED:
     case TimelineStepType.REFUSED:
     default:
-      throw new Error(`Unsupported step type: ${nextStepType}`)
+      return undefined
   }
 }
 
@@ -179,21 +173,19 @@ const getLineStyle = (
  * - **Visual Indicators**: The component uses different colors and icons to indicate the status of each step, making it easy to understand at a glance.
  */
 export const Timeline = ({ steps }: TimelineProps): JSX.Element => {
-  const hasErrorSteps =
-    steps.filter((x) => x.type === TimelineStepType.ERROR).length > 0
   return (
     <ol className={styles.container}>
       {steps.map((step, index) => {
+        const nextStepType = steps[index + 1]?.type
         return (
-          <li
-            key={index}
-            className={cn(
-              styles.step,
-              getLineStyle(step.type, steps[index + 1]?.type, hasErrorSteps)
-            )}
-          >
-            {getIconComponent(step.type, hasErrorSteps)}
-            {step.content}
+          <li key={index} className={styles['step']}>
+            <div className={styles['icon-line-container']}>
+              <div className={styles['icon-container']}>
+                {getIconComponent(step.type)}
+              </div>
+              <div className={getLineStyle(step.type, nextStepType)} />
+            </div>
+            <div className={styles['step-content']}>{step.content}</div>
           </li>
         )
       })}
