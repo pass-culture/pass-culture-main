@@ -9,7 +9,7 @@
 }
 
 .contact-details-title-newlayout {
-  @include fonts.title3;
+  @include fonts.title2;
 
   margin-bottom: rem.torem(24px);
 }
@@ -38,7 +38,7 @@
     color: var(--color-icon-default);
   }
 
-    &:first-child {
+  &:first-child {
     margin-bottom: rem.torem(4px);
   }
 
@@ -52,7 +52,6 @@
   padding: rem.torem(24px);
   border-radius: rem.torem(8px);
 }
-
 
 @media (min-width: size.$tablet) {
   .contact-details-container-oldlayout {

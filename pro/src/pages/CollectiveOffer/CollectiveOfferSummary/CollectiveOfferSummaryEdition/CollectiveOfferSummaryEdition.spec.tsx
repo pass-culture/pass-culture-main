@@ -76,7 +76,7 @@ describe('CollectiveOfferSummary', () => {
     })
     expect(desactivateOffer).toBeInTheDocument()
   })
-  it('should display new composant for new collective offer detail page when offer is bookable and FF is enabled', async () => {
+  it('should display new component for new collective offer detail page when offer is bookable and FF is enabled', async () => {
     renderCollectiveOfferSummaryEdition(getCollectiveOfferFactory(), {
       features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'],
     })
@@ -84,7 +84,7 @@ describe('CollectiveOfferSummary', () => {
     expect(await screen.findByText('n°2')).toBeInTheDocument()
   })
 
-  it('should not display new composant for new collective offer detail page when offer is template and FF is enabled', async () => {
+  it('should not display new component for new collective offer detail page when offer is template and FF is enabled', async () => {
     renderCollectiveOfferSummaryEdition(getCollectiveOfferTemplateFactory(), {
       features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'],
     })

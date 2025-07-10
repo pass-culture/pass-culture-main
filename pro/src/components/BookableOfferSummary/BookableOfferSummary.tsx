@@ -49,6 +49,7 @@ import {
   getLocation,
   getLocationForOfferVenue,
 } from 'pages/AdageIframe/app/components/OfferInfos/AdageOffer/AdageOfferDetailsSection/AdageOfferInfoSection'
+import { BookableOfferTimeline } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/BookableOfferTimeline'
 import { DEFAULT_RECAP_VALUE } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/constants'
 import { formatDateTime } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/utils/formatDatetime'
 import { Button } from 'ui-kit/Button/Button'
@@ -316,7 +317,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
         </div>
       </div>
       <div className={styles['offer-details']}>
-        <div>Component timeline à ajouter ici</div>
+        <BookableOfferTimeline offer={offer} />
         {offer.institution && (
           <EducationalInstitutionDetails
             educationalInstitution={offer.institution}
