@@ -1,24 +1,49 @@
 import { Meta, StoryObj } from '@storybook/react'
 
+import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
+import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/CollectiveStatusLabel'
+
 import { Column, Table } from './Table'
 
 // Define sample data type
 type Row = {
   id: number
   name: string
-  value: number
+  date: string
+  structure: string
+  etablissement: string
   description?: string
+  displayedStatus: CollectiveOfferDisplayedStatus
 }
 
 // Sample data
 const sampleData: Row[] = [
-  { id: 1, name: 'Offre Alpha', value: 20, description: 'Détails de Alpha' },
-  { id: 2, name: 'Offre Bravo', value: 10, description: 'Détails de Bravo' },
+  {
+    id: 1,
+    name: 'REIMBURSED BY AC offer 158 pour eac_2_lieu [BON EAC]',
+    date: '02/07/2025',
+    structure: 'Tous les établissements',
+    description: 'Détails de Alpha',
+    etablissement: 'Collége Jean moulin',
+    displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
+  },
+  {
+    id: 2,
+    name: 'CANCELLED BY AC offer 158 pour eac_2_lieu [BON EAC]',
+    date: '04/07/2025',
+    structure: 'Tous les établissements',
+    description: 'Détails de Bravo',
+    etablissement: 'Collége Jean moulin',
+    displayedStatus: CollectiveOfferDisplayedStatus.BOOKED,
+  },
   {
     id: 3,
-    name: 'Offre Charlie',
-    value: 30,
+    name: 'BOOK BY AC offer 158 pour eac_2_lieu [BON EAC]',
+    structure: 'Tous les établissements',
+    date: '28/08/2025',
     description: 'Détails de Charlie',
+    etablissement: 'Collége Jean moulin',
+    displayedStatus: CollectiveOfferDisplayedStatus.CANCELLED,
   },
 ]
 
@@ -26,15 +51,38 @@ const sampleData: Row[] = [
 const baseColumns: Column<Row>[] = [
   {
     id: 'name',
-    label: 'Nom',
+    label: "Nom de l'offre",
     accessor: 'name',
     sortable: true,
   },
   {
-    id: 'value',
-    label: 'Valeur',
-    accessor: 'value',
+    id: 'date',
+    label: "Date de l'évènement",
+    accessor: 'date',
     sortable: true,
+  },
+  {
+    id: 'Structure',
+    label: 'Structure',
+    accessor: 'structure',
+  },
+  {
+    id: 'etablissement',
+    label: 'Établissement',
+    accessor: 'etablissement',
+  },
+  {
+    id: 'statut',
+    label: 'Statut',
+    accessor: 'displayedStatus',
+    render: (row) => (
+      <CollectiveStatusLabel offerDisplayedStatus={row.displayedStatus} />
+    ),
+  },
+  {
+    id: 'action',
+    label: 'Actions',
+    render: () => '...',
   },
 ]
 
@@ -94,7 +142,14 @@ export const WithFullRows: StoryObj<typeof Table<Row>> = {
     columns: baseColumns,
     data: sampleData,
     getFullRowContent: (row) => (
-      <div style={{ padding: '0.5rem', background: '#f0f0f0' }}>
+      <div
+        style={{
+          padding: '0.5rem',
+          background: '#f0f0f0',
+          borderBottomLeftRadius: '8px',
+          borderBottomRightRadius: '8px',
+        }}
+      >
         <strong>Description :</strong> {row.description}
       </div>
     ),
