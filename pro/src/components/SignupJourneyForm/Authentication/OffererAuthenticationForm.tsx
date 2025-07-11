@@ -2,7 +2,6 @@ import cn from 'classnames'
 import { useFormContext } from 'react-hook-form'
 
 import { Address } from 'commons/core/shared/types'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { resetReactHookFormAddressFields } from 'commons/utils/resetAddressFields'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OpenToPublicToggle } from 'components/OpenToPublicToggle/OpenToPublicToggle'
@@ -34,7 +33,6 @@ export const OffererAuthenticationForm = (): JSX.Element => {
   const { watch, setValue, register, getFieldState } =
     useFormContext<OffererAuthenticationFormValues>()
 
-  const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
   const manuallySetAddress = watch('manuallySetAddress')
 
   const toggleManuallySetAddress = () => {
@@ -105,18 +103,16 @@ export const OffererAuthenticationForm = (): JSX.Element => {
         {manuallySetAddress && <AddressManual />}
       </FormLayout.Row>
       <FormLayout.Row>
-        {isOpenToPublicEnabled && (
-          <OpenToPublicToggle
-            className={cn(styles['open-to-public-toggle'], {
-              [styles['open-to-public-toggle-address-manual-open']]:
-                manuallySetAddress,
-            })}
-            onChange={(e) => {
-              setValue('isOpenToPublic', e.target.value)
-            }}
-            isOpenToPublic={watch('isOpenToPublic')}
-          />
-        )}
+        <OpenToPublicToggle
+          className={cn(styles['open-to-public-toggle'], {
+            [styles['open-to-public-toggle-address-manual-open']]:
+              manuallySetAddress,
+          })}
+          onChange={(e) => {
+            setValue('isOpenToPublic', e.target.value)
+          }}
+          isOpenToPublic={watch('isOpenToPublic')}
+        />
       </FormLayout.Row>
     </FormLayout.Section>
   )

@@ -1,91 +1,104 @@
-{% from "components/badges.html" import build_fraudulent_booking_badge %}
-{% import "components/links.html" as links with context %}
-{% from "components/connect_as.html" import build_connect_as_link %}
-{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% from "components/badges.html" import build_fraudulent_booking_badge %} {%
+import "components/links.html" as links with context %} {% from
+"components/connect_as.html" import build_connect_as_link %} {% from
+"components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 <turbo-frame id="offerer_venues_frame">
-{% if has_permission("CREATE_PRO_ENTITY") %}
-  <button class="btn btn-outline-primary-subtle-bg mt-2"
-          data-bs-toggle="modal"
-          data-bs-target="#create-venue-modal"
-          type="button">Ajouter un partenaire sans SIRET</button>
-  {{ build_lazy_modal(url_for('backoffice_web.offerer.get_create_venue_without_siret_form', offerer_id=offerer_id) , "create-venue-modal") }}
-{% endif %}
-<table class="table table-hover my-4">
-  <thead>
-    <tr>
-      <th scope="col"></th>
-      <th scope="col">ID</th>
-      <th scope="col">Nom</th>
-      <th scope="col">
-        {%+ if rows | map(attribute="Venue.ridet") | any +%}
-        RIDET
-        {%+ else +%}
-        SIRET
-        {%+ endif +%}
-      </th>
-      <th scope="col">Permanent</th>
-      {% if is_feature_active("WIP_IS_OPEN_TO_PUBLIC") %}<th scope="col">Ouvert au public</th>{% endif %}
-      <th scope="col">Activité principale</th>
-      <th scope="col">Présence web</th>
-      <th scope="col">Offres cibles</th>
-      <th scope="col">Compte bancaire associé</th>
-      <th scope="col">Partenaire technique</th>
-      {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}<th scope="col">Fraude</th>{% endif %}
-    </tr>
-  </thead>
-  <tbody>
-    {% for row in rows %}
-      {% set venue = row.Venue %}
+  {% if has_permission("CREATE_PRO_ENTITY") %}
+  <button
+    class="btn btn-outline-primary-subtle-bg mt-2"
+    data-bs-toggle="modal"
+    data-bs-target="#create-venue-modal"
+    type="button"
+  >
+    Ajouter un partenaire sans SIRET
+  </button>
+  {{
+  build_lazy_modal(url_for('backoffice_web.offerer.get_create_venue_without_siret_form',
+  offerer_id=offerer_id) , "create-venue-modal") }} {% endif %}
+  <table class="table table-hover my-4">
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">ID</th>
+        <th scope="col">Nom</th>
+        <th scope="col">
+          {%+ if rows | map(attribute="Venue.ridet") | any +%} RIDET {%+ else
+          +%} SIRET {%+ endif +%}
+        </th>
+        <th scope="col">Permanent</th>
+        <th scope="col">Ouvert au public</th>
+        <th scope="col">Activité principale</th>
+        <th scope="col">Présence web</th>
+        <th scope="col">Offres cibles</th>
+        <th scope="col">Compte bancaire associé</th>
+        <th scope="col">Partenaire technique</th>
+        {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
+        <th scope="col">Fraude</th>
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %} {% set venue = row.Venue %}
       <tr>
         <th scope="row"></th>
-        <td class="fw-bolder">{{ links.build_venue_name_to_details_link(venue, text_attr="id") }}</td>
-        <td class="text-break">{{ build_connect_as_link(connect_as[venue.id], venue.publicName or venue.name, "link-primary") }}</td>
+        <td class="fw-bolder">
+          {{ links.build_venue_name_to_details_link(venue, text_attr="id") }}
+        </td>
+        <td class="text-break">
+          {{ build_connect_as_link(connect_as[venue.id], venue.publicName or
+          venue.name, "link-primary") }}
+        </td>
         <td>{{ links.build_siret_to_external_link(venue) }}</td>
         <td>
           {% if venue.isPermanent %}
-            <span class="visually-hidden">Partenaire culturel permanent</span><i class="bi bi-check-circle-fill"></i>
+          <span class="visually-hidden">Partenaire culturel permanent</span
+          ><i class="bi bi-check-circle-fill"></i>
           {% endif %}
         </td>
-        {% if is_feature_active("WIP_IS_OPEN_TO_PUBLIC") %}
-          <td>
-            {% if venue.isOpenToPublic %}
-              <span class="visually-hidden">Partenaire culturel ouvert au public</span><i class="bi bi-check-circle-fill"></i>
-            {% endif %}
-          </td>
-        {% endif %}
+        <td>
+          {% if venue.isOpenToPublic %}
+          <span class="visually-hidden"
+            >Partenaire culturel ouvert au public</span
+          ><i class="bi bi-check-circle-fill"></i>
+          {% endif %}
+        </td>
         <td>{{ venue.venueTypeCode.value }}</td>
         <td>
-          {% if venue.web_presence %}
-            {% for link in venue.web_presence.split(", ") %}
-              <div class="text-truncate"
-                   data-bs-toggle="tooltip"
-                   data-bs-placement="top"
-                   data-bs-custom-class="primary-tooltip larger-tooltip"
-                   data-bs-title="{{ link }}"
-                   style="max-width: 9ch">{{ links.build_safe_redirect_link(link) }}</div>
-            {% endfor %}
-          {% endif %}
+          {% if venue.web_presence %} {% for link in venue.web_presence.split(",
+          ") %}
+          <div
+            class="text-truncate"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            data-bs-custom-class="primary-tooltip larger-tooltip"
+            data-bs-title="{{ link }}"
+            style="max-width: 9ch"
+          >
+            {{ links.build_safe_redirect_link(link) }}
+          </div>
+          {% endfor %} {% endif %}
         </td>
         <td>{{ venue.target | format_venue_target }}</td>
         <td>
-          {% set bank_account_link = venue.current_bank_account_link %}
-          {% if bank_account_link %}{{ links.build_bank_account_name_to_details_link(bank_account_link.bankAccount) }}{% endif %}
+          {% set bank_account_link = venue.current_bank_account_link %} {% if
+          bank_account_link %}{{
+          links.build_bank_account_name_to_details_link(bank_account_link.bankAccount)
+          }}{% endif %}
         </td>
         <td>
-          {% for venue_provider in venue.venueProviders %}
-            {{ links.build_provider_name_to_details_link(venue_provider.provider) }}
-            {% if venue_provider.isActive and venue_provider.provider.isActive %}
-              (actif)
-            {% else %}
-              (inactif)
-            {% endif %}
-          {% endfor %}
+          {% for venue_provider in venue.venueProviders %} {{
+          links.build_provider_name_to_details_link(venue_provider.provider) }}
+          {% if venue_provider.isActive and venue_provider.provider.isActive %}
+          (actif) {% else %} (inactif) {% endif %} {% endfor %}
         </td>
         {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
-          <td>{{ build_fraudulent_booking_badge(row.has_fraudulent_booking, "Réservations frauduleuses") }}</td>
+        <td>
+          {{ build_fraudulent_booking_badge(row.has_fraudulent_booking,
+          "Réservations frauduleuses") }}
+        </td>
         {% endif %}
       </tr>
-    {% endfor %}
-  </tbody>
-</table>
+      {% endfor %}
+    </tbody>
+  </table>
 </turbo-frame>

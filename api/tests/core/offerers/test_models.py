@@ -162,7 +162,6 @@ class VenueBannerUrlTest:
 
 
 class VenueIsEligibleForSearchTest:
-    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=False)
     @pytest.mark.parametrize(
         "permanent,active,venue_type_code,is_eligible_for_search",
         [
