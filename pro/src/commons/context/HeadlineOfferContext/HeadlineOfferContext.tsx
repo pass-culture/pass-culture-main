@@ -125,7 +125,7 @@ export function HeadlineOfferContextProvider({
       await mutate(
         [GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId],
         api.upsertHeadlineOffer({ offerId }),
-        { revalidate: true, throwOnError: true }
+        { populateCache: true, revalidate: false, throwOnError: true }
       )
 
       notify.success('Votre offre a été mise à la une !')
