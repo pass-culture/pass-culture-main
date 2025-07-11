@@ -294,3 +294,7 @@ def format_offset(off: timedelta | None, sep: str = ":") -> str:
 def get_naive_utc_now() -> datetime:
     """To replace deprecated `datetime.utcnow()`"""
     return datetime.now(tz.utc).replace(tzinfo=None)
+
+
+def get_naive_utc_from_iso_str(iso_str: str) -> datetime:
+    return datetime.fromisoformat(iso_str).astimezone(tz.utc).replace(tzinfo=None)

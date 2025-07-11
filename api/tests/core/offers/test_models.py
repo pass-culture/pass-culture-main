@@ -7,6 +7,7 @@ from sqlalchemy import exc as sa_exc
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.providers.factories as providers_factories
+import pcapi.utils.db as db_utils
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories
@@ -896,6 +897,15 @@ class HeadlineOfferTest:
 
         assert product.headlinesCount == 1
 
+    def test_new_headline_does_not_increment_product_count_if_inactive(self):
+        now = datetime.datetime.utcnow()
+        past_datetime = now - datetime.timedelta(days=1)
+
+        product = factories.ProductFactory()
+        factories.HeadlineOfferFactory(offer__product=product, timespan=(past_datetime, now))
+
+        assert product.headlinesCount == 0
+
     def test_headline_deletion_decrements_product_count(self):
         product = factories.ProductFactory()
         headline_offer = factories.HeadlineOfferFactory(offer__product=product)
@@ -905,6 +915,50 @@ class HeadlineOfferTest:
         db.session.refresh(product)
 
         assert product.headlinesCount == 0
+
+
+class OnSetTimespanTest:
+    def test_deactivating_headline_offer_decrements_product_count(self):
+        now = datetime.datetime.utcnow()
+        past_datetime = now - datetime.timedelta(days=1)
+
+        product = factories.ProductFactory()
+        headline_offer = factories.HeadlineOfferFactory(offer__product=product)
+        db.session.refresh(headline_offer)
+
+        assert product.headlinesCount == 1
+
+        headline_offer.timespan = db_utils.make_timerange(past_datetime, now)
+
+        assert product.headlinesCount == 0
+
+    def test_updating_timespan_without_deactivating_does_not_affect_count(self):
+        now = datetime.datetime.utcnow()
+        future_datetime = now + datetime.timedelta(days=1)
+
+        product = factories.ProductFactory()
+        headline_offer = factories.HeadlineOfferFactory(offer__product=product)
+        db.session.refresh(headline_offer)
+
+        assert product.headlinesCount == 1
+
+        headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, future_datetime)
+
+        assert product.headlinesCount == 1
+
+    def test_incrementing_headlines_count_when_activating_headline_offer(self):
+        now = datetime.datetime.utcnow()
+        past_datetime = now - datetime.timedelta(days=1)
+
+        product = factories.ProductFactory()
+        headline_offer = factories.HeadlineOfferFactory(offer__product=product, timespan=(past_datetime, now))
+        db.session.refresh(headline_offer)
+
+        assert product.headlinesCount == 0
+
+        headline_offer.timespan = db_utils.make_timerange(now, None)
+
+        assert product.headlinesCount == 1
 
 
 class OfferIsHeadlineTest:
