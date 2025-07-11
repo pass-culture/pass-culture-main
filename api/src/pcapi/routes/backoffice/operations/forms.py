@@ -112,6 +112,7 @@ class OperationResponseForm(utils.PCForm):
     eligibility = fields.PCSelectMultipleField(
         "Éligibilité", choices=utils.choices_from_enum(search.AccountSearchFilter)
     )
+    age = fields.PCSelectMultipleField("Âge", choices=tuple([(i, f"{i} ans") for i in range(14, 21)]))
     page = wtforms.HiddenField("page", default="1", validators=(wtforms.validators.Optional(),))
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
