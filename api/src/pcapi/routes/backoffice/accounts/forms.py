@@ -107,6 +107,9 @@ class AccountUpdateRequestSearchForm(utils.PCForm):
         reset_to_blank=True,
     )
     page = wtforms.HiddenField("page", default="1", validators=(wtforms.validators.Optional(),))
+    order = wtforms.HiddenField(
+        "order", default="desc", validators=(wtforms.validators.Optional(), wtforms.validators.AnyOf(("asc", "desc")))
+    )
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
         choices=(

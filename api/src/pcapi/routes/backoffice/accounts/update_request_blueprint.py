@@ -221,7 +221,7 @@ def list_account_update_requests() -> utils.BackofficeResponse:
         return render_template("accounts/update_requests_list.html", rows=[], form=form), 400
 
     query = _get_filtered_account_update_requests(form)
-    query = query.order_by(users_models.UserAccountUpdateRequest.dateLastStatusUpdate.desc())
+    query = query.order_by(getattr(users_models.UserAccountUpdateRequest.dateLastStatusUpdate, form.order.data)())
 
     paginated_rows = paginate(
         query=query,
@@ -234,12 +234,16 @@ def list_account_update_requests() -> utils.BackofficeResponse:
 
     autocomplete.prefill_bo_users_choices(form.last_instructor)
 
+    form_url = partial(url_for, ".list_account_update_requests", **form.raw_data)
+    date_last_update_sort_url = form_url(order="desc" if form.order.data == "asc" else "asc")
+
     return render_template(
         "accounts/update_requests_list.html",
         rows=paginated_rows,
         form=form,
         next_pages_urls=next_pages_urls,
         is_instructor=(current_user.backoffice_profile.dsInstructorId is not None),
+        date_last_update_sort_url=date_last_update_sort_url,
     )
 
 
