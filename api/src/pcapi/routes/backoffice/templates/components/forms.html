@@ -48,22 +48,22 @@
   {% set select_multiple = [] %}
   {% set switches = [] %}
   {% set limit_fields = [] %}
-  {% for form_field in form %}
-    {% if "Hidden" in form_field.type %}
-      {{ form_field }}
-    {% elif "limit" in form_field.name %}
-      {% set _ = limit_fields.append(form_field) %}
-    {% elif form_field.type in ('PCSelectMultipleField', "PCQuerySelectMultipleField", "PCTomSelectField") and not form_field.search_inline %}
-      {% set _ = select_multiple.append(form_field) %}
-    {% elif form_field.type == "PCSwitchBooleanField" %}
-      {% set _ = switches.append(form_field) %}
-    {% else %}
-      {% set _ = row1_fields.append(form_field) %}
-    {% endif %}
-  {% endfor %}
   <form action="{{ action }}"
         name="{{ action | action_to_name }}"
         method="get">
+    {% for form_field in form %}
+      {% if "Hidden" in form_field.type %}
+        {{ form_field }}
+      {% elif "limit" in form_field.name %}
+        {% set _ = limit_fields.append(form_field) %}
+      {% elif form_field.type in ('PCSelectMultipleField', "PCQuerySelectMultipleField", "PCTomSelectField") and not form_field.search_inline %}
+        {% set _ = select_multiple.append(form_field) %}
+      {% elif form_field.type == "PCSwitchBooleanField" %}
+        {% set _ = switches.append(form_field) %}
+      {% else %}
+        {% set _ = row1_fields.append(form_field) %}
+      {% endif %}
+    {% endfor %}
     {% if form.errors %}
       <div class="w-100 my-4">
         {% for form_field in form %}

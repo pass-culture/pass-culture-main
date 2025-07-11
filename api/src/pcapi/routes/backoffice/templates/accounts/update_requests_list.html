@@ -31,7 +31,18 @@
   {% if is_instructor %}<th>Actions</th>{% endif %}
   <th>Dossier</th>
   <th>État</th>
-  <th>Date de dernière MàJ</th>
+  <th>
+    {% if date_last_update_sort_url %}
+      <a href="{{ date_last_update_sort_url }}"
+         class="text-decoration-none"
+         title="Changer pour un tri {{ 'décroissant' if request.args.get("order") == 'asc' else 'croissant' }}">
+        Date de dernière MàJ
+        <i class="bi bi-sort-{{ 'up' if request.args.get("order") == 'asc' else 'down' }}-alt"></i>
+      </a>
+    {% else %}
+      Date de dernière MàJ
+    {% endif %}
+  </th>
   <th>Date des derniers messages</th>
   <th>Demandeur</th>
   <th>Jeune</th>
