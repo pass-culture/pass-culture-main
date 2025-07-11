@@ -213,13 +213,10 @@ export function Table<
                   id={col.id}
                   colSpan={col.headerColSpan || 1}
                   key={col.id}
-                  className={classNames(
-                    styles.columnWidth,
-                    styles['table-header-th'],
-                    {
-                      [styles['table-header-th-sortable']]: col.sortable,
-                    }
-                  )}
+                  className={classNames(styles.columnWidth, {
+                    [styles['table-header-th']]: !col.sortable,
+                    [styles['table-header-sortable-th']]: col.sortable,
+                  })}
                 >
                   {col.sortable ? (
                     <SortColumn
