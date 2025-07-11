@@ -1,5 +1,6 @@
 import hashlib
 import os
+import time
 from collections import namedtuple
 from contextlib import suppress
 from pathlib import Path
@@ -120,6 +121,12 @@ def _retrieve_hash(file_path: Path) -> str:
 
 
 def generate_bundle(files: list[Path], destination: Path) -> None:
+    if settings.ENABLE_BO_BUNDLES_AUTORELOAD:
+        with suppress(FileNotFoundError):
+            # do not rebuild the bundle if it was built less than 1s ago
+            if os.stat(destination).st_mtime > time.time() - 1:
+                return
+
     with suppress(FileNotFoundError):
         os.unlink(destination)
 
