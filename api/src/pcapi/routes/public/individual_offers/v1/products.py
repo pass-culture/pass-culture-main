@@ -198,69 +198,66 @@ def post_product_offer(body: products_serializers.ProductOfferCreation) -> seria
     venue_provider = authorization.get_venue_provider_or_raise_404(body.location.venue_id)
     venue = utils.get_venue_with_offerer_address(venue_provider.venueId)
 
-    try:
-        offerer_address = venue.offererAddress  # default offerer_address
+    offerer_address = venue.offererAddress  # default offerer_address
 
-        if body.location.type == "address":
-            address = public_utils.get_address_or_raise_404(body.location.address_id)
-            offerer_address = offerers_api.get_or_create_offerer_address(
-                offerer_id=venue.managingOffererId,
-                address_id=address.id,
-                label=body.location.address_label,
-            )
-
-        offer = offers_api.create_offer(
-            offers_schemas.CreateOffer(
-                name=body.name,
-                subcategoryId=body.category_related_fields.subcategory_id,
-                audioDisabilityCompliant=body.accessibility.audio_disability_compliant,
-                mentalDisabilityCompliant=body.accessibility.mental_disability_compliant,
-                motorDisabilityCompliant=body.accessibility.motor_disability_compliant,
-                visualDisabilityCompliant=body.accessibility.visual_disability_compliant,
-                bookingContact=body.booking_contact,
-                bookingEmail=body.booking_email,
-                description=body.description,
-                externalTicketOfficeUrl=body.external_ticket_office_url,
-                ean=body.category_related_fields.ean if hasattr(body.category_related_fields, "ean") else None,
-                extraData=serialization.deserialize_extra_data(body.category_related_fields, venue_id=venue.id),
-                idAtProvider=body.id_at_provider,
-                isDuo=body.enable_double_bookings,
-                url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
-                withdrawalDetails=body.withdrawal_details,
-            ),  # type: ignore[call-arg]
-            venue=venue,
-            provider=current_api_key.provider,
-            offerer_address=offerer_address,
+    if body.location.type == "address":
+        address = public_utils.get_address_or_raise_404(body.location.address_id)
+        offerer_address = offerers_api.get_or_create_offerer_address(
+            offerer_id=venue.managingOffererId,
+            address_id=address.id,
+            label=body.location.address_label,
         )
 
-        if body.image:
-            utils.save_image(body.image, offer)
+    offer = offers_api.create_offer(
+        offers_schemas.CreateOffer(
+            name=body.name,
+            subcategoryId=body.category_related_fields.subcategory_id,
+            audioDisabilityCompliant=body.accessibility.audio_disability_compliant,
+            mentalDisabilityCompliant=body.accessibility.mental_disability_compliant,
+            motorDisabilityCompliant=body.accessibility.motor_disability_compliant,
+            visualDisabilityCompliant=body.accessibility.visual_disability_compliant,
+            bookingContact=body.booking_contact,
+            bookingEmail=body.booking_email,
+            description=body.description,
+            externalTicketOfficeUrl=body.external_ticket_office_url,
+            ean=body.category_related_fields.ean if hasattr(body.category_related_fields, "ean") else None,
+            extraData=serialization.deserialize_extra_data(body.category_related_fields, venue_id=venue.id),
+            idAtProvider=body.id_at_provider,
+            isDuo=body.enable_double_bookings,
+            url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
+            withdrawalDetails=body.withdrawal_details,
+        ),  # type: ignore[call-arg]
+        venue=venue,
+        provider=current_api_key.provider,
+        offerer_address=offerer_address,
+    )
 
-        if body.stock:
-            offers_api.create_stock(
-                offer=offer,
-                price=finance_utils.cents_to_full_unit(body.stock.price),
-                quantity=serialization.deserialize_quantity(body.stock.quantity),
-                booking_limit_datetime=body.stock.booking_limit_datetime,
-                creating_provider=current_api_key.provider,
-            )
+    if body.image:
+        utils.save_image(body.image, offer)
 
-        offers_api.update_offer_fraud_information(offer, user=None)
+    if body.stock:
+        offers_api.create_stock(
+            offer=offer,
+            price=finance_utils.cents_to_full_unit(body.stock.price),
+            quantity=serialization.deserialize_quantity(body.stock.quantity),
+            booking_limit_datetime=body.stock.booking_limit_datetime,
+            creating_provider=current_api_key.provider,
+        )
 
-        updates = body.dict(by_alias=True, exclude_unset=True)
-        now = datetime.now(timezone.utc).replace(tzinfo=None)
-        publication_datetime = updates.get("publicationDatetime", now)
+    offers_api.update_offer_fraud_information(offer, user=None)
 
-        # if publication_datetime is explicitly set to None, the offer
-        # is a draft and it should not be finalized.
-        if publication_datetime:
-            offers_api.finalize_offer(
-                offer,
-                publication_datetime=body.publication_datetime,  # type: ignore[arg-type]
-                booking_allowed_datetime=body.booking_allowed_datetime,
-            )
-    except offers_exceptions.OfferException as error:
-        raise api_errors.ApiErrors(error.errors)
+    updates = body.dict(by_alias=True, exclude_unset=True)
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    publication_datetime = updates.get("publicationDatetime", now)
+
+    # if publication_datetime is explicitly set to None, the offer
+    # is a draft and it should not be finalized.
+    if publication_datetime:
+        offers_api.finalize_offer(
+            offer,
+            publication_datetime=body.publication_datetime,  # type: ignore[arg-type]
+            booking_allowed_datetime=body.booking_allowed_datetime,
+        )
 
     return serialization.ProductOfferResponse.build_product_offer(offer)
 
@@ -577,52 +574,49 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
 
     venue, offerer_address = utils.extract_venue_and_offerer_address_from_location(body)
 
-    try:
-        updates = body.dict(by_alias=True, exclude_unset=True)
-        dc = updates.get("accessibility", {})
-        extra_data = copy.deepcopy(offer.extraData)
+    updates = body.dict(by_alias=True, exclude_unset=True)
+    dc = updates.get("accessibility", {})
+    extra_data = copy.deepcopy(offer.extraData)
 
-        publication_datetime = get_field(offer, updates, "publicationDatetime")
-        is_active = get_field(offer, updates, "isActive")
+    publication_datetime = get_field(offer, updates, "publicationDatetime")
+    is_active = get_field(offer, updates, "isActive")
 
-        # TODO(jbaudet): remove this part, do not use isActive once
-        # the public API does not allow it anymore
-        if "publicationDatetime" not in updates and updates.get("isActive") is not None:
-            publication_datetime = datetime.now(timezone.utc) if is_active else None
+    # TODO(jbaudet): remove this part, do not use isActive once
+    # the public API does not allow it anymore
+    if "publicationDatetime" not in updates and updates.get("isActive") is not None:
+        publication_datetime = datetime.now(timezone.utc) if is_active else None
 
-        offer_body = offers_schemas.UpdateOffer(
-            name=get_field(offer, updates, "name"),
-            audioDisabilityCompliant=get_field(offer, dc, "audioDisabilityCompliant"),
-            mentalDisabilityCompliant=get_field(offer, dc, "mentalDisabilityCompliant"),
-            motorDisabilityCompliant=get_field(offer, dc, "motorDisabilityCompliant"),
-            visualDisabilityCompliant=get_field(offer, dc, "visualDisabilityCompliant"),
-            bookingContact=get_field(offer, updates, "bookingContact"),
-            bookingEmail=get_field(offer, updates, "bookingEmail"),
-            description=get_field(offer, updates, "description"),
-            extraData=(
-                serialization.deserialize_extra_data(
-                    body.category_related_fields, extra_data, venue_id=venue.id if venue else None
-                )
-                if "categoryRelatedFields" in updates
-                else extra_data
-            ),
-            idAtProvider=get_field(offer, updates, "idAtProvider"),
-            isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
-            withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
-            publicationDatetime=publication_datetime,
-            bookingAllowedDatetime=get_field(offer, updates, "bookingAllowedDatetime"),
-        )  # type: ignore[call-arg]
-        updated_offer = offers_api.update_offer(offer, offer_body, venue=venue, offerer_address=offerer_address)
-        db.session.flush()
+    offer_body = offers_schemas.UpdateOffer(
+        name=get_field(offer, updates, "name"),
+        audioDisabilityCompliant=get_field(offer, dc, "audioDisabilityCompliant"),
+        mentalDisabilityCompliant=get_field(offer, dc, "mentalDisabilityCompliant"),
+        motorDisabilityCompliant=get_field(offer, dc, "motorDisabilityCompliant"),
+        visualDisabilityCompliant=get_field(offer, dc, "visualDisabilityCompliant"),
+        bookingContact=get_field(offer, updates, "bookingContact"),
+        bookingEmail=get_field(offer, updates, "bookingEmail"),
+        description=get_field(offer, updates, "description"),
+        extraData=(
+            serialization.deserialize_extra_data(
+                body.category_related_fields, extra_data, venue_id=venue.id if venue else None
+            )
+            if "categoryRelatedFields" in updates
+            else extra_data
+        ),
+        idAtProvider=get_field(offer, updates, "idAtProvider"),
+        isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
+        withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
+        publicationDatetime=publication_datetime,
+        bookingAllowedDatetime=get_field(offer, updates, "bookingAllowedDatetime"),
+    )  # type: ignore[call-arg]
+    updated_offer = offers_api.update_offer(offer, offer_body, venue=venue, offerer_address=offerer_address)
+    db.session.flush()
 
-        if body.image:
-            utils.save_image(body.image, updated_offer)
+    if body.image:
+        utils.save_image(body.image, updated_offer)
 
-        if "stock" in updates:
-            offers_tasks.upsert_product_stock(updated_offer, body.stock, current_api_key.provider)
-            db.session.refresh(offer)  # to ensure that `offer.activeStocks` is correctly populated
-    except offers_exceptions.OfferException as e:
-        raise api_errors.ApiErrors(e.errors)
+    if "stock" in updates:
+        offers_tasks.upsert_product_stock(updated_offer, body.stock, current_api_key.provider)
+        db.session.refresh(offer)  # to ensure that `offer.activeStocks` is correctly populated
 
     return serialization.ProductOfferResponse.build_product_offer(offer)
 
