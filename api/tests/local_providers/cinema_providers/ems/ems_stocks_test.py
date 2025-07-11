@@ -7,6 +7,7 @@ from pathlib import Path
 from unittest import mock
 
 import pytest
+import time_machine
 
 from pcapi import settings
 from pcapi.connectors.ems import EMSScheduleConnector
@@ -43,6 +44,7 @@ class EMSStocksTest:
         credentials = history_api_call.headers["Authorization"].split("Basic ")[1]
         assert b64decode(credentials).decode() == f"{settings.EMS_API_USER}:{settings.EMS_API_PASSWORD}"
 
+    @time_machine.travel(datetime.datetime(2023, 2, 12), tick=False)
     def should_fill_and_create_offer_and_stock_information_for_each_movie_if_product_doesnt_exist(self, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
@@ -270,6 +272,7 @@ class EMSStocksTest:
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.image is None
 
+    @time_machine.travel(datetime.datetime(2023, 2, 12), tick=False)
     def test_successive_version_syncs(self, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
@@ -448,6 +451,7 @@ class EMSStocksTest:
         assert created_offers[0].bookingEmail == "seyne-sur-mer-booking@example.com"
         assert created_offers[0].withdrawalDetails == "Modalité de retrait"
         assert created_offers[0].isDuo
+        assert created_offers[0].publicationDatetime == datetime.datetime(2023, 2, 12)
 
         assert not created_stocks[0].quantity
         assert created_stocks[0].price == Decimal("7.15")
@@ -479,6 +483,7 @@ class EMSStocksTest:
         assert created_offers[1].bookingEmail == "seyne-sur-mer-booking@example.com"
         assert created_offers[1].withdrawalDetails == "Modalité de retrait"
         assert created_offers[1].isDuo
+        assert created_offers[1].publicationDatetime == datetime.datetime(2023, 2, 12)
 
         assert not created_stocks[2].quantity
         assert created_stocks[2].price == Decimal("5.15")

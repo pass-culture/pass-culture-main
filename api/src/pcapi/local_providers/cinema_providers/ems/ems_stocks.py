@@ -169,6 +169,7 @@ class EMSStocks:
         offer.offererAddress = self.venue.offererAddress
         offer.bookingEmail = venue.bookingEmail
         offer.withdrawalDetails = venue.withdrawalDetails
+        offer.publicationDatetime = offer.publicationDatetime or utils_date.get_naive_utc_now()
         self.created_objects += 1
         return offer
 
