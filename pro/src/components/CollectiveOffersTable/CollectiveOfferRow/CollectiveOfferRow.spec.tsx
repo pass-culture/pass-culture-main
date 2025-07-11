@@ -556,4 +556,77 @@ describe('ollectiveOfferRow', () => {
       ).not.toBeInTheDocument()
     })
   })
+
+  it('should use the new collective offer detail URL when feature flag is active', () => {
+    vi.mock('commons/hooks/useActiveFeature', () => ({
+      useActiveFeature: vi.fn(() => true),
+    }))
+
+    renderOfferItem(props)
+
+    const offerTitle = screen.getByRole('link', { name: props.offer.name })
+    expect(offerTitle).toHaveAttribute(
+      'href',
+      `/offre/${props.offer.id}/collectif/recapitulatif`
+    )
+  })
+
+  it('should use the creation edit URL when offer is a draft', () => {
+    props.offer.displayedStatus = CollectiveOfferDisplayedStatus.DRAFT
+
+    renderOfferItem(props)
+
+    const actionsButton = screen.getByRole('button', {
+      name: 'Voir les actions',
+    })
+    expect(actionsButton).toBeInTheDocument()
+  })
+
+  it('should call selectOffer when checkbox is clicked', async () => {
+    renderOfferItem(props)
+
+    const checkbox = screen.getByRole('checkbox')
+    await userEvent.click(checkbox)
+
+    expect(props.selectOffer).toHaveBeenCalledWith(props.offer)
+  })
+
+  it('should apply "is-first-row" class if isFirstRow is true', () => {
+    const { container } = renderOfferItem(props)
+
+    const row = container.querySelector('tr')
+    expect(row?.className).toContain('is-first-row')
+  })
+
+  it('should display "Tous les établissements" if educationalInstitution is null', () => {
+    props.offer.educationalInstitution = null
+
+    renderOfferItem(props)
+
+    expect(screen.getByText('Tous les établissements')).toBeInTheDocument()
+  })
+
+  it('should use only the first stock for bookingLimitDate', () => {
+    props.offer = collectiveOfferFactory({
+      displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
+      stocks: [
+        {
+          bookingLimitDatetime: getToday().toISOString(),
+          remainingQuantity: 1,
+          hasBookingLimitDatetimePassed: false,
+        },
+        {
+          bookingLimitDatetime: undefined,
+          remainingQuantity: 0,
+          hasBookingLimitDatetimePassed: true,
+        },
+      ],
+    })
+
+    renderOfferItem(props)
+
+    expect(
+      screen.getByText('En attente de réservation par le chef d’établissement')
+    ).toBeInTheDocument()
+  })
 })
