@@ -41,7 +41,7 @@ from . import models
 # You will find the legacy ones at the bottom of the file, waiting to be improved or ruthlessly deleted.
 
 
-class BaseUserFactory(BaseFactory):
+class BaseUserFactory(BaseFactory[models.User]):
     """
     Generates a user as if it were created by the account creation form.
     The user was asked for
