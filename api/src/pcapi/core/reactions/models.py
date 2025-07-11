@@ -24,9 +24,9 @@ class Reaction(PcObject, Base, Model):
     reactionType = sa.Column(MagicEnum(ReactionTypeEnum), nullable=False)
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
     user: sa_orm.Mapped["User"] = sa_orm.relationship("User", back_populates="reactions")
-    offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=True, index=True)
+    offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=True)
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", back_populates="reactions")
-    productId = sa.Column(sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=True, index=True)
+    productId = sa.Column(sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=True)
     product: sa_orm.Mapped["Product"] = sa_orm.relationship("Product", back_populates="reactions")
 
     __table_args__ = (
@@ -39,6 +39,16 @@ class Reaction(PcObject, Base, Model):
             )
         ),
         sa.Index("reaction_offer_product_user_unique_constraint", "userId", "offerId", "productId", unique=True),
+        sa.Index(
+            "ix_reaction_offer_like",
+            "offerId",
+            postgresql_where=sa.text('"reactionType" = \'LIKE\' AND "offerId" IS NOT NULL'),
+        ),
+        sa.Index(
+            "ix_reaction_product_like",
+            "productId",
+            postgresql_where=sa.text('"reactionType" = \'LIKE\' AND "productId" IS NOT NULL'),
+        ),
     )
 
 
