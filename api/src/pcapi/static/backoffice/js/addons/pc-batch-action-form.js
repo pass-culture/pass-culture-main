@@ -63,6 +63,7 @@ class PcBatchActionForm extends PcAddOn {
   static BATCH_CONFIRM_BTN_SELECTOR = 'button[data-use-confirmation-modal],button[data-use-dynamic-modal]'
   static BATCH_ACTION_BUTTON_CONTAINER = '[data-table-multiselect-menu-for="%s"]'
   static BATCH_ACTION_BUTTON_CONTAINER_ITEM_COUNTER = '.counter'
+  static BATCH_ACTION_BUTTON_CONTAINER_ITEM_VALUE = '.value'
 
   state = {}
 
@@ -80,6 +81,10 @@ class PcBatchActionForm extends PcAddOn {
 
   getCounterElement = ($menuContainer) => {
     return $menuContainer.querySelector(PcBatchActionForm.BATCH_ACTION_BUTTON_CONTAINER_ITEM_COUNTER)
+  }
+
+  getValueElement = ($menuContainer) => {
+    return $menuContainer.querySelector(PcBatchActionForm.BATCH_ACTION_BUTTON_CONTAINER_ITEM_VALUE)
   }
 
   initialize = () => {
@@ -115,7 +120,7 @@ class PcBatchActionForm extends PcAddOn {
   }
 
   #onBatchSelectionChange = ({ detail }) => {
-    const { selectedRowsIds, tableMultiSelectId } = detail
+    const { selectedRowsIds, selectedCheckboxes, tableMultiSelectId } = detail
     const $menuContainer = this.getBatchActionButtonContainer(tableMultiSelectId)
     this.state[tableMultiSelectId] = { selectedRowsIds }
     this.$batchConfirmBtnGroups.forEach(($batchConfirmBtnGroup) => {
@@ -135,6 +140,14 @@ class PcBatchActionForm extends PcAddOn {
         $menuContainer.classList.remove('d-none')
         const $counterElement = this.getCounterElement($menuContainer)
         $counterElement.innerText = selectedRowsIds.length
+        const $valueElement = this.getValueElement($menuContainer)
+        if ($valueElement != null) {
+          const totalValue = selectedCheckboxes.reduce(
+            (acc, checkbox) => acc + parseFloat(checkbox?.dataset?.value || 0)
+            , 0.0,
+          )
+          $valueElement.innerText = totalValue.toFixed(2).replace('.', ',')
+        }
       }
     }
     this.#updateHiddenFormIds(tableMultiSelectId, selectedRowsIds)
