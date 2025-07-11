@@ -42,4 +42,67 @@ describe('OfferNameCell', () => {
     expect(screen.getByText('Offre vitrine')).toBeInTheDocument()
     expect(screen.getByText('Offre nom')).toBeInTheDocument()
   })
+
+  it('should not display tag when offer is not a template', () => {
+    const offer = collectiveOfferFactory({ isShowcase: false, name: 'Test' })
+
+    renderOfferNameCell({ offer, offerLink: '#', rowId: 'rowId' })
+
+    expect(screen.queryByText('Offre vitrine')).not.toBeInTheDocument()
+    expect(screen.getByText('Test')).toBeInTheDocument()
+  })
+
+  it('should render a thumbnail when displayThumb is true', () => {
+    const offer = collectiveOfferFactory({ imageUrl: '/thumb.jpg' })
+
+    renderOfferNameCell({
+      offer,
+      offerLink: '#',
+      rowId: 'rowId',
+      displayThumb: true,
+    })
+
+    expect(screen.getByRole('presentation')).toHaveAttribute(
+      'src',
+      '/thumb.jpg'
+    )
+  })
+
+  it('should not render a thumbnail when displayThumb is false', () => {
+    const offer = collectiveOfferFactory({ imageUrl: '/thumb.jpg' })
+
+    renderOfferNameCell({
+      offer,
+      offerLink: '#',
+      rowId: 'rowId',
+      displayThumb: false,
+    })
+
+    expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
+  })
+
+  it('should display the mobile label when displayLabel is true', () => {
+    const offer = collectiveOfferFactory({ name: 'Test' })
+
+    renderOfferNameCell({
+      offer,
+      offerLink: '#',
+      rowId: 'rowId',
+      displayLabel: true,
+    })
+
+    expect(screen.getByText(/Nom de l’offre|Nom/i)).toBeInTheDocument()
+  })
+
+  it('should use the correct link for the offer', () => {
+    const offer = collectiveOfferFactory({ name: 'Link test' })
+
+    renderOfferNameCell({
+      offer,
+      offerLink: '/offre/123',
+      rowId: 'rowId',
+    })
+
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/offre/123')
+  })
 })
