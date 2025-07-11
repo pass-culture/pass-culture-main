@@ -1946,9 +1946,9 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         This test is inspired from real life data, and aims to reproduce a bug
 
         We generate a user that:
-        - First had a failed AGE18 acvtivation attempt (thus having some AGE18 ok fraud checks)
+        - First had a failed AGE18 activation attempt (thus having some AGE18 ok fraud checks)
         - Then had a successful UNDERAGE activation attempt
-        - Finally tries a GRANT_17_18 activation attempt, while being elligible.
+        - Finally tries a GRANT_17_18 activation attempt, while being eligible.
           - They used to get an error when activating and get the wrong role (with an awful 500 error)
           - But now they get the right role (and a nice 200 response)
         """
@@ -1987,7 +1987,6 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             eligibilityType=users_models.EligibilityType.AGE18,
             type=fraud_models.FraudCheckType.UBBLE,
             reason="Eligibility type changed by the identity provider",
-            resultContent=fraud_factories.UbbleContentFactory(),
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -2016,7 +2015,6 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             eligibilityType=users_models.EligibilityType.UNDERAGE,
             type=fraud_models.FraudCheckType.UBBLE,
             reason="",
-            resultContent=fraud_factories.UbbleContentFactory(),
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -2039,6 +2037,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         with time_machine.travel(datetime(2025, 3, 10)):
             fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
             subscription_api.activate_beneficiary_if_no_missing_step(user)
+
         assert user.roles == [users_models.UserRole.BENEFICIARY]
         assert user.deposit.type == finance_models.DepositType.GRANT_17_18
 
