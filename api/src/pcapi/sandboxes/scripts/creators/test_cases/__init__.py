@@ -631,6 +631,10 @@ def create_offers_interactions() -> None:
         name="Livre 1 headline 1 chronique 5 likes dans vos Librairies des interactions",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
     )
+    product_with_mixed_chronicles = offers_factories.ProductFactory.create(
+        name="Livre avec chroniques mixtes",
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
+    )
 
     offer_1_likes_headline = offers_factories.OfferFactory.create(
         product=product_1_likes_1_headline, venue=venue_with_headlined_and_liked_books_1
@@ -653,12 +657,27 @@ def create_offers_interactions() -> None:
         product=product_2_likes_2_headline_1_chronicle, venue=venue_with_headlined_and_liked_books_1
     )
 
+    offer_without_product_with_chronicles = offers_factories.OfferFactory.create(
+        name="Offre sans produit avec chroniques", venue=venue_with_headlined_and_liked_books_1
+    )
+
+    offer_without_product_with_likes = offers_factories.OfferFactory.create(
+        name="Offre sans produit avec likes", venue=venue_with_headlined_and_liked_books_1
+    )
+
+    offer_with_product_with_chronicles = offers_factories.OfferFactory.create(
+        product=product_with_mixed_chronicles, venue=venue_with_headlined_and_liked_books_1
+    )
+
     offers_factories.StockFactory.create(offer=offer_1_likes_headline)
     offers_factories.StockFactory.create(offer=offer_1_likes_no_headline)
     offers_factories.StockFactory.create(offer=offer_2_likes_headline_1)
     offers_factories.StockFactory.create(offer=offer_2_likes_headline_2)
     offers_factories.StockFactory.create(offer=offer_5_likes_headline)
     offers_factories.StockFactory.create(offer=offer_5_likes_no_headline)
+    offers_factories.StockFactory.create(offer=offer_without_product_with_chronicles)
+    offers_factories.StockFactory.create(offer=offer_without_product_with_likes)
+    offers_factories.StockFactory.create(offer=offer_with_product_with_chronicles)
 
     ReactionFactory.create_batch(1, offer=offer_1_likes_headline, reactionType=ReactionTypeEnum.LIKE)
     ReactionFactory.create_batch(1, offer=offer_1_likes_no_headline, reactionType=ReactionTypeEnum.LIKE)
@@ -666,9 +685,58 @@ def create_offers_interactions() -> None:
     ReactionFactory.create_batch(2, offer=offer_2_likes_headline_2, reactionType=ReactionTypeEnum.LIKE)
     ReactionFactory.create_batch(5, offer=offer_5_likes_headline, reactionType=ReactionTypeEnum.LIKE)
     ReactionFactory.create_batch(5, offer=offer_5_likes_no_headline, reactionType=ReactionTypeEnum.LIKE)
+    ReactionFactory.create_batch(5, offer=offer_without_product_with_likes, reactionType=ReactionTypeEnum.LIKE)
 
     chronicles_factories.ChronicleFactory.create(products=[product_2_likes_2_headline_1_chronicle])
     chronicles_factories.ChronicleFactory.create(products=[product_5_likes_1_headline_1_chronicle])
+    chronicles_factories.ChronicleFactory.create(
+        content="Chronique avec likes et chroniques",
+        products=[product_with_mixed_chronicles],
+        isActive=True,
+        isSocialMediaDiffusible=True,
+    )
+    chronicles_factories.ChronicleFactory.create(
+        content="Chronique avec likes et chroniques",
+        products=[product_with_mixed_chronicles],
+        isActive=True,
+        isSocialMediaDiffusible=False,
+    )
+    chronicles_factories.ChronicleFactory.create(
+        content="Chronique avec likes et chroniques",
+        products=[product_with_mixed_chronicles],
+        isActive=False,
+        isSocialMediaDiffusible=True,
+    )
+    chronicles_factories.ChronicleFactory.create(
+        content="Chronique avec likes et chroniques",
+        products=[product_with_mixed_chronicles],
+        isActive=False,
+        isSocialMediaDiffusible=False,
+    )
+    chronicles_factories.ChronicleFactory.create(
+        content="Chronique inactive et non diffusible",
+        offers=[offer_without_product_with_chronicles],
+        isActive=False,
+        isSocialMediaDiffusible=False,
+    )
+    chronicles_factories.ChronicleFactory.create(
+        content="Chronique inactive et diffusible",
+        offers=[offer_without_product_with_chronicles],
+        isActive=False,
+        isSocialMediaDiffusible=True,
+    )
+    chronicles_factories.ChronicleFactory.create(
+        content="Chronique active et non diffusible",
+        offers=[offer_without_product_with_chronicles],
+        isActive=True,
+        isSocialMediaDiffusible=False,
+    )
+    chronicles_factories.ChronicleFactory.create(
+        content="Chronique active et diffusible",
+        offers=[offer_without_product_with_chronicles],
+        isActive=True,
+        isSocialMediaDiffusible=True,
+    )
 
     offers_factories.HeadlineOfferFactory.create(offer=offer_1_likes_headline)
     offers_factories.HeadlineOfferFactory.create(offer=offer_2_likes_headline_1)
