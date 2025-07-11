@@ -153,6 +153,7 @@ class GetOffererTest:
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # check user_offerer exists
         num_queries += 1  # rollback
+        num_queries += 1  # rollback
         with testing.assert_num_queries(num_queries):
             response = client.get(f"/offerers/{offerer_id}")
             assert response.status_code == 403

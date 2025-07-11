@@ -166,7 +166,8 @@ def confirm_email_update_request_and_send_mail(encoded_token: str) -> None:
     try:
         generate_and_send_beneficiary_validation_email_for_email_change(user, new_email)
         with transaction():
-            models.UserEmailHistory.build_confirmation(user, new_email)
+            email_history = models.UserEmailHistory.build_confirmation(user, new_email)
+            db.session.add(email_history)
         token.expire()
 
     except Exception as error:
@@ -220,7 +221,8 @@ def cancel_email_update_request(encoded_token: str) -> None:
         comment="Suspension suite à un changement d'email annulé",
     )
     transactional_mails.send_email_update_cancellation_email(user)
-    models.UserEmailHistory.build_cancellation(user, new_email)
+    email_history = models.UserEmailHistory.build_cancellation(user, new_email)
+    db.session.add(email_history)
     token.expire()
 
 

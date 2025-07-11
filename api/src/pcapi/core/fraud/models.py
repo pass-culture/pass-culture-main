@@ -18,6 +18,7 @@ from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.serialization.utils import to_camel
+from pcapi.utils.db import MagicEnum
 
 from .common import models as common_models
 
@@ -580,7 +581,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
     )
     # The eligibility is null when the user is not eligible
     eligibilityType = sa.Column(
-        sa.Enum(users_models.EligibilityType, create_constraint=False),
+        MagicEnum(users_models.EligibilityType),
         nullable=True,
     )
     idPicturesStored = sa.Column(
@@ -595,9 +596,9 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
     resultContent: sa_orm.Mapped[dict | None] = sa.Column(
         sa.ext.mutable.MutableDict.as_mutable(sa.dialects.postgresql.JSONB(none_as_null=True))
     )
-    status: FraudCheckStatus = sa.Column(sa.Enum(FraudCheckStatus, create_constraint=False), nullable=True)
+    status: FraudCheckStatus = sa.Column(MagicEnum(FraudCheckStatus), nullable=True)
     thirdPartyId: str = sa.Column(sa.TEXT(), index=True, nullable=False)
-    type: FraudCheckType = sa.Column(sa.Enum(FraudCheckType, create_constraint=False), nullable=False)
+    type: FraudCheckType = sa.Column(MagicEnum(FraudCheckType), nullable=False)
     updatedAt: datetime.datetime = sa.Column(
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=sa.func.now()
     )

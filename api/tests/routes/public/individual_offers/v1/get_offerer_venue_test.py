@@ -228,6 +228,7 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
 
         num_queries = 1  # select api_key, offerer and provider
         num_queries += 1  # rollback atomic
+        num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"siren": "1234567890"})
             assert response == 400
@@ -238,6 +239,7 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
         plain_api_key, _ = self.setup_provider()
 
         num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # rollback atomic
         num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"siren": "1234890"})

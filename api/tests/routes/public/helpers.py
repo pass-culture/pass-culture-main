@@ -53,10 +53,14 @@ class PublicAPIEndpointBaseHelper:
         client_method = getattr(client, self.endpoint_method)
         url = self.endpoint_url
 
+        kwargs = {}
+        if self.endpoint_method == "post":
+            kwargs["json"] = {}
+
         if self.default_path_params:
             url = url.format(**self.default_path_params)
         with testing.assert_num_queries(0):
-            response = client_method(url)
+            response = client_method(url, **kwargs)
             assert response.status_code == 401
 
         assert response.json == {"auth": "API key required"}
@@ -71,11 +75,15 @@ class PublicAPIEndpointBaseHelper:
         client_method = getattr(client.with_explicit_token(plain_api_key), self.endpoint_method)
         url = self.endpoint_url
 
+        kwargs = {}
+        if self.endpoint_method == "post":
+            kwargs["json"] = {}
+
         if self.default_path_params:
             url = url.format(**self.default_path_params)
 
         # TODO: (tcoudray-pass, 23/06/25) Restore `testing.assert_num_queries` when all public API endpoints use `@atomic`
-        response = client_method(url)
+        response = client_method(url, **kwargs)
         assert response.status_code == 401
 
         assert response.json == {"auth": "Deprecated API key. Please contact provider support to get a new API key"}

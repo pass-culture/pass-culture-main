@@ -22,6 +22,7 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
     num_queries_404 = 1  # select api_key, offerer and provider
     num_queries_404 += 1  # select offers
     num_queries_404 += 1  # rollback atomic
+    num_queries_404 += 1  # rollback atomic
 
     num_queries = 1  # select price categories
     num_queries += 1  # select api_key, offerer and provider

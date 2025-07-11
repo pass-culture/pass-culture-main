@@ -111,6 +111,7 @@ def adage_mock_cancel_collective_booking(booking_id: int) -> None:
     environment as it is a mock meant to ease the test of your
     integrations.
     """
+    api_key_id = current_api_key.id
     booking = _get_booking_or_raise_404(booking_id)
 
     try:
@@ -121,8 +122,8 @@ def adage_mock_cancel_collective_booking(booking_id: int) -> None:
     except exceptions.BookingIsAlreadyRefunded:
         raise ForbiddenError({"code": "BOOKING_IS_REIMBURSED"})
     except Exception:
-        err_extras = {"booking": booking.id, "api_key_id": current_api_key.id}
-        logger.exception("Adage mock. Failed to cancel booking.", extra=err_extras)
+        err_extras = {"booking": booking_id, "api_key_id": api_key_id}
+        logger.error("Adage mock. Failed to cancel booking.", extra=err_extras)
         raise ApiErrors({"code": "FAILED_TO_CANCEL_BOOKING_TRY_AGAIN"}, status_code=500)
 
 

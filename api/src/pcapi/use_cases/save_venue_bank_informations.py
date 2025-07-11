@@ -269,7 +269,7 @@ class ImportBankAccountMixin:
                 sa.or_(has_non_free_offers_subquery, has_non_free_collective_offers_subquery),
             )
             .join(offerers_models.Offerer)
-            .outerjoin(
+            .join(
                 offerers_models.VenueBankAccountLink,
                 sa.and_(
                     offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,

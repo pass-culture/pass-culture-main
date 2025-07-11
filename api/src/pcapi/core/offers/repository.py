@@ -920,10 +920,10 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
                     offerers_models.OffererAddress._isLinkedToVenue,
                     offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
                 ),
-                sa_orm.joinedload(models.Offer.venue)
+                sa_orm.defaultload(models.Offer.venue)
                 .joinedload(offerers_models.Venue.offererAddress)
                 .joinedload(offerers_models.OffererAddress.address),
-                sa_orm.joinedload(models.Offer.venue)
+                sa_orm.defaultload(models.Offer.venue)
                 .joinedload(offerers_models.Venue.offererAddress)
                 .with_expression(
                     offerers_models.OffererAddress._isLinkedToVenue,

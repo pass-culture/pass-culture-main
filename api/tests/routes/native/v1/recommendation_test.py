@@ -90,7 +90,7 @@ class SimilarOffersTest:
 class PlaylistTest:
     def test_anonymous(self, client):
         with testing.assert_num_queries(0):
-            response = client.post("/native/v1/recommendation/playlist")
+            response = client.post("/native/v1/recommendation/playlist", json={})
             assert response.status_code == 401
 
     def test_authenticated(self, client, db_session):
@@ -99,7 +99,7 @@ class PlaylistTest:
         client = client.with_token(user.email)
         # User authentication
         with testing.assert_num_queries(1):
-            response = client.post("/native/v1/recommendation/playlist")
+            response = client.post("/native/v1/recommendation/playlist", json={})
             assert response.status_code == 200
 
         assert response.json["playlistRecommendedOffers"] == ["300", "301", "302"]
@@ -137,7 +137,7 @@ class PlaylistTest:
         client = client.with_token(user.email)
         # User authentication
         with testing.assert_num_queries(1):
-            response = client.post("/native/v1/recommendation/playlist")
+            response = client.post("/native/v1/recommendation/playlist", json={})
             assert response.status_code == 504
 
         assert response.json == {"code": "RECOMMENDATION_API_TIMEOUT"}
@@ -156,7 +156,7 @@ class PlaylistTest:
         client = client.with_token(user.email)
         # User authentication
         with testing.assert_num_queries(1):
-            response = client.post("/native/v1/recommendation/playlist")
+            response = client.post("/native/v1/recommendation/playlist", json={})
             assert response.status_code == 502
 
         assert response.json == {"code": "RECOMMENDATION_API_ERROR"}

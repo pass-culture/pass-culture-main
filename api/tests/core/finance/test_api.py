@@ -207,7 +207,7 @@ class PriceEventTest:
         venue.isSoftDeleted = True
         db.session.add(venue)
         db.session.commit()
-        assert offerers_models.Venue.query.filter_by(id=venue_id).first() is None
+        assert db.session.query(offerers_models.Venue).filter_by(id=venue_id).first() is None
 
         api.price_event(event1)
 
@@ -4059,7 +4059,7 @@ class PrepareInvoiceContextTest:
         venue.isSoftDeleted = True
         db.session.add(venue)
         db.session.commit()
-        assert offerers_models.Venue.query.filter_by(id=venue_id).first() is None
+        assert db.session.query(offerers_models.Venue).filter_by(id=venue_id).first() is None
 
         batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
@@ -4073,8 +4073,8 @@ class PrepareInvoiceContextTest:
         softdeleted_context = api.get_reimbursements_by_venue(invoice)
         assert softdeleted_context
 
-        offerers_models.Venue.query.filter_by(id=venue_id).update({"isSoftDeleted": False})
-        assert offerers_models.Venue.query.filter_by(id=venue_id).first() is not None
+        db.session.query(offerers_models.Venue).filter_by(id=venue_id).update({"isSoftDeleted": False})
+        assert db.session.query(offerers_models.Venue).filter_by(id=venue_id).first() is not None
 
         assert list(api.get_reimbursements_by_venue(invoice)) == list(softdeleted_context)
 

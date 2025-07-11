@@ -309,6 +309,21 @@ def find_collective_bookings_for_adage(
     return query.all()
 
 
+def get_templates_ids_for_redactor_email(redactor_email: str) -> set[int]:
+    query = (
+        db.session.query(
+            educational_models.CollectiveOfferTemplateEducationalRedactor.collectiveOfferTemplateId,
+        )
+        .join(
+            educational_models.EducationalRedactor,
+            educational_models.CollectiveOfferTemplateEducationalRedactor.educationalRedactorId
+            == educational_models.EducationalRedactor.id,
+        )
+        .filter(educational_models.EducationalRedactor.email == redactor_email)
+    )
+    return {t.collectiveOfferTemplateId for t in query.all()}
+
+
 def find_redactor_by_email(redactor_email: str) -> educational_models.EducationalRedactor | None:
     return (
         db.session.query(educational_models.EducationalRedactor)

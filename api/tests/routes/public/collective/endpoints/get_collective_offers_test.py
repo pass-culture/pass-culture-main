@@ -281,6 +281,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         offer_id = educational_factories.CollectiveStockFactory().collectiveOffer.id
 
         api_client = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
-        with testing.assert_num_queries(self.num_queries + 1):  # rollback
+        with testing.assert_num_queries(self.num_queries + 2):  # double rollback
             response = api_client.get(f"/v2/collective/offers/{offer_id}")
             assert response.status_code == 403

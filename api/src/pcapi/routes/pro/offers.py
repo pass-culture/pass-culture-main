@@ -464,6 +464,20 @@ def patch_offer(
         offer = offers_api.update_offer(offer, offer_body, is_from_private_api=True)
     except exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
+    else:
+        db.session.flush()
+        offer = offers_repository.get_offer_by_id(
+            offer_id,
+            load_options=[
+                "stock",
+                "venue",
+                "offerer_address",
+                "product",
+                "bookings_count",
+                "is_non_free_offer",
+                "event_opening_hours",
+            ],
+        )
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 

@@ -16,6 +16,7 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
 
     num_queries_400 = 1  # select api_key, offerer and provider
     num_queries_400 += 1  # rollback atomic (at the end)
+    num_queries_400 += 1  # rollback atomic (at the end)
     num_queries_404 = num_queries_400 + 1  # check venue_provider exists
 
     num_queries_success_no_offers = 1  # select api_key, offerer and provider
