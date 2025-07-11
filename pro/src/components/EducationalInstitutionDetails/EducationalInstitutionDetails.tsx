@@ -30,7 +30,7 @@ export const EducationalInstitutionDetails = ({
           : styles['contact-details-container-oldlayout']
       }
     >
-      <div
+      <h2
         className={
           newLayout
             ? styles['contact-details-title-newlayout']
@@ -38,7 +38,7 @@ export const EducationalInstitutionDetails = ({
         }
       >
         Contact de l’établissement {newLayout ? '' : 'scolaire'}
-      </div>
+      </h2>
       <dl
         className={newLayout ? styles['contact-details-newlayout'] : undefined}
       >

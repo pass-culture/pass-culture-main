@@ -8,8 +8,6 @@
 
   &-step-title-passed {
     @include fonts.body-accent;
-
-    color: var(--color-text-subtle);
   }
 
   &-step-title-disabled {

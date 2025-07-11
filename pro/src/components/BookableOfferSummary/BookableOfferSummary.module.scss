@@ -115,7 +115,6 @@
   flex-direction: row;
   gap: rem.torem(24px);
   margin-top: rem.torem(32px);
-  justify-content: space-between;
 
   @media (max-width: size.$tablet) {
     margin-top: rem.torem(24px);

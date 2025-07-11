@@ -10,34 +10,62 @@ $vertical-offset-icon-from-step: calc(
 
 .container {
   display: flex;
-  gap: $margin-between-steps;
   flex-direction: column;
 }
 
-.icon {
-  position: absolute;
-  z-index: 1;
-  width: $icon-size;
-  height: $icon-size;
-  background-color: var(--color-background-default);
-  top: $vertical-offset-icon-from-step;
+.icon-line-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: rem.torem(20px);
+  height: auto;
+  margin-top: rem.torem(2px);
+}
 
-  // Multiply by -1 at the end because calc() syntax doesn't accept - at the start
-  left: calc(
-    (#{$margin-between-content-and-time-line} + #{$icon-size} / 2) * -1
+.icon-container {
+  display: flex;
+  width: rem.torem(20px);
+  height: rem.torem(20px);
+}
+
+.line {
+  margin-top: rem.torem(4px);
+  margin-bottom: rem.torem(4px);
+  width: rem.torem(2px);
+  height: 100%;
+  background-image: radial-gradient(
+    ellipse rem.torem(4px) rem.torem(4px),
+    var(--color-border-disabled) 100%,
+    transparent 100%
+  );
+  background-size: rem.torem(2px) rem.torem(10px);
+  background-repeat: repeat-y;
+  background-position: center;
+}
+
+.line-success {
+  background-image: radial-gradient(var(--color-valid) 100%, transparent 100%);
+}
+
+.line-disabled,
+.line-waiting {
+  background-image: radial-gradient(
+    ellipse rem.torem(2px) rem.torem(4px),
+    var(--color-border-disabled) 100%,
+    transparent 100%
   );
 }
 
 .icon-error {
+  width: rem.torem(20px);
+  height: rem.torem(20px);
   color: var(--color-icon-error);
-
-  path {
-    fill: var(--color-icon-error);
-  }
 }
 
 .icon-success {
   color: var(--color-icon-success);
+  width: rem.torem(20px);
+  height: rem.torem(20px);
 }
 
 .icon-success-disabled {
@@ -45,11 +73,16 @@ $vertical-offset-icon-from-step: calc(
 }
 
 .icon-waiting {
-  color: var(--color-icon-subtle);
+  width: rem.torem(12px);
+  height: rem.torem(12px);
+  margin: rem.torem(4px) auto;
 }
 
 .icon-disabled {
+  width: rem.torem(12px);
+  height: rem.torem(12px);
   color: var(--color-icon-disabled);
+  margin: rem.torem(4px) auto;
 }
 
 .icon-wrong {
@@ -57,41 +90,10 @@ $vertical-offset-icon-from-step: calc(
 }
 
 .step {
-  position: relative;
-  margin-left: calc(
-    #{$icon-size} / 2 + #{$margin-between-content-and-time-line}
-  );
-
-  &::after {
-    content: "";
-    border-width: 0 0 0 $time-line-width;
-    position: absolute;
-    top: $vertical-offset-icon-from-step;
-
-    // Multiply by -1 at the end because calc() syntax doesn't accept - at the start
-    left: calc(
-      (#{$margin-between-content-and-time-line} + #{$time-line-width} / 2) * -1
-    );
-    height: calc(100% + #{$margin-between-steps});
-  }
+  display: flex;
+  min-height: rem.torem(58px);
 }
 
-.line-success::after {
-  border-style: solid;
-  border-color: var(--color-valid);
-}
-
-.line-error::after {
-  border-style: solid;
-  border-color: var(--color-border-subtle);
-}
-
-.line-waiting::after {
-  border-style: dashed;
-  border-color: var(--color-border-default);
-}
-
-.line-disabled::after {
-  border-style: dashed;
-  border-color: var(--color-border-disabled);
+.step-content {
+  margin-left: rem.torem(16px);
 }

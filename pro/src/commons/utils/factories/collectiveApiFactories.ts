@@ -28,7 +28,7 @@ import {
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferBookingResponseModel,
-  CollectiveBookingStatus
+  CollectiveBookingStatus,
 } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
 
@@ -64,7 +64,7 @@ export const collectiveOfferFactory = (
     isPublicApi: false,
     interventionArea: [],
     isShowcase: false,
-    allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE,],
+    allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
     ...customCollectiveOffer,
     formats: [EacFormat.ATELIER_DE_PRATIQUE],
   }
@@ -130,8 +130,25 @@ export const getCollectiveOfferFactory = (
       locationType: CollectiveLocationType.ADDRESS,
     },
     history: {
-      past: [],
-      future: [],
+      future: [
+        CollectiveOfferDisplayedStatus.BOOKED,
+        CollectiveOfferDisplayedStatus.ENDED,
+        CollectiveOfferDisplayedStatus.REIMBURSED,
+      ],
+      past: [
+        {
+          status: CollectiveOfferDisplayedStatus.PUBLISHED,
+          datetime: '2025-07-05T13:38:12.020421Z',
+        },
+        {
+          status: CollectiveOfferDisplayedStatus.PREBOOKED,
+          datetime: '2025-06-23T13:28:11.883708Z',
+        },
+        {
+          status: CollectiveOfferDisplayedStatus.EXPIRED,
+          datetime: '2025-06-24T13:28:11.883708Z',
+        },
+      ],
     },
     ...customCollectiveOffer,
   }
@@ -296,15 +313,15 @@ export const collectiveBookingByIdFactory = (
 }
 
 export const defaultEducationalInstitution: EducationalInstitutionResponseModel =
-{
-  city: 'Paris',
-  id: institutionId++,
-  institutionId: 'ABC123',
-  institutionType: 'LYCEE',
-  name: 'Sacré coeur',
-  phoneNumber: '0601020304',
-  postalCode: '75000',
-}
+  {
+    city: 'Paris',
+    id: institutionId++,
+    institutionId: 'ABC123',
+    institutionType: 'LYCEE',
+    name: 'Sacré coeur',
+    phoneNumber: '0601020304',
+    postalCode: '75000',
+  }
 
 export const defaultEducationalRedactor: EducationalRedactorResponseModel = {
   civility: 'Mr',
@@ -354,18 +371,18 @@ export const defaultGetVenue: GetVenueResponseModel = {
 }
 
 export const defaultGetCollectiveOfferRequest: GetCollectiveOfferRequestResponseModel =
-{
-  comment: 'comment',
-  institution: {
-    city: 'Paris',
-    institutionId: 'ABC123',
-    institutionType: 'LYCEE',
-    name: 'Sacré coeur',
-    postalCode: '75000',
-  },
-  redactor: {
-    email: 'Jean.Dupont@example.com',
-    firstName: 'Jean',
-    lastName: 'Dupont',
-  },
-}
+  {
+    comment: 'comment',
+    institution: {
+      city: 'Paris',
+      institutionId: 'ABC123',
+      institutionType: 'LYCEE',
+      name: 'Sacré coeur',
+      postalCode: '75000',
+    },
+    redactor: {
+      email: 'Jean.Dupont@example.com',
+      firstName: 'Jean',
+      lastName: 'Dupont',
+    },
+  }
