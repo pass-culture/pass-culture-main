@@ -2,6 +2,7 @@ import { useLocation } from 'react-router'
 
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
+import { ReSendEmailCallout } from 'components/ReSendEmailCallout/ReSendEmailCallout'
 import fullMailIcon from 'icons/full-mail.svg'
 import { Callout } from 'ui-kit/Callout/Callout'
 
@@ -33,12 +34,7 @@ export const SignupConfirmation = () => {
           </>
         )}
       </p>
-      <Callout>
-        <p className={styles['signup-confirmation-info']}>
-          Vous n’avez pas reçu d’email ? <br /> Vérifiez vos spams ou cliquez
-          ici pour le recevoir à nouveau.
-        </p>
-      </Callout>
+      <ReSendEmailCallout hideLink />
     </section>
   ) : (
     <section className={styles['content']}>

@@ -19,12 +19,6 @@
 
     margin-bottom: rem.torem(24px);
   }
-
-  &-info {
-    @include fonts.body-s;
-
-    color: var(--color-grey-dark);
-  }
 }
 
 .content {
