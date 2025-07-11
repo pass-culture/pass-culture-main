@@ -29,6 +29,7 @@ import { postImageToVenue } from 'repository/pcapi/pcapi'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
+import { getPathToNavigateTo } from './context'
 import styles from './VenueEditionHeader.module.scss'
 
 export interface VenueEditionHeaderProps {
@@ -161,7 +162,11 @@ export const VenueEditionHeader = ({
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             icon={fullParametersIcon}
-            to={`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/parametres`}
+            to={getPathToNavigateTo(
+              venue.managingOfferer.id,
+              venue.id,
+              '/parametres'
+            )}
           >
             Paramètres généraux
           </ButtonLink>

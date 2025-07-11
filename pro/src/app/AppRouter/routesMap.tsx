@@ -149,7 +149,17 @@ export const routes: RouteConfig[] = [
   },
   {
     lazy: () => import('pages/VenueSettings/VenueSettings'),
+    path: '/structures/:offererId/lieux/:venueId/page-partenaire/parametres',
+    title: 'Paramètres généraux',
+  },
+  {
+    lazy: () => import('pages/VenueSettings/VenueSettings'),
     path: '/structures/:offererId/lieux/:venueId/parametres',
+    title: 'Paramètres généraux',
+  },
+  {
+    lazy: () => import('pages/VenueSettings/VenueSettings'),
+    path: '/structures/:offererId/lieux/:venueId/collectif/parametres',
     title: 'Paramètres généraux',
   },
   {
