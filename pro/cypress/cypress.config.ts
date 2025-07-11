@@ -32,7 +32,7 @@ export default defineConfig({
     experimentalRunAllSpecs: true, // Run all specs test in UI mode
   },
   retries: {
-    runMode: 2,
+    runMode: 0,
     openMode: 0,
   },
   viewportHeight: 1080,
@@ -45,6 +45,6 @@ export default defineConfig({
   env: {
     FAIL_FAST_STRATEGY: 'run',
     FAIL_FAST_ENABLED: true,
-    FAIL_FAST_BAIL: 3,
+    FAIL_FAST_BAIL: 1,
   },
 })
