@@ -15,4 +15,4 @@ class FeatureResponseModel(BaseModel):
 
 
 class ListFeatureResponseModel(BaseModel):
-    features: typing.Sequence[FeatureResponseModel]
+    __root__: typing.Sequence[FeatureResponseModel]

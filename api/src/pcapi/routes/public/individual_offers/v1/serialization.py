@@ -809,7 +809,7 @@ class GetTiteliveEventMusicTypesResponse(serialization.ConfiguredBaseModel):
 
 class BaseFileModel(BaseFile):
     @classmethod
-    def __modify_schema__(cls, field_schema: dict[str, typing.Any], field: typing.Any):
+    def __modify_schema__(cls, field_schema: dict[str, typing.Any], field: typing.Any) -> None:
         field_schema["format"] = "binary"
         field_schema["type"] = "string"
 

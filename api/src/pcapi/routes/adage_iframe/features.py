@@ -16,4 +16,4 @@ from pcapi.serialization.decorator import spectree_serialize
 def list_features(authenticated_information: AuthenticatedInformation) -> features_serialize.ListFeatureResponseModel:
     features = feature_queries.find_all()
 
-    return features_serialize.ListFeatureResponseModel(features=features)
+    return features_serialize.ListFeatureResponseModel(__root__=features)

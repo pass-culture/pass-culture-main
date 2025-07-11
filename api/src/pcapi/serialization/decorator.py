@@ -21,37 +21,48 @@ from .spec_tree import add_feature_flag
 logger = logging.getLogger(__name__)
 
 
-def _make_json_response(
-    content: BaseModel | None,
+def _make_response(
+    content: typing.Any,
     status_code: int,
-    by_alias: bool,
-    exclude_none: bool = False,
     headers: dict | None = None,
-) -> flask.Response:
-    """serializes model, creates JSON response with given status code"""
+) -> tuple:
     if status_code == 204:
-        return flask.make_response({}, 204)
+        return "", 204
 
     if not content:
         raise ApiErrors({"configuration": "You need to provide a response body model if the status code is not 204"})
 
-    json_content = content.json(exclude_none=exclude_none, by_alias=by_alias)
+    return content, status_code, headers or {}
+
+
+def _make_json_response(
+    content: BaseModel | None,
+    status_code: int,
+    headers: dict | None = None,
+) -> tuple | flask.Response:
+    """serializes model, creates JSON response with given status code"""
+    if status_code == 204:
+        return "", 204
+
+    if not content:
+        raise ApiErrors({"configuration": "You need to provide a response body model if the status code is not 204"})
+
+    json_content = content.json()
 
     response = flask.make_response(json_content, status_code, headers or {})
     response.mimetype = "application/json"
     return response
 
 
-def _make_string_response(content: BaseModel | None, status_code: int, headers: dict | None = None) -> flask.Response:
+def _make_string_response(content: BaseModel | None, status_code: int, headers: dict | None = None) -> tuple:
     """serializes model, creates JSON response with given status code"""
     if status_code == 204:
-        return flask.make_response({}, 204)
+        return "", 204
 
     if not content:
         raise ApiErrors({"configuration": "You need to provide a response body model if the status code is not 204"})
 
-    response = flask.make_response(content, status_code, headers or {})
-    return response
+    return content, status_code, headers or {}
 
 
 def _transform_query_args_to_dict(query_params: MultiDict, use_as_list: list[str]) -> dict:
@@ -77,8 +88,6 @@ def spectree_serialize(
     tags: typing.Sequence = (),
     before: typing.Callable | None = None,
     after: typing.Callable | None = None,
-    response_by_alias: bool = True,
-    exclude_none: bool = False,
     on_success_status: int = 200,
     on_empty_status: int | None = None,
     on_error_statuses: list[int] | None = None,
@@ -99,8 +108,6 @@ def spectree_serialize(
         tags: list of tags’ string. Defaults to ().
         before: hook executed before the spectree validation. Defaults to None.
         after: hook executed after the spectree validation. Defaults to None.
-        response_by_alias: whether or not the alias generator will be used. Defaults to True.
-        exclude_none: whether or not to remove the none values. Defaults to False.
         on_success_status: status returned when the validation is a success. Defaults to 200.
         on_error_statuses: list of possible error statuses. Defaults to [].
         api: [description]. Defaults to default_api.
@@ -149,7 +156,7 @@ def spectree_serialize(
             resp=spectree_response,
             tags=tags,
         )
-        def sync_validate(*args: typing.Any, **kwargs: typing.Any) -> flask.Response:
+        def sync_validate(*args: typing.Any, **kwargs: typing.Any) -> flask.Response | tuple:
             query_params = flask.request.args
             form = flask.request.form
             if body_in_kwargs:
@@ -190,12 +197,11 @@ def spectree_serialize(
             result = route(*args, **kwargs)
             if raw_response:
                 return result
+
             if json_format:
                 return _make_json_response(
                     content=result,
                     status_code=on_success_status if result else on_empty_status,
-                    by_alias=response_by_alias,
-                    exclude_none=exclude_none,
                     headers=response_headers,
                 )
 

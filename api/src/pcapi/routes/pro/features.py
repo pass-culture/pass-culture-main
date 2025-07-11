@@ -12,4 +12,4 @@ from . import blueprint
 @spectree_serialize(response_model=features_serialize.ListFeatureResponseModel, api=blueprint.pro_private_schema)
 def list_features() -> features_serialize.ListFeatureResponseModel:
     features = feature_queries.find_all()
-    return features_serialize.ListFeatureResponseModel(features=features)
+    return features_serialize.ListFeatureResponseModel(__root__=features)
