@@ -26,6 +26,7 @@ from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.repository.providable_queries import get_last_update_for_provider
+from pcapi.utils.date import get_naive_utc_now
 
 
 logger = logging.getLogger(__name__)
@@ -118,6 +119,7 @@ class BoostStocks(LocalProvider):
         offer.bookingEmail = self.venue.bookingEmail
         offer.withdrawalDetails = self.venue.withdrawalDetails
         offer.subcategoryId = subcategories.SEANCE_CINE.id
+        offer.publicationDatetime = offer.publicationDatetime or get_naive_utc_now()
         self.update_from_movie_information(offer, self.showtime_details.film)
 
         is_new_offer_to_insert = offer.id is None
