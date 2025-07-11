@@ -258,6 +258,24 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "otherAddress": "",
         }
 
+    def test_update_venue_does_nothing_if_unchanged(self, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+        venue = venue_provider.venue
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
+
+        payload = {"venueId": venue.id}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            with patch("pcapi.core.educational.api.offer.move_collective_offer_venue") as move_mock:
+                response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                    f"/v2/collective/offers/{offer.id}", json=payload
+                )
+
+        move_mock.assert_not_called()
+        assert response.status_code == 200
+        offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=offer.id).one()
+        assert offer.venueId == venue.id
+
     def test_change_venue_error(self, client):
         venue_provider = provider_factories.VenueProviderFactory()
         venue = venue_provider.venue
