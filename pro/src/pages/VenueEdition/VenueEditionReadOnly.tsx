@@ -15,20 +15,28 @@ interface VenueEditionReadOnlyProps {
 export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
   const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
 
-  const PublicWelcomeSection = ({ children }: { children: React.ReactNode | React.ReactNode[] }): JSX.Element => {
-    return isOpenToPublicEnabled ?
-      <SummarySubSection
-        title="Accueil du public"
-        shouldShowDivider={false}
-      >
+  const PublicWelcomeSection = ({
+    children,
+  }: {
+    children: React.ReactNode | React.ReactNode[]
+  }): JSX.Element => {
+    return isOpenToPublicEnabled ? (
+      <SummarySubSection title="Accueil du public" shouldShowDivider={false}>
         {children}
-      </SummarySubSection> : <>{children}</>
+      </SummarySubSection>
+    ) : (
+      <>{children}</>
+    )
   }
 
   return (
     <SummarySection
       title="Vos informations pour le grand public"
-      editLink={getPathToNavigateTo(venue.managingOfferer.id, venue.id, true)}
+      editLink={getPathToNavigateTo(
+        venue.managingOfferer.id,
+        venue.id,
+        '/edition'
+      )}
     >
       <SummarySubSection
         title="À propos de votre activité"
@@ -44,20 +52,22 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         />
       </SummarySubSection>
       <PublicWelcomeSection>
-        {isOpenToPublicEnabled && !venue.isOpenToPublic && <span>
-          Accueil du public dans la structure : Non
-        </span>}
-        {(!isOpenToPublicEnabled || venue.isOpenToPublic) && <>
-          <OpeningHoursReadOnly
-            isOpenToPublicEnabled={isOpenToPublicEnabled}
-            openingHours={venue.openingHours}
-            address={venue.address}
-          />
-          <AccessibilityReadOnly
-            isOpenToPublicEnabled={isOpenToPublicEnabled}
-            venue={venue}
-          />
-        </>}
+        {isOpenToPublicEnabled && !venue.isOpenToPublic && (
+          <span>Accueil du public dans la structure : Non</span>
+        )}
+        {(!isOpenToPublicEnabled || venue.isOpenToPublic) && (
+          <>
+            <OpeningHoursReadOnly
+              isOpenToPublicEnabled={isOpenToPublicEnabled}
+              openingHours={venue.openingHours}
+              address={venue.address}
+            />
+            <AccessibilityReadOnly
+              isOpenToPublicEnabled={isOpenToPublicEnabled}
+              venue={venue}
+            />
+          </>
+        )}
       </PublicWelcomeSection>
       <SummarySubSection
         title="Informations de contact"
