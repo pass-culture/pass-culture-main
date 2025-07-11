@@ -5,6 +5,7 @@ from pathlib import Path
 from unittest import mock
 
 import pytest
+import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
@@ -116,6 +117,7 @@ class CGRStocksTest:
         assert created_offers[1].extraData == {"allocineId": 234099, "visa": "82382"}
         assert created_offers[1]._extraData == None
 
+    @time_machine.travel(datetime.datetime(2022, 12, 30), tick=False)
     def should_fill_offer_and_stock_informations_for_each_movie_based_on_product(self, requests_mock):
         self._create_products()
         requests_mock.get("https://example.com/149341.jpg", content=bytes())
@@ -157,6 +159,7 @@ class CGRStocksTest:
         assert created_offers[0].description == "Description du produit allociné 1"
         assert created_offers[0].durationMinutes == 111
         assert created_offers[0].isDuo
+        assert created_offers[0].publicationDatetime == datetime.datetime(2022, 12, 30)
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[0].extraData == {"allocineId": 138473}
         assert created_offers[0]._extraData == None
@@ -176,6 +179,7 @@ class CGRStocksTest:
         assert created_offers[1].description == "Description du produit allociné 2"
         assert created_offers[1].durationMinutes == 222
         assert created_offers[1].isDuo
+        assert created_offers[1].publicationDatetime == datetime.datetime(2022, 12, 30)
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[1].extraData == {"allocineId": 234099}
         assert created_offers[1]._extraData == None
