@@ -18,9 +18,10 @@ class TestLocalProvider(LocalProvider):
     name = "LocalProvider Test"
     can_create = True
 
-    def __init__(self, venue_provider: VenueProvider = None):
+    def __init__(self, venue_provider: VenueProvider = None, enable_debug: bool = False):
         super().__init__(venue_provider)
         self.venue_provider = venue_provider
+        self.enable_debug = enable_debug
 
     def fill_object_attributes(self, obj):
         obj.name = "New Product"

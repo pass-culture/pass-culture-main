@@ -2,6 +2,8 @@ import datetime
 import json
 import logging
 
+import pydantic.v1 as pydantic_v1
+
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.users.models as users_models
@@ -20,14 +22,37 @@ from . import constants
 logger = logging.getLogger(__name__)
 
 
+def _log_external_call(
+    client: external_bookings_models.ExternalBookingsClientAPI, method: str, response: pydantic_v1.BaseModel
+) -> None:
+    logger.debug(
+        "[CINEMA] Call to external API",
+        extra={
+            "api_client": client.__class__.__name__,
+            "cinema_id": client.cinema_id,
+            "method": method,
+            "response": response.dict(exclude_unset=True),
+        },
+    )
+
+
 class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
-    def __init__(self, cinema_id: str, request_timeout: None | int = None):
-        super().__init__(cinema_id=cinema_id, request_timeout=request_timeout)
+    def __init__(
+        self,
+        cinema_id: str,
+        request_timeout: None | int = None,
+        enable_debug: bool = False,
+    ):
+        super().__init__(cinema_id=cinema_id, request_timeout=request_timeout, enable_debug=enable_debug)
         self.cgr_cinema_details = get_cgr_cinema_details(cinema_id)
 
     def get_films(self) -> list[cgr_serializers.Film]:
         logger.info("Fetching CGR movies", extra={"cinema_id": self.cinema_id})
         response = get_seances_pass_culture(self.cgr_cinema_details)
+
+        if self.enable_debug:
+            _log_external_call(self, "get_films", response)
+
         return response.ObjetRetour.Films
 
     @external_bookings_models.cache_external_call(
@@ -40,6 +65,9 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             allocine_film_id=int(film_id),
             request_timeout=self.request_timeout,
         )
+
+        if self.enable_debug:
+            _log_external_call(self, "get_film_showtimes_stocks", response)
 
         try:
             film = response.ObjetRetour.Films[0]

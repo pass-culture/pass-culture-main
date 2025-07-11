@@ -43,7 +43,11 @@ class CDSStocks(LocalProvider):
     name = "Ciné Office"
     can_create = True
 
-    def __init__(self, venue_provider: VenueProvider):
+    def __init__(
+        self,
+        venue_provider: VenueProvider,
+        enable_debug: bool = False,
+    ):
         super().__init__(venue_provider)
         self.apiUrl = settings.CDS_API_URL
         if not self.apiUrl:
@@ -60,6 +64,7 @@ class CDSStocks(LocalProvider):
             api_url=self.apiUrl,
             cinema_api_token=self.apiToken,
             request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
+            enable_debug=enable_debug,
         )
         self.movies: Iterator[MediaCDS] = iter(self.client_cds.get_venue_movies())
         self.media_options = self.client_cds.get_media_options()

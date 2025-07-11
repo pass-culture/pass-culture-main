@@ -1,5 +1,6 @@
 import datetime
 import decimal
+import logging
 from decimal import Decimal
 from pathlib import Path
 from unittest import mock
@@ -67,6 +68,96 @@ class CGRStocksTest:
         assert stock_providable_info.type == offers_models.Stock
         assert stock_providable_info.id_at_providers == f"138473%{venue_provider.venue.id}%CGR#177182"
         assert stock_providable_info.new_id_at_provider == f"138473%{venue_provider.venue.id}%CGR#177182"
+
+    @pytest.mark.parametrize(
+        "enable_debug,expected_logs_count,expected_logs",
+        [
+            (
+                False,
+                2,  # Info Fetching CGR movies + warning zeep
+                {},
+            ),
+            (
+                True,
+                3,  # Info Fetching CGR movies + warning zeep + debug call
+                {
+                    2: {
+                        "message": "[CINEMA] Call to external API",
+                        "extra": {
+                            "api_client": "CGRClientAPI",
+                            "cinema_id": "00000002600013",
+                            "method": "get_films",
+                            "response": {
+                                "CodeErreur": 0,
+                                "IntituleErreur": "",
+                                "ObjetRetour": {
+                                    "Films": [
+                                        {
+                                            "Affiche": "https://example.com/149341.jpg",
+                                            "Duree": 112,
+                                            "IDFilm": 138473,
+                                            "IDFilmAlloCine": 138473,
+                                            "NumVisa": 149341,
+                                            "Seances": [
+                                                {
+                                                    "Date": datetime.date(2023, 1, 29),
+                                                    "Heure": datetime.time(14, 0),
+                                                    "IDSeance": 177182,
+                                                    "NbPlacesRestantes": 99,
+                                                    "PrixUnitaire": Decimal("6.9"),
+                                                    "Relief": "2D",
+                                                    "Version": "VF",
+                                                    "bAVP": False,
+                                                    "bAvecDuo": True,
+                                                    "bAvecPlacement": True,
+                                                    "bICE": True,
+                                                    "libTarif": "Tarif Standard ICE",
+                                                }
+                                            ],
+                                            "Synopsis": "Possédé par un symbiote "
+                                            "qui agit de manière "
+                                            "autonome, le journaliste "
+                                            "Eddie Brock devient le "
+                                            "protecteur létal Venom.",
+                                            "Titre": "Venom",
+                                            "TypeFilm": "CNC",
+                                        }
+                                    ],
+                                    "NumCine": 999,
+                                },
+                            },
+                        },
+                    }
+                },
+            ),
+        ],
+    )
+    def test_should_log_calls_to_api(self, enable_debug, expected_logs_count, expected_logs, requests_mock, caplog):
+        requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        requests_mock.post(
+            "https://cgr-cinema-0.example.com/web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
+        )
+
+        cgr_provider = get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(
+            provider=cgr_provider, venueIdAtOfferProvider="00000002600013"
+        )
+        cinema_provider_pivot = providers_factories.CGRCinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
+        )
+
+        with caplog.at_level(logging.DEBUG, logger="pcapi.core.external_bookings.cgr.client"):
+            CGRStocks(venue_provider=venue_provider, enable_debug=enable_debug)
+
+        assert len(caplog.records) == expected_logs_count
+
+        for record_number in expected_logs.keys():
+            for attribute in expected_logs[record_number].keys():
+                assert getattr(caplog.records[record_number], attribute) == expected_logs[record_number][attribute]
 
     def should_create_offers_with_allocine_id_and_visa_if_products_dont_exist(self, requests_mock):
         requests_mock.get("https://example.com/149341.jpg", content=bytes())

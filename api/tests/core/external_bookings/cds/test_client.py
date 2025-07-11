@@ -1,5 +1,7 @@
+import copy
 import datetime
 import json
+import logging
 from unittest.mock import patch
 
 import pytest
@@ -62,246 +64,238 @@ def create_screen_cds(
     )
 
 
+MANY_SHOWS_RESPONSE_JSON = [
+    {
+        "id": 1,
+        "remaining_place": 88,
+        "internet_remaining_place": 10,
+        "disableseatmap": False,
+        "is_empty_seatmap": False,
+        "showtime": datetime.datetime(2022, 3, 28),
+        "is_cancelled": False,
+        "is_deleted": False,
+        "showsTariffPostypeCollection": [
+            {"tariffid": {"id": 96}},
+            {"tariffid": {"id": 3}},
+            {"tariffid": {"id": 2}},
+        ],
+        "screenid": {"id": 10},
+        "mediaid": {"id": 52},
+        "showsMediaoptionsCollection": [
+            {"mediaoptionsid": {"id": 12}},
+        ],
+    },
+    {
+        "id": 2,
+        "remaining_place": 88,
+        "internet_remaining_place": 30,
+        "disableseatmap": False,
+        "is_empty_seatmap": False,
+        "showtime": datetime.datetime(2022, 3, 29),
+        "is_cancelled": False,
+        "is_deleted": False,
+        "showsTariffPostypeCollection": [
+            {"tariffid": {"id": 96}},
+        ],
+        "screenid": {"id": 10},
+        "mediaid": {"id": 52},
+        "showsMediaoptionsCollection": [
+            {"mediaoptionsid": {"id": 12}},
+        ],
+    },
+    {
+        "id": 3,
+        "remaining_place": 88,
+        "internet_remaining_place": 100,
+        "disableseatmap": False,
+        "is_empty_seatmap": False,
+        "showtime": datetime.datetime(2022, 3, 30),
+        "is_cancelled": False,
+        "is_deleted": False,
+        "showsTariffPostypeCollection": [{"tariffid": {"id": 96}}],
+        "screenid": {"id": 20},
+        "mediaid": {"id": 52},
+        "showsMediaoptionsCollection": [
+            {"mediaoptionsid": {"id": 12}},
+        ],
+    },
+]
+
+ONE_SHOW_RESPONSE_JSON = [
+    {
+        "id": 1,
+        "remaining_place": 88,
+        "internet_remaining_place": 10,
+        "disableseatmap": False,
+        "is_empty_seatmap": False,
+        "showtime": datetime.datetime(2022, 3, 28),
+        "is_cancelled": False,
+        "is_deleted": False,
+        "showsTariffPostypeCollection": [{"tariffid": {"id": 96}}],
+        "screenid": {"id": 10},
+        "mediaid": {"id": 52},
+        "showsMediaoptionsCollection": [
+            {"mediaoptionsid": {"id": 12}},
+        ],
+    },
+]
+
+
 class CineDigitalServiceGetShowTest:
+    @pytest.mark.parametrize(
+        "enable_debug, expected_logs",
+        [
+            (False, {}),
+            (
+                True,
+                {
+                    0: {
+                        "message": "[CINEMA] Call to external API",
+                        "extra": {
+                            "api_client": "CineDigitalServiceAPI",
+                            "method": "get_show",
+                            "cinema_id": "cinemaid_test",
+                            "response": MANY_SHOWS_RESPONSE_JSON,
+                        },
+                    }
+                },
+            ),
+        ],
+    )
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
-    def test_should_return_show_corresponding_to_show_id(self, mocked_get_resource):
-        # Given
+    def test_should_return_show_corresponding_to_show_id(
+        self, mocked_get_resource, enable_debug, expected_logs, caplog
+    ):
         token = "token_test"
         api_url = "apiUrl_test/"
         account_id = "accountid_test"
         resource = ResourceCDS.SHOWS
 
-        json_shows = [
-            {
-                "id": 1,
-                "remaining_place": 88,
-                "internet_remaining_place": 10,
-                "disableseatmap": False,
-                "is_empty_seatmap": False,
-                "showtime": datetime.datetime(2022, 3, 28),
-                "is_cancelled": False,
-                "is_deleted": False,
-                "showsTariffPostypeCollection": [
-                    {"tariffid": {"id": 96}},
-                    {"tariffid": {"id": 3}},
-                    {"tariffid": {"id": 2}},
-                ],
-                "screenid": {"id": 10},
-                "mediaid": {"id": 52},
-                "showsMediaoptionsCollection": [
-                    {"mediaoptionsid": {"id": 12}},
-                ],
-            },
-            {
-                "id": 2,
-                "remaining_place": 88,
-                "internet_remaining_place": 30,
-                "disableseatmap": False,
-                "is_empty_seatmap": False,
-                "showtime": datetime.datetime(2022, 3, 29),
-                "is_cancelled": False,
-                "is_deleted": False,
-                "showsTariffPostypeCollection": [
-                    {"tariffid": {"id": 96}},
-                ],
-                "screenid": {"id": 10},
-                "mediaid": {"id": 52},
-                "showsMediaoptionsCollection": [
-                    {"mediaoptionsid": {"id": 12}},
-                ],
-            },
-            {
-                "id": 3,
-                "remaining_place": 88,
-                "internet_remaining_place": 100,
-                "disableseatmap": False,
-                "is_empty_seatmap": False,
-                "showtime": datetime.datetime(2022, 3, 30),
-                "is_cancelled": False,
-                "is_deleted": False,
-                "showsTariffPostypeCollection": [{"tariffid": {"id": 96}}],
-                "screenid": {"id": 20},
-                "mediaid": {"id": 52},
-                "showsMediaoptionsCollection": [
-                    {"mediaoptionsid": {"id": 12}},
-                ],
-            },
-        ]
-        mocked_get_resource.return_value = json_shows
+        mocked_get_resource.return_value = MANY_SHOWS_RESPONSE_JSON
 
-        # when
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="cinemaid_test",
             account_id="accountid_test",
             cinema_api_token="token_test",
             api_url="apiUrl_test/",
             request_timeout=14,
+            enable_debug=enable_debug,
         )
-        show = cine_digital_service.get_show(2)
+        with caplog.at_level(logging.DEBUG, logger="pcapi.core.external_bookings.cds.client"):
+            show = cine_digital_service.get_show(2)
 
-        # then
+        assert len(caplog.records) == len(expected_logs.keys())
+        for record_number in expected_logs.keys():
+            for attribute in expected_logs[record_number].keys():
+                assert getattr(caplog.records[record_number], attribute) == expected_logs[record_number][attribute]
+
         mocked_get_resource.assert_called_once_with(api_url, account_id, token, resource, request_timeout=14)
 
         assert show.id == 2
 
+    @pytest.mark.parametrize(
+        "enable_debug,expected_logs",
+        [
+            (False, {}),
+            (
+                True,
+                {
+                    0: {
+                        "message": "[CINEMA] Call to external API",
+                        "extra": {
+                            "api_client": "CineDigitalServiceAPI",
+                            "method": "get_show",
+                            "cinema_id": "test_id",
+                            "response": ONE_SHOW_RESPONSE_JSON,
+                        },
+                    }
+                },
+            ),
+        ],
+    )
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
-    def test_should_raise_exception_if_show_not_found(self, mocked_get_resource):
-        json_shows = [
-            {
-                "id": 1,
-                "remaining_place": 88,
-                "internet_remaining_place": 10,
-                "disableseatmap": False,
-                "is_empty_seatmap": False,
-                "showtime": datetime.datetime(2022, 3, 28),
-                "is_cancelled": False,
-                "is_deleted": False,
-                "showsTariffPostypeCollection": [{"tariffid": {"id": 96}}],
-                "screenid": {"id": 10},
-                "mediaid": {"id": 52},
-                "showsMediaoptionsCollection": [
-                    {"mediaoptionsid": {"id": 12}},
-                ],
-            },
-        ]
-        mocked_get_resource.return_value = json_shows
+    def test_should_raise_exception_if_show_not_found(self, mocked_get_resource, enable_debug, expected_logs, caplog):
+        mocked_get_resource.return_value = ONE_SHOW_RESPONSE_JSON
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="account_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id",
+            account_id="account_test",
+            cinema_api_token="token_test",
+            api_url="test_url",
+            enable_debug=enable_debug,
         )
-        with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as cds_exception:
-            cine_digital_service.get_show(4)
+
+        with caplog.at_level(logging.DEBUG, logger="pcapi.core.external_bookings.cds.client"):
+            with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as cds_exception:
+                cine_digital_service.get_show(4)
+
+        assert len(caplog.records) == len(expected_logs.keys())
+        for record_number in expected_logs.keys():
+            for attribute in expected_logs[record_number].keys():
+                assert getattr(caplog.records[record_number], attribute) == expected_logs[record_number][attribute]
+
         assert (
             str(cds_exception.value)
             == "Show #4 not found in Cine Digital Service API for cinemaId=test_id & url=test_url"
         )
 
+    @pytest.mark.parametrize(
+        "seatmap, expected_result",
+        [("[[]]", True), ("[[1,1,1,1],[2,2,2,2]]", False)],
+    )
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
-    def test_should_return_true_if_seatmap_is_empty(self, mocked_get_resource):
-        json_shows = [
-            {
-                "id": 1,
-                "remaining_place": 88,
-                "internet_remaining_place": 10,
-                "disableseatmap": False,
-                "seatmap": "[[]]",
-                "showtime": datetime.datetime(2022, 3, 28),
-                "is_cancelled": False,
-                "is_deleted": False,
-                "showsTariffPostypeCollection": [{"tariffid": {"id": 96}}],
-                "screenid": {"id": 10},
-                "mediaid": {"id": 52},
-                "showsMediaoptionsCollection": [
-                    {"mediaoptionsid": {"id": 12}},
-                ],
-            },
-        ]
-        mocked_get_resource.return_value = json_shows
-        cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="account_test", cinema_api_token="token_test", api_url="test_url"
-        )
-        show = cine_digital_service.get_show(1)
-        assert show.is_empty_seatmap is True
+    def test_should_return_true_if_seatmap_is_empty(self, mocked_get_resource, seatmap, expected_result):
+        show = copy.deepcopy(ONE_SHOW_RESPONSE_JSON[0])
+        show.update(seatmap=seatmap)
+        mocked_get_resource.return_value = [show]
 
-    @patch("pcapi.core.external_bookings.cds.client.get_resource")
-    def test_should_return_false_if_seatmap_is_not_empty(self, mocked_get_resource):
-        json_shows = [
-            {
-                "id": 1,
-                "remaining_place": 88,
-                "internet_remaining_place": 10,
-                "disableseatmap": False,
-                "seatmap": "[[1,1,1,1],[2,2,2,2]]",
-                "showtime": datetime.datetime(2022, 3, 28),
-                "is_cancelled": False,
-                "is_deleted": False,
-                "showsTariffPostypeCollection": [{"tariffid": {"id": 96}}],
-                "screenid": {"id": 10},
-                "mediaid": {"id": 52},
-                "showsMediaoptionsCollection": [
-                    {"mediaoptionsid": {"id": 12}},
-                ],
-            },
-        ]
-        mocked_get_resource.return_value = json_shows
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id", account_id="account_test", cinema_api_token="token_test", api_url="test_url"
         )
+
         show = cine_digital_service.get_show(1)
-        assert show.is_empty_seatmap is False
+        assert show.is_empty_seatmap is expected_result
 
 
 class CineDigitalServiceGetShowsRemainingPlacesTest:
+    @pytest.mark.parametrize(
+        "enable_debug, expected_logs",
+        [
+            (False, {}),
+            (
+                True,
+                {
+                    0: {
+                        "message": "[CINEMA] Call to external API",
+                        "extra": {
+                            "api_client": "CineDigitalServiceAPI",
+                            "method": "get_shows_remaining_places",
+                            "cinema_id": "cinemaid_test",
+                            "response": MANY_SHOWS_RESPONSE_JSON,
+                        },
+                    }
+                },
+            ),
+        ],
+    )
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     @patch(
         "pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_internet_sale_gauge_active",
         return_value=True,
     )
     def test_should_return_shows_id_with_corresponding_internet_remaining_places(
-        self, mocked_internet_sale_gauge_active, mocked_get_resource
+        self,
+        mocked_internet_sale_gauge_active,
+        mocked_get_resource,
+        enable_debug,
+        expected_logs,
+        caplog,
     ):
-        # Given
         token = "token_test"
         api_url = "apiUrl_test/"
         account_id = "accountid_test"
         resource = ResourceCDS.SHOWS
 
-        json_shows = [
-            {
-                "id": 1,
-                "remaining_place": 88,
-                "internet_remaining_place": 10,
-                "disableseatmap": False,
-                "is_empty_seatmap": False,
-                "showtime": datetime.datetime(2022, 3, 28),
-                "is_cancelled": False,
-                "is_deleted": False,
-                "showsTariffPostypeCollection": [
-                    {"tariffid": {"id": 2}},
-                ],
-                "screenid": {"id": 10},
-                "mediaid": {"id": 52},
-                "showsMediaoptionsCollection": [
-                    {"mediaoptionsid": {"id": 12}},
-                ],
-            },
-            {
-                "id": 2,
-                "remaining_place": 88,
-                "internet_remaining_place": 30,
-                "disableseatmap": False,
-                "is_empty_seatmap": False,
-                "showtime": datetime.datetime(2022, 3, 29),
-                "is_cancelled": False,
-                "is_deleted": False,
-                "showsTariffPostypeCollection": [
-                    {"tariffid": {"id": 2}},
-                ],
-                "screenid": {"id": 10},
-                "mediaid": {"id": 52},
-                "showsMediaoptionsCollection": [
-                    {"mediaoptionsid": {"id": 12}},
-                ],
-            },
-            {
-                "id": 3,
-                "remaining_place": 88,
-                "internet_remaining_place": 100,
-                "disableseatmap": False,
-                "is_empty_seatmap": False,
-                "showtime": datetime.datetime(2022, 3, 30),
-                "is_cancelled": False,
-                "is_deleted": False,
-                "showsTariffPostypeCollection": [
-                    {"tariffid": {"id": 2}},
-                ],
-                "screenid": {"id": 10},
-                "mediaid": {"id": 52},
-                "showsMediaoptionsCollection": [
-                    {"mediaoptionsid": {"id": 12}},
-                ],
-            },
-        ]
-        mocked_get_resource.return_value = json_shows
+        mocked_get_resource.return_value = MANY_SHOWS_RESPONSE_JSON
 
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="cinemaid_test",
@@ -309,8 +303,16 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
             cinema_api_token="token_test",
             api_url="apiUrl_test/",
             request_timeout=14,
+            enable_debug=enable_debug,
         )
-        shows_remaining_places = cine_digital_service.get_shows_remaining_places([2, 3])
+
+        with caplog.at_level(logging.DEBUG, logger="pcapi.core.external_bookings.cds.client"):
+            shows_remaining_places = cine_digital_service.get_shows_remaining_places([2, 3])
+
+        assert len(caplog.records) == len(expected_logs.keys())
+        for record_number in expected_logs.keys():
+            for attribute in expected_logs[record_number].keys():
+                assert getattr(caplog.records[record_number], attribute) == expected_logs[record_number][attribute]
 
         mocked_get_resource.assert_called_once_with(api_url, account_id, token, resource, request_timeout=14)
 
@@ -329,63 +331,7 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
         api_url = "apiUrl_test/"
         resource = ResourceCDS.SHOWS
 
-        json_shows = [
-            {
-                "id": 1,
-                "remaining_place": 88,
-                "internet_remaining_place": 10,
-                "disableseatmap": False,
-                "is_empty_seatmap": False,
-                "showtime": datetime.datetime(2022, 3, 28),
-                "is_cancelled": False,
-                "is_deleted": False,
-                "showsTariffPostypeCollection": [
-                    {"tariffid": {"id": 2}},
-                ],
-                "screenid": {"id": 10},
-                "mediaid": {"id": 52},
-                "showsMediaoptionsCollection": [
-                    {"mediaoptionsid": {"id": 12}},
-                ],
-            },
-            {
-                "id": 2,
-                "remaining_place": 88,
-                "internet_remaining_place": 30,
-                "disableseatmap": False,
-                "is_empty_seatmap": False,
-                "showtime": datetime.datetime(2022, 3, 29),
-                "is_cancelled": False,
-                "is_deleted": False,
-                "showsTariffPostypeCollection": [
-                    {"tariffid": {"id": 2}},
-                ],
-                "screenid": {"id": 10},
-                "mediaid": {"id": 52},
-                "showsMediaoptionsCollection": [
-                    {"mediaoptionsid": {"id": 12}},
-                ],
-            },
-            {
-                "id": 3,
-                "remaining_place": 88,
-                "internet_remaining_place": 100,
-                "disableseatmap": False,
-                "is_empty_seatmap": False,
-                "showtime": datetime.datetime(2022, 3, 30),
-                "is_cancelled": False,
-                "is_deleted": False,
-                "showsTariffPostypeCollection": [
-                    {"tariffid": {"id": 2}},
-                ],
-                "screenid": {"id": 10},
-                "mediaid": {"id": 52},
-                "showsMediaoptionsCollection": [
-                    {"mediaoptionsid": {"id": 12}},
-                ],
-            },
-        ]
-        mocked_get_resource.return_value = json_shows
+        mocked_get_resource.return_value = MANY_SHOWS_RESPONSE_JSON
 
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="cinemaid_test",
@@ -402,8 +348,39 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
 
 
 class CineDigitalServiceGetPaymentTypeTest:
+    @pytest.mark.parametrize(
+        "enable_debug,expected_logs",
+        [
+            (False, {}),
+            (
+                True,
+                {
+                    0: {
+                        "message": "[CINEMA] Call to external API",
+                        "extra": {
+                            "api_client": "CineDigitalServiceAPI",
+                            "method": "get_voucher_payment_type",
+                            "cinema_id": "cinemaid_test",
+                            "response": [
+                                {
+                                    "id": 21,
+                                    "active": True,
+                                    "internalcode": "VCH",
+                                },
+                                {
+                                    "id": 22,
+                                    "active": True,
+                                    "internalcode": "OTHERPAYMENTYPE",
+                                },
+                            ],
+                        },
+                    }
+                },
+            ),
+        ],
+    )
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
-    def test_should_return_voucher_payment_type(self, mocked_get_resource):
+    def test_should_return_voucher_payment_type(self, mocked_get_resource, enable_debug, expected_logs, caplog):
         json_payment_types = [
             {
                 "id": 21,
@@ -419,10 +396,22 @@ class CineDigitalServiceGetPaymentTypeTest:
 
         mocked_get_resource.return_value = json_payment_types
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="cinemaid_test", account_id="accountid_test", cinema_api_token="token_test", api_url="apiUrl_test"
+            cinema_id="cinemaid_test",
+            account_id="accountid_test",
+            cinema_api_token="token_test",
+            api_url="apiUrl_test",
+            enable_debug=enable_debug,
         )
 
         payment_type = cine_digital_service.get_voucher_payment_type()
+
+        with caplog.at_level(logging.DEBUG, logger="pcapi.core.external_bookings.cds.client"):
+            payment_type = cine_digital_service.get_voucher_payment_type()
+
+        assert len(caplog.records) == len(expected_logs.keys())
+        for record_number in expected_logs.keys():
+            for attribute in expected_logs[record_number].keys():
+                assert getattr(caplog.records[record_number], attribute) == expected_logs[record_number][attribute]
 
         assert payment_type.id == 21
         assert payment_type.internal_code == "VCH"
@@ -454,8 +443,48 @@ class CineDigitalServiceGetPaymentTypeTest:
 
 
 class CineDigitalServiceGetPCVoucherTypesTest:
+    @pytest.mark.parametrize(
+        "enable_debug,expected_logs",
+        [
+            (False, {}),
+            (
+                True,
+                {
+                    0: {
+                        "message": "[CINEMA] Call to external API",
+                        "extra": {
+                            "api_client": "CineDigitalServiceAPI",
+                            "method": "get_pc_voucher_types",
+                            "cinema_id": "cinemaid_test",
+                            "response": [
+                                {
+                                    "id": 1,
+                                    "code": "TESTCODE",
+                                    "tariffid": {"id": 2, "price": 5, "active": True, "labeltariff": ""},
+                                },
+                                {
+                                    "id": 2,
+                                    "code": "PSCULTURE",
+                                    "tariffid": {"id": 3, "price": 5, "active": True, "labeltariff": ""},
+                                },
+                                {
+                                    "id": 3,
+                                    "code": "PSCULTURE",
+                                    "tariffid": {"id": 4, "price": 6, "active": True, "labeltariff": ""},
+                                },
+                                {"id": 4, "code": "PSCULTURE"},
+                                {"id": 5, "code": None},
+                            ],
+                        },
+                    }
+                },
+            ),
+        ],
+    )
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
-    def test_should_return_only_voucher_types_with_pass_culture_code_and_tariff(self, mocked_get_resource):
+    def test_should_return_only_voucher_types_with_pass_culture_code_and_tariff(
+        self, mocked_get_resource, enable_debug, expected_logs, caplog
+    ):
         json_voucher_types = [
             {"id": 1, "code": "TESTCODE", "tariffid": {"id": 2, "price": 5, "active": True, "labeltariff": ""}},
             {"id": 2, "code": "PSCULTURE", "tariffid": {"id": 3, "price": 5, "active": True, "labeltariff": ""}},
@@ -466,12 +495,20 @@ class CineDigitalServiceGetPCVoucherTypesTest:
 
         mocked_get_resource.return_value = json_voucher_types
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="cinema_id_test",
+            cinema_id="cinemaid_test",
             account_id="accountid_test",
             cinema_api_token="token_test",
             api_url="apiUrl_test",
+            enable_debug=enable_debug,
         )
-        pc_voucher_types = cine_digital_service.get_pc_voucher_types()
+
+        with caplog.at_level(logging.DEBUG, logger="pcapi.core.external_bookings.cds.client"):
+            pc_voucher_types = cine_digital_service.get_pc_voucher_types()
+
+        assert len(caplog.records) == len(expected_logs.keys())
+        for record_number in expected_logs.keys():
+            for attribute in expected_logs[record_number].keys():
+                assert getattr(caplog.records[record_number], attribute) == expected_logs[record_number][attribute]
 
         assert len(pc_voucher_types) == 2
         assert pc_voucher_types[0].id == 2
