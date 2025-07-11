@@ -696,7 +696,7 @@ export const StocksEventEdition = ({
                     const beginningDate = stock.beginningDate
 
                     return (
-                      <tr className={styles['table-row']} key={index}>
+                      <tr className={styles['table-row']} key={f.id}>
                         <td className={styles['data']}>
                           <DatePicker
                             label=""
