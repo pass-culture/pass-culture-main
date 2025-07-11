@@ -1,9 +1,11 @@
 import re
 import typing
+from datetime import date
 from functools import partial
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from dateutil.relativedelta import relativedelta
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -201,6 +203,14 @@ def _get_special_event_responses(
     response_rows_filters = [operations_models.SpecialEventResponse.eventId == special_event_id]
     if response_status_data := response_form.response_status.data:
         response_rows_filters.append(operations_models.SpecialEventResponse.status.in_(response_status_data))
+
+    if response_ages_data := response_form.age.data:
+        age_filters = []
+        for age in response_ages_data:
+            start = date.today() - relativedelta(years=int(age) + 1)
+            end = date.today() - relativedelta(years=int(age))
+            age_filters.append(users_models.User.validatedBirthDate.between(start, end))
+        response_rows_filters.append(sa.or_(*age_filters))
 
     account_tags_subquery = (
         sa.select(sa.func.array_agg(sa.func.coalesce(users_models.UserTag.label, users_models.UserTag.name)))
