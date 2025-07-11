@@ -330,7 +330,7 @@ def patch_collective_offer_public(
             )
 
     # check new venueId and update offer venue
-    if new_values.get("venueId"):
+    if new_values.get("venueId") and new_values["venueId"] != offer.venueId:
         venue = offerers_repository.find_venue_and_provider_by_id(new_values["venueId"])
         if not venue:
             raise api_errors.ApiErrors(errors={"venueId": ["Ce lieu n'a pas été trouvé."]}, status_code=404)
