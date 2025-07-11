@@ -377,7 +377,7 @@ class Returns200Test:
         assert response.json["address"]["label"] == venue.common_name if is_venue_address else "Librairie des mangas"
 
     @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
-    def test_update_offer_draft_with_new_offer_creation_flow(self, client):
+    def test_update_offer_accepts_accessibility_fields(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
@@ -489,7 +489,7 @@ class Returns400Test:
         assert response.json["global"] == ["Les extraData des offres avec produit ne sont pas modifiables"]
 
     @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
-    def test_fail_when_body_has_null_disability_props_with_new_offer_creation_flow(self, client):
+    def test_fail_when_body_has_null_accessibility_fields(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(

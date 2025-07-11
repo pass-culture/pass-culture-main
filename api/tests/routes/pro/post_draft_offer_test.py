@@ -287,7 +287,7 @@ class Returns201Test:
         assert offer.visualDisabilityCompliant == True
 
     @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
-    def test_create_offer_with_new_offer_creation_flow(self, client):
+    def test_create_offer_accepts_accessibility_fields(self, client):
         venue = offerers_factories.VenueFactory(
             audioDisabilityCompliant=False,
             mentalDisabilityCompliant=False,
@@ -440,7 +440,7 @@ class Returns400Test:
         assert response.json["subcategory"] == [msg]
 
     @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
-    def test_fail_when_body_is_missing_disability_props_with_new_offer_creation_flow(self, client):
+    def test_fail_when_body_is_missing_accessibility_fields(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
