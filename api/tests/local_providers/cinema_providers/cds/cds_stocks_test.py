@@ -4,6 +4,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.providers.factories as providers_factories
@@ -181,6 +182,7 @@ class CDSStocksTest:
         # Then
         assert db.session.query(Offer).count() == 2
 
+    @time_machine.travel(datetime(2022, 3, 19), tick=False)
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_fill_offer_and_stock_informations_for_each_movie(self, mock_get_venue_movies, requests_mock):
@@ -219,7 +221,7 @@ class CDSStocksTest:
         assert len(created_stocks) == 2
         assert len(created_price_categories) == 2
 
-        # Information fetched from exisiting product
+        # Information fetched from existing product
         assert created_offers[0].name == "Coupez !"
         assert created_offers[0].product
         assert created_offers[0].venue == venue_provider.venue
@@ -228,6 +230,7 @@ class CDSStocksTest:
         assert created_offers[0].description == "Description du produit allociné 1"
         assert created_offers[0].durationMinutes == 111
         assert created_offers[0].isDuo
+        assert created_offers[0].publicationDatetime == datetime(2022, 3, 19)
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[0].extraData == {"allocineId": 291483}
         assert created_offers[0]._extraData == None
@@ -248,6 +251,7 @@ class CDSStocksTest:
         assert created_offers[1].description == "Film sur les avions"
         assert created_offers[1].durationMinutes == 150
         assert created_offers[1].isDuo
+        assert created_offers[1].publicationDatetime == datetime(2022, 3, 19)
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[1].extraData == {"allocineId": 2133, "visa": "333333"}
         assert created_offers[1]._extraData == None
