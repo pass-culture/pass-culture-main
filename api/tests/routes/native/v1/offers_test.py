@@ -1806,7 +1806,7 @@ class OffersV2Test:
     def test_anonymize_author_of_chronicles(self, client):
         product = offers_factories.ProductFactory()
         offer = offers_factories.OfferFactory(product=product)
-        chronicle = chronicles_factories.ChronicleFactory(
+        chronicles_factories.ChronicleFactory(
             products=[product],
             isActive=True,
             isSocialMediaDiffusible=True,
@@ -1888,6 +1888,82 @@ class OffersV2Test:
 
         assert response.status_code == 200
         assert response.json["venue"]["name"] == "Public name"
+
+    def test_get_offer_with_no_chronicles(self, client):
+        offer = offers_factories.OfferFactory()
+
+        offer_id = offer.id
+        response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["chroniclesCount"] == 0
+
+    def test_get_offer_with_chronicles(self, client):
+        offer = offers_factories.OfferFactory()
+        chronicles_factories.ChronicleFactory(offers=[offer])
+        chronicles_factories.ChronicleFactory(offers=[offer])
+
+        offer_id = offer.id
+        response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["chroniclesCount"] == 2
+
+    def test_get_offer_with_product_with_no_chronicles(self, client):
+        product = offers_factories.ProductFactory()
+        offer = offers_factories.OfferFactory(product=product)
+
+        offer_id = offer.id
+        response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["chroniclesCount"] == 0
+
+    def test_get_offer_with_product_with_chronicles(self, client):
+        product = offers_factories.ProductFactory()
+        offer = offers_factories.OfferFactory(product=product)
+        chronicles_factories.ChronicleFactory(products=[product], isActive=False, isSocialMediaDiffusible=False)
+        chronicles_factories.ChronicleFactory(products=[product])
+
+        offer_id = offer.id
+        response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["chroniclesCount"] == 2
+
+    def test_get_offer_with_chronicles_with_product_with_chronicles(self, client):
+        product = offers_factories.ProductFactory()
+        offer = offers_factories.OfferFactory(product=product)
+        chronicles_factories.ChronicleFactory(products=[product], isActive=False, isSocialMediaDiffusible=False)
+        chronicles_factories.ChronicleFactory(products=[product])
+        chronicles_factories.ChronicleFactory(offers=[offer])
+
+        offer_id = offer.id
+        response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["chroniclesCount"] == 2
+
+    def test_get_offer_with_unpublished_chronicles(self, client):
+        offer = offers_factories.OfferFactory()
+        chronicles_factories.ChronicleFactory(offers=[offer], isActive=False, isSocialMediaDiffusible=False)
+
+        offer_id = offer.id
+        response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["chroniclesCount"] == 1
+
+    def test_get_offer_with_product_with_unpublished_chronicles(self, client):
+        product = offers_factories.ProductFactory()
+        offer = offers_factories.OfferFactory(product=product)
+        chronicles_factories.ChronicleFactory(products=[product], isActive=False, isSocialMediaDiffusible=False)
+
+        offer_id = offer.id
+        response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["chroniclesCount"] == 1
 
 
 class OffersStocksV2Test:

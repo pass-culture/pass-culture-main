@@ -20,6 +20,7 @@ from pcapi.core.categories.genres.show import SHOW_TYPES_LABEL_BY_CODE
 from pcapi.core.chronicles.api import get_offer_published_chronicles
 from pcapi.core.geography.models import Address
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import models
 from pcapi.core.offers import offer_metadata
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.api import get_expense_domains
@@ -263,8 +264,9 @@ MAX_PREVIEW_CHRONICLES = 5
 
 class BaseOfferResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any = None) -> Any:
-        offer = self._obj
-        product = offer.product
+        offer: models.Offer = self._obj
+        product: models.Product | None = offer.product
+
         if key == "reactions_count":
             if product:
                 likes = product.likesCount or 0
@@ -347,6 +349,9 @@ class BaseOfferResponseGetterDict(GetterDict):
             published_chronicles = get_offer_published_chronicles(offer)
             return published_chronicles[:MAX_PREVIEW_CHRONICLES]
 
+        if key == "chroniclesCount":
+            return product.chroniclesCount if product and product.chroniclesCount else offer.chroniclesCount
+
         if key == "publicationDate":
             return offer.bookingAllowedDatetime  # FIXME: to be removed when min app version stop using publicationDate
 
@@ -421,6 +426,7 @@ class BaseOfferResponse(ConfiguredBaseModel):
     address: OfferAddressResponse | None
     artists: list[OfferArtist]
     chronicles: list[ChroniclePreview]
+    chronicles_count: int | None
     description: str | None
     expense_domains: list[ExpenseDomain]
     externalTicketOfficeUrl: str | None

@@ -12,6 +12,7 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
+from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
@@ -331,6 +332,7 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
         )
         .options(sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address))
         .options(sa_orm.selectinload(models.Offer.mediations))
+        .options(sa_orm.with_expression(models.Offer.chroniclesCount, get_offer_chronicles_count_subquery()))
         .options(sa_orm.with_expression(models.Offer.likesCount, get_offer_reaction_count_subquery()))
         .options(
             sa_orm.joinedload(models.Offer.product)
@@ -341,6 +343,7 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
                 models.Product.last_30_days_booking,
                 models.Product.thumbCount,
                 models.Product.durationMinutes,
+                models.Product.chroniclesCount,
                 models.Product.likesCount,
             )
             .joinedload(models.Product.productMediations)
@@ -767,6 +770,16 @@ def get_pending_bookings_subquery(offer_id: int) -> sa.sql.selectable.Exists:
             bookings_models.Booking.status == bookings_models.BookingStatus.CONFIRMED,
         )
         .exists()
+    )
+
+
+def get_offer_chronicles_count_subquery() -> sa.sql.selectable.ScalarSelect:
+    return (
+        sa.select(sa.func.count(chronicles_models.OfferChronicle.id))
+        .select_from(chronicles_models.OfferChronicle)
+        .where(chronicles_models.OfferChronicle.offerId == models.Offer.id)
+        .correlate(models.Offer)
+        .scalar_subquery()
     )
 
 
