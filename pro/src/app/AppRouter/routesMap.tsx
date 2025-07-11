@@ -124,28 +124,37 @@ export const routes: RouteConfig[] = [
   },
   {
     lazy: () => import('pages/VenueEdition/VenueEdition'),
-    path: '/structures/:offererId/lieux/:venueId/page-partenaire/edition',
-    title: 'Gérer ma page sur l’application',
+    path: '/structures/:offererId/lieux/:venueId/collectif',
+    title: 'Gérer ma page sur ADAGE',
+    children: [
+      {
+        lazy: () => import('pages/VenueEdition/VenueEdition'),
+        path: '*',
+        title: 'Gérer ma page sur ADAGE',
+      },
+    ],
   },
   {
     lazy: () => import('pages/VenueEdition/VenueEdition'),
     path: '/structures/:offererId/lieux/:venueId',
     title: 'Gérer ma page adresse',
+    children: [
+      {
+        lazy: () => import('pages/VenueEdition/VenueEdition'),
+        path: '*',
+        title: 'Gérer ma page adresse',
+      },
+    ],
   },
   {
-    lazy: () => import('pages/VenueEdition/VenueEdition'),
-    path: '/structures/:offererId/lieux/:venueId/edition',
-    title: 'Gérer ma page adresse',
+    lazy: () => import('pages/VenueSettings/VenueSettings'),
+    path: '/structures/:offererId/lieux/:venueId/page-partenaire/parametres',
+    title: 'Paramètres généraux',
   },
   {
-    lazy: () => import('pages/VenueEdition/VenueEdition'),
-    path: '/structures/:offererId/lieux/:venueId/collectif',
-    title: 'Gérer ma page sur ADAGE',
-  },
-  {
-    lazy: () => import('pages/VenueEdition/VenueEdition'),
-    path: '/structures/:offererId/lieux/:venueId/collectif/edition',
-    title: 'Gérer ma page sur ADAGE',
+    lazy: () => import('pages/VenueSettings/VenueSettings'),
+    path: '/structures/:offererId/lieux/:venueId/collectif/parametres',
+    title: 'Paramètres généraux',
   },
   {
     lazy: () => import('pages/VenueSettings/VenueSettings'),

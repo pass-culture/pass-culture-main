@@ -16,6 +16,7 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useNotification } from 'commons/hooks/useNotification'
+import { getVenuePagePathToNavigateTo } from 'commons/utils/getVenuePagePathToNavigateTo'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { generateSiretValidationSchema } from 'pages/VenueSettings/SiretOrCommentFields/validationSchema'
 
@@ -70,7 +71,7 @@ export const VenueSettingsScreen = ({
       await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigate(`/structures/${venue.managingOfferer.id}/lieux/${venue.id}`)
+      navigate(getVenuePagePathToNavigateTo(venue.managingOfferer.id, venue.id))
 
       logEvent(Events.CLICKED_SAVE_VENUE, {
         from: location.pathname,

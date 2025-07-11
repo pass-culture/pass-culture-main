@@ -1,9 +1,8 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
+import { getVenuePagePathToNavigateTo } from 'commons/utils/getVenuePagePathToNavigateTo'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-
-import { getPathToNavigateTo } from '../context'
 
 import styles from './VenueFormActionBar.module.scss'
 
@@ -22,7 +21,7 @@ export const VenueFormActionBar = ({
     <div className={styles['action-bar']}>
       <ButtonLink
         variant={ButtonVariant.SECONDARY}
-        to={getPathToNavigateTo(
+        to={getVenuePagePathToNavigateTo(
           venue?.managingOfferer.id as number,
           venue?.id as number
         )}

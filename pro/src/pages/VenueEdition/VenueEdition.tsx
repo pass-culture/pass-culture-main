@@ -13,6 +13,7 @@ import { SelectOption } from 'commons/custom_types/form'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { setSelectedPartnerPageId } from 'commons/store/nav/reducer'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { getVenuePagePathToNavigateTo } from 'commons/utils/getVenuePagePathToNavigateTo'
 import { setSavedPartnerPageVenueId } from 'commons/utils/savedPartnerPageVenueId'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
@@ -21,7 +22,6 @@ import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import { NavLinkItem, NavLinkItems } from 'ui-kit/NavLinkItems/NavLinkItems'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import { getPathToNavigateTo } from './context'
 import styles from './VenueEdition.module.scss'
 import { VenueEditionFormScreen } from './VenueEditionFormScreen'
 import { VenueEditionHeader } from './VenueEditionHeader'
@@ -93,7 +93,7 @@ export const VenueEdition = (): JSX.Element | null => {
           const fallbackVenueId = filteredVenues[0]?.id.toString()
 
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          navigate(getPathToNavigateTo(offerer.id, fallbackVenueId))
+          navigate(getVenuePagePathToNavigateTo(offerer.id, fallbackVenueId))
           dispatch(setSelectedPartnerPageId(fallbackVenueId))
         } else {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -174,7 +174,7 @@ export const VenueEdition = (): JSX.Element | null => {
                         dispatch(setSelectedPartnerPageId(venueId))
                       }
 
-                      const path = getPathToNavigateTo(
+                      const path = getVenuePagePathToNavigateTo(
                         offererId as string,
                         venueId
                       )

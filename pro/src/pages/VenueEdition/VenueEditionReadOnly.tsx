@@ -1,34 +1,44 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { getVenuePagePathToNavigateTo } from 'commons/utils/getVenuePagePathToNavigateTo'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { OpeningHoursReadOnly } from 'pages/VenueEdition/OpeningHoursReadOnly/OpeningHoursReadOnly'
 
 import { AccessibilityReadOnly } from './AccessibilityReadOnly/AccessibilityReadOnly'
-import { getPathToNavigateTo } from './context'
 
 interface VenueEditionReadOnlyProps {
   venue: GetVenueResponseModel
 }
 
+const PublicWelcomeSection = ({
+  isOpenToPublicEnabled,
+  children,
+}: {
+  isOpenToPublicEnabled: boolean
+  children: React.ReactNode | React.ReactNode[]
+}): JSX.Element => {
+  return isOpenToPublicEnabled ? (
+    <SummarySubSection title="Accueil du public" shouldShowDivider={false}>
+      {children}
+    </SummarySubSection>
+  ) : (
+    <>{children}</>
+  )
+}
+
 export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
   const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
-
-  const PublicWelcomeSection = ({ children }: { children: React.ReactNode | React.ReactNode[] }): JSX.Element => {
-    return isOpenToPublicEnabled ?
-      <SummarySubSection
-        title="Accueil du public"
-        shouldShowDivider={false}
-      >
-        {children}
-      </SummarySubSection> : <>{children}</>
-  }
 
   return (
     <SummarySection
       title="Vos informations pour le grand public"
-      editLink={getPathToNavigateTo(venue.managingOfferer.id, venue.id, true)}
+      editLink={getVenuePagePathToNavigateTo(
+        venue.managingOfferer.id,
+        venue.id,
+        '/edition'
+      )}
     >
       <SummarySubSection
         title="À propos de votre activité"
@@ -43,21 +53,23 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
           ]}
         />
       </SummarySubSection>
-      <PublicWelcomeSection>
-        {isOpenToPublicEnabled && !venue.isOpenToPublic && <span>
-          Accueil du public dans la structure : Non
-        </span>}
-        {(!isOpenToPublicEnabled || venue.isOpenToPublic) && <>
-          <OpeningHoursReadOnly
-            isOpenToPublicEnabled={isOpenToPublicEnabled}
-            openingHours={venue.openingHours}
-            address={venue.address}
-          />
-          <AccessibilityReadOnly
-            isOpenToPublicEnabled={isOpenToPublicEnabled}
-            venue={venue}
-          />
-        </>}
+      <PublicWelcomeSection isOpenToPublicEnabled={isOpenToPublicEnabled}>
+        {isOpenToPublicEnabled && !venue.isOpenToPublic && (
+          <span>Accueil du public dans la structure : Non</span>
+        )}
+        {(!isOpenToPublicEnabled || venue.isOpenToPublic) && (
+          <>
+            <OpeningHoursReadOnly
+              isOpenToPublicEnabled={isOpenToPublicEnabled}
+              openingHours={venue.openingHours}
+              address={venue.address}
+            />
+            <AccessibilityReadOnly
+              isOpenToPublicEnabled={isOpenToPublicEnabled}
+              venue={venue}
+            />
+          </>
+        )}
       </PublicWelcomeSection>
       <SummarySubSection
         title="Informations de contact"

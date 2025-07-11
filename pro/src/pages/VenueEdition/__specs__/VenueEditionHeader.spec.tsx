@@ -172,4 +172,22 @@ describe('VenueEditionHeader', () => {
 
     expect(screen.queryByText('Visualiser votre page')).not.toBeInTheDocument()
   })
+
+  it('should display a "Paramètres généraux" link', () => {
+    renderPartnerPages({
+      venue: {
+        ...defaultGetVenue,
+      },
+    })
+
+    const link = screen.getByRole('link', {
+      name: 'Paramètres généraux',
+    })
+
+    expect(link).toBeInTheDocument()
+    expect(link).toHaveAttribute(
+      'href',
+      `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}/parametres`
+    )
+  })
 })

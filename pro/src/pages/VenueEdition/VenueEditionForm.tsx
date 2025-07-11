@@ -12,6 +12,7 @@ import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { getFormattedAddress } from 'commons/utils/getFormattedAddress'
+import { getVenuePagePathToNavigateTo } from 'commons/utils/getVenuePagePathToNavigateTo'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { OpenToPublicToggle } from 'components/OpenToPublicToggle/OpenToPublicToggle'
@@ -22,7 +23,6 @@ import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { AccessibilityForm } from './AccessibilityForm/AccessibilityForm'
-import { getPathToNavigateTo } from './context'
 import { OpeningHoursForm } from './OpeningHoursForm/OpeningHoursForm'
 import { RouteLeavingGuardVenueEdition } from './RouteLeavingGuardVenueEdition'
 import { serializeEditVenueBodyModel } from './serializers'
@@ -97,7 +97,10 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
       await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
 
-      const path = getPathToNavigateTo(venue.managingOfferer.id, venue.id)
+      const path = getVenuePagePathToNavigateTo(
+        venue.managingOfferer.id,
+        venue.id
+      )
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(path)
 
