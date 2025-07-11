@@ -34,6 +34,7 @@ class Returns200Test:
         response_dict = response.json
         assert offer.isActive is False
         assert response_dict["venue"]["id"] == offer.venue.id
+        assert response.json["venue"]["street"] == offer.venue.offererAddress.address.street
         assert response_dict["name"] == "Celeste"
         assert response_dict["id"] == offer.id
         assert not offer.product

@@ -31,6 +31,7 @@ class Returns201Test:
         offer = db.session.get(Offer, offer_id)
         assert offer.isActive is False
         assert response_dict["venue"]["id"] == offer.venue.id
+        assert response_dict["venue"]["street"] == offer.venue.offererAddress.address.street
         assert response_dict["name"] == "Celeste"
         assert response_dict["id"] == offer.id
         assert response_dict["productId"] == None

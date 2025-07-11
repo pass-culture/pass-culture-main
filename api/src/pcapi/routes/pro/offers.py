@@ -248,7 +248,9 @@ def post_draft_offer(
     venue: offerers_models.Venue = (
         db.session.query(offerers_models.Venue)
         .filter(offerers_models.Venue.id == body.venue_id)
-        .options(sa_orm.joinedload(offerers_models.Venue.offererAddress))
+        .options(
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
+        )
         .first_or_404()
     )
 
@@ -284,6 +286,9 @@ def patch_draft_offer(
         .options(
             sa_orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
             sa_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
+            sa_orm.joinedload(models.Offer.venue)
+            .joinedload(offerers_models.Venue.offererAddress)
+            .joinedload(offerers_models.OffererAddress.address),
             sa_orm.joinedload(models.Offer.product),
             sa_orm.joinedload(models.Offer.metaData),
         )
@@ -300,7 +305,6 @@ def patch_draft_offer(
         offer = offers_api.update_draft_offer(offer, body)
     except exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
-
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
@@ -316,7 +320,9 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
     venue: offerers_models.Venue = (
         db.session.query(offerers_models.Venue)
         .filter(offerers_models.Venue.id == body.venue_id)
-        .options(sa_orm.joinedload(offerers_models.Venue.offererAddress))
+        .options(
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
+        )
         .first_or_404()
     )
     offerer_address: offerers_models.OffererAddress | None = None
