@@ -86,6 +86,7 @@ class AllocineStocksTest:
 
 
 class UpdateObjectsTest:
+    @time_machine.travel("2023-10-15", tick=False)
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
@@ -149,6 +150,7 @@ class UpdateObjectsTest:
 
         assert not created_offer.isDuo
         assert created_offer.name == "Ceux de chez nous"
+        assert created_offer.publicationDatetime == datetime(2023, 10, 15)
         assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offer.withdrawalDetails == venue.withdrawalDetails
 
