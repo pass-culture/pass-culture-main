@@ -661,6 +661,10 @@
                     "coordinates": {
                         "$ref": "#/components/schemas/Coordinates"
                     },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
                     "label": {
                         "nullable": true,
                         "title": "Label",
@@ -681,6 +685,7 @@
                     }
                 },
                 "required": [
+                    "id",
                     "postalCode",
                     "city",
                     "coordinates",
@@ -1051,6 +1056,17 @@
                 "title": "BookingStockResponseV2",
                 "type": "object"
             },
+            "BookingVenueAddressResponseV2": {
+                "properties": {
+                    "id": {
+                        "nullable": true,
+                        "title": "Id",
+                        "type": "integer"
+                    }
+                },
+                "title": "BookingVenueAddressResponseV2",
+                "type": "object"
+            },
             "BookingVenueResponse": {
                 "properties": {
                     "bannerUrl": {
@@ -1091,6 +1107,9 @@
             },
             "BookingVenueResponseV2": {
                 "properties": {
+                    "address": {
+                        "$ref": "#/components/schemas/BookingVenueAddressResponseV2"
+                    },
                     "bannerUrl": {
                         "nullable": true,
                         "title": "Bannerurl",
@@ -1120,6 +1139,7 @@
                 },
                 "required": [
                     "id",
+                    "address",
                     "name",
                     "timezone",
                     "isOpenToPublic"
