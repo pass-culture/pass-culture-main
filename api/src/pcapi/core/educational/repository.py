@@ -585,7 +585,17 @@ def get_collective_offers_by_filters(
         query = query.filter(educational_models.CollectiveOffer.name.ilike(search))
 
     if statuses:
-        query = _filter_collective_offers_by_statuses(query, statuses)
+        status_values = [
+            status.value for status in statuses if status != educational_models.CollectiveOfferDisplayedStatus.HIDDEN
+        ]
+
+        displayed_status = educational_models.CollectiveOffer.get_displayed_status_expression()
+        last_booking_id = educational_models.CollectiveOffer.get_last_booking_id_subquery()
+        query = (
+            query.outerjoin(educational_models.CollectiveOffer.collectiveStock)
+            .outerjoin(educational_models.CollectiveBooking, educational_models.CollectiveBooking.id == last_booking_id)
+            .filter(displayed_status.in_(status_values))
+        )
 
     if period_beginning_date is not None or period_ending_date is not None:
         subquery = (
