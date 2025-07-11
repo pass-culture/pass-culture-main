@@ -2,6 +2,7 @@ import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import { CollectiveOffersSortingColumn } from 'commons/core/OfferEducational/types'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { SortingMode } from 'commons/hooks/useColumnSorting'
+import { isSameOffer } from 'commons/utils/isSameOffer'
 import { OffersTable } from 'components/OffersTable/OffersTable'
 import {
   Columns,
@@ -9,7 +10,8 @@ import {
 } from 'components/OffersTable/OffersTableHead/OffersTableHead'
 import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 
-import { CollectiveOffersTableBody } from './CollectiveOffersTableBody/CollectiveOffersTableBody'
+import { CollectiveOfferRow } from './CollectiveOfferRow/CollectiveOfferRow'
+import styles from './CollectiveOffersTable.module.scss'
 
 type CollectiveOffersTableProps = {
   hasFiltersOrNameSearch: boolean
@@ -76,12 +78,25 @@ export const CollectiveOffersTable = ({
       toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
     >
       <OffersTableHead columns={columns} />
-      <CollectiveOffersTableBody
-        offers={currentPageItems}
-        selectOffer={setSelectedOffer}
-        selectedOffers={selectedOffers}
-        urlSearchFilters={urlSearchFilters}
-      />
+
+      <tbody className={styles['collective-tbody']}>
+        {currentPageItems.map((offer, index) => {
+          const isSelected = selectedOffers.some((selectedOffer) =>
+            isSameOffer(selectedOffer, offer)
+          )
+
+          return (
+            <CollectiveOfferRow
+              isSelected={isSelected}
+              key={`${offer.isShowcase ? 'T-' : ''}${offer.id}`}
+              offer={offer}
+              selectOffer={setSelectedOffer}
+              urlSearchFilters={urlSearchFilters}
+              isFirstRow={index === 0}
+            />
+          )
+        })}
+      </tbody>
     </OffersTable>
   )
 }

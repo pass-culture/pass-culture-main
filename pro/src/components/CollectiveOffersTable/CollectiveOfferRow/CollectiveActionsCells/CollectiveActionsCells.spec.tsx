@@ -5,8 +5,8 @@ import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
 import {
-  CollectiveOfferDisplayedStatus,
   CollectiveOfferAllowedAction,
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
   OfferAddressType,
 } from 'apiClient/v1'
@@ -539,6 +539,81 @@ describe('CollectiveActionsCells', () => {
 
     expect(notifySuccess).toHaveBeenCalledWith(
       'Votre offre est maintenant active et visible dans ADAGE'
+    )
+  })
+
+  it('should show error notification if toggling template active state fails', async () => {
+    vi.spyOn(
+      api,
+      'patchCollectiveOffersTemplateActiveStatus'
+    ).mockRejectedValueOnce(new Error('fail'))
+
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory({
+        isActive: false,
+        isShowcase: true,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
+      }),
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Mettre en pause' })
+    )
+
+    expect(notifyError).toHaveBeenCalledWith(
+      'Une erreur est survenue lors de la désactivation de votre offre.'
+    )
+  })
+
+  it('should show error notification if toggling template to active state fails', async () => {
+    vi.spyOn(
+      api,
+      'patchCollectiveOffersTemplateActiveStatus'
+    ).mockRejectedValueOnce(new Error('fail'))
+
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory({
+        isActive: true,
+        isShowcase: true,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
+      }),
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Publier' }))
+
+    expect(notifyError).toHaveBeenCalledWith(
+      'Une erreur est survenue lors de l’activation de votre offre.'
+    )
+  })
+
+  it('should show error notification when archiving fails', async () => {
+    vi.spyOn(api, 'patchCollectiveOffersArchive').mockRejectedValueOnce(
+      new Error('fail')
+    )
+
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory({
+        allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
+      }),
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
+    await userEvent.click(screen.getByText('Archiver'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Archiver l’offre' })
+    )
+
+    expect(notifyError).toHaveBeenCalledWith(
+      'Une erreur est survenue lors de l’archivage de l’offre',
+      expect.any(Object)
     )
   })
 })

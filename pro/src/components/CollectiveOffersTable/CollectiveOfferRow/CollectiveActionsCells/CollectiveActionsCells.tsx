@@ -16,9 +16,9 @@ import {
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import {
+  COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
   CollectiveBookingsEvents,
   Events,
-  COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
 } from 'commons/core/FirebaseEvents/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
 import { createOfferFromTemplate } from 'commons/core/OfferEducational/utils/createOfferFromTemplate'
