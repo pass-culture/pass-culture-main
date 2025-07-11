@@ -113,6 +113,7 @@ class CGRStocks(LocalProvider):
         offer.offererAddress = self.venue.offererAddress
         offer.bookingEmail = self.venue.bookingEmail
         offer.withdrawalDetails = self.venue.withdrawalDetails
+        offer.publicationDatetime = offer.publicationDatetime or utils_date.get_naive_utc_now()
         offer.subcategoryId = subcategories.SEANCE_CINE.id
 
         self.update_from_movie_information(offer)
