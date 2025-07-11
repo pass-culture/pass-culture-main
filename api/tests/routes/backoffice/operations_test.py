@@ -3,6 +3,7 @@ import re
 from unittest.mock import patch
 
 import pytest
+from dateutil.relativedelta import relativedelta
 from flask import url_for
 
 from pcapi.connectors import typeform
@@ -374,6 +375,30 @@ class GetEventDetailsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 6
         assert {"À contacter", "Nouvelle"} == {e["État de la candidature"] for e in rows}
+
+    def test_filter_event_responses_by_age(self, authenticated_client):
+        event = operations_factories.SpecialEventFactory()
+        operations_factories.SpecialEventResponseFactory(
+            event=event,
+            user__validatedBirthDate=datetime.date.today() - relativedelta(years=22),
+        )
+        event_response = operations_factories.SpecialEventResponseFactory(
+            event=event,
+            user__validatedBirthDate=datetime.date.today() - relativedelta(years=20),
+        )
+        operations_factories.SpecialEventResponseFactory(
+            event=event,
+            user__validatedBirthDate=datetime.date.today() - relativedelta(years=18),
+        )
+
+        url = url_for(self.endpoint, special_event_id=event.id, age=20)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(event_response.id)
 
     def test_filter_event_responses_by_eligibility(self, authenticated_client):
         event = operations_factories.SpecialEventFactory(
