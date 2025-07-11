@@ -45,3 +45,7 @@ def monkey_patch_sendinblue() -> None:
 
 def install_monkey_patches() -> None:
     monkey_patch_sendinblue()
+
+    from spectree import _pydantic
+
+    _pydantic.PYDANTIC2 = False
