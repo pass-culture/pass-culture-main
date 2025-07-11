@@ -7,6 +7,7 @@ import typing
 from collections import defaultdict
 from functools import wraps
 
+import sqlalchemy.orm as sa_orm
 from flask import Blueprint
 from flask import Response as FlaskResponse
 from flask import flash
@@ -27,7 +28,6 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.pc_object import BaseQuery
 from pcapi.utils import date as date_utils
 from pcapi.utils.regions import get_all_regions
 
@@ -263,14 +263,14 @@ def get_regions_choices() -> list[tuple]:
 
 
 def generate_search_query(
-    query: BaseQuery,
+    query: sa_orm.Query,
     *,
     search_parameters: typing.Iterable[dict[str, typing.Any]],
     fields_definition: dict[str, dict[str, typing.Any]],
     joins_definition: dict[str, list[dict[str, typing.Any]]],
     subqueries_definition: dict[str, dict[str, typing.Any]],
     _ignore_subquery_joins: bool = False,
-) -> tuple[BaseQuery, set[str], set[str], set[str]]:
+) -> tuple[sa_orm.Query, set[str], set[str], set[str]]:
     """
     Generate a search query from a list of dict (from a ListField of FormFields).
 
@@ -346,11 +346,11 @@ def generate_search_query(
 
 
 def _manage_joins(
-    query: BaseQuery,
+    query: sa_orm.Query,
     joins: set,
     joins_definition: dict[str, list[dict[str, typing.Any]]],
     join_type: str = "inner_join",
-) -> tuple[BaseQuery, set[str]]:
+) -> tuple[sa_orm.Query, set[str]]:
     join_log = set()
     join_containers = sorted((joins_definition[join] for join in joins), key=len, reverse=True)
     for join_container in join_containers:

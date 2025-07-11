@@ -66,7 +66,7 @@ class GetChronicleSearchForm(forms_utils.PCForm):
 
 
 class UpdateContentForm(forms_utils.PCForm):
-    def __init__(self, *args: typing.Any, content: str = "", **kwargs: typing.Any) -> None:
+    def __init__(self, *args: typing.Any, content: str | None = "", **kwargs: typing.Any) -> None:
         super().__init__(*args, **kwargs)
         if content:
             self.content.data = content

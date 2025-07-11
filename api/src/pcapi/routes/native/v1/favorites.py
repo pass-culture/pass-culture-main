@@ -21,6 +21,7 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.utils import first_or_404
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
@@ -219,5 +220,5 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
 @authenticated_and_active_user_required
 def delete_favorite(user: User, favorite_id: int) -> None:
     with transaction():
-        favorite = db.session.query(Favorite).filter_by(id=favorite_id, user=user).first_or_404()
+        favorite = first_or_404(db.session.query(Favorite).filter_by(id=favorite_id, user=user))
         db.session.delete(favorite)

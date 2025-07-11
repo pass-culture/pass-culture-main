@@ -21,6 +21,7 @@ from pcapi.core.offerers.models import Venue
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
+from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
@@ -104,7 +105,7 @@ def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.
 @login_required
 @spectree_serialize(response_model=venues_serialize.GetVenueResponseModel, api=blueprint.pro_private_schema)
 def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venues_serialize.GetVenueResponseModel:
-    venue = db.session.query(Venue).get_or_404(venue_id)
+    venue = get_or_404(Venue, venue_id)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     has_siret_changed = bool(body.siret and body.siret != venue.siret)
@@ -142,7 +143,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
     location_modifications = {
         field: value
         for field, value in update_location_attrs.items()
-        if venue.offererAddress.address.field_exists_and_has_changed(field, value)
+        if venue.offererAddress and venue.offererAddress.address.field_exists_and_has_changed(field, value)
     }
     validation.check_venue_edition(modifications, venue)
 
@@ -186,7 +187,7 @@ def edit_venue_collective_data(
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def link_venue_to_pricing_point(venue_id: int, body: venues_serialize.LinkVenueToPricingPointBodyModel) -> None:
-    venue = db.session.query(Venue).get_or_404(venue_id)
+    venue = get_or_404(Venue, venue_id)
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     try:
         offerers_api.link_venue_to_pricing_point(venue, body.pricingPointId)
@@ -198,7 +199,7 @@ def link_venue_to_pricing_point(venue_id: int, body: venues_serialize.LinkVenueT
 @login_required
 @spectree_serialize(response_model=venues_serialize.GetVenueResponseModel, on_success_status=201)
 def upsert_venue_banner(venue_id: int) -> venues_serialize.GetVenueResponseModel:
-    venue = db.session.query(Venue).get_or_404(venue_id)
+    venue = get_or_404(Venue, venue_id)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
@@ -230,7 +231,7 @@ def upsert_venue_banner(venue_id: int) -> venues_serialize.GetVenueResponseModel
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def delete_venue_banner(venue_id: int) -> None:
-    venue = db.session.query(Venue).get_or_404(venue_id)
+    venue = get_or_404(Venue, venue_id)
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     offerers_api.delete_venue_banner(venue)
@@ -254,7 +255,7 @@ def get_venues_educational_statuses() -> venues_serialize.VenuesEducationalStatu
     on_success_status=200, response_model=offerers_serialize.OffererStatsResponseModel, api=blueprint.pro_private_schema
 )
 def get_venue_stats_dashboard_url(venue_id: str) -> offerers_serialize.OffererStatsResponseModel:
-    venue: Venue = db.session.query(Venue).get_or_404(venue_id)
+    venue: Venue = get_or_404(Venue, venue_id)
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     url = offerers_api.get_metabase_stats_iframe_url(venue.managingOfferer, venues=[venue])
     return offerers_serialize.OffererStatsResponseModel(dashboardUrl=url)

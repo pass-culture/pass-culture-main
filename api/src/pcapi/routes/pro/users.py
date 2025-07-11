@@ -34,6 +34,7 @@ from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.api_errors import UnauthorizedError
 from pcapi.models.feature import FeatureToggle
+from pcapi.models.utils import get_or_404
 from pcapi.repository.session_management import atomic
 from pcapi.routes.serialization import users as users_serializers
 from pcapi.routes.shared.cookies_consent import CookieConsentRequest
@@ -79,7 +80,7 @@ def validate_user(token: str) -> None:
     def classic_token_check(token: str) -> None:
         try:
             stored_token = token_utils.Token.load_and_check(token, token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION)
-            user_to_validate = db.session.query(users_models.User).get_or_404(stored_token.user_id)
+            user_to_validate = get_or_404(users_models.User, stored_token.user_id)
             stored_token.expire()
             users_api.validate_pro_user_email(user_to_validate)
         except users_exceptions.InvalidToken:
@@ -88,7 +89,7 @@ def validate_user(token: str) -> None:
     if FeatureToggle.WIP_2025_AUTOLOGIN.is_active():
         try:
             user_id = token_utils.validate_passwordless_token(token)["sub"]
-            user = db.session.query(users_models.User).get_or_404(user_id)
+            user = get_or_404(users_models.User, user_id)
             users_api.validate_pro_user_email(user)
         except jwt.InvalidAlgorithmError:
             # Users could have signup before the FF were activated, but validate their email after.

@@ -12,6 +12,9 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models.utils import first_or_404
+from pcapi.models.utils import get_or_404
+from pcapi.models.utils import get_or_404_from_query
 from pcapi.repository import transaction
 from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
@@ -91,7 +94,7 @@ def _filter_out_stock_duplicates(
 )
 @atomic()
 def create_thing_stock(body: stock_serialize.ThingStockCreateBodyModel) -> stock_serialize.StockIdResponseModel:
-    offer: offers_models.Offer = db.session.query(offers_models.Offer).get_or_404(body.offer_id)
+    offer: offers_models.Offer = get_or_404(offers_models.Offer, body.offer_id)
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     input_data = body.dict()
     input_data.pop("offer_id")
@@ -111,7 +114,7 @@ def update_thing_stock(
     stock_id: int,
     body: stock_serialize.ThingStockUpdateBodyModel,
 ) -> stock_serialize.StockIdResponseModel:
-    stock: offers_models.Stock = db.session.query(offers_models.Stock).get_or_404(stock_id)
+    stock: offers_models.Stock = get_or_404(offers_models.Stock, stock_id)
     check_user_has_access_to_offerer(current_user, stock.offer.venue.managingOffererId)
     offers_api.edit_stock(stock, **body.dict())
     return stock_serialize.StockIdResponseModel.from_orm(stock)
@@ -128,10 +131,9 @@ def update_thing_stock(
 def bulk_create_event_stocks(
     body: stock_serialize.EventStocksBulkCreateBodyModel,
 ) -> stock_serialize.StocksResponseModel:
-    offer: offers_models.Offer = (
-        db.session.query(offers_models.Offer)
-        .options(sa_orm.joinedload(offers_models.Offer.priceCategories))
-        .get_or_404(body.offer_id)
+    offer: offers_models.Offer = get_or_404_from_query(
+        db.session.query(offers_models.Offer).options(sa_orm.joinedload(offers_models.Offer.priceCategories)),
+        body.offer_id,
     )
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
@@ -176,10 +178,9 @@ def bulk_create_event_stocks(
 def bulk_update_event_stocks(
     body: stock_serialize.EventStocksBulkUpdateBodyModel,
 ) -> stock_serialize.StocksResponseModel:
-    offer: offers_models.Offer = (
-        db.session.query(offers_models.Offer)
-        .options(sa_orm.joinedload(offers_models.Offer.priceCategories))
-        .get_or_404(body.offer_id)
+    offer: offers_models.Offer = get_or_404_from_query(
+        db.session.query(offers_models.Offer).options(sa_orm.joinedload(offers_models.Offer.priceCategories)),
+        body.offer_id,
     )
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
@@ -238,12 +239,8 @@ def bulk_update_event_stocks(
 @login_required
 @spectree_serialize(response_model=stock_serialize.StockIdResponseModel, api=blueprint.pro_private_schema)
 def delete_stock(stock_id: int) -> stock_serialize.StockIdResponseModel:
-    stock = (
-        offers_models.Stock.queryNotSoftDeleted()
-        .filter_by(id=stock_id)
-        .join(offers_models.Offer)
-        .join(Venue)
-        .first_or_404()
+    stock = first_or_404(
+        offers_models.Stock.queryNotSoftDeleted().filter_by(id=stock_id).join(offers_models.Offer).join(Venue)
     )
 
     offerer_id = stock.offer.venue.managingOffererId

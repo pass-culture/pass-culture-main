@@ -14,7 +14,6 @@ from pcapi.core.external.attributes import api as attributes_api
 from pcapi.core.external.sendinblue import add_contacts_to_list
 from pcapi.core.users.models import User
 from pcapi.models import db
-from pcapi.models.pc_object import BaseQuery
 
 
 YIELD_COUNT_PER_DB_QUERY = 1000
@@ -23,7 +22,7 @@ YIELD_COUNT_PER_DB_QUERY = 1000
 DAYS_IN_18_YEARS = 365 * 14 + 366 * 4
 
 
-def get_young_users_emails_query() -> BaseQuery:
+def get_young_users_emails_query() -> sa_orm.Query:
     return (
         db.session.query(User.email)
         .yield_per(YIELD_COUNT_PER_DB_QUERY)

@@ -69,7 +69,6 @@ from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models import pc_object
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.pc_object import BaseQuery
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 from pcapi.repository import transaction
@@ -1828,7 +1827,7 @@ def get_venue_by_id(venue_id: int) -> offerers_models.Venue:
     return offerers_repository.get_venue_by_id(venue_id)
 
 
-def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) -> BaseQuery:
+def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) -> sa_orm.Query:
     offerers = db.session.query(models.Offerer)
 
     search_query = search_query.strip()
@@ -1858,11 +1857,11 @@ def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) ->
     return offerers
 
 
-def get_offerer_base_query(offerer_id: int) -> BaseQuery:
+def get_offerer_base_query(offerer_id: int) -> sa_orm.Query:
     return db.session.query(models.Offerer).filter(models.Offerer.id == offerer_id)
 
 
-def search_venue(search_query: str, departments: typing.Iterable[str] = ()) -> BaseQuery:
+def search_venue(search_query: str, departments: typing.Iterable[str] = ()) -> sa_orm.Query:
     venues = (
         db.session.query(models.Venue)
         .outerjoin(models.VenueContact)
@@ -1938,15 +1937,15 @@ def search_venue(search_query: str, departments: typing.Iterable[str] = ()) -> B
     return venues
 
 
-def get_venue_base_query(venue_id: int) -> BaseQuery:
+def get_venue_base_query(venue_id: int) -> sa_orm.Query:
     return db.session.query(models.Venue).outerjoin(offerers_models.VenueContact).filter(models.Venue.id == venue_id)
 
 
-def get_bank_account_base_query(bank_account_id: int) -> BaseQuery:
+def get_bank_account_base_query(bank_account_id: int) -> sa_orm.Query:
     return finance_models.BankAccount.filter(finance_models.BankAccount.id == bank_account_id)
 
 
-def search_bank_account(search_query: str, *_: typing.Any) -> BaseQuery:
+def search_bank_account(search_query: str, *_: typing.Any) -> sa_orm.Query:
     bank_accounts_query = db.session.query(finance_models.BankAccount).options(
         sa_orm.joinedload(finance_models.BankAccount.offerer)
     )

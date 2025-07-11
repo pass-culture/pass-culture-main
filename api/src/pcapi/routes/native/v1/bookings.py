@@ -11,6 +11,7 @@ from pcapi.core.providers.exceptions import InactiveProvider
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.utils import first_or_404
 from pcapi.repository import repository
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.serialization.bookings import BookOfferRequest
@@ -122,7 +123,7 @@ def get_bookings(user: User) -> BookingsResponse:
 @spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400, 404])
 @authenticated_and_active_user_required
 def cancel_booking(user: User, booking_id: int) -> None:
-    booking = db.session.query(Booking).filter(Booking.id == booking_id, Booking.userId == user.id).first_or_404()
+    booking = first_or_404(db.session.query(Booking).filter(Booking.id == booking_id, Booking.userId == user.id))
     try:
         bookings_api.cancel_booking_by_beneficiary(user, booking)
     except bookings_exceptions.BookingIsCancelled:
@@ -150,6 +151,6 @@ def cancel_booking(user: User, booking_id: int) -> None:
 @spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400])
 @authenticated_and_active_user_required
 def flag_booking_as_used(user: User, booking_id: int, body: BookingDisplayStatusRequest) -> None:
-    booking = db.session.query(Booking).filter(Booking.userId == user.id, Booking.id == booking_id).first_or_404()
+    booking = first_or_404(db.session.query(Booking).filter(Booking.userId == user.id, Booking.id == booking_id))
     booking.displayAsEnded = body.ended
     repository.save(booking)

@@ -19,7 +19,6 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
 from pcapi.models import db
-from pcapi.models.pc_object import BaseQuery
 from pcapi.repository import repository
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
@@ -38,7 +37,7 @@ bo_users_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _get_bo_user_query(user_id: int) -> BaseQuery:
+def _get_bo_user_query(user_id: int) -> sa_orm.Query:
     return db.session.query(users_models.User).filter_by(id=user_id).join(users_models.User.backoffice_profile)
 
 

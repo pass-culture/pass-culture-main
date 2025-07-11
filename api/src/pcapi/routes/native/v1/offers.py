@@ -15,6 +15,8 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.models.utils import first_or_404
+from pcapi.models.utils import get_or_404
 from pcapi.repository.session_management import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
@@ -33,7 +35,7 @@ from .serialization import subcategories_v2 as subcategories_v2_serializers
 @atomic()
 def get_offer(offer_id: str) -> serializers.OfferResponse:
     query = repository.get_offers_details([int(offer_id)])
-    offer = query.first_or_404()
+    offer = first_or_404(query)
 
     if offer.isActive:
         api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
@@ -46,7 +48,7 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
 @atomic()
 def get_offer_v2(offer_id: int) -> serializers.OfferResponseV2:
     query = repository.get_offers_details([int(offer_id)])
-    offer = query.first_or_404()
+    offer = first_or_404(query)
 
     if offer.isActive:
         api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
@@ -77,7 +79,7 @@ def report_offer_reasons(user: User) -> serializers.OfferReportReasons:
 )
 @atomic()
 def offer_chronicles(offer_id: int) -> serializers.OfferChronicles:
-    offer = db.session.query(Offer).get_or_404(offer_id)
+    offer = get_or_404(Offer, offer_id)
 
     chronicles = chronicles_api.get_offer_published_chronicles(offer)
 
@@ -94,11 +96,10 @@ def send_offer_app_link(user: User, offer_id: int) -> None:
     On iOS native app, users cannot book numeric offers with price > 0, so
     give them webapp link.
     """
-    offer = (
+    offer = first_or_404(
         db.session.query(Offer)
         .options(joinedload(Offer.venue))
         .filter(Offer.id == offer_id, Offer.validation == OfferValidationStatus.APPROVED)
-        .first_or_404()
     )
     transactional_mails.send_offer_link_to_ios_user_email(user, offer)
 
@@ -107,7 +108,7 @@ def send_offer_app_link(user: User, offer_id: int) -> None:
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 def send_offer_link_by_push(user: User, offer_id: int) -> None:
-    offer = db.session.query(Offer).get_or_404(offer_id)
+    offer = get_or_404(Offer, offer_id)
     if offer.validation != OfferValidationStatus.APPROVED:
         raise ResourceNotFoundError()
     push_notification_job.send_offer_link_by_push_job.delay(user.id, offer_id)

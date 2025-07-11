@@ -22,7 +22,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models.pc_object import BaseQuery
+from pcapi.models.utils import get_or_404
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
@@ -78,7 +78,7 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
         to_datetime=date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time()),
     )
 
-    sorted_offerers: BaseQuery = offerers.order_by(
+    sorted_offerers: sa_orm.Query = offerers.order_by(
         getattr(getattr(offerers_models.Offerer, form.sort.data), form.order.data)()
     )
 
@@ -154,7 +154,7 @@ def _get_validation_action_information(offerer_ids: typing.Collection[int]) -> s
 @validation_blueprint.route("/offerer/<int:offerer_id>/validate", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_validate_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
+    offerer = get_or_404(offerers_models.Offerer, offerer_id)
     information = _get_validation_action_information([offerer_id])
 
     return render_template(
@@ -203,7 +203,7 @@ def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
 @validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
-    offerer = db.session.query(offerers_models.Offerer).get_or_404(offerer_id)
+    offerer = get_or_404(offerers_models.Offerer, offerer_id)
     information = _get_validation_action_information([offerer_id])
 
     return render_template(
@@ -529,7 +529,7 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
         to_datetime=date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time()),
     )
 
-    sorted_users_offerers: BaseQuery = users_offerers.order_by(  # type: ignore[assignment]
+    sorted_users_offerers: sa_orm.Query = users_offerers.order_by(
         getattr(getattr(offerers_models.UserOfferer, form.sort.data), form.order.data)()
     )
 

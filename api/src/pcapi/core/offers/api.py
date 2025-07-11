@@ -71,7 +71,6 @@ from pcapi.models import offer_mixin
 from pcapi.models import pc_object
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.models.pc_object import BaseQuery
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.repository.session_management import atomic
@@ -516,7 +515,7 @@ def update_offer(
 
 
 def batch_update_offers(
-    query: BaseQuery,
+    query: sa_orm.Query,
     update_fields: dict | None = None,
     activate: bool | None = None,
     send_email_notification: bool = False,
@@ -1699,7 +1698,7 @@ def fetch_or_update_product_with_titelive_data(titelive_product: models.Product)
     return product
 
 
-def batch_delete_draft_offers(query: BaseQuery) -> None:
+def batch_delete_draft_offers(query: sa_orm.Query) -> None:
     offer_ids = [id_ for (id_,) in query.with_entities(models.Offer.id)]
     filters = (models.Offer.validation == models.OfferValidationStatus.DRAFT, models.Offer.id.in_(offer_ids))
     db.session.query(models.Mediation).filter(models.Mediation.offerId == models.Offer.id).filter(*filters).delete(
