@@ -1,20 +1,27 @@
+import pathlib
+import re
+import uuid
 from unittest.mock import patch
 
 import pytest
 from flask import url_for
 
+import pcapi.core.providers.repository as providers_repository
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers.models import ImageType
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.backoffice.filters import format_titelive_id_lectorat
 from pcapi.utils import requests
 
+import tests
 from tests.connectors.titelive import fixtures
 
 from .helpers import button as button_helpers
@@ -326,13 +333,25 @@ class PostProductSynchronizationWithTiteliveTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     @patch("pcapi.connectors.titelive.get_by_ean13")
-    def test_whitelist_product(self, mock_get_by_ean13, authenticated_client):
+    def test_synchronize_product_with_titelive(self, mock_get_by_ean13, requests_mock, authenticated_client):
+        image_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
+        with open(image_path, "rb") as thumb_file:
+            requests_mock.get(re.compile("image"), content=thumb_file.read())
+
         mock_get_by_ean13.return_value = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE
         article = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["article"][0]
         oeuvre = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]
 
         ean = "1234567899999"
         product = offers_factories.ProductFactory.create(ean=ean, extraData={})
+        provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+        recto_mediation = offers_factories.ProductMediationFactory.create(
+            product=product, imageType=ImageType.RECTO, uuid=uuid.uuid4(), lastProvider=provider
+        )
+        verso_mediation = offers_factories.ProductMediationFactory.create(
+            product=product, imageType=ImageType.VERSO, uuid=uuid.uuid4(), lastProvider=provider
+        )
+
         response = self.post_to_endpoint(authenticated_client, product_id=product.id)
         assert response.status_code == 303
 
@@ -355,6 +374,9 @@ class PostProductSynchronizationWithTiteliveTest(PostEndpointHelper):
             "date_parution": "2014-10-02 00:00:00",
             "num_in_collection": "5833",
         }
+        assert len(product.productMediations) == 2
+        assert recto_mediation not in product.productMediations
+        assert verso_mediation not in product.productMediations
 
 
 class WhitelistProductButtonTest(button_helpers.ButtonHelper):

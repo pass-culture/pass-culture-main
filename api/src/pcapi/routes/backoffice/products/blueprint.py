@@ -295,8 +295,9 @@ def synchronize_product_with_titelive(product_id: int) -> utils.BackofficeRespon
         raise NotFound()
 
     try:
-        titelive_product = offers_api.get_new_product_from_ean13(product.ean)
+        titelive_product, titelive_article = offers_api.get_new_product_from_ean13(product.ean)
         offers_api.fetch_or_update_product_with_titelive_data(titelive_product)
+        offers_api.create_or_update_product_mediations_from_article(product, titelive_article)
     except requests.ExternalAPIException as err:
         mark_transaction_as_invalid()
         flash(
@@ -598,7 +599,13 @@ def import_product_from_titelive(ean: str) -> utils.BackofficeResponse:
     is_ineligible = request.args.get("is_ineligible", "false").lower() == "true"
 
     try:
-        product = offers_api.whitelist_product(ean)
+        titelive_product, titelive_article = offers_api.get_new_product_from_ean13(ean)
+        product = offers_api.fetch_or_update_product_with_titelive_data(titelive_product)
+        product.gcuCompatibilityType = offers_models.GcuCompatibilityType.COMPATIBLE
+        db.session.add(product)
+        db.session.flush()
+        offers_api.create_or_update_product_mediations_from_article(product, titelive_article)
+
     except offers_exceptions.TiteLiveAPINotExistingEAN:
         flash(Markup("L'EAN <b>{ean}</b> n'existe pas chez Titelive").format(ean=ean), "warning")
     except GtlIdError:
