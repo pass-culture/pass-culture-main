@@ -41,6 +41,7 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import ValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
+from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 
 
@@ -649,15 +650,54 @@ class HeadlineOffer(PcObject, Base, Model):
 
 
 @sa.event.listens_for(HeadlineOffer, "after_insert")
-def after_insert_product_reaction(
+def after_insert_headline_offer(
     _mapper: sa_orm.Mapper, connection: sa.engine.Connection, target: HeadlineOffer
 ) -> None:
-    if target.offer.productId:
+    if not target.offer.productId:
+        return
+
+    now = date_utils.get_naive_utc_now()
+    parsed_value = _parse_datetime_range(target.timespan)
+
+    if now in parsed_value:
         _increment_product_headlines_count(connection, target.offer.productId, 1)
 
 
+@sa.event.listens_for(HeadlineOffer.timespan, "set")
+def on_set_timespan(
+    target: HeadlineOffer,
+    value: psycopg2.extras.DateTimeRange,
+    old_value: psycopg2.extras.DateTimeRange,
+    _initiator: sa_orm.AttributeEvent,
+) -> None:
+    # During object creation, old_value is not a DateTimeRange (it's the NO_VALUE symbol).
+    # The after_insert event handles the count for new objects, so we can return early.
+    if old_value is sa_orm.attributes.NO_VALUE:
+        return
+
+    if not target.offer.productId:
+        return
+
+    now = date_utils.get_naive_utc_now()
+    parsed_value = _parse_datetime_range(value)
+
+    is_active_before_update = now in old_value
+    is_active_after_update = now in parsed_value
+
+    if is_active_before_update and not is_active_after_update:
+        _increment_product_headlines_count(db.session, target.offer.productId, -1)
+    elif not is_active_before_update and is_active_after_update:
+        _increment_product_headlines_count(db.session, target.offer.productId, 1)
+
+
+def _parse_datetime_range(value: psycopg2.extras.DateTimeRange) -> psycopg2.extras.DateTimeRange:
+    lower_bound = date_utils.get_naive_utc_from_iso_str(value.lower) if value.lower else None
+    upper_bound = date_utils.get_naive_utc_from_iso_str(value.upper) if value.upper else None
+    return psycopg2.extras.DateTimeRange(lower=lower_bound, upper=upper_bound)
+
+
 @sa.event.listens_for(HeadlineOffer, "after_delete")
-def after_delete_product_reaction(
+def after_delete_headline_offer(
     _mapper: sa_orm.Mapper, connection: sa.engine.Connection, target: HeadlineOffer
 ) -> None:
     # SQLAlchemy will not call this event if the object is deleted using a bulk delete

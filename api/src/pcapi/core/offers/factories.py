@@ -294,7 +294,7 @@ class DigitalOfferFactory(OfferFactory):
     offererAddress: factory.declarations.BaseDeclaration | None = None
 
 
-class HeadlineOfferFactory(BaseFactory):
+class HeadlineOfferFactory(BaseFactory[models.HeadlineOffer]):
     class Meta:
         model = models.HeadlineOffer
 
