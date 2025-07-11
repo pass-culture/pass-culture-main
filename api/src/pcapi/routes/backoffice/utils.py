@@ -315,6 +315,10 @@ def generate_search_query(
                 inner_joins.update(custom_filter_inner_joins)
             continue
 
+        if query_modifier := meta_field.get("query_modifier", {}).get("function"):
+            query = query_modifier(query, field_value)
+            continue
+
         column = meta_field["column"]
         if OPERATOR_DICT[operator].get("outer_join", False):
             if not meta_field.get("outer_join") or not meta_field.get("outer_join_column"):
