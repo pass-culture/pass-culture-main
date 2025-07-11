@@ -5,6 +5,7 @@ from unittest import mock
 from unittest.mock import patch
 
 import pytest
+import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
@@ -114,6 +115,7 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
+    @time_machine.travel(datetime.datetime(2023, 8, 11), tick=False)
     def should_fill_offer_and_stock_informations_for_each_movie_based_on_product(self, requests_mock):
         self._create_products()
         venue_provider = self._create_cinema_and_pivot()
@@ -151,6 +153,7 @@ class BoostStocksTest:
         assert created_offers[0].description == "Description du produit allociné 3"
         assert created_offers[0].durationMinutes == 333
         assert created_offers[0].isDuo
+        assert created_offers[0].publicationDatetime == datetime.datetime(2023, 8, 11)
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[0].extraData == {"allocineId": 270935}
         assert created_offers[0]._extraData == None
@@ -171,6 +174,7 @@ class BoostStocksTest:
         assert created_offers[1].description == "Description du produit allociné 4"
         assert created_offers[1].durationMinutes == 444
         assert created_offers[1].isDuo
+        assert created_offers[1].publicationDatetime == datetime.datetime(2023, 8, 11)
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[1].extraData == {"allocineId": 269975}
         assert created_offers[1]._extraData == None
