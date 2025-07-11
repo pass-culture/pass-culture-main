@@ -241,7 +241,6 @@ class AlgoliaSerializationMixin:
         )
         headlines_count = offer.product.headlinesCount if offer.product and offer.product.headlinesCount else None
         likes_count = offer.product.likesCount if offer.product and offer.product.likesCount else offer.likesCount
-
         # If you update this dictionary, please check whether you need to
         # also update `core.offerers.api.VENUE_ALGOLIA_INDEXED_FIELDS`.
         object_to_index: dict[str, typing.Any] = {
@@ -250,7 +249,7 @@ class AlgoliaSerializationMixin:
             "offer": {
                 "allocineId": extra_data.get("allocineId"),
                 "artist": " ".join(extra_data_artists).strip() or None,
-                "chroniclesCount": chronicles_count,
+                "chroniclesCount": chronicles_count or None,
                 "bookMacroSection": macro_section,
                 "dateCreated": date_created,
                 "dates": sorted(dates),
@@ -260,7 +259,7 @@ class AlgoliaSerializationMixin:
                 "gtlCodeLevel2": gtl_code_2,
                 "gtlCodeLevel3": gtl_code_3,
                 "gtlCodeLevel4": gtl_code_4,
-                "headlinesCount": headlines_count,
+                "headlinesCount": headlines_count or None,
                 "indexedAt": datetime.datetime.utcnow().isoformat(),
                 "isDigital": offer.isDigital,
                 "isDuo": offer.isDuo,
@@ -271,7 +270,7 @@ class AlgoliaSerializationMixin:
                 "isThing": offer.isThing,
                 "last30DaysBookings": last_30_days_bookings,
                 "last30DaysBookingsRange": get_last_30_days_bookings_range(last_30_days_bookings),
-                "likes": likes_count,
+                "likes": likes_count or None,
                 "movieGenres": extra_data.get("genres"),
                 "musicType": music_type_labels,
                 "name": offer.name,

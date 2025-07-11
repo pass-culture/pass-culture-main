@@ -473,6 +473,16 @@ def test_filter_on_empty_artist():
     assert serialized["offer"]["artist"] == "Artiste1 Artiste2"
 
 
+def test_serialize_offer_chronicles_and_likes_count_when_0():
+    offer = offers_factories.OfferFactory()
+
+    offer = get_base_query_for_offer_indexation().filter(offers_models.Offer.id == offer.id).one()
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
+    assert "chroniclesCount" not in serialized["offer"]
+    assert "headlinesCount" not in serialized["offer"]
+    assert "likes" not in serialized["offer"]
+
+
 def test_serialize_product_likes_count():
     product = offers_factories.ProductFactory()
     offer = offers_factories.OfferFactory(product=product)
