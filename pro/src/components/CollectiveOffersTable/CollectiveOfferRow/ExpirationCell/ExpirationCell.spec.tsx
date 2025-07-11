@@ -74,4 +74,45 @@ describe('ExpirationCell', () => {
       screen.getByText('En attente de réservation par le chef d’établissement')
     ).toBeInTheDocument()
   })
+
+  it('should not show the expiration days badge if expiration is more than 7 days away', () => {
+    const in10Days = new Date()
+    in10Days.setDate(in10Days.getDate() + 10)
+
+    renderExpirationCell(offer, in10Days.toISOString())
+
+    expect(screen.queryByText(/expire dans/)).not.toBeInTheDocument()
+  })
+
+  it('should show "préréservation par l’enseignant" when offer is PUBLISHED', () => {
+    const offerPublished = {
+      ...offer,
+      displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
+    }
+    const today = new Date()
+
+    renderExpirationCell(offerPublished, today.toISOString())
+
+    expect(
+      screen.getByText('En attente de préréservation par l’enseignant')
+    ).toBeInTheDocument()
+  })
+
+  it('should apply the "banner-expires-soon" class when expiration is in 2 days', () => {
+    const soon = new Date()
+    soon.setDate(soon.getDate() + 2)
+
+    const { container } = renderExpirationCell(offer, soon.toISOString())
+
+    expect(container.querySelector('.banner-expires-soon')).toBeInTheDocument()
+  })
+
+  it('should display "expire aujourd’hui" if expiration date is in the past (defensive)', () => {
+    const yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+
+    renderExpirationCell(offer, yesterday.toISOString())
+
+    expect(screen.getByText('expire aujourd’hui')).toBeInTheDocument()
+  })
 })
