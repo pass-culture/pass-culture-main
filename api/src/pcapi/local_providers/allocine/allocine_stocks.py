@@ -26,6 +26,7 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.repository.providable_queries import get_last_update_for_provider
 from pcapi.utils.date import get_department_timezone
+from pcapi.utils.date import get_naive_utc_now
 from pcapi.utils.date import local_datetime_to_default_timezone
 
 
@@ -108,6 +109,7 @@ class AllocineStocks(LocalProvider):
         offer.bookingEmail = self.venue.bookingEmail
         offer.withdrawalDetails = self.venue.withdrawalDetails
         offer.subcategoryId = subcategories.SEANCE_CINE.id
+        offer.publicationDatetime = offer.publicationDatetime or get_naive_utc_now()
         self.update_from_movie_information(offer)
 
         if offer.id is None:  # Newly created offer
