@@ -54,12 +54,8 @@ class OfferOpeningHoursSchemaTest:
             }
         )
 
-        assert oh.openingHours["MONDAY"] == [[time(10), time(13)], [time(14), time(17)]]
-        assert oh.openingHours["FRIDAY"] == [[time(12), time(19)]]
-
-    def test_mixing_str_and_time_objects_is_ok(self):
-        oh = schemas.OfferOpeningHoursSchema(openingHours={"MONDAY": [["10:00", time(18)]]})
-        assert oh.openingHours["MONDAY"] == [[time(10), time(18)]]
+        assert oh.openingHours["MONDAY"] == [["10:00", "13:00"], ["14:00", "17:00"]]
+        assert oh.openingHours["FRIDAY"] == [["12:00", "19:00"]]
 
     def test_none_opening_hours_is_not_ok(self):
         with pytest.raises(ValueError, match="none is not an allowed value"):
@@ -92,9 +88,24 @@ class OfferOpeningHoursSchemaTest:
             [["10:00:00:00:00", "18:00"]],  # not a valid iso time
         ],
     )
-    def test_timespan_is_not_a_valid_hour_is_not_ok(self, timespans):
-        with pytest.raises(ValueError, match="invalid time format"):
+    def test_malformed_timespan_is_not_a_valid_hour_is_not_ok(self, timespans):
+        with pytest.raises(ValueError, match="string does not match regex"):
             schemas.OfferOpeningHoursSchema(openingHours={"MONDAY": timespans})
+
+    @pytest.mark.parametrize(
+        "timespans",
+        [
+            [[time(10), "18:00"]],  # time objects are not valid (only str)
+            [[10 * 60, "18:00"]],  # int is not a valid data type
+        ],
+    )
+    def test_invalid_timespan_data_type_is_not_ok(self, timespans):
+        with pytest.raises(ValueError, match="str type expected"):
+            schemas.OfferOpeningHoursSchema(openingHours={"MONDAY": timespans})
+
+    def test_null_timespan_is_not_ok(self):
+        with pytest.raises(ValueError, match="none is not an allowed value"):
+            schemas.OfferOpeningHoursSchema(openingHours={"MONDAY": [[None, "18:00"]]})
 
     @pytest.mark.parametrize(
         "timespans",
@@ -106,3 +117,12 @@ class OfferOpeningHoursSchemaTest:
     def test_overlapping_timespans_is_not_ok(self, timespans):
         with pytest.raises(ValueError, match="overlapping"):
             schemas.OfferOpeningHoursSchema(openingHours={"MONDAY": timespans})
+
+    @pytest.mark.parametrize("weekday", ["MNDAY", "monday", "OOPS", 1])
+    def test_unknown_weekday_is_not_valid(self, weekday):
+        with pytest.raises(ValueError, match="value is not a valid enumeration member"):
+            schemas.OfferOpeningHoursSchema(openingHours={weekday: [["10:00", "18:00"]]})
+
+    def test_none_is_not_a_valid_weekday(self):
+        with pytest.raises(ValueError, match="none is not an allowed value"):
+            schemas.OfferOpeningHoursSchema(openingHours={None: [["10:00", "18:00"]]})

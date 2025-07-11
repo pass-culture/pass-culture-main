@@ -7,12 +7,13 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
 from pcapi.core.categories import subcategories
-from pcapi.core.offers import factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
+
+from tests.routes.pro import conftest
 
 
 @pytest.mark.usefixtures("db_session")
@@ -444,29 +445,8 @@ class Returns403Test:
         ]
 
 
-@pytest.fixture(name="venue")
-def venue_fixture():
-    return offerers_factories.VenueFactory()
-
-
-@pytest.fixture(name="offer")
-def offer_fixture(venue):
-    return factories.ThingOfferFactory(venue=venue)
-
-
-@pytest.fixture(name="user")
-def user_fixture(venue):
-    offerer = venue.managingOfferer
-    return offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
-
-
-@pytest.fixture(name="auth_client")
-def auth_client_fixture(client, user):
-    return client.with_session_auth(user.email)
-
-
 @pytest.mark.usefixtures("db_session")
-class CreateOfferOpeningHoursTest:
+class UpsertOfferOpeningHoursTest(conftest.SharedOfferOpeningHoursErrors):
     """Check that one client can create an offer's opening hours
 
     This should only test some relatively basic behaviour:
@@ -479,7 +459,7 @@ class CreateOfferOpeningHoursTest:
     go any further.
     """
 
-    endpoint = "Private API.create_offer_opening_hours"
+    endpoint = "Private API.upsert_offer_opening_hours"
 
     def test_create_simple_opening_hours_works(self, auth_client, offer):
         data = {"openingHours": {"MONDAY": [["10:00", "18:00"]]}}
@@ -489,9 +469,10 @@ class CreateOfferOpeningHoursTest:
         # fetch user
         # fetch offer with its venue
         # check user has access to offer
+        # delete offer's opening hours
         # insert opening hours
         # reload offer (with its opening hours)
-        with assert_num_queries(6):
+        with assert_num_queries(7):
             response = auth_client.post(url, json=data)
 
         assert response.status_code == 201
@@ -523,8 +504,9 @@ class CreateOfferOpeningHoursTest:
         # fetch user
         # fetch offer with its venue
         # check user has access to offer
+        # delete offer's existing opening hours
         # reload offer (with its opening hours)
-        with assert_num_queries(5):
+        with assert_num_queries(6):
             response = auth_client.post(url, json=data)
 
         assert response.status_code == 201
@@ -568,29 +550,3 @@ class CreateOfferOpeningHoursTest:
         response = auth_client.post(url, json=data)
         assert response.status_code == 400
         assert "openingHours.__key__" in response.json
-
-    def test_unknown_offer_returns_an_error(self, auth_client):
-        data = {"openingHours": {"MONDAY": [["10:00", "18:00"]]}}
-        url = flask.url_for(self.endpoint, offer_id=-1)
-        assert auth_client.post(url, json=data).status_code == 404
-
-    def test_unauthenticated_user_gets_an_error(self, client, offer):
-        data = {"openingHours": {"MONDAY": [["10:00", "18:00"]]}}
-        url = flask.url_for(self.endpoint, offer_id=offer.id)
-        assert client.post(url, json=data).status_code == 401
-
-    def test_authenticated_user_but_with_no_rights_on_offer_gets_an_error(self, auth_client):
-        offer = factories.ThingOfferFactory()
-
-        data = {"openingHours": {"MONDAY": [["10:00", "18:00"]]}}
-        url = flask.url_for(self.endpoint, offer_id=offer.id)
-
-        # fetch user session
-        # fetch user
-        # fetch offer with venue
-        # check if user has access to offer
-        # rollback
-        with assert_num_queries(5):
-            response = auth_client.post(url, json=data)
-
-        assert response.status_code == 403

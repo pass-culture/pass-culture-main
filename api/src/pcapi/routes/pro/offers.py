@@ -733,8 +733,8 @@ def _format_offer_opening_hours(
             lower = int(ts.lower)
             upper = int(ts.upper)
 
-            start = time(lower // 60, lower % 60)
-            end = time(upper // 60, upper % 60)
+            start = time(lower // 60, lower % 60).isoformat(timespec="minutes")
+            end = time(upper // 60, upper % 60).isoformat(timespec="minutes")
 
             formatted[weekday].append([start, end])  # type: ignore[union-attr]
 
@@ -749,11 +749,11 @@ def _format_offer_opening_hours(
     api=blueprint.pro_private_schema,
 )
 @atomic()
-def create_offer_opening_hours(
+def upsert_offer_opening_hours(
     offer_id: int,
     body: offers_schemas.OfferOpeningHoursSchema,
 ) -> offers_schemas.OfferOpeningHoursSchema:
-    """Create an offer's opening hours (erase existing if any).
+    """Create or update an offer's opening hours (erase existing if any)
 
     For each day of the week, there can be at most two pairs of
     timespans (opening hours start and end).
@@ -767,10 +767,26 @@ def create_offer_opening_hours(
     offer = offers_repository.get_offer_by_id(offer_id, load_options={"venue", "openingHours"})
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    opening_hours_api.create_opening_hours(offer, body.openingHours)
+    opening_hours_api.upsert_opening_hours(offer, body.openingHours)
 
     db.session.flush()
 
     offer = offers_repository.get_offer_by_id(offer.id, load_options={"openingHours"})
+    opening_hours = _format_offer_opening_hours(offer.openingHours)
+    return offers_schemas.OfferOpeningHoursSchema(openingHours=opening_hours)
+
+
+@private_api.route("/offers/<int:offer_id>/opening-hours", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offers_schemas.OfferOpeningHoursSchema,
+    on_success_status=200,
+    api=blueprint.pro_private_schema,
+)
+@atomic()
+def get_offer_opening_hours(offer_id: int) -> offers_schemas.OfferOpeningHoursSchema:
+    offer = offers_repository.get_offer_by_id(offer_id, load_options={"venue", "openingHours"})
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
     opening_hours = _format_offer_opening_hours(offer.openingHours)
     return offers_schemas.OfferOpeningHoursSchema(openingHours=opening_hours)

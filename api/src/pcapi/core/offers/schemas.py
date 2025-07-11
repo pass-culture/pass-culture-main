@@ -1,5 +1,4 @@
 import datetime
-import re
 import typing
 
 from psycopg2.extras import NumericRange
@@ -7,6 +6,7 @@ from pydantic.v1 import EmailStr
 from pydantic.v1 import Field
 from pydantic.v1 import HttpUrl
 from pydantic.v1 import conlist
+from pydantic.v1 import constr
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
@@ -196,7 +196,8 @@ class StartEndOpeningHours(BaseModel):
 
 # defines start and end opening hours
 # eg. ["10:00", "18:00"] (from 10:00 to 18:00)
-OpeningHours = conlist(item_type=datetime.time, min_items=2, max_items=2, unique_items=True)
+Hour = constr(regex=r"^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$", strip_whitespace=True, strict=True)
+OpeningHours = conlist(item_type=Hour, min_items=2, max_items=2, unique_items=True)
 
 
 # defines a whole day's opening hours
@@ -209,45 +210,6 @@ WeekdayOpeningHoursTimespans = dict[offers_models.Weekday, OpeningHoursTimespans
 
 class OfferOpeningHoursSchema(BaseModel):
     openingHours: WeekdayOpeningHoursTimespans
-
-    @root_validator(pre=True)
-    def validate_input_time_objects(cls, values: dict) -> dict:
-        """Strangely pydantic accepts some invalid time formats
-
-        Doc says that strings like "HH:MM[:SS[.ffffff]][Z or [±]HH[:]MM]"
-        are accepted... but, reality is a little bit different. If the
-        input is not valid but could be parsed as an integer, it is
-        interpreted as 00:00 + N seconds.
-
-        This validation function ensures that only HH:MM time strings
-        are accepted. Time objects will be (obviously) ignored.
-        """
-        times = []
-        try:
-            opening_hours = values["openingHours"]
-            for day_timespans in opening_hours.values():
-                if not day_timespans:
-                    continue
-
-                for timespan in day_timespans:
-                    for hour in timespan:
-                        if isinstance(hour, str):
-                            times.append(hour)
-        except Exception:
-            # some unexpected error occurred: let pydantic handle it,
-            # the general input data strucure is not the expected one.
-            return values
-
-        # no need to be more specific, pydantic's serialization will
-        # take care of others errors like hours > 23 or minutes > 59.
-        # the goal for now is only to have a less permissive time
-        # serialization.
-        regexp = re.compile(r"^\d\d:\d\d$")
-        for t in times:
-            if isinstance(t, str):
-                if not regexp.match(t):
-                    raise ValueError(f"invalid time format: {t}")
-        return values
 
     @validator("openingHours")
     def validate_timespans(cls, opening_hours: OpeningHoursTimespans | None) -> OpeningHoursTimespans | None:  # type: ignore[valid-type]
@@ -283,7 +245,14 @@ class OfferOpeningHoursSchema(BaseModel):
     def _parse_timespans(cls, timespans: OpeningHoursTimespans) -> list[NumericRange]:  # type: ignore[valid-type]
         def unpack_and_parse(ts: OpeningHours) -> StartEndOpeningHours:  # type: ignore[valid-type]
             start, end = ts  # type: ignore[misc]
-            return StartEndOpeningHours(start=start, end=end)  # type: ignore[has-type]
+
+            try:
+                start = datetime.time.fromisoformat(start)
+                end = datetime.time.fromisoformat(end)
+            except Exception as err:
+                raise ValueError(f"invalid time format: [{ts}] -> {err}")
+            else:
+                return StartEndOpeningHours(start=start, end=end)  # type: ignore[has-type]
 
         return [unpack_and_parse(ts) for ts in timespans]  # type: ignore[attr-defined]
 
