@@ -18,7 +18,7 @@ import {
 import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
 import { isCollectiveOffer, Mode } from 'commons/core/OfferEducational/types'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
@@ -49,7 +49,8 @@ export const OfferEducationalActions = ({
 }: OfferEducationalActionsProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const currentOfferer = useSelector(selectCurrentOfferer)
+  const selectedOffererId = currentOfferer?.id ?? null
   const lastBookingId = isCollectiveOffer(offer) ? offer.booking?.id : null
   const lastBookingStatus = isCollectiveOffer(offer)
     ? offer.booking?.status

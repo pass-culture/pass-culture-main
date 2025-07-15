@@ -8,7 +8,7 @@ import {
 } from 'apiClient/v1'
 import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
 import {
   Description,
   SummaryDescriptionList,
@@ -33,7 +33,8 @@ export const OldCollectiveOfferLocationSection = ({
     ([, venueIdParam]) => api.getVenue(venueIdParam)
   )
 
-  const offererId = useSelector(selectCurrentOffererId)
+  const currentOfferer = useSelector(selectCurrentOfferer)
+  const offererId = currentOfferer?.id ?? null
   const { data: offerer } = useOfferer(offererId)
 
   const interventionAreas = getInterventionAreaLabels(offer.interventionArea)

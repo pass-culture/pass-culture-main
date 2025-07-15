@@ -23,7 +23,7 @@ import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils
 import { duplicateBookableOffer } from 'commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
 import { FORMAT_DD_MM_YYYY } from 'commons/utils/date'
 import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { pluralizeString } from 'commons/utils/pluralize'
@@ -68,7 +68,8 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const currentOfferer = useSelector(selectCurrentOfferer)
+  const selectedOffererId = currentOfferer?.id ?? null
 
   const archiveButtonRef = useRef<HTMLButtonElement>(null)
   const duplicateButtonRef = useRef<HTMLButtonElement>(null)

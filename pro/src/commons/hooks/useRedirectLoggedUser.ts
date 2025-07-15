@@ -5,7 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router'
 import { api } from 'apiClient/api'
 import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { updateSelectedOffererId } from 'commons/store/offerer/reducer'
+import { updateCurrentOfferer } from 'commons/store/offerer/reducer'
 import { updateUser } from 'commons/store/user/reducer'
 import { selectCurrentUser } from 'commons/store/user/selectors'
 import { storageAvailable } from 'commons/utils/storageAvailable'
@@ -51,7 +51,7 @@ export const useRedirectLoggedUser = () => {
         localStorage.removeItem(SAVED_OFFERER_ID_KEY)
       }
       dispatch(updateUser(null))
-      dispatch(updateSelectedOffererId(null))
+      dispatch(updateCurrentOfferer(null))
     }
   }, [currentUser])
 }

@@ -8,11 +8,12 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import * as orejime from 'app/App/analytics/orejime'
 import { App } from 'app/App/App'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { DeepPartial } from 'commons/custom_types/utils'
 import * as useHasAccessToDidacticOnboarding from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import { RootState } from 'commons/store/rootReducer'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
@@ -146,11 +147,13 @@ describe('App', () => {
 
   describe('Onboarding status', () => {
     const user = sharedCurrentUserFactory({ hasUserOfferer: true })
-    const overrides: Partial<RootState> = {
+    const overrides: DeepPartial<RootState> = {
       user: {
         currentUser: user,
       },
-      offerer: currentOffererFactory({ isOnboarded: false }),
+      offerer: currentOffererFactory({
+        currentOfferer: { isOnboarded: false },
+      }),
     }
 
     it('should redirect to onboarding if user is not onboarded and tries to go to home page', async () => {
@@ -183,9 +186,8 @@ describe('App', () => {
         storeOverrides: {
           ...overrides,
           offerer: {
-            selectedOffererId: 1,
+            currentOfferer: { id: 1, isOnboarded: true },
             offererNames: [],
-            isOnboarded: true,
           },
         },
         features: ['WIP_ENABLE_PRO_DIDACTIC_ONBOARDING'],

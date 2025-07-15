@@ -9,11 +9,12 @@ import {
   FeatureResponseModel,
   SharedCurrentUserResponseModel,
 } from 'apiClient/v1'
+import { DeepPartial } from 'commons/custom_types/utils'
 import { RootState } from 'commons/store/rootReducer'
 import { configureTestStore } from 'commons/store/testUtils'
 
 export type RenderWithProvidersOptions = {
-  storeOverrides?: Partial<RootState>
+  storeOverrides?: DeepPartial<RootState>
   initialRouterEntries?: string[]
   features?: string[]
   user?: SharedCurrentUserResponseModel | null
@@ -61,7 +62,7 @@ export const renderWithProviders = (
     })
   )
 
-  const storeOverrides: Partial<RootState> = {
+  const storeOverrides: DeepPartial<RootState> = {
     ...overrides?.storeOverrides,
     features: {
       list: featuresList,
@@ -76,7 +77,7 @@ export const renderWithProviders = (
     offerer: overrides?.storeOverrides?.offerer,
   }
 
-  const store = configureTestStore(storeOverrides)
+  const store = configureTestStore(storeOverrides as RootState)
   const router = createRouterFromOverrides(component, overrides, initialPath)
 
   const { rerender, ...otherRenderResult } = render(

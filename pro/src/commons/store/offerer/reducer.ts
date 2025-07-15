@@ -1,17 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import type { GetOffererNameResponseModel } from 'apiClient/v1'
+import type { GetOffererResponseModel } from 'apiClient/v1/models/GetOffererResponseModel'
 
 export type OffererState = {
   offererNames: null | GetOffererNameResponseModel[]
-  selectedOffererId: number | null
-  isOnboarded: boolean | null
+  currentOfferer: GetOffererResponseModel | null
 }
 
 const initialState: OffererState = {
   offererNames: null,
-  selectedOffererId: null,
-  isOnboarded: null,
+  currentOfferer: null,
 }
 
 const offererSlice = createSlice({
@@ -24,17 +23,19 @@ const offererSlice = createSlice({
     ) => {
       state.offererNames = action.payload
     },
-    updateSelectedOffererId: (
+    updateCurrentOfferer: (
       state: OffererState,
-      action: PayloadAction<number | null>
+      action: PayloadAction<GetOffererResponseModel | null>
     ) => {
-      state.selectedOffererId = action.payload
+      state.currentOfferer = action.payload
     },
-    updateOffererIsOnboarded: (
+    updateCurrentOffererOnboardingStatus: (
       state: OffererState,
-      action: PayloadAction<boolean | null>
+      action: PayloadAction<GetOffererResponseModel['isOnboarded']>
     ) => {
-      state.isOnboarded = action.payload
+      if (state.currentOfferer) {
+        state.currentOfferer.isOnboarded = action.payload
+      }
     },
   },
 })
@@ -43,6 +44,6 @@ export const offererReducer = offererSlice.reducer
 
 export const {
   updateOffererNames,
-  updateSelectedOffererId,
-  updateOffererIsOnboarded,
+  updateCurrentOfferer,
+  updateCurrentOffererOnboardingStatus,
 } = offererSlice.actions
