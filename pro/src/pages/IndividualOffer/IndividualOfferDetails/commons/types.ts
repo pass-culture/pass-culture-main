@@ -1,3 +1,8 @@
+import {
+  GetIndividualOfferResponseModel,
+  SubcategoryResponseModel,
+} from 'apiClient/v1'
+
 export type DetailsFormValues = {
   name: string
   description?: string
@@ -33,4 +38,9 @@ export type Product = {
     recto?: string
     verso?: string
   }
+}
+
+export type SetDefaultInitialValuesFromOfferProps = {
+  offer: GetIndividualOfferResponseModel
+  subcategories: SubcategoryResponseModel[]
 }
