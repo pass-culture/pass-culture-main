@@ -52,10 +52,14 @@ class BoostStocks(LocalProvider):
     ):
         super().__init__(venue_provider)
         self.venue = venue_provider.venue
-        self.cinema_id = venue_provider.venueIdAtOfferProvider
+        self._boost_api_client = BoostClientAPI(
+            venue_provider.venueIdAtOfferProvider,
+            request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
+            enable_debug=enable_debug,
+        )
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
-        self.attributs: list[boost_serializers.CinemaAttribut] = self._get_cinema_attributs()
-        self.showtimes: Iterator[boost_serializers.ShowTime4] = iter(self._get_showtimes())
+        self.attributs: list[boost_serializers.CinemaAttribut] = self._boost_api_client.get_cinemas_attributs()
+        self.showtimes: Iterator[boost_serializers.ShowTime4] = iter(self._boost_api_client.get_showtimes())
         self.price_category_labels: list[offers_models.PriceCategoryLabel] = (
             db.session.query(offers_models.PriceCategoryLabel)
             .filter(offers_models.PriceCategoryLabel.venue == self.venue)
@@ -135,7 +139,7 @@ class BoostStocks(LocalProvider):
 
         if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.today().date():
             if self.showtime_details.film.posterUrl:
-                image = self._get_boost_movie_poster(self.showtime_details.film.posterUrl)
+                image = self._boost_api_client.get_movie_poster(self.showtime_details.film.posterUrl)
                 if image and self.product and not self.product.productMediations:
                     try:
                         image_id = str(uuid.uuid4())
@@ -252,25 +256,13 @@ class BoostStocks(LocalProvider):
 
     def get_object_thumb(self) -> bytes:
         image_url = self.showtime_details.film.posterUrl
-        return self._get_boost_movie_poster(image_url) if image_url else bytes()
+        return self._boost_api_client.get_movie_poster(image_url) if image_url else bytes()
 
     def shall_synchronize_thumbs(self) -> bool:
         return True
 
     def get_keep_poster_ratio(self) -> bool:
         return True
-
-    def _get_showtimes(self) -> list[boost_serializers.ShowTime4]:
-        client_boost = BoostClientAPI(self.cinema_id, request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS)
-        return client_boost.get_showtimes()
-
-    def _get_boost_movie_poster(self, image_url: str) -> bytes:
-        client_boost = BoostClientAPI(self.cinema_id, request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS)
-        return client_boost.get_movie_poster(image_url)
-
-    def _get_cinema_attributs(self) -> list[boost_serializers.CinemaAttribut]:
-        client_boost = BoostClientAPI(self.cinema_id, request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS)
-        return client_boost.get_cinemas_attributs()
 
 
 def _build_movie_uuid(film_id: int, venue: Venue) -> str:
