@@ -773,7 +773,7 @@ class CegidFinanceBackendTest:
         assert request_json["Hold"] == {"value": False}
         assert request_json["LocationID"] == {"value": "PRINCIPAL"}
         assert request_json["PostPeriod"] == {"value": f"{invoice.date:%m%Y}"}
-        assert request_json["Status"] == {"value": "Open"}
+        assert request_json["Status"] == {"value": "R"}
         assert request_json["TaxTotal"] == {"value": "0"}
         assert request_json["Terms"] == {"value": "30J"}
         assert request_json["Type"] == {"value": "INV"}
@@ -962,7 +962,7 @@ class CegidFinanceBackendTest:
         assert request_json["Hold"] == {"value": False}
         assert request_json["LocationID"] == {"value": "PRINCIPAL"}
         assert request_json["PostPeriod"] == {"value": f"{invoice.date:%m%Y}"}
-        assert request_json["Status"] == {"value": "Open"}
+        assert request_json["Status"] == {"value": "R"}
         assert request_json["TaxTotal"] == {"value": "0"}
         assert request_json["Terms"] == {"value": "30J"}
         assert request_json["Type"] == {"value": "ADR"}
