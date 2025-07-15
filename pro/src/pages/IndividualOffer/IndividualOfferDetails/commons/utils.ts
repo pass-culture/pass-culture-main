@@ -1,12 +1,11 @@
-import { UseFormSetValue } from 'react-hook-form'
 
 import {
   CategoryResponseModel,
   GetIndividualOfferResponseModel,
   OfferStatus,
+  SubcategoryIdEnum,
   SubcategoryResponseModel,
   VenueListItemResponseModel,
-  SubcategoryIdEnum,
 } from 'apiClient/v1'
 import { showOptionsTree } from 'commons/core/Offers/categoriesSubTypes'
 import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
@@ -97,92 +96,6 @@ export const completeSubcategoryConditionalFields = (
     ...new Set(subcategory?.conditionalFields),
     ...(subcategory?.isEvent ? ['durationMinutes'] : []),
   ] as (keyof DetailsFormValues)[]
-
-type OnCategoryChangeProps = {
-  readOnlyFields: string[]
-  categoryId: string
-  subcategories: SubcategoryResponseModel[]
-  setFieldValue: UseFormSetValue<DetailsFormValues>
-  onSubcategoryChange: (p: OnSubcategoryChangeProps) => void
-  subcategoryConditionalFields: (keyof DetailsFormValues)[]
-  setIsEvent?: (isEvent: boolean | null) => void
-}
-
-export const onCategoryChange = ({
-  categoryId,
-  readOnlyFields,
-  subcategories,
-  setFieldValue,
-  onSubcategoryChange,
-  subcategoryConditionalFields,
-  setIsEvent,
-}: OnCategoryChangeProps) => {
-  if (readOnlyFields.includes('subcategoryId')) {
-    return
-  }
-  const newSubcategoryOptions = buildSubcategoryOptions(
-    subcategories,
-    categoryId
-  )
-  const subcategoryId =
-    newSubcategoryOptions.length === 1
-      ? String(newSubcategoryOptions[0].value)
-      : DEFAULT_DETAILS_FORM_VALUES.subcategoryId
-  setFieldValue('subcategoryId', subcategoryId)
-  onSubcategoryChange({
-    newSubCategoryId: subcategoryId,
-    subcategories,
-    setFieldValue,
-    subcategoryConditionalFields,
-    setIsEvent,
-  })
-}
-
-type OnSubcategoryChangeProps = {
-  newSubCategoryId: string
-  subcategories: SubcategoryResponseModel[]
-  setFieldValue: UseFormSetValue<DetailsFormValues>
-  subcategoryConditionalFields: (keyof DetailsFormValues)[]
-  setIsEvent?: (isEvent: boolean | null) => void
-}
-
-export const onSubcategoryChange = ({
-  newSubCategoryId,
-  subcategories,
-  setFieldValue,
-  subcategoryConditionalFields,
-  setIsEvent,
-}: OnSubcategoryChangeProps) => {
-  const newSubcategory = subcategories.find(
-    (subcategory) => subcategory.id === newSubCategoryId
-  )
-
-  if (setIsEvent) {
-    setIsEvent(newSubcategory?.isEvent ?? null)
-  }
-
-  const newSubcategoryConditionalFields =
-    completeSubcategoryConditionalFields(newSubcategory)
-  setFieldValue('subcategoryConditionalFields', newSubcategoryConditionalFields)
-
-  if (newSubcategoryConditionalFields === subcategoryConditionalFields) {
-    return
-  }
-
-  const fieldsToReset = subcategoryConditionalFields.filter(
-    (field) => !newSubcategoryConditionalFields.includes(field)
-  )
-  fieldsToReset.forEach((field) => {
-    if (field in DEFAULT_DETAILS_FORM_VALUES) {
-      setFieldValue(
-        field,
-        DEFAULT_DETAILS_FORM_VALUES[
-          field as keyof typeof DEFAULT_DETAILS_FORM_VALUES
-        ]
-      )
-    }
-  })
-}
 
 export const formatVenuesOptions = (
   venues: VenueListItemResponseModel[],

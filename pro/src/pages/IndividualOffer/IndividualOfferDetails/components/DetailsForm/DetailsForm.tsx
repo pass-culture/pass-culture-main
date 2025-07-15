@@ -112,7 +112,9 @@ export const DetailsForm = ({
                       return
                     }
 
-                    setValue('venueId', e.target.value)
+                    setValue('venueId', e.target.value, {
+                      shouldValidate: true,
+                    })
                   }}
                   disabled={
                     readOnlyFields.includes('venueId') ||

@@ -30,8 +30,8 @@ import {
   venueListItemFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
 import {
@@ -355,6 +355,93 @@ describe('IndividualOfferDetails', () => {
     expect(
       screen.getByText('Veuillez sélectionner un genre musical')
     ).toBeInTheDocument()
+  })
+
+  it('should clear errors in the form when all fields have been filled', async () => {
+    renderDetailsScreen({ contextValue })
+
+    await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
+    expect(
+      screen.getByText('Veuillez sélectionner une catégorie')
+    ).toBeInTheDocument()
+
+    await userEvent.selectOptions(
+      await screen.findByLabelText('Catégorie *'),
+      'A'
+    )
+
+    await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
+
+    expect(
+      screen.getByText('Veuillez sélectionner une sous-catégorie')
+    ).toBeInTheDocument()
+
+    await userEvent.selectOptions(
+      await screen.findByLabelText('Sous-catégorie *'),
+      'physical'
+    )
+
+    await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
+    expect(screen.getByText('Veuillez renseigner un titre')).toBeInTheDocument()
+    expect(
+      screen.getByText('Veuillez sélectionner une structure')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Veuillez sélectionner un type de spectacle')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Veuillez sélectionner un sous-type de spectacle')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Veuillez sélectionner un genre musical')
+    ).toBeInTheDocument()
+
+    await userEvent.selectOptions(
+      await screen.findByLabelText('Qui propose l’offre ?'),
+      'Le nom du lieu 1'
+    )
+
+    await userEvent.selectOptions(
+      await screen.findByLabelText('Catégorie *'),
+      'A'
+    )
+    await userEvent.selectOptions(
+      await screen.findByLabelText('Sous-catégorie *'),
+      'physical'
+    )
+    await userEvent.type(
+      screen.getByRole('textbox', {
+        name: 'Titre de l’offre *',
+      }),
+      'Mon super spectacle'
+    )
+    await userEvent.selectOptions(
+      await screen.findByLabelText('Type de spectacle *'),
+      'Cirque'
+    )
+    await userEvent.selectOptions(
+      await screen.findByLabelText('Sous-type *'),
+      'Mentaliste'
+    )
+
+    expect(
+      screen.queryByText('Veuillez sélectionner une structure')
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByText('Veuillez renseigner un titre')
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByText('Veuillez sélectionner une catégorie')
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByText('Veuillez sélectionner un type de spectacle')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Veuillez sélectionner un sous-type de spectacle')
+    ).not.toBeInTheDocument()
   })
 
   it('should display error from api on fields', async () => {
