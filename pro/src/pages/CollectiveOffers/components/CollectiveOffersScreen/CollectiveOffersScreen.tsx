@@ -28,7 +28,7 @@ import { NoData } from 'components/NoData/NoData'
 import { useStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
-import { ResponsiveTable } from 'ui-kit/ResponsiveTable/ResponsiveTable'
+import { Table } from 'ui-kit/Table/Table'
 
 import styles from './CollectiveOffersScreen.module.scss'
 import { CollectiveOffersSearchFilters } from './CollectiveOffersSearchFilters/CollectiveOffersSearchFilters'
@@ -191,7 +191,7 @@ export const CollectiveOffersScreen = ({
             )}
           </div>
 
-          <ResponsiveTable
+          <Table
             data={currentPageItems}
             columns={columns}
             selectable={true}
