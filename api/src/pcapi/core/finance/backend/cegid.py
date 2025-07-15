@@ -227,7 +227,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
             "PostPeriod": {"value": f"{invoice.date:%m%Y}"},
             # "ReferenceNbr": {"value": invoice.reference},  # This has no effect because XRP generates an incremental ID that cannot be overriden
             "RefNbr": {"value": invoice.reference},
-            "Status": {"value": "Open"},
+            "Status": {"value": "R"},
             "TaxTotal": {"value": "0"},
             "Terms": {"value": "30J"},
             "Type": {"value": "ADR" if invoice.reference.startswith("A") else "INV"},
