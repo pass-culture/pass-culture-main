@@ -189,7 +189,7 @@ class GetBookingsTest:
                 },
                 "display": "online_code",
             },
-            "totalAmount": 10,
+            "totalAmount": 1010,
         }
 
     def test_get_bookings_returns_user_reaction(self, client):

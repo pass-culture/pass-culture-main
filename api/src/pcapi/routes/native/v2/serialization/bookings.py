@@ -284,6 +284,8 @@ class BookingResponse(ConfiguredBaseModel):
     user_reaction: ReactionTypeEnum | None
     ticket: TicketResponse
 
+    _convert_total_amount = validator("total_amount", pre=True, allow_reuse=True)(convert_to_cent)
+
     class Config:
         getter_dict = BookingResponseGetterDict
 
