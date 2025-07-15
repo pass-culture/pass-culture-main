@@ -4,6 +4,7 @@ import logging
 from unittest import mock
 
 import pytest
+import time_machine
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
@@ -86,6 +87,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         )
         assert response.status_code == 404
 
+    @time_machine.travel(datetime.datetime(2025, 7, 15), tick=False)
     def test_valid_ean_with_stock(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
@@ -143,12 +145,135 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert created_offer.motorDisabilityCompliant == venue.motorDisabilityCompliant
         assert created_offer.visualDisabilityCompliant == venue.visualDisabilityCompliant
         assert created_offer.offererAddressId == venue.offererAddressId
+        assert created_offer.publicationDatetime == datetime.datetime(2025, 7, 15)
+        assert created_offer.bookingAllowedDatetime == None
 
         created_stock = db.session.query(offers_models.Stock).one()
         assert created_stock.price == decimal.Decimal("12.34")
         assert created_stock.quantity == 3
         assert created_stock.offer == created_offer
         assert created_stock.bookingLimitDatetime == in_ten_minutes
+
+    @time_machine.travel(datetime.datetime(2025, 7, 15), tick=False)
+    @pytest.mark.parametrize(
+        "input_product_stock_dict,expected_publication_datetime",
+        [
+            (  # no `publicationDatetime` should default to "now"
+                {"ean": "1234567890123", "stock": {"price": 1234, "quantity": 3}},
+                datetime.datetime(2025, 7, 15),
+            ),
+            (  # `publicationDatetime="now"`
+                {"ean": "1234567890123", "publicationDatetime": "now", "stock": {"price": 1234, "quantity": 3}},
+                datetime.datetime(2025, 7, 15),
+            ),
+            (  # `publicationDatetime` in the future
+                {
+                    "ean": "1234567890123",
+                    "publicationDatetime": date_utils.utc_datetime_to_department_timezone(
+                        datetime.datetime(2025, 7, 17, 10), "75"
+                    ).isoformat(),
+                    "stock": {"price": 1234, "quantity": 3},
+                },
+                datetime.datetime(2025, 7, 17, 10),
+            ),
+            (  # unset `publicationDatetime`
+                {"ean": "2461567890123", "publicationDatetime": None, "stock": {"price": 1234, "quantity": 3}},
+                None,
+            ),
+        ],
+    )
+    def test_publication_datetime_behavior(self, input_product_stock_dict, expected_publication_datetime, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
+
+        offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            ean="1234567890123",
+            lastProviderId=venue_provider.provider.id,
+        )
+        product_with_existing_offer = offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            ean="2461567890123",
+            lastProviderId=venue_provider.provider.id,
+        )
+        offers_factories.ThingOfferFactory(
+            product=product_with_existing_offer,
+            ean=product_with_existing_offer.ean,
+            venue=venue,
+            lastProvider=venue_provider.provider,
+        )
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json={"location": {"type": "physical", "venueId": venue.id}, "products": [input_product_stock_dict]},
+        )
+
+        assert response.status_code == 204
+
+        offer_1 = db.session.query(offers_models.Offer).filter_by(ean=input_product_stock_dict["ean"]).one()
+        assert offer_1.publicationDatetime == expected_publication_datetime
+
+    @time_machine.travel(datetime.datetime(2025, 7, 15), tick=False)
+    @pytest.mark.parametrize(
+        "input_product_stock_dict,expected_booking_allowed_datetime",
+        [
+            (  # no `bookingAllowedDatetime` should default to None
+                {"ean": "1234567890123", "stock": {"price": 1234, "quantity": 3}},
+                None,
+            ),
+            (  # `bookingAllowedDatetime=None`
+                {"ean": "1234567890123", "bookingAllowedDatetime": None, "stock": {"price": 1234, "quantity": 3}},
+                None,
+            ),
+            (  # `bookingAllowedDatetime` in the future
+                {
+                    "ean": "1234567890123",
+                    "bookingAllowedDatetime": date_utils.utc_datetime_to_department_timezone(
+                        datetime.datetime(2025, 7, 17, 10), "75"
+                    ).isoformat(),
+                    "stock": {"price": 1234, "quantity": 3},
+                },
+                datetime.datetime(2025, 7, 17, 10),
+            ),
+            (  # unset `bookingAllowedDatetime`
+                {"ean": "2461567890123", "bookingAllowedDatetime": None, "stock": {"price": 1234, "quantity": 3}},
+                None,
+            ),
+        ],
+    )
+    def test_booking_allowed_datetime_behavior(
+        self, input_product_stock_dict, expected_booking_allowed_datetime, client
+    ):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
+
+        offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            ean="1234567890123",
+            lastProviderId=venue_provider.provider.id,
+        )
+        product_with_existing_offer = offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            ean="2461567890123",
+            lastProviderId=venue_provider.provider.id,
+        )
+        offers_factories.ThingOfferFactory(
+            product=product_with_existing_offer,
+            ean=product_with_existing_offer.ean,
+            venue=venue,
+            lastProvider=venue_provider.provider,
+            bookingAllowedDatetime=datetime.datetime(2025, 8, 15),
+        )
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json={"location": {"type": "physical", "venueId": venue.id}, "products": [input_product_stock_dict]},
+        )
+
+        assert response.status_code == 204
+
+        offer_1 = db.session.query(offers_models.Offer).filter_by(ean=input_product_stock_dict["ean"]).one()
+        assert offer_1.bookingAllowedDatetime == expected_booking_allowed_datetime
 
     def test_update_stock_quantity_with_previous_bookings(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()

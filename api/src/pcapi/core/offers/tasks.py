@@ -17,6 +17,7 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.routes.public.individual_offers.v1 import utils as individual_offers_v1_utils
+from pcapi.utils import date as utils_date
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
 
@@ -72,6 +73,8 @@ def _create_offer_from_product(
     product: offers_models.Product,
     provider: providers_models.Provider,
     offererAddress: offerers_models.OffererAddress,
+    publicationDatetime: datetime.datetime,
+    bookingAllowedDatetime: datetime.datetime | None,
 ) -> offers_models.Offer:
     offer = offers_api.build_new_offer_from_product(
         venue,
@@ -86,8 +89,9 @@ def _create_offer_from_product(
     offer.motorDisabilityCompliant = venue.motorDisabilityCompliant
     offer.visualDisabilityCompliant = venue.visualDisabilityCompliant
 
-    offer.publicationDatetime = datetime.datetime.utcnow()
-    offer.lastValidationDate = datetime.datetime.utcnow()
+    offer.publicationDatetime = publicationDatetime
+    offer.bookingAllowedDatetime = bookingAllowedDatetime
+    offer.lastValidationDate = utils_date.get_naive_utc_now()
     offer.lastValidationType = OfferValidationType.AUTO
     offer.lastValidationAuthorUserId = None
 
@@ -191,11 +195,14 @@ def create_or_update_ean_offers(
                 )
             for product in existing_products:
                 try:
+                    stock_data = serialized_products_stocks[product.ean]
                     created_offer = _create_offer_from_product(
                         venue,
                         product,
                         provider,
                         offererAddress=offerer_address,
+                        publicationDatetime=stock_data["publication_datetime"],
+                        bookingAllowedDatetime=stock_data["booking_allowed_datetime"],
                     )
                     created_offers.append(created_offer)
 
@@ -245,6 +252,8 @@ def create_or_update_ean_offers(
 
                 ean = offer.ean
                 stock_data = serialized_products_stocks[ean]
+                offer.publicationDatetime = stock_data["publication_datetime"]
+                offer.bookingAllowedDatetime = stock_data["booking_allowed_datetime"]
                 # FIXME (mageoffray, 2023-05-26): stock upserting optimisation
                 # Stocks are edited one by one for now, we need to improve edit_stock to remove the repository.session.add()
                 # It will be done before the release of this API

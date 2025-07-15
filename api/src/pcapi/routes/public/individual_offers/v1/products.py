@@ -326,6 +326,8 @@ def _serialize_products_from_body(
             "quantity": product.stock.quantity,
             "price": product.stock.price,
             "booking_limit_datetime": product.stock.booking_limit_datetime,
+            "publication_datetime": product.publication_datetime,
+            "booking_allowed_datetime": product.booking_allowed_datetime,
         }
     return stock_details
 
