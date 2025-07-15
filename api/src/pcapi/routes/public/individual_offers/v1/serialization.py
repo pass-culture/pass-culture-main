@@ -498,6 +498,16 @@ class ProductOfferByEanCreation(serialization.ConfiguredBaseModel):
     else:
         ean: pydantic_v1.constr(min_length=13, max_length=13) = fields.EAN
     stock: StockUpsert
+    publication_datetime: datetime.datetime | serialization_utils.NOW_LITERAL | None = (
+        fields.OFFER_PUBLICATION_DATETIME_WITH_DEFAULT
+    )
+    booking_allowed_datetime: datetime.datetime | None = fields.OFFER_BOOKING_ALLOWED_DATETIME
+
+    _validate_publicationDatetime = serialization_utils.validate_datetime(
+        "publication_datetime",
+        always=True,  # to convert default literal `"now"` into an actual datetime
+    )
+    _validate_bookingAllowedDatetime = serialization_utils.validate_datetime("booking_allowed_datetime")
 
     class Config:
         extra = "forbid"
