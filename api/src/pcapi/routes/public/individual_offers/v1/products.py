@@ -279,7 +279,7 @@ def post_product_offer(body: products_serializers.ProductOfferCreation) -> seria
         )
     ),
 )
-def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) -> None:
+def post_product_offer_by_ean(body: products_serializers.ProductsOfferByEanCreation) -> None:
     """
     Batch Upsert Product Offers by EAN
 
@@ -318,7 +318,7 @@ def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) ->
 
 
 def _serialize_products_from_body(
-    products: list[serialization.ProductOfferByEanCreation],
+    products: list[products_serializers.ProductOfferByEanCreation],
 ) -> dict:
     stock_details = {}
     for product in products:

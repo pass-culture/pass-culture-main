@@ -450,24 +450,6 @@ def deserialize_quantity(quantity: int | UNLIMITED_LITERAL | None) -> int | None
     return quantity
 
 
-class StockCreation(BaseStockCreation):
-    price: offer_price_model = fields.PRICE
-    booking_limit_datetime: datetime.datetime | None = fields.BOOKING_LIMIT_DATETIME
-    quantity: pydantic_v1.PositiveInt | UNLIMITED_LITERAL | None = fields.QUANTITY  # type: ignore[assignment]
-
-    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
-
-    @pydantic_v1.validator("price")
-    def price_must_be_positive(cls, value: int) -> int:
-        if value < 0:
-            raise ValueError("Value must be positive")
-        return value
-
-
-class StockUpsert(StockCreation):
-    quantity: pydantic_v1.StrictInt | UNLIMITED_LITERAL | None = fields.QUANTITY
-
-
 class BaseStockEdition(serialization.ConfiguredBaseModel):
     booking_limit_datetime: datetime.datetime | None = fields.BOOKING_LIMIT_DATETIME
     quantity: pydantic_v1.NonNegativeInt | UNLIMITED_LITERAL | None = fields.QUANTITY
@@ -483,41 +465,6 @@ class BaseStockEdition(serialization.ConfiguredBaseModel):
                 raise ValueError(f"Value must be less than {offers_models.Stock.MAX_STOCK_QUANTITY}")
 
         return quantity
-
-    class Config:
-        extra = "forbid"
-
-
-class StockEdition(BaseStockEdition):
-    price: offer_price_model | None = fields.PRICE
-
-
-class ProductOfferByEanCreation(serialization.ConfiguredBaseModel):
-    if typing.TYPE_CHECKING:
-        ean: str = fields.EAN
-    else:
-        ean: pydantic_v1.constr(min_length=13, max_length=13) = fields.EAN
-    stock: StockUpsert
-    publication_datetime: datetime.datetime | serialization_utils.NOW_LITERAL | None = (
-        fields.OFFER_PUBLICATION_DATETIME_WITH_DEFAULT
-    )
-    booking_allowed_datetime: datetime.datetime | None = fields.OFFER_BOOKING_ALLOWED_DATETIME
-
-    _validate_publicationDatetime = serialization_utils.validate_datetime(
-        "publication_datetime",
-        always=True,  # to convert default literal `"now"` into an actual datetime
-    )
-    _validate_bookingAllowedDatetime = serialization_utils.validate_datetime("booking_allowed_datetime")
-
-    class Config:
-        extra = "forbid"
-
-
-class ProductsOfferByEanCreation(serialization.ConfiguredBaseModel):
-    products: list[ProductOfferByEanCreation] = pydantic_v1.Field(
-        description="List of product to create or update", max_items=500
-    )
-    location: PhysicalLocation | DigitalLocation | AddressLocation = fields.OFFER_LOCATION
 
     class Config:
         extra = "forbid"
