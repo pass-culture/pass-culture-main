@@ -501,6 +501,99 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json == {"products.0.stock.quantity": ["Value must be less than 1000000"]}
 
+    @pytest.mark.parametrize(
+        "product_json, expected_response_json",
+        [
+            # `publicationDatetime` in the past
+            (
+                {
+                    "stock": {"price": 10, "quantity": 10},
+                    "ean": "1234567890123",
+                    "publicationDatetime": (
+                        datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=3)
+                    ).isoformat(),
+                },
+                {"products.0.publicationDatetime": ["The datetime must be in the future."]},
+            ),
+            # `publicationDatetime` missing tz
+            (
+                {
+                    "stock": {"price": 10, "quantity": 10},
+                    "ean": "1234567890123",
+                    "publicationDatetime": (datetime.datetime.now() + datetime.timedelta(days=3)).isoformat(),
+                },
+                {"products.0.publicationDatetime": ["The datetime must be timezone-aware."]},
+            ),
+            # `bookingAllowedDatetime` in the past
+            (
+                {
+                    "stock": {"price": 10, "quantity": 10},
+                    "ean": "1234567890123",
+                    "bookingAllowedDatetime": (
+                        datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=3)
+                    ).isoformat(),
+                },
+                {"products.0.bookingAllowedDatetime": ["The datetime must be in the future."]},
+            ),
+            # `bookingAllowedDatetime` missing tz
+            (
+                {
+                    "stock": {"price": 10, "quantity": 10},
+                    "ean": "1234567890123",
+                    "bookingAllowedDatetime": (datetime.datetime.now() + datetime.timedelta(days=3)).isoformat(),
+                },
+                {"products.0.bookingAllowedDatetime": ["The datetime must be timezone-aware."]},
+            ),
+            # `stock.bookingLimitDatetime` and `publicationDatetime` not coherent
+            (
+                {
+                    "stock": {
+                        "bookingLimitDatetime": (
+                            datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=3)
+                        ).isoformat(),
+                        "price": 10,
+                        "quantity": 10,
+                    },
+                    "ean": "1234567890123",
+                    "publicationDatetime": (
+                        datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=100)
+                    ).isoformat(),
+                },
+                {"products.0.__root__": ["`stock.bookingLimitDatetime` must be after `publicationDatetime`"]},
+            ),
+            # `stock.bookingLimitDatetime` and `bookingLimitDatetime` not coherent
+            (
+                {
+                    "stock": {
+                        "bookingLimitDatetime": (
+                            datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=3)
+                        ).isoformat(),
+                        "price": 10,
+                        "quantity": 10,
+                    },
+                    "ean": "1234567890123",
+                    "bookingAllowedDatetime": (
+                        datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=100)
+                    ).isoformat(),
+                },
+                {"products.0.__root__": ["`stock.bookingLimitDatetime` must be after `bookingAllowedDatetime`"]},
+            ),
+        ],
+    )
+    def test_400_when_dates_are_incorrect_or_incoherent(self, product_json, expected_response_json, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offers_factories.ThingProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
+        )
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json={"products": [product_json], "location": {"type": "physical", "venueId": venue_provider.venue.id}},
+        )
+
+        assert response.status_code == 400
+        assert response.json == expected_response_json
+
     def test_400_when_ean_wrong_format(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offers_factories.ProductFactory(ean="1234567890123")
