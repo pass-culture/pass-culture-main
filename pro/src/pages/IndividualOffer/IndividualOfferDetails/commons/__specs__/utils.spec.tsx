@@ -7,18 +7,18 @@ import {
 
 import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
 import {
-  hasMusicType,
   buildCategoryOptions,
   buildShowSubTypeOptions,
-  completeSubcategoryConditionalFields,
   buildSubcategoryOptions,
-  formatVenuesOptions,
+  completeSubcategoryConditionalFields,
   deSerializeDurationMinutes,
+  formatVenuesOptions,
+  hasMusicType,
+  serializeDetailsPostData,
+  serializeDurationMinutes,
   serializeExtraData,
   setDefaultInitialValuesFromOffer,
   setFormReadOnlyFields,
-  serializeDetailsPostData,
-  serializeDurationMinutes,
 } from '../utils'
 
 describe('hasMusicType', () => {
