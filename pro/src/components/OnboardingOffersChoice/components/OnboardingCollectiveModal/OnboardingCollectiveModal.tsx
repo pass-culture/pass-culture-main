@@ -6,8 +6,8 @@ import { useNavigate } from 'react-router'
 import { api } from 'apiClient/api'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { OnboardingDidacticEvents } from 'commons/core/FirebaseEvents/constants'
-import { updateOffererIsOnboarded } from 'commons/store/offerer/reducer'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { updateCurrentOffererOnboardingStatus } from 'commons/store/offerer/reducer'
+import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
 import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -29,7 +29,8 @@ export const OnboardingCollectiveModal = ({
 }: OnboardingCollectiveModalProps): JSX.Element => {
   const [errorMessage, setErrorMessage] = useState<null | string>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const currentOffererId = useSelector(selectCurrentOffererId)
+  const currentOfferer = useSelector(selectCurrentOfferer)
+  const currentOffererId = currentOfferer?.id ?? null
   const navigate = useNavigate()
   const { logEvent } = useAnalytics()
   const dispatch = useDispatch()
@@ -47,7 +48,7 @@ export const OnboardingCollectiveModal = ({
       setIsLoading(true)
       const eligibility = await api.getOffererEligibility(currentOffererId)
       if (eligibility.isOnboarded) {
-        dispatch(updateOffererIsOnboarded(true))
+        dispatch(updateCurrentOffererOnboardingStatus(true))
         return navigate('/accueil')
       }
 

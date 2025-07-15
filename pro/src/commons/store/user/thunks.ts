@@ -5,9 +5,8 @@ import { isErrorAPIError } from 'apiClient/helpers'
 import { SharedCurrentUserResponseModel } from 'apiClient/v1'
 import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
 import {
-  updateOffererIsOnboarded,
+  updateCurrentOfferer,
   updateOffererNames,
-  updateSelectedOffererId,
 } from 'commons/store/offerer/reducer'
 import { updateUser } from 'commons/store/user/reducer'
 import { storageAvailable } from 'commons/utils/storageAvailable'
@@ -19,10 +18,10 @@ export const initializeUserThunk = createAsyncThunk(
     { dispatch, rejectWithValue }
   ) => {
     try {
-      const initializeOffererIsOnboarded = async (offererId: number) => {
+      const initializeOfferer = async (offererId: number) => {
         try {
           const response = await api.getOfferer(offererId)
-          dispatch(updateOffererIsOnboarded(response.isOnboarded))
+          dispatch(updateCurrentOfferer(response))
         } catch (e: unknown) {
           if (isErrorAPIError(e) && e.status === 403) {
             // Do nothing at this point,
@@ -43,17 +42,11 @@ export const initializeUserThunk = createAsyncThunk(
 
         if (storageAvailable('localStorage')) {
           const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
-          dispatch(
-            updateSelectedOffererId(
-              savedOffererId ? Number(savedOffererId) : firstOffererId
-            )
-          )
-          await initializeOffererIsOnboarded(
+          await initializeOfferer(
             savedOffererId ? Number(savedOffererId) : firstOffererId
           )
         } else {
-          dispatch(updateSelectedOffererId(firstOffererId))
-          await initializeOffererIsOnboarded(firstOffererId)
+          await initializeOfferer(firstOffererId)
         }
       }
 
@@ -63,8 +56,7 @@ export const initializeUserThunk = createAsyncThunk(
     } catch (error: unknown) {
       // In case of error, cancel all state modifications
       dispatch(updateOffererNames(null))
-      dispatch(updateSelectedOffererId(null))
-      dispatch(updateOffererIsOnboarded(null))
+      dispatch(updateCurrentOfferer(null))
       dispatch(updateUser(null))
 
       if (isErrorAPIError(error)) {

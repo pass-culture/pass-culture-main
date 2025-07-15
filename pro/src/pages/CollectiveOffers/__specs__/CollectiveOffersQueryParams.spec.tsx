@@ -57,9 +57,8 @@ const renderOffers = async (
       initialRouterEntries: [route],
       storeOverrides: {
         offerer: {
-          selectedOffererId: 1,
+          currentOfferer: { id: 1, isOnboarded: true },
           offererNames: [],
-          isOnboarded: true,
         },
       },
     }

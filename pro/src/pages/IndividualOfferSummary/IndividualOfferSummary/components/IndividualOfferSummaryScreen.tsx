@@ -1,7 +1,8 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useNavigate, useLocation, useSearchParams } from 'react-router'
+import { useSelector } from 'react-redux'
+import { useLocation, useNavigate, useSearchParams } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -9,14 +10,16 @@ import { getHumanReadableApiError } from 'apiClient/helpers'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
-  OFFER_WIZARD_MODE,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
+import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
 import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
 import { getOfferConditionalFields } from 'commons/utils/getOfferConditionalFields'
+import { getOffererData } from 'commons/utils/offererStoreHelper'
 import { DisplayOfferInAppLink } from 'components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { OfferAppPreview } from 'components/OfferAppPreview/OfferAppPreview'
 import { RedirectToBankAccountDialog } from 'components/RedirectToBankAccountDialog/RedirectToBankAccountDialog'
@@ -50,6 +53,7 @@ export const IndividualOfferSummaryScreen = () => {
   const { offer, subCategories, publishedOfferWithSameEAN } =
     useIndividualOfferContext()
   const [searchParams, setSearchParams] = useSearchParams()
+  const currentOfferer = useSelector(selectCurrentOfferer)
 
   const onPublish = async (values: EventPublicationFormValues) => {
     // Edition mode offers are already published
@@ -61,8 +65,11 @@ export const IndividualOfferSummaryScreen = () => {
     const departmentCode = getDepartmentCode(offer)
 
     try {
-      const offererResponse = await api.getOfferer(
-        offer.venue.managingOfferer.id
+      const offererId = offer.venue.managingOfferer.id
+      const offererResponse = await getOffererData(
+        offererId,
+        currentOfferer,
+        () => api.getOfferer(offererId)
       )
       const publishIndividualOfferResponse = await api.patchPublishOffer({
         id: offer.id,
@@ -92,9 +99,9 @@ export const IndividualOfferSummaryScreen = () => {
       const shouldDisplayRedirectDialog =
         isOnboarding ||
         (publishIndividualOfferResponse.isNonFreeOffer &&
-          !offererResponse.hasNonFreeOffer &&
-          !offererResponse.hasValidBankAccount &&
-          !offererResponse.hasPendingBankAccount)
+          !offererResponse?.hasNonFreeOffer &&
+          !offererResponse?.hasValidBankAccount &&
+          !offererResponse?.hasPendingBankAccount)
 
       if (shouldDisplayRedirectDialog) {
         setSearchParams(

@@ -18,7 +18,7 @@ import { useQuerySearchFilters } from 'commons/core/Offers/hooks/useQuerySearchF
 import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
@@ -58,7 +58,8 @@ export const IndividualActionsCells = ({
   const { storedFilters } = getStoredFilterConfig('individual')
   const { isHeadlineOfferAllowedForOfferer, upsertHeadlineOffer } =
     useHeadlineOfferContext()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const currentOfferer = useSelector(selectCurrentOfferer)
+  const selectedOffererId = currentOfferer?.id ?? null
   const urlSearchFilters = useQuerySearchFilters()
   const finalSearchFilters = {
     ...urlSearchFilters,

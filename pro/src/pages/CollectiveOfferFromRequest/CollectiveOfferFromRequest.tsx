@@ -13,7 +13,7 @@ import { Events } from 'commons/core/FirebaseEvents/constants'
 import { createOfferFromTemplate } from 'commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
 import { getDateToFrenchText } from 'commons/utils/date'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
@@ -27,7 +27,8 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
   const navigate = useNavigate()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const currentOfferer = useSelector(selectCurrentOfferer)
+  const selectedOffererId = currentOfferer?.id ?? null
 
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
   const isCollectiveOaActive = useActiveFeature(

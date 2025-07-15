@@ -1,4 +1,5 @@
 import { SharedCurrentUserResponseModel } from 'apiClient/v1'
+import { DeepPartial } from 'commons/custom_types/utils'
 import { OffererState } from 'commons/store/offerer/reducer'
 
 export const sharedCurrentUserFactory = (
@@ -16,10 +17,12 @@ export const sharedCurrentUserFactory = (
 })
 
 export const currentOffererFactory = (
-  customOfferer: Partial<OffererState> = {}
-): OffererState => ({
-  selectedOffererId: 1,
-  offererNames: [],
-  isOnboarded: true,
-  ...customOfferer,
+  customOfferer: DeepPartial<OffererState> = {}
+): DeepPartial<OffererState> => ({
+  offererNames: [...(customOfferer.offererNames ?? [])],
+  currentOfferer: {
+    id: 1,
+    isOnboarded: true,
+    ...customOfferer.currentOfferer,
+  },
 })

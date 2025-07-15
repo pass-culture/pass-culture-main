@@ -71,8 +71,10 @@ describe('<OnboardingOfferIndividual />', () => {
     renderOnboardingOfferIndividual({
       storeOverrides: {
         offerer: {
-          isOnboarded: false,
-          selectedOffererId: 42,
+          currentOfferer: {
+            id: 42,
+            isOnboarded: false,
+          },
           offererNames: [],
         },
       },

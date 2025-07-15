@@ -9,7 +9,7 @@ import { Events } from 'commons/core/FirebaseEvents/constants'
 import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import {
-  selectCurrentOffererId,
+  selectCurrentOfferer,
   selectOffererNames,
 } from 'commons/store/offerer/selectors'
 import { selectCurrentUser } from 'commons/store/user/selectors'
@@ -41,7 +41,8 @@ export const HeaderDropdown = () => {
   const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
 
   const currentUser = useSelector(selectCurrentUser)
-  const currentOffererId = useSelector(selectCurrentOffererId)
+  const currentOfferer = useSelector(selectCurrentOfferer)
+  const currentOffererId = currentOfferer?.id ?? null
   const offererNames = useSelector(selectOffererNames)
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [subOpen, setSubOpen] = useState(false)
@@ -288,7 +289,7 @@ export const HeaderDropdown = () => {
                     dialogTrigger={
                       <DropdownMenu.Item
                         asChild
-                        onSelect={(e) => e.preventDefault()} //  Necessary to prenent selecting the item from closing the DropdownMenu
+                        onSelect={(e) => e.preventDefault()} //  Necessary to prevent selecting the item from closing the DropdownMenu
                       >
                         <Button
                           variant={ButtonVariant.TERNARY}
