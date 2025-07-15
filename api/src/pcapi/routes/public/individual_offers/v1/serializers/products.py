@@ -92,6 +92,9 @@ class ProductOfferByEanCreation(routes_serialization.ConfiguredBaseModel):
         always=True,  # to convert default literal `"now"` into an actual datetime
     )
     _validate_bookingAllowedDatetime = serialization_utils.validate_datetime("booking_allowed_datetime")
+    _validate_stock_booking_limit_datetime = pydantic_v1.root_validator(skip_on_failure=True, allow_reuse=True)(
+        _validate_stock_booking_limit_datetime_is_coherent_with_offer_dates
+    )
 
     class Config:
         extra = "forbid"
