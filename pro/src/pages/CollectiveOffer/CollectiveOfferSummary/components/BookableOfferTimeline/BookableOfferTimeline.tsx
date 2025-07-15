@@ -26,6 +26,13 @@ const statusLabelMapping = {
   [CollectiveOfferDisplayedStatus.HIDDEN]: 'En pause',
 }
 
+const isMoreThan48hAgo = (dateString: string) => {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  return diffMs > 48 * 60 * 60 * 1000
+}
+
 export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
   const { past, future } = offer.history
 
@@ -181,10 +188,15 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
   }
 
   const getAllSteps = () => {
-    const lastPastStepStatus = past[past.length - 1].status
+    const lastPastStep = past[past.length - 1]
+    const lastPastStepStatus = lastPastStep.status
 
-    // TODO gérer la step intermédiaire "en attente de remboursement" et ne l'afficher qu'après 48h post terminé
-    if (waitingWording[lastPastStepStatus]) {
+    if (
+      waitingWording[lastPastStepStatus] &&
+      lastPastStepStatus === CollectiveOfferDisplayedStatus.ENDED &&
+      lastPastStep.datetime &&
+      isMoreThan48hAgo(lastPastStep.datetime)
+    ) {
       const waitingStep = {
         type: TimelineStepType.WAITING,
         content: <StatusWithDate status={waitingWording[lastPastStepStatus]} />,
@@ -192,6 +204,16 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
       return [...pastSteps, waitingStep, ...futureSteps]
     }
 
+    if (
+      waitingWording[lastPastStepStatus] &&
+      lastPastStepStatus !== CollectiveOfferDisplayedStatus.ENDED
+    ) {
+      const waitingStep = {
+        type: TimelineStepType.WAITING,
+        content: <StatusWithDate status={waitingWording[lastPastStepStatus]} />,
+      }
+      return [...pastSteps, waitingStep, ...futureSteps]
+    }
     return [...pastSteps, ...futureSteps]
   }
 
