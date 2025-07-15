@@ -83,8 +83,8 @@ def validate_user(token: str) -> None:
             user_to_validate = get_or_404(users_models.User, stored_token.user_id)
             stored_token.expire()
             users_api.validate_pro_user_email(user_to_validate)
-        except users_exceptions.InvalidToken:
-            raise ResourceNotFoundError(errors={"global": "Ce lien est invalide"})
+        except (users_exceptions.InvalidToken, users_exceptions.ExpiredToken):
+            raise ResourceNotFoundError(errors={"global": "Le lien est invalide ou a expiré. Veuillez recommencer."})
 
     if FeatureToggle.WIP_2025_AUTOLOGIN.is_active():
         try:
@@ -95,11 +95,8 @@ def validate_user(token: str) -> None:
             # Users could have signup before the FF were activated, but validate their email after.
             # This can safely be removed a few days after the FF activation, while users consume their tokens.
             classic_token_check(token)
-        except users_exceptions.ExpiredToken:
-            # To be changed in PC-34119
-            raise ResourceNotFoundError(errors={"global": "Ce lien est invalide"})
-        except users_exceptions.InvalidToken:
-            raise ResourceNotFoundError(errors={"global": "Ce lien est invalide"})
+        except (users_exceptions.InvalidToken, users_exceptions.ExpiredToken):
+            raise ResourceNotFoundError(errors={"global": "Le lien est invalide ou a expiré. Veuillez recommencer."})
         discard_session()
         login_user(user)
         stamp_session(user)
