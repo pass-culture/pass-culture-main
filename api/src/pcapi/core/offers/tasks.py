@@ -13,7 +13,6 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
-from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
@@ -44,7 +43,7 @@ def upsert_product_stock(
 
     if not existing_stock:
         if stock_body.price is None:
-            raise api_errors.ApiErrors({"stock.price": ["Required"]})
+            raise offers_exceptions.OfferException({"stock.price": ["Required"]})
         offers_api.create_stock(
             offer=offer,
             price=finance_utils.cents_to_full_unit(stock_body.price),
@@ -74,12 +73,10 @@ def _create_offer_from_product(
     provider: providers_models.Provider,
     offererAddress: offerers_models.OffererAddress,
 ) -> offers_models.Offer:
-    ean = product.ean
-
     offer = offers_api.build_new_offer_from_product(
         venue,
         product,
-        id_at_provider=ean,
+        id_at_provider=None,
         provider_id=provider.id,
         offerer_address_id=offererAddress.id,
     )
@@ -184,8 +181,8 @@ def create_or_update_ean_offers(
         if ean_list_to_create:
             created_offers = []
             existing_products = _get_existing_products(ean_list_to_create)
-            product_by_ean = {product.ean: product for product in existing_products}
-            not_found_eans = [ean for ean in ean_list_to_create if ean not in product_by_ean.keys()]
+            found_eans = {product.ean for product in existing_products}
+            not_found_eans = ean_list_to_create - found_eans
             if not_found_eans:
                 logger.warning(
                     "Some provided eans were not found",
@@ -194,21 +191,19 @@ def create_or_update_ean_offers(
                 )
             for product in existing_products:
                 try:
-                    ean = product.ean
-                    stock_data = serialized_products_stocks[ean]
                     created_offer = _create_offer_from_product(
                         venue,
-                        product_by_ean[ean],
+                        product,
                         provider,
                         offererAddress=offerer_address,
                     )
                     created_offers.append(created_offer)
 
                 except offers_exceptions.OfferException as exc:
-                    logger.info(
+                    logger.warning(
                         "Error while creating offer by ean",
                         extra={
-                            "ean": ean,
+                            "ean": product.ean,
                             "venue_id": venue_id,
                             "provider_id": provider_id,
                             "exc": exc.__class__.__name__,
@@ -232,7 +227,7 @@ def create_or_update_ean_offers(
                         creating_provider=provider,
                     )
                 except offers_exceptions.OfferException as exc:
-                    logger.info(
+                    logger.warning(
                         "Error while creating offer by ean",
                         extra={
                             "ean": ean,
@@ -277,7 +272,7 @@ def create_or_update_ean_offers(
                 )
                 offers_to_index.append(offer_to_update_by_ean[ean].id)
             except offers_exceptions.OfferException as exc:
-                logger.info(
+                logger.warning(
                     "Error while creating offer by ean",
                     extra={"ean": ean, "venue_id": venue_id, "provider_id": provider_id, "exc": exc.__class__.__name__},
                 )
