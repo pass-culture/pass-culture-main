@@ -26,7 +26,7 @@ class ValidateUserTest:
         response = client.patch("/users/validate_signup/unknown-token")
 
         assert response.status_code == 404
-        assert response.json["global"] == "Ce lien est invalide"
+        assert response.json["global"] == "Le lien est invalide ou a expiré. Veuillez recommencer."
 
 
 class Returns204Tests:
