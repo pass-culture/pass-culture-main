@@ -41,11 +41,12 @@ import {
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import { useIndividualOfferImageUpload } from 'pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 import {
-  formatVenuesOptions,
+  filterAvailableVenues,
+  getVenuesAsOptions,
   hasMusicType,
   serializeDetailsPatchData,
   serializeDetailsPostData,
-  setDefaultInitialValuesFromOffer,
+  getInitialValuesFromOffer,
   setFormReadOnlyFields,
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { getValidationSchema } from 'pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
@@ -95,10 +96,10 @@ export const IndividualOfferDetailsScreen = ({
     isOfferSubtypeEvent(offerSubtype)
   )
 
-  const availableVenuesOptions = formatVenuesOptions(
-    venues,
+  const isOfferVirtual =
     categoryStatus === CATEGORY_STATUS.ONLINE || Boolean(offer?.isDigital)
-  )
+  const availableVenues = filterAvailableVenues(venues, isOfferVirtual)
+  const availableVenuesAsOptions = getVenuesAsOptions(availableVenues)
 
   const initialValues = isDraftOffer
     ? //  When there is only one venue available the venueId field is not displayed
@@ -106,11 +107,11 @@ export const IndividualOfferDetailsScreen = ({
       {
         ...DEFAULT_DETAILS_FORM_VALUES,
         venueId:
-          availableVenuesOptions.length === 1
-            ? availableVenuesOptions[0]?.value
+          availableVenuesAsOptions.length === 1
+            ? availableVenuesAsOptions[0]?.value
             : '',
       }
-    : setDefaultInitialValuesFromOffer({
+    : getInitialValuesFromOffer({
         offer,
         subcategories: subCategories,
       })
@@ -323,7 +324,7 @@ export const IndividualOfferDetailsScreen = ({
               filteredCategories={filteredCategories}
               filteredSubcategories={filteredSubcategories}
               readOnlyFields={readOnlyFields}
-              venuesOptions={availableVenuesOptions}
+              venuesOptions={availableVenuesAsOptions}
               categoryStatus={categoryStatus}
               displayedImage={displayedImage}
               onImageUpload={onImageUpload}

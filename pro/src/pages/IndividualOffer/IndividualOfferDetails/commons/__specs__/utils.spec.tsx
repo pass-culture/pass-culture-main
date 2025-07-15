@@ -1,6 +1,7 @@
 import { OfferStatus, SubcategoryIdEnum } from 'apiClient/v1'
 import {
   getIndividualOfferFactory,
+  getOfferVenueFactory,
   subcategoryFactory,
   venueListItemFactory,
 } from 'commons/utils/factories/individualApiFactories'
@@ -12,12 +13,13 @@ import {
   buildSubcategoryOptions,
   completeSubcategoryConditionalFields,
   deSerializeDurationMinutes,
-  formatVenuesOptions,
   hasMusicType,
   serializeDetailsPostData,
   serializeDurationMinutes,
+  filterAvailableVenues,
+  getVenuesAsOptions,
   serializeExtraData,
-  setDefaultInitialValuesFromOffer,
+  getInitialValuesFromOffer,
   setFormReadOnlyFields,
 } from '../utils'
 
@@ -150,57 +152,160 @@ describe('buildSubcategoryFields', () => {
   })
 })
 
-describe('formatVenuesOptions', () => {
+// Temporarely kept in this refactoring commit for non-breaking changes check
+describe('formatVenuesOptions (split into `getVenuesAsOptions` and `filterRelevantVenues`)', () => {
   it('should format venues as options', () => {
-    const formattedVenuesOptions = formatVenuesOptions(
-      [
-        venueListItemFactory({ isVirtual: false, id: 10 }),
-        venueListItemFactory({ isVirtual: false, id: 3 }),
-      ],
-      false
+    const formattedVenuesOptions = getVenuesAsOptions(
+      filterAvailableVenues(
+        [
+          venueListItemFactory({ isVirtual: false, id: 10 }),
+          venueListItemFactory({ isVirtual: false, id: 3 }),
+        ],
+        false
+      )
     )
+
     expect(formattedVenuesOptions).toEqual(
       expect.arrayContaining([expect.objectContaining({ value: '10' })])
     )
-
     expect(formattedVenuesOptions).toEqual(
       expect.arrayContaining([expect.objectContaining({ value: '3' })])
     )
   })
 
   it('should exclude digital venues if a physcal venue is available', () => {
-    const formattedVenuesOptions = formatVenuesOptions(
-      [
-        venueListItemFactory({ isVirtual: true, id: 10 }),
-        venueListItemFactory({ isVirtual: false, id: 3 }),
-      ],
-      false
+    const formattedVenuesOptions = getVenuesAsOptions(
+      filterAvailableVenues(
+        [
+          venueListItemFactory({ isVirtual: true, id: 10 }),
+          venueListItemFactory({ isVirtual: false, id: 3 }),
+        ],
+        false
+      )
     )
+
     expect(formattedVenuesOptions).not.toEqual(
       expect.arrayContaining([expect.objectContaining({ value: '10' })])
     )
-
     expect(formattedVenuesOptions).toEqual(
       expect.arrayContaining([expect.objectContaining({ value: '3' })])
     )
 
-    const formattedDigitalVenuesOptions = formatVenuesOptions(
-      [venueListItemFactory({ isVirtual: true, id: 10 })],
-      true
+    const formattedDigitalVenuesOptions = getVenuesAsOptions(
+      filterAvailableVenues(
+        [venueListItemFactory({ isVirtual: true, id: 10 })],
+        true
+      )
     )
+
     expect(formattedDigitalVenuesOptions).toEqual(
       expect.arrayContaining([expect.objectContaining({ value: '10' })])
     )
   })
 })
 
-describe('setDefaultInitialValuesFromOffer', () => {
-  it('should set default initial values from offer', () => {
+describe('filterAvailableVenues', () => {
+  const physicalVenue = venueListItemFactory({
+    id: 1,
+    name: 'Physical Venue',
+    isVirtual: false,
+  })
+  const virtualVenue = venueListItemFactory({
+    id: 2,
+    name: 'Virtual Venue',
+    isVirtual: true,
+  })
+
+  it('should return only physical venues if at least one exists', () => {
+    const venues = [physicalVenue, virtualVenue]
+
+    const physicalOfferResult = filterAvailableVenues(venues, false)
+
+    expect(physicalOfferResult).toEqual([physicalVenue])
+
+    const virtualOfferResult = filterAvailableVenues(venues, true)
+
+    expect(virtualOfferResult).toEqual([physicalVenue])
+  })
+
+  it('should return an empty array for a physical offer with only virtual venues', () => {
+    const venues = [virtualVenue]
+
+    const physicalOfferResult = filterAvailableVenues(venues, false)
+
+    expect(physicalOfferResult).toEqual([])
+  })
+
+  it('should return virtual venues for a virtual offer if NO physical venues exist', () => {
+    const venues = [virtualVenue]
+
+    const virtualOfferResult = filterAvailableVenues(venues, true)
+
+    expect(virtualOfferResult).toEqual([virtualVenue])
+  })
+
+  it('should return all physical venues if only physical venues are provided', () => {
+    const anotherPhysicalVenue = venueListItemFactory({
+      id: 3,
+      name: 'Another Physical',
+      isVirtual: false,
+    })
+    const venues = [physicalVenue, anotherPhysicalVenue]
+
+    const physicalOfferResult = filterAvailableVenues(venues, false)
+
+    expect(physicalOfferResult).toEqual(venues)
+
+    const virtualOfferResult = filterAvailableVenues(venues, true)
+
+    expect(virtualOfferResult).toEqual(venues)
+  })
+})
+
+describe('getVenuesAsOptions', () => {
+  it('should correctly map a list of venues to an array of Option objects', () => {
+    const venues = [
+      venueListItemFactory({ id: 10, name: 'My Venue' }),
+      venueListItemFactory({ id: 20, name: 'Your Venue' }),
+    ]
+    const options = getVenuesAsOptions(venues)
+
+    expect(options).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ value: '10', label: 'My Venue' }),
+        expect.objectContaining({ value: '20', label: 'Your Venue' }),
+      ])
+    )
+    expect(options.length).toBe(2)
+  })
+
+  it('should sort the resulting options by label using French locale rules', () => {
+    const venues = [
+      venueListItemFactory({ name: 'Zoo' }),
+      venueListItemFactory({ name: 'Cinéma' }),
+      venueListItemFactory({ name: 'À la ferme' }), // Accented char should be sorted correctly
+    ]
+
+    const optionsResult = getVenuesAsOptions(venues)
+
+    expect(optionsResult.map((o) => o.label)).toEqual([
+      'À la ferme',
+      'Cinéma',
+      'Zoo',
+    ])
+  })
+})
+
+describe('getInitialValuesFromOffer', () => {
+  it('should get the expected initial values from an offer', () => {
     expect(
-      setDefaultInitialValuesFromOffer({
-        offer: getIndividualOfferFactory({
-          subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
-        }),
+      getInitialValuesFromOffer({
+        offer: getIndividualOfferFactory(
+          {
+            subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
+          },
+          getOfferVenueFactory({ id: 6 })
+        ),
         subcategories: [
           subcategoryFactory({ id: SubcategoryIdEnum.SEANCE_CINE }),
         ],

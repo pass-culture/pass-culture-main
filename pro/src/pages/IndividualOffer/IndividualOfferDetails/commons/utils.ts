@@ -1,4 +1,3 @@
-
 import {
   CategoryResponseModel,
   GetIndividualOfferResponseModel,
@@ -11,10 +10,14 @@ import { showOptionsTree } from 'commons/core/Offers/categoriesSubTypes'
 import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
 import { SelectOption } from 'commons/custom_types/form'
 import { trimStringsInObject } from 'commons/utils/trimStringsInObject'
+import { Option } from 'pages/AdageIframe/app/types'
 import { computeVenueDisplayName } from 'repository/venuesService'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
-import { DetailsFormValues } from './types'
+import {
+  DetailsFormValues,
+  SetDefaultInitialValuesFromOfferProps,
+} from './types'
 
 export const serializeDurationMinutes = (
   durationHour: string
@@ -97,30 +100,35 @@ export const completeSubcategoryConditionalFields = (
     ...(subcategory?.isEvent ? ['durationMinutes'] : []),
   ] as (keyof DetailsFormValues)[]
 
-export const formatVenuesOptions = (
-  venues: VenueListItemResponseModel[],
-  isOnline: boolean
-) => {
-  //  We want to display the virtual venues only if there are no physical venues available
-  //  We also want to prevent selecting a virtual venue for a physical offer form
+/**
+ * **Rules**
+ * 1. Virtual venues are shown **only when no physical venue exists**.
+ * 2. When this is a **physical** offer (`isOfferVirtual === false`), virtual venues are never shown.
+ */
+export function filterAvailableVenues(
+  venues: readonly VenueListItemResponseModel[],
+  isOfferVirtual: boolean
+): VenueListItemResponseModel[] {
   const hasAtLeastOnePhysicalVenue = venues.some((v) => !v.isVirtual)
+  // Virtual venues are allowed only if *all* venues are virtual *and* the offer is virtual.
+  const shouldIncludeVirtualVenues =
+    !hasAtLeastOnePhysicalVenue && isOfferVirtual
+
+  return venues.filter((v) => shouldIncludeVirtualVenues || !v.isVirtual)
+}
+
+export function getVenuesAsOptions(
+  venues: readonly VenueListItemResponseModel[]
+): Option[] {
   return venues
-    .filter((venue) =>
-      hasAtLeastOnePhysicalVenue || !isOnline ? !venue.isVirtual : true
-    )
-    .map((venue) => ({
-      value: venue.id.toString(),
-      label: computeVenueDisplayName(venue),
+    .map((v) => ({
+      value: String(v.id),
+      label: computeVenueDisplayName(v),
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 }
 
-type SetDefaultInitialValuesFromOfferProps = {
-  offer: GetIndividualOfferResponseModel
-  subcategories: SubcategoryResponseModel[]
-}
-
-export function setDefaultInitialValuesFromOffer({
+export function getInitialValuesFromOffer({
   offer,
   subcategories,
 }: SetDefaultInitialValuesFromOfferProps): DetailsFormValues {

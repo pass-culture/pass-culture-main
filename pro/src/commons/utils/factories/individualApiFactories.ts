@@ -83,7 +83,8 @@ export const listOffersStockFactory = (
 }
 
 export const getIndividualOfferFactory = (
-  customGetIndividualOffer: Partial<GetIndividualOfferWithAddressResponseModel> = {}
+  customGetIndividualOffer: Partial<GetIndividualOfferWithAddressResponseModel> = {},
+  venue: GetOfferVenueResponseModel = getOfferVenueFactory()
 ): GetIndividualOfferWithAddressResponseModel => {
   const currentOfferId = offerId++
 
@@ -96,7 +97,7 @@ export const getIndividualOfferFactory = (
     isThing: true,
     id: currentOfferId,
     status: OfferStatus.ACTIVE,
-    venue: getOfferVenueFactory(),
+    venue,
     hasBookingLimitDatetimesPassed: false,
     hasStocks: true,
     dateCreated: '2020-04-12T19:31:12Z',
@@ -140,7 +141,7 @@ export const priceCategoryFactory = (
 export const getOfferVenueFactory = (
   customGetOfferVenue: Partial<GetOfferVenueResponseModel> = {}
 ): GetOfferVenueResponseModel => {
-  const currentVenueId = venueId++
+  const currentVenueId = customGetOfferVenue.id ?? venueId++
 
   return {
     id: currentVenueId,
