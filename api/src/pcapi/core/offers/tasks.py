@@ -17,6 +17,7 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.routes.public.individual_offers.v1 import utils as individual_offers_v1_utils
+from pcapi.routes.public.individual_offers.v1.serializers import products as products_serializers
 from pcapi.utils import date as utils_date
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
@@ -33,7 +34,7 @@ ALLOWED_PRODUCT_SUBCATEGORIES = [
 
 def upsert_product_stock(
     offer: offers_models.Offer,
-    stock_body: individual_offers_v1_serialization.StockEdition | None,
+    stock_body: products_serializers.StockEdition | None,
     provider: providers_models.Provider,
 ) -> None:
     existing_stock = next((stock for stock in offer.activeStocks), None)
@@ -270,7 +271,7 @@ def create_or_update_ean_offers(
 
                 upsert_product_stock(
                     offer_to_update_by_ean[ean],
-                    individual_offers_v1_serialization.StockEdition(
+                    products_serializers.StockEdition(
                         **{
                             "price": stock_data["price"],
                             "quantity": stock_data["quantity"],
