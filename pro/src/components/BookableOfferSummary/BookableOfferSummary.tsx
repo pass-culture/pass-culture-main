@@ -317,7 +317,15 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
         </div>
       </div>
       <div className={styles['offer-details']}>
-        <BookableOfferTimeline offer={offer} />
+        <div
+          className={
+            offer.institution
+              ? styles['timeline-container']
+              : styles['partial-timeline-container']
+          }
+        >
+          <BookableOfferTimeline offer={offer} />
+        </div>
         {offer.institution && (
           <EducationalInstitutionDetails
             educationalInstitution={offer.institution}

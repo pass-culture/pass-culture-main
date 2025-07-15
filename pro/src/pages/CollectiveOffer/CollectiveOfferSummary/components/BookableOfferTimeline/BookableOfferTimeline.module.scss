@@ -3,10 +3,6 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_a11y.scss" as a11y;
 
-.container {
-  flex: 1;
-}
-
 .title {
   @include fonts.title2;
 
