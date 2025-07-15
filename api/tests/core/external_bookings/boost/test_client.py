@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 from decimal import Decimal
 
 import pytest
@@ -9,6 +10,7 @@ import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.connectors import boost as boost_connector
 from pcapi.connectors.serialization import boost_serializers
 from pcapi.core.external_bookings.boost import client as boost_client
 from pcapi.utils import date
@@ -57,8 +59,49 @@ class GetPcuPricingIfExistsTest:
 
 
 class GetShowtimesTest:
-    def test_should_return_showtimes(self, requests_mock):
-        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
+    @pytest.mark.parametrize(
+        "enable_debug,expected_logs",
+        [
+            (False, {}),
+            (
+                True,
+                {
+                    0: {
+                        "message": "[CINEMA] Call to external API",
+                        "extra": {
+                            "api_client": "BoostClientAPI",
+                            "method": "get_collection_items",
+                            "cinema_id": "test_id",
+                            "method_params": {
+                                "page": 1,
+                                "per_page": 2,
+                                "resource": boost_connector.ResourceBoost.SHOWTIMES,
+                            },
+                            "response": fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
+                        },
+                    },
+                    1: {
+                        "message": "[CINEMA] Call to external API",
+                        "extra": {
+                            "api_client": "BoostClientAPI",
+                            "method": "get_collection_items",
+                            "method_params": {
+                                "page": 2,
+                                "per_page": 2,
+                                "resource": boost_connector.ResourceBoost.SHOWTIMES,
+                            },
+                            "cinema_id": "test_id",
+                            "response": fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
+                        },
+                    },
+                },
+            ),
+        ],
+    )
+    def test_should_return_showtimes(self, enable_debug, expected_logs, caplog, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema-0.example.com/", cinemaProviderPivot__idAtProvider="test_id"
+        )
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         start_date = datetime.date.today()
         end_date = (start_date + datetime.timedelta(days=10)).strftime("%Y-%m-%d")
@@ -70,8 +113,15 @@ class GetShowtimesTest:
             f"https://cinema-0.example.com/api/showtimes/between/{start_date.strftime('%Y-%m-%d')}/{end_date}?paymentMethod=external%3Acredit%3Apassculture&hideFullReservation=1&page=2&per_page=2",
             json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
         )
-        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=14)
-        showtimes = boost.get_showtimes(per_page=2, start_date=start_date, interval_days=10)
+        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=14, enable_debug=enable_debug)
+
+        with caplog.at_level(logging.DEBUG, logger="pcapi.core.external_bookings.boost.client"):
+            showtimes = boost.get_showtimes(per_page=2, start_date=start_date, interval_days=10)
+
+        assert len(caplog.records) == len(expected_logs.keys())
+        for record_number in expected_logs.keys():
+            for attribute in expected_logs[record_number].keys():
+                assert getattr(caplog.records[record_number], attribute) == expected_logs[record_number][attribute]
 
         assert requests_mock.request_history[-1].method == "GET"
         assert requests_mock.request_history[-1].timeout == 14

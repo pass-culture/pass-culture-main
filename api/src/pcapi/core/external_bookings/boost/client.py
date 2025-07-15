@@ -45,6 +45,27 @@ def get_pcu_pricing_if_exists(
     return first_pcu_pricing
 
 
+def _log_external_call(
+    client: external_bookings_models.ExternalBookingsClientAPI,
+    method: str,
+    response: dict | list[dict] | list,
+    method_params: dict | None = None,
+) -> None:
+    client_name = client.__class__.__name__
+    cinema_id = client.cinema_id
+    extra = {
+        "api_client": client_name,
+        "cinema_id": cinema_id,
+        "method": method,
+        "response": response,
+    }
+
+    if method_params:
+        extra["method_params"] = method_params
+
+    logger.debug("[CINEMA] Call to external API", extra=extra)
+
+
 class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     # FIXME: define those later
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
@@ -143,14 +164,13 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     ) -> list:
         # XXX: per_page max value seems to be 200
         items = []
+        params = params or {}
         current_page = next_page = 1
 
         while current_page <= next_page:
-            if params:
-                params["page"] = current_page
-                params["per_page"] = per_page
-            else:
-                params = {"page": current_page, "per_page": per_page}
+            params["page"] = current_page
+            params["per_page"] = per_page
+
             json_data = boost.get_resource(
                 self.cinema_id,
                 resource,
@@ -158,6 +178,19 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
                 pattern_values=pattern_values,
                 request_timeout=self.request_timeout,
             )
+
+            if self.enable_debug:
+                _log_external_call(
+                    self,
+                    "get_collection_items",
+                    json_data,
+                    method_params={
+                        "page": current_page,
+                        "per_page": per_page,
+                        "resource": resource,
+                    },
+                )
+
             collection = parse_obj_as(collection_class, json_data)
             items.extend(collection.data)
             total_pages = collection.totalPages
@@ -199,6 +232,10 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             pattern_values={"id": showtime_id},
             request_timeout=self.request_timeout,
         )
+
+        if self.enable_debug:
+            _log_external_call(self, "get_showtime", json_data)
+
         showtime_details = parse_obj_as(boost_serializers.ShowTimeDetails, json_data)
         return showtime_details.data
 
@@ -220,5 +257,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             self.cinema_id,
             boost.ResourceBoost.CINEMAS_ATTRIBUTS,
         )
+        if self.enable_debug:
+            _log_external_call(self, "get_cinemas_attributs", json_data)
         attributs = parse_obj_as(boost_serializers.CinemaAttributCollection, json_data)
         return attributs.data
