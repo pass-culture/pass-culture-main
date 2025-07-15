@@ -218,12 +218,12 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
   }
 
   return (
-    <div className={styles['container']}>
+    <>
       <h2 className={styles['title']}>{"Suivi de l'offre"}</h2>
       <div className={styles['timeline-container']}>
         <Timeline steps={getAllSteps()} />
       </div>
-    </div>
+    </>
   )
 }
 
