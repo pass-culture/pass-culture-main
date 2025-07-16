@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import React, { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { NavLink } from 'react-router'
 
 import { selectCurrentUser } from 'commons/store/user/selectors'
 import { BackToNavLink } from 'components/BackToNavLink/BackToNavLink'
@@ -228,14 +229,15 @@ export const Layout = ({
               )}
             >
               {layout === 'sign-up' && (
-                <SvgIcon
-                  className={styles['logo-sign-up']}
-                  viewBox="0 0 282 120"
-                  alt="Pass Culture pro, l’espace des acteurs culturels"
-                  src={logoPassCultureProFullIcon}
-                  width="135"
-                  data-testid="sign-up-logo"
-                />
+                <NavLink className={styles['logo-sign-up']} to="/connexion">
+                  <SvgIcon
+                    viewBox="0 0 282 120"
+                    alt="Pass Culture pro, l’espace des acteurs culturels"
+                    src={logoPassCultureProFullIcon}
+                    width="135"
+                    data-testid="sign-up-logo"
+                  />
+                </NavLink>
               )}
               <main id="content">
                 <div id="orejimeElement" />
