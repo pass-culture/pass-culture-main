@@ -163,7 +163,7 @@ export const SignupForm = (): JSX.Element => {
                 S’inscrire
               </Button>
             </div>
-            <aside className={styles['no-account']}>
+            <div className={styles['no-account']}>
               <p className={styles['no-account-text']}>
                 Vous avez déjà un compte ?
               </p>
@@ -178,7 +178,7 @@ export const SignupForm = (): JSX.Element => {
               >
                 Se connecter
               </ButtonLink>
-            </aside>
+            </div>
           </>
         ) : (
           <>
