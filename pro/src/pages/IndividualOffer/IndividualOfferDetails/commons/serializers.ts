@@ -1,3 +1,4 @@
+import { PatchDraftOfferBodyModel, PostDraftOfferBodyModel } from 'apiClient/v1'
 import { trimStringsInObject } from 'commons/utils/trimStringsInObject'
 
 import { DetailsFormValues } from './types'
@@ -24,7 +25,7 @@ export function deSerializeDurationMinutes(durationMinute: number): string {
   return `${hours}:${minutes}`
 }
 
-export const serializeExtraData = (formValues: DetailsFormValues) => {
+const serializeExtraData = (formValues: DetailsFormValues) => {
   return trimStringsInObject({
     author: formValues.author,
     gtl_id: formValues.gtl_id,
@@ -38,19 +39,10 @@ export const serializeExtraData = (formValues: DetailsFormValues) => {
   })
 }
 
-type PostPayload = {
-  description?: string | null
-  durationMinutes?: number
-  extraData?: Record<string, unknown>
-  name: string
-  subcategoryId: string
-  venueId: number
-  productId?: number
-}
-
 export function serializeDetailsPostData(
-  formValues: DetailsFormValues
-): PostPayload {
+  formValues: DetailsFormValues,
+  isNewOfferCreationFlowFeatureActive: boolean
+): PostDraftOfferBodyModel {
   return trimStringsInObject({
     name: formValues.name,
     subcategoryId: formValues.subcategoryId,
@@ -60,27 +52,37 @@ export function serializeDetailsPostData(
     extraData: serializeExtraData(formValues),
     productId: formValues.productId ? Number(formValues.productId) : undefined,
     url: formValues.url,
+
+    ...(isNewOfferCreationFlowFeatureActive
+      ? {
+          audioDisabilityCompliant: formValues.accessibility?.audio,
+          mentalDisabilityCompliant: formValues.accessibility?.mental,
+          motorDisabilityCompliant: formValues.accessibility?.motor,
+          visualDisabilityCompliant: formValues.accessibility?.visual,
+        }
+      : {}),
   })
 }
 
-type PatchPayload = {
-  description?: string | null
-  durationMinutes?: number
-  extraData?: Record<string, unknown>
-  name: string
-  subcategoryId: string
-  url?: string | null
-}
-
 export function serializeDetailsPatchData(
-  formValues: DetailsFormValues
-): PatchPayload {
-  return {
+  formValues: DetailsFormValues,
+  isNewOfferCreationFlowFeatureActive: boolean
+): PatchDraftOfferBodyModel {
+  return trimStringsInObject({
     name: formValues.name,
     subcategoryId: formValues.subcategoryId,
     description: formValues.description,
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
     extraData: serializeExtraData(formValues),
     url: formValues.url,
-  }
+
+    ...(isNewOfferCreationFlowFeatureActive
+      ? {
+          audioDisabilityCompliant: formValues.accessibility?.audio,
+          mentalDisabilityCompliant: formValues.accessibility?.mental,
+          motorDisabilityCompliant: formValues.accessibility?.motor,
+          visualDisabilityCompliant: formValues.accessibility?.visual,
+        }
+      : {}),
+  })
 }

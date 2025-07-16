@@ -19,6 +19,7 @@ import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { usePrevious } from 'commons/hooks/usePrevious'
@@ -79,6 +80,9 @@ export const IndividualOfferInformationsScreen = ({
   const isEvent = subCategories.find(
     (subcategory) => subcategory.id === offer.subcategoryId
   )?.isEvent
+  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
 
   const addToLocalStorage = () => {
     const keyName = getLocalStorageKeyName(offer)
@@ -130,6 +134,7 @@ export const IndividualOfferInformationsScreen = ({
         offer,
         formValues,
         shouldSendMail: sendWithdrawalMail,
+        isNewOfferCreationFlowFeatureActive,
       })
       const response = await api.patchOffer(offer.id, requestBody)
 
