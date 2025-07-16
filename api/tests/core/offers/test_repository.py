@@ -1101,30 +1101,37 @@ class GetCappedOffersForFiltersTest:
 @pytest.mark.usefixtures("db_session")
 class GetOffersByPublicationDateTest:
     def test_get_offers_by_publication_date(self):
-        publication_date = datetime.datetime.utcnow().replace(minute=0, second=0, microsecond=0) + datetime.timedelta(
-            days=30
-        )
+        publication_date_target = datetime.datetime.utcnow().replace(
+            minute=0, second=0, microsecond=0
+        ) + datetime.timedelta(days=30)
 
         # no publication date -> should be ignored ignored
         factories.OfferFactory(publicationDatetime=None)
 
-        # publication date outside of N minutes range -> should be ignored
-        publication_date_before = publication_date - datetime.timedelta(minutes=25)
+        # publication date outside of 24 hours range -> should be ignored
+        publication_date_before = publication_date_target - datetime.timedelta(hours=25)
         factories.OfferFactory(publicationDatetime=publication_date_before)
 
-        # publication date within N minutes range -> both should be returned
-        offer_to_publish_1 = factories.OfferFactory(publicationDatetime=publication_date)
+        # publication date outside of 15 minutes range -> should be returned
+        publication_date_before = publication_date_target - datetime.timedelta(minutes=25)
+        offer_to_publish_1 = factories.OfferFactory(publicationDatetime=publication_date_before)
 
-        publication_date_within_range = publication_date - datetime.timedelta(minutes=13)
-        offer_to_publish_2 = factories.OfferFactory(publicationDatetime=publication_date_within_range)
+        # publication date within 15 minutes range -> should be returned
+        publication_date_within_range = publication_date_target - datetime.timedelta(minutes=13)
+        offer_to_publish_2 = factories.OfferFactory(publicationDatetime=publication_date_target)
+        offer_to_publish_3 = factories.OfferFactory(publicationDatetime=publication_date_within_range)
 
-        # publication date outside of N minutes range -> should be ignored
-        publication_date_after = publication_date + datetime.timedelta(minutes=17)
+        # publication date after publication_date_target -> should be ignored
+        publication_date_after = publication_date_target + datetime.timedelta(minutes=17)
         factories.OfferFactory(publicationDatetime=publication_date_after)
 
-        offers_query = repository.get_offers_by_publication_date(publication_date=publication_date)
-        assert offers_query.count() == 2
-        assert {o.id for o in offers_query.all()} == {offer_to_publish_1.id, offer_to_publish_2.id}
+        offers_query = repository.get_offers_by_publication_date(publication_date=publication_date_target)
+        assert offers_query.count() == 3
+        assert {o.id for o in offers_query.all()} == {
+            offer_to_publish_1.id,
+            offer_to_publish_2.id,
+            offer_to_publish_3.id,
+        }
 
 
 @pytest.mark.usefixtures("db_session")

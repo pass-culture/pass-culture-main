@@ -188,7 +188,10 @@ def get_offers_by_publication_date(
         publication_date = datetime.datetime.utcnow()
 
     upper_bound = publication_date
-    lower_bound = upper_bound - datetime.timedelta(minutes=15)
+    # The lower bound is intentionally very far in the past.
+    # This function should be called every quarter hour, but filtering the last days allows auto-correction
+    # when the function fails (timeout, or lock denied, most of the time)
+    lower_bound = upper_bound - datetime.timedelta(hours=24)
 
     return db.session.query(models.Offer).filter(
         models.Offer.publicationDatetime != None,
