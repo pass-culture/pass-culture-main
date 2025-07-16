@@ -138,10 +138,12 @@ def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:
         db.session.commit()
 
 
-def synchronize_ems_venue_provider(venue_provider: provider_models.VenueProvider) -> None:
-    connector = ems_connectors.EMSScheduleConnector()
+def synchronize_ems_venue_provider(venue_provider: provider_models.VenueProvider, enable_debug: bool = False) -> None:
+    connector = ems_connectors.EMSScheduleConnector(enable_debug=enable_debug)
     ems_cinema_details = providers_repository.get_ems_cinema_details(venue_provider.venueIdAtOfferProvider)
     last_version = ems_cinema_details.lastVersion
+    if enable_debug and last_version:
+        last_version -= 1  # retry from previous version
     schedules = connector.get_schedules(last_version)
     new_version = schedules.version
     for site in schedules.sites:

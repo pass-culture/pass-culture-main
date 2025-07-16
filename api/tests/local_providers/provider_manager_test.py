@@ -1,3 +1,4 @@
+import logging
 from unittest.mock import patch
 
 import pytest
@@ -104,7 +105,27 @@ class SynchronizeDataForProviderTest:
 
 class SynchronizeEMSVenueProviderTest:
     @pytest.mark.usefixtures("db_session")
-    def test_should_synchronize_ems_venue_provider(self):
+    @pytest.mark.parametrize(
+        "enable_debug,expected_logs",
+        [
+            (False, {}),
+            (
+                True,
+                {
+                    0: {
+                        "message": "[CINEMA] Call to external API",
+                        "extra": {
+                            "api_client": "EMSScheduleConnector",
+                            "method": "get_schedules",
+                            "method_params": {"version": 0},
+                            "response": ems_fixtures.DATA_VERSION_0,
+                        },
+                    },
+                },
+            ),
+        ],
+    )
+    def test_should_synchronize_ems_venue_provider(self, enable_debug, expected_logs, caplog):
         ems_provider = get_provider_by_local_class("EMSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venueIdAtOfferProvider="0063")
         pivot = providers_factories.EMSCinemaProviderPivotFactory(idAtProvider=venue_provider.venueIdAtOfferProvider)
@@ -113,7 +134,13 @@ class SynchronizeEMSVenueProviderTest:
             requests_mocker.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0)
             requests_mocker.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg", content=bytes())
 
-            synchronize_ems_venue_provider(venue_provider)
+            with caplog.at_level(logging.DEBUG, logger="pcapi.connectors.ems"):
+                synchronize_ems_venue_provider(venue_provider, enable_debug=enable_debug)
+
+            assert len(caplog.records) == len(expected_logs.keys())
+            for record_number in expected_logs.keys():
+                for attribute in expected_logs[record_number].keys():
+                    assert getattr(caplog.records[record_number], attribute) == expected_logs[record_number][attribute]
 
             assert ems_cinema_details.lastVersion == 86400
             assert venue_provider.lastSyncDate
