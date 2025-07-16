@@ -32,11 +32,11 @@ export type RecurrenceFormValues = {
   recurrenceType: RecurrenceType
   days: RecurrenceDays[]
   startingDate: string | null
-  endingDate: string | null
+  endingDate?: string | null
   beginningTimes: { beginningTime: string }[]
   quantityPerPriceCategories: QuantityPerPriceCategoryForm[]
   bookingLimitDateInterval: number | null
-  monthlyOption: MonthlyOption | null
+  monthlyOption?: MonthlyOption | null
 }
 
 //  Under WIP_ENABLE_EVENT_WITH_OPENING_HOUR FF

@@ -151,7 +151,7 @@ const getRecurrenceDates = (values: RecurrenceFormValues): Date[] => {
       ) {
         throw new Error('Starting or ending date is empty')
       }
-      if (values.monthlyOption === null) {
+      if (values.monthlyOption === null || values.monthlyOption === undefined) {
         throw new Error('Monthly option is empty')
       }
       const {

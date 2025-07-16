@@ -37,9 +37,8 @@ export const getValidationSchema = () =>
       }),
     endingDate: yup
       .string()
-      .required()
       .transform((curr, orig) => (orig === '' ? null : curr))
-      .nullable('Veuillez renseigner une date de fin')
+      .nullable()
       .when('recurrenceType', {
         is: (recurrenceType: RecurrenceType) =>
           recurrenceType !== RecurrenceType.UNIQUE,
@@ -154,7 +153,6 @@ export const getValidationSchema = () =>
     bookingLimitDateInterval: yup.number().required().nullable(),
     monthlyOption: yup
       .string<MonthlyOption>()
-      .required()
       .nullable()
       .when('recurrenceType', {
         is: RecurrenceType.MONTHLY,
