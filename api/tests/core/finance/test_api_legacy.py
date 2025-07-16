@@ -925,7 +925,7 @@ def test_generate_payments_file(clean_temp_files):
         amount=-500,  # rate = 100 %
         booking__amount=5,
         booking__dateUsed=used_date + datetime.timedelta(days=5),
-        booking__stock__offer__name="Une histoire plutôt bien sur un recredit 18",
+        booking__stock__offer__name="Une histoire plutôt bien sur un recrédit 18",
         booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         booking__stock__offer__venue=venue2,
         booking__usedRecreditType=bookings_models.BookingRecreditType.RECREDIT_18,
@@ -934,7 +934,7 @@ def test_generate_payments_file(clean_temp_files):
         amount=-200,  # rate = 100 %
         booking__amount=2,
         booking__dateUsed=used_date + datetime.timedelta(days=5),
-        booking__stock__offer__name="Une histoire plutôt bien sur un recredit 17",
+        booking__stock__offer__name="Une histoire plutôt bien sur un recrédit 17",
         booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         booking__stock__offer__venue=venue2,
         booking__usedRecreditType=bookings_models.BookingRecreditType.RECREDIT_17,
@@ -1494,6 +1494,19 @@ def test_generate_invoice_file(clean_temp_files):
         category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
     )
 
+    pricing5 = factories.PricingFactory(
+        status=models.PricingStatus.VALIDATED,
+        booking__stock__offer__venue=venue,
+        booking__user__deposit__type=models.DepositType.GRANT_FREE,
+        amount=-1,
+    )
+    pline51 = factories.PricingLineFactory(pricing=pricing5, amount=-1)
+    pline52 = factories.PricingLineFactory(
+        pricing=pricing5,
+        amount=-2,
+        category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
+    )
+
     # eac pricing
     year1 = educational_factories.EducationalYearFactory()
     educational_institution = educational_factories.EducationalInstitutionFactory()
@@ -1610,6 +1623,7 @@ def test_generate_invoice_file(clean_temp_files):
             program_pricing_left,
             pricing3,
             pricing4,
+            pricing5,
             *incidents_pricings,
         ],
         status=models.CashflowStatus.ACCEPTED,
@@ -1693,7 +1707,7 @@ def test_generate_invoice_file(clean_temp_files):
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)
 
-    assert len(rows) == 11
+    assert len(rows) == 13
     assert rows[0] == {
         "Identifiant des coordonnées bancaires": str(bank_account_1.id),
         "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
@@ -1719,12 +1733,32 @@ def test_generate_invoice_file(clean_temp_files):
         "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
         "Référence du justificatif": invoice1.reference,
+        "Type de ticket de facturation": pline51.category.value,
+        "Type de réservation": "FREE-15-16",
+        "Ministère": "",
+        "Somme des tickets de facturation": pline51.amount,
+    }
+    assert rows[3] == {
+        "Identifiant des coordonnées bancaires": str(bank_account_1.id),
+        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Type de ticket de facturation": pline52.category.value,
+        "Type de réservation": "FREE-15-16",
+        "Ministère": "",
+        "Somme des tickets de facturation": pline52.amount,
+    }
+    assert rows[4] == {
+        "Identifiant des coordonnées bancaires": str(bank_account_1.id),
+        "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
         "Type de ticket de facturation": pline41.category.value,
         "Type de réservation": "PR18+",
         "Ministère": "",
         "Somme des tickets de facturation": pline41.amount + 200,  # 200 is the incident amount,
     }
-    assert rows[3] == {
+    assert rows[5] == {
         "Identifiant des coordonnées bancaires": str(bank_account_1.id),
         "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
@@ -1734,7 +1768,7 @@ def test_generate_invoice_file(clean_temp_files):
         "Ministère": "",
         "Somme des tickets de facturation": pline42.amount,
     }
-    assert rows[4] == {
+    assert rows[6] == {
         "Identifiant des coordonnées bancaires": str(bank_account_1.id),
         "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
@@ -1744,7 +1778,7 @@ def test_generate_invoice_file(clean_temp_files):
         "Ministère": "",
         "Somme des tickets de facturation": pline31.amount,
     }
-    assert rows[5] == {
+    assert rows[7] == {
         "Identifiant des coordonnées bancaires": str(bank_account_1.id),
         "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
@@ -1755,7 +1789,7 @@ def test_generate_invoice_file(clean_temp_files):
         "Somme des tickets de facturation": pline32.amount,
     }
     # New Caledonia
-    assert rows[6] == {
+    assert rows[8] == {
         "Identifiant des coordonnées bancaires": str(nc_bank_account.id),
         "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(nc_bank_account.id),
         "Date du justificatif": datetime.date.today().isoformat(),
@@ -1765,7 +1799,7 @@ def test_generate_invoice_file(clean_temp_files):
         "Ministère": "NC",
         "Somme des tickets de facturation": nc_pline_1.amount + nc_pline_1_transferred.amount,
     }
-    assert rows[7] == {
+    assert rows[9] == {
         "Identifiant des coordonnées bancaires": str(nc_bank_account.id),
         "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(nc_bank_account.id),
         "Date du justificatif": datetime.date.today().isoformat(),
@@ -1776,7 +1810,7 @@ def test_generate_invoice_file(clean_temp_files):
         "Somme des tickets de facturation": nc_pline_2.amount + nc_pline_2_transferred.amount,
     }
     # collective pricing lines
-    assert rows[8] == {
+    assert rows[10] == {
         "Identifiant des coordonnées bancaires": str(bank_account_1.id),
         "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
@@ -1786,7 +1820,7 @@ def test_generate_invoice_file(clean_temp_files):
         "Ministère": "AGRICULTURE",
         "Somme des tickets de facturation": coll_pline1.amount + program_pline_left.amount,
     }
-    assert rows[9] == {
+    assert rows[11] == {
         "Identifiant des coordonnées bancaires": str(bank_account_1.id),
         "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),
@@ -1796,7 +1830,7 @@ def test_generate_invoice_file(clean_temp_files):
         "Ministère": "AGRICULTURE",
         "Somme des tickets de facturation": coll_pline2.amount,
     }
-    assert rows[10] == {
+    assert rows[12] == {
         "Identifiant des coordonnées bancaires": str(bank_account_1.id),
         "Identifiant humanisé des coordonnées bancaires": human_ids.humanize(bank_account_1.id),
         "Date du justificatif": datetime.date.today().isoformat(),

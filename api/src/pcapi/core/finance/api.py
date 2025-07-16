@@ -111,6 +111,10 @@ ORIGIN_OF_CREDIT_CASE: sa.sql.elements.Case = sa.case(
         models.Deposit.type == models.DepositType.GRANT_18,
         "AR18+",
     ),
+    (
+        models.Deposit.type == models.DepositType.GRANT_FREE,
+        "FREE-15-16",
+    ),
     else_="",
 )
 
