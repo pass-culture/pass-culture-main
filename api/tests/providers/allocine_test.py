@@ -161,16 +161,13 @@ class GetMovieShowtimeListFromAllocineTest:
 
     @patch("pcapi.core.providers.allocine.api_allocine.get_movies_showtimes_from_allocine")
     def test_should_exclude_empty_movies_and_special_events(self, mock_get_movies_showtimes):
-        # Given
         mock_get_movies_showtimes.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
             fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
         )
 
-        # When
         movie_showtimes = get_movies_showtimes(self.theater_id)
 
-        # Then
-        mock_get_movies_showtimes.assert_called_once_with(self.theater_id)
+        mock_get_movies_showtimes.assert_called_once_with(self.theater_id, enable_debug=False)
         assert next(movie_showtimes).movie.internalId == 131136
         assert next(movie_showtimes, None) is None
 

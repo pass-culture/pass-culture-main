@@ -59,9 +59,13 @@ def get_movie_list() -> list[allocine_serializers.AllocineMovie]:
     return movie_list
 
 
-def get_movies_showtimes(theater_id: str) -> Iterator[allocine_serializers.AllocineMovieShowtime]:
+def get_movies_showtimes(
+    theater_id: str, enable_debug: bool = False
+) -> Iterator[allocine_serializers.AllocineMovieShowtime]:
     try:
-        movie_showtime_list_response = api_allocine.get_movies_showtimes_from_allocine(theater_id)
+        movie_showtime_list_response = api_allocine.get_movies_showtimes_from_allocine(
+            theater_id, enable_debug=enable_debug
+        )
     except api_allocine.AllocineException as exc:
         logger.error("Could not get movies showtimes for theater %s. Error: '%s'", theater_id, str(exc))
         return iter([])

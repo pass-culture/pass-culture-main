@@ -34,10 +34,25 @@ def _extract_allocine_id_from_allocine_movie_list(movie_list: dict, path: tuple[
     return allocine_id
 
 
-def get_movie_list_page(after: str = "") -> allocine_serializers.AllocineMovieListResponse:
+def get_movie_list_page(after: str = "", enable_debug: bool = False) -> allocine_serializers.AllocineMovieListResponse:
     url = f"{ALLOCINE_API_URL}/movieList?after={after}"
+
+    enable_debug = enable_debug or settings.ENABLE_CINEMA_PROVIDER_DEBUG
+
     try:
         response = requests.get(url, headers={"Authorization": "Bearer " + settings.ALLOCINE_API_KEY})
+
+        if enable_debug:
+            logger.debug(
+                "[CINEMA] Call to external API",
+                extra={
+                    "api_client": "api_allocine",
+                    "method": "get_movie_list_page",
+                    "method_params": {"after": after},
+                    "response": response.json(),
+                },
+            )
+
     except Exception:
         raise AllocineException("Error connecting Allocine API to get movie list")
 
@@ -108,11 +123,27 @@ def parse_movie_showtimes(
         return parse_movie_showtimes(data, theater_id, try_count + 1)
 
 
-def get_movies_showtimes_from_allocine(theater_id: str) -> allocine_serializers.AllocineMovieShowtimeListResponse:
+def get_movies_showtimes_from_allocine(
+    theater_id: str,
+    enable_debug: bool = False,
+) -> allocine_serializers.AllocineMovieShowtimeListResponse:
     url = f"{ALLOCINE_API_URL}/movieShowtimeList?theater={theater_id}"
+
+    enable_debug = enable_debug or settings.ENABLE_CINEMA_PROVIDER_DEBUG
 
     try:
         response = requests.get(url, headers={"Authorization": "Bearer " + settings.ALLOCINE_API_KEY})
+
+        if enable_debug:
+            logger.debug(
+                "[CINEMA] Call to external API",
+                extra={
+                    "api_client": "api_allocine",
+                    "cinema_id": theater_id,
+                    "method": "get_movies_showtimes_from_allocine",
+                    "response": response.json(),
+                },
+            )
     except Exception:
         raise AllocineException(f"Error connecting Allocine API for theater {theater_id}")
 

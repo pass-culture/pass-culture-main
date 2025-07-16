@@ -27,7 +27,6 @@ class AllocineStocksTest:
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
         @pytest.mark.usefixtures("db_session")
         def test_should_call_allocine_api(self, mock_call_allocine_api, app):
-            # Given
             theater_token = "test"
 
             venue = offerers_factories.VenueFactory(
@@ -37,11 +36,9 @@ class AllocineStocksTest:
                 venue=venue, venueIdAtOfferProvider=theater_token
             )
 
-            # When
-            AllocineStocks(allocine_venue_provider)
+            AllocineStocks(allocine_venue_provider, enable_debug=True)
 
-            # Then
-            mock_call_allocine_api.assert_called_once_with(theater_token)
+            mock_call_allocine_api.assert_called_once_with(theater_token, enable_debug=True)
 
     class NextTest:
         @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
