@@ -8,6 +8,7 @@ import {
 } from 'apiClient/v1'
 import { showOptionsTree } from 'commons/core/Offers/categoriesSubTypes'
 import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
+import { AccessibilityFormValues } from 'commons/core/shared/types'
 import { SelectOption } from 'commons/custom_types/form'
 import { getAccessibilityInfoFromVenue } from 'commons/utils/getAccessibilityInfoFromVenue'
 import { Option } from 'pages/AdageIframe/app/types'
@@ -136,6 +137,7 @@ export function getInitialValuesFromVenues(
 export function getInitialValuesFromOffer({
   offer,
   subcategories,
+  isNewOfferCreationFlowFeatureActive,
 }: SetDefaultInitialValuesFromOfferProps): DetailsFormValues {
   const subcategory = subcategories.find(
     (subcategory: SubcategoryResponseModel) =>
@@ -147,6 +149,9 @@ export function getInitialValuesFromOffer({
   }
 
   const ean = offer.extraData?.ean ?? DEFAULT_DETAILS_FORM_VALUES.ean
+  const maybeAccessibility = isNewOfferCreationFlowFeatureActive
+    ? { accessibility: getAccessibilityFormValuesFromOffer(offer) }
+    : {}
 
   return {
     ...DEFAULT_DETAILS_FORM_VALUES,
@@ -176,14 +181,37 @@ export function getInitialValuesFromOffer({
     productId:
       offer.productId?.toString() ?? DEFAULT_DETAILS_FORM_VALUES.productId,
     url: offer.url,
+    ...maybeAccessibility,
   }
 }
 
-export function setFormReadOnlyFields(
+export function getAccessibilityFormValuesFromOffer(
+  offer: GetIndividualOfferResponseModel
+): AccessibilityFormValues {
+  const accessibilityBase = {
+    audio: !!offer.audioDisabilityCompliant,
+    mental: !!offer.mentalDisabilityCompliant,
+    motor: !!offer.motorDisabilityCompliant,
+    visual: !!offer.visualDisabilityCompliant,
+  }
+  const hasSomeAccessibility = Object.values(accessibilityBase).some((v) => v)
+
+  return {
+    ...accessibilityBase,
+    none: !hasSomeAccessibility,
+  }
+}
+
+export function getFormReadOnlyFields(
   offer: GetIndividualOfferResponseModel | null,
-  isProductBased?: boolean
+  isProductBased: boolean,
+  isNewOfferCreationFlowFeatureActive: boolean
 ): string[] {
   const allFields: string[] = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
+  const maybeAccessibilityFields = isNewOfferCreationFlowFeatureActive
+    ? ['accessibility']
+    : []
+
   const hasPendingOrRejectedStatus =
     offer && [OfferStatus.REJECTED, OfferStatus.PENDING].includes(offer.status)
 
@@ -192,7 +220,7 @@ export function setFormReadOnlyFields(
     // An EAS search was performed, so the form is product based.
     // Multiple fields are read-only.
     if (isProductBased) {
-      const editableFields = ['venueId']
+      const editableFields = ['venueId', ...maybeAccessibilityFields]
 
       return allFields.filter((field) => !editableFields.includes(field))
     }
@@ -203,7 +231,7 @@ export function setFormReadOnlyFields(
     isOfferSynchronized(offer) ||
     hasPendingOrRejectedStatus
   ) {
-    return allFields
+    return [...allFields, ...maybeAccessibilityFields]
   } else {
     return ['categoryId', 'subcategoryId', 'venueId']
   }

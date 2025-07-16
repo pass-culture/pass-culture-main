@@ -45,4 +45,5 @@ export type Product = {
 export type SetDefaultInitialValuesFromOfferProps = {
   offer: GetIndividualOfferResponseModel
   subcategories: SubcategoryResponseModel[]
+  isNewOfferCreationFlowFeatureActive: boolean
 }

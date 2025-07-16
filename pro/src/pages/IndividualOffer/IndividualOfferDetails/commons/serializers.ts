@@ -25,7 +25,7 @@ export function deSerializeDurationMinutes(durationMinute: number): string {
   return `${hours}:${minutes}`
 }
 
-const serializeExtraData = (formValues: DetailsFormValues) => {
+export const serializeExtraData = (formValues: DetailsFormValues) => {
   return trimStringsInObject({
     author: formValues.author,
     gtl_id: formValues.gtl_id,
