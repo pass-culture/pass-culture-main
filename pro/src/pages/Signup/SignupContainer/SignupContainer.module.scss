@@ -40,7 +40,6 @@
 .signup-form-row {
   display: flex;
   flex-direction: column;
-  margin-bottom: rem.torem(24px);
 
   @media (min-width: size.$tablet) {
     flex-direction: row;

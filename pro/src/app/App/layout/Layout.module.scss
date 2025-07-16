@@ -144,7 +144,7 @@ $connect-as-header-height: rem.torem(52px);
             }
           }
 
-          @media (max-height: rem.torem(740px)) {
+          @media (max-height: rem.torem(780px)) {
             margin: 4vh auto;
           }
 
@@ -172,19 +172,22 @@ $connect-as-header-height: rem.torem(52px);
         .image-laptop {
           &-macstudio {
             width: 100%;
-            bottom: 0;
+            bottom: rem.torem(64px);
             right: 0;
             position: absolute;
             max-width: rem.torem(540px);
 
-            @media (max-height: rem.torem(610px)) {
-              bottom: rem.torem(-95px);
-              max-width: rem.torem(400px);
+            @media (max-height: rem.torem(1024px)) {
+              bottom: 0;
+            }
+
+            @media (max-height: rem.torem(675px)) {
+              max-width: rem.torem(350px);
             }
           }
         }
 
-        @media (max-height: rem.torem(430px)) {
+        @media (max-height: rem.torem(500px)) {
           .image-engagements {
             margin: rem.torem(50px) auto rem.torem(25px);
           }
@@ -250,6 +253,7 @@ $connect-as-header-height: rem.torem(52px);
       max-width: rem.torem(640px);
       align-self: center;
       margin: auto;
+      padding-bottom: rem.torem(48px);
 
       /* For ultra-wide screens, makes content little bit more larger */
       @media (min-width: rem.torem(2600px)) {
