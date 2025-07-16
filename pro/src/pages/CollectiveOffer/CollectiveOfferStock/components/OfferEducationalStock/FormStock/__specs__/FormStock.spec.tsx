@@ -5,8 +5,8 @@ import { addDays, format } from 'date-fns'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import {
-  OfferEducationalStockFormValues,
   Mode,
+  OfferEducationalStockFormValues,
 } from 'commons/core/OfferEducational/types'
 import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import {
@@ -102,6 +102,62 @@ describe('FormStock', () => {
     expect(
       screen.getByText('Le prix total TTC est obligatoire')
     ).toBeInTheDocument()
+  })
+
+  it('should clear errors when fields are filled', async () => {
+    props.canEditDates = true
+    props.canEditDiscount = true
+
+    renderFormStock({ initialValues, onSubmit, props })
+
+    const saveButton = screen.getByText('Enregistrer')
+
+    await userEvent.click(saveButton)
+
+    expect(
+      screen.getByText('La date de début est obligatoire')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('La date de fin est obligatoire')
+    ).toBeInTheDocument()
+    expect(screen.getByText('L’horaire est obligatoire')).toBeInTheDocument()
+    expect(
+      screen.getByText('Le nombre de participants est obligatoire')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Le prix total TTC est obligatoire')
+    ).toBeInTheDocument()
+
+    const userDateInput = format(addDays(new Date(), 5), FORMAT_ISO_DATE_ONLY)
+
+    const startDatetimeInput = screen.getByLabelText('Date de début')
+    await userEvent.click(startDatetimeInput)
+    await waitFor(() => userEvent.type(startDatetimeInput, userDateInput))
+
+    const timeInput = screen.getByLabelText('Horaire')
+    await userEvent.click(screen.getByLabelText('Horaire'))
+    await waitFor(() => userEvent.type(timeInput, '00:00'))
+
+    await userEvent.type(screen.getByLabelText('Nombre de participants'), '10')
+    await userEvent.type(screen.getByLabelText('Prix total TTC'), '100')
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText('La date de début est obligatoire')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('La date de fin est obligatoire')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('L’horaire est obligatoire')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Le nombre de participants est obligatoire')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Le prix total TTC est obligatoire')
+      ).not.toBeInTheDocument()
+    })
   })
 
   it('should automatically update end date input when the user edits the start date', async () => {

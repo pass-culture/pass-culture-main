@@ -49,13 +49,13 @@ export const FormStock = ({
   function handleStartDatetimeChange(
     event: React.ChangeEvent<HTMLInputElement>
   ) {
-    setValue('startDatetime', event.target.value)
+    setValue('startDatetime', event.target.value, { shouldValidate: true })
     if (mode === Mode.EDITION || mode === Mode.CREATION) {
       if (
         !isDateValid(values.endDatetime) ||
         values.endDatetime < event.target.value
       ) {
-        setValue('endDatetime', event.target.value)
+        setValue('endDatetime', event.target.value, { shouldValidate: true })
       }
     }
   }
