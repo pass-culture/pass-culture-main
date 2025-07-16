@@ -90,7 +90,7 @@ describe('Signup', () => {
       // then it should have a title
       expect(
         screen.getByRole('heading', {
-          name: /Créer votre compte/,
+          name: /Créez votre compte/,
         })
       ).toBeInTheDocument()
       // and an external link to the help center

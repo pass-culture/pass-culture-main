@@ -73,7 +73,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
             })
           }
         >
-          Mot de passe oublié ?
+          Réinitialisez votre mot de passe
         </ButtonLink>
         <div className={styles['buttons-field']}>
           {!is2025SignUpEnabled && (

@@ -104,9 +104,7 @@ export const ResetPassword = (): JSX.Element => {
         {token && !passwordChanged && !isBadToken && (
           <section>
             <h1 className={styles['change-password-title']}>
-              {is2025SignUpEnabled
-                ? 'Réinitialisation de mot de passe'
-                : 'Définir un nouveau mot de passe'}
+              Réinitialisez votre mot de passe
             </h1>
             <p className={styles['mandatory-info']}>
               Veuillez définir votre nouveau mot de passe afin d’accéder à la

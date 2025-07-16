@@ -17,7 +17,7 @@ export const routesSignup: RouteConfig[] = [
   {
     element: <SignupConfirmation />,
     path: '/inscription/compte/confirmation',
-    title: 'Confirmation de création de compte',
+    title: 'Validez votre adresse email',
     meta: { public: true },
   },
   {

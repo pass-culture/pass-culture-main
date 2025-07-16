@@ -24,7 +24,6 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { Hero } from 'ui-kit/Hero/Hero'
 
-import emailIcon from './assets/email.svg'
 import styles from './LostPassword.module.scss'
 import { validationSchema } from './validationSchema'
 
@@ -74,13 +73,8 @@ export const LostPassword = (): JSX.Element => {
 
   const successComponent = is2025SignUpEnabled ? (
     <section className={styles['change-password-request-success']}>
-      <img
-        src={emailIcon}
-        alt=""
-        className={styles['change-password-request-success-icon']}
-      />
       <h1 className={styles['change-password-request-success-title']}>
-        Vous allez recevoir un email !
+        Vous allez recevoir un email
       </h1>
       <p className={styles['change-password-request-success-body']}>
         Cliquez sur le lien envoyé par email à <b>{email}</b>
@@ -92,7 +86,7 @@ export const LostPassword = (): JSX.Element => {
       linkLabel="Retourner sur la page de connexion"
       linkTo="/"
       text="Vous allez recevoir par email les instructions pour définir un nouveau mot de passe."
-      title="Merci !"
+      title="Validez votre adresse email"
     />
   )
 
@@ -106,9 +100,7 @@ export const LostPassword = (): JSX.Element => {
             [styles['change-password-request-form-old']]: !is2025SignUpEnabled,
           })}
         >
-          <h1 className={styles['title']}>
-            Mot de passe oublié{!is2025SignUpEnabled && ' ?'}
-          </h1>
+          <h1 className={styles['title']}>Réinitialisez votre mot de passe</h1>
           <p className={styles['subtitle']}>
             {is2025SignUpEnabled
               ? 'Entrez votre email pour recevoir un lien de réinitialisation.'

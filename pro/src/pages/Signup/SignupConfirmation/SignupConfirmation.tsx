@@ -6,8 +6,6 @@ import { ReSendEmailCallout } from 'components/ReSendEmailCallout/ReSendEmailCal
 import fullMailIcon from 'icons/full-mail.svg'
 import { Callout } from 'ui-kit/Callout/Callout'
 
-import emailIcon from '../../LostPassword/assets/email.svg'
-
 import styles from './SignupConfirmation.module.scss'
 
 export const SignupConfirmation = () => {
@@ -17,11 +15,6 @@ export const SignupConfirmation = () => {
 
   return isNewSignupEnabled ? (
     <section className={styles['signup-confirmation']}>
-      <img
-        src={emailIcon}
-        alt=""
-        className={styles['signup-confirmation-icon']}
-      />
       <h1 className={styles['signup-confirmation-title']}>
         Validez votre adresse email
       </h1>
@@ -39,7 +32,7 @@ export const SignupConfirmation = () => {
   ) : (
     <section className={styles['content']}>
       <div className={styles['hero-body']}>
-        <h1 className={styles['title']}>Merci !</h1>
+        <h1 className={styles['title']}>Validez votre adresse email</h1>
         <div className={styles['confirmation-text']}>
           Votre compte est en cours de création.
         </div>
