@@ -246,6 +246,7 @@ def _update_user_information(
     first_name: str | None = None,
     last_name: str | None = None,
     validated_birth_date: datetime.date | None = None,
+    birth_place: str | None = None,
     activity: str | None = None,
     address: str | None = None,
     city: str | None = None,
@@ -261,6 +262,8 @@ def _update_user_information(
         user.lastName = last_name
     if validated_birth_date is not None:
         user.validatedBirthDate = validated_birth_date
+    if birth_place is not None:
+        user.birthPlace = birth_place
     if activity is not None:
         user.activity = activity
     if address is not None:
@@ -304,6 +307,7 @@ def update_user_information_from_external_source(
         first_name=first_name,
         last_name=last_name,
         validated_birth_date=birth_date,
+        birth_place=data.get_birth_place(),
         activity=data.get_activity(),
         address=data.get_address(),
         city=data.get_city(),
