@@ -2,7 +2,7 @@ import { hasProperties } from 'commons/utils/types'
 
 export type PriceCategoryForm = {
   label: string
-  price: number | ''
+  price: number
   id?: number
 }
 

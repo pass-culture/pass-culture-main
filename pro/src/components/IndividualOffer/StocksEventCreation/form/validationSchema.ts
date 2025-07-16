@@ -6,10 +6,10 @@ import { MAX_STOCKS_QUANTITY } from 'components/IndividualOffer/StocksThing/vali
 
 import {
   DurationTypeOption,
+  MonthlyOption,
   RecurrenceDays,
   RecurrenceType,
   TimeSlotTypeOption,
-  MonthlyOption,
 } from './types'
 
 export const getValidationSchema = () =>

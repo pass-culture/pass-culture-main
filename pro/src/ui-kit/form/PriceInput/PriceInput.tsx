@@ -30,6 +30,11 @@ export type PriceInputProps = Pick<
    */
   showFreeCheckbox?: boolean
   hideAsterisk?: boolean
+  /**
+   * A custom error message to be displayed.
+   * If this prop is provided, the error message will be displayed and the field will be marked as errored
+   */
+  error?: string
   updatePriceValue: (value: string) => void
 }
 
@@ -65,6 +70,7 @@ export const PriceInput = React.forwardRef(
       smallLabel,
       showFreeCheckbox,
       hideAsterisk = false,
+      error,
       updatePriceValue,
     }: PriceInputProps,
     ref: ForwardedRef<HTMLInputElement>
@@ -141,6 +147,7 @@ export const PriceInput = React.forwardRef(
           disabled={disabled}
           asterisk={!hideAsterisk}
           onChange={onTextInputChange}
+          hasError={!!error}
           {...(showFreeCheckbox ? { InputExtension: inputExtension } : {})}
         />
       </div>

@@ -4,7 +4,7 @@ import {
 } from 'commons/utils/factories/priceCategoryFactories'
 import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHelpers'
 
-import { PRICE_CATEGORY_PRICE_MAX } from '../constants'
+import { PRICE_CATEGORY_LABEL_MAX_LENGTH, PRICE_CATEGORY_PRICE_MAX } from '../constants'
 import { PriceCategoriesFormValues } from '../types'
 import { validationSchema } from '../validationSchema'
 
@@ -53,6 +53,44 @@ describe('validationSchema', () => {
         'Plusieurs tarifs sont identiques, veuillez changer l’intitulé ou le prix',
         'Plusieurs tarifs sont identiques, veuillez changer l’intitulé ou le prix',
       ],
+    },
+    {
+      description: 'duplicated label and price',
+      formValues: priceCategoriesFormValuesFactory({
+        priceCategories: [
+          priceCategoryFormFactory({ label: 'Tarif', price: 10 }),
+          priceCategoryFormFactory({ label: 'Tarif', price: 10 }),
+        ],
+      }),
+      expectedErrors: [
+        'Plusieurs tarifs sont identiques, veuillez changer l’intitulé ou le prix',
+        'Plusieurs tarifs sont identiques, veuillez changer l’intitulé ou le prix',
+      ],
+    },
+    {
+      description: 'missing label',
+      formValues: priceCategoriesFormValuesFactory({
+        priceCategories: [priceCategoryFormFactory({ label: '' })],
+      }),
+      expectedErrors: ['Veuillez renseigner un intitulé de tarif'],
+    },
+    {
+      description: 'label too long',
+      formValues: priceCategoriesFormValuesFactory({
+        priceCategories: [
+          priceCategoryFormFactory({
+            label: 'a'.repeat(PRICE_CATEGORY_LABEL_MAX_LENGTH + 1),
+          }),
+        ],
+      }),
+      expectedErrors: ['Le nom du tarif est trop long'],
+    },
+    {
+      description: 'missing price',
+      formValues: priceCategoriesFormValuesFactory({
+        priceCategories: [priceCategoryFormFactory({ price: undefined })],
+      }),
+      expectedErrors: ['Veuillez renseigner un tarif'],
     },
   ]
 
