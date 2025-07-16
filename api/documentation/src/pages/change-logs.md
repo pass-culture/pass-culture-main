@@ -27,10 +27,19 @@ title: Pass Culture API change logs
   - **You can find details on the new status and the allowed actions [here](/docs/understanding-our-api/resources/collective-offers#collective-offer-status-and-allowed-actions).**
 :::
 
+:::info
+Soon, a `bookingAllowedDatetime` param will be available at offer creation and update. Thanks to this new param, you will be able to precise when your offer becomes bookable. 
+
+You will have two dates at your disposal :
+
+- a `publicationDatetime` that indicates the date and time when the offer becomes visible in the beneficiary application
+- a `bookingAllowedDatetime` that indicates the date and time when the offer becomes bookable in the beneficiary application. If not set, the offer will be bookable as soon as it is published.
+:::
+
 ## July 2025
 
-- You can specify a `publicationDatetime` and a `bookingAllowedDatetime` for your product offers in the [**Create Product Offer**](/rest-api#tag/Product-Offers/operation/PostProductOffer) and [**Update Product Offer**](/rest-api#tag/Product-Offers/operation/EditProduct) endpoints
-- You can specify a `publicationDatetime` and a `bookingAllowedDatetime` for your event offers in the [**Create Event Offer**](/rest-api#tag/Event-Offers/operation/PostEventOffer) and [**Update Event Offer**](/rest-api#tag/Event-Offers/operation/EditEvent) endpoints
+- You can specify a `publicationDatetime` for your product offers in the [**Create Product Offer**](/rest-api#tag/Product-Offers/operation/PostProductOffer) and [**Update Product Offer**](/rest-api#tag/Product-Offers/operation/EditProduct) endpoints
+- You can specify a `publicationDatetime` for your event offers in the [**Create Event Offer**](/rest-api#tag/Event-Offers/operation/PostEventOffer) and [**Update Event Offer**](/rest-api#tag/Event-Offers/operation/EditEvent) endpoints
 
 
 ## June 2025
