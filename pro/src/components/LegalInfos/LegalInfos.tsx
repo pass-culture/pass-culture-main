@@ -37,6 +37,7 @@ export const LegalInfos = ({
           icon={fullLinkIcon}
           className={styles['legal-infos-callout-link']}
           opensInNewTab
+          isExternal
           onClick={() =>
             logEvent(Events.CLICKED_CONSULT_CGU, { from: location.pathname })
           }
