@@ -519,11 +519,11 @@ def batch_update_offers(
     update_fields: dict | None = None,
     activate: bool | None = None,
     send_email_notification: bool = False,
-) -> None:
+) -> set[int]:
     query = query.filter(models.Offer.validation == models.OfferValidationStatus.APPROVED)
     query = query.with_entities(models.Offer.id, models.Offer.venueId).yield_per(2_500)
 
-    offers_count = 0
+    updated_offer_ids = set()
     found_venue_ids = set()
 
     if update_fields is None:
@@ -541,8 +541,8 @@ def batch_update_offers(
         offer_ids = set(raw_offer_ids)
         venue_ids = set(raw_venue_ids)
 
-        offers_count += len(offer_ids)
-        found_venue_ids |= set(venue_ids)
+        updated_offer_ids |= offer_ids
+        found_venue_ids |= venue_ids
 
         query_to_update = db.session.query(models.Offer).filter(models.Offer.id.in_(offer_ids))
         query_to_update.update(update_fields, synchronize_session=False)
@@ -579,23 +579,24 @@ def batch_update_offers(
     else:
         db.session.commit()
 
-    log_extra = {"updated_fields": update_fields, "nb_offers": offers_count, "nb_venues": len(found_venue_ids)}
+    log_extra = {
+        "updated_fields": update_fields,
+        "nb_offers": len(updated_offer_ids),
+        "nb_venues": len(found_venue_ids),
+    }
     logger.info("Batch update of offers: end", extra=log_extra)
+
+    return updated_offer_ids
 
 
 def activate_future_offers(publication_date: datetime.datetime | None = None) -> list[int]:
     offer_query = offers_repository.get_offers_by_publication_date(publication_date=publication_date)
     offer_query = offers_repository.exclude_offers_from_inactive_venue_provider(offer_query)
-
-    # get offers before their update, otherwise the query might return
-    # an empty list (since `publicationDatetime` might be updated)
-    offer_ids = [offer.id for offer in offer_query]
-
     with transaction():
         updates = {"publicationDatetime": datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)}
-        batch_update_offers(offer_query, updates)
+        updated_offer_ids = batch_update_offers(offer_query, updates)
 
-    return offer_ids
+    return list(updated_offer_ids)
 
 
 def activate_future_offers_and_remind_users() -> None:
