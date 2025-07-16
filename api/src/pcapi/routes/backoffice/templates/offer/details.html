@@ -285,6 +285,9 @@
     {# section stocks #}
     <!-- DOWNLOAD BOOKINGS CSV -->
     {% call nav_section("bookings", "Réservations") %}
+      <a href="{{ url_for('backoffice_web.individual_bookings.list_individual_bookings', q=offer.id) }}"
+         class="link-primary">Réservations individuelles</a>
+      <br />
       <span>Choisissez le format pour exporter les réservations&nbsp;:</span>
       <div class="hstack gap-4 py-2">
         <a href="{{ url_for('backoffice_web.offer.download_bookings_csv', offer_id=offer.id) }}"
