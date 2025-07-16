@@ -94,7 +94,7 @@ def download_gdpr_extract(extract_id: int) -> utils.BackofficeResponse:
             object_id=f"{extract.id}.zip",
             bucket=settings.GCP_GDPR_EXTRACT_BUCKET,
         )
-    except object_storage.FileNotFound:
+    except object_storage.backends.base.FileNotFound:
         flash("L'extraction demandée existe mais aucune archive ne lui est associée", "warning")
         return redirect(
             url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract"),

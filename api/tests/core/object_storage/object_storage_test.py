@@ -6,9 +6,7 @@ from google.cloud.exceptions import NotFound
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.object_storage import BACKENDS_MAPPING
-from pcapi.core.object_storage import _check_backend_setting
-from pcapi.core.object_storage import _check_backends_module_paths
+from pcapi.core.object_storage import check_backend_setting
 from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
 
@@ -39,28 +37,16 @@ class CheckBackendSettingTest:
     @pytest.mark.settings(OBJECT_STORAGE_PROVIDER="")
     def test_empty_setting(self):
         with pytest.raises(RuntimeError):
-            _check_backend_setting()
+            check_backend_setting()
 
     @pytest.mark.settings(OBJECT_STORAGE_PROVIDER="local, GCP")
     def test_correct_multi_values(self):
-        _check_backend_setting()
+        check_backend_setting()
 
     @pytest.mark.settings(OBJECT_STORAGE_PROVIDER="AWS")
     def test_unknown_backend(self):
         with pytest.raises(RuntimeError):
-            _check_backend_setting()
-
-
-class CheckBackendsModulePathsTest:
-    @pytest.fixture()
-    def wrong_backend_path(self):
-        BACKENDS_MAPPING["some_backend"] = "pcapi.some_dir.SomeBackend"
-        yield BACKENDS_MAPPING
-        BACKENDS_MAPPING.pop("some_backend")
-
-    def test_wrong_path(self, wrong_backend_path):
-        with pytest.raises(ModuleNotFoundError):
-            _check_backends_module_paths()
+            check_backend_setting()
 
 
 class DeletePublicObjectTest:

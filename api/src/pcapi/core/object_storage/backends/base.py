@@ -1,3 +1,7 @@
+class FileNotFound(Exception):
+    pass
+
+
 class BaseBackend:
     def __init__(
         self,
