@@ -383,7 +383,6 @@ function goToOffererCreation(login: string) {
   logInAndGoToPage(login, '/')
 
   cy.stepLog({ message: 'I start offerer creation' })
-  cy.findByText('Commencer').click()
 }
 
 function siretInterceptionPayload(

@@ -18,6 +18,7 @@ import {
   SAVED_OFFERER_ID_KEY,
 } from 'commons/core/shared/constants'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import { useNotification } from 'commons/hooks/useNotification'
 import { updateSelectedOffererId } from 'commons/store/offerer/reducer'
@@ -54,6 +55,8 @@ export const App = (): JSX.Element | null => {
   useLoadFeatureFlags()
   usePageTitle()
   useFocus()
+
+  const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
 
   // This is to force the offerer if the url comes from the BO
   // (without breaking everything else)
@@ -133,7 +136,10 @@ export const App = (): JSX.Element | null => {
     !!currentUser &&
     !currentUser.hasUserOfferer
   ) {
-    return <Navigate to="/parcours-inscription" replace />
+    const url = isNewSignupEnabled
+      ? '/parcours-inscription/structure'
+      : '/parcours-inscription'
+    return <Navigate to={url} replace />
   }
   return (
     <>
