@@ -47,11 +47,14 @@ import {
   getInitialValuesFromVenues,
   getVenuesAsOptions,
   hasMusicType,
-  serializeDetailsPatchData,
-  serializeDetailsPostData,
   setFormReadOnlyFields,
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { getValidationSchema } from 'pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
+
+import {
+  serializeDetailsPatchData,
+  serializeDetailsPostData,
+} from '../commons/serializers'
 
 import { DetailsEanSearch } from './DetailsEanSearch/DetailsEanSearch'
 import { DetailsForm } from './DetailsForm/DetailsForm'
