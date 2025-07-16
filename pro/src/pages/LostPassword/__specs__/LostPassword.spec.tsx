@@ -43,7 +43,9 @@ describe('LostPassword', () => {
 
       // he has been redirected to next step
       await waitFor(() => {
-        expect(screen.getByText(/Merci/)).toBeInTheDocument()
+        expect(
+          screen.getByText(/Validez votre adresse email/)
+        ).toBeInTheDocument()
       })
     })
 
@@ -57,7 +59,9 @@ describe('LostPassword', () => {
 
       it('should display the right texts without the FF', async () => {
         renderLostPassword()
-        expect(screen.getByText('Mot de passe oublié ?')).toBeInTheDocument()
+        expect(
+          screen.getByText('Réinitialisez votre mot de passe')
+        ).toBeInTheDocument()
         expect(
           screen.getByText(
             'Indiquez ci-dessous l’adresse email avec laquelle vous avez créé votre compte.'
@@ -76,13 +80,17 @@ describe('LostPassword', () => {
         await userEvent.click(screen.getByText(/Valider/))
 
         await waitFor(() => {
-          expect(screen.getByText(/Merci/)).toBeInTheDocument()
+          expect(
+            screen.getByText(/Validez votre adresse email/)
+          ).toBeInTheDocument()
         })
       })
 
       it('should display the right texts with the FF', async () => {
         renderLostPassword(['WIP_2025_SIGN_UP']) // ggignore
-        expect(screen.getByText('Mot de passe oublié')).toBeInTheDocument()
+        expect(
+          screen.getByText('Réinitialisez votre mot de passe')
+        ).toBeInTheDocument()
         expect(
           screen.getByText(
             'Entrez votre email pour recevoir un lien de réinitialisation.'
@@ -99,7 +107,7 @@ describe('LostPassword', () => {
         await userEvent.click(screen.getByText(/Réinitialiser/))
         await waitFor(() => {
           expect(
-            screen.getByText(/Vous allez recevoir un email !/)
+            screen.getByText(/Vous allez recevoir un email/)
           ).toBeInTheDocument()
         })
       })

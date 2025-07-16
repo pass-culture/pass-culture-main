@@ -135,11 +135,7 @@ export const SignIn = (): JSX.Element => {
   ) : (
     <Layout
       layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}
-      mainHeading={
-        is2025SignUpEnabled
-          ? 'Connexion'
-          : 'Bienvenue sur l’espace partenaires culturels'
-      }
+      mainHeading="Connectez-vous"
     >
       <MandatoryInfo areAllFieldsMandatory={true} />
       <FormProvider {...hookForm}>

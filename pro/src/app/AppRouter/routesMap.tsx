@@ -58,7 +58,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () => import('pages/Signup/Signup'),
     path: '/inscription',
-    title: 'Créer un compte',
+    title: 'Créez votre compte',
     meta: { public: true },
     children: routesSignup,
   },
@@ -91,7 +91,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () => import('pages/SignIn/SignIn'),
     path: '/connexion',
-    title: 'Se connecter',
+    title: 'Connectez-vous',
     meta: { public: true },
   },
   {
@@ -340,13 +340,13 @@ export const routes: RouteConfig[] = [
   {
     lazy: () => import('pages/ResetPassword/ResetPassword'),
     path: '/demande-mot-de-passe/:token',
-    title: 'Définir un nouveau mot de passe',
+    title: 'Réinitialisez votre mot de passe',
     meta: { public: true },
   },
   {
     lazy: () => import('pages/LostPassword/LostPassword'),
     path: '/demande-mot-de-passe',
-    title: 'Demander un nouveau mot de passe',
+    title: 'Réinitialisez votre mot de passe',
     meta: { public: true },
   },
   {

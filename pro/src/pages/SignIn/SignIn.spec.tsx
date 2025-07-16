@@ -107,7 +107,9 @@ describe('SignIn', () => {
     expect(screen.getByLabelText('Mot de passe')).toBeInTheDocument()
     expect(screen.getByText('Se connecter')).toBeInTheDocument()
     expect(screen.getByText('Créer un compte')).toBeInTheDocument()
-    expect(screen.getByText('Mot de passe oublié ?')).toBeInTheDocument()
+    expect(
+      screen.getByText('Réinitialisez votre mot de passe')
+    ).toBeInTheDocument()
     expect(
       screen.getByText('Consulter nos recommandations de sécurité')
     ).toHaveAttribute(
@@ -317,7 +319,7 @@ describe('SignIn', () => {
 
       await userEvent.click(
         screen.getByRole('link', {
-          name: 'Mot de passe oublié ?',
+          name: 'Réinitialisez votre mot de passe',
         })
       )
       expect(mockLogEvent).toHaveBeenCalledTimes(1)

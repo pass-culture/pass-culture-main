@@ -45,7 +45,7 @@ describe('src | components | pages | Signup', () => {
     })
 
     expect(
-      screen.getByRole('heading', { name: /Créer votre compte/ })
+      screen.getByRole('heading', { name: /Créez votre compte/ })
     ).toBeInTheDocument()
 
     expect(screen.getByLabelText(/Nom/)).toBeInTheDocument()
