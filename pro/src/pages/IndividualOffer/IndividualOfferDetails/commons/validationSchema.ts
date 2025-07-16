@@ -62,7 +62,7 @@ export const getValidationSchema = ({
       then: (schema) =>
         schema.required('Veuillez sélectionner un type de spectacle'),
     }),
-    showSubType: yup.string().when(['subcategoryConditionalFields'], {
+    showSubType: yup.string().when('subcategoryConditionalFields', {
       is: (subcategoryConditionalFields: string[]) =>
         subcategoryConditionalFields.includes('showType'),
       then: (schema) =>

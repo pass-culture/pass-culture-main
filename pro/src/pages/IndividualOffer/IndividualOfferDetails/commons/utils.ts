@@ -20,22 +20,6 @@ import {
   SetDefaultInitialValuesFromOfferProps,
 } from './types'
 
-export const serializeDurationMinutes = (
-  durationHour: string
-): number | undefined => {
-  /* istanbul ignore next: DEBT, TO FIX */
-  if (durationHour.trim().length === 0) {
-    return undefined
-  }
-
-  /* istanbul ignore next: DEBT, TO FIX */
-  const [hours, minutes] = durationHour
-    .split(':')
-    .map((s: string) => parseInt(s, 10))
-
-  return minutes + hours * 60
-}
-
 export const isSubCategoryCD = (subcategoryId: string): boolean => {
   return subcategoryId === SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD
 }
