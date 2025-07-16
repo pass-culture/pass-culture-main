@@ -5,6 +5,7 @@ import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHel
 import { weekDays } from '../constants'
 import {
   DurationTypeOption,
+  MonthlyOption,
   RecurrenceFormValues,
   RecurrenceType,
   StocksCalendarFormValues,
@@ -44,6 +45,19 @@ describe('validationSchema', () => {
       expectedErrors: [],
     },
     {
+      description: 'valid form for monthly recurrence',
+      formValues: {
+        ...baseValidForm,
+        recurrenceType: RecurrenceType.MONTHLY,
+        startingDate: new Date().toISOString(),
+        endingDate: new Date(
+          new Date().setMonth(new Date().getMonth() + 1)
+        ).toISOString(),
+        monthlyOption: MonthlyOption.BY_LAST_DAY,
+      },
+      expectedErrors: [],
+    },
+    {
       description: 'missing required fields for unique date',
       formValues: {
         ...baseValidForm,
@@ -62,6 +76,21 @@ describe('validationSchema', () => {
         'Veuillez renseigner un horaire',
         'Veuillez indiquer un nombre supérieur à 0',
         'Veuillez renseigner un tarif',
+      ],
+    },
+    {
+      description: 'missing required fields for monthly recurrence',
+      formValues: {
+        ...baseValidForm,
+        recurrenceType: RecurrenceType.MONTHLY,
+        startingDate: '',
+        endingDate: '',
+        monthlyOption: null,
+      },
+      expectedErrors: [
+        'Veuillez renseigner une date de début',
+        'Veuillez renseigner une date de fin',
+        'Veuillez choisir une option',
       ],
     },
     {

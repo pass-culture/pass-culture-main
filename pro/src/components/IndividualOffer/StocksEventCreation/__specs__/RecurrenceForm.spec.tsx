@@ -141,6 +141,68 @@ describe('RecurrenceForm', () => {
     expect(screen.getByLabelText('Dimanche')).toBeInTheDocument()
   })
 
+  it('should render for monthly recurrence', async () => {
+    renderRecurrenceForm()
+
+    await userEvent.click(screen.getByLabelText('Tous les mois'))
+
+    expect(screen.getByLabelText(/premier évènement le/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/fin de la récurrence/i)).toBeInTheDocument()
+    expect(
+      screen.getByLabelText(/détail de la récurrence/i)
+    ).toBeInTheDocument()
+  })
+
+  it.each([
+    {
+      label: /premier évènement le/i,
+      errorMessage: 'Veuillez renseigner une date de début',
+    },
+    {
+      label: /fin de la récurrence/i,
+      errorMessage: 'Veuillez renseigner une date de fin',
+    },
+  ])(
+    'should handle error messages for monthly recurrence date inputs: %s',
+    async (data) => {
+      const { label, errorMessage } = data
+      renderRecurrenceForm()
+
+      await userEvent.click(screen.getByLabelText('Tous les mois'))
+
+      await userEvent.click(screen.getByLabelText(label))
+      await userEvent.tab()
+
+      expect(screen.getByText(errorMessage)).toBeInTheDocument()
+
+      await userEvent.type(
+        screen.getByLabelText(label),
+        format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
+      )
+
+      expect(screen.queryByText(errorMessage)).not.toBeInTheDocument()
+    }
+  )
+
+  it('should handle error messages for monthly recurrence details', async () => {
+    renderRecurrenceForm()
+
+    await userEvent.click(screen.getByLabelText('Tous les mois'))
+    await userEvent.click(screen.getByLabelText(/détail de la récurrence/i))
+    await userEvent.tab()
+
+    expect(screen.getByText('Veuillez choisir une option')).toBeInTheDocument()
+
+    await userEvent.selectOptions(
+      screen.getByLabelText(/détail de la récurrence/i),
+      'BY_FIRST_DAY'
+    )
+
+    expect(
+      screen.queryByText('Veuillez choisir une option')
+    ).not.toBeInTheDocument()
+  })
+
   it('should not log an event when the limit date is updated but the value is the same as the initial value', async () => {
     renderRecurrenceForm(defaultProps)
 
