@@ -51,6 +51,7 @@ class UbbleDocument(pydantic_v1.BaseModel):
     full_name: str
     last_name: str | None
     birth_date: datetime.date | None
+    birth_place: str | None
     document_type: str | None
     document_number: str | None
     gender: users_models.GenderEnum | None
@@ -115,6 +116,7 @@ def convert_identification_to_ubble_content(
     content = fraud_models.UbbleContent(
         applicant_id=identification.applicant_id,
         birth_date=getattr(document, "birth_date", None),
+        birth_place=getattr(document, "birth_place", None),
         document_type=getattr(document, "document_type", None),
         external_applicant_id=identification.external_applicant_id,
         first_name=first_name,

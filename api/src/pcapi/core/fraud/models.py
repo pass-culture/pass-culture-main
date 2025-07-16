@@ -389,6 +389,7 @@ UBBLE_REASON_CODE_MAPPING = {
 class UbbleContent(common_models.IdentityCheckContent):
     applicant_id: str | None = None
     birth_date: datetime.date | None = None
+    birth_place: str | None = None
     comment: str | None = None
     document_type: str | None = None
     expiry_date_score: float | None = None
@@ -422,6 +423,9 @@ class UbbleContent(common_models.IdentityCheckContent):
 
     def get_birth_date(self) -> datetime.date | None:
         return self.birth_date
+
+    def get_birth_place(self) -> str | None:
+        return self.birth_place
 
     def get_registration_datetime(self) -> datetime.datetime | None:
         return (
