@@ -51,7 +51,7 @@ class AllocineStocks(LocalProvider):
         super().__init__(allocine_venue_provider)
         self.venue = allocine_venue_provider.venue
         self.theater_id = allocine_venue_provider.venueIdAtOfferProvider
-        self.movies_showtimes = get_movies_showtimes(self.theater_id)
+        self.movies_showtimes = get_movies_showtimes(self.theater_id, enable_debug=enable_debug)
         self.isDuo = allocine_venue_provider.isDuo
         self.quantity = allocine_venue_provider.quantity
         self.room_internal_id = allocine_venue_provider.internalId

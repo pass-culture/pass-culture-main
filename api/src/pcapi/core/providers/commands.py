@@ -28,7 +28,7 @@ def debug_synchronize_venue_provider(venue_provider_id: int) -> None:
     """
     Start synchronize_venue_provider with `enable_debug=True` to log all the calls made to the external provider API
 
-    /!\ For now, it only works with Boost, CGR & CDS providers
+    /!\ For now, it only works with Allocine, Boost, CGR & CDS providers
     """
     venue_provider = db.session.query(providers_models.VenueProvider).filter_by(id=venue_provider_id).one()
     provider_manager.synchronize_venue_provider(venue_provider=venue_provider, enable_debug=True)
