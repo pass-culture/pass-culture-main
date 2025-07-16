@@ -19,6 +19,7 @@ from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
@@ -57,6 +58,7 @@ def bookings_fixture() -> tuple:
         stock__offer__isDuo=True,
         stock__offer__name="Guide du Routard Sainte-Hélène",
         stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+        stock__offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
         validationAuthorType=bookings_models.BookingValidationAuthorType.BACKOFFICE,
     )
@@ -156,6 +158,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert f"Date de validation : {datetime.date.today().strftime('%d/%m/%Y')} à " in extra_data
         assert "Date limite de réservation" not in extra_data
         assert "Date d'annulation" not in extra_data
+        assert "Modalités de retrait : Dans l'app" in extra_data
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, 1)
 

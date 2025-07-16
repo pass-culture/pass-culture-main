@@ -14,6 +14,7 @@
         <th scope="col">État</th>
         {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}<th scope="col">Fraude</th>{% endif %}
         <th scope="col">Contremarque</th>
+        <th scope="col">Modalités de retrait</th>
       </tr>
     </thead>
     <tbody>
@@ -35,6 +36,7 @@
           <td>
             {% if booking.token %}{{ links.build_booking_token_to_booking_details_link(booking.token) }}{% endif %}
           </td>
+          <td>{{ booking.stock.offer.withdrawalType | format_withdrawal_type }}</td>
         </tr>
         <tr class="collapse accordion-collapse pc-booking-{{ booking.id }}"
             data-bs-parent=".table">

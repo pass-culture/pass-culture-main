@@ -84,6 +84,7 @@ def _get_individual_bookings(
                 offers_models.Offer.name,
                 offers_models.Offer.isDuo,
                 offers_models.Offer.subcategoryId,
+                offers_models.Offer.withdrawalType,
             ),
             sa_orm.joinedload(bookings_models.Booking.user).load_only(
                 users_models.User.id,

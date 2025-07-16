@@ -612,6 +612,22 @@ def format_validation_status(status: validation_status_mixin.ValidationStatus) -
             return status.value
 
 
+def format_withdrawal_type(withdrawal_type: offers_models.WithdrawalTypeEnum | None) -> str:
+    match withdrawal_type:
+        case offers_models.WithdrawalTypeEnum.BY_EMAIL:
+            return "Par email"
+        case offers_models.WithdrawalTypeEnum.IN_APP:
+            return "Dans l'app"
+        case offers_models.WithdrawalTypeEnum.NO_TICKET:
+            return "Sans ticket"
+        case offers_models.WithdrawalTypeEnum.ON_SITE:
+            return "Sur place"
+        case None:
+            return ""
+        case _:
+            return withdrawal_type.value
+
+
 def format_badge(text: str, category: str = "primary", icon: str | None = None) -> str:
     # Category: primary, secondary, success, danger, warning and info
     span_class = f"badge text-{category} bg-{category}-subtle"
@@ -1902,6 +1918,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_deposit_used"] = format_deposit_used
     app.jinja_env.filters["format_active_deposit"] = format_active_deposit
     app.jinja_env.filters["format_validation_status"] = format_validation_status
+    app.jinja_env.filters["format_withdrawal_type"] = format_withdrawal_type
     app.jinja_env.filters["format_offer_validation_status"] = format_offer_validation_status
     app.jinja_env.filters["format_offer_status"] = format_offer_status
     app.jinja_env.filters["format_collective_offer_displayed_status"] = format_collective_offer_displayed_status
