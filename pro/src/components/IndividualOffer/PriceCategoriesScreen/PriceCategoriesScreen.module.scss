@@ -25,8 +25,9 @@
   padding: 0;
   height: fit-content;
   margin-top: calc(
-    forms.$input-label-min-height + forms.$label-small-space-before-input +
-      (size.$input-min-height / 2) - (rem.torem(24px) / 2)
+    #{var(--typography-body-line-height)} + #{forms.$label-space-before-input} +
+      #{var(--typography-body-xs-line-height)} + rem.torem(4px) +
+      (#{size.$input-min-height} - #{size.$button-icon-size}) / 2
   );
 
   &-svg {
@@ -55,14 +56,6 @@
       min-height: forms.$input-label-min-height;
       margin-bottom: forms.$label-small-space-before-input !important;
     }
-  }
-
-  .delete-icon {
-    margin-top: calc(
-      forms.$label-space-before-input + forms.$input-description-min-height +
-        forms.$input-label-min-height + forms.$label-small-space-before-input +
-        (size.$input-min-height / 2) - (rem.torem(16px) / 2)
-    );
   }
 
   .form-layout-row-price-category:nth-child(odd) {

@@ -1,3 +1,4 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
@@ -21,7 +22,6 @@ import {
   INITIAL_PRICE_CATEGORY,
   PRICE_CATEGORY_LABEL_MAX_LENGTH,
   PRICE_CATEGORY_MAX_LENGTH,
-  PRICE_CATEGORY_PRICE_MAX,
   UNIQUE_PRICE,
 } from 'components/IndividualOffer/PriceCategoriesScreen/form/constants'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -35,6 +35,7 @@ import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { PriceInput } from 'ui-kit/form/PriceInput/PriceInput'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
+import { validationSchema } from '../PriceCategoriesScreen/form/validationSchema'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import { computeInitialValues } from './form/computeInitialValues'
@@ -128,6 +129,7 @@ export const PriceCategoriesScreen = ({
   const defaultValues = computeInitialValues(offer)
   const hookForm = useForm({
     defaultValues,
+    resolver: yupResolver(validationSchema),
     mode: 'onBlur',
   })
 
@@ -139,7 +141,7 @@ export const PriceCategoriesScreen = ({
     reset,
     watch,
     control,
-    formState: { isDirty, isSubmitting },
+    formState: { errors, isDirty, isSubmitting },
   } = hookForm
 
   const { fields, append, remove } = useFieldArray({
@@ -150,7 +152,7 @@ export const PriceCategoriesScreen = ({
   const priceCategories = watch('priceCategories')
 
   const onSubmit = async () => {
-    const values = getValues()
+    const values = { ...getValues(), isDuo: getValues().isDuo ?? false }
     const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
       step:
@@ -254,7 +256,9 @@ export const PriceCategoriesScreen = ({
     }
 
     if (priceCategories.length === 2) {
-      setValue(`priceCategories.0.label`, UNIQUE_PRICE)
+      setValue(`priceCategories.0.label`, UNIQUE_PRICE, {
+        shouldValidate: true,
+      })
       const otherPriceCategory = priceCategories.filter(
         (pC) => pC.id !== priceCategoryId
       )
@@ -327,7 +331,7 @@ export const PriceCategoriesScreen = ({
                   </legend>
                   <FormLayout.Row
                     inline
-                    smSpaceAfter
+                    mdSpaceAfter
                     className={styles['form-layout-row-price-category']}
                   >
                     <TextInput
@@ -336,17 +340,21 @@ export const PriceCategoriesScreen = ({
                       label="Intitulé du tarif"
                       description="Par exemple : catégorie 2, moins de 18 ans, pass 3 jours..."
                       maxLength={PRICE_CATEGORY_LABEL_MAX_LENGTH}
-                      count={field.price.toString().length}
+                      count={priceCategories[index]?.label.length}
                       className={styles['label-input']}
                       labelClassName={styles['label-input-label']}
                       disabled={priceCategories.length <= 1 || isDisabled}
+                      error={
+                        errors.priceCategories?.[index]?.label?.message ||
+                        errors.priceCategories?.[index]?.price?.message
+                      }
+                      autoComplete="off"
                     />
                     <PriceInput
                       {...register(`priceCategories.${index}.price`)}
                       className={styles['price-input']}
                       name={`priceCategories.${index}.price`}
                       label="Prix par personne"
-                      max={PRICE_CATEGORY_PRICE_MAX}
                       rightIcon={strokeEuroIcon}
                       disabled={isDisabled}
                       showFreeCheckbox
@@ -355,10 +363,13 @@ export const PriceCategoriesScreen = ({
                       updatePriceValue={(value) =>
                         setValue(
                           `priceCategories.${index}.price`,
-                          parseFloat(value)
+                          parseFloat(value),
+                          { shouldValidate: true }
                         )
                       }
+                      error={errors.priceCategories?.[index]?.price?.message}
                     />
+
                     {mode === OFFER_WIZARD_MODE.CREATION && (
                       <Button
                         className={styles['delete-icon']}
@@ -388,7 +399,9 @@ export const PriceCategoriesScreen = ({
                 onClick={() => {
                   append(INITIAL_PRICE_CATEGORY)
                   if (priceCategories[0].label === UNIQUE_PRICE) {
-                    setValue(`priceCategories.0.label`, '')
+                    setValue(`priceCategories.0.label`, '', {
+                      shouldValidate: true,
+                    })
                   }
                 }}
                 disabled={
