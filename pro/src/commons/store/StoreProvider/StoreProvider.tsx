@@ -57,14 +57,26 @@ export const StoreProvider = ({
             ? Number(savedOffererId)
             : firstOffererId
         }
-        const offererObj = await getOffererData(
-          offererIdToUse,
-          currentOfferer,
-          () => api.getOfferer(offererIdToUse)
-        )
-        dispatch(updateCurrentOfferer(offererObj))
-        dispatch(updateOffererNames(response.offerersNames))
+
+        try {
+          const offererObj = await getOffererData(
+            offererIdToUse,
+            currentOfferer,
+            () => api.getOfferer(offererIdToUse)
+          )
+          dispatch(updateCurrentOfferer(offererObj))
+          dispatch(updateOffererNames(response.offerersNames))
+        } catch {
+          dispatch(
+            // TODO: Find a better way with the Product team to handle this behavior
+            // @ts-expect-error: This is because updateCurrentOfferer() expects its argument to be a full offerer object (which we can't have here because the API will returns a 404 for an offerer awaiting rattachment)
+            updateCurrentOfferer({
+              id: offererIdToUse,
+            })
+          )
+        }
       } catch {
+        // In any other case, it's a normal error
         dispatch(updateCurrentOfferer(null))
       }
     }
