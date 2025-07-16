@@ -47,8 +47,7 @@ import {
   getInitialValuesFromVenues,
   getVenuesAsOptions,
   hasMusicType,
-  setFormReadOnlyFields,
-} from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
+ getFormReadOnlyFields } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { getValidationSchema } from 'pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
 
 import {
@@ -115,6 +114,7 @@ export const IndividualOfferDetailsScreen = ({
     : getInitialValuesFromOffer({
         offer,
         subcategories: subCategories,
+        isNewOfferCreationFlowFeatureActive,
       })
 
   const form = useForm<DetailsFormValues>({
@@ -237,7 +237,11 @@ export const IndividualOfferDetailsScreen = ({
     }
   }
 
-  const readOnlyFields = setFormReadOnlyFields(offer, isProductBased)
+  const readOnlyFields = getFormReadOnlyFields(
+    offer,
+    isProductBased,
+    isNewOfferCreationFlowFeatureActive
+  )
 
   const isEanSearchAvailable =
     isRecordStore(venues) &&

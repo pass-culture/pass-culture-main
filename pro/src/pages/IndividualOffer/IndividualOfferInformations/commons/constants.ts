@@ -10,8 +10,8 @@ export const DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES: UsefulInformationFormVal
     isNational: false,
     bookingContact: '',
     withdrawalDetails: '',
-    withdrawalType: SUBCATEGORIES_FIELDS_DEFAULT_VALUES['withdrawalType'],
-    withdrawalDelay: SUBCATEGORIES_FIELDS_DEFAULT_VALUES['withdrawalDelay'],
+    withdrawalType: SUBCATEGORIES_FIELDS_DEFAULT_VALUES.withdrawalType,
+    withdrawalDelay: SUBCATEGORIES_FIELDS_DEFAULT_VALUES.withdrawalDelay,
     receiveNotificationEmails: false,
     bookingEmail: '',
     accessibility: {

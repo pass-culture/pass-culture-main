@@ -5,10 +5,10 @@ import {
 } from 'apiClient/v1'
 import {
   getIndividualOfferFactory,
-  getOfferVenueFactory,
   subcategoryFactory,
   venueListItemFactory,
 } from 'commons/utils/factories/individualApiFactories'
+import { offerVenueFactory } from 'commons/utils/factories/venueFactories'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
 import {
@@ -21,7 +21,8 @@ import {
   getInitialValuesFromVenues,
   getVenuesAsOptions,
   getInitialValuesFromOffer,
-  setFormReadOnlyFields,
+  getFormReadOnlyFields,
+  getAccessibilityFormValuesFromOffer,
 } from '../utils'
 
 describe('hasMusicType', () => {
@@ -246,38 +247,98 @@ describe('getVenuesAsOptions', () => {
 })
 
 describe('getInitialValuesFromOffer', () => {
-  it('should get the expected initial values from an offer', () => {
-    expect(
-      getInitialValuesFromOffer({
-        offer: getIndividualOfferFactory(
-          {
-            subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
-          },
-          getOfferVenueFactory({ id: 6 })
-        ),
-        subcategories: [
-          subcategoryFactory({ id: SubcategoryIdEnum.SEANCE_CINE }),
-        ],
+  describe('without Feature Flag', () => {
+    const isNewOfferCreationFlowFeatureActive = false
+
+    it('should get the expected initial values from an offer', () => {
+      const offer = getIndividualOfferFactory({
+        subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
+        venue: offerVenueFactory({ id: 6 }),
       })
-    ).toStrictEqual({
-      author: 'Chuck Norris',
-      categoryId: 'A',
-      description: '',
-      durationMinutes: '',
-      ean: '1234567891234',
-      gtl_id: '',
-      name: 'Le nom de l’offre 1',
-      performer: 'Le Poing de Chuck',
-      showSubType: 'PEGI 18',
-      showType: 'Cinéma',
-      speaker: "Chuck Norris n'a pas besoin de doubleur",
-      stageDirector: 'JCVD',
-      subcategoryConditionalFields: [],
-      subcategoryId: 'SEANCE_CINE',
-      venueId: '6',
-      visa: 'USA',
-      productId: '',
-      url: undefined,
+      const subcategories = [
+        subcategoryFactory({ id: SubcategoryIdEnum.SEANCE_CINE }),
+      ]
+
+      const result = getInitialValuesFromOffer({
+        offer,
+        subcategories,
+        isNewOfferCreationFlowFeatureActive,
+      })
+
+      expect(result).toStrictEqual({
+        author: 'Chuck Norris',
+        categoryId: 'A',
+        description: '',
+        durationMinutes: '',
+        ean: '1234567891234',
+        gtl_id: '',
+        name: 'Le nom de l’offre 1',
+        performer: 'Le Poing de Chuck',
+        showSubType: 'PEGI 18',
+        showType: 'Cinéma',
+        speaker: "Chuck Norris n'a pas besoin de doubleur",
+        stageDirector: 'JCVD',
+        subcategoryConditionalFields: [],
+        subcategoryId: 'SEANCE_CINE',
+        venueId: '6',
+        visa: 'USA',
+        productId: '',
+        url: undefined,
+      })
+    })
+  })
+
+  describe('with Feature Flag', () => {
+    const isNewOfferCreationFlowFeatureActive = true
+
+    it('should get the expected initial values from an offer with accessibility', () => {
+      const offer = getIndividualOfferFactory({
+        id: 1,
+        name: 'Le nom de l’offre 1',
+        audioDisabilityCompliant: true,
+        mentalDisabilityCompliant: false,
+        motorDisabilityCompliant: true,
+        subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
+        venue: offerVenueFactory({ id: 6 }),
+        visualDisabilityCompliant: false,
+      })
+      const subcategories = [
+        subcategoryFactory({ id: SubcategoryIdEnum.SEANCE_CINE }),
+      ]
+
+      const result = getInitialValuesFromOffer({
+        offer,
+        subcategories,
+        isNewOfferCreationFlowFeatureActive,
+      })
+
+      expect(result).toStrictEqual({
+        author: 'Chuck Norris',
+        categoryId: 'A',
+        description: '',
+        durationMinutes: '',
+        ean: '1234567891234',
+        gtl_id: '',
+        name: 'Le nom de l’offre 1',
+        performer: 'Le Poing de Chuck',
+        showSubType: 'PEGI 18',
+        showType: 'Cinéma',
+        speaker: "Chuck Norris n'a pas besoin de doubleur",
+        stageDirector: 'JCVD',
+        subcategoryConditionalFields: [],
+        subcategoryId: 'SEANCE_CINE',
+        venueId: '6',
+        visa: 'USA',
+        productId: '',
+        url: undefined,
+        accessibility: {
+          audio: true,
+          mental: false,
+          motor: true,
+          none: false,
+          visual: false,
+        },
+      })
     })
   })
 })
@@ -396,64 +457,122 @@ describe('getInitialValuesFromVenues', () => {
   })
 })
 
-describe('setFormReadOnlyFields', () => {
-  it('should disable all fields except venue when an ean search filled the form and offer is not yet created', () => {
-    const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES).filter(
-      (key) => key !== 'venueId'
-    )
+describe('getFormReadOnlyFields', () => {
+  describe('without Feature Flag', () => {
+    const isNewOfferCreationFlowFeatureActive = false
 
-    expect(setFormReadOnlyFields(null, true)).toStrictEqual(expectedValues)
-  })
-
-  it('should disable all field when offer has been created and was created by ean', () => {
-    const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
-
-    expect(
-      setFormReadOnlyFields(getIndividualOfferFactory({ productId: 1 }), true)
-    ).toStrictEqual(expectedValues)
-  })
-
-  it('should not disable fields when there is no offer and no ean search was performed', () => {
-    expect(setFormReadOnlyFields(null)).toStrictEqual([])
-  })
-
-  it('should disable category/subcategory/venue fields when updating a regular offer', () => {
-    expect(setFormReadOnlyFields(getIndividualOfferFactory({}))).toStrictEqual([
-      'categoryId',
-      'subcategoryId',
-      'venueId',
-    ])
-  })
-
-  it('should disable all fields when there offer is rejected or pending', () => {
-    const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
-
-    expect(
-      setFormReadOnlyFields(
-        getIndividualOfferFactory({
-          status: OfferStatus.REJECTED,
-        })
+    it('should disable all fields except venue when an ean search filled the form and offer is not yet created', () => {
+      const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES).filter(
+        (key) => key !== 'venueId'
       )
-    ).toStrictEqual(expectedValues)
 
-    expect(
-      setFormReadOnlyFields(
-        getIndividualOfferFactory({
-          status: OfferStatus.PENDING,
-        })
-      )
-    ).toStrictEqual(expectedValues)
+      expect(
+        getFormReadOnlyFields(null, true, isNewOfferCreationFlowFeatureActive)
+      ).toStrictEqual(expectedValues)
+    })
+
+    it('should disable all field when offer has been created and was created by ean', () => {
+      const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
+
+      expect(
+        getFormReadOnlyFields(
+          getIndividualOfferFactory({ productId: 1 }),
+          true,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).toStrictEqual(expectedValues)
+    })
+
+    it('should not disable fields when there is no offer and no ean search was performed', () => {
+      expect(
+        getFormReadOnlyFields(null, false, isNewOfferCreationFlowFeatureActive)
+      ).toStrictEqual([])
+    })
+
+    it('should disable category/subcategory/venue fields when updating a regular offer', () => {
+      expect(
+        getFormReadOnlyFields(
+          getIndividualOfferFactory({}),
+          false,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).toStrictEqual(['categoryId', 'subcategoryId', 'venueId'])
+    })
+
+    it('should disable all fields when there offer is rejected or pending', () => {
+      const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
+
+      expect(
+        getFormReadOnlyFields(
+          getIndividualOfferFactory({
+            status: OfferStatus.REJECTED,
+          }),
+          false,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).toStrictEqual(expectedValues)
+
+      expect(
+        getFormReadOnlyFields(
+          getIndividualOfferFactory({
+            status: OfferStatus.PENDING,
+          }),
+          false,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).toStrictEqual(expectedValues)
+    })
+
+    it('should disable all fields for provided offers', () => {
+      const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
+
+      expect(
+        getFormReadOnlyFields(
+          getIndividualOfferFactory({
+            lastProvider: { name: 'provider' },
+          }),
+          false,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).toStrictEqual(expectedValues)
+    })
+  })
+})
+
+describe('getAccessibilityFormValuesFromOffer', () => {
+  it('should coerce all flags to false and set none as true when flags are all false, null or undefined', () => {
+    const offer = getIndividualOfferFactory({
+      audioDisabilityCompliant: null,
+      mentalDisabilityCompliant: undefined,
+      motorDisabilityCompliant: false,
+      visualDisabilityCompliant: false,
+    })
+
+    expect(getAccessibilityFormValuesFromOffer(offer)).toEqual({
+      audio: false,
+      mental: false,
+      motor: false,
+      visual: false,
+      none: true,
+    })
   })
 
-  it('should disable all fields for provided offers', () => {
-    const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
+  it('should return correct flags and set none as false when any flags is true', () => {
+    const offer = getIndividualOfferFactory({
+      audioDisabilityCompliant: false,
+      mentalDisabilityCompliant: true,
+      motorDisabilityCompliant: false,
+      visualDisabilityCompliant: false,
+    })
 
-    expect(
-      setFormReadOnlyFields(
-        getIndividualOfferFactory({
-          lastProvider: { name: 'provider' },
-        })
-      )
-    ).toStrictEqual(expectedValues)
+    const result = getAccessibilityFormValuesFromOffer(offer)
+
+    expect(result).toEqual({
+      audio: false,
+      mental: true,
+      motor: false,
+      visual: false,
+      none: false,
+    })
   })
 })

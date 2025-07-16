@@ -122,7 +122,7 @@ export const DetailsForm = ({
     <>
       <FormLayout.Section title="À propos de votre offre">
         {showAddVenueBanner && (
-          <FormLayout.Row className={styles['row']}>
+          <FormLayout.Row className={styles.row}>
             <Callout
               links={[
                 {
@@ -143,7 +143,7 @@ export const DetailsForm = ({
         {!showAddVenueBanner && (
           <>
             {venuesOptions.length > 1 && (
-              <FormLayout.Row className={styles['row']}>
+              <FormLayout.Row className={styles.row}>
                 <Select
                   label="Qui propose l’offre ?"
                   options={venuesOptions}
@@ -161,7 +161,7 @@ export const DetailsForm = ({
                 />
               </FormLayout.Row>
             )}
-            <FormLayout.Row className={styles['row']}>
+            <FormLayout.Row className={styles.row}>
               <TextInput
                 count={watch('name').length}
                 label="Titre de l’offre"
@@ -174,7 +174,7 @@ export const DetailsForm = ({
             </FormLayout.Row>
             <FormLayout.Row
               sideComponent={<MarkdownInfoBox />}
-              className={styles['row']}
+              className={styles.row}
             >
               <TextArea
                 label="Description"
@@ -186,7 +186,7 @@ export const DetailsForm = ({
             </FormLayout.Row>
             {(categoryStatus === CATEGORY_STATUS.ONLINE ||
               offer?.isDigital) && (
-              <FormLayout.Row className={styles['row']}>
+              <FormLayout.Row className={styles.row}>
                 <TextInput
                   label="URL d’accès à l’offre"
                   type="text"
@@ -224,7 +224,7 @@ export const DetailsForm = ({
           readOnlyFields={readOnlyFields}
         />
       )}
-      {isNewOfferCreationFlowFeatureActive && !!accessibilityOptionsGroups && (
+      {isNewOfferCreationFlowFeatureActive && accessibilityOptionsGroups && (
         <FormLayout.Section title="Modalités d’accessibilité">
           <FormLayout.Row>
             <CheckboxGroup
