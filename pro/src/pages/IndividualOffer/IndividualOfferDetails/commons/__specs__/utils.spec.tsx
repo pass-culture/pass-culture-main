@@ -1,4 +1,8 @@
-import { OfferStatus, SubcategoryIdEnum } from 'apiClient/v1'
+import {
+  OfferStatus,
+  SubcategoryIdEnum,
+  type VenueListItemResponseModel,
+} from 'apiClient/v1'
 import {
   getIndividualOfferFactory,
   getOfferVenueFactory,
@@ -17,6 +21,7 @@ import {
   serializeDetailsPostData,
   serializeDurationMinutes,
   filterAvailableVenues,
+  getInitialValuesFromVenues,
   getVenuesAsOptions,
   serializeExtraData,
   getInitialValuesFromOffer,
@@ -152,58 +157,6 @@ describe('buildSubcategoryFields', () => {
   })
 })
 
-// Temporarely kept in this refactoring commit for non-breaking changes check
-describe('formatVenuesOptions (split into `getVenuesAsOptions` and `filterRelevantVenues`)', () => {
-  it('should format venues as options', () => {
-    const formattedVenuesOptions = getVenuesAsOptions(
-      filterAvailableVenues(
-        [
-          venueListItemFactory({ isVirtual: false, id: 10 }),
-          venueListItemFactory({ isVirtual: false, id: 3 }),
-        ],
-        false
-      )
-    )
-
-    expect(formattedVenuesOptions).toEqual(
-      expect.arrayContaining([expect.objectContaining({ value: '10' })])
-    )
-    expect(formattedVenuesOptions).toEqual(
-      expect.arrayContaining([expect.objectContaining({ value: '3' })])
-    )
-  })
-
-  it('should exclude digital venues if a physcal venue is available', () => {
-    const formattedVenuesOptions = getVenuesAsOptions(
-      filterAvailableVenues(
-        [
-          venueListItemFactory({ isVirtual: true, id: 10 }),
-          venueListItemFactory({ isVirtual: false, id: 3 }),
-        ],
-        false
-      )
-    )
-
-    expect(formattedVenuesOptions).not.toEqual(
-      expect.arrayContaining([expect.objectContaining({ value: '10' })])
-    )
-    expect(formattedVenuesOptions).toEqual(
-      expect.arrayContaining([expect.objectContaining({ value: '3' })])
-    )
-
-    const formattedDigitalVenuesOptions = getVenuesAsOptions(
-      filterAvailableVenues(
-        [venueListItemFactory({ isVirtual: true, id: 10 })],
-        true
-      )
-    )
-
-    expect(formattedDigitalVenuesOptions).toEqual(
-      expect.arrayContaining([expect.objectContaining({ value: '10' })])
-    )
-  })
-})
-
 describe('filterAvailableVenues', () => {
   const physicalVenue = venueListItemFactory({
     id: 1,
@@ -329,6 +282,120 @@ describe('getInitialValuesFromOffer', () => {
       visa: 'USA',
       productId: '',
       url: undefined,
+    })
+  })
+})
+
+describe('getInitialValuesFromVenues', () => {
+  describe('without Feature Flag', () => {
+    const isNewOfferCreationFlowFeatureActive = false
+
+    it('should return a `venueId` if only one is available', () => {
+      const venues = [venueListItemFactory({ id: 123 })]
+
+      const initialValuesResult = getInitialValuesFromVenues(
+        venues,
+        isNewOfferCreationFlowFeatureActive
+      )
+
+      expect(initialValuesResult.venueId).toBe('123')
+      expect(initialValuesResult).not.toHaveProperty('accessibility')
+    })
+
+    it('should return an empty `venueId` if multiple are available', () => {
+      const venues = [
+        venueListItemFactory({ id: 1 }),
+        venueListItemFactory({ id: 2 }),
+      ]
+
+      const initialValuesResult = getInitialValuesFromVenues(
+        venues,
+        isNewOfferCreationFlowFeatureActive
+      )
+
+      expect(initialValuesResult.venueId).toBe('')
+      expect(initialValuesResult).not.toHaveProperty('accessibility')
+    })
+
+    it('should return an empty `venueId` if none are available', () => {
+      const venues: VenueListItemResponseModel[] = []
+
+      const initialValuesResult = getInitialValuesFromVenues(
+        venues,
+        isNewOfferCreationFlowFeatureActive
+      )
+
+      expect(initialValuesResult.venueId).toBe('')
+      expect(initialValuesResult).not.toHaveProperty('accessibility')
+    })
+  })
+
+  describe('with Feature Flag', () => {
+    const isNewOfferCreationFlowFeatureActive = true
+
+    it('should return an empty `venueId` and none `accessibility` options if multiple venues are available', () => {
+      const venues = [
+        venueListItemFactory({ id: 1 }),
+        venueListItemFactory({ id: 2 }),
+      ]
+
+      const initialValuesResult = getInitialValuesFromVenues(
+        venues,
+        isNewOfferCreationFlowFeatureActive
+      )
+
+      expect(initialValuesResult.venueId).toBe('')
+      expect(initialValuesResult.accessibility).toEqual({
+        audio: false,
+        visual: false,
+        motor: false,
+        mental: false,
+        none: true,
+      })
+    })
+
+    it('should return an empty `venueId` and none `accessibility` options if no venues are available', () => {
+      const venues: VenueListItemResponseModel[] = []
+
+      const initialValuesResult = getInitialValuesFromVenues(
+        venues,
+        isNewOfferCreationFlowFeatureActive
+      )
+
+      expect(initialValuesResult.venueId).toBe('')
+      expect(initialValuesResult.accessibility).toEqual({
+        audio: false,
+        visual: false,
+        motor: false,
+        mental: false,
+        none: true,
+      })
+    })
+
+    it('should return a default `venueId` and its `accessibility` props if only one venue is available', () => {
+      const venues = [
+        venueListItemFactory({
+          id: 789,
+          audioDisabilityCompliant: true,
+          visualDisabilityCompliant: false,
+          motorDisabilityCompliant: true,
+          mentalDisabilityCompliant: false,
+        }),
+      ]
+
+      const initialValuesResult = getInitialValuesFromVenues(
+        venues,
+        isNewOfferCreationFlowFeatureActive
+      )
+
+      expect(initialValuesResult.venueId).toBe('789')
+      expect(initialValuesResult.accessibility).toEqual({
+        audio: true,
+        visual: false,
+        motor: true,
+        mental: false,
+        none: false,
+      })
     })
   })
 })

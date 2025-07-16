@@ -1,5 +1,7 @@
 import * as yup from 'yup'
 
+import { AccessibilityFormValues } from 'commons/core/shared/types'
+
 import { DetailsFormValues } from './types'
 
 const eanValidation = yup
@@ -9,6 +11,9 @@ const eanValidation = yup
     message: "L'EAN doit être composé de 13 chiffres.",
     test: (ean) => !ean || ean.length === 13,
   })
+
+const isAnyTrue = (values: Record<string, boolean>): boolean =>
+  Object.values(values).includes(true)
 
 // TODO: this regex is subject to backtracking which can lead to "catastrophic backtracking", high memory usage and slow performance
 // we cannot use the yup url validation because we need to allow {} in the url to interpolate some data
@@ -20,8 +25,10 @@ const offerFormUrlRegex = new RegExp(
 
 export const getValidationSchema = ({
   isDigitalOffer = false,
+  isNewOfferCreationFlowFeatureActive,
 }: {
   isDigitalOffer: boolean
+  isNewOfferCreationFlowFeatureActive: boolean
 }) => {
   return yup.object<DetailsFormValues>().shape({
     name: yup.string().trim().max(90).required('Veuillez renseigner un titre'),
@@ -86,6 +93,28 @@ export const getValidationSchema = ({
               url ? url.match(offerFormUrlRegex) !== null : true,
           })
       : yup.string().nullable(),
+
+    accessibility: yup.lazy(
+      () =>
+        isNewOfferCreationFlowFeatureActive
+          ? yup
+              .object<AccessibilityFormValues>()
+              .test({
+                name: 'is-any-true',
+                message:
+                  'Veuillez sélectionner au moins un critère d’accessibilité',
+                test: isAnyTrue,
+              })
+              .shape({
+                mental: yup.boolean().required(),
+                audio: yup.boolean().required(),
+                visual: yup.boolean().required(),
+                motor: yup.boolean().required(),
+                none: yup.boolean().required(),
+              })
+              .required()
+          : yup.mixed<any>().optional() // `any` represents `undefined` here which is impossible to type via yup
+    ),
   })
 }
 

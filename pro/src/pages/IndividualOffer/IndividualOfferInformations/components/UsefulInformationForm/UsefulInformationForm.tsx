@@ -8,6 +8,7 @@ import {
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'commons/core/Finances/constants'
 import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferRefundWarning } from 'components/IndividualOffer/UsefulInformationScreen/UsefulInformationForm/components/OfferRefundWarning'
@@ -55,6 +56,10 @@ export const UsefulInformationForm = ({
   const bookingEmail = watch('bookingEmail')
   const receiveNotificationEmails = watch('receiveNotificationEmails')
   const accessibility = watch('accessibility')
+
+  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
 
   const accessibilityOptionsGroups = useAccessibilityOptions(
     setValue,
@@ -227,19 +232,21 @@ export const UsefulInformationForm = ({
           />
         </FormLayout.Row>
       </FormLayout.Section>
-      <FormLayout.Section title="Modalités d’accessibilité">
-        <FormLayout.Row>
-          <CheckboxGroup
-            name="accessibility"
-            group={accessibilityOptionsGroups}
-            disabled={readOnlyFields.includes('accessibility')}
-            legend="Cette offre est accessible au public en situation de handicap :"
-            onChange={() => trigger('accessibility')}
-            required
-            error={errors.accessibility?.message}
-          />
-        </FormLayout.Row>
-      </FormLayout.Section>
+      {!isNewOfferCreationFlowFeatureActive && (
+        <FormLayout.Section title="Modalités d’accessibilité">
+          <FormLayout.Row>
+            <CheckboxGroup
+              name="accessibility"
+              group={accessibilityOptionsGroups}
+              disabled={readOnlyFields.includes('accessibility')}
+              legend="Cette offre est accessible au public en situation de handicap :"
+              onChange={() => trigger('accessibility')}
+              required
+              error={errors.accessibility?.message}
+            />
+          </FormLayout.Row>
+        </FormLayout.Section>
+      )}
       <FormLayout.Section title="Notifications">
         <FormLayout.Row>
           <Checkbox
