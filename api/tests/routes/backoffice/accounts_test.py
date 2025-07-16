@@ -27,6 +27,7 @@ from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.core.operations import factories as operations_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.models import SubscriptionItemStatus
@@ -1107,6 +1108,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             dateCreated=datetime.date.today() - relativedelta(days=2),
             stock__offer__bookingContact="contact.offer@example.com",
             stock__offer__bookingEmail="booking.offer@example.com",
+            stock__offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
         )
         b2 = bookings_factories.UsedBookingFactory(user=user, amount=20)
         bookings_factories.FraudulentBookingTagFactory(booking=b2)
@@ -1127,6 +1129,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert bookings[0]["État"] == "Le jeune a consommé l'offre"
         assert bookings[0]["Contremarque"] == b2.token
         assert bookings[0]["Fraude"] == "Frauduleuse"
+        assert bookings[0]["Modalités de retrait"] == ""
 
         assert bookings[1]["Offreur"] == b1.offerer.name
         assert bookings[1]["Nom de l'offre"] == b1.stock.offer.name
@@ -1137,6 +1140,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert bookings[1]["État"] == "L'offre n'a pas eu lieu"
         assert bookings[1]["Contremarque"] == b1.token
         assert bookings[1]["Fraude"] == ""
+        assert bookings[1]["Modalités de retrait"] == "Dans l'app"
 
         extra_rows = html_parser.extract(response.data, "tr", class_="accordion-collapse")
         assert len(extra_rows) == 2

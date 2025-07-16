@@ -52,6 +52,12 @@
                   {{ booking.cancellationReason | format_booking_cancellation(booking.cancellationUser) }}
                 </li>
               {% endif %}
+              {% if offer.withdrawalType %}
+                <li>
+                  Modalités de retrait :
+                  {{ offer.withdrawalType | format_withdrawal_type }}
+                </li>
+              {% endif %}
               {% if booking.fraudulentBookingTag and has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
                 <li>
                   Date et auteur du marquage frauduleux :
