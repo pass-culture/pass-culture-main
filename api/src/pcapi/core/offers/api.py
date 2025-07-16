@@ -589,14 +589,14 @@ def batch_update_offers(
     return updated_offer_ids
 
 
-def activate_future_offers(publication_date: datetime.datetime | None = None) -> list[int]:
+def activate_future_offers(publication_date: datetime.datetime | None = None) -> typing.Collection[int]:
     offer_query = offers_repository.get_offers_by_publication_date(publication_date=publication_date)
     offer_query = offers_repository.exclude_offers_from_inactive_venue_provider(offer_query)
     with transaction():
         updates = {"publicationDatetime": datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)}
         updated_offer_ids = batch_update_offers(offer_query, updates)
 
-    return list(updated_offer_ids)
+    return updated_offer_ids
 
 
 def activate_future_offers_and_remind_users() -> None:

@@ -2121,7 +2121,7 @@ class ActivateFutureOffersTest:
 
         assert not db.session.get(models.Offer, offer.id).isActive
         mocked_async_index_offer_ids.assert_not_called()
-        assert offers_ids == []
+        assert len(offers_ids) == 0
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_activate_future_offers(self, mocked_async_index_offer_ids):
@@ -2130,7 +2130,7 @@ class ActivateFutureOffersTest:
 
         offers_ids = api.activate_future_offers(publication_date=publication_date)
 
-        assert offers_ids == [offer.id]
+        assert next(iter(offers_ids)) == offer.id
         assert db.session.get(models.Offer, offer.id).isActive
 
         mocked_async_index_offer_ids.assert_called_once()
