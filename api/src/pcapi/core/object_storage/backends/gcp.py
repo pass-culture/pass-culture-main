@@ -8,8 +8,8 @@ from google.oauth2.service_account import Credentials
 
 from pcapi import settings
 
-from .. import FileNotFound
 from .base import BaseBackend
+from .base import FileNotFound
 
 
 logger = logging.getLogger(__name__)

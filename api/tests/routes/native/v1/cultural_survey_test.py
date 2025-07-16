@@ -5,6 +5,7 @@ import pytest
 import time_machine
 from dateutil.relativedelta import relativedelta
 
+from pcapi import settings
 from pcapi.core.cultural_survey.models import CulturalSurveyAnswerEnum
 from pcapi.core.cultural_survey.models import CulturalSurveyQuestionEnum
 from pcapi.core.testing import assert_num_queries
@@ -267,8 +268,8 @@ class CulturalSurveyQuestionsTest:
         }
 
     @time_machine.travel("2020-01-01", tick=False)
-    @patch("pcapi.core.object_storage.backends.gcp.GCPBackend.store_public_object")
-    def test_post_cultural_survey_answers(self, store_public_object, client):
+    @patch("pcapi.tasks.cultural_survey_tasks.store_public_object")
+    def test_post_cultural_survey_answers(self, store_public_object_mock, client):
         user: users_models.User = users_factories.UserFactory()
         client.with_token(user.email)
 
@@ -307,12 +308,13 @@ class CulturalSurveyQuestionsTest:
             '{"question_id": "PROJECTIONS", "answer_ids": ["PROJECTION_SPECTACLE", "PROJECTION_CINEMA"]}]}'
         ) % user.id
 
-        # Note: if the path does not exist, GCP creates the necessary folders
-        store_public_object.assert_called_once_with(
+        store_public_object_mock.assert_called_once_with(
             folder="QPI_exports/qpi_answers_20200101",
             object_id=f"user_id_{user.id}.jsonl",
             blob=bytes(answers_str, "utf-8"),
             content_type="application/json",
+            bucket=settings.GCP_DATA_BUCKET_NAME,
+            project_id=settings.GCP_DATA_PROJECT_ID,
         )
 
         assert not user.needsToFillCulturalSurvey

@@ -5,7 +5,7 @@ import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
 from pcapi.core.cultural_survey import models as cultural_survey_models
-from pcapi.core.object_storage.backends import gcp as gcp_backend
+from pcapi.core.object_storage import store_public_object
 from pcapi.tasks.decorator import task
 
 
@@ -28,12 +28,8 @@ class CulturalSurveyTaskAnswers(pydantic_v1.BaseModel):
 
 @task(CULTURAL_SURVEY_ANSWERS_QUEUE_NAME, "/cultural_survey/upload_answers")
 def upload_answers_task(payload: CulturalSurveyTaskAnswers) -> None:
-    BUCKET_NAME = settings.GCP_DATA_BUCKET_NAME
-    PROJECT_ID = settings.GCP_DATA_PROJECT_ID
-
-    STORAGE_PATH = f"QPI_exports/qpi_answers_{datetime.date.today().strftime('%Y%m%d')}"
+    storage_path = f"QPI_exports/qpi_answers_{datetime.date.today().strftime('%Y%m%d')}"
     answers_file_name = f"user_id_{payload.user_id}.jsonl"
-    gcp_client = gcp_backend.GCPBackend(bucket_name=BUCKET_NAME, project_id=PROJECT_ID)
 
     answer = {
         "user_id": payload.user_id,
@@ -41,9 +37,11 @@ def upload_answers_task(payload: CulturalSurveyTaskAnswers) -> None:
         "answers": [answer.dict() for answer in payload.answers],
     }
 
-    gcp_client.store_public_object(
-        folder=STORAGE_PATH,
+    store_public_object(
+        folder=storage_path,
         object_id=answers_file_name,
         blob=bytes(json.dumps(answer, ensure_ascii=False), "utf-8"),
         content_type="application/json",
+        bucket=settings.GCP_DATA_BUCKET_NAME,
+        project_id=settings.GCP_DATA_PROJECT_ID,
     )

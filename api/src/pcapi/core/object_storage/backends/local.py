@@ -5,8 +5,8 @@ from itertools import chain
 
 from pcapi import settings
 
-from .. import FileNotFound
 from .base import BaseBackend
+from .base import FileNotFound
 
 
 logger = logging.getLogger(__name__)
