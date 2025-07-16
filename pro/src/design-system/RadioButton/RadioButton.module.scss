@@ -10,6 +10,7 @@
 
   // Sizing to "hug" (content width) by default
   display: inline-flex;
+  width: fit-content;
   flex-direction: column;
 
   &.sizing-fill {
@@ -119,6 +120,8 @@
 
   &.has-error {
     & > .radio-button-label {
+      color: var(--color-text-error);
+
       .radio-button-input {
         border-color: var(--color-border-error);
       }
@@ -159,7 +162,6 @@
     border: rem.torem(1px) solid black;
     border-color: var(--color-border-default);
     border-radius: rem.torem(8px);
-    width: 100%;
 
     > .radio-button-label {
       padding: rem.torem(16px);

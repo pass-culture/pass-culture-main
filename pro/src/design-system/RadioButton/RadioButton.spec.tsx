@@ -35,6 +35,23 @@ describe('<RadioButton />', () => {
     expect(getByText('Ma description')).toBeInTheDocument()
   })
 
+  it('not renders any asset in DEFAULT variant', () => {
+    const { container } = render(
+      <RadioButton
+        label="Label"
+        name="groupe"
+        value="valeur"
+        variant="default"
+        asset={{
+          variant: 'icon',
+          src: 'icon.svg',
+        }}
+      />
+    )
+
+    expect(container.querySelector('svg, img')).not.toBeInTheDocument()
+  })
+
   it('renders the tag on the right in DETAILED variant', () => {
     const { getByText } = render(
       <RadioButton
@@ -130,6 +147,14 @@ describe('<RadioButton />', () => {
       <RadioButton label="Label" name="groupe" value="valeur" disabled />
     )
     expect(getByLabelText('Label')).toBeDisabled()
+  })
+
+  it('handles error state', () => {
+    const { getByLabelText } = render(
+      <RadioButton label="Label" name="groupe" value="valeur" hasError />
+    )
+    const radio = getByLabelText('Label')
+    expect(radio).toHaveAttribute('aria-invalid', 'true')
   })
 
   it('calls onChange on click', () => {

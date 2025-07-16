@@ -7,6 +7,8 @@ import {
   RadioButtonAssetProps,
 } from './RadioButtonAsset/RadioButtonAsset'
 
+export type RadioButtonSizing = 'hug' | 'fill'
+
 type RadioButtonBaseProps = {
   /** Label displayed next to the radio */
   label: string
@@ -17,7 +19,7 @@ type RadioButtonBaseProps = {
   /** If the radio is selected */
   checked?: boolean
   /** Component size. If `hug` the input width matches its content. If `fill` the input takes all available space. */
-  sizing?: 'hug' | 'fill'
+  sizing?: RadioButtonSizing
   /** If the radio is disabled */
   disabled?: boolean
   /** If the radio is in an error state */
@@ -26,36 +28,24 @@ type RadioButtonBaseProps = {
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   /** Event handler for blur */
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void
-  /**
-   * Display for the checkbox container. If `hug`, the width of the checkbox fits its content. If `fill` the checkbox takes all the available space.
-   */
-  display?: 'hug' | 'fill'
 }
 
-export type RadioButtonProps = RadioButtonBaseProps &
-  (
-    | {
-        variant?: 'default'
-        description?: never
-        asset?: never
-        collapsed?: never
-      }
-    | {
-        variant: 'detailed'
-        /**
-         * Description test displayed under the checkbox label.
-         */
-        description?: string
-        /**
-         * Asset element displayed on the right of the checkbox.
-         */
-        asset?: RadioButtonAssetProps
-        /**
-         * Content collapsed, displayed under the checkbox input when the checkbox is checked.
-         */
-        collapsed?: React.ReactNode
-      }
-  )
+export type RadioButtonVariantProps = {
+  variant?: 'default' | 'detailed'
+  /**
+   * Description text displayed under the checkbox label.
+   */
+  description?: string
+  /**
+   * Asset element displayed on the right of the checkbox.
+   */
+  asset?: RadioButtonAssetProps
+  /**
+   * Content collapsed, displayed under the checkbox input when the checkbox is checked.
+   */
+  collapsed?: React.ReactNode
+}
+export type RadioButtonProps = RadioButtonBaseProps & RadioButtonVariantProps
 
 export const RadioButton = forwardRef(
   (
@@ -105,6 +95,7 @@ export const RadioButton = forwardRef(
                 disabled={disabled}
                 name={name}
                 checked={checked}
+                aria-invalid={hasError}
               />
               <div>
                 {label}
@@ -113,7 +104,7 @@ export const RadioButton = forwardRef(
                 )}
               </div>
             </div>
-            {asset && (
+            {asset && isVariantDetailed && (
               <RadioButtonAsset
                 {...asset}
                 className={cn(styles['radio-asset'], {
