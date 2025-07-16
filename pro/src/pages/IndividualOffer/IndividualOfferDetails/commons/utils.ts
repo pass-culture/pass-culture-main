@@ -9,6 +9,7 @@ import {
 import { showOptionsTree } from 'commons/core/Offers/categoriesSubTypes'
 import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
 import { SelectOption } from 'commons/custom_types/form'
+import { getAccessibilityInfoFromVenue } from 'commons/utils/getAccessibilityInfoFromVenue'
 import { trimStringsInObject } from 'commons/utils/trimStringsInObject'
 import { Option } from 'pages/AdageIframe/app/types'
 import { computeVenueDisplayName } from 'repository/venuesService'
@@ -126,6 +127,26 @@ export function getVenuesAsOptions(
       label: computeVenueDisplayName(v),
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
+}
+
+export function getInitialValuesFromVenues(
+  availableVenues: VenueListItemResponseModel[],
+  isNewOfferCreationFlowFeatureActive: boolean
+) {
+  //  When there is only one venue available, we can automatically use this venue as the initially selected one.
+  const onlyVenue =
+    availableVenues.length === 1 ? availableVenues[0] : undefined
+  const venueId = onlyVenue?.id.toString() ?? ''
+
+  const maybeAccessibility = isNewOfferCreationFlowFeatureActive
+    ? getAccessibilityInfoFromVenue(onlyVenue).accessibility
+    : undefined
+
+  return {
+    ...DEFAULT_DETAILS_FORM_VALUES,
+    venueId,
+    ...(maybeAccessibility ? { accessibility: maybeAccessibility } : {}),
+  }
 }
 
 export function getInitialValuesFromOffer({

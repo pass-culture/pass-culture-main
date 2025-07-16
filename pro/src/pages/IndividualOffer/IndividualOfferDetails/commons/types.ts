@@ -2,6 +2,7 @@ import {
   GetIndividualOfferResponseModel,
   SubcategoryResponseModel,
 } from 'apiClient/v1'
+import { AccessibilityFormValues } from 'commons/core/shared/types'
 
 export type DetailsFormValues = {
   name: string
@@ -24,6 +25,7 @@ export type DetailsFormValues = {
   productId?: string
   callId?: string
   url?: string | null
+  accessibility?: AccessibilityFormValues
 }
 
 export type Product = {

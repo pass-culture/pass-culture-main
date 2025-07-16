@@ -12,6 +12,7 @@ interface AccessibilityReadOnlyProps {
 export const AccessibilityReadOnly = ({
   venue,
 }: AccessibilityReadOnlyProps) => {
+  // TODO (igabriele, 2025-07-16): Use `getAccessibilityInfoFromVenue()` common util rather than inlining domain rules.
   if (!venue.externalAccessibilityData) {
     return (
       <InternalAccessibilitySummarySection

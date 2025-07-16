@@ -8,10 +8,32 @@ import strokeAccessibilityEyeIcon from 'icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLegIcon from 'icons/stroke-accessibility-leg.svg'
 import { CheckboxGroupProps } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 
-export const useAccessibilityOptions = (
-  setFieldValue: ((field: string, value: any) => void) | UseFormSetValue<any>,
+type SetFieldValue =
+  | ((field: string, value: any) => void)
+  | UseFormSetValue<any>
+
+// Hooks can't be called conditionally, so we need to use a polymorphic signature to handle the `undefined` case
+function useAccessibilityOptions(
+  setFieldValue: SetFieldValue,
   accessibilityValues: OfferEducationalFormValues['accessibility']
-) => {
+): CheckboxGroupProps['group']
+function useAccessibilityOptions(
+  setFieldValue: SetFieldValue,
+  accessibilityValues: undefined
+): undefined
+function useAccessibilityOptions(
+  setFieldValue: SetFieldValue,
+  accessibilityValues: OfferEducationalFormValues['accessibility'] | undefined
+): CheckboxGroupProps['group'] | undefined
+
+function useAccessibilityOptions(
+  setFieldValue: SetFieldValue,
+  accessibilityValues: OfferEducationalFormValues['accessibility'] | undefined
+): CheckboxGroupProps['group'] | undefined {
+  if (!accessibilityValues) {
+    return undefined
+  }
+
   const onNoneOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       setFieldValue('accessibility', {
@@ -35,6 +57,7 @@ export const useAccessibilityOptions = (
 
     setFieldValue(`accessibility.${name}`, event.target.checked)
   }
+
   return [
     {
       label: 'Visuel',
@@ -76,3 +99,5 @@ export const useAccessibilityOptions = (
     },
   ] satisfies CheckboxGroupProps['group']
 }
+
+export { useAccessibilityOptions }
