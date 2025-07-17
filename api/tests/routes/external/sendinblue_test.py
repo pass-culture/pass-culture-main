@@ -105,7 +105,6 @@ class NotifyImportContactsTest:
 
 
 @pytest.mark.usefixtures("db_session")
-@pytest.mark.features(WIP_ENABLE_BREVO_RECOMMENDATION_ROUTE=True)
 @pytest.mark.settings(BREVO_WEBHOOK_SECRET="secret")
 class GetUserRecommendationsTest:
     headers = {"Authorization": "Bearer secret"}
@@ -121,8 +120,7 @@ class GetUserRecommendationsTest:
         OfferFactory(id=1, product=product)
         offer_2 = OfferFactory(id=2)
 
-        expected_num_queries = 1  # feature
-        expected_num_queries += 1  # user
+        expected_num_queries = 1  # user
         expected_num_queries += 1  # offers
         with assert_num_queries(expected_num_queries):
             response = client.get(f"/webhooks/brevo/recommendations/{user_id}", headers=self.headers)
@@ -137,7 +135,6 @@ class GetUserRecommendationsTest:
             },
         ]
 
-    @pytest.mark.features(WIP_ENABLE_BREVO_RECOMMENDATION_ROUTE=False)
     def test_401_on_invalid_token(self, client):
         user_id = UserFactory(id=1).id
         response = client.get(
@@ -148,13 +145,6 @@ class GetUserRecommendationsTest:
 
     def test_fails_on_user_not_found(self, client):
         response = client.get("/webhooks/brevo/recommendations/0", headers=self.headers)
-
-        assert response.status_code == 404
-
-    @pytest.mark.features(WIP_ENABLE_BREVO_RECOMMENDATION_ROUTE=False)
-    def test_404_on_feature_flag_disabled(self, client):
-        user_id = UserFactory(id=1).id
-        response = client.get(f"/webhooks/brevo/recommendations/{user_id}", headers=self.headers)
 
         assert response.status_code == 404
 

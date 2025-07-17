@@ -132,9 +132,6 @@ class FeatureToggle(enum.Enum):
     WIP_DISABLE_TODAY_STOCK_NOTIFICATION = (
         "Désactiver la notification push Batch pour les réservations se déroulant le jour même"
     )
-    WIP_ENABLE_BREVO_RECOMMENDATION_ROUTE = (
-        "Exposer la route utilisée par Brevo pour récupérer les recommandations d'un utilisateur"
-    )
     WIP_ENABLE_CLICKHOUSE_IN_BO = "Utiliser Clickhouse pour les statistiques des acteurs culturels dans le BO"
     WIP_ENABLE_EVENT_WITH_OPENING_HOUR = "Activer la nouvelle création d'un événement sur horaires d'ouverture"
     WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE = (
