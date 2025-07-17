@@ -50,7 +50,11 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
       'createOfferer'
     )
-    cy.setFeatureFlags([{ name: 'WIP_2025_SIGN_UP', isActive: false }])
+    cy.setFeatureFlags([
+      { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
+      { name: 'WIP_2025_SIGN_UP', isActive: false },
+      { name: 'WIP_2025_AUTOLOGIN', isActive: false },
+    ])
   })
 
   it('I should be able to sign up with a new account and create a new offerer with an unknown SIREN (unknown SIRET)', () => {
@@ -147,7 +151,11 @@ describe('Signup journey with known offerer...', () => {
       method: 'GET',
       url: `/venues/siret/**`,
     }).as('venuesSiret')
-    cy.setFeatureFlags([{ name: 'WIP_2025_SIGN_UP', isActive: false }])
+    cy.setFeatureFlags([
+      { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
+      { name: 'WIP_2025_SIGN_UP', isActive: false },
+      { name: 'WIP_2025_AUTOLOGIN', isActive: false },
+    ])
   })
 
   describe('...and unknown venue', () => {
@@ -170,7 +178,11 @@ describe('Signup journey with known offerer...', () => {
           ).as('getSiret')
         }
       )
-      cy.setFeatureFlags([{ name: 'WIP_2025_SIGN_UP', isActive: false }])
+      cy.setFeatureFlags([
+        { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
+        { name: 'WIP_2025_SIGN_UP', isActive: false },
+        { name: 'WIP_2025_AUTOLOGIN', isActive: false },
+      ])
     })
 
     it('I should be able to sign up with a new account and create a new venue with a known SIREN (unknown SIRET)', () => {
@@ -246,7 +258,11 @@ describe('Signup journey with known offerer...', () => {
       )
       interceptSearch5Adresses()
       cy.intercept({ method: 'POST', url: '/offerers' }).as('postOfferers')
-      cy.setFeatureFlags([{ name: 'WIP_2025_SIGN_UP', isActive: false }])
+      cy.setFeatureFlags([
+        { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
+        { name: 'WIP_2025_SIGN_UP', isActive: false },
+        { name: 'WIP_2025_AUTOLOGIN', isActive: false },
+      ])
     })
 
     it('I should be able as a local authority to sign up with a new account and a known offerer/venue and then create a new venue in the space', () => {

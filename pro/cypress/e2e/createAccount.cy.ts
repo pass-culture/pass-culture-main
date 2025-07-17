@@ -4,7 +4,10 @@ import { logInAndGoToPage } from '../support/helpers.ts'
 describe('Account creation', () => {
   before(() => {
     cy.visit('/')
-    cy.setFeatureFlags([{ name: 'WIP_2025_SIGN_UP', isActive: false }])
+    cy.setFeatureFlags([
+      { name: 'WIP_2025_SIGN_UP', isActive: false },
+      { name: 'WIP_2025_AUTOLOGIN', isActive: false },
+    ])
   })
 
   beforeEach(() => {
