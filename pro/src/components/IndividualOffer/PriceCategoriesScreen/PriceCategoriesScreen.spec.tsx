@@ -22,6 +22,7 @@ import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 
+import { PRICE_CATEGORY_MAX_LENGTH } from './form/constants'
 import { PriceCategoriesScreen } from './PriceCategoriesScreen'
 
 const renderPriceCategoriesScreen = async (
@@ -170,5 +171,81 @@ describe('PriceCategoriesScreen', () => {
     })
     expect(priceLabel).toBeDisabled()
     expect(priceLabel).toHaveValue('mon label')
+  })
+
+  it('disables "Ajouter un tarif" button when reaching max number of categories', async () => {
+    await renderPriceCategoriesScreen(apiOffer)
+
+    for (let i = 0; i < PRICE_CATEGORY_MAX_LENGTH - 1; i++) {
+      await userEvent.click(screen.getByText(/ajouter un tarif/i))
+    }
+
+    expect(screen.getByText(/ajouter un tarif/i)).toBeDisabled()
+  })
+
+  it('submits form when confirmation modal is accepted', async () => {
+    const spySubmit = vi
+      .spyOn(api, 'postPriceCategories')
+      .mockResolvedValue(apiOffer)
+
+    const offerWithStocks = {
+      ...apiOffer,
+      hasStocks: true,
+      priceCategories: [
+        {
+          id: 1,
+          label: 'Old',
+          price: 100,
+        },
+      ],
+    }
+
+    await renderPriceCategoriesScreen(offerWithStocks)
+
+    const priceInput = screen.getAllByLabelText('Prix par personne')
+    await userEvent.clear(priceInput[0])
+    await userEvent.type(priceInput[0], '300')
+
+    await userEvent.click(
+      screen.getByRole('button', { name: /Enregistrer et continuer/i })
+    )
+
+    expect(
+      screen.getByText(/modification de tarif s’appliquera/i)
+    ).toBeInTheDocument()
+
+    await userEvent.click(screen.getByText('Confirmer la modification'))
+
+    await waitFor(() => {
+      expect(spySubmit).toHaveBeenCalledOnce()
+    })
+  })
+
+  it('shows confirmation dialog before deleting a saved price category with stocks', async () => {
+    const modifiedApiOffer = {
+      ...apiOffer,
+      hasStocks: true,
+      priceCategories: [
+        {
+          id: 1,
+          label: 'first',
+          price: 100,
+        },
+        {
+          id: 2,
+          label: 'second',
+          price: 50,
+        },
+      ],
+    }
+
+    await renderPriceCategoriesScreen(modifiedApiOffer)
+
+    const deleteButton = screen.getAllByTestId('delete-button')
+    await userEvent.click(deleteButton[1])
+
+    expect(
+      screen.getByText(/vous allez aussi supprimer l’ensemble des dates/i)
+    ).toBeInTheDocument()
   })
 })

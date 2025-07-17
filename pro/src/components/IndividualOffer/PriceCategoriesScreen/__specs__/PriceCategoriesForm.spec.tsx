@@ -9,13 +9,11 @@ import {
 import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   getIndividualOfferFactory,
-  subcategoryFactory,
   priceCategoryFactory,
+  subcategoryFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { PriceCategoriesScreen } from 'components/IndividualOffer/PriceCategoriesScreen/PriceCategoriesScreen'
-
-import { PRICE_CATEGORY_MAX_LENGTH } from '../form/constants'
 
 const renderPriceCategoriesForm = (
   canBeDuo = true,
@@ -107,21 +105,6 @@ describe('PriceCategories', () => {
     expect(freeCheckboxes[0]).not.toBeChecked()
     expect(freeCheckboxes[1]).not.toBeChecked()
     expect(freeCheckboxes[2]).not.toBeChecked()
-  })
-
-  it('should not let add more than 20 price categories', async () => {
-    renderPriceCategoriesForm(false, {
-      priceCategories: [priceCategoryFactory()],
-    })
-
-    for (let i = 0; i < PRICE_CATEGORY_MAX_LENGTH - 1; i++) {
-      await userEvent.click(screen.getByText('Ajouter un tarif'))
-    }
-
-    expect(screen.getAllByText('Intitulé du tarif')).toHaveLength(
-      PRICE_CATEGORY_MAX_LENGTH
-    )
-    expect(screen.getByText('Ajouter un tarif')).toBeDisabled()
   })
 
   it('should remove price categories on trash button click', async () => {
@@ -218,7 +201,7 @@ describe('PriceCategories', () => {
     await userEvent.click(
       screen.getAllByRole('button', { name: 'Supprimer le tarif' })[1]
     )
-    await userEvent.click(screen.getByText('Confirmer la supression'))
+    await userEvent.click(screen.getByText('Confirmer la suppression'))
     expect(api.deletePriceCategory).toHaveBeenNthCalledWith(1, 42, 144)
   })
 
@@ -246,7 +229,7 @@ describe('PriceCategories', () => {
       )
     ).toBeInTheDocument()
 
-    await userEvent.click(screen.getByText('Confirmer la supression'))
+    await userEvent.click(screen.getByText('Confirmer la suppression'))
     expect(api.deletePriceCategory).toHaveBeenCalledWith(42, 2)
   })
 
