@@ -28,7 +28,7 @@ import {
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferBookingResponseModel,
-  CollectiveBookingStatus
+  CollectiveBookingStatus,
 } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
 
@@ -64,7 +64,7 @@ export const collectiveOfferFactory = (
     isPublicApi: false,
     interventionArea: [],
     isShowcase: false,
-    allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE,],
+    allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
     ...customCollectiveOffer,
     formats: [EacFormat.ATELIER_DE_PRATIQUE],
   }
@@ -94,7 +94,6 @@ const sharedCollectiveOfferData = {
   domains: [{ id: 1, name: 'Danse' }],
   hasBookingLimitDatetimesPassed: false,
   interventionArea: ['mainland'],
-  isEditable: true,
   isPublicApi: false,
   id: 123,
   offerVenue: {
@@ -296,15 +295,15 @@ export const collectiveBookingByIdFactory = (
 }
 
 export const defaultEducationalInstitution: EducationalInstitutionResponseModel =
-{
-  city: 'Paris',
-  id: institutionId++,
-  institutionId: 'ABC123',
-  institutionType: 'LYCEE',
-  name: 'Sacré coeur',
-  phoneNumber: '0601020304',
-  postalCode: '75000',
-}
+  {
+    city: 'Paris',
+    id: institutionId++,
+    institutionId: 'ABC123',
+    institutionType: 'LYCEE',
+    name: 'Sacré coeur',
+    phoneNumber: '0601020304',
+    postalCode: '75000',
+  }
 
 export const defaultEducationalRedactor: EducationalRedactorResponseModel = {
   civility: 'Mr',
@@ -354,18 +353,18 @@ export const defaultGetVenue: GetVenueResponseModel = {
 }
 
 export const defaultGetCollectiveOfferRequest: GetCollectiveOfferRequestResponseModel =
-{
-  comment: 'comment',
-  institution: {
-    city: 'Paris',
-    institutionId: 'ABC123',
-    institutionType: 'LYCEE',
-    name: 'Sacré coeur',
-    postalCode: '75000',
-  },
-  redactor: {
-    email: 'Jean.Dupont@example.com',
-    firstName: 'Jean',
-    lastName: 'Dupont',
-  },
-}
+  {
+    comment: 'comment',
+    institution: {
+      city: 'Paris',
+      institutionId: 'ABC123',
+      institutionType: 'LYCEE',
+      name: 'Sacré coeur',
+      postalCode: '75000',
+    },
+    redactor: {
+      email: 'Jean.Dupont@example.com',
+      firstName: 'Jean',
+      lastName: 'Dupont',
+    },
+  }
