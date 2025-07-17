@@ -91,7 +91,6 @@ const sharedCollectiveOfferData = {
   domains: [{ id: 1, name: 'Danse' }],
   hasBookingLimitDatetimesPassed: false,
   interventionArea: ['mainland'],
-  isEditable: true,
   isPublicApi: false,
   id: 123,
   offerVenue: {

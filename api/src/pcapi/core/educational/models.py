@@ -720,13 +720,6 @@ class CollectiveOffer(
         "NationalProgram", foreign_keys=nationalProgramId
     )
 
-    @property
-    def isEditable(self) -> bool:
-        return self.status not in [
-            offer_mixin.CollectiveOfferStatus.PENDING,
-            offer_mixin.CollectiveOfferStatus.REJECTED,
-        ]
-
     @hybrid_property
     def hasEndDatePassed(self) -> bool:
         return False
@@ -846,31 +839,14 @@ class CollectiveOffer(
             .where(aliased_collective_stock.hasEndDatetimePassed.is_(True))
         )
 
-    @property
-    def days_until_booking_limit(self) -> int | None:
+    def get_days_until_booking_limit(self) -> int | None:
         if not self.collectiveStock:
             return None
 
         delta = self.collectiveStock.bookingLimitDatetime - datetime.datetime.utcnow()
         return delta.days
 
-    @property
-    def requires_attention(self) -> bool:
-        is_prebooked = (
-            False
-            if not self.collectiveStock
-            else any(
-                booking.status == CollectiveBookingStatus.PENDING for booking in self.collectiveStock.collectiveBookings
-            )
-        )
-        is_published = self.status == offer_mixin.CollectiveOfferStatus.ACTIVE
-        if self.days_until_booking_limit is not None:
-            return self.days_until_booking_limit < 7 and (is_prebooked or is_published)
-
-        return False
-
-    @property
-    def sort_criterion(self) -> typing.Tuple[bool, int, datetime.datetime]:
+    def get_sort_criterion(self) -> tuple[bool, int, datetime.datetime]:
         """
         This is used to sort offers with the following criterium.
 
@@ -878,8 +854,18 @@ class CollectiveOffer(
         2. Published or prebooked offers with a booking limit in a near future (ie < 7 days) are relevant
         3. DateCreated is to be used as a default rule. Older -> less relevant that younger
         """
-        if self.requires_attention and self.days_until_booking_limit is not None:
-            date_limit_score = self.days_until_booking_limit
+        days_until_booking_limit = self.get_days_until_booking_limit()
+        statuses_requiring_attention = {
+            CollectiveOfferDisplayedStatus.PREBOOKED,
+            CollectiveOfferDisplayedStatus.PUBLISHED,
+        }
+
+        if (
+            days_until_booking_limit is not None
+            and days_until_booking_limit < 7
+            and self.displayedStatus in statuses_requiring_attention
+        ):
+            date_limit_score = days_until_booking_limit
         else:
             date_limit_score = BIG_NUMBER_FOR_SORTING_OFFERS
 
@@ -1307,13 +1293,6 @@ class CollectiveOfferTemplate(
             return None
         return {"start": self.start, "end": self.end}
 
-    @property
-    def isEditable(self) -> bool:
-        return self.status not in [
-            offer_mixin.CollectiveOfferStatus.PENDING,
-            offer_mixin.CollectiveOfferStatus.REJECTED,
-        ]
-
     @hybrid_property
     def hasEndDatePassed(self) -> bool:
         if not self.end:
@@ -1388,8 +1367,7 @@ class CollectiveOfferTemplate(
     def is_eligible_for_search(self) -> bool:
         return bool(self.isReleased and not self.venue.isVirtual)
 
-    @property
-    def sort_criterion(self) -> typing.Tuple[bool, int, datetime.datetime]:
+    def get_sort_criterion(self) -> tuple[bool, int, datetime.datetime]:
         """
         This is is used to compare offers.
 
@@ -1471,18 +1449,6 @@ class CollectiveStock(PcObject, models.Base, models.Model):
             return False
 
         return not self.isExpired and self.collectiveOffer.isReleased and not self.isSoldOut
-
-    @property
-    def isEditable(self) -> bool:
-        """this rule has nothing to do with the isEditable from pcapi.core.offers.models.Booking
-        a collectiveStock is editable if there is no booking with status REIMBURSED, USED, CONFIRMED
-        and its offer is editable.
-        """
-        bookable = (CollectiveBookingStatus.PENDING, CollectiveBookingStatus.CANCELLED)
-        for booking in self.collectiveBookings:
-            if booking.status not in bookable:
-                return False
-        return self.collectiveOffer.isEditable
 
     @hybrid_property
     def hasBookingLimitDatetimePassed(self) -> bool:

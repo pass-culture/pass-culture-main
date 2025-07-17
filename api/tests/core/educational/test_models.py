@@ -23,7 +23,6 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import HasImageMixin
 from pcapi.models import db
-from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import db as db_utils
@@ -261,63 +260,6 @@ class CollectiveOfferIsSoldOutTest:
         assert results[1].id == offer_4.id
 
 
-class CollectiveStockIsEditableTest:
-    def test_booked_stock_editable_offer(self) -> None:
-        offer = factories.CollectiveOfferFactory(validation=OfferValidationStatus.APPROVED)
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.USED, collectiveStock=stock)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
-
-        assert not stock.isEditable
-
-    def test_unbooked_stock_editable_offer(self) -> None:
-        offer = factories.CollectiveOfferFactory(validation=OfferValidationStatus.APPROVED)
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
-
-        assert stock.isEditable
-
-    def test_no_bookings_stock_editable_offer(self) -> None:
-        offer = factories.CollectiveOfferFactory(validation=OfferValidationStatus.APPROVED)
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-
-        assert stock.isEditable
-
-    def test_booked_stock_not_editable_offer(self) -> None:
-        offer = factories.CollectiveOfferFactory(validation=OfferValidationStatus.REJECTED)
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.USED, collectiveStock=stock)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
-
-        assert not stock.isEditable
-
-    def test_unbooked_stock_not_editable_offer(self) -> None:
-        offer = factories.CollectiveOfferFactory(validation=OfferValidationStatus.REJECTED)
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
-
-        assert not stock.isEditable
-
-    def test_no_bookings_stock_not_editable_offer(self) -> None:
-        offer = factories.CollectiveOfferFactory(validation=OfferValidationStatus.REJECTED)
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-
-        assert not stock.isEditable
-
-
-class CollectiveOfferIsEditableTest:
-    @pytest.mark.parametrize(
-        "state,expected", [("PENDING", False), ("REJECTED", False), ("APPROVED", True), ("DRAFT", True)]
-    )
-    def test_offer_for_status(self, state, expected) -> None:
-        offer = factories.CollectiveOfferFactory(validation=state)
-        factories.CollectiveStockFactory(collectiveOffer=offer)
-
-        assert offer.isEditable == expected
-
-
 class CollectiveOfferIsArchiveTest:
     @pytest.mark.parametrize("state", OfferValidationStatus)
     def test_date_archive_for_status(self, state) -> None:
@@ -329,7 +271,7 @@ class CollectiveOfferIsArchiveTest:
         offer.dateArchived = datetime.datetime.utcnow()
 
         assert offer.isArchived == True
-        assert offer.status == CollectiveOfferStatus.ARCHIVED.value
+        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ARCHIVED
 
     def test_query_is_archived(self) -> None:
         offer_archived = factories.CollectiveOfferFactory(isActive=False, dateArchived=datetime.datetime.utcnow())
@@ -341,31 +283,6 @@ class CollectiveOfferIsArchiveTest:
         assert len(results) == 1
         assert offer_archived.id in results_ids
         assert offer_not_archived.id not in results_ids
-
-    def test_query_status_for_archived(self) -> None:
-        offer_archived = factories.CollectiveOfferFactory(isActive=False, dateArchived=datetime.datetime.utcnow())
-        offer_not_archived = factories.CollectiveOfferFactory(dateArchived=None)
-
-        results = db.session.query(CollectiveOffer.id, CollectiveOffer.status).all()
-        status_by_id = dict(results)
-
-        assert status_by_id[offer_archived.id] == "ARCHIVED"
-        assert status_by_id[offer_not_archived.id] == "ACTIVE"
-
-        results_archived = db.session.query(CollectiveOffer.id).filter(CollectiveOffer.status == "ARCHIVED").all()
-        results_archived_ids = {id for (id,) in results_archived}
-        assert len(results_archived_ids) == 1
-        assert offer_archived.id in results_archived_ids
-
-
-class CollectiveOfferTemplateIsEditableTest:
-    @pytest.mark.parametrize(
-        "state,expected", [("PENDING", False), ("REJECTED", False), ("APPROVED", True), ("DRAFT", True)]
-    )
-    def test_offer_is_editable_for_status(self, state, expected) -> None:
-        offer = factories.CollectiveOfferTemplateFactory(validation=state)
-
-        assert offer.isEditable == expected
 
 
 class CollectiveStockIsCancellableFromOfferer:
