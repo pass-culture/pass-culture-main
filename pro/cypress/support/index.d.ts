@@ -51,6 +51,8 @@ declare namespace Cypress {
       onRequest: (response: any) => void,
       retry?: boolean
     ): Chainable
+
+    clickWithRetryIfStillVisible(): Chainable
   }
 }
 
