@@ -15,7 +15,6 @@ from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.routes.apis import public_api
 from pcapi.routes.external.serialization import sendinblue as serializers
@@ -93,9 +92,6 @@ def sendinblue_notify_importcontacts(list_id: int, iteration: int) -> None:
 )
 def brevo_get_user_recommendations(user_id: int) -> serializers.BrevoOffersResponse:
     """This route is called by Brevo on sending an email to a user to get recommended offers."""
-
-    if not FeatureToggle.WIP_ENABLE_BREVO_RECOMMENDATION_ROUTE.is_active():
-        abort(404)
 
     user = db.session.query(User).filter(User.id == user_id).one_or_none()
     if not user:
