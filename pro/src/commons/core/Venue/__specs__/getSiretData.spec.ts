@@ -21,7 +21,6 @@ describe('getsiretData', () => {
         inseeCode: '',
         siret: '',
         apeCode: '',
-        legalCategoryCode: '',
         banId: '',
       },
     })

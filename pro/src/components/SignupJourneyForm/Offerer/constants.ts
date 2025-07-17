@@ -17,7 +17,6 @@ export const DEFAULT_OFFERER_FORM_VALUES = {
   name: '',
   publicName: '',
   hasVenueWithSiret: false,
-  legalCategoryCode: '',
   ...DEFAULT_ADDRESS_FORM_VALUES,
   isOpenToPublic: '',
 }

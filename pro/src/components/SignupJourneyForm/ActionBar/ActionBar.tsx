@@ -20,7 +20,6 @@ export interface ActionBarProps {
   previousTo?: SIGNUP_JOURNEY_STEP_IDS
   hideRightButton?: boolean
   withRightIcon?: boolean
-  legalCategoryCode?: string
 }
 
 export const ActionBar = ({
@@ -33,7 +32,6 @@ export const ActionBar = ({
   previousStepTitle = 'Étape précédente',
   previousTo,
   withRightIcon = true,
-  legalCategoryCode,
 }: ActionBarProps) => {
   const location = useLocation()
   const { logEvent } = useAnalytics()
@@ -43,7 +41,6 @@ export const ActionBar = ({
       from: location.pathname,
       to,
       used: OnboardingFormNavigationAction.ActionBar,
-      categorieJuridiqueUniteLegale: legalCategoryCode,
     })
   }
   const Left = (): JSX.Element => {

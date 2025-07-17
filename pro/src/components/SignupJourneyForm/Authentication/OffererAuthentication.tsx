@@ -47,7 +47,6 @@ export const OffererAuthentication = (): JSX.Element => {
       city: removeQuotes(formValues.city),
       street: removeQuotes(formValues.street),
       hasVenueWithSiret: false,
-      legalCategoryCode: offerer?.legalCategoryCode,
     })
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/parcours-inscription/activite')
@@ -82,7 +81,6 @@ export const OffererAuthentication = (): JSX.Element => {
             nextTo={SIGNUP_JOURNEY_STEP_IDS.ACTIVITY}
             previousStepTitle="Retour"
             isDisabled={methods.formState.isSubmitting}
-            legalCategoryCode={offerer?.legalCategoryCode}
           />
         </form>
       </FormProvider>
