@@ -247,7 +247,7 @@ const StatusWithDate = ({
       >
         {status}
       </div>
-      <div className={styles['date']}>{date ?? null}</div>
+      {date && <div className={styles['date']}>{date}</div>}
     </div>
   )
 }

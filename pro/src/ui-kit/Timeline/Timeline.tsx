@@ -122,6 +122,10 @@ const getLineStyle = (
     return undefined
   }
 
+  if (stepType === TimelineStepType.ERROR) {
+    return cn(styles['line'], styles['line-error'])
+  }
+
   if (stepType === TimelineStepType.SUCCESS) {
     return cn(styles['line'], styles['line-success'])
   }
@@ -177,6 +181,7 @@ export const Timeline = ({ steps }: TimelineProps): JSX.Element => {
     <ol className={styles.container}>
       {steps.map((step, index) => {
         const nextStepType = steps[index + 1]?.type
+        const isLast = index === steps.length - 1
         return (
           <li key={index} className={styles['step']}>
             <div className={styles['icon-line-container']}>
@@ -185,7 +190,13 @@ export const Timeline = ({ steps }: TimelineProps): JSX.Element => {
               </div>
               <div className={getLineStyle(step.type, nextStepType)} />
             </div>
-            <div className={styles['step-content']}>{step.content}</div>
+            <div
+              className={cn(styles['step-content'], {
+                [styles['step-content-last']]: isLast,
+              })}
+            >
+              {step.content}
+            </div>
           </li>
         )
       })}
