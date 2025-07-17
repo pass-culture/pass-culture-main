@@ -138,7 +138,6 @@ export const PriceCategoriesScreen = ({
     handleSubmit,
     getValues,
     setValue,
-    reset,
     watch,
     control,
     formState: { errors, isDirty, isSubmitting },
@@ -152,7 +151,7 @@ export const PriceCategoriesScreen = ({
   const priceCategories = watch('priceCategories')
 
   const onSubmit = async () => {
-    const values = { ...getValues(), isDuo: getValues().isDuo ?? false }
+    const values = { ...getValues(), isDuo: getValues().isDuo }
     const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
       step:
@@ -184,7 +183,7 @@ export const PriceCategoriesScreen = ({
 
     // Submit
     try {
-      await submitToApi(values, offer, reset)
+      await submitToApi(values, offer)
       await mutate([GET_OFFER_QUERY_KEY, offer.id])
     } catch (error) {
       if (error instanceof Error) {

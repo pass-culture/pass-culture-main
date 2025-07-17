@@ -1,17 +1,14 @@
-import { UseFormReset } from 'react-hook-form'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 
-import { computeInitialValues } from './computeInitialValues'
 import { serializePriceCategories } from './serializePriceCategories'
 import { PriceCategoriesFormValues } from './types'
 
 export const submitToApi = async (
   values: PriceCategoriesFormValues,
   offer: GetIndividualOfferResponseModel,
-  resetForm: UseFormReset<PriceCategoriesFormValues>
 ) => {
   try {
     await api.patchOffer(offer.id, { isDuo: values.isDuo })
@@ -37,7 +34,4 @@ export const submitToApi = async (
       'Une erreur est survenue lors de la mise à jour de votre tarif'
     )
   }
-
-  const updatedOffer = await api.getOffer(offer.id)
-  resetForm(computeInitialValues(updatedOffer))
 }

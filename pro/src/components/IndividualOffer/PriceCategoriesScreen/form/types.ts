@@ -2,7 +2,7 @@ import { hasProperties } from 'commons/utils/types'
 
 export type PriceCategoryForm = {
   label: string
-  price: number
+  price: number | ''
   id?: number
 }
 
@@ -12,7 +12,7 @@ export const isPriceCategoriesForm = (
 
 export type PriceCategoriesFormValues = {
   priceCategories: PriceCategoryForm[]
-  isDuo: boolean
+  isDuo?: boolean
 }
 
 export const isPriceCategoriesFormValues = (

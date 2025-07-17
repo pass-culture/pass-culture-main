@@ -46,13 +46,18 @@ const priceCategoryValidationSchema = yup.object({
     }),
 
   price: yup
-    .number()
-    .nullable()
-    .transform((value) => (Number.isNaN(value) ? null : value))
-    .min(0, 'Nombre positif attendu')
+    .mixed<number | "">()
+    .test('is-valid-price', 'Price must be a number', (value) =>
+      value === '' ? true : typeof value === 'number'
+    )
+    .test('min', priceTooLowMsg, (value) =>
+      typeof value === 'number' ? value >= 1 : false
+    )
+    .test('max', priceTooHighMsg, (value) =>
+      typeof value === 'number' ? value <= PRICE_CATEGORY_PRICE_MAX : false
+    )
+    .transform((value) => (value === '' ? undefined : value))
     .required(priceRequiredMsg)
-    .min(0, priceTooLowMsg)
-    .max(PRICE_CATEGORY_PRICE_MAX, priceTooHighMsg),
 })
 
 export const validationSchema = yup.object({
