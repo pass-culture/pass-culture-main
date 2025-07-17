@@ -233,6 +233,13 @@ export const PriceCategoriesScreen = ({
     priceCategories: PriceCategoryForm[]
   ) => {
     const priceCategoryId = priceCategories[index].id
+    const hasOnlyTwo = priceCategories.length === 2
+
+    if (hasOnlyTwo) {
+      setValue(`priceCategories.0.label`, UNIQUE_PRICE, {
+        shouldValidate: true,
+      })
+    }
 
     if (priceCategoryId) {
       if (currentDeletionIndex === null && offer.hasStocks) {
@@ -241,10 +248,30 @@ export const PriceCategoriesScreen = ({
       } else {
         setCurrentDeletionIndex(null)
       }
+
       try {
         await api.deletePriceCategory(offer.id, priceCategoryId)
         remove(index)
         notify.success('Le tarif a été supprimé.')
+
+        if (hasOnlyTwo) {
+          const remaining = priceCategories.filter(
+            (pC) => pC.id !== priceCategoryId
+          )
+
+          if (remaining[0]?.id) {
+            const requestBody = {
+              priceCategories: [
+                {
+                  label: UNIQUE_PRICE,
+                  id: remaining[0]?.id,
+                },
+              ],
+            }
+
+            await api.postPriceCategories(offer.id, requestBody)
+          }
+        }
       } catch {
         notify.error(
           'Une erreur est survenue lors de la suppression de votre tarif'
@@ -252,33 +279,6 @@ export const PriceCategoriesScreen = ({
       }
     } else {
       remove(index)
-    }
-
-    if (priceCategories.length === 2) {
-      setValue(`priceCategories.0.label`, UNIQUE_PRICE, {
-        shouldValidate: true,
-      })
-      const otherPriceCategory = priceCategories.filter(
-        (pC) => pC.id !== priceCategoryId
-      )
-      const otherPriceCategoryId = otherPriceCategory[0]?.id
-      if (otherPriceCategoryId) {
-        const requestBody = {
-          priceCategories: [
-            {
-              label: UNIQUE_PRICE,
-              id: otherPriceCategoryId,
-            },
-          ],
-        }
-        try {
-          await api.postPriceCategories(offer.id, requestBody)
-        } catch {
-          notify.error(
-            'Une erreur est survenue lors de la mise à jour de votre tarif'
-          )
-        }
-      }
     }
   }
 
@@ -316,7 +316,7 @@ export const PriceCategoriesScreen = ({
                   )
                 }}
                 title="En supprimant ce tarif vous allez aussi supprimer l’ensemble des dates qui lui sont associées."
-                confirmText="Confirmer la supression"
+                confirmText="Confirmer la suppression"
                 cancelText="Annuler"
                 open={currentDeletionIndex !== null}
               />
@@ -344,7 +344,7 @@ export const PriceCategoriesScreen = ({
                       labelClassName={styles['label-input-label']}
                       disabled={priceCategories.length <= 1 || isDisabled}
                       error={
-                        errors.priceCategories?.[index]?.label?.message ||
+                        errors.priceCategories?.[index]?.label?.message ??
                         errors.priceCategories?.[index]?.price?.message
                       }
                       autoComplete="off"

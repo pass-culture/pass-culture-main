@@ -10,8 +10,8 @@ import {
   SubcategoryResponseModel,
 } from 'apiClient/v1'
 import {
-  GET_CATEGORIES_QUERY_KEY,
   GET_ACTIVE_VENUE_OFFER_BY_EAN_QUERY_KEY,
+  GET_CATEGORIES_QUERY_KEY,
   GET_OFFER_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { isOfferProductBased } from 'commons/core/Offers/utils/typology'

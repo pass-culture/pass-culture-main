@@ -36,10 +36,12 @@ const priceCategoryValidationSchema = yup.object({
         throw new yup.ValidationError('Le formulaire n’est pas complet')
       }
 
-      if (!current.label || !current.price) {return true}
+      if (!current.label || !current.price && current.price !== 0) {return true}
 
       const duplicates = allValues.priceCategories.filter(
-        (p) => p.label === current.label && p.price === current.price
+        (p) => {
+          return p.label === current.label && p.price === current.price
+        }
       )
 
       return duplicates.length === 1
@@ -47,11 +49,11 @@ const priceCategoryValidationSchema = yup.object({
 
   price: yup
     .mixed<number | "">()
-    .test('is-valid-price', 'Price must be a number', (value) =>
+    .test('is-valid-price', 'Le prix doit être un nombre', (value) =>
       value === '' ? true : typeof value === 'number'
     )
     .test('min', priceTooLowMsg, (value) =>
-      typeof value === 'number' ? value >= 1 : false
+      typeof value === 'number' ? value >= 0 : false
     )
     .test('max', priceTooHighMsg, (value) =>
       typeof value === 'number' ? value <= PRICE_CATEGORY_PRICE_MAX : false
