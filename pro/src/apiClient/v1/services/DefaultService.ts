@@ -2707,26 +2707,6 @@ export class DefaultService {
     });
   }
   /**
-   * signup_pro_V2 <POST>
-   * @param requestBody
-   * @returns void
-   * @throws ApiError
-   */
-  public signupProV2(
-    requestBody?: ProUserCreationBodyV2Model,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/v2/users/signup/pro',
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
    * fetch_venue_labels <GET>
    * @returns VenueLabelListResponseModel OK
    * @throws ApiError
