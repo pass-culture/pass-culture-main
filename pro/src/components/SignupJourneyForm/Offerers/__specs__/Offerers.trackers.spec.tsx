@@ -80,7 +80,6 @@ describe('Offerers trackers', () => {
         from: '/',
         to: 'LinkModal',
         used: OnboardingFormNavigationAction.LinkModalActionButton,
-        categorieJuridiqueUniteLegale: '',
       }
     )
   })
@@ -105,7 +104,6 @@ describe('Offerers trackers', () => {
         from: 'LinkModal',
         to: '/',
         used: OnboardingFormNavigationAction.LinkModalActionButton,
-        categorieJuridiqueUniteLegale: '',
       }
     )
   })

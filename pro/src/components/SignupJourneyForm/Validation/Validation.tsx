@@ -202,7 +202,6 @@ export const Validation = (): JSX.Element => {
                 from: location.pathname,
                 to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
                 used: OnboardingFormNavigationAction.UpdateFromValidation,
-                categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
               })
             }}
             variant={ButtonVariant.TERNARY}
@@ -233,7 +232,6 @@ export const Validation = (): JSX.Element => {
                 from: location.pathname,
                 to: SIGNUP_JOURNEY_STEP_IDS.ACTIVITY,
                 used: OnboardingFormNavigationAction.UpdateFromValidation,
-                categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
               })
             }}
             variant={ButtonVariant.TERNARY}
@@ -271,7 +269,6 @@ export const Validation = (): JSX.Element => {
         isDisabled={loading}
         withRightIcon={false}
         nextStepTitle="Valider et créer ma structure"
-        legalCategoryCode={offerer.legalCategoryCode}
       />
     </div>
   )

@@ -55,7 +55,6 @@ describe('screens:SignupJourney::ActionBar', () => {
         from: '/parcours-inscription/activite',
         to: SIGNUP_JOURNEY_STEP_IDS.VALIDATION,
         used: OnboardingFormNavigationAction.ActionBar,
-        categorieJuridiqueUniteLegale: undefined,
       }
     )
   })
@@ -83,7 +82,6 @@ describe('screens:SignupJourney::ActionBar', () => {
       isDisabled: false,
       nextTo: SIGNUP_JOURNEY_STEP_IDS.VALIDATION,
       previousTo: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
-      legalCategoryCode: '1000',
     }
     renderActionBar(props)
 
@@ -97,7 +95,6 @@ describe('screens:SignupJourney::ActionBar', () => {
         from: '/parcours-inscription/activite',
         to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
         used: OnboardingFormNavigationAction.ActionBar,
-        categorieJuridiqueUniteLegale: '1000',
       }
     )
   })

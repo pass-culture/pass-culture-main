@@ -16,7 +16,6 @@ export type GetSiretDataResponse = {
     inseeCode: string | null
     siret: string
     apeCode: string
-    legalCategoryCode: string
     banId: string | null
   }
 }
@@ -37,7 +36,6 @@ const getSiretDataRequest = async (
         inseeCode: '',
         siret: '',
         apeCode: '',
-        legalCategoryCode: '',
         banId: '',
       },
     }
@@ -74,7 +72,6 @@ const getSiretDataRequest = async (
         inseeCode: addressData[0].inseeCode,
         siret: response.siret,
         apeCode: response.ape_code,
-        legalCategoryCode: response.legal_category_code,
         banId: addressData[0].id,
       },
     }

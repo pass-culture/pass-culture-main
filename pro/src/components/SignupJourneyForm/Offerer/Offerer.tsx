@@ -123,7 +123,6 @@ export const Offerer = (): JSX.Element => {
         longitude: offererSiretData.values.longitude,
         postalCode: offererSiretData.values.postalCode,
         inseeCode: offererSiretData.values.inseeCode,
-        legalCategoryCode: offererSiretData.values.legalCategoryCode,
         banId: offererSiretData.values.banId,
         hasVenueWithSiret:
           venueOfOffererProvidersResponse.venues.find(
@@ -160,7 +159,6 @@ export const Offerer = (): JSX.Element => {
         from: location.pathname,
         to: redirection.to,
         used: OnboardingFormNavigationAction.ActionBar,
-        categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
       })
     }
   }, [logEvent, navigate, offerer])

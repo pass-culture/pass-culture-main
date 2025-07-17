@@ -58,7 +58,6 @@ describe('ConfirmedAttachment trackers', () => {
         from: '/',
         to: SIGNUP_JOURNEY_STEP_IDS.COMPLETED,
         used: OnboardingFormNavigationAction.WaitingLinkButton,
-        categorieJuridiqueUniteLegale: '',
       }
     )
   })

@@ -13,7 +13,6 @@ export interface Offerer extends OffererFormValues, Address {
   name: string
   publicName?: string
   createVenueWithoutSiret?: boolean
-  legalCategoryCode?: string
   hasVenueWithSiret: boolean
   isOpenToPublic?: string
   apeCode?: string
