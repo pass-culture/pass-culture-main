@@ -3,6 +3,9 @@ import {
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
 import { getDateToFrenchText } from 'commons/utils/date'
+import fullEditIcon from 'icons/full-edit.svg'
+import { Callout } from 'ui-kit/Callout/Callout'
+import { CalloutVariant } from 'ui-kit/Callout/types'
 import { Timeline, TimelineStepType } from 'ui-kit/Timeline/Timeline'
 
 import styles from './BookableOfferTimeline.module.scss'
@@ -36,13 +39,36 @@ const isMoreThan48hAgo = (dateString: string) => {
 export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
   const { past, future } = offer.history
 
-  const pastSteps = past.map(({ datetime, status }) => {
+  const pastSteps = past.map(({ datetime, status }, index) => {
     const statusLabel = statusLabelMapping[status]
+    const isCurrentStep = past.length - 1 === index
 
     if (status === CollectiveOfferDisplayedStatus.DRAFT) {
       return {
         type: TimelineStepType.WAITING,
-        content: <StatusWithDate status={statusLabel} />,
+        content: (
+          <>
+            <StatusWithDate status={statusLabel} />
+            {isCurrentStep && (
+              <Callout
+                className={styles['callout']}
+                variant={CalloutVariant.INFO}
+                shouldShowIcon={false}
+                links={[
+                  {
+                    icon: { src: fullEditIcon, alt: 'Modifier' },
+                    href: `/offre/collectif/${offer.id}/creation`,
+                    label: 'Reprendre mon brouillon',
+                  },
+                ]}
+              >
+                {
+                  "Vous avez commencé à rédiger un brouillon. Vous pouvez le reprendre à tout moment afin de finaliser sa rédaction et l'envoyer à un établissement."
+                }
+              </Callout>
+            )}
+          </>
+        ),
       }
     }
 
