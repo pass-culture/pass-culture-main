@@ -42,19 +42,22 @@
             {% endif %}
           </div>
         </div>
-        <h6 class="card-subtitle text-muted">
+        <h6 class="card-subtitle text-muted mb-1">
           User ID : {{ user.id }} <span class="ms-1">{{ clipboard.copy_to_clipboard(user.id, "Copier l'ID du jeune") }}</span>
         </h6>
         <div class="d-flex justify-content-start">
           <div class="d-flex flex-column pe-5">
             {% if show_personal_info %}
-              <p class="my-1 ">
-                <span class="fw-bold">Date de naissance</span>
+              <p class="mb-1">
+                <span class="fw-bold">Date de naissance :</span>
                 {% if user.birth_date %}<span>{{ user.birth_date | format_date }} ({{ user.age | empty_string_if_null }} ans)</span>{% endif %}
               </p>
+              <p class="mb-1">
+                <span class="fw-bold">Lieu de naissance :</span> <span>{{ user.birthPlace }}</span>
+              </p>
               {% if user.dateOfBirth and user.dateOfBirth.date() != user.birth_date %}
-                <p class="my-1 ">
-                  <span class="fw-bold">Date de naissance déclarée à l'inscription</span>
+                <p class="mb-1">
+                  <span class="fw-bold">Date de naissance déclarée à l'inscription :</span>
                   <span>{{ user.dateOfBirth | format_date }}</span>
                 </p>
               {% endif %}

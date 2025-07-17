@@ -854,7 +854,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert f"Email : {user.email} " in content
         assert f"Tél : {user.phoneNumber} " in content
         if user.dateOfBirth:
-            assert f"Date de naissance {user.dateOfBirth.strftime('%d/%m/%Y')}" in content
+            assert f"Date de naissance : {user.dateOfBirth.strftime('%d/%m/%Y')}" in content
         assert "Date de naissance déclarée à l'inscription" not in content
         if user.deposit:
             assert (
@@ -1029,8 +1029,8 @@ class GetPublicAccountTest(GetEndpointHelper):
             assert response.status_code == 200
 
         content = html_parser.content_as_text(response.data)
-        assert f"Date de naissance {user.validatedBirthDate.strftime('%d/%m/%Y')} " in content
-        assert f"Date de naissance déclarée à l'inscription {user.dateOfBirth.strftime('%d/%m/%Y')} " in content
+        assert f"Date de naissance : {user.validatedBirthDate.strftime('%d/%m/%Y')} " in content
+        assert f"Date de naissance déclarée à l'inscription : {user.dateOfBirth.strftime('%d/%m/%Y')} " in content
 
     @pytest.mark.parametrize(
         "user_factory,expected_remaining_text,expected_digital_remaining_text",
