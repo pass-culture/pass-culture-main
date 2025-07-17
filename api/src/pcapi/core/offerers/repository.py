@@ -9,6 +9,7 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.users.models as users_models
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import repository as educational_repository
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.models import db
@@ -357,22 +358,29 @@ def venues_have_individual_offers(*venues: models.Venue) -> bool:
 def venues_have_collective_offers(*venues: models.Venue) -> bool:
     venue_ids = [venue.id for venue in venues]
 
-    collective_offer_query = (
-        db.session.query(educational_models.CollectiveOffer.id)
-        .filter(
-            educational_models.CollectiveOffer.venueId.in_(venue_ids),
-            educational_models.CollectiveOffer.status.in_(  # type: ignore[attr-defined]
-                [offer_mixin.CollectiveOfferStatus.ACTIVE, offer_mixin.CollectiveOfferStatus.SOLD_OUT]
-            ),
-        )
-        .exists()
+    collective_offer_query = db.session.query(educational_models.CollectiveOffer.id).filter(
+        educational_models.CollectiveOffer.venueId.in_(venue_ids)
     )
+
+    collective_offer_query = educational_repository.filter_collective_offers_by_statuses(
+        query=collective_offer_query,
+        statuses=[
+            educational_models.CollectiveOfferDisplayedStatus.PUBLISHED,
+            educational_models.CollectiveOfferDisplayedStatus.PREBOOKED,
+            educational_models.CollectiveOfferDisplayedStatus.BOOKED,
+            educational_models.CollectiveOfferDisplayedStatus.ENDED,
+            educational_models.CollectiveOfferDisplayedStatus.REIMBURSED,
+        ],
+    )
+
+    collective_offer_query = collective_offer_query.exists()
 
     collective_offer_template_query = (
         db.session.query(educational_models.CollectiveOfferTemplate.id)
         .filter(
             educational_models.CollectiveOfferTemplate.venueId.in_(venue_ids),
-            educational_models.CollectiveOfferTemplate.status == offer_mixin.CollectiveOfferStatus.ACTIVE,
+            educational_models.CollectiveOfferTemplate.displayedStatus
+            == educational_models.CollectiveOfferDisplayedStatus.PUBLISHED.value,
         )
         .exists()
     )
@@ -920,25 +928,29 @@ def get_number_of_pending_offers_for_offerer(offerer_id: int) -> int:
 
 
 def get_number_of_bookable_collective_offers_for_offerer(offerer_id: int) -> int:
-    return (
+    collective_offers_query = (
         db.session.query(educational_models.CollectiveOffer)
+        .join(models.Venue)
+        .filter(models.Venue.managingOffererId == offerer_id)
+        .with_entities(educational_models.CollectiveOffer.id)
+    )
+    collective_offers_query = educational_repository.filter_collective_offers_by_statuses(
+        query=collective_offers_query, statuses=[educational_models.CollectiveOfferDisplayedStatus.PUBLISHED]
+    )
+
+    collective_offer_templates_query = (
+        db.session.query(educational_models.CollectiveOfferTemplate)
         .join(models.Venue)
         .filter(
             models.Venue.managingOffererId == offerer_id,
-            educational_models.CollectiveOffer.isActive,
-            educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.ACTIVE,
+            educational_models.CollectiveOfferTemplate.displayedStatus
+            == educational_models.CollectiveOfferDisplayedStatus.PUBLISHED.value,
         )
-        .with_entities(educational_models.CollectiveOffer.id)
-        .union_all(
-            db.session.query(educational_models.CollectiveOfferTemplate)
-            .join(models.Venue)
-            .filter(
-                models.Venue.managingOffererId == offerer_id,
-                educational_models.CollectiveOfferTemplate.isActive,
-                educational_models.CollectiveOfferTemplate.status == offer_mixin.CollectiveOfferStatus.ACTIVE,
-            )
-            .with_entities(educational_models.CollectiveOfferTemplate.id)
-        )
+        .with_entities(educational_models.CollectiveOfferTemplate.id)
+    )
+
+    return (
+        collective_offers_query.union_all(collective_offer_templates_query)
         .limit(MAX_OFFERS_PER_OFFERER_FOR_COUNT)
         .count()
     )

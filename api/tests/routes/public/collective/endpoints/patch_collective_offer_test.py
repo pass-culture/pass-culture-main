@@ -1000,6 +1000,22 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json == {"offerVenue": ["Ce champ peut ne pas être présent mais ne peut pas être null."]}
 
+    @pytest.mark.parametrize(
+        "offer_factory",
+        (educational_factories.UnderReviewCollectiveOfferFactory, educational_factories.RejectedCollectiveOfferFactory),
+    )
+    @pytest.mark.features(WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API=False)
+    def test_update_offer_not_editable(self, offer_factory):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        collective_offer = offer_factory(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        payload = {"name": "hello"}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = self.make_request(plain_api_key, {"offer_id": collective_offer.id}, json_body=payload)
+
+        assert response.status_code == 422
+        assert response.json == {"global": ["Offre non éditable."]}
+
 
 @pytest.mark.usefixtures("db_session")
 class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):

@@ -160,7 +160,7 @@ class CollectiveOfferTemplateTest:
             response = eac_client.get(url)
 
         assert response.status_code == 200
-        assert offer.status == "ACTIVE"
+        assert offer.displayedStatus == educational_models.CollectiveOfferDisplayedStatus.PUBLISHED
         assert response.json == expected_serialized_offer(offer, redactor, venue)
 
     def test_get_collective_offer_template_if_inactive(self, eac_client, redactor):
@@ -178,7 +178,7 @@ class CollectiveOfferTemplateTest:
             response = eac_client.get(url)
 
         assert response.status_code == 200
-        assert offer.status == offer_mixin.CollectiveOfferStatus.INACTIVE.value
+        assert offer.displayedStatus == educational_models.CollectiveOfferDisplayedStatus.ENDED
 
     def test_get_collective_offer_template_without_date_range(self, eac_client, redactor):
         offer = educational_factories.CollectiveOfferTemplateFactory(
@@ -192,7 +192,7 @@ class CollectiveOfferTemplateTest:
             response = eac_client.get(url)
 
         assert response.status_code == 200
-        assert offer.status == offer_mixin.CollectiveOfferStatus.ACTIVE.value
+        assert offer.displayedStatus == educational_models.CollectiveOfferDisplayedStatus.PUBLISHED
 
     def test_is_a_redactors_favorite(self, eac_client):
         """Ensure that the isFavorite field is true only if the
