@@ -27,7 +27,7 @@ export const Activity = (): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
   const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
-  const { activity, setActivity, offerer } = useSignupJourneyContext()
+  const { activity, setActivity } = useSignupJourneyContext()
 
   const { data: venueTypes, isLoading } = useSWR(
     [GET_VENUE_TYPES_QUERY_KEY],
@@ -121,7 +121,6 @@ export const Activity = (): JSX.Element => {
             isDisabled={methods.formState.isSubmitting}
             previousTo={SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION}
             nextTo={SIGNUP_JOURNEY_STEP_IDS.VALIDATION}
-            legalCategoryCode={offerer?.legalCategoryCode}
           />
         </form>
       </FormProvider>

@@ -95,7 +95,6 @@ export const Offerers = (): JSX.Element => {
       from: location.pathname,
       to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
       used: OnboardingFormNavigationAction.NewOfferer,
-      categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
     })
     setOfferer(newOfferer)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -107,7 +106,6 @@ export const Offerers = (): JSX.Element => {
       from: location.pathname,
       to: '/parcours-inscription/structure/rattachement/confirmation',
       used: OnboardingFormNavigationAction.JoinModal,
-      categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
     })
     /* istanbul ignore next: venuesOfOfferer will always be defined here or else,
      the user would have been redirected */
@@ -138,7 +136,6 @@ export const Offerers = (): JSX.Element => {
       from: location.pathname,
       to: 'LinkModal',
       used: OnboardingFormNavigationAction.LinkModalActionButton,
-      categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
     })
     setShowLinkDialog(true)
   }
@@ -148,7 +145,6 @@ export const Offerers = (): JSX.Element => {
       from: 'LinkModal',
       to: location.pathname,
       used: OnboardingFormNavigationAction.LinkModalActionButton,
-      categorieJuridiqueUniteLegale: offerer.legalCategoryCode,
     })
     setShowLinkDialog(false)
   }
@@ -230,7 +226,6 @@ export const Offerers = (): JSX.Element => {
         }}
         previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
         isDisabled={false}
-        legalCategoryCode={offerer.legalCategoryCode}
       />
       <ConfirmDialog
         icon={strokeCollaboratorIcon}
