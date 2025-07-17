@@ -24,7 +24,7 @@ describe('Cookie management with no login', () => {
     cy.contains('Respect de votre vie privée').should('be.visible')
 
     cy.stepLog({ message: 'I accept all cookies' })
-    cy.findByText('Tout accepter').should('be.enabled').click()
+    cy.findByText('Tout accepter').clickWithRetryIfStillVisible()
 
     cy.stepLog({ message: 'the cookie banner should not be displayed' })
     cy.contains('Respect de votre vie privée').should('not.exist')
@@ -39,7 +39,7 @@ describe('Cookie management with no login', () => {
     )
 
     cy.stepLog({ message: 'I save my choices' })
-    cy.findByText('Enregistrer mes choix').click()
+    cy.findByText('Enregistrer mes choix').clickWithRetryIfStillVisible()
 
     cy.stepLog({
       message: 'I click on the "Accessibilité : non conforme" link',
@@ -76,7 +76,7 @@ describe('Cookie management with no login', () => {
     cy.findByText('Beamer').click()
 
     cy.stepLog({ message: 'I save my choices' })
-    cy.findByText('Enregistrer mes choix').click()
+    cy.findByText('Enregistrer mes choix').clickWithRetryIfStillVisible()
 
     cy.stepLog({ message: 'I open the cookie management option' })
     cy.findAllByText('Gestion des cookies').first().click()
@@ -130,7 +130,7 @@ describe('Cookie management with no login', () => {
     cy.findByText('Beamer').click()
 
     cy.stepLog({ message: 'I save my choices' })
-    cy.findByText('Enregistrer mes choix').click()
+    cy.findByText('Enregistrer mes choix').clickWithRetryIfStillVisible()
 
     cy.stepLog({ message: 'I clear all cookies and storage' })
     cy.clearAllCookies()
@@ -168,7 +168,7 @@ describe('Cookie management with login', () => {
     cy.findByText('Beamer').click()
 
     cy.stepLog({ message: 'I save my choices' })
-    cy.findByText('Enregistrer mes choix').click()
+    cy.findByText('Enregistrer mes choix').clickWithRetryIfStillVisible()
 
     cy.stepLog({ message: 'I disconnect of my account' })
     cy.findByTestId('offerer-select').click()

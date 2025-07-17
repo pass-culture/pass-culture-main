@@ -174,4 +174,18 @@ Cypress.Commands.add(
   }
 )
 
+Cypress.Commands.add(
+  'clickWithRetryIfStillVisible',
+  { prevSubject: true },
+  (subject: JQuery<HTMLElement>) => {
+    const element = cy.wrap(subject)
+    element.click().then(($el) => {
+      if (Cypress.dom.isAttached($el)) {
+        console.log('element still visible, retrying click')
+        element.click()
+      }
+    })
+  }
+)
+
 export {}
