@@ -1,5 +1,6 @@
 import datetime
 import logging
+import os
 from decimal import Decimal
 
 import click
@@ -57,28 +58,59 @@ def generate_fake_adage_token(readonly: bool, cannot_prebook: bool) -> None:
     help="Ministry for this deposit.",
     required=True,
 )
-@click.option("--path", type=str, required=True, help="Path to the CSV to import.")
+@click.option("--filename", type=str, required=True, help="Name of the CSV to import.")
 @click.option(
     "--conflict",
     type=click.Choice(("keep", "replace"), case_sensitive=False),
     default="keep",
     help="Overide previous ministry if needed.",
 )
+@click.option(
+    "--educational-program-name",
+    type=click.Choice([educational_models.PROGRAM_MARSEILLE_EN_GRAND]),
+    help="Link the institutions to a program, if given.",
+)
 @click.option("--final", is_flag=True, help="Flag deposits as final.")
 @click.option("--not-dry", is_flag=True, help="Do not commit the changes.")
 def import_deposit_csv(
-    *, path: str, year: int, ministry: str, conflict: str, final: bool, not_dry: bool = False
+    *,
+    year: int,
+    ministry: str,
+    filename: str,
+    conflict: str,
+    educational_program_name: str,
+    final: bool,
+    not_dry: bool = False,
 ) -> None:
     """
     import CSV deposits and update institution according to adage data.
 
     CSV format change every time we try to work with it.
     """
-    institution_api.import_deposit_institution_csv(
-        path=path, year=year, ministry=ministry, conflict=conflict, final=final, program_name=None
+    args = locals()
+    logger.info("Starting import deposit csv with args %s", args)
+
+    namespace_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = f"{namespace_dir}/{filename}"
+
+    total_amount = institution_api.import_deposit_institution_csv(
+        path=file_path,
+        year=year,
+        ministry=ministry,
+        conflict=conflict,
+        final=final,
+        program_name=educational_program_name,
     )
+
+    with open(f"{os.environ.get('OUTPUT_DIRECTORY')}/total_amount.txt", "w", encoding="utf8") as f:
+        f.write(f"Total imported amount: {total_amount}")
+
     if not_dry:
+        logger.info("Finished import deposit csv, committing")
         db.session.commit()
+    else:
+        logger.info("Finished dry run for import budget, rollback")
+        db.session.rollback()
 
 
 @blueprint.cli.command("synchronize_venues_from_adage_cultural_partners")
