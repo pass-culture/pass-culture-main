@@ -7,7 +7,7 @@ export const serializePriceCategories = (
 ): PriceCategoryBody => {
   const serializedData = values.priceCategories.map((priceCategory) => {
     if (priceCategory.price === '') {
-      throw new Error('Price should not be empty because of formik validation')
+      throw new Error('Price should not be empty because of form validation')
     }
     return {
       label: priceCategory.label,
