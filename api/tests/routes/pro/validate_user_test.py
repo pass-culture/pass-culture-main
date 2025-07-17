@@ -12,6 +12,7 @@ from pcapi.models import db
 
 class ValidateUserTest:
     @pytest.mark.usefixtures("db_session")
+    @pytest.mark.features(WIP_2025_AUTOLOGIN=False)
     def test_validate_user_token(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__isEmailValidated=False)
         token = token_utils.Token.create(
@@ -22,6 +23,7 @@ class ValidateUserTest:
         assert user_offerer.user.isEmailValidated
 
     @pytest.mark.usefixtures("db_session")
+    @pytest.mark.features(WIP_2025_AUTOLOGIN=False)
     def test_fail_if_unknown_token(self, client):
         response = client.patch("/users/validate_signup/unknown-token")
 

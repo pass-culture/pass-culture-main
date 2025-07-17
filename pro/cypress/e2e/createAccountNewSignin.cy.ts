@@ -1,10 +1,12 @@
 import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
-import { logInAndGoToPage } from '../support/helpers.ts'
 
 describe('Account creation', () => {
   before(() => {
     cy.visit('/')
-    cy.setFeatureFlags([{ name: 'WIP_2025_SIGN_UP', isActive: true }])
+    cy.setFeatureFlags([
+      { name: 'WIP_2025_SIGN_UP', isActive: true },
+      { name: 'WIP_2025_AUTOLOGIN', isActive: true },
+    ])
   })
 
   beforeEach(() => {
@@ -58,19 +60,8 @@ describe('Account creation', () => {
     )
 
     cy.stepLog({
-      message:
-        'check that we are redirected to connexion with a toaster message',
+      message: 'check that we are redirected to subscription journey',
     })
-
-    cy.findAllByTestId('global-notification-success')
-      .contains(
-        'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.'
-      )
-      .should('not.be.visible')
-    cy.url().should('contain', '/connexion')
-
-    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
-
-    logInAndGoToPage(randomEmail, '/parcours-inscription')
+    cy.url().should('contain', '/parcours-inscription/structure')
   })
 })
