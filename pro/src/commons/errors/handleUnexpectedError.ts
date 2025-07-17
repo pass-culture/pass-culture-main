@@ -1,5 +1,4 @@
 import { captureException, withScope } from '@sentry/browser'
-import type { Extras } from '@sentry/core/build/types/types-hoist/extra.d.ts'
 
 import { NOTIFICATION_SHOW_DURATION } from 'commons/core/Notification/constants'
 import { NotificationTypeEnum } from 'commons/hooks/useNotification'
@@ -7,22 +6,9 @@ import { showNotification } from 'commons/store/notifications/reducer'
 import { rootStore } from 'commons/store/store'
 
 import { FrontendError } from './FrontendError'
+import { FrontendErrorOptions } from './types'
 
-type HandleUnexpectedErrorOptions = Partial<{
-  extras: Extras
-  /**
-   * Whether to notify the user about the error
-   * @default false
-   */
-  isSilent: boolean
-  /**
-   * End-user message to display when `shouldNotifyUser` is true.
-   * @default "Une erreur est survenue de notre côté. Veuillez réessayer plus tard."
-   */
-  userMessage: string
-}>
-
-const DEFAULT_OPTIONS: HandleUnexpectedErrorOptions = {
+const DEFAULT_OPTIONS: FrontendErrorOptions = {
   isSilent: false,
   userMessage:
     'Une erreur est survenue de notre côté. Veuillez réessayer plus tard.',
@@ -35,20 +21,10 @@ const DEFAULT_OPTIONS: HandleUnexpectedErrorOptions = {
  * - Logging it to the console
  *
  * Can be used anywhere, inluding outside of the Redux context.
- *
- * @example
- * ```ts
- * const foundItem = items.find((item) => item.id === id)
- * if (!foundItem) {
- *   return handleUnexpectedError(new FrontendError('`foundItem` is undefined.'), {
- *     userMessage: 'Nous n’avons pas pu mettre à jour votre offre car une erreur est survenue. Veuillez réessayer plus tard.',
- *   })
- * }
- * ```
  */
 export function handleUnexpectedError(
   error: FrontendError,
-  options: HandleUnexpectedErrorOptions = {}
+  options: FrontendErrorOptions = {}
 ): void {
   const { extras, isSilent, userMessage } = {
     ...DEFAULT_OPTIONS,
