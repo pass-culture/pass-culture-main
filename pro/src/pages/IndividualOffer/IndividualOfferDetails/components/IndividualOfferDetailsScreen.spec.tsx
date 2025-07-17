@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 import { Route, Routes } from 'react-router'
@@ -176,24 +176,22 @@ const renderDetailsScreen = ({
   )
 
   return renderWithProviders(
-    <>
-      <Routes>
-        <Route
-          path={getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.DETAILS,
-            mode,
-          })}
-          element={element}
-        />
-        <Route
-          path={`/onboarding${getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.DETAILS,
-            mode,
-          })}`}
-          element={element}
-        />
-      </Routes>
-    </>,
+    <Routes>
+      <Route
+        path={getIndividualOfferPath({
+          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          mode,
+        })}
+        element={element}
+      />
+      <Route
+        path={`/onboarding${getIndividualOfferPath({
+          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          mode,
+        })}`}
+        element={element}
+      />
+    </Routes>,
     {
       user: sharedCurrentUserFactory(),
       initialRouterEntries: [initialRoute],
@@ -291,6 +289,14 @@ describe('IndividualOfferDetails', () => {
       await screen.findByRole('heading', { name: 'Illustrez votre offre' })
     ).toBeInTheDocument()
     expect(screen.getByText(DEFAULTS.submitButtonLabel)).toBeInTheDocument()
+  })
+
+  it('should NOT display the accessibility field', () => {
+    renderDetailsScreen({ contextValue })
+
+    expect(
+      screen.queryByRole('heading', { name: 'Modalités d’accessibilité' })
+    ).not.toBeInTheDocument()
   })
 
   it('should display the full form when categories, and subcategories has been selected', async () => {
@@ -398,7 +404,7 @@ describe('IndividualOfferDetails', () => {
 
     await userEvent.selectOptions(
       await screen.findByLabelText('Qui propose l’offre ?'),
-      'Le nom du lieu 1'
+      'Le nom du lieu 189'
     )
 
     await userEvent.selectOptions(
@@ -656,6 +662,7 @@ describe('IndividualOfferDetails', () => {
       const eanInputLabel = /Scanner ou rechercher un produit par EAN/
       const eanSearchButtonLabel = /Rechercher/
       const eanResetButtonLabel = /Effacer/
+
       it('should render EAN search for record stores as a venue', async () => {
         const context = individualOfferContextValuesFactory({
           categories: MOCK_DATA.categories,
@@ -926,6 +933,164 @@ describe('IndividualOfferDetails', () => {
         })
       })
     })
+
+    describe('with Feature Flag', () => {
+      const contextValue = individualOfferContextValuesFactory({
+        categories: MOCK_DATA.categories,
+        subCategories: MOCK_DATA.subCategories,
+        offer: null,
+      })
+      const options = {
+        features: ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'],
+      }
+
+      const venueWithoutExternalAccessibilityData = venueListItemFactory({
+        id: 1,
+        name: 'Lieu sans données d’accessibilité externe',
+        audioDisabilityCompliant: true,
+        mentalDisabilityCompliant: false,
+        motorDisabilityCompliant: true,
+        visualDisabilityCompliant: false,
+      })
+      const venueWithExternalAccessibilityData = venueListItemFactory({
+        id: 2,
+        name: 'Lieu avec données d’accessibilité externe',
+        audioDisabilityCompliant: true,
+        mentalDisabilityCompliant: false,
+        motorDisabilityCompliant: true,
+        visualDisabilityCompliant: false,
+        externalAccessibilityData: {
+          isAccessibleAudioDisability: false,
+          isAccessibleMentalDisability: true,
+          isAccessibleMotorDisability: false,
+          isAccessibleVisualDisability: true,
+        },
+      })
+
+      const props = {
+        venues: [
+          venueWithoutExternalAccessibilityData,
+          venueWithExternalAccessibilityData,
+        ],
+      }
+
+      it('should display the accessibility field', () => {
+        renderDetailsScreen({
+          contextValue,
+          options,
+          props,
+        })
+
+        expect(
+          screen.getByRole('heading', {
+            name: 'Modalités d’accessibilité',
+          })
+        ).toBeVisible()
+
+        expect(
+          screen.getByRole('checkbox', { name: 'Visuel' })
+        ).not.toBeChecked()
+        expect(
+          screen.getByRole('checkbox', { name: 'Psychique ou cognitif' })
+        ).not.toBeChecked()
+        expect(
+          screen.getByRole('checkbox', { name: 'Moteur' })
+        ).not.toBeChecked()
+        expect(
+          screen.getByRole('checkbox', { name: 'Auditif' })
+        ).not.toBeChecked()
+        expect(
+          screen.getByRole('checkbox', { name: 'Non accessible' })
+        ).toBeChecked()
+      })
+
+      // For some reason that may require further investigation, `userEvent` does't work here
+      // (more precisely, the change event is not triggered on venueId select).
+      it('should update the accessibility field depending on the selected venue', async () => {
+        renderDetailsScreen({
+          contextValue,
+          options,
+          props,
+        })
+
+        fireEvent.change(screen.getByLabelText('Qui propose l’offre ?'), {
+          target: {
+            value: screen.getByRole<HTMLOptionElement>('option', {
+              name: 'Lieu sans données d’accessibilité externe',
+            }).value,
+          },
+        })
+
+        expect(
+          await screen.findByRole('checkbox', { name: 'Auditif' })
+        ).toBeChecked()
+        expect(
+          await screen.findByRole('checkbox', { name: 'Psychique ou cognitif' })
+        ).not.toBeChecked()
+        expect(
+          await screen.findByRole('checkbox', { name: 'Moteur' })
+        ).toBeChecked()
+        expect(
+          await screen.findByRole('checkbox', { name: 'Visuel' })
+        ).not.toBeChecked()
+        expect(
+          await screen.findByRole('checkbox', { name: 'Non accessible' })
+        ).not.toBeChecked()
+
+        fireEvent.change(screen.getByLabelText('Qui propose l’offre ?'), {
+          target: {
+            value: screen.getByRole<HTMLOptionElement>('option', {
+              name: 'Lieu avec données d’accessibilité externe',
+            }).value,
+          },
+        })
+
+        // Venue's external accessibility data should take precedence
+        expect(
+          await screen.findByRole('checkbox', { name: 'Auditif' })
+        ).not.toBeChecked()
+        expect(
+          await screen.findByRole('checkbox', { name: 'Psychique ou cognitif' })
+        ).toBeChecked()
+        expect(
+          await screen.findByRole('checkbox', { name: 'Moteur' })
+        ).not.toBeChecked()
+        expect(
+          await screen.findByRole('checkbox', { name: 'Visuel' })
+        ).toBeChecked()
+        expect(
+          await screen.findByRole('checkbox', { name: 'Non accessible' })
+        ).not.toBeChecked()
+      })
+
+      it('should initialize the accessibility field with the default venue data when there is only one venue', async () => {
+        const props = {
+          venues: [venueWithoutExternalAccessibilityData],
+        }
+
+        renderDetailsScreen({
+          contextValue,
+          options,
+          props,
+        })
+
+        expect(
+          await screen.findByRole('checkbox', { name: 'Auditif' })
+        ).toBeChecked()
+        expect(
+          await screen.findByRole('checkbox', { name: 'Psychique ou cognitif' })
+        ).not.toBeChecked()
+        expect(
+          await screen.findByRole('checkbox', { name: 'Moteur' })
+        ).toBeChecked()
+        expect(
+          await screen.findByRole('checkbox', { name: 'Visuel' })
+        ).not.toBeChecked()
+        expect(
+          await screen.findByRole('checkbox', { name: 'Non accessible' })
+        ).not.toBeChecked()
+      })
+    })
   })
 
   describe('on edition', () => {
@@ -1031,6 +1196,41 @@ describe('IndividualOfferDetails', () => {
 
       expect(screen.getByLabelText('Catégorie *')).toBeDisabled()
       expect(screen.getByLabelText('Sous-catégorie *')).toBeDisabled()
+    })
+
+    describe('with Feature Flag', () => {
+      const contextValue = individualOfferContextValuesFactory({
+        categories: MOCK_DATA.categories,
+        subCategories: MOCK_DATA.subCategories,
+      })
+      const mode = OFFER_WIZARD_MODE.EDITION
+      const options = {
+        features: ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'],
+      }
+      const props = {
+        venues: [venueListItemFactory()],
+      }
+
+      it("should set the accessibility field to readonly when it's a pending offer", async () => {
+        const offer = getIndividualOfferFactory({
+          subcategoryId: 'virtual' as SubcategoryIdEnum,
+          status: OfferStatus.PENDING,
+        })
+
+        renderDetailsScreen({
+          contextValue: {
+            ...contextValue,
+            offer,
+          },
+          mode,
+          options,
+          props,
+        })
+
+        expect(
+          await screen.findByRole('checkbox', { name: 'Visuel' })
+        ).toBeDisabled()
+      })
     })
   })
 

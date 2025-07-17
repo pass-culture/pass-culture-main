@@ -295,7 +295,6 @@ describe('getInitialValuesFromOffer', () => {
     it('should get the expected initial values from an offer with accessibility', () => {
       const offer = getIndividualOfferFactory({
         id: 1,
-        name: 'Le nom de l’offre 1',
         audioDisabilityCompliant: true,
         mentalDisabilityCompliant: false,
         motorDisabilityCompliant: true,

@@ -88,16 +88,16 @@ export const getIndividualOfferFactory = (
   customGetIndividualOffer: Partial<GetIndividualOfferWithAddressResponseModel> = {},
   venue: GetOfferVenueResponseModel = getOfferVenueFactory()
 ): GetIndividualOfferWithAddressResponseModel => {
-  const currentOfferId = offerId++
+  const id = customGetIndividualOffer.id ?? offerId++
 
   return {
-    name: `Le nom de l’offre ${currentOfferId}`,
+    id,
+    name: `Le nom de l’offre ${id}`,
     isActive: true,
     isEditable: true,
     isEvent: true,
     isHeadlineOffer: false,
     isThing: true,
-    id: currentOfferId,
     status: OfferStatus.ACTIVE,
     venue,
     hasBookingLimitDatetimesPassed: false,
@@ -233,12 +233,12 @@ export const bookingRecapFactory = (
 export const venueListItemFactory = (
   customVenueListItem: Partial<VenueListItemResponseModel> = {}
 ): VenueListItemResponseModel => {
-  const currentVenueId = venueId++
+  const id = customVenueListItem.id ?? venueId++
 
   return {
-    id: currentVenueId,
+    id,
     isVirtual: false,
-    name: `Le nom du lieu ${currentVenueId}`,
+    name: `Le nom du lieu ${id}`,
     publicName: undefined,
     venueTypeCode: VenueTypeCode.AUTRE,
     hasCreatedOffer: true,
