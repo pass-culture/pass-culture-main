@@ -8,6 +8,7 @@ import {
   subcategoryFactory,
   venueListItemFactory,
 } from 'commons/utils/factories/individualApiFactories'
+import { getOfferLastProvider } from 'commons/utils/factories/providerFactories'
 import { offerVenueFactory } from 'commons/utils/factories/venueFactories'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
@@ -535,6 +536,94 @@ describe('getFormReadOnlyFields', () => {
           isNewOfferCreationFlowFeatureActive
         )
       ).toStrictEqual(expectedValues)
+    })
+  })
+
+  describe('with Feature Flag', () => {
+    const isNewOfferCreationFlowFeatureActive = true
+
+    it('should include accessibility as read-only when the offer status is pending or rejected', () => {
+      const pendingOffer = getIndividualOfferFactory({
+        status: OfferStatus.PENDING,
+      })
+      const rejectedOffer = getIndividualOfferFactory({
+        status: OfferStatus.REJECTED,
+      })
+
+      let isProductBased = false
+
+      expect(
+        getFormReadOnlyFields(
+          pendingOffer,
+          isProductBased,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).toContain('accessibility')
+      expect(
+        getFormReadOnlyFields(
+          rejectedOffer,
+          isProductBased,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).toContain('accessibility')
+
+      isProductBased = true
+
+      expect(
+        getFormReadOnlyFields(
+          pendingOffer,
+          isProductBased,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).toContain('accessibility')
+      expect(
+        getFormReadOnlyFields(
+          rejectedOffer,
+          isProductBased,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).toContain('accessibility')
+    })
+
+    it('should exclude accessibility for all other cases', () => {
+      const nullOffer = null
+      const synchronizedOffer = getIndividualOfferFactory({
+        lastProvider: getOfferLastProvider(),
+      })
+
+      let isProductBased = false
+
+      expect(
+        getFormReadOnlyFields(
+          nullOffer,
+          isProductBased,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).not.toContain('accessibility')
+      expect(
+        getFormReadOnlyFields(
+          synchronizedOffer,
+          isProductBased,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).not.toContain('accessibility')
+
+      isProductBased = true
+
+      expect(
+        getFormReadOnlyFields(
+          nullOffer,
+          isProductBased,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).not.toContain('accessibility')
+      expect(
+        getFormReadOnlyFields(
+          synchronizedOffer,
+          isProductBased,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).not.toContain('accessibility')
     })
   })
 })

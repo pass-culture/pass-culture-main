@@ -207,7 +207,11 @@ export function getFormReadOnlyFields(
   isProductBased: boolean,
   isNewOfferCreationFlowFeatureActive: boolean
 ): string[] {
-  const allFields: string[] = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
+  const isNewOfferDraft = offer === null
+
+  const allFieldsExceptAccessibility: string[] = Object.keys(
+    DEFAULT_DETAILS_FORM_VALUES
+  )
   const maybeAccessibilityFields = isNewOfferCreationFlowFeatureActive
     ? ['accessibility']
     : []
@@ -215,24 +219,23 @@ export function getFormReadOnlyFields(
   const hasPendingOrRejectedStatus =
     offer && [OfferStatus.REJECTED, OfferStatus.PENDING].includes(offer.status)
 
-  // Offer is still a draft / being created.
-  if (offer === null) {
-    // An EAS search was performed, so the form is product based.
-    // Multiple fields are read-only.
-    if (isProductBased) {
-      const editableFields = ['venueId', ...maybeAccessibilityFields]
-
-      return allFields.filter((field) => !editableFields.includes(field))
-    }
-
-    return []
-  } else if (
-    isProductBased ||
-    isOfferSynchronized(offer) ||
-    hasPendingOrRejectedStatus
-  ) {
-    return [...allFields, ...maybeAccessibilityFields]
-  } else {
-    return ['categoryId', 'subcategoryId', 'venueId']
+  // An EAS search was performed, so the form is product based.
+  // Multiple fields are read-only.
+  if (isNewOfferDraft && isProductBased) {
+    return allFieldsExceptAccessibility.filter((field) => field !== 'venueId')
   }
+
+  if (isNewOfferDraft) {
+    return []
+  }
+
+  if (hasPendingOrRejectedStatus) {
+    return [...allFieldsExceptAccessibility, ...maybeAccessibilityFields]
+  }
+
+  if (isProductBased || isOfferSynchronized(offer)) {
+    return allFieldsExceptAccessibility
+  }
+
+  return ['categoryId', 'subcategoryId', 'venueId']
 }
