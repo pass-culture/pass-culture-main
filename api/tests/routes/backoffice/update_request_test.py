@@ -199,6 +199,19 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
         assert rows[4]["Modification"] == "Nom : Nouveau-Nom"
         assert rows[4]["Instructeur"] == "Instructeur du Backoffice"
 
+    def test_list_account_update_requests_order_asc(self, authenticated_client):
+        update_request_1 = users_factories.EmailUpdateRequestFactory()
+        update_request_2 = users_factories.EmailUpdateRequestFactory()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, order="asc"))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert rows[0]["Dossier"] == str(update_request_1.dsApplicationId)
+        assert rows[1]["Dossier"] == str(update_request_2.dsApplicationId)
+
     def test_list_account_update_requests_with_flags(self, authenticated_client):
         update_request = users_factories.EmailUpdateRequestFactory(
             status=dms_models.GraphQLApplicationStates.draft,
