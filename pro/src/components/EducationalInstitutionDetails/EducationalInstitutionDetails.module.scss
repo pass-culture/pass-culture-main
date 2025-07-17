@@ -19,6 +19,7 @@
   display: flex;
   flex-direction: column;
   background-color: var(--color-background-default);
+  max-height: max-content;
 }
 
 .contact-details-container-oldlayout {

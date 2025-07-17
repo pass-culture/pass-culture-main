@@ -43,8 +43,15 @@ $vertical-offset-icon-from-step: calc(
   background-position: center;
 }
 
+.line-error {
+  background-image: inherit;
+  background-color: var(--color-icon-error);
+  border-radius: rem.torem(2px);
+}
+
 .line-success {
   background-image: radial-gradient(var(--color-valid) 100%, transparent 100%);
+  border-radius: rem.torem(2px);
 }
 
 .line-disabled,
@@ -92,8 +99,17 @@ $vertical-offset-icon-from-step: calc(
 .step {
   display: flex;
   min-height: rem.torem(58px);
+
+  &:last-child {
+    min-height: 0;
+  }
 }
 
 .step-content {
   margin-left: rem.torem(16px);
+  margin-bottom: rem.torem(32px);
+}
+
+.step-content-last {
+  margin-bottom: unset;
 }
