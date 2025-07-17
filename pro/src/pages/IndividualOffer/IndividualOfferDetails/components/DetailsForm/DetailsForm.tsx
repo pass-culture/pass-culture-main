@@ -151,8 +151,9 @@ export const DetailsForm = ({
                     value: '',
                     label: 'Sélectionner la structure',
                   }}
-                  {...register('venueId')}
-                  onChange={updateVenue}
+                  {...register('venueId', {
+                    onChange: updateVenue,
+                  })}
                   disabled={
                     readOnlyFields.includes('venueId') ||
                     venuesOptions.length === 1

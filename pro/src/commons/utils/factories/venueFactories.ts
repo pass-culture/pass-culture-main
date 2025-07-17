@@ -5,20 +5,20 @@ let VENUE_ID = 0
 export const offerVenueFactory = (
   customOfferVenue: Partial<GetOfferVenueResponseModel> = {}
 ): GetOfferVenueResponseModel => {
-  const currentVenueId = VENUE_ID++
+  const id = customOfferVenue.id ?? VENUE_ID++
 
   return {
-    id: currentVenueId,
+    id,
     audioDisabilityCompliant: true,
     isVirtual: false,
     managingOfferer: {
       id: 1,
       allowedOnAdage: true,
-      name: `Gestionnaire de la venue ${currentVenueId}`,
+      name: 'Le nom de l’offreur 1',
     },
     mentalDisabilityCompliant: true,
     motorDisabilityCompliant: true,
-    name: `Le nom du lieu ${currentVenueId}`,
+    name: `Le nom du lieu ${id}`,
     publicName: undefined,
     visualDisabilityCompliant: true,
     ...customOfferVenue,
