@@ -20,6 +20,7 @@ export interface CalloutProps {
   onClose?: undefined | (() => void)
   variant?: CalloutVariant
   testId?: string
+  shouldShowIcon?: boolean
 }
 
 interface CalloutVariantProps {
@@ -36,6 +37,7 @@ export const Callout = ({
   onClose,
   testId,
   variant = CalloutVariant.INFO,
+  shouldShowIcon = true,
 }: CalloutProps): JSX.Element => {
   let calloutIcon: CalloutVariantProps
   /* istanbul ignore next: graphic variations */
@@ -65,12 +67,14 @@ export const Callout = ({
       )}
       data-testid={testId}
     >
-      <SvgIcon
-        src={calloutIcon.src}
-        alt={calloutIcon.alt}
-        className={styles['icon']}
-        width="20"
-      />
+      {shouldShowIcon && (
+        <SvgIcon
+          src={calloutIcon.src}
+          alt={calloutIcon.alt}
+          className={styles['icon']}
+          width="20"
+        />
+      )}
       <div className={styles['content']}>
         {title && <div className={styles['title']}>{title}</div>}
         {children && <div className={styles['callout-text']}>{children}</div>}

@@ -1,13 +1,16 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 
 import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { BookableOfferTimeline } from './BookableOfferTimeline'
 
 describe('BookableOfferTimeline', () => {
   it("should render the 'Suivi de l'offre' title", () => {
-    render(<BookableOfferTimeline offer={getCollectiveOfferFactory()} />)
+    renderWithProviders(
+      <BookableOfferTimeline offer={getCollectiveOfferFactory()} />
+    )
     expect(screen.getByText("Suivi de l'offre")).toBeInTheDocument()
   })
 
@@ -59,7 +62,7 @@ describe('BookableOfferTimeline', () => {
   ])(
     'should render the correct label for past step with status $status',
     ({ status, expectedText }) => {
-      render(
+      renderWithProviders(
         <BookableOfferTimeline
           offer={getCollectiveOfferFactory({
             history: {
@@ -94,7 +97,7 @@ describe('BookableOfferTimeline', () => {
   ])(
     'should render a waiting step after $lastStatus if applicable',
     ({ lastStatus, expectedWaiting }) => {
-      render(
+      renderWithProviders(
         <BookableOfferTimeline
           offer={getCollectiveOfferFactory({
             history: {
@@ -114,7 +117,7 @@ describe('BookableOfferTimeline', () => {
   )
 
   it('should not render a waiting step for statuses that do not require it', () => {
-    render(
+    renderWithProviders(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           history: {
@@ -134,8 +137,10 @@ describe('BookableOfferTimeline', () => {
 
   it('should render the waiting step "En attente de remboursement" only if 48h have passed after ENDED status', () => {
     const now = new Date()
-    const date49hAgo = new Date(now.getTime() - 49 * 60 * 60 * 1000).toISOString()
-    render(
+    const date49hAgo = new Date(
+      now.getTime() - 49 * 60 * 60 * 1000
+    ).toISOString()
+    renderWithProviders(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           history: {
@@ -154,7 +159,7 @@ describe('BookableOfferTimeline', () => {
   })
 
   it('should render the waiting step "En attente de préréservation" after PUBLISHED', () => {
-    render(
+    renderWithProviders(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           history: {
@@ -173,7 +178,7 @@ describe('BookableOfferTimeline', () => {
   })
 
   it('should render the waiting step "En attente de réservation" after PREBOOKED', () => {
-    render(
+    renderWithProviders(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           history: {
@@ -200,7 +205,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
     { status: CollectiveOfferDisplayedStatus.EXPIRED, label: 'Expirée' },
     { status: CollectiveOfferDisplayedStatus.REJECTED, label: 'Non conforme' },
   ])('should render an error icon for status $status', ({ status, label }) => {
-    render(
+    renderWithProviders(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           history: {
@@ -228,7 +233,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
     { status: CollectiveOfferDisplayedStatus.REIMBURSED, label: 'Remboursée' },
     { status: CollectiveOfferDisplayedStatus.ARCHIVED, label: 'Archivée' },
   ])('should render a success icon for status $status', ({ status, label }) => {
-    render(
+    renderWithProviders(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           history: {
@@ -250,9 +255,12 @@ describe('BookableOfferTimeline - step type rendering', () => {
 
   it.each([
     { status: CollectiveOfferDisplayedStatus.DRAFT, label: 'Brouillon' },
-    { status: CollectiveOfferDisplayedStatus.UNDER_REVIEW, label: 'En instruction' },
+    {
+      status: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
+      label: 'En instruction',
+    },
   ])('should render a waiting icon for status $status', ({ status, label }) => {
-    render(
+    renderWithProviders(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           history: {
@@ -273,7 +281,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
   })
 
   it('should render a disabled icon for future steps', () => {
-    render(
+    renderWithProviders(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           history: {
@@ -288,9 +296,33 @@ describe('BookableOfferTimeline - step type rendering', () => {
         })}
       />
     )
-    
+
     const futureStep = screen.getByText('Préréservée')
     const icon = futureStep.closest('li')?.querySelector('svg')
     expect(icon).toHaveClass('icon-disabled')
+  })
+
+  it('should render a infobox if current step is draft', () => {
+    renderWithProviders(
+      <BookableOfferTimeline
+        offer={getCollectiveOfferFactory({
+          history: {
+            past: [
+              {
+                status: CollectiveOfferDisplayedStatus.DRAFT,
+              },
+            ],
+            future: [CollectiveOfferDisplayedStatus.PUBLISHED],
+          },
+        })}
+      />
+    )
+
+    expect(
+      screen.getByText(
+        "Vous avez commencé à rédiger un brouillon. Vous pouvez le reprendre à tout moment afin de finaliser sa rédaction et l'envoyer à un établissement."
+      )
+    ).toBeInTheDocument()
+    expect(screen.getByText('Reprendre mon brouillon')).toBeInTheDocument()
   })
 })
