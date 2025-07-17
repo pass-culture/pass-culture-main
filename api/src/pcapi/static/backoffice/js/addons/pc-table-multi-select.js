@@ -69,6 +69,7 @@ class PcTableMultiSelect extends PcAddOn {
     this.state[tableMultiSelectId] = {
       rowsIds,
       selectedRowsIds: new Set(this.state[tableMultiSelectId] ? this.state[tableMultiSelectId].selectedRowsIds || [] : []),
+      selectedCheckboxes: new Set(this.state[tableMultiSelectId] ? this.state[tableMultiSelectId].selectedCheckboxes || [] : []),
     }
   }
 
@@ -129,8 +130,10 @@ class PcTableMultiSelect extends PcAddOn {
 
     if (event.target.checked) {
       this.state[tableMultiSelectId].selectedRowsIds.add(id)
+      this.state[tableMultiSelectId].selectedCheckboxes.add(event.target)
     } else {
       this.state[tableMultiSelectId].selectedRowsIds.delete(id)
+      this.state[tableMultiSelectId].selectedCheckboxes.delete(event.target)
     }
 
     const selectableCheckboxes = this.#getSelectableCheckboxes($table)
@@ -160,8 +163,10 @@ class PcTableMultiSelect extends PcAddOn {
       $checkbox.checked = checked
       if (checked) {
         this.state[tableMultiSelectId].selectedRowsIds.add($checkbox.dataset.id)
+        this.state[tableMultiSelectId].selectedCheckboxes.add($checkbox)
       } else {
         this.state[tableMultiSelectId].selectedRowsIds.delete($checkbox.dataset.id)
+        this.state[tableMultiSelectId].selectedCheckboxes.delete($checkbox)
       }
     })
 
@@ -178,6 +183,7 @@ class PcTableMultiSelect extends PcAddOn {
       detail: {
         tableMultiSelectId,
         rowsIds: Array.from(this.state[tableMultiSelectId].rowsIds),
+        selectedCheckboxes: Array.from(this.state[tableMultiSelectId].selectedCheckboxes),
         selectedRowsIds: Array.from(this.state[tableMultiSelectId].selectedRowsIds),
       }
     }))

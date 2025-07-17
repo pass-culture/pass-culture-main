@@ -63,7 +63,8 @@
         <input type="checkbox"
                class="form-check-input"
                name="pc-table-multi-select-check-{{ booking.id }}"
-               data-id="{{ booking.id }}" />
+               data-id="{{ booking.id }}"
+               data-value="{{ booking.amount }}" />
       </td>
       <td>
         <div class="d-flex">
@@ -183,8 +184,8 @@
   {% endfor %}
 {% endblock table_body %}
 {% block multi_select_menu %}
-  <div class="counter-container text-nowrap">
-    <span class="counter">0</span> réservation(s) individuelle(s) sélectionnée(s)
+  <div class="counter-container text-nowrap ">
+    <span class="counter">0</span> réservation(s) individuelle(s) sélectionnée(s)&nbsp:&nbsp<span class="value">0</span> €
   </div>
   {% if has_permission("MANAGE_BOOKINGS") %}
     <div data-toggle="pc-batch-confirm-btn-group"
@@ -217,7 +218,7 @@
               data-modal-selector="#batch-tag-fraudulent-booking-modal"
               data-mode="fetch"
               data-fetch-url="{{ url_for('backoffice_web.individual_bookings.get_batch_tag_fraudulent_bookings_form') }}">
-        Marquer comme frauduleuse
+        Frauduleuse
       </button>
       <button disabled
               type="button"
@@ -226,7 +227,7 @@
               data-modal-selector="#batch-remove-fraudulent-booking-tag-modal"
               data-mode="fetch"
               data-fetch-url="{{ url_for('backoffice_web.individual_bookings.get_batch_remove_fraudulent_booking_tag_form') }}">
-        Supprimer le marquage frauduleux
+        Non frauduleuse
       </button>
     </div>
   {% endif %}
@@ -242,14 +243,14 @@
               data-modal-selector="#overpayment-creation-modal"
               data-mode="fetch"
               data-fetch-url="{{ url_for('backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form') }}"
-              data-use-confirmation-modal="true">Créer un incident</button>
+              data-use-confirmation-modal="true">Incident</button>
       <button disabled
               type="button"
               class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap"
               data-modal-selector="#commercial-gesture-creation-modal"
               data-mode="fetch"
               data-fetch-url="{{ url_for('backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form') }}"
-              data-use-confirmation-modal="true">Créer un geste commercial</button>
+              data-use-confirmation-modal="true">Geste commercial</button>
     </div>
   {% endif %}
 {% endblock multi_select_menu %}
