@@ -53,6 +53,7 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.setFeatureFlags([
       { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
       { name: 'WIP_2025_SIGN_UP', isActive: false },
+      { name: 'WIP_2025_AUTOLOGIN', isActive: false },
     ])
   })
 
@@ -153,6 +154,7 @@ describe('Signup journey with known offerer...', () => {
     cy.setFeatureFlags([
       { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
       { name: 'WIP_2025_SIGN_UP', isActive: false },
+      { name: 'WIP_2025_AUTOLOGIN', isActive: false },
     ])
   })
 
@@ -179,6 +181,7 @@ describe('Signup journey with known offerer...', () => {
       cy.setFeatureFlags([
         { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
         { name: 'WIP_2025_SIGN_UP', isActive: false },
+        { name: 'WIP_2025_AUTOLOGIN', isActive: false },
       ])
     })
 
@@ -258,6 +261,7 @@ describe('Signup journey with known offerer...', () => {
       cy.setFeatureFlags([
         { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
         { name: 'WIP_2025_SIGN_UP', isActive: false },
+        { name: 'WIP_2025_AUTOLOGIN', isActive: false },
       ])
     })
 
