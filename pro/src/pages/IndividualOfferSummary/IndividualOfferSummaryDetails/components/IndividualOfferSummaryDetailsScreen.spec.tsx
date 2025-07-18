@@ -20,9 +20,9 @@ import {
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 
-import { DetailsSummaryScreen } from '../DetailsSummary'
+import { IndividualOfferSummaryDetailsScreen } from './IndividualOfferSummaryDetailsScreen'
 
-const renderDetailsSummaryScreen = (
+const renderIndividualOfferSummaryDetailsScreen = (
   offer: GetIndividualOfferWithAddressResponseModel,
   options?: RenderWithProvidersOptions
 ) => {
@@ -61,7 +61,7 @@ const renderDetailsSummaryScreen = (
 
   renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
-      <DetailsSummaryScreen offer={offer} />
+      <IndividualOfferSummaryDetailsScreen offer={offer} />
     </IndividualOfferContext.Provider>,
     {
       ...options,
@@ -69,14 +69,14 @@ const renderDetailsSummaryScreen = (
   )
 }
 
-describe('DetailsSummaryScreen', () => {
+describe('IndividualOfferSummaryDetailsScreen', () => {
   it('should render summary with filled data', () => {
     const offer = getIndividualOfferFactory({
       name: 'Offre de test',
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
     })
 
-    renderDetailsSummaryScreen(offer)
+    renderIndividualOfferSummaryDetailsScreen(offer)
 
     expect(screen.getAllByText('Offre de test')).toHaveLength(2)
     expect(screen.getByText('Catégorie A')).toBeInTheDocument()
@@ -92,7 +92,7 @@ describe('DetailsSummaryScreen', () => {
         productId: 1234567891234,
       })
 
-      renderDetailsSummaryScreen(offer)
+      renderIndividualOfferSummaryDetailsScreen(offer)
     })
 
     it('should display a callout telling that details cannot be edited', () => {
@@ -124,7 +124,7 @@ describe('DetailsSummaryScreen', () => {
       venue: getOfferVenueFactory({ publicName: undefined }),
     })
 
-    renderDetailsSummaryScreen(offer)
+    renderIndividualOfferSummaryDetailsScreen(offer)
 
     expect(screen.getByText(/Structure/)).toBeInTheDocument()
     expect(screen.getByText(/Le nom du lieu/)).toBeInTheDocument()
@@ -145,7 +145,7 @@ describe('DetailsSummaryScreen', () => {
       venue: getOfferVenueFactory({ publicName: 'TATA' }),
     })
 
-    renderDetailsSummaryScreen(offer)
+    renderIndividualOfferSummaryDetailsScreen(offer)
 
     expect(screen.getByText(/Structure/)).toBeInTheDocument()
     expect(screen.getByText('TATA')).toBeInTheDocument()
@@ -157,7 +157,7 @@ describe('DetailsSummaryScreen', () => {
       description: 'my description',
     })
 
-    renderDetailsSummaryScreen(offer)
+    renderIndividualOfferSummaryDetailsScreen(offer)
 
     //  The description is displayed twice : once in the summary and once in the preview
     expect(screen.getAllByText('my description')).toHaveLength(2)
@@ -170,7 +170,7 @@ describe('DetailsSummaryScreen', () => {
       description: '',
     })
 
-    renderDetailsSummaryScreen(offer)
+    renderIndividualOfferSummaryDetailsScreen(offer)
 
     expect(screen.queryByTestId('markdown-content')).not.toBeInTheDocument()
   })

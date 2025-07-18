@@ -7,6 +7,7 @@ import { useIndividualOfferContext } from 'commons/context/IndividualOfferContex
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
+import { DisplayOfferInAppLink } from 'components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { Markdown } from 'components/Markdown/Markdown'
 import { OfferAppPreview } from 'components/OfferAppPreview/OfferAppPreview'
@@ -20,20 +21,20 @@ import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
+import { serializeOfferSectionData } from 'pages/IndividualOfferSummary/commons/serializer'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { DisplayOfferInAppLink } from '../SummaryScreen/DisplayOfferInAppLink/DisplayOfferInAppLink'
-import { serializeOfferSectionData } from '../SummaryScreen/OfferSection/serializer'
+import styles from './IndividualOfferSummaryDetailsScreen.module.scss'
 
-import styles from './DetailsSummary.module.scss'
-
-type DetailsSummaryScreenProps = {
+type IndividualOfferSummaryDetailsScreenProps = {
   offer: GetIndividualOfferWithAddressResponseModel
 }
 
-export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
+export function IndividualOfferSummaryDetailsScreen({
+  offer,
+}: IndividualOfferSummaryDetailsScreenProps) {
   const mode = useOfferWizardMode()
   const { categories, subCategories } = useIndividualOfferContext()
 

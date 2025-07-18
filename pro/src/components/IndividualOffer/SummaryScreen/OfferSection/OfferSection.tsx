@@ -20,11 +20,11 @@ import {
 } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
+import { serializeOfferSectionData } from 'pages/IndividualOfferSummary/commons/serializer'
 import { computeAddressDisplayName } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './OfferSection.module.scss'
-import { serializeOfferSectionData } from './serializer'
 import { humanizeDelay } from './utils'
 
 interface OfferSummaryProps {

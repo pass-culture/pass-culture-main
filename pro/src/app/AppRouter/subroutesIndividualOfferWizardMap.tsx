@@ -22,17 +22,19 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   },
   {
     lazy: () =>
-      import('pages/IndividualOfferWizard/DetailsSummary/DetailsSummary'),
-    path: '/offre/individuelle/:offerId/recapitulatif/details',
-    title: 'Détails de l’offre - Consulter une offre individuelle',
-  },
-  {
-    lazy: () =>
       import(
         'pages/IndividualOffer/IndividualOfferDetails/IndividualOfferDetails'
       ),
     path: '/offre/individuelle/:offerId/edition/details',
     title: 'Détails de l’offre - Modifier une offre individuelle',
+  },
+  {
+    lazy: () =>
+      import(
+        'pages/IndividualOfferSummary/IndividualOfferSummaryDetails/IndividualOfferSummaryDetails'
+      ),
+    path: '/offre/individuelle/:offerId/recapitulatif/details',
+    title: 'Détails de l’offre - Consulter une offre individuelle',
   },
   // Useful information pages
   {
