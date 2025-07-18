@@ -48,7 +48,7 @@ import {
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { Notification } from 'components/Notification/Notification'
 
-import { SummaryScreen } from './SummaryScreen'
+import { IndividualOfferSummaryScreen } from './IndividualOfferSummaryScreen'
 
 // vi.mock('apiClient/api', () => ({
 //   api: {
@@ -104,14 +104,14 @@ const renderSummaryScreen = ({
               step: OFFER_WIZARD_STEP_IDS.SUMMARY,
               mode: OFFER_WIZARD_MODE.READ_ONLY,
             })}
-            element={<SummaryScreen />}
+            element={<IndividualOfferSummaryScreen />}
           />
           <Route
             path={getIndividualOfferPath({
               step: OFFER_WIZARD_STEP_IDS.SUMMARY,
               mode: OFFER_WIZARD_MODE.CREATION,
             })}
-            element={<SummaryScreen />}
+            element={<IndividualOfferSummaryScreen />}
           />
           <Route
             path={getIndividualOfferPath({
@@ -786,11 +786,11 @@ describe('SummaryScreen', () => {
       expect(screen.getByText('Intitulé')).toBeInTheDocument()
       expect(screen.getByText('Adresse')).toBeInTheDocument()
 
-      // Present with the colon « : » in the <SummaryScreen /> component
+      // Present with the colon « : » in the <IndividualOfferSummaryScreen /> component
       expect(screen.getByText('Intitulé :')).toBeInTheDocument()
       expect(screen.getByText('Adresse :')).toBeInTheDocument()
 
-      // Both present in <VenueDetails /> and <SummaryScreen /> components
+      // Both present in <VenueDetails /> and <IndividualOfferSummaryScreen /> components
       expect(screen.getAllByText('mon adresse')).toHaveLength(2)
       expect(screen.getAllByText('ma street 1 ma ville')).toHaveLength(2)
     })

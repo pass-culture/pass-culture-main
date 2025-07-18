@@ -13,6 +13,8 @@ import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOf
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { getOfferConditionalFields } from 'commons/utils/getOfferConditionalFields'
+import { serializeDateTimeToUTCFromLocalDepartment } from 'components/IndividualOffer/StocksEventEdition/serializers'
+import { getDepartmentCode } from 'components/IndividualOffer/utils/getDepartmentCode'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OfferAppPreview } from 'components/OfferAppPreview/OfferAppPreview'
 import { RedirectToBankAccountDialog } from 'components/RedirectToBankAccountDialog/RedirectToBankAccountDialog'
@@ -25,21 +27,17 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { serializeDateTimeToUTCFromLocalDepartment } from '../StocksEventEdition/serializers'
-import { getDepartmentCode } from '../utils/getDepartmentCode'
 
 import { DisplayOfferInAppLink } from './DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { EventPublicationForm } from './EventPublicationForm/EventPublicationForm'
 import { EventPublicationFormValues } from './EventPublicationForm/types'
 import { validationSchema } from './EventPublicationForm/validationSchema'
+import styles from './IndividualOfferSummaryScreen.module.scss'
 import { OfferSection } from './OfferSection/OfferSection'
 import { PriceCategoriesSection } from './PriceCategoriesSection/PriceCategoriesSection'
 import { StockSection } from './StockSection/StockSection'
-import styles from './SummaryScreen.module.scss'
 
-// TODO (igabriele, 2025-07-18): Move this file to `pages/IndividualOffer/IndividualOfferSummary/components/IndividualOfferSummaryScreen.tsx`.
-// + move all the related files accordingly
-export const SummaryScreen = () => {
+export const IndividualOfferSummaryScreen = () => {
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
   const notification = useNotification()
   const mode = useOfferWizardMode()
