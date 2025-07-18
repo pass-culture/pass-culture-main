@@ -8,12 +8,14 @@ import { getTitle } from 'components/IndividualOffer/IndividualOfferLayout/utils
 import { SummaryScreen } from 'components/IndividualOffer/SummaryScreen/SummaryScreen'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
+// TODO (igabriele, 2025-07-18): Move this file to `pages/IndividualOffer/IndividualOfferSummary/IndividualOfferSummary.tsx`.
+// + move all the related files accordingly
 const Summary = (): JSX.Element | null => {
   const { offer, publishedOfferWithSameEAN } = useIndividualOfferContext()
 
   const mode = useOfferWizardMode()
 
-  let title: string | undefined = undefined
+  let title: string | undefined
   if (
     mode === OFFER_WIZARD_MODE.READ_ONLY ||
     mode === OFFER_WIZARD_MODE.EDITION

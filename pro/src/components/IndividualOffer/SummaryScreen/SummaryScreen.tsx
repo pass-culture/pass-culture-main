@@ -37,6 +37,8 @@ import { PriceCategoriesSection } from './PriceCategoriesSection/PriceCategories
 import { StockSection } from './StockSection/StockSection'
 import styles from './SummaryScreen.module.scss'
 
+// TODO (igabriele, 2025-07-18): Move this file to `pages/IndividualOffer/IndividualOfferSummary/components/IndividualOfferSummaryScreen.tsx`.
+// + move all the related files accordingly
 export const SummaryScreen = () => {
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
   const notification = useNotification()
