@@ -486,8 +486,12 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
 
     @property
     def is_eligible_for_search(self) -> bool:
-        can_be_searched = bool(self.isOpenToPublic)
-        return can_be_searched and self.managingOfferer.isActive and self.managingOfferer.isValidated and self.hasOffers
+        return (
+            bool(self.isOpenToPublic)
+            and self.managingOfferer.isActive
+            and self.managingOfferer.isValidated
+            and self.hasOffers
+        )
 
     def store_departement_code(self) -> None:
         if not self.postalCode:
