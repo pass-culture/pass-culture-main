@@ -11,6 +11,7 @@ import {
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
+import { getDelayToFrenchText } from 'commons/utils/date'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { Markdown } from 'components/Markdown/Markdown'
@@ -25,7 +26,6 @@ import { computeAddressDisplayName } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './OfferSection.module.scss'
-import { humanizeDelay } from './utils'
 
 interface OfferSummaryProps {
   offer: GetIndividualOfferWithAddressResponseModel
@@ -162,7 +162,7 @@ export const OfferSection = ({
   if (offerData.withdrawalDelay) {
     practicalInfoDescriptions.push({
       title: 'Heure de retrait',
-      text: `${humanizeDelay(offerData.withdrawalDelay)} avant le début de l’évènement`,
+      text: `${getDelayToFrenchText(offerData.withdrawalDelay)} avant le début de l’évènement`,
     })
   }
   if (offerData.bookingContact) {
