@@ -11,8 +11,6 @@ import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { OfferRefundWarning } from 'components/IndividualOffer/UsefulInformationScreen/UsefulInformationForm/components/OfferRefundWarning'
-import { WithdrawalReminder } from 'components/IndividualOffer/UsefulInformationScreen/UsefulInformationForm/components/WithdrawalReminder'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
@@ -32,7 +30,9 @@ import { UsefulInformationFormValues } from '../../commons/types'
 import { setFormReadOnlyFields } from '../../commons/utils'
 import { OfferLocation } from '../OfferLocation/OfferLocation'
 
+import { OfferRefundWarning } from './OfferRefundWarning'
 import styles from './UsefulInformationForm.module.scss'
+import { WithdrawalReminder } from './WithdrawalReminder'
 
 export interface UsefulInformationFormProps {
   conditionalFields: string[]
