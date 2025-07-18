@@ -32,18 +32,13 @@ const MOCK_DATA = {
         { open: '14:00', close: '19:30' },
       ],
       SUNDAY: null,
-    }
+    },
   },
 }
 
 describe('OpeningHoursReadOnly', () => {
   it('should display each necessary days', () => {
-    render(
-      <OpeningHoursReadOnly
-        isOpenToPublicEnabled={false}
-        openingHours={MOCK_DATA.venue.openingHours}
-      />
-    )
+    render(<OpeningHoursReadOnly openingHours={MOCK_DATA.venue.openingHours} />)
 
     expect(screen.getByText(/Lundi/)).toBeInTheDocument()
     expect(screen.getByText(/Mardi/)).toBeInTheDocument()
@@ -55,12 +50,7 @@ describe('OpeningHoursReadOnly', () => {
   })
 
   it('should display no opening hours !', () => {
-    render(
-      <OpeningHoursReadOnly
-        isOpenToPublicEnabled={false}
-        openingHours={undefined}
-      />
-    )
+    render(<OpeningHoursReadOnly openingHours={undefined} />)
 
     expect(
       screen.getByText(
@@ -69,68 +59,56 @@ describe('OpeningHoursReadOnly', () => {
     ).toBeInTheDocument()
   })
 
-  describe('when open to public feature is enabled', () => {
-    it('should display the address', () => {
-      render(
-        <OpeningHoursReadOnly
-          isOpenToPublicEnabled
-          openingHours={MOCK_DATA.venue.openingHours}
-          address={MOCK_DATA.venue.address}
-        />
+  it('should display the address', () => {
+    render(
+      <OpeningHoursReadOnly
+        openingHours={MOCK_DATA.venue.openingHours}
+        address={MOCK_DATA.venue.address}
+      />
+    )
+
+    const expectedText = `Adresse : ${MOCK_DATA.venue.address.street}, ${MOCK_DATA.venue.address.postalCode} ${MOCK_DATA.venue.address.city}`
+    expect(screen.getByText(expectedText)).toBeInTheDocument()
+  })
+
+  it('should display opening hours when there are some', () => {
+    render(
+      <OpeningHoursReadOnly
+        openingHours={MOCK_DATA.venue.openingHours}
+        address={MOCK_DATA.venue.address}
+      />
+    )
+
+    const firstDay = MOCK_DATA.venue.openingHours.MONDAY
+    expect(screen.getByText(/Lundi/)).toBeInTheDocument()
+    expect(screen.getByText(firstDay[0].open)).toBeInTheDocument()
+    expect(screen.getByText(firstDay[0].close)).toBeInTheDocument()
+  })
+
+  it('should display an empty state message when opening hours are not set', () => {
+    render(
+      <OpeningHoursReadOnly
+        openingHours={null}
+        address={MOCK_DATA.venue.address}
+      />
+    )
+
+    expect(screen.getByText(/Horaires : Non renseigné/)).toBeInTheDocument()
+  })
+
+  it('should display a closed state message when opening hours are set but empty', () => {
+    render(
+      <OpeningHoursReadOnly
+        openingHours={{}}
+        address={MOCK_DATA.venue.address}
+      />
+    )
+
+    expect(
+      screen.getByText(
+        /Horaires : Vous n’avez pas renseigné d’horaire d’ouverture. Votre établissement est indiqué comme fermé sur l’application./
       )
-
-      const expectedText = `Adresse : ${MOCK_DATA.venue.address.street}, ${MOCK_DATA.venue.address.postalCode} ${MOCK_DATA.venue.address.city}`
-      expect(
-        screen.getByText(expectedText)
-      ).toBeInTheDocument()
-    })
-
-    it('should display opening hours when there are some', () => {
-      render(
-        <OpeningHoursReadOnly
-          isOpenToPublicEnabled
-          openingHours={MOCK_DATA.venue.openingHours}
-          address={MOCK_DATA.venue.address}
-        />
-      )
-
-      const firstDay = MOCK_DATA.venue.openingHours.MONDAY
-      expect(screen.getByText(/Lundi/)).toBeInTheDocument()
-      expect(screen.getByText(firstDay[0].open)).toBeInTheDocument()
-      expect(screen.getByText(firstDay[0].close)).toBeInTheDocument()
-    })
-
-    it('should display an empty state message when opening hours are not set', () => {
-      render(
-        <OpeningHoursReadOnly
-          isOpenToPublicEnabled
-          openingHours={null}
-          address={MOCK_DATA.venue.address}
-        />
-      )
-
-      expect(
-        screen.getByText(
-          /Horaires : Non renseigné/
-        )
-      ).toBeInTheDocument()
-    })
-
-    it('should display a closed state message when opening hours are set but empty', () => {
-      render(
-        <OpeningHoursReadOnly
-          isOpenToPublicEnabled
-          openingHours={{}}
-          address={MOCK_DATA.venue.address}
-        />
-      )
-
-      expect(
-        screen.getByText(
-          /Horaires : Vous n’avez pas renseigné d’horaire d’ouverture. Votre établissement est indiqué comme fermé sur l’application./
-        )
-      ).toBeInTheDocument()
-    })
+    ).toBeInTheDocument()
   })
 })
 

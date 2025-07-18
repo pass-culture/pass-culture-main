@@ -11,25 +11,7 @@ interface VenueEditionReadOnlyProps {
   venue: GetVenueResponseModel
 }
 
-const PublicWelcomeSection = ({
-  isOpenToPublicEnabled,
-  children,
-}: {
-  isOpenToPublicEnabled: boolean
-  children: React.ReactNode | React.ReactNode[]
-}): JSX.Element => {
-  return isOpenToPublicEnabled ? (
-    <SummarySubSection title="Accueil du public" shouldShowDivider={false}>
-      {children}
-    </SummarySubSection>
-  ) : (
-    <>{children}</>
-  )
-}
-
 export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
-  const isOpenToPublicEnabled = true
-
   return (
     <SummarySection
       title="Vos informations pour le grand public"
@@ -52,24 +34,20 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
           ]}
         />
       </SummarySubSection>
-      <PublicWelcomeSection isOpenToPublicEnabled={isOpenToPublicEnabled}>
+      <SummarySubSection title="Accueil du public" shouldShowDivider={false}>
         {!venue.isOpenToPublic && (
           <span>Accueil du public dans la structure : Non</span>
         )}
         {venue.isOpenToPublic && (
           <>
             <OpeningHoursReadOnly
-              isOpenToPublicEnabled={isOpenToPublicEnabled}
               openingHours={venue.openingHours}
               address={venue.address}
             />
-            <AccessibilityReadOnly
-              isOpenToPublicEnabled={isOpenToPublicEnabled}
-              venue={venue}
-            />
+            <AccessibilityReadOnly venue={venue} />
           </>
         )}
-      </PublicWelcomeSection>
+      </SummarySubSection>
       <SummarySubSection
         title="Informations de contact"
         shouldShowDivider={false}
