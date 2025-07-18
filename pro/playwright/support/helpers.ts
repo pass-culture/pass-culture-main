@@ -1,4 +1,4 @@
-import { Page, expect , APIRequestContext, APIResponse } from '@playwright/test'
+import { Page, expect, APIRequestContext, APIResponse } from '@playwright/test'
 
 /**
  * A helper to make API requests to the sandbox, with a built-in retry.
@@ -27,11 +27,15 @@ export async function sandboxCall(
     return response
   } else if (retry) {
     // eslint-disable-next-line no-console
-    console.warn(`Sandbox call to ${url} failed with status ${response.status()}. Retrying in 4s...`)
-    await new Promise(resolve => setTimeout(resolve, 4000)) // Wait for 4 seconds
+    console.warn(
+      `Sandbox call to ${url} failed with status ${response.status()}. Retrying in 4s...`
+    )
+    await new Promise((resolve) => setTimeout(resolve, 4000)) // Wait for 4 seconds
     return sandboxCall(request, method, url, false) // Retry once
   } else {
-    throw new Error(`Sandbox call failed for ${method} ${url} with status ${response.status()}: ${await response.text()}`)
+    throw new Error(
+      `Sandbox call failed for ${method} ${url} with status ${response.status()}: ${await response.text()}`
+    )
   }
 }
 
@@ -63,7 +67,7 @@ export async function login(page: Page, email: string) {
   await page.reload()
 
   // Wait for connection page title to be visible
-  await page.waitForSelector('text=Bienvenue sur l’espace partenaires culturels')
+  await page.waitForSelector('text=Connectez-vous')
 
   // Wait for the email input to be ready, then fill credentials and submit
   await expect(page.locator('#email')).toBeEnabled()
@@ -72,8 +76,12 @@ export async function login(page: Page, email: string) {
 
   // Wait for both the sign-in and subsequent data fetch to complete
   await Promise.all([
-    page.waitForResponse(resp => resp.url().includes('/users/signin') && resp.status() === 200),
-    page.waitForResponse(resp => resp.url().includes('/offerers/names') && resp.status() === 200),
+    page.waitForResponse(
+      (resp) => resp.url().includes('/users/signin') && resp.status() === 200
+    ),
+    page.waitForResponse(
+      (resp) => resp.url().includes('/offerers/names') && resp.status() === 200
+    ),
     page.locator('button[type=submit]').click(),
   ])
 }
@@ -85,7 +93,11 @@ export async function login(page: Page, email: string) {
  * @param email The user's email.
  * @param path The path to navigate to after login.
  */
-export async function loginAndGoToPage(page: Page, email: string, path: string) {
+export async function loginAndGoToPage(
+  page: Page,
+  email: string,
+  path: string
+) {
   await login(page, email)
   await page.goto(path)
 
@@ -104,7 +116,11 @@ export async function loginAndSeeDidacticOnboarding(page: Page, email: string) {
 
   // Assertions to verify the page content
   await expect(page.locator('[data-testid="spinner"]')).not.toBeVisible()
-  await expect(page.getByText('Bienvenue sur le pass Culture Pro !')).toBeVisible()
-  await expect(page.getByText('À qui souhaitez-vous proposer votre première offre ?')).toBeVisible()
+  await expect(
+    page.getByText('Bienvenue sur le pass Culture Pro !')
+  ).toBeVisible()
+  await expect(
+    page.getByText('À qui souhaitez-vous proposer votre première offre ?')
+  ).toBeVisible()
   await expect(page.getByRole('button', { name: 'Commencer' })).toHaveCount(2)
 }
