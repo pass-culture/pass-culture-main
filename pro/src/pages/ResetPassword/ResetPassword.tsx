@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useCallback, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useNavigate, useParams, Params } from 'react-router'
+import { Params, useNavigate, useParams } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { Layout } from 'app/App/layout/Layout'
@@ -82,8 +82,16 @@ export const ResetPassword = (): JSX.Element => {
     return <Spinner />
   }
 
+  const mainHeading =
+    token && !passwordChanged && !isBadToken
+      ? 'Réinitialisez votre mot de passe'
+      : ''
+
   return (
-    <Layout layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}>
+    <Layout
+      layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}
+      mainHeading={mainHeading}
+    >
       <div>
         {passwordChanged && !isBadToken && (
           <Hero
@@ -103,9 +111,6 @@ export const ResetPassword = (): JSX.Element => {
         )}
         {token && !passwordChanged && !isBadToken && (
           <section>
-            <h1 className={styles['change-password-title']}>
-              Réinitialisez votre mot de passe
-            </h1>
             <p className={styles['mandatory-info']}>
               Veuillez définir votre nouveau mot de passe afin d’accéder à la
               plateforme.

@@ -3,10 +3,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_forms.scss" as forms;
 
-.title {
-  @include fonts.title1;
-}
-
 .content {
   .siren-field {
     margin-bottom: rem.torem(16px);
