@@ -78,14 +78,10 @@ export const EventPublicationForm = () => {
     'Date de publication'
   )
 
-  const updatePublicationDate = async (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
+  const updatePublicationDate = (event: ChangeEvent<HTMLInputElement>) => {
     const nextPublicationDate = event.target.value
 
-    setValue('publicationDate', nextPublicationDate)
-
-    await trigger('publicationDate')
+    setValue('publicationDate', nextPublicationDate, { shouldValidate: true })
   }
 
   const updatePublicationTime = async (
