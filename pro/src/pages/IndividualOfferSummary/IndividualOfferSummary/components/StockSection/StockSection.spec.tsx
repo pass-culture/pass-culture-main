@@ -17,7 +17,7 @@ import {
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 
-import { StockSection, StockSectionProps } from '../StockSection'
+import { StockSection, StockSectionProps } from './StockSection'
 
 const renderStockSection = (
   props: StockSectionProps,

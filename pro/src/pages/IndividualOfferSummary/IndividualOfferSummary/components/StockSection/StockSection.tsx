@@ -3,41 +3,24 @@ import { useLocation } from 'react-router'
 
 import { api } from 'apiClient/api'
 import {
-  GetIndividualOfferResponseModel,
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
-  OfferStatus,
   StockStatsResponseModel,
 } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { getDepartmentCode } from 'components/IndividualOffer/utils/getDepartmentCode'
+import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
+import { getStockWarningText } from 'pages/IndividualOfferSummary/commons/getStockWarningText'
+import { StockThingSection } from 'pages/IndividualOfferSummary/components/StockThingSection/StockThingSection'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { RecurrenceSection } from './RecurrenceSection/RecurrenceSection'
 import styles from './StockSection.module.scss'
-import { StockThingSection } from './StockThingSection/StockThingSection'
-
-export const getStockWarningText = (offer: GetIndividualOfferResponseModel) => {
-  if (!offer.hasStocks) {
-    return 'Vous n’avez aucun stock renseigné.'
-  }
-
-  if (offer.status === OfferStatus.SOLD_OUT) {
-    return 'Votre stock est épuisé.'
-  }
-
-  if (offer.status === OfferStatus.EXPIRED) {
-    return 'Votre stock est expiré.'
-  }
-
-  return false
-}
 
 export interface StockSectionProps {
   offer: GetIndividualOfferWithAddressResponseModel

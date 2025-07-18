@@ -9,16 +9,15 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
+import { getStockWarningText } from 'pages/IndividualOfferSummary/commons/getStockWarningText'
+import { StockThingSection } from 'pages/IndividualOfferSummary/components/StockThingSection/StockThingSection'
 import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import { getStockWarningText } from '../../../pages/IndividualOfferSummary/IndividualOfferSummary/components/StockSection/StockSection'
-import { StockThingSection } from '../../../pages/IndividualOfferSummary/IndividualOfferSummary/components/StockSection/StockThingSection/StockThingSection'
+import { RecurrenceSummary } from './components/RecurrenceSummary'
+import styles from './IndividualOfferSummaryStocksScreen.module.scss'
 
-import { RecurrenceSummary } from './RecurrenceSummary'
-import styles from './StocksSummary.module.scss'
-
-export const StocksSummaryScreen = () => {
+export const IndividualOfferSummaryStocksScreen = () => {
   const { offer, subCategories } = useIndividualOfferContext()
   const notify = useNotification()
 

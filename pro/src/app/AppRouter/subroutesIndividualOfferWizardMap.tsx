@@ -3,7 +3,7 @@
 import type { RouteConfig } from './routesMap'
 
 export const routesIndividualOfferWizard: RouteConfig[] = [
-  // details pages
+  // Details pages
   {
     lazy: () =>
       import(
@@ -36,7 +36,7 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     path: '/offre/individuelle/:offerId/recapitulatif/details',
     title: 'Détails de l’offre - Consulter une offre individuelle',
   },
-  // Useful information pages
+  // Information pages
   {
     lazy: () =>
       import(
@@ -95,11 +95,22 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   },
   {
     lazy: () =>
-      import('pages/IndividualOfferWizard/StocksSummary/StocksSummary'),
+      import(
+        'pages/IndividualOfferSummary/IndividualOfferSummaryStocks/IndividualOfferSummaryStocks'
+      ),
     path: '/offre/individuelle/:offerId/stocks',
     title: 'Stocks et prix - Consulter une offre individuelle',
   },
-  // confirmation pages
+  // Booking summary page
+  {
+    lazy: () =>
+      import(
+        'pages/IndividualOffer/IndividualOfferSummary/IndividualOfferBookings/IndividualOfferBookings'
+      ),
+    path: '/offre/individuelle/:offerId/reservations',
+    title: 'Réservations - Consulter une offre individuelle',
+  },
+  // Confirmation pages
   {
     lazy: () =>
       import(
@@ -115,15 +126,6 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
       ),
     path: '/offre/individuelle/:offerId/confirmation',
     title: 'Confirmation - Offre individuelle publiée',
-  },
-  // booking summary page
-  {
-    lazy: () =>
-      import(
-        'pages/IndividualOffer/IndividualOfferSummary/IndividualOfferBookings/IndividualOfferBookings'
-      ),
-    path: '/offre/individuelle/:offerId/reservations',
-    title: 'Réservations - Consulter une offre individuelle',
   },
   // Summary pages
   {

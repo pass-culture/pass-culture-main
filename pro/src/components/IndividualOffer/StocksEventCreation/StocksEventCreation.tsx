@@ -7,11 +7,10 @@ import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
+import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { StocksEventList } from 'components/StocksEventList/StocksEventList'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
-
-import { getDepartmentCode } from '../utils/getDepartmentCode'
 
 import { HelpSection } from './HelpSection/HelpSection'
 import styles from './StocksEventCreation.module.scss'

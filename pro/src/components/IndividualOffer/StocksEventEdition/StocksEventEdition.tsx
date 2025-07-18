@@ -33,6 +33,7 @@ import {
   isValidTime,
 } from 'commons/utils/timezone'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
+import { EventCancellationBanner } from 'components/EventCancellationBanner/EventCancellationBanner'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { onSubmit as onRecurrenceSubmit } from 'components/IndividualOffer/StocksEventCreation/form/onSubmit'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -54,14 +55,13 @@ import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
+import { getDepartmentCode } from '../../../commons/utils/getDepartmentCode'
 import { DialogStockEventDeleteConfirm } from '../DialogStockDeleteConfirm/DialogStockEventDeleteConfirm'
 import { DialogStocksEventEditConfirm } from '../DialogStocksEventEditConfirm/DialogStocksEventEditConfirm'
 import { RecurrenceFormValues } from '../StocksEventCreation/form/types'
 import { RecurrenceForm } from '../StocksEventCreation/RecurrenceForm'
-import { getDepartmentCode } from '../utils/getDepartmentCode'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
-import { EventCancellationBanner } from './EventCancellationBanner'
 import { getPriceCategoryOptions } from './getPriceCategoryOptions'
 import { hasChangesOnStockWithBookings } from './hasChangesOnStockWithBookings'
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from './StockFormList/constants'
