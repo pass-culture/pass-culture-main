@@ -177,15 +177,15 @@ Cypress.Commands.add(
 Cypress.Commands.add(
   'clickWithRetryIfStillVisible',
   { prevSubject: true },
-  (subject: JQuery<HTMLElement>) => {
+  (subject: JQuery) => {
+    // eslint-disable-next-line cypress/no-assigning-return-values
     const element = cy.wrap(subject)
     element.click().then(($el) => {
       if (Cypress.dom.isAttached($el)) {
+        // eslint-disable-next-line no-console
         console.log('element still visible, retrying click')
         element.click()
       }
     })
   }
 )
-
-export {}
