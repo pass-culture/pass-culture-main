@@ -13,18 +13,19 @@ export const publicationDateValidationSchema = (schema: yup.StringSchema) =>
         .test(
           'is-in-future',
           'Veuillez indiquer une date dans le futur',
-          function (value) {
+          (value, context) => {
             const dateTime =
-              isDateValid(value) && this.parent.publicationTime
-                ? buildDateTime(value, this.parent.publicationTime)
+              isDateValid(value) && context.parent.publicationTime
+                ? buildDateTime(value, context.parent.publicationTime)
                 : undefined
+
             return dateTime && isAfter(dateTime, new Date())
           }
         )
         .test(
           'is-within-two-years',
           'Veuillez indiquer une date dans les 2 ans à venir',
-          function (value) {
+          (value) => {
             const twoYearsFromNow = addYears(new Date(), 2)
 
             return isDateValid(value) && new Date(value) < twoYearsFromNow
@@ -48,10 +49,10 @@ export const bookingAllowedDateValidationSchema = (schema: yup.StringSchema) =>
         .test(
           'is-in-future',
           'Veuillez indiquer une date dans le futur',
-          function (value) {
+          (value, context) => {
             const dateTime =
-              isDateValid(value) && this.parent.bookingAllowedTime
-                ? buildDateTime(value, this.parent.bookingAllowedTime)
+              isDateValid(value) && context.parent.bookingAllowedTime
+                ? buildDateTime(value, context.parent.bookingAllowedTime)
                 : undefined
             return dateTime && isAfter(dateTime, new Date())
           }
@@ -59,7 +60,7 @@ export const bookingAllowedDateValidationSchema = (schema: yup.StringSchema) =>
         .test(
           'is-within-two-years',
           'Veuillez indiquer une date dans les 2 ans à venir',
-          function (value) {
+          (value) => {
             const twoYearsFromNow = addYears(new Date(), 2)
 
             return isDateValid(value) && new Date(value) < twoYearsFromNow

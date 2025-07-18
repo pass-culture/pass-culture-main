@@ -5,7 +5,7 @@ import {
   bookingAllowedTimeValidationSchema,
   publicationDateValidationSchema,
   publicationTimeValidationSchema,
-} from 'components/IndividualOffer/SummaryScreen/EventPublicationForm/validationSchema'
+} from 'pages/IndividualOffer/IndividualOfferSummary/components/EventPublicationForm/validationSchema'
 
 export const validationSchema = yup.object().shape({
   publicationMode: yup.string<'now' | 'later'>().required().nullable(),

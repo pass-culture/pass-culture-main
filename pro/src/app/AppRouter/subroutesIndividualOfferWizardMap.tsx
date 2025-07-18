@@ -99,12 +99,18 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   },
   // Summary pages
   {
-    lazy: () => import('pages/IndividualOfferWizard/Summary/Summary'),
+    lazy: () =>
+      import(
+        'pages/IndividualOffer/IndividualOfferSummary/IndividualOfferSummary'
+      ),
     path: '/offre/individuelle/:offerId/creation/recapitulatif',
     title: 'Récapitulatif - Créer une offre individuelle',
   },
   {
-    lazy: () => import('pages/IndividualOfferWizard/Summary/Summary'),
+    lazy: () =>
+      import(
+        'pages/IndividualOffer/IndividualOfferSummary/IndividualOfferSummary'
+      ),
     path: '/offre/individuelle/:offerId/recapitulatif',
     title: 'Récapitulatif - Modifier une offre individuelle',
   },
@@ -129,7 +135,7 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/IndividualOffer/IndividualOfferSummary/IndividualOfferBookings/IndividualOfferBookings'
+        'pages/IndividualOffer/IndividualOfferBookings/IndividualOfferBookings'
       ),
     path: '/offre/individuelle/:offerId/reservations',
     title: 'Réservations - Consulter une offre individuelle',
@@ -179,7 +185,10 @@ export const routesOnboardingIndividualOfferWizard: RouteConfig[] = [
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {
-    lazy: () => import('pages/IndividualOfferWizard/Summary/Summary'),
+    lazy: () =>
+      import(
+        'pages/IndividualOffer/IndividualOfferSummary/IndividualOfferSummary'
+      ),
     path: '/onboarding/offre/individuelle/:offerId/creation/recapitulatif',
     title: 'Récapitulatif - Créer une offre individuelle - Onboarding',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',

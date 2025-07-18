@@ -16,7 +16,7 @@ import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
-import { humanizeDelay } from '../SummaryScreen/OfferSection/utils'
+import { humanizeDelay } from '../../../pages/IndividualOffer/IndividualOfferSummary/components/OfferSection/utils'
 
 type DetailsSummaryScreenProps = {
   offer: GetIndividualOfferWithAddressResponseModel

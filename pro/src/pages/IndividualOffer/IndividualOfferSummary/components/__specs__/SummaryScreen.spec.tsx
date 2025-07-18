@@ -41,7 +41,7 @@ import {
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { Notification } from 'components/Notification/Notification'
 
-import { SummaryScreen } from '../SummaryScreen'
+import { IndividualOfferSummaryScreen } from '../IndividualOfferSummaryScreen'
 
 const mockLogEvent = vi.fn()
 
@@ -64,14 +64,14 @@ const renderSummary = (
               step: OFFER_WIZARD_STEP_IDS.SUMMARY,
               mode: OFFER_WIZARD_MODE.READ_ONLY,
             })}
-            element={<SummaryScreen />}
+            element={<IndividualOfferSummaryScreen />}
           />
           <Route
             path={getIndividualOfferPath({
               step: OFFER_WIZARD_STEP_IDS.SUMMARY,
               mode: OFFER_WIZARD_MODE.CREATION,
             })}
-            element={<SummaryScreen />}
+            element={<IndividualOfferSummaryScreen />}
           />
           <Route
             path={getIndividualOfferPath({

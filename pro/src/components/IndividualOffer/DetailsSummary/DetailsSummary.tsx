@@ -24,8 +24,8 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { DisplayOfferInAppLink } from '../SummaryScreen/DisplayOfferInAppLink/DisplayOfferInAppLink'
-import { serializeOfferSectionData } from '../SummaryScreen/OfferSection/serializer'
+import { DisplayOfferInAppLink } from '../../../pages/IndividualOffer/IndividualOfferSummary/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
+import { serializeOfferSectionData } from '../../../pages/IndividualOffer/IndividualOfferSummary/components/OfferSection/serializer'
 
 import styles from './DetailsSummary.module.scss'
 

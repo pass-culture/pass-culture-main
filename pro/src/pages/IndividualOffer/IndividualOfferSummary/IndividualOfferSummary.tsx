@@ -5,15 +5,16 @@ import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { IndividualOfferLayout } from 'components/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
 import { getTitle } from 'components/IndividualOffer/IndividualOfferLayout/utils/getTitle'
-import { SummaryScreen } from 'components/IndividualOffer/SummaryScreen/SummaryScreen'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-const Summary = (): JSX.Element | null => {
+import { IndividualOfferSummaryScreen } from './components/IndividualOfferSummaryScreen'
+
+const IndividualOfferSummary = (): JSX.Element | null => {
   const { offer, publishedOfferWithSameEAN } = useIndividualOfferContext()
 
   const mode = useOfferWizardMode()
 
-  let title: string | undefined = undefined
+  let title: string | undefined
   if (
     mode === OFFER_WIZARD_MODE.READ_ONLY ||
     mode === OFFER_WIZARD_MODE.EDITION
@@ -33,11 +34,11 @@ const Summary = (): JSX.Element | null => {
       mode={mode}
       venueHasPublishedOfferWithSameEan={Boolean(publishedOfferWithSameEAN)}
     >
-      <SummaryScreen />
+      <IndividualOfferSummaryScreen />
     </IndividualOfferLayout>
   )
 }
 
 // Below exports are used by react-router
 // ts-unused-exports:disable-next-line
-export const Component = Summary
+export const Component = IndividualOfferSummary

@@ -2,7 +2,7 @@
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { IndividualOfferLayout } from 'components/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
-import { PriceCategoriesSection } from 'components/IndividualOffer/SummaryScreen/PriceCategoriesSection/PriceCategoriesSection'
+import { PriceCategoriesSection } from 'pages/IndividualOffer/IndividualOfferSummary/components/PriceCategoriesSection/PriceCategoriesSection'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 const PriceCategoriesSummary = (): JSX.Element | null => {

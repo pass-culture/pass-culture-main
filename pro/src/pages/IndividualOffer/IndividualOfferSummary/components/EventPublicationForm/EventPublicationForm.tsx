@@ -1,3 +1,4 @@
+import { type ChangeEvent } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import { SelectOption } from 'commons/custom_types/form'
@@ -58,8 +59,9 @@ export const getPublicationHoursOptions = (): SelectOption[] => {
 export const EventPublicationForm = () => {
   const today = new Date()
 
-  const { register, watch, setValue, formState } =
+  const { register, watch, setValue, formState, trigger } =
     useFormContext<EventPublicationFormValues>()
+  const publicationMode = watch('publicationMode')
 
   const isNewPublicationDatetimeEnabled = useActiveFeature(
     'WIP_REFACTO_FUTURE_OFFER'
@@ -75,6 +77,22 @@ export const EventPublicationForm = () => {
   ) : (
     'Date de publication'
   )
+
+  const updatePublicationDate = (event: ChangeEvent<HTMLInputElement>) => {
+    const nextPublicationDate = event.target.value
+
+    setValue('publicationDate', nextPublicationDate, { shouldValidate: true })
+  }
+
+  const updatePublicationTime = async (
+    event: ChangeEvent<HTMLSelectElement>
+  ) => {
+    const nextPublicationTime = event.target.value
+
+    setValue('publicationTime', nextPublicationTime)
+
+    await trigger('publicationDate')
+  }
 
   return (
     <>
@@ -103,14 +121,16 @@ export const EventPublicationForm = () => {
                     'L’offre restera secrète pour le public jusqu’à sa publication.',
                   value: 'later',
                   sizing: 'fill',
-                  collapsed: watch('publicationMode') === 'later' && (
+                  collapsed: publicationMode === 'later' && (
                     <FormLayout.Row inline className={styles['publish-later']}>
                       <DatePicker
                         label="Date"
                         minDate={today}
                         className={styles['date-picker']}
                         required
-                        {...register('publicationDate')}
+                        {...register('publicationDate', {
+                          onChange: updatePublicationDate,
+                        })}
                         error={formState.errors.publicationDate?.message}
                       />
                       <Select
@@ -119,7 +139,9 @@ export const EventPublicationForm = () => {
                         defaultOption={{ label: 'HH:MM', value: '' }}
                         className={styles['time-picker']}
                         required
-                        {...register('publicationTime')}
+                        {...register('publicationTime', {
+                          onChange: updatePublicationTime,
+                        })}
                         error={formState.errors.publicationTime?.message}
                       />
                     </FormLayout.Row>
