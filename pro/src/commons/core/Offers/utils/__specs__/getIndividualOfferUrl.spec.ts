@@ -1,5 +1,7 @@
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 
 import { getIndividualOfferUrl } from '../getIndividualOfferUrl'
 
@@ -11,7 +13,7 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: undefined,
         mode: OFFER_WIZARD_MODE.CREATION,
-        step: OFFER_WIZARD_STEP_IDS.DETAILS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
       },
       expectedUrl: '/offre/individuelle/creation/details',
     },
@@ -20,7 +22,7 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.CREATION,
-        step: OFFER_WIZARD_STEP_IDS.DETAILS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
       },
       expectedUrl: '/offre/individuelle/42/creation/details',
     },
@@ -28,7 +30,7 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.CREATION,
-        step: OFFER_WIZARD_STEP_IDS.STOCKS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
       },
       expectedUrl: '/offre/individuelle/42/creation/stocks',
     },
@@ -36,7 +38,7 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.CREATION,
-        step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
       },
       expectedUrl: '/offre/individuelle/42/creation/recapitulatif',
     },
@@ -44,7 +46,7 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.CREATION,
-        step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.CONFIRMATION,
       },
       expectedUrl: '/offre/individuelle/42/creation/confirmation',
     },
@@ -52,7 +54,7 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.CREATION,
-        step: OFFER_WIZARD_STEP_IDS.TARIFS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
       },
       expectedUrl: '/offre/individuelle/42/creation/tarifs',
     },
@@ -61,7 +63,7 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.EDITION,
-        step: OFFER_WIZARD_STEP_IDS.DETAILS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
       },
       expectedUrl: '/offre/individuelle/42/edition/details',
     },
@@ -69,7 +71,7 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.EDITION,
-        step: OFFER_WIZARD_STEP_IDS.STOCKS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
       },
       expectedUrl: '/offre/individuelle/42/edition/stocks',
     },
@@ -77,7 +79,7 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.EDITION,
-        step: OFFER_WIZARD_STEP_IDS.TARIFS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
       },
       expectedUrl: '/offre/individuelle/42/edition/tarifs',
     },
@@ -86,7 +88,7 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.READ_ONLY,
-        step: OFFER_WIZARD_STEP_IDS.STOCKS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
       },
       expectedUrl: '/offre/individuelle/42/stocks',
     },
@@ -94,7 +96,7 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.READ_ONLY,
-        step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
       },
       expectedUrl: '/offre/individuelle/42/recapitulatif',
     },
@@ -102,7 +104,7 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.READ_ONLY,
-        step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.CONFIRMATION,
       },
       expectedUrl: '',
     },
@@ -110,7 +112,7 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.READ_ONLY,
-        step: OFFER_WIZARD_STEP_IDS.TARIFS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
       },
       expectedUrl: '/offre/individuelle/42/tarifs',
     },
@@ -118,7 +120,7 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.READ_ONLY,
-        step: OFFER_WIZARD_STEP_IDS.BOOKINGS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.BOOKINGS,
       },
       expectedUrl: '/offre/individuelle/42/reservations',
     },
@@ -134,7 +136,7 @@ describe('getIndividualOfferUrl', () => {
         props: {
           offerId: undefined,
           mode: OFFER_WIZARD_MODE.CREATION,
-          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
           isOnboarding: true,
         },
         expectedUrl: '/onboarding/offre/individuelle/creation/details',
@@ -144,7 +146,7 @@ describe('getIndividualOfferUrl', () => {
         props: {
           offerId: offerId,
           mode: OFFER_WIZARD_MODE.CREATION,
-          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
           isOnboarding: true,
         },
         expectedUrl: '/onboarding/offre/individuelle/42/creation/details',
@@ -153,7 +155,7 @@ describe('getIndividualOfferUrl', () => {
         props: {
           offerId: offerId,
           mode: OFFER_WIZARD_MODE.CREATION,
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           isOnboarding: true,
         },
         expectedUrl: '/onboarding/offre/individuelle/42/creation/stocks',
@@ -162,7 +164,7 @@ describe('getIndividualOfferUrl', () => {
         props: {
           offerId: offerId,
           mode: OFFER_WIZARD_MODE.CREATION,
-          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
           isOnboarding: true,
         },
         expectedUrl: '/onboarding/offre/individuelle/42/creation/recapitulatif',
@@ -171,7 +173,7 @@ describe('getIndividualOfferUrl', () => {
         props: {
           offerId: offerId,
           mode: OFFER_WIZARD_MODE.CREATION,
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           isOnboarding: true,
         },
         expectedUrl: '/onboarding/offre/individuelle/42/creation/tarifs',

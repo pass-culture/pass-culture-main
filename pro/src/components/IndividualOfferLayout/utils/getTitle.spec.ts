@@ -1,6 +1,6 @@
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 
-import { getTitle } from '../getTitle'
+import { getTitle } from './getTitle'
 
 describe('getTitle', () => {
   const testCases = [

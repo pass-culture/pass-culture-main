@@ -8,7 +8,10 @@ import { api } from 'apiClient/api'
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { isOfferAllocineSynchronized } from 'commons/core/Offers/utils/typology'
@@ -24,7 +27,6 @@ import {
   PRICE_CATEGORY_MAX_LENGTH,
   UNIQUE_PRICE,
 } from 'components/IndividualOffer/PriceCategoriesScreen/form/constants'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -156,8 +158,8 @@ export const PriceCategoriesScreen = ({
       offerId: offer.id,
       step:
         mode === OFFER_WIZARD_MODE.EDITION
-          ? OFFER_WIZARD_STEP_IDS.TARIFS
-          : OFFER_WIZARD_STEP_IDS.STOCKS,
+          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
+          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
       mode:
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
       isOnboarding,
@@ -206,7 +208,7 @@ export const PriceCategoriesScreen = ({
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })
@@ -216,7 +218,7 @@ export const PriceCategoriesScreen = ({
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
           mode,
           isOnboarding,
         })
@@ -435,7 +437,7 @@ export const PriceCategoriesScreen = ({
 
         <ActionBar
           onClickPrevious={handlePreviousStepOrBackToReadOnly}
-          step={OFFER_WIZARD_STEP_IDS.TARIFS}
+          step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS}
           isDisabled={isSubmitting}
           dirtyForm={isDirty}
         />

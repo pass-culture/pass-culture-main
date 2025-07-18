@@ -20,6 +20,7 @@ import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
   CATEGORY_STATUS,
   OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import {
@@ -38,7 +39,6 @@ import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import * as imageUploadModule from 'pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 
 import {
@@ -154,7 +154,7 @@ const renderDetailsScreen = ({
   options = {},
   mode = DEFAULTS.mode,
   initialRoute = getIndividualOfferPath({
-    step: OFFER_WIZARD_STEP_IDS.DETAILS,
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
     mode,
   }),
 }: {
@@ -179,14 +179,14 @@ const renderDetailsScreen = ({
     <Routes>
       <Route
         path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
           mode,
         })}
         element={element}
       />
       <Route
         path={`/onboarding${getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
           mode,
         })}`}
         element={element}
@@ -680,7 +680,7 @@ describe('IndividualOfferDetailsScreen', () => {
           contextValue: context,
           initialRoute:
             getIndividualOfferPath({
-              step: OFFER_WIZARD_STEP_IDS.DETAILS,
+              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
               mode: OFFER_WIZARD_MODE.CREATION,
             }) + '?offer-type=PHYSICAL_GOOD',
         })
@@ -707,7 +707,7 @@ describe('IndividualOfferDetailsScreen', () => {
           contextValue: context,
           initialRoute:
             getIndividualOfferPath({
-              step: OFFER_WIZARD_STEP_IDS.DETAILS,
+              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
               mode: OFFER_WIZARD_MODE.CREATION,
             }) + '?offer-type=PHYSICAL_GOOD',
         })
@@ -746,7 +746,7 @@ describe('IndividualOfferDetailsScreen', () => {
             contextValue: context,
             initialRoute:
               getIndividualOfferPath({
-                step: OFFER_WIZARD_STEP_IDS.DETAILS,
+                step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
                 mode: OFFER_WIZARD_MODE.CREATION,
               }) + '?offer-type=PHYSICAL_GOOD',
           })
@@ -804,7 +804,7 @@ describe('IndividualOfferDetailsScreen', () => {
             contextValue: context,
             initialRoute:
               getIndividualOfferPath({
-                step: OFFER_WIZARD_STEP_IDS.DETAILS,
+                step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
                 mode: OFFER_WIZARD_MODE.CREATION,
               }) + '?offer-type=PHYSICAL_GOOD',
           })
@@ -860,7 +860,7 @@ describe('IndividualOfferDetailsScreen', () => {
             contextValue: context,
             initialRoute:
               getIndividualOfferPath({
-                step: OFFER_WIZARD_STEP_IDS.DETAILS,
+                step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
                 mode: OFFER_WIZARD_MODE.CREATION,
               }) + '?offer-type=PHYSICAL_GOOD',
           })
@@ -897,7 +897,7 @@ describe('IndividualOfferDetailsScreen', () => {
             contextValue: context,
             initialRoute:
               getIndividualOfferPath({
-                step: OFFER_WIZARD_STEP_IDS.DETAILS,
+                step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
                 mode: OFFER_WIZARD_MODE.CREATION,
               }) + '?offer-type=PHYSICAL_GOOD',
           })
@@ -925,7 +925,7 @@ describe('IndividualOfferDetailsScreen', () => {
             contextValue: context,
             initialRoute:
               getIndividualOfferPath({
-                step: OFFER_WIZARD_STEP_IDS.DETAILS,
+                step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
                 mode: OFFER_WIZARD_MODE.CREATION,
               }) + '?offer-type=PHYSICAL_GOOD',
           })
@@ -1112,7 +1112,7 @@ describe('IndividualOfferDetailsScreen', () => {
         options: {},
         mode: OFFER_WIZARD_MODE.CREATION,
         initialRoute: `/onboarding${getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}`,
       })

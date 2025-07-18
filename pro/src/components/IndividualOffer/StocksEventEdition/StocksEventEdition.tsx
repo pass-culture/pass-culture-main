@@ -16,7 +16,10 @@ import {
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { SelectOption } from 'commons/custom_types/form'
@@ -36,7 +39,6 @@ import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { EventCancellationBanner } from 'components/EventCancellationBanner/EventCancellationBanner'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { onSubmit as onRecurrenceSubmit } from 'components/IndividualOffer/StocksEventCreation/form/onSubmit'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { NoResultsRow } from 'components/StocksEventList/NoResultsRow'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
@@ -289,7 +291,7 @@ export const StocksEventEdition = ({
   const onSubmit = async (values: StocksEventFormValues) => {
     const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
-      step: OFFER_WIZARD_STEP_IDS.STOCKS,
+      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
       mode: OFFER_WIZARD_MODE.READ_ONLY,
       isOnboarding,
     })
@@ -431,7 +433,7 @@ export const StocksEventEdition = ({
     navigate(
       getIndividualOfferUrl({
         offerId: offer.id,
-        step: OFFER_WIZARD_STEP_IDS.STOCKS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
         mode: OFFER_WIZARD_MODE.READ_ONLY,
         isOnboarding,
       })
@@ -859,7 +861,7 @@ export const StocksEventEdition = ({
             <ActionBar
               isDisabled={isSubmitting || isOfferDisabled(offer.status)}
               onClickPrevious={handleBackToReadOnly}
-              step={OFFER_WIZARD_STEP_IDS.STOCKS}
+              step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS}
             />
           </form>
         </div>

@@ -8,21 +8,23 @@ import { generatePath, Route, Routes } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 
 import { StockSection, StockSectionProps } from './StockSection'
 
 const renderStockSection = (
   props: StockSectionProps,
   url: string = getIndividualOfferPath({
-    step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
     mode: OFFER_WIZARD_MODE.EDITION,
   })
 ) =>
@@ -30,28 +32,28 @@ const renderStockSection = (
     <Routes>
       <Route
         path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode: OFFER_WIZARD_MODE.EDITION,
         })}
         element={<StockSection {...props} />}
       />
       <Route
         path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}
         element={<StockSection {...props} />}
       />
       <Route
         path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}
         element={<div>Offer creation: page stocks</div>}
       />
       <Route
         path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.EDITION,
         })}
         element={<div>Offer edition: page stocks</div>}
@@ -85,7 +87,7 @@ describe('Summary stock section', () => {
         props,
         generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -119,7 +121,7 @@ describe('Summary stock section', () => {
         props,
         generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -153,7 +155,7 @@ describe('Summary stock section', () => {
         props,
         generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -197,7 +199,7 @@ describe('Summary stock section', () => {
         props,
         generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -319,7 +321,7 @@ describe('Summary stock section', () => {
         props,
         generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }

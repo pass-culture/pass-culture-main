@@ -14,7 +14,10 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { useNotification } from 'commons/hooks/useNotification'
@@ -25,7 +28,6 @@ import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
 import { DuoCheckbox } from 'components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { FormLayoutDescription } from 'components/FormLayout/FormLayoutDescription'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import fullCodeIcon from 'icons/full-code.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -106,8 +108,8 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       offerId: offer.id,
       step:
         mode === OFFER_WIZARD_MODE.EDITION
-          ? OFFER_WIZARD_STEP_IDS.STOCKS
-          : OFFER_WIZARD_STEP_IDS.SUMMARY,
+          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
+          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
       mode:
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
       isOnboarding,
@@ -176,7 +178,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })
@@ -186,7 +188,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
           mode,
           isOnboarding,
         })
@@ -499,7 +501,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         )}
         <ActionBar
           onClickPrevious={handlePreviousStepOrBackToReadOnly}
-          step={OFFER_WIZARD_STEP_IDS.STOCKS}
+          step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS}
           isDisabled={
             isSubmitting || isDisabled || Boolean(publishedOfferWithSameEAN)
           }

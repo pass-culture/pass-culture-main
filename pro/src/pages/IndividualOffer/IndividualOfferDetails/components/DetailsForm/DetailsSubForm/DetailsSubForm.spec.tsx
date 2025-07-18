@@ -6,10 +6,12 @@ import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 
 import {
@@ -61,7 +63,7 @@ const renderDetailsSubForm = ({
   mode?: OFFER_WIZARD_MODE
 } = {}) => {
   const path = getIndividualOfferPath({
-    step: OFFER_WIZARD_STEP_IDS.DETAILS,
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
     mode,
   })
   const options = {

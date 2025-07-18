@@ -2,7 +2,10 @@ import { FC } from 'react'
 import { generatePath, useLocation } from 'react-router'
 
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useActiveStep } from 'commons/hooks/useActiveStep'
@@ -14,7 +17,6 @@ import {
 } from 'pages/IndividualOffer/commons/filterCategories'
 import { NavLinkItems } from 'ui-kit/NavLinkItems/NavLinkItems'
 
-import { OFFER_WIZARD_STEP_IDS } from './constants'
 import styles from './IndividualOfferNavigation.module.scss'
 import { LabelBooking } from './LabelBooking/LabelBooking'
 
@@ -28,7 +30,9 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const { offer, isEvent: isEventOfferContext } = useIndividualOfferContext()
-  const activeStep = useActiveStep(Object.values(OFFER_WIZARD_STEP_IDS))
+  const activeStep = useActiveStep(
+    Object.values(INDIVIDUAL_OFFER_WIZARD_STEP_IDS)
+  )
   const isEventWithOpeningHoursEnabled = useActiveFeature(
     'WIP_ENABLE_EVENT_WITH_OPENING_HOUR'
   )
@@ -47,20 +51,20 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
 
   const steps: StepPattern[] = [
     {
-      id: OFFER_WIZARD_STEP_IDS.DETAILS,
+      id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
       label: 'Détails de l’offre',
       path: getIndividualOfferPath({
-        step: OFFER_WIZARD_STEP_IDS.DETAILS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
         mode,
         isOnboarding,
       }),
       isActive: true,
     },
     {
-      id: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+      id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
       label: 'Informations pratiques',
       path: getIndividualOfferPath({
-        step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
         mode,
         isOnboarding,
       }),
@@ -72,10 +76,10 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
   if (isEvent) {
     steps.push(
       {
-        id: OFFER_WIZARD_STEP_IDS.TARIFS,
+        id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
         label: 'Tarifs',
         path: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           mode,
           isOnboarding,
         }),
@@ -83,12 +87,12 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
           (hasOffer && isUsefulInformationSubmitted) || hasPriceCategories,
       },
       {
-        id: OFFER_WIZARD_STEP_IDS.STOCKS,
+        id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
         label: isEventWithOpeningHoursEnabled
           ? 'Calendrier'
           : 'Dates & Capacités',
         path: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           mode,
           isOnboarding,
         }),
@@ -97,10 +101,10 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
     )
   } else {
     steps.push({
-      id: OFFER_WIZARD_STEP_IDS.STOCKS,
+      id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
       label: 'Stock & Prix',
       path: getIndividualOfferPath({
-        step: OFFER_WIZARD_STEP_IDS.STOCKS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
         mode,
         isOnboarding,
       }),
@@ -112,10 +116,10 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
   // Summary/confirmation steps on creation
   if (mode === OFFER_WIZARD_MODE.CREATION) {
     steps.push({
-      id: OFFER_WIZARD_STEP_IDS.SUMMARY,
+      id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
       label: 'Récapitulatif',
       path: getIndividualOfferPath({
-        step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
         mode,
         isOnboarding,
       }),
@@ -128,10 +132,10 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
     mode === OFFER_WIZARD_MODE.EDITION
   ) {
     steps.push({
-      id: OFFER_WIZARD_STEP_IDS.BOOKINGS,
+      id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.BOOKINGS,
       label: <LabelBooking bookingsCount={offer?.bookingsCount || 0} />,
       path: getIndividualOfferPath({
-        step: OFFER_WIZARD_STEP_IDS.BOOKINGS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.BOOKINGS,
         mode: OFFER_WIZARD_MODE.READ_ONLY,
         isOnboarding,
       }),

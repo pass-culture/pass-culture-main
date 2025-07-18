@@ -13,7 +13,7 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { formatDateTimeParts, isDateValid } from 'commons/utils/date'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { BackToNavLink } from 'components/BackToNavLink/BackToNavLink'
-import { IndividualOfferNavigation } from 'components/IndividualOfferNavigation/IndividualOfferNavigation'
+import { SynchronizedProviderInformation } from 'components/SynchronisedProviderInformation/SynchronizedProviderInformation'
 import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import fullTrashIcon from 'icons/full-trash.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
@@ -24,12 +24,11 @@ import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { Status } from '../Status/Status'
-import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos/SynchronizedProviderInformation'
-
 import styles from './IndividualOfferLayout.module.scss'
+import { IndividualOfferNavigation } from './IndividualOfferNavigation/IndividualOfferNavigation'
 import { OfferPublicationEdition } from './OfferPublicationEdition/OfferPublicationEdition'
 import { OfferStatusBanner } from './OfferStatusBanner/OfferStatusBanner'
+import { Status } from './Status/Status'
 
 export interface IndividualOfferLayoutProps {
   title: string

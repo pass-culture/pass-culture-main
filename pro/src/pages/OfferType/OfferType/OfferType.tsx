@@ -11,6 +11,7 @@ import {
   INDIVIDUAL_OFFER_SUBTYPE,
   OFFER_TYPES,
   OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
@@ -19,7 +20,6 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -35,7 +35,9 @@ export const OfferTypeScreen = () => {
   const queryParams = new URLSearchParams(location.search)
   const queryOffererId = useSelector(selectCurrentOffererId)?.toString()
   const queryVenueId = queryParams.get('lieu')
-  const isNewOfferCreationFlowFeatureActive = useActiveFeature('WIP_ENABLE_NEW_OFFER_CREATION_FLOW')
+  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
 
   const notify = useNotification()
 
@@ -71,7 +73,7 @@ export const OfferTypeScreen = () => {
 
       return navigate({
         pathname: getIndividualOfferUrl({
-          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
           mode: OFFER_WIZARD_MODE.CREATION,
           isOnboarding,
         }),
@@ -178,9 +180,10 @@ export const OfferTypeScreen = () => {
                 />
               )}
 
-              {!isNewOfferCreationFlowFeatureActive && offer.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
-                <IndividualOfferType />
-              )}
+              {!isNewOfferCreationFlowFeatureActive &&
+                offer.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
+                  <IndividualOfferType />
+                )}
 
               {offer.offerType === OFFER_TYPES.EDUCATIONAL &&
                 (isOffererLoading ? (

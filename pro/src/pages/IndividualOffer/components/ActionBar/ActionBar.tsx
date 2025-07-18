@@ -1,12 +1,14 @@
 import { useLocation } from 'react-router'
 
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { computeIndividualOffersUrl } from 'commons/core/Offers/utils/computeIndividualOffersUrl'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import fullLeftIcon from 'icons/full-left.svg'
 import fullRightIcon from 'icons/full-right.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
@@ -22,7 +24,7 @@ export interface ActionBarProps {
   onClickPrevious?: () => void
   isDisabled?: boolean
   publicationMode?: 'later' | 'now'
-  step: OFFER_WIZARD_STEP_IDS
+  step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
   dirtyForm?: boolean
   saveEditionChangesButtonRef?: React.RefObject<HTMLButtonElement>
 }
@@ -61,7 +63,7 @@ export const ActionBar = ({
 
     if (
       mode === OFFER_WIZARD_MODE.EDITION &&
-      step === OFFER_WIZARD_STEP_IDS.STOCKS &&
+      step === INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS &&
       isEventWithOpeningHoursEnabled
     ) {
       return (
@@ -72,7 +74,7 @@ export const ActionBar = ({
     }
 
     // mode === OFFER_WIZARD_MODE.EDITION
-    return step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
+    return step === INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY ? (
       <ButtonLink to={backOfferUrl} variant={ButtonVariant.PRIMARY}>
         Retour à la liste des offres
       </ButtonLink>
@@ -120,7 +122,7 @@ export const ActionBar = ({
             </>
           )}
 
-          {step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
+          {step === INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY ? (
             <>
               {!isDisabled && (
                 <ButtonLink
@@ -164,7 +166,9 @@ export const ActionBar = ({
     <ActionsBarSticky hasSideNav={!isOnboarding}>
       <ActionsBarSticky.Left>{Left()}</ActionsBarSticky.Left>
       <ActionsBarSticky.Right
-        inverseWhenSmallerThanTablet={step === OFFER_WIZARD_STEP_IDS.SUMMARY}
+        inverseWhenSmallerThanTablet={
+          step === INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY
+        }
       >
         {Right()}
       </ActionsBarSticky.Right>

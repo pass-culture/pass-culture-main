@@ -15,7 +15,10 @@ import {
   GET_VENUES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
@@ -28,7 +31,6 @@ import { isEqual } from 'commons/utils/isEqual'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
@@ -143,10 +145,10 @@ export const IndividualOfferInformationsScreen = ({
 
       const nextStep =
         mode === OFFER_WIZARD_MODE.EDITION
-          ? OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
+          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
           : isEvent
-            ? OFFER_WIZARD_STEP_IDS.TARIFS
-            : OFFER_WIZARD_STEP_IDS.STOCKS
+            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
+            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
 
       addToLocalStorage()
 
@@ -241,7 +243,7 @@ export const IndividualOfferInformationsScreen = ({
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
           mode: OFFER_WIZARD_MODE.CREATION,
           isOnboarding,
         })
@@ -251,7 +253,7 @@ export const IndividualOfferInformationsScreen = ({
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })
@@ -311,7 +313,7 @@ export const IndividualOfferInformationsScreen = ({
           </FormLayout>
           <ActionBar
             onClickPrevious={handlePreviousStepOrBackToReadOnly}
-            step={OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS}
+            step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS}
             isDisabled={
               form.formState.isSubmitting ||
               isOfferDisabled(offer.status) ||

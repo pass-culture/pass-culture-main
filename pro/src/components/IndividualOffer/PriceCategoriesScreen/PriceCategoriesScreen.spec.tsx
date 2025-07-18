@@ -12,7 +12,10 @@ import {
   GetOfferStockResponseModel,
 } from 'apiClient/v1'
 import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import {
   getIndividualOfferFactory,
@@ -20,7 +23,6 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 
 import { PRICE_CATEGORY_MAX_LENGTH } from './form/constants'
 import { PriceCategoriesScreen } from './PriceCategoriesScreen'
@@ -52,7 +54,7 @@ const renderPriceCategoriesScreen = async (
       user: sharedCurrentUserFactory(),
       initialRouterEntries: [
         getIndividualOfferUrl({
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.CREATION,
           offerId: apiOffer.id,
         }),

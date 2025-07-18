@@ -41,6 +41,16 @@ export enum OFFER_WIZARD_MODE {
   EDITION = 'edition',
 }
 
+export enum INDIVIDUAL_OFFER_WIZARD_STEP_IDS {
+  DETAILS = 'details',
+  USEFUL_INFORMATIONS = 'pratiques',
+  TARIFS = 'tarifs',
+  STOCKS = 'stocks',
+  SUMMARY = 'recapitulatif',
+  CONFIRMATION = 'confirmation',
+  BOOKINGS = 'reservations',
+}
+
 export const OFFER_WITHDRAWAL_TYPE_LABELS = {
   [WithdrawalTypeEnum.ON_SITE]: 'Retrait sur place (guichet, comptoir...)',
   [WithdrawalTypeEnum.NO_TICKET]: 'Aucun billet n’est nécessaire',

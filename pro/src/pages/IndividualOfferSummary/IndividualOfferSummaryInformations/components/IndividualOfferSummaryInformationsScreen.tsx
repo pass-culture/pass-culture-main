@@ -2,11 +2,11 @@ import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import {
   OFFER_WITHDRAWAL_TYPE_LABELS,
   OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { getDelayToFrenchText } from 'commons/utils/date'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
 import {
   Description,
@@ -55,7 +55,7 @@ export function IndividualOfferSummaryInformationsScreen({
           title="Informations pratiques"
           editLink={getIndividualOfferUrl({
             offerId: offer.id,
-            step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
             mode: OFFER_WIZARD_MODE.EDITION,
           })}
           aria-label="Modifier les détails de l’offre"

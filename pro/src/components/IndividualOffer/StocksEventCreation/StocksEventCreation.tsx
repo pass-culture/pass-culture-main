@@ -4,11 +4,11 @@ import { useSWRConfig } from 'swr'
 
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { StocksEventList } from 'components/StocksEventList/StocksEventList'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 
@@ -37,7 +37,7 @@ export const StocksEventCreation = ({
     navigate(
       getIndividualOfferUrl({
         offerId: offer.id,
-        step: OFFER_WIZARD_STEP_IDS.TARIFS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
         mode,
         isOnboarding,
       })
@@ -56,7 +56,7 @@ export const StocksEventCreation = ({
     navigate(
       getIndividualOfferUrl({
         offerId: offer.id,
-        step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
         mode,
         isOnboarding,
       })
@@ -84,7 +84,7 @@ export const StocksEventCreation = ({
         isDisabled={false}
         onClickPrevious={handlePreviousStep}
         onClickNext={handleNextStep}
-        step={OFFER_WIZARD_STEP_IDS.STOCKS}
+        step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS}
         // now we submit in RecurrenceForm, StocksEventCreation could not be dirty
         dirtyForm={false}
       />

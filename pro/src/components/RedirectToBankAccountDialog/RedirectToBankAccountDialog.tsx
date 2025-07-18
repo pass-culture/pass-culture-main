@@ -3,8 +3,8 @@ import { useLocation, useNavigate } from 'react-router'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events, VenueEvents } from 'commons/core/FirebaseEvents/constants'
+import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from 'commons/core/Offers/constants'
 import { updateOffererIsOnboarded } from 'commons/store/offerer/reducer'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RedirectDialog } from 'components/RedirectDialog/RedirectDialog'
 import fullWaitIcon from 'icons/full-wait.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
@@ -33,7 +33,7 @@ export const RedirectToBankAccountDialog = ({
       icon={strokePartyIcon}
       onCancel={() => {
         logEvent(Events.CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL, {
-          from: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          from: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
         })
         if (isOnboarding) {
           dispatch(updateOffererIsOnboarded(true))
@@ -50,7 +50,7 @@ export const RedirectToBankAccountDialog = ({
       onRedirect={() => {
         logEvent(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
           venue_id: venueId,
-          from: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          from: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
         })
         if (isOnboarding) {
           dispatch(updateOffererIsOnboarded(true))

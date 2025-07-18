@@ -23,6 +23,7 @@ import {
 import {
   CATEGORY_STATUS,
   OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
@@ -45,7 +46,6 @@ import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { Notification } from 'components/Notification/Notification'
 
 import { IndividualOfferSummaryScreen } from './IndividualOfferSummaryScreen'
@@ -82,7 +82,7 @@ const renderIndividualOfferSummaryScreen = ({
   mode = OFFER_WIZARD_MODE.READ_ONLY,
   options,
   path = getIndividualOfferPath({
-    step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
     mode,
   }),
 }: Partial<{
@@ -101,21 +101,21 @@ const renderIndividualOfferSummaryScreen = ({
         <Routes>
           <Route
             path={getIndividualOfferPath({
-              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
               mode: OFFER_WIZARD_MODE.READ_ONLY,
             })}
             element={<IndividualOfferSummaryScreen />}
           />
           <Route
             path={getIndividualOfferPath({
-              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
               mode: OFFER_WIZARD_MODE.CREATION,
             })}
             element={<IndividualOfferSummaryScreen />}
           />
           <Route
             path={getIndividualOfferPath({
-              step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.CONFIRMATION,
               mode: OFFER_WIZARD_MODE.CREATION,
             })}
             element={<div>Confirmation page: creation</div>}
@@ -267,7 +267,7 @@ describe('IndividualOfferSummaryScreen', () => {
         mode: OFFER_WIZARD_MODE.CREATION,
         path: generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -291,7 +291,7 @@ describe('IndividualOfferSummaryScreen', () => {
         mode: OFFER_WIZARD_MODE.CREATION,
         path: generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -309,7 +309,7 @@ describe('IndividualOfferSummaryScreen', () => {
         mode: OFFER_WIZARD_MODE.CREATION,
         path: generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -333,7 +333,7 @@ describe('IndividualOfferSummaryScreen', () => {
         mode: OFFER_WIZARD_MODE.CREATION,
         path: generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -355,7 +355,7 @@ describe('IndividualOfferSummaryScreen', () => {
         mode: OFFER_WIZARD_MODE.CREATION,
         path: generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -405,7 +405,7 @@ describe('IndividualOfferSummaryScreen', () => {
         mode: OFFER_WIZARD_MODE.CREATION,
         path: generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -466,7 +466,7 @@ describe('IndividualOfferSummaryScreen', () => {
         mode: OFFER_WIZARD_MODE.CREATION,
         path: generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -524,7 +524,7 @@ describe('IndividualOfferSummaryScreen', () => {
         mode: OFFER_WIZARD_MODE.CREATION,
         path: generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -568,7 +568,7 @@ describe('IndividualOfferSummaryScreen', () => {
         mode: OFFER_WIZARD_MODE.CREATION,
         path: generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -615,7 +615,7 @@ describe('IndividualOfferSummaryScreen', () => {
         mode: OFFER_WIZARD_MODE.CREATION,
         path: generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -661,7 +661,7 @@ describe('IndividualOfferSummaryScreen', () => {
         mode: OFFER_WIZARD_MODE.CREATION,
         path: generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -695,7 +695,7 @@ describe('IndividualOfferSummaryScreen', () => {
         mode: OFFER_WIZARD_MODE.CREATION,
         path: generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -730,7 +730,7 @@ describe('IndividualOfferSummaryScreen', () => {
         mode: OFFER_WIZARD_MODE.CREATION,
         path: generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -770,7 +770,7 @@ describe('IndividualOfferSummaryScreen', () => {
         mode: OFFER_WIZARD_MODE.CREATION,
         path: generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -809,7 +809,7 @@ describe('IndividualOfferSummaryScreen', () => {
         mode: OFFER_WIZARD_MODE.CREATION,
         path: generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -833,7 +833,7 @@ describe('IndividualOfferSummaryScreen', () => {
     it('should display pre publishing banner in creation', () => {
       const url = generatePath(
         getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode: OFFER_WIZARD_MODE.CREATION,
         }),
         { offerId: 'AA' }
@@ -853,7 +853,7 @@ describe('IndividualOfferSummaryScreen', () => {
         mode: OFFER_WIZARD_MODE.CREATION,
         path: generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
@@ -873,7 +873,7 @@ describe('IndividualOfferSummaryScreen', () => {
         mode: OFFER_WIZARD_MODE.EDITION,
         path: generatePath(
           getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.EDITION,
           }),
           { offerId: 'AA' }

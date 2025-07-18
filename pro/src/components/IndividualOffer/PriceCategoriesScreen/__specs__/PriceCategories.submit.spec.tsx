@@ -6,7 +6,10 @@ import { expect } from 'vitest'
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { PATCH_SUCCESS_MESSAGE } from 'commons/core/shared/constants'
 import {
@@ -14,7 +17,6 @@ import {
   priceCategoryFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { Notification } from 'components/Notification/Notification'
 
 import {
@@ -26,7 +28,7 @@ const renderPriceCategories = (
   props: PriceCategoriesScreenProps,
   url = generatePath(
     getIndividualOfferPath({
-      step: OFFER_WIZARD_STEP_IDS.TARIFS,
+      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
       mode: OFFER_WIZARD_MODE.CREATION,
     }),
     { offerId: '12' }
@@ -143,7 +145,7 @@ describe('PriceCategories', () => {
       { offer: getIndividualOfferFactory({ hasStocks: false }) },
       generatePath(
         getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
         { offerId: 'AA' }
@@ -169,7 +171,7 @@ describe('PriceCategories', () => {
       { offer: getIndividualOfferFactory({ hasStocks: false }) },
       generatePath(
         getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
         { offerId: 'AA' }
@@ -201,7 +203,7 @@ describe('PriceCategories', () => {
       { offer: getIndividualOfferFactory({ hasStocks: false }) },
       generatePath(
         getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
         { offerId: 'AA' }

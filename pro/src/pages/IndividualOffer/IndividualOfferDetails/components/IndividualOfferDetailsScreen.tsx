@@ -17,6 +17,7 @@ import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
   OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
@@ -24,7 +25,6 @@ import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { getIndividualOfferImage } from 'components/IndividualOffer/utils/getIndividualOfferImage'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import {
@@ -170,7 +170,7 @@ export const IndividualOfferDetailsScreen = ({
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
-          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
           offerId,
           mode,
           isOnboarding: pathname.indexOf('onboarding') !== -1,
@@ -179,11 +179,11 @@ export const IndividualOfferDetailsScreen = ({
       )
       const nextStep =
         mode === OFFER_WIZARD_MODE.EDITION
-          ? OFFER_WIZARD_STEP_IDS.DETAILS
-          : OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
+          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS
+          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
 
       logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.DETAILS,
+        from: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
         offerId,
         venueId: form.getValues('venueId'),
         offerType: 'individual',
@@ -222,7 +222,7 @@ export const IndividualOfferDetailsScreen = ({
       navigate(
         getIndividualOfferUrl({
           offerId: offer?.id,
-          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })
@@ -339,7 +339,7 @@ export const IndividualOfferDetailsScreen = ({
           </FormLayout>
           <ActionBar
             onClickPrevious={handlePreviousStepOrBackToReadOnly}
-            step={OFFER_WIZARD_STEP_IDS.DETAILS}
+            step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS}
             isDisabled={
               form.formState.isSubmitting ||
               Boolean(offer && isOfferDisabled(offer.status)) ||

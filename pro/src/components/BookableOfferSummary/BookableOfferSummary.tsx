@@ -31,7 +31,7 @@ import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/Ar
 import { BackToNavLink } from 'components/BackToNavLink/BackToNavLink'
 import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/CollectiveStatusLabel'
 import { EducationalInstitutionDetails } from 'components/EducationalInstitutionDetails/EducationalInstitutionDetails'
-import { SynchronizedProviderInformation } from 'components/IndividualOffer/SynchronisedProviderInfos/SynchronizedProviderInformation'
+import { SynchronizedProviderInformation } from 'components/SynchronisedProviderInformation/SynchronizedProviderInformation'
 import fullArchiveIcon from 'icons/full-archive.svg'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullCopyIcon from 'icons/full-duplicate.svg'
