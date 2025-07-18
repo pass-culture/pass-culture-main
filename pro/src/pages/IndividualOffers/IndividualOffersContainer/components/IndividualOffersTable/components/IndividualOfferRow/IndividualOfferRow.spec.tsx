@@ -805,4 +805,20 @@ describe('IndividualOfferRow', () => {
       )
     })
   })
+
+  it('should trigger selectOffer when checkbox is clicked', async () => {
+    renderOfferItem({ props })
+
+    const checkbox = screen.getByRole('checkbox')
+    await userEvent.click(checkbox)
+
+    expect(props.selectOffer).toHaveBeenCalledWith(props.offer)
+  })
+
+  it('should not render OfferBookingCell if feature WIP_REFACTO_FUTURE_OFFER is disabled', async () => {
+    renderOfferItem({ props, features: [] })
+
+    const cell = screen.queryByTestId('individual-cell-bookings')
+    expect(cell).not.toBeInTheDocument()
+  })
 })
