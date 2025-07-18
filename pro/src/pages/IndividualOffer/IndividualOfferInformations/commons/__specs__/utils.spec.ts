@@ -73,7 +73,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
 
     const expectedValues = {
       withdrawalDetails:
-        DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES['withdrawalDetails'],
+        DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES.withdrawalDetails,
       withdrawalDelay: undefined,
       withdrawalType: undefined,
       bookingEmail: '',

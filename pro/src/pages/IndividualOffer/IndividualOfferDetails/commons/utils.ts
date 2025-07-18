@@ -1,4 +1,3 @@
-
 import {
   CategoryResponseModel,
   GetIndividualOfferResponseModel,
@@ -9,28 +8,18 @@ import {
 } from 'apiClient/v1'
 import { showOptionsTree } from 'commons/core/Offers/categoriesSubTypes'
 import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
+import { AccessibilityFormValues } from 'commons/core/shared/types'
 import { SelectOption } from 'commons/custom_types/form'
-import { trimStringsInObject } from 'commons/utils/trimStringsInObject'
+import { getAccessibilityInfoFromVenue } from 'commons/utils/getAccessibilityInfoFromVenue'
+import { Option } from 'pages/AdageIframe/app/types'
 import { computeVenueDisplayName } from 'repository/venuesService'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
-import { DetailsFormValues } from './types'
-
-export const serializeDurationMinutes = (
-  durationHour: string
-): number | undefined => {
-  /* istanbul ignore next: DEBT, TO FIX */
-  if (durationHour.trim().length === 0) {
-    return undefined
-  }
-
-  /* istanbul ignore next: DEBT, TO FIX */
-  const [hours, minutes] = durationHour
-    .split(':')
-    .map((s: string) => parseInt(s, 10))
-
-  return minutes + hours * 60
-}
+import { deSerializeDurationMinutes } from './serializers'
+import {
+  DetailsFormValues,
+  SetDefaultInitialValuesFromOfferProps,
+} from './types'
 
 export const isSubCategoryCD = (subcategoryId: string): boolean => {
   return subcategoryId === SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD
@@ -97,32 +86,58 @@ export const completeSubcategoryConditionalFields = (
     ...(subcategory?.isEvent ? ['durationMinutes'] : []),
   ] as (keyof DetailsFormValues)[]
 
-export const formatVenuesOptions = (
-  venues: VenueListItemResponseModel[],
-  isOnline: boolean
-) => {
-  //  We want to display the virtual venues only if there are no physical venues available
-  //  We also want to prevent selecting a virtual venue for a physical offer form
+/**
+ * **Rules**
+ * 1. Virtual venues are shown **only when no physical venue exists**.
+ * 2. When this is a **physical** offer (`isOfferVirtual === false`), virtual venues are never shown.
+ */
+export function filterAvailableVenues(
+  venues: readonly VenueListItemResponseModel[],
+  isOfferVirtual: boolean
+): VenueListItemResponseModel[] {
   const hasAtLeastOnePhysicalVenue = venues.some((v) => !v.isVirtual)
+  // Virtual venues are allowed only if *all* venues are virtual *and* the offer is virtual.
+  const shouldIncludeVirtualVenues =
+    !hasAtLeastOnePhysicalVenue && isOfferVirtual
+
+  return venues.filter((v) => shouldIncludeVirtualVenues || !v.isVirtual)
+}
+
+export function getVenuesAsOptions(
+  venues: readonly VenueListItemResponseModel[]
+): Option[] {
   return venues
-    .filter((venue) =>
-      hasAtLeastOnePhysicalVenue || !isOnline ? !venue.isVirtual : true
-    )
-    .map((venue) => ({
-      value: venue.id.toString(),
-      label: computeVenueDisplayName(venue),
+    .map((v) => ({
+      value: String(v.id),
+      label: computeVenueDisplayName(v),
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 }
 
-type SetDefaultInitialValuesFromOfferProps = {
-  offer: GetIndividualOfferResponseModel
-  subcategories: SubcategoryResponseModel[]
+export function getInitialValuesFromVenues(
+  availableVenues: VenueListItemResponseModel[],
+  isNewOfferCreationFlowFeatureActive: boolean
+) {
+  //  When there is only one venue available, we can automatically use this venue as the initially selected one.
+  const onlyVenue =
+    availableVenues.length === 1 ? availableVenues[0] : undefined
+  const venueId = onlyVenue?.id.toString() ?? ''
+
+  const maybeAccessibility = isNewOfferCreationFlowFeatureActive
+    ? getAccessibilityInfoFromVenue(onlyVenue).accessibility
+    : undefined
+
+  return {
+    ...DEFAULT_DETAILS_FORM_VALUES,
+    venueId,
+    ...(maybeAccessibility ? { accessibility: maybeAccessibility } : {}),
+  }
 }
 
-export function setDefaultInitialValuesFromOffer({
+export function getInitialValuesFromOffer({
   offer,
   subcategories,
+  isNewOfferCreationFlowFeatureActive,
 }: SetDefaultInitialValuesFromOfferProps): DetailsFormValues {
   const subcategory = subcategories.find(
     (subcategory: SubcategoryResponseModel) =>
@@ -134,6 +149,9 @@ export function setDefaultInitialValuesFromOffer({
   }
 
   const ean = offer.extraData?.ean ?? DEFAULT_DETAILS_FORM_VALUES.ean
+  const maybeAccessibility = isNewOfferCreationFlowFeatureActive
+    ? { accessibility: getAccessibilityFormValuesFromOffer(offer) }
+    : {}
 
   return {
     ...DEFAULT_DETAILS_FORM_VALUES,
@@ -163,102 +181,61 @@ export function setDefaultInitialValuesFromOffer({
     productId:
       offer.productId?.toString() ?? DEFAULT_DETAILS_FORM_VALUES.productId,
     url: offer.url,
+    ...maybeAccessibility,
   }
 }
 
-export function deSerializeDurationMinutes(durationMinute: number): string {
-  const hours = Math.floor(durationMinute / 60)
-  const minutes = (durationMinute % 60).toString().padStart(2, '0')
-  return `${hours}:${minutes}`
+export function getAccessibilityFormValuesFromOffer(
+  offer: GetIndividualOfferResponseModel
+): AccessibilityFormValues {
+  const accessibilityBase = {
+    audio: !!offer.audioDisabilityCompliant,
+    mental: !!offer.mentalDisabilityCompliant,
+    motor: !!offer.motorDisabilityCompliant,
+    visual: !!offer.visualDisabilityCompliant,
+  }
+  const hasSomeAccessibility = Object.values(accessibilityBase).some((v) => v)
+
+  return {
+    ...accessibilityBase,
+    none: !hasSomeAccessibility,
+  }
 }
 
-export function setFormReadOnlyFields(
+export function getFormReadOnlyFields(
   offer: GetIndividualOfferResponseModel | null,
-  isProductBased?: boolean
+  isProductBased: boolean,
+  isNewOfferCreationFlowFeatureActive: boolean
 ): string[] {
-  const allFields: string[] = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
+  const isNewOfferDraft = offer === null
+
+  const allFieldsExceptAccessibility: string[] = Object.keys(
+    DEFAULT_DETAILS_FORM_VALUES
+  )
+  const maybeAccessibilityFields = isNewOfferCreationFlowFeatureActive
+    ? ['accessibility']
+    : []
+
   const hasPendingOrRejectedStatus =
     offer && [OfferStatus.REJECTED, OfferStatus.PENDING].includes(offer.status)
 
-  // Offer is still a draft / being created.
-  if (offer === null) {
-    // An EAS search was performed, so the form is product based.
-    // Multiple fields are read-only.
-    if (isProductBased) {
-      const editableFields = ['venueId']
+  // An EAS search was performed, so the form is product based.
+  // Multiple fields are read-only.
+  if (isNewOfferDraft && isProductBased) {
+    return allFieldsExceptAccessibility.filter((field) => field !== 'venueId')
+  }
 
-      return allFields.filter((field) => !editableFields.includes(field))
-    }
-
+  if (isNewOfferDraft) {
     return []
-  } else if (
-    isProductBased ||
-    isOfferSynchronized(offer) ||
-    hasPendingOrRejectedStatus
-  ) {
-    return allFields
-  } else {
-    return ['categoryId', 'subcategoryId', 'venueId']
   }
-}
 
-export const serializeExtraData = (formValues: DetailsFormValues) => {
-  return trimStringsInObject({
-    author: formValues.author,
-    gtl_id: formValues.gtl_id,
-    performer: formValues.performer,
-    showType: formValues.showType,
-    showSubType: formValues.showSubType,
-    speaker: formValues.speaker,
-    stageDirector: formValues.stageDirector,
-    visa: formValues.visa,
-    ean: formValues.ean,
-  })
-}
-
-type PostPayload = {
-  description?: string | null
-  durationMinutes?: number
-  extraData?: Record<string, unknown>
-  name: string
-  subcategoryId: string
-  venueId: number
-  productId?: number
-}
-
-export function serializeDetailsPostData(
-  formValues: DetailsFormValues
-): PostPayload {
-  return trimStringsInObject({
-    name: formValues.name,
-    subcategoryId: formValues.subcategoryId,
-    venueId: Number(formValues.venueId),
-    description: formValues.description,
-    durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
-    extraData: serializeExtraData(formValues),
-    productId: formValues.productId ? Number(formValues.productId) : undefined,
-    url: formValues.url,
-  })
-}
-
-type PatchPayload = {
-  description?: string | null
-  durationMinutes?: number
-  extraData?: Record<string, unknown>
-  name: string
-  subcategoryId: string
-  url?: string | null
-}
-
-export function serializeDetailsPatchData(
-  formValues: DetailsFormValues
-): PatchPayload {
-  return {
-    name: formValues.name,
-    subcategoryId: formValues.subcategoryId,
-    description: formValues.description,
-    durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
-    extraData: serializeExtraData(formValues),
-    url: formValues.url,
+  if (hasPendingOrRejectedStatus) {
+    return [...allFieldsExceptAccessibility, ...maybeAccessibilityFields]
   }
+
+  if (isProductBased || isOfferSynchronized(offer)) {
+    return allFieldsExceptAccessibility
+  }
+
+  return ['categoryId', 'subcategoryId', 'venueId']
 }

@@ -1,11 +1,19 @@
+import type { ChangeEvent } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
+import {
+  CategoryResponseModel,
+  SubcategoryResponseModel,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 import { IndividualOfferImage } from 'commons/core/Offers/types'
+import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { getAccessibilityInfoFromVenue } from 'commons/utils/getAccessibilityInfoFromVenue'
 import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { MarkdownInfoBox } from 'components/MarkdownInfoBox/MarkdownInfoBox'
@@ -16,6 +24,7 @@ import { DetailsFormValues } from 'pages/IndividualOffer/IndividualOfferDetails/
 import { isSubCategoryCD } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
+import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
@@ -28,6 +37,7 @@ import { Subcategories } from './Subcategories/Subcategories'
 type DetailsFormProps = {
   isEanSearchDisplayed: boolean
   isProductBased: boolean
+  venues: VenueListItemResponseModel[]
   venuesOptions: { label: string; value: string }[]
   filteredCategories: CategoryResponseModel[]
   filteredSubcategories: SubcategoryResponseModel[]
@@ -41,6 +51,7 @@ type DetailsFormProps = {
 export const DetailsForm = ({
   isEanSearchDisplayed,
   isProductBased,
+  venues,
   venuesOptions,
   filteredCategories,
   filteredSubcategories,
@@ -52,19 +63,28 @@ export const DetailsForm = ({
 }: DetailsFormProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const {
-    register,
-    watch,
-    setValue,
     formState: { errors },
+    register,
+    setValue,
+    trigger,
+    watch,
   } = useFormContext<DetailsFormValues>()
 
   const subcategoryId = watch('subcategoryId')
   const { offer } = useIndividualOfferContext()
+  const accessibility = watch('accessibility')
 
+  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
   const isSubCategorySelected =
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
-
   const showAddVenueBanner = venuesOptions.length === 0
+
+  const accessibilityOptionsGroups = useAccessibilityOptions(
+    setValue,
+    accessibility
+  )
 
   const logOnImageDropOrSelected = () => {
     logEvent(Events.DRAG_OR_SELECTED_IMAGE, {
@@ -73,11 +93,36 @@ export const DetailsForm = ({
     })
   }
 
+  // TODO (igabriele, 2025-07-16): Use a `watch` flow once the FF is enabled in production.
+  const updateVenue = (event: ChangeEvent<HTMLSelectElement>) => {
+    if (!isNewOfferCreationFlowFeatureActive && isProductBased) {
+      return
+    }
+
+    const venueId = event.target.value
+    setValue('venueId', venueId, {
+      shouldValidate: true,
+    })
+
+    if (!isNewOfferCreationFlowFeatureActive) {
+      return
+    }
+
+    const venue = venues.find((venue) => venue.id === Number(venueId))
+    if (!venue) {
+      // TODO (igabriele, 2025-07-16): Handle that more gracefully once we have agreed on how to handle it.
+      throw new Error(`Venue with id ${venueId} not found in venues.`)
+    }
+
+    const { accessibility } = getAccessibilityInfoFromVenue(venue)
+    setValue('accessibility', accessibility)
+  }
+
   return (
     <>
       <FormLayout.Section title="À propos de votre offre">
         {showAddVenueBanner && (
-          <FormLayout.Row className={styles['row']}>
+          <FormLayout.Row className={styles.row}>
             <Callout
               links={[
                 {
@@ -98,7 +143,7 @@ export const DetailsForm = ({
         {!showAddVenueBanner && (
           <>
             {venuesOptions.length > 1 && (
-              <FormLayout.Row className={styles['row']}>
+              <FormLayout.Row className={styles.row}>
                 <Select
                   label="Qui propose l’offre ?"
                   options={venuesOptions}
@@ -106,16 +151,9 @@ export const DetailsForm = ({
                     value: '',
                     label: 'Sélectionner la structure',
                   }}
-                  {...register('venueId')}
-                  onChange={(e) => {
-                    if (isProductBased) {
-                      return
-                    }
-
-                    setValue('venueId', e.target.value, {
-                      shouldValidate: true,
-                    })
-                  }}
+                  {...register('venueId', {
+                    onChange: updateVenue,
+                  })}
                   disabled={
                     readOnlyFields.includes('venueId') ||
                     venuesOptions.length === 1
@@ -124,7 +162,7 @@ export const DetailsForm = ({
                 />
               </FormLayout.Row>
             )}
-            <FormLayout.Row className={styles['row']}>
+            <FormLayout.Row className={styles.row}>
               <TextInput
                 count={watch('name').length}
                 label="Titre de l’offre"
@@ -137,7 +175,7 @@ export const DetailsForm = ({
             </FormLayout.Row>
             <FormLayout.Row
               sideComponent={<MarkdownInfoBox />}
-              className={styles['row']}
+              className={styles.row}
             >
               <TextArea
                 label="Description"
@@ -149,7 +187,7 @@ export const DetailsForm = ({
             </FormLayout.Row>
             {(categoryStatus === CATEGORY_STATUS.ONLINE ||
               offer?.isDigital) && (
-              <FormLayout.Row className={styles['row']}>
+              <FormLayout.Row className={styles.row}>
                 <TextInput
                   label="URL d’accès à l’offre"
                   type="text"
@@ -186,6 +224,21 @@ export const DetailsForm = ({
           isOfferCD={isSubCategoryCD(subcategoryId)}
           readOnlyFields={readOnlyFields}
         />
+      )}
+      {isNewOfferCreationFlowFeatureActive && accessibilityOptionsGroups && (
+        <FormLayout.Section title="Modalités d’accessibilité">
+          <FormLayout.Row>
+            <CheckboxGroup
+              name="accessibility"
+              group={accessibilityOptionsGroups}
+              disabled={readOnlyFields.includes('accessibility')}
+              legend="Cette offre est accessible au public en situation de handicap :"
+              onChange={() => trigger('accessibility')}
+              required
+              error={errors.accessibility?.message}
+            />
+          </FormLayout.Row>
+        </FormLayout.Section>
       )}
     </>
   )

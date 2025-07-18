@@ -5,7 +5,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
-import {
+import type {
   GetIndividualOfferResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
@@ -21,6 +21,7 @@ import {
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { getIndividualOfferImage } from 'components/IndividualOffer/utils/getIndividualOfferImage'
@@ -35,22 +36,24 @@ import {
 } from 'pages/IndividualOffer/commons/filterCategories'
 import { isRecordStore } from 'pages/IndividualOffer/commons/isRecordStore'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
-import {
+import type {
   DetailsFormValues,
   Product,
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import { useIndividualOfferImageUpload } from 'pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 import {
-  formatVenuesOptions,
+  filterAvailableVenues,
+  getInitialValuesFromOffer,
+  getInitialValuesFromVenues,
+  getVenuesAsOptions,
   hasMusicType,
-  serializeDetailsPatchData,
-  serializeDetailsPostData,
-  setDefaultInitialValuesFromOffer,
-  setFormReadOnlyFields,
-} from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
+ getFormReadOnlyFields } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { getValidationSchema } from 'pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
 
-import { DEFAULT_DETAILS_FORM_VALUES } from '../commons/constants'
+import {
+  serializeDetailsPatchData,
+  serializeDetailsPostData,
+} from '../commons/serializers'
 
 import { DetailsEanSearch } from './DetailsEanSearch/DetailsEanSearch'
 import { DetailsForm } from './DetailsForm/DetailsForm'
@@ -87,6 +90,9 @@ export const IndividualOfferDetailsScreen = ({
     handleImageOnSubmit,
   } = useIndividualOfferImageUpload(initialImageOffer)
   const isDraftOffer = !offer
+  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
 
   const [filteredCategories, filteredSubcategories] = filterCategories(
     categories,
@@ -95,24 +101,20 @@ export const IndividualOfferDetailsScreen = ({
     isOfferSubtypeEvent(offerSubtype)
   )
 
-  const availableVenuesOptions = formatVenuesOptions(
-    venues,
+  const isOfferVirtual =
     categoryStatus === CATEGORY_STATUS.ONLINE || Boolean(offer?.isDigital)
-  )
+  const availableVenues = filterAvailableVenues(venues, isOfferVirtual)
+  const availableVenuesAsOptions = getVenuesAsOptions(availableVenues)
 
   const initialValues = isDraftOffer
-    ? //  When there is only one venue available the venueId field is not displayed
-      //  Thus we need to set the venueId programmatically
-      {
-        ...DEFAULT_DETAILS_FORM_VALUES,
-        venueId:
-          availableVenuesOptions.length === 1
-            ? availableVenuesOptions[0]?.value
-            : '',
-      }
-    : setDefaultInitialValuesFromOffer({
+    ? getInitialValuesFromVenues(
+        availableVenues,
+        isNewOfferCreationFlowFeatureActive
+      )
+    : getInitialValuesFromOffer({
         offer,
         subcategories: subCategories,
+        isNewOfferCreationFlowFeatureActive,
       })
 
   const form = useForm<DetailsFormValues>({
@@ -122,6 +124,7 @@ export const IndividualOfferDetailsScreen = ({
         isDigitalOffer:
           categoryStatus === CATEGORY_STATUS.ONLINE ||
           Boolean(offer?.isDigital),
+        isNewOfferCreationFlowFeatureActive,
       })
     ),
     mode: 'onBlur',
@@ -145,12 +148,18 @@ export const IndividualOfferDetailsScreen = ({
 
       if (isDraftOffer) {
         response = await api.postDraftOffer(
-          serializeDetailsPostData(formValues)
+          serializeDetailsPostData(
+            formValues,
+            isNewOfferCreationFlowFeatureActive
+          )
         )
       } else if (!shouldNotPatchData && initialOfferId) {
         response = await api.patchDraftOffer(
           initialOfferId,
-          serializeDetailsPatchData(formValues)
+          serializeDetailsPatchData(
+            formValues,
+            isNewOfferCreationFlowFeatureActive
+          )
         )
       }
 
@@ -228,7 +237,11 @@ export const IndividualOfferDetailsScreen = ({
     }
   }
 
-  const readOnlyFields = setFormReadOnlyFields(offer, isProductBased)
+  const readOnlyFields = getFormReadOnlyFields(
+    offer,
+    isProductBased,
+    isNewOfferCreationFlowFeatureActive
+  )
 
   const isEanSearchAvailable =
     isRecordStore(venues) &&
@@ -323,7 +336,8 @@ export const IndividualOfferDetailsScreen = ({
               filteredCategories={filteredCategories}
               filteredSubcategories={filteredSubcategories}
               readOnlyFields={readOnlyFields}
-              venuesOptions={availableVenuesOptions}
+              venues={venues}
+              venuesOptions={availableVenuesAsOptions}
               categoryStatus={categoryStatus}
               displayedImage={displayedImage}
               onImageUpload={onImageUpload}

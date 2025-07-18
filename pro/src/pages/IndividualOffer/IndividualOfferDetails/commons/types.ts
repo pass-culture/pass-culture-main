@@ -1,3 +1,9 @@
+import {
+  GetIndividualOfferResponseModel,
+  SubcategoryResponseModel,
+} from 'apiClient/v1'
+import { AccessibilityFormValues } from 'commons/core/shared/types'
+
 export type DetailsFormValues = {
   name: string
   description?: string
@@ -19,6 +25,7 @@ export type DetailsFormValues = {
   productId?: string
   callId?: string
   url?: string | null
+  accessibility?: AccessibilityFormValues
 }
 
 export type Product = {
@@ -33,4 +40,10 @@ export type Product = {
     recto?: string
     verso?: string
   }
+}
+
+export type SetDefaultInitialValuesFromOfferProps = {
+  offer: GetIndividualOfferResponseModel
+  subcategories: SubcategoryResponseModel[]
+  isNewOfferCreationFlowFeatureActive: boolean
 }

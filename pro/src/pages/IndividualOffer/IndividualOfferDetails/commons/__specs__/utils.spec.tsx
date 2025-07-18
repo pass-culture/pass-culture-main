@@ -1,9 +1,15 @@
-import { OfferStatus, SubcategoryIdEnum } from 'apiClient/v1'
+import {
+  OfferStatus,
+  SubcategoryIdEnum,
+  type VenueListItemResponseModel,
+} from 'apiClient/v1'
 import {
   getIndividualOfferFactory,
   subcategoryFactory,
   venueListItemFactory,
 } from 'commons/utils/factories/individualApiFactories'
+import { getOfferLastProvider } from 'commons/utils/factories/providerFactories'
+import { offerVenueFactory } from 'commons/utils/factories/venueFactories'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
 import {
@@ -11,14 +17,13 @@ import {
   buildShowSubTypeOptions,
   buildSubcategoryOptions,
   completeSubcategoryConditionalFields,
-  deSerializeDurationMinutes,
-  formatVenuesOptions,
   hasMusicType,
-  serializeDetailsPostData,
-  serializeDurationMinutes,
-  serializeExtraData,
-  setDefaultInitialValuesFromOffer,
-  setFormReadOnlyFields,
+  filterAvailableVenues,
+  getInitialValuesFromVenues,
+  getVenuesAsOptions,
+  getInitialValuesFromOffer,
+  getFormReadOnlyFields,
+  getAccessibilityFormValuesFromOffer,
 } from '../utils'
 
 describe('hasMusicType', () => {
@@ -150,279 +155,512 @@ describe('buildSubcategoryFields', () => {
   })
 })
 
-describe('formatVenuesOptions', () => {
-  it('should format venues as options', () => {
-    const formattedVenuesOptions = formatVenuesOptions(
-      [
-        venueListItemFactory({ isVirtual: false, id: 10 }),
-        venueListItemFactory({ isVirtual: false, id: 3 }),
-      ],
-      false
-    )
-    expect(formattedVenuesOptions).toEqual(
-      expect.arrayContaining([expect.objectContaining({ value: '10' })])
-    )
-
-    expect(formattedVenuesOptions).toEqual(
-      expect.arrayContaining([expect.objectContaining({ value: '3' })])
-    )
+describe('filterAvailableVenues', () => {
+  const physicalVenue = venueListItemFactory({
+    id: 1,
+    name: 'Physical Venue',
+    isVirtual: false,
+  })
+  const virtualVenue = venueListItemFactory({
+    id: 2,
+    name: 'Virtual Venue',
+    isVirtual: true,
   })
 
-  it('should exclude digital venues if a physcal venue is available', () => {
-    const formattedVenuesOptions = formatVenuesOptions(
-      [
-        venueListItemFactory({ isVirtual: true, id: 10 }),
-        venueListItemFactory({ isVirtual: false, id: 3 }),
-      ],
-      false
-    )
-    expect(formattedVenuesOptions).not.toEqual(
-      expect.arrayContaining([expect.objectContaining({ value: '10' })])
-    )
+  it('should return only physical venues if at least one exists', () => {
+    const venues = [physicalVenue, virtualVenue]
 
-    expect(formattedVenuesOptions).toEqual(
-      expect.arrayContaining([expect.objectContaining({ value: '3' })])
-    )
+    const physicalOfferResult = filterAvailableVenues(venues, false)
 
-    const formattedDigitalVenuesOptions = formatVenuesOptions(
-      [venueListItemFactory({ isVirtual: true, id: 10 })],
-      true
-    )
-    expect(formattedDigitalVenuesOptions).toEqual(
-      expect.arrayContaining([expect.objectContaining({ value: '10' })])
-    )
+    expect(physicalOfferResult).toEqual([physicalVenue])
+
+    const virtualOfferResult = filterAvailableVenues(venues, true)
+
+    expect(virtualOfferResult).toEqual([physicalVenue])
   })
-})
 
-describe('setDefaultInitialValuesFromOffer', () => {
-  it('should set default initial values from offer', () => {
-    expect(
-      setDefaultInitialValuesFromOffer({
-        offer: getIndividualOfferFactory({
-          subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
-        }),
-        subcategories: [
-          subcategoryFactory({ id: SubcategoryIdEnum.SEANCE_CINE }),
-        ],
-      })
-    ).toStrictEqual({
-      author: 'Chuck Norris',
-      categoryId: 'A',
-      description: '',
-      durationMinutes: '',
-      ean: '1234567891234',
-      gtl_id: '',
-      name: 'Le nom de l’offre 1',
-      performer: 'Le Poing de Chuck',
-      showSubType: 'PEGI 18',
-      showType: 'Cinéma',
-      speaker: "Chuck Norris n'a pas besoin de doubleur",
-      stageDirector: 'JCVD',
-      subcategoryConditionalFields: [],
-      subcategoryId: 'SEANCE_CINE',
-      venueId: '6',
-      visa: 'USA',
-      productId: '',
-      url: undefined,
+  it('should return an empty array for a physical offer with only virtual venues', () => {
+    const venues = [virtualVenue]
+
+    const physicalOfferResult = filterAvailableVenues(venues, false)
+
+    expect(physicalOfferResult).toEqual([])
+  })
+
+  it('should return virtual venues for a virtual offer if NO physical venues exist', () => {
+    const venues = [virtualVenue]
+
+    const virtualOfferResult = filterAvailableVenues(venues, true)
+
+    expect(virtualOfferResult).toEqual([virtualVenue])
+  })
+
+  it('should return all physical venues if only physical venues are provided', () => {
+    const anotherPhysicalVenue = venueListItemFactory({
+      id: 3,
+      name: 'Another Physical',
+      isVirtual: false,
     })
+    const venues = [physicalVenue, anotherPhysicalVenue]
+
+    const physicalOfferResult = filterAvailableVenues(venues, false)
+
+    expect(physicalOfferResult).toEqual(venues)
+
+    const virtualOfferResult = filterAvailableVenues(venues, true)
+
+    expect(virtualOfferResult).toEqual(venues)
   })
 })
 
-describe('deSerializeDurationMinutes', () => {
-  it('should correctly de serialize duration minutes', () => {
-    expect(deSerializeDurationMinutes(0)).toStrictEqual('0:00')
-    expect(deSerializeDurationMinutes(21)).toStrictEqual('0:21')
-    expect(deSerializeDurationMinutes(183)).toStrictEqual('3:03')
-    expect(deSerializeDurationMinutes(1838)).toStrictEqual('30:38')
-  })
-})
+describe('getVenuesAsOptions', () => {
+  it('should correctly map a list of venues to an array of Option objects', () => {
+    const venues = [
+      venueListItemFactory({ id: 10, name: 'My Venue' }),
+      venueListItemFactory({ id: 20, name: 'Your Venue' }),
+    ]
+    const options = getVenuesAsOptions(venues)
 
-describe('setFormReadOnlyFields', () => {
-  it('should disable all fields except venue when an ean search filled the form and offer is not yet created', () => {
-    const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES).filter(
-      (key) => key !== 'venueId'
+    expect(options).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ value: '10', label: 'My Venue' }),
+        expect.objectContaining({ value: '20', label: 'Your Venue' }),
+      ])
     )
-
-    expect(setFormReadOnlyFields(null, true)).toStrictEqual(expectedValues)
+    expect(options.length).toBe(2)
   })
 
-  it('should disable all field when offer has been created and was created by ean', () => {
-    const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
+  it('should sort the resulting options by label using French locale rules', () => {
+    const venues = [
+      venueListItemFactory({ name: 'Zoo' }),
+      venueListItemFactory({ name: 'Cinéma' }),
+      venueListItemFactory({ name: 'À la ferme' }), // Accented char should be sorted correctly
+    ]
 
-    expect(
-      setFormReadOnlyFields(getIndividualOfferFactory({ productId: 1 }), true)
-    ).toStrictEqual(expectedValues)
-  })
+    const optionsResult = getVenuesAsOptions(venues)
 
-  it('should not disable fields when there is no offer and no ean search was performed', () => {
-    expect(setFormReadOnlyFields(null)).toStrictEqual([])
-  })
-
-  it('should disable category/subcategory/venue fields when updating a regular offer', () => {
-    expect(setFormReadOnlyFields(getIndividualOfferFactory({}))).toStrictEqual([
-      'categoryId',
-      'subcategoryId',
-      'venueId',
+    expect(optionsResult.map((o) => o.label)).toEqual([
+      'À la ferme',
+      'Cinéma',
+      'Zoo',
     ])
   })
-
-  it('should disable all fields when there offer is rejected or pending', () => {
-    const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
-
-    expect(
-      setFormReadOnlyFields(
-        getIndividualOfferFactory({
-          status: OfferStatus.REJECTED,
-        })
-      )
-    ).toStrictEqual(expectedValues)
-
-    expect(
-      setFormReadOnlyFields(
-        getIndividualOfferFactory({
-          status: OfferStatus.PENDING,
-        })
-      )
-    ).toStrictEqual(expectedValues)
-  })
-
-  it('should disable all fields for provided offers', () => {
-    const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
-
-    expect(
-      setFormReadOnlyFields(
-        getIndividualOfferFactory({
-          lastProvider: { name: 'provider' },
-        })
-      )
-    ).toStrictEqual(expectedValues)
-  })
 })
 
-describe('serializeExtraData', () => {
-  it('should correctly serialize extra data', () => {
-    const formValues = {
-      name: 'anything',
-      description: 'anything',
-      venueId: 'anything',
-      categoryId: 'anything',
-      subcategoryId: 'anything',
-      showType: 'a showtype',
-      showSubType: 'a showSubtype',
-      gtl_id: 'a gtl id',
-      author: 'Boris Vian',
-      performer: 'Marcel et son orchestre',
-      ean: 'any ean',
-      speaker: 'Robert Smith',
-      stageDirector: 'Bob Sinclar',
-      visa: '123456789',
-      durationMinutes: '',
-      subcategoryConditionalFields: [],
-      productId: '',
-    }
+describe('getInitialValuesFromOffer', () => {
+  describe('without Feature Flag', () => {
+    const isNewOfferCreationFlowFeatureActive = false
 
-    expect(serializeExtraData(formValues)).toStrictEqual({
-      author: 'Boris Vian',
-      ean: 'any ean',
-      gtl_id: 'a gtl id',
-      performer: 'Marcel et son orchestre',
-      showSubType: 'a showSubtype',
-      showType: 'a showtype',
-      speaker: 'Robert Smith',
-      stageDirector: 'Bob Sinclar',
-      visa: '123456789',
+    it('should get the expected initial values from an offer', () => {
+      const offer = getIndividualOfferFactory({
+        subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
+        venue: offerVenueFactory({ id: 6 }),
+      })
+      const subcategories = [
+        subcategoryFactory({ id: SubcategoryIdEnum.SEANCE_CINE }),
+      ]
+
+      const result = getInitialValuesFromOffer({
+        offer,
+        subcategories,
+        isNewOfferCreationFlowFeatureActive,
+      })
+
+      expect(result).toStrictEqual({
+        author: 'Chuck Norris',
+        categoryId: 'A',
+        description: '',
+        durationMinutes: '',
+        ean: '1234567891234',
+        gtl_id: '',
+        name: 'Le nom de l’offre 1',
+        performer: 'Le Poing de Chuck',
+        showSubType: 'PEGI 18',
+        showType: 'Cinéma',
+        speaker: "Chuck Norris n'a pas besoin de doubleur",
+        stageDirector: 'JCVD',
+        subcategoryConditionalFields: [],
+        subcategoryId: 'SEANCE_CINE',
+        venueId: '6',
+        visa: 'USA',
+        productId: '',
+        url: undefined,
+      })
     })
   })
 
-  it('should correctly serialize extra data with empty values', () => {
-    const formValues = {
-      name: '',
-      description: '',
-      venueId: '',
-      categoryId: '',
-      subcategoryId: '',
-      showType: '',
-      showSubType: '',
-      gtl_id: '',
-      author: '',
-      performer: '',
-      ean: '',
-      speaker: '',
-      stageDirector: '',
-      visa: '',
-      durationMinutes: '',
-      subcategoryConditionalFields: [],
-      productId: '',
-    }
+  describe('with Feature Flag', () => {
+    const isNewOfferCreationFlowFeatureActive = true
 
-    expect(serializeExtraData(formValues)).toStrictEqual({
-      author: '',
-      ean: '',
-      gtl_id: '',
-      performer: '',
-      showSubType: '',
-      showType: '',
-      speaker: '',
-      stageDirector: '',
-      visa: '',
+    it('should get the expected initial values from an offer with accessibility', () => {
+      const offer = getIndividualOfferFactory({
+        id: 1,
+        audioDisabilityCompliant: true,
+        mentalDisabilityCompliant: false,
+        motorDisabilityCompliant: true,
+        subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
+        venue: offerVenueFactory({ id: 6 }),
+        visualDisabilityCompliant: false,
+      })
+      const subcategories = [
+        subcategoryFactory({ id: SubcategoryIdEnum.SEANCE_CINE }),
+      ]
+
+      const result = getInitialValuesFromOffer({
+        offer,
+        subcategories,
+        isNewOfferCreationFlowFeatureActive,
+      })
+
+      expect(result).toStrictEqual({
+        author: 'Chuck Norris',
+        categoryId: 'A',
+        description: '',
+        durationMinutes: '',
+        ean: '1234567891234',
+        gtl_id: '',
+        name: 'Le nom de l’offre 1',
+        performer: 'Le Poing de Chuck',
+        showSubType: 'PEGI 18',
+        showType: 'Cinéma',
+        speaker: "Chuck Norris n'a pas besoin de doubleur",
+        stageDirector: 'JCVD',
+        subcategoryConditionalFields: [],
+        subcategoryId: 'SEANCE_CINE',
+        venueId: '6',
+        visa: 'USA',
+        productId: '',
+        url: undefined,
+        accessibility: {
+          audio: true,
+          mental: false,
+          motor: true,
+          none: false,
+          visual: false,
+        },
+      })
     })
   })
 })
 
-describe('serializeDetailsPostData', () => {
-  it('should trim spaces in all string fields', () => {
-    const formValues = {
-      name: ' Festival de la Musique ',
-      description: ' Ancien festival annuel musical ',
-      venueId: '0',
-      categoryId: 'anything',
-      subcategoryId: 'anything',
-      showType: 'a showtype',
-      showSubType: 'a showSubtype',
-      gtl_id: 'a gtl id',
-      author: ' Boris Vian ',
-      performer: ' Marcel et son orchestre ',
-      ean: ' any ean ',
-      speaker: ' Robert Smith ',
-      stageDirector: ' Bob Sinclar ',
-      visa: ' 123456789 ',
-      durationMinutes: '',
-      subcategoryConditionalFields: [],
-      productId: '',
-    }
+describe('getInitialValuesFromVenues', () => {
+  describe('without Feature Flag', () => {
+    const isNewOfferCreationFlowFeatureActive = false
 
-    expect(serializeDetailsPostData(formValues)).toStrictEqual({
-      name: 'Festival de la Musique',
-      subcategoryId: 'anything',
-      venueId: 0,
-      description: 'Ancien festival annuel musical',
-      durationMinutes: undefined,
-      extraData: {
-        author: 'Boris Vian',
-        gtl_id: 'a gtl id',
-        performer: 'Marcel et son orchestre',
-        showType: 'a showtype',
-        showSubType: 'a showSubtype',
-        speaker: 'Robert Smith',
-        stageDirector: 'Bob Sinclar',
-        visa: '123456789',
-        ean: 'any ean',
-      },
-      url: undefined,
-      productId: undefined,
+    it('should return a `venueId` if only one is available', () => {
+      const venues = [venueListItemFactory({ id: 123 })]
+
+      const initialValuesResult = getInitialValuesFromVenues(
+        venues,
+        isNewOfferCreationFlowFeatureActive
+      )
+
+      expect(initialValuesResult.venueId).toBe('123')
+      expect(initialValuesResult).not.toHaveProperty('accessibility')
+    })
+
+    it('should return an empty `venueId` if multiple are available', () => {
+      const venues = [
+        venueListItemFactory({ id: 1 }),
+        venueListItemFactory({ id: 2 }),
+      ]
+
+      const initialValuesResult = getInitialValuesFromVenues(
+        venues,
+        isNewOfferCreationFlowFeatureActive
+      )
+
+      expect(initialValuesResult.venueId).toBe('')
+      expect(initialValuesResult).not.toHaveProperty('accessibility')
+    })
+
+    it('should return an empty `venueId` if none are available', () => {
+      const venues: VenueListItemResponseModel[] = []
+
+      const initialValuesResult = getInitialValuesFromVenues(
+        venues,
+        isNewOfferCreationFlowFeatureActive
+      )
+
+      expect(initialValuesResult.venueId).toBe('')
+      expect(initialValuesResult).not.toHaveProperty('accessibility')
+    })
+  })
+
+  describe('with Feature Flag', () => {
+    const isNewOfferCreationFlowFeatureActive = true
+
+    it('should return an empty `venueId` and none `accessibility` options if multiple venues are available', () => {
+      const venues = [
+        venueListItemFactory({ id: 1 }),
+        venueListItemFactory({ id: 2 }),
+      ]
+
+      const initialValuesResult = getInitialValuesFromVenues(
+        venues,
+        isNewOfferCreationFlowFeatureActive
+      )
+
+      expect(initialValuesResult.venueId).toBe('')
+      expect(initialValuesResult.accessibility).toEqual({
+        audio: false,
+        visual: false,
+        motor: false,
+        mental: false,
+        none: true,
+      })
+    })
+
+    it('should return an empty `venueId` and none `accessibility` options if no venues are available', () => {
+      const venues: VenueListItemResponseModel[] = []
+
+      const initialValuesResult = getInitialValuesFromVenues(
+        venues,
+        isNewOfferCreationFlowFeatureActive
+      )
+
+      expect(initialValuesResult.venueId).toBe('')
+      expect(initialValuesResult.accessibility).toEqual({
+        audio: false,
+        visual: false,
+        motor: false,
+        mental: false,
+        none: true,
+      })
+    })
+
+    it('should return a default `venueId` and its `accessibility` props if only one venue is available', () => {
+      const venues = [
+        venueListItemFactory({
+          id: 789,
+          audioDisabilityCompliant: true,
+          visualDisabilityCompliant: false,
+          motorDisabilityCompliant: true,
+          mentalDisabilityCompliant: false,
+        }),
+      ]
+
+      const initialValuesResult = getInitialValuesFromVenues(
+        venues,
+        isNewOfferCreationFlowFeatureActive
+      )
+
+      expect(initialValuesResult.venueId).toBe('789')
+      expect(initialValuesResult.accessibility).toEqual({
+        audio: true,
+        visual: false,
+        motor: true,
+        mental: false,
+        none: false,
+      })
     })
   })
 })
 
-describe('serializeDurationMinutes', () => {
-  it('should return undefined when durationHour is empty', () => {
-    expect(serializeDurationMinutes('')).toStrictEqual(undefined)
+describe('getFormReadOnlyFields', () => {
+  describe('without Feature Flag', () => {
+    const isNewOfferCreationFlowFeatureActive = false
+
+    it('should disable all fields except venue when an ean search filled the form and offer is not yet created', () => {
+      const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES).filter(
+        (key) => key !== 'venueId'
+      )
+
+      expect(
+        getFormReadOnlyFields(null, true, isNewOfferCreationFlowFeatureActive)
+      ).toStrictEqual(expectedValues)
+    })
+
+    it('should disable all field when offer has been created and was created by ean', () => {
+      const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
+
+      expect(
+        getFormReadOnlyFields(
+          getIndividualOfferFactory({ productId: 1 }),
+          true,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).toStrictEqual(expectedValues)
+    })
+
+    it('should not disable fields when there is no offer and no ean search was performed', () => {
+      expect(
+        getFormReadOnlyFields(null, false, isNewOfferCreationFlowFeatureActive)
+      ).toStrictEqual([])
+    })
+
+    it('should disable category/subcategory/venue fields when updating a regular offer', () => {
+      expect(
+        getFormReadOnlyFields(
+          getIndividualOfferFactory({}),
+          false,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).toStrictEqual(['categoryId', 'subcategoryId', 'venueId'])
+    })
+
+    it('should disable all fields when there offer is rejected or pending', () => {
+      const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
+
+      expect(
+        getFormReadOnlyFields(
+          getIndividualOfferFactory({
+            status: OfferStatus.REJECTED,
+          }),
+          false,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).toStrictEqual(expectedValues)
+
+      expect(
+        getFormReadOnlyFields(
+          getIndividualOfferFactory({
+            status: OfferStatus.PENDING,
+          }),
+          false,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).toStrictEqual(expectedValues)
+    })
+
+    it('should disable all fields for provided offers', () => {
+      const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
+
+      expect(
+        getFormReadOnlyFields(
+          getIndividualOfferFactory({
+            lastProvider: { name: 'provider' },
+          }),
+          false,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).toStrictEqual(expectedValues)
+    })
   })
 
-  it('should transform string duration into int minutes', () => {
-    expect(serializeDurationMinutes('0:00')).toStrictEqual(0)
-    expect(serializeDurationMinutes('0:21')).toStrictEqual(21)
-    expect(serializeDurationMinutes('3:03')).toStrictEqual(183)
-    expect(serializeDurationMinutes('30:38')).toStrictEqual(1838)
+  describe('with Feature Flag', () => {
+    const isNewOfferCreationFlowFeatureActive = true
+
+    it('should include accessibility as read-only when the offer status is pending or rejected', () => {
+      const pendingOffer = getIndividualOfferFactory({
+        status: OfferStatus.PENDING,
+      })
+      const rejectedOffer = getIndividualOfferFactory({
+        status: OfferStatus.REJECTED,
+      })
+
+      let isProductBased = false
+
+      expect(
+        getFormReadOnlyFields(
+          pendingOffer,
+          isProductBased,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).toContain('accessibility')
+      expect(
+        getFormReadOnlyFields(
+          rejectedOffer,
+          isProductBased,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).toContain('accessibility')
+
+      isProductBased = true
+
+      expect(
+        getFormReadOnlyFields(
+          pendingOffer,
+          isProductBased,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).toContain('accessibility')
+      expect(
+        getFormReadOnlyFields(
+          rejectedOffer,
+          isProductBased,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).toContain('accessibility')
+    })
+
+    it('should exclude accessibility for all other cases', () => {
+      const nullOffer = null
+      const synchronizedOffer = getIndividualOfferFactory({
+        lastProvider: getOfferLastProvider(),
+      })
+
+      let isProductBased = false
+
+      expect(
+        getFormReadOnlyFields(
+          nullOffer,
+          isProductBased,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).not.toContain('accessibility')
+      expect(
+        getFormReadOnlyFields(
+          synchronizedOffer,
+          isProductBased,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).not.toContain('accessibility')
+
+      isProductBased = true
+
+      expect(
+        getFormReadOnlyFields(
+          nullOffer,
+          isProductBased,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).not.toContain('accessibility')
+      expect(
+        getFormReadOnlyFields(
+          synchronizedOffer,
+          isProductBased,
+          isNewOfferCreationFlowFeatureActive
+        )
+      ).not.toContain('accessibility')
+    })
+  })
+})
+
+describe('getAccessibilityFormValuesFromOffer', () => {
+  it('should coerce all flags to false and set none as true when flags are all false, null or undefined', () => {
+    const offer = getIndividualOfferFactory({
+      audioDisabilityCompliant: null,
+      mentalDisabilityCompliant: undefined,
+      motorDisabilityCompliant: false,
+      visualDisabilityCompliant: false,
+    })
+
+    expect(getAccessibilityFormValuesFromOffer(offer)).toEqual({
+      audio: false,
+      mental: false,
+      motor: false,
+      visual: false,
+      none: true,
+    })
+  })
+
+  it('should return correct flags and set none as false when any flags is true', () => {
+    const offer = getIndividualOfferFactory({
+      audioDisabilityCompliant: false,
+      mentalDisabilityCompliant: true,
+      motorDisabilityCompliant: false,
+      visualDisabilityCompliant: false,
+    })
+
+    const result = getAccessibilityFormValuesFromOffer(offer)
+
+    expect(result).toEqual({
+      audio: false,
+      mental: true,
+      motor: false,
+      visual: false,
+      none: false,
+    })
   })
 })

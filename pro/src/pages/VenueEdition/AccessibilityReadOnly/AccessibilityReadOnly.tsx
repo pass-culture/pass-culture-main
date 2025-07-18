@@ -11,34 +11,41 @@ interface AccessibilityReadOnlyProps {
   venue: GetVenueResponseModel
 }
 
-export const AccessibilityReadOnly = ({ isOpenToPublicEnabled, venue }: AccessibilityReadOnlyProps) => {
+export const AccessibilityReadOnly = ({
+  isOpenToPublicEnabled,
+  venue,
+}: AccessibilityReadOnlyProps) => {
   const isSubSubSection = isOpenToPublicEnabled
 
+  // TODO (igabriele, 2025-07-16): Use `getAccessibilityInfoFromVenue()` common util rather than inlining domain rules.
   if (!venue.externalAccessibilityData) {
-    return <InternalAccessibilitySummarySection
-      callout={
-        venue.isPermanent ? (
-          <AccessibilityCallout />
-        ) : null
-      }
-      accessibleItem={venue}
-      accessibleWording="Votre établissement est accessible aux publics en situation de handicap :"
-      shouldShowDivider={false}
-      isSubSubSection={isSubSubSection}
-    />
+    return (
+      <InternalAccessibilitySummarySection
+        callout={venue.isPermanent ? <AccessibilityCallout /> : null}
+        accessibleItem={venue}
+        accessibleWording="Votre établissement est accessible aux publics en situation de handicap :"
+        shouldShowDivider={false}
+        isSubSubSection={isSubSubSection}
+      />
+    )
   }
 
-  const sectionContent = <ExternalAccessibility
-    externalAccessibilityId={venue.externalAccessibilityId}
-    externalAccessibilityData={venue.externalAccessibilityData}
-  />
+  const sectionContent = (
+    <ExternalAccessibility
+      externalAccessibilityId={venue.externalAccessibilityId}
+      externalAccessibilityData={venue.externalAccessibilityData}
+    />
+  )
 
   return isSubSubSection ? (
     <SummarySubSubSection title="Modalités d’accessibilité via acceslibre">
       {sectionContent}
     </SummarySubSubSection>
   ) : (
-    <SummarySubSection title="Modalités d’accessibilité via acceslibre" shouldShowDivider={false}>
+    <SummarySubSection
+      title="Modalités d’accessibilité via acceslibre"
+      shouldShowDivider={false}
+    >
       {sectionContent}
     </SummarySubSection>
   )

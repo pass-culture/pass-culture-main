@@ -97,7 +97,7 @@ export function setDefaultInitialValuesFromOffer({
     isNational: offer.isNational,
     withdrawalDetails:
       offer.withdrawalDetails ||
-      DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES['withdrawalDetails'],
+      DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES.withdrawalDetails,
     withdrawalDelay:
       offer.withdrawalDelay === null
         ? undefined
