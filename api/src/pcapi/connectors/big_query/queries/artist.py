@@ -1,3 +1,5 @@
+import enum
+
 import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
@@ -74,3 +76,66 @@ class ArtistAliasQuery(BaseQuery):
     """
 
     model = ArtistAliasModel
+
+
+class DeltaAction(str, enum.Enum):
+    ADD = "add"
+    REMOVE = "remove"
+
+
+class DeltaArtistModel(ArtistModel):
+    action: DeltaAction
+
+
+class DeltaArtistProductLinkModel(ArtistProductLinkModel):
+    action: DeltaAction
+
+
+class DeltaArtistAliasModel(ArtistAliasModel):
+    action: DeltaAction
+
+
+class ArtistDeltaQuery(BaseQuery):
+    raw_query = f"""
+        SELECT
+            artist_id as id,
+            artist_name as name,
+            artist_description as description,
+            wikidata_image_file_url as image,
+            wikidata_image_author as author,
+            wikidata_image_license as license,
+            wikidata_image_license_url as license_url,
+            action
+        FROM
+            `{settings.BIG_QUERY_TABLE_BASENAME}.artist_delta`
+    """
+    model = DeltaArtistModel
+
+
+class ArtistProductLinkDeltaQuery(BaseQuery):
+    raw_query = f"""
+        SELECT
+            artist_id,
+            offer_product_id as product_id,
+            artist_type,
+            action
+        FROM
+            `{settings.BIG_QUERY_TABLE_BASENAME}.product_artist_link_delta`
+    """
+    model = DeltaArtistProductLinkModel
+
+
+class ArtistAliasDeltaQuery(BaseQuery):
+    raw_query = f"""
+        SELECT
+            artist_id,
+            artist_offer_name as artist_alias_name,
+            artist_cluster_id,
+            artist_wiki_id as artist_wiki_data_id,
+            offer_category_id as offer_category_id,
+            artist_type,
+            action
+        FROM
+            `{settings.BIG_QUERY_TABLE_BASENAME}.artist_alias_delta`
+    """
+    model = DeltaArtistAliasModel
