@@ -1,6 +1,6 @@
-import { useRef, useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams, Navigate } from 'react-router'
+import { Navigate, useParams } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
@@ -33,7 +33,7 @@ export const SignupValidation = (): JSX.Element | null => {
             const user = await api.getProfile()
             const result = await dispatch(initializeUserThunk(user)).unwrap()
             if (result.success) {
-                setUrlToRedirect('/')
+              setUrlToRedirect('/')
             }
           } else {
             setUrlToRedirect('/connexion?accountValidation=true')

@@ -73,9 +73,6 @@ export const LostPassword = (): JSX.Element => {
 
   const successComponent = is2025SignUpEnabled ? (
     <section className={styles['change-password-request-success']}>
-      <h1 className={styles['change-password-request-success-title']}>
-        Vous allez recevoir un email
-      </h1>
       <p className={styles['change-password-request-success-body']}>
         Cliquez sur le lien envoyé par email à <b>{email}</b>
       </p>
@@ -90,8 +87,17 @@ export const LostPassword = (): JSX.Element => {
     />
   )
 
+  const mainHeading = email
+    ? is2025SignUpEnabled
+      ? 'Vous allez recevoir un email'
+      : ''
+    : 'Réinitialisez votre mot de passe'
+
   return (
-    <Layout layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}>
+    <Layout
+      layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}
+      mainHeading={mainHeading}
+    >
       {email ? (
         successComponent
       ) : (
@@ -100,7 +106,6 @@ export const LostPassword = (): JSX.Element => {
             [styles['change-password-request-form-old']]: !is2025SignUpEnabled,
           })}
         >
-          <h1 className={styles['title']}>Réinitialisez votre mot de passe</h1>
           <p className={styles['subtitle']}>
             {is2025SignUpEnabled
               ? 'Entrez votre email pour recevoir un lien de réinitialisation.'

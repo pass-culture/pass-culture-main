@@ -8,12 +8,6 @@
     margin-bottom: rem.torem(12px);
   }
 
-  &-title {
-    @include fonts.title1;
-
-    margin-bottom: rem.torem(16px);
-  }
-
   &-body {
     @include fonts.body;
 
@@ -25,10 +19,6 @@
   display: flex;
   align-items: center;
 
-  .title {
-    @include fonts.title1;
-  }
-
   .confirmation-text {
     @include fonts.title4;
 
@@ -39,5 +29,3 @@
     margin-top: rem.torem(24px);
   }
 }
-
-
