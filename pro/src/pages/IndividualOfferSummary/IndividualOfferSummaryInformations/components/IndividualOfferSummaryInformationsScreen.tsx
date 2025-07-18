@@ -4,6 +4,7 @@ import {
   OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { getDelayToFrenchText } from 'commons/utils/date'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
@@ -16,13 +17,11 @@ import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
-import { humanizeDelay } from '../SummaryScreen/OfferSection/utils'
-
 type DetailsSummaryScreenProps = {
   offer: GetIndividualOfferWithAddressResponseModel
 }
 
-export function UsefulInformationsSummaryScreen({
+export function IndividualOfferSummaryInformationsScreen({
   offer,
 }: DetailsSummaryScreenProps) {
   const practicalInfoDescriptions: Description[] = []
@@ -40,7 +39,7 @@ export function UsefulInformationsSummaryScreen({
   if (offer.withdrawalDelay) {
     practicalInfoDescriptions.push({
       title: 'Heure de retrait',
-      text: `${humanizeDelay(offer.withdrawalDelay)} avant le début de l’évènement`,
+      text: `${getDelayToFrenchText(offer.withdrawalDelay)} avant le début de l’évènement`,
     })
   }
   if (offer.bookingContact) {

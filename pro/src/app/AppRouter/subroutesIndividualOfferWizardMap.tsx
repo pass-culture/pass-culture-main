@@ -40,14 +40,6 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/IndividualOfferWizard/UsefulInformationsSummary/UsefulInformationsSummary'
-      ),
-    path: '/offre/individuelle/:offerId/pratiques',
-    title: 'Informations pratiques - Consulter une offre individuelle',
-  },
-  {
-    lazy: () =>
-      import(
         'pages/IndividualOffer/IndividualOfferInformations/IndividualOfferInformations'
       ),
     path: '/offre/individuelle/:offerId/creation/pratiques',
@@ -60,6 +52,14 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
       ),
     path: '/offre/individuelle/:offerId/edition/pratiques',
     title: 'Informations pratiques - Modifier une offre individuelle',
+  },
+  {
+    lazy: () =>
+      import(
+        'pages/IndividualOfferSummary/IndividualOfferSummaryInformations/IndividualOfferSummaryInformations'
+      ),
+    path: '/offre/individuelle/:offerId/pratiques',
+    title: 'Informations pratiques - Consulter une offre individuelle',
   },
   // Price categories pages
   {

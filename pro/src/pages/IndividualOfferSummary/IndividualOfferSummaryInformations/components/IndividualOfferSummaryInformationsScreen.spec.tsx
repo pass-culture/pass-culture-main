@@ -17,7 +17,7 @@ import {
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 
-import { UsefulInformationsSummaryScreen } from '../UsefulInformationsSummary'
+import { IndividualOfferSummaryInformationsScreen } from './IndividualOfferSummaryInformationsScreen'
 
 const renderUsefulInformationsSummaryScreen = (
   offer: GetIndividualOfferWithAddressResponseModel,
@@ -29,7 +29,7 @@ const renderUsefulInformationsSummaryScreen = (
 
   renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
-      <UsefulInformationsSummaryScreen offer={offer} />
+      <IndividualOfferSummaryInformationsScreen offer={offer} />
     </IndividualOfferContext.Provider>,
     {
       ...options,
@@ -37,7 +37,7 @@ const renderUsefulInformationsSummaryScreen = (
   )
 }
 
-describe('UsefulInformationsSummaryScreen', () => {
+describe('IndividualOfferSummaryInformationsScreen', () => {
   it('should render summary with filled data', () => {
     const offer = getIndividualOfferFactory({
       withdrawalType: WithdrawalTypeEnum.ON_SITE,
