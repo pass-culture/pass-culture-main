@@ -5,6 +5,7 @@ import {
   formatTimeForInput,
   getDateToFrenchText,
   getRangeToFrenchText,
+  getDelayToFrenchText,
   toDateStrippedOfTimezone,
   toISOStringWithoutMilliseconds,
 } from '../date'
@@ -118,6 +119,15 @@ describe('getRangeToFrenchText', () => {
   })
 })
 
+describe('getDelayToFrenchText', () => {
+  it('should render the correct delay', () => {
+    expect(getDelayToFrenchText(900)).toStrictEqual('15 minutes')
+    expect(getDelayToFrenchText(3600)).toStrictEqual('1 heure')
+    expect(getDelayToFrenchText(7200)).toStrictEqual('2 heures')
+    expect(getDelayToFrenchText(259200)).toStrictEqual('3 jours')
+  })
+})
+
 describe('formatShortDateForInput', () => {
   it('should format a date with the right format for a HTML input', () => {
     const date = new Date('2020-11-17T08:00:00Z')
@@ -125,6 +135,7 @@ describe('formatShortDateForInput', () => {
     expect(formatShortDateForInput(date)).toBe('2020-11-17')
   })
 })
+
 describe('formatTimeForInput', () => {
   it('should format a time with the right format for a HTML input', () => {
     const date = new Date('2020-11-17T23:10:00Z')
@@ -132,6 +143,7 @@ describe('formatTimeForInput', () => {
     expect(formatTimeForInput(date)).toBe('23:10')
   })
 })
+
 describe('getDateToFrenchText', () => {
   it('should not return a date when transforming an invalid date into French text', () => {
     expect(getDateToFrenchText('0024-01-15T23:59:59+00:09:21')).toEqual(null)

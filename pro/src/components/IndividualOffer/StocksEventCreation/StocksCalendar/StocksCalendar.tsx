@@ -13,9 +13,9 @@ import {
 } from 'commons/config/swrQueryKeys'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { useNotification } from 'commons/hooks/useNotification'
+import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
 import { pluralize } from 'commons/utils/pluralize'
 import { convertTimeFromVenueTimezoneToUtc } from 'commons/utils/timezone'
-import { getDepartmentCode } from 'components/IndividualOffer/utils/getDepartmentCode'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 
 import { StocksTableFilters, StocksTableSort } from '../form/types'

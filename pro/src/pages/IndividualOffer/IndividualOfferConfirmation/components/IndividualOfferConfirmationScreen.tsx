@@ -1,7 +1,7 @@
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_STATUS_PENDING } from 'commons/core/Offers/constants'
 import { formatDateTimeParts, isDateValid } from 'commons/utils/date'
-import { DisplayOfferInAppLink } from 'components/IndividualOffer/SummaryScreen/DisplayOfferInAppLink/DisplayOfferInAppLink'
+import { DisplayOfferInAppLink } from 'components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import fullWaitIcon from 'icons/full-wait.svg'

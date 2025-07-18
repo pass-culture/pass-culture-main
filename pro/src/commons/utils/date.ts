@@ -108,6 +108,19 @@ export function getRangeToFrenchText(
   )}${formattedTime}`
 }
 
+export function getDelayToFrenchText(delay: number): string {
+  const timeInHour = delay / 60 / 60
+
+  if (timeInHour < 1) {
+    return `${timeInHour * 60} minutes`
+  } else if (timeInHour === 1) {
+    return `${timeInHour} heure`
+  } else if (timeInHour > 48) {
+    return `${timeInHour / 24} jours`
+  }
+  return `${timeInHour} heures`
+}
+
 export const toISOStringWithoutMilliseconds = (date: Date) => {
   return date.toISOString().replace(/\.\d{3}/, '')
 }
@@ -162,4 +175,12 @@ export function mapDayToFrench(
   }
 }
 
-export const DAYS_IN_ORDER = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']
+export const DAYS_IN_ORDER = [
+  'MONDAY',
+  'TUESDAY',
+  'WEDNESDAY',
+  'THURSDAY',
+  'FRIDAY',
+  'SATURDAY',
+  'SUNDAY',
+]
