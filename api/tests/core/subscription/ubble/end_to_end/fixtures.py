@@ -180,10 +180,24 @@ ID_VERIFICATION_APPROVED_RESPONSE = {
     "declared_data": {"name": "Catherine Destivelle"},
     "documents": [
         {
-            "back_image_signed_url": "https://minio.ubble.example.com/production.ubble.ai/OIOXQTAYFYMF/idv_01je97fqt08dn6a687jcqnxd1b/a9febddd-6a89-4aa5-bd6a-912f4ca9f5da/dd1e68f6-1a8d-4267-916f-8b381b6d7f87/back_id.jpeg?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20241204%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20241204T162401Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=d3f73e2bb257df8204dd363eda7498067b717fb8d9f31cd7aec31a97e787685f",
-            "front_image_signed_url": "https://minio.ubble.example.com/production.ubble.ai/OIOXQTAYFYMF/idv_01je97fqt08dn6a687jcqnxd1b/a9febddd-6a89-4aa5-bd6a-912f4ca9f5da/dd1e68f6-1a8d-4267-916f-8b381b6d7f87/front_id.jpeg?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20241204%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20241204T162401Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=dbac3ed4d439973b3986142528638df8d37a133a0673d369f383b74db16d0fd0",
-            "full_name": "SMITH",
+            "back_image_signed_url": "https://minio.ubble.ai/production.ubble.ai/OIOXQTAYFYMF/idv_01je97fqt08dn6a687jcqnxd1b/3ab73828-f228-431c-ad35-520c8e877eef/5ed52248-d61d-4b91-b8aa-59d41bd0f8ad/back_id.jpeg?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20250716%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250716T135414Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=cb79c6201419d7af19a61c7e94ac58e34f61ce1536de329f876fbf8f1f68b1d6",
+            "birth_date": "1984-10-02",
+            "birth_place": "Paris",
+            "document_expiry_date": "2035-03-25",
+            "document_issue_date": "2025-03-26",
+            "document_issue_place": "Paris",
+            "document_issuing_country": "FR",
+            "document_mrz": "P<FRASMITHJOHNDANIEL<<<<<<<<<<<<<<<<<<<<<<<<<<<<",
+            "document_number": "A12345678",
+            "document_type": "ID",
+            "first_names": "Toby, Daniel",
+            "front_image_signed_url": "https://minio.ubble.ai/production.ubble.ai/OIOXQTAYFYMF/idv_01je97fqt08dn6a687jcqnxd1b/3ab73828-f228-431c-ad35-520c8e877eef/5ed52248-d61d-4b91-b8aa-59d41bd0f8ad/front_id.jpeg?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20250716%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250716T135414Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=209dd3ab5110c752c7a9d50c9202863d32895d4b7f175f1a29849a45d6251c90",
+            "full_name": "Toby Daniel SMITH",
+            "gender": "M",
             "last_name": "SMITH",
+            "nationality": "FR",
+            "personal_number": "AB1234567890XY",
+            "tax_identification_number": "TIN123456789",
         }
     ],
     "face": {

@@ -10,6 +10,9 @@ class IdentityCheckContent(pydantic_v1.BaseModel):
     def get_birth_date(self) -> datetime.date | None:
         raise NotImplementedError()
 
+    def get_birth_place(self) -> str | None:
+        return None
+
     def get_first_name(self) -> str | None:
         raise NotImplementedError()
 

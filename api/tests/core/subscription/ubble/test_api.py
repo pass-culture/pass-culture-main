@@ -217,6 +217,7 @@ class UbbleWorkflowV2Test:
         ubble_subscription_api.update_ubble_workflow(fraud_check)
 
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert fraud_check.resultContent.get("birth_place") is not None
 
     def test_ubble_identification_approved_with_test_email(self, requests_mock):
         user = users_factories.UserFactory(email="hello+ubble_test@example.com", age=17)

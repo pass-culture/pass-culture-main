@@ -1392,6 +1392,7 @@ class BeneficiaryInformationUpdateTest:
             first_name="Raoul",
             last_name="Dufy",
             birth_date=datetime.date(2000, 5, 1).isoformat(),
+            birth_place="Lyon",
             id_document_number="123456789",
             gender=users_models.GenderEnum.M,
         )
@@ -1400,6 +1401,7 @@ class BeneficiaryInformationUpdateTest:
         assert new_user.firstName == "Raoul"
         assert new_user.lastName == "Dufy"
         assert new_user.validatedBirthDate == datetime.date(2000, 5, 1)
+        assert new_user.birthPlace == "Lyon"
         assert new_user.idPieceNumber == "123456789"
         assert new_user.civility == "M."
 
