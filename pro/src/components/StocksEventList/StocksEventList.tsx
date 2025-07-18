@@ -17,7 +17,7 @@ import { Events } from 'commons/core/FirebaseEvents/constants'
 import { SortingMode, useColumnSorting } from 'commons/hooks/useColumnSorting'
 import { useNotification } from 'commons/hooks/useNotification'
 import { usePaginationWithSearchParams } from 'commons/hooks/usePagination'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
 import { formatPrice } from 'commons/utils/formatPrice'
 import { pluralize, pluralizeString } from 'commons/utils/pluralize'
 import {
@@ -92,7 +92,8 @@ export const StocksEventList = ({
   const notify = useNotification()
   const [searchParams, setSearchParams] = useSearchParams()
   const { mutate } = useSWRConfig()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const currentOfferer = useSelector(selectCurrentOfferer)
+  const selectedOffererId = currentOfferer?.id ?? null
   // states
   const [allStocksChecked, setAllStocksChecked] = useState<PartialCheck>(
     PartialCheck.UNCHECKED

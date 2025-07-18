@@ -18,7 +18,7 @@ import {
   selectIsIndividualSectionOpen,
   selectSelectedPartnerPageId,
 } from 'commons/store/nav/selector'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
 import { getSavedPartnerPageVenueId } from 'commons/utils/savedPartnerPageVenueId'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
@@ -51,7 +51,9 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const dispatch = useDispatch()
   const isIndividualSectionOpen = useSelector(selectIsIndividualSectionOpen)
   const isCollectiveSectionOpen = useSelector(selectIsCollectiveSectionOpen)
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const currentOfferer = useSelector(selectCurrentOfferer)
+  const selectedOffererId = currentOfferer?.id ?? null
+  const offererId = currentOfferer?.id ?? null
   const sideNavCollapseSize = useMediaQuery(
     SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY
   )
@@ -97,8 +99,6 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
       )
     }
   }, [sideNavCollapseSize, dispatch, location.pathname])
-
-  const offererId = useSelector(selectCurrentOffererId)
 
   return (
     <div

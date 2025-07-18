@@ -40,7 +40,8 @@ vi.mock('commons/hooks/useHasAccessToDidacticOnboarding', () => ({
 }))
 
 const selectCurrentOffererId = vi.hoisted(() => vi.fn())
-vi.mock('commons/store/offerer/selectors', () => ({
+vi.mock('commons/store/offerer/selectors', async (importOriginal) => ({
+  ...(await importOriginal()),
   selectCurrentOffererId,
 }))
 

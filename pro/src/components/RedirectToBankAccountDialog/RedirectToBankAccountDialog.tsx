@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events, VenueEvents } from 'commons/core/FirebaseEvents/constants'
-import { updateOffererIsOnboarded } from 'commons/store/offerer/reducer'
+import { updateCurrentOffererOnboardingStatus } from 'commons/store/offerer/reducer'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RedirectDialog } from 'components/RedirectDialog/RedirectDialog'
 import fullWaitIcon from 'icons/full-wait.svg'
@@ -36,7 +36,7 @@ export const RedirectToBankAccountDialog = ({
           from: OFFER_WIZARD_STEP_IDS.SUMMARY,
         })
         if (isOnboarding) {
-          dispatch(updateOffererIsOnboarded(true))
+          dispatch(updateCurrentOffererOnboardingStatus(true))
         }
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         navigate(cancelRedirectUrl)
@@ -53,7 +53,7 @@ export const RedirectToBankAccountDialog = ({
           from: OFFER_WIZARD_STEP_IDS.SUMMARY,
         })
         if (isOnboarding) {
-          dispatch(updateOffererIsOnboarded(true))
+          dispatch(updateCurrentOffererOnboardingStatus(true))
         }
       }}
       cancelText="Plus tard"

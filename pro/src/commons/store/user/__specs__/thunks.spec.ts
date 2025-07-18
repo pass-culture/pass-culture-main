@@ -52,8 +52,7 @@ describe('initializeUserThunk', () => {
 
     expect(store.getState().user.currentUser).toBeNull()
     expect(store.getState().offerer.offererNames).toBeNull()
-    expect(store.getState().offerer.selectedOffererId).toBeNull()
-    expect(store.getState().offerer.isOnboarded).toBeNull()
+    expect(store.getState().offerer.currentOfferer).toBeNull()
 
     expect(result).toEqual({
       error: { message: 'Rejected' },
@@ -95,8 +94,7 @@ describe('initializeUserThunk', () => {
 
     expect(store.getState().user.currentUser).toBeNull()
     expect(store.getState().offerer.offererNames).toBeNull()
-    expect(store.getState().offerer.selectedOffererId).toBeNull()
-    expect(store.getState().offerer.isOnboarded).toBeNull()
+    expect(store.getState().offerer.currentOfferer).toBeNull()
 
     expect(result).toEqual({
       error: { message: 'Rejected' },
@@ -126,8 +124,7 @@ describe('initializeUserThunk', () => {
 
     expect(store.getState().user.currentUser).toBeNull()
     expect(store.getState().offerer.offererNames).toBeNull()
-    expect(store.getState().offerer.selectedOffererId).toBeNull()
-    expect(store.getState().offerer.isOnboarded).toBeNull()
+    expect(store.getState().offerer.currentOfferer).toBeNull()
 
     expect(result).toEqual({
       error: { message: 'Rejected' },

@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullCloseIcon from 'icons/full-close.svg'
 import strokeBarcodeIcon from 'icons/stroke-barcode.svg'
@@ -43,7 +43,8 @@ export const DetailsEanSearch = ({
   onEanReset,
 }: DetailsEanSearchProps): JSX.Element => {
   const tooltipId = useId()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const currentOfferer = useSelector(selectCurrentOfferer)
+  const selectedOffererId = currentOfferer?.id ?? null
   const [wasCleared, setWasCleared] = useState(false)
   const [subcatError, setSubcatError] = useState<string | null>(null)
 

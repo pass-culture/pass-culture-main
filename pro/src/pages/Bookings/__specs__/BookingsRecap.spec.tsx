@@ -9,6 +9,7 @@ import { ApiResult } from 'apiClient/v2/core/ApiResult'
 import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
 import { ALL_OFFERER_ADDRESS_OPTION } from 'commons/core/Offers/constants'
 import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import { DeepPartial } from 'commons/custom_types/utils'
 import { RootState } from 'commons/store/rootReducer'
 import {
   FORMAT_ISO_DATE_ONLY,
@@ -20,8 +21,8 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from 'commons/utils/factories/offererAddressFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
@@ -57,7 +58,7 @@ const NTH_ARGUMENT_GET_BOOKINGS = {
 const user = sharedCurrentUserFactory()
 
 const renderBookingsRecap = (
-  overrides: Partial<RootState> = {
+  overrides: DeepPartial<RootState> = {
     user: { currentUser: user },
     offerer: currentOffererFactory(),
   }
@@ -694,7 +695,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should fetch API for CSV using selectedOffererId', async () => {
     renderBookingsRecap({
-      offerer: currentOffererFactory({ selectedOffererId: 42 }),
+      offerer: currentOffererFactory({ currentOfferer: { id: 42 } }),
     })
     await waitForCompleteLoading()
 

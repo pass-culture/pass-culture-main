@@ -21,12 +21,15 @@ import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDi
 import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
 import { useNotification } from 'commons/hooks/useNotification'
 import {
-  updateOffererIsOnboarded,
+  updateCurrentOfferer,
   updateOffererNames,
-  updateSelectedOffererId,
 } from 'commons/store/offerer/reducer'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import {
+  selectCurrentOfferer,
+  selectCurrentOffererId,
+} from 'commons/store/offerer/selectors'
 import { updateUser } from 'commons/store/user/reducer'
+import { getOffererData } from 'commons/utils/offererStoreHelper'
 import { getReCaptchaToken } from 'commons/utils/recaptcha'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
@@ -61,6 +64,7 @@ export const Validation = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
   const currentOffererId = useSelector(selectCurrentOffererId)
+  const currentOfferer = useSelector(selectCurrentOfferer)
 
   const targetCustomerLabel = {
     [Target.INDIVIDUAL]: 'Au grand public',
@@ -144,8 +148,9 @@ export const Validation = (): JSX.Element => {
 
       // If API returns an offerer ID that is different from the one in the redux store, we must update it too
       if (currentOffererId !== response.id) {
-        // Update the current offerer ID in the redux store and in the local storage if available
-        dispatch(updateSelectedOffererId(response.id))
+        // Update the current offerer in the redux store and in the local storage if available
+        const fullOfferer = await api.getOfferer(response.id)
+        dispatch(updateCurrentOfferer(fullOfferer))
         if (storageAvailable('localStorage')) {
           localStorage.setItem(SAVED_OFFERER_ID_KEY, response.id.toString())
         }
@@ -155,14 +160,19 @@ export const Validation = (): JSX.Element => {
       if (isDidacticOnboardingEnabled) {
         // If currentOffererId is null, offerer is not onboarded yet
         if (currentOffererId === null) {
-          dispatch(updateOffererIsOnboarded(false))
+          const fullOfferer = await api.getOfferer(response.id)
+          dispatch(updateCurrentOfferer(fullOfferer))
           return navigate('/onboarding')
         }
 
-        // Else, we should getting the new offererId onboarded status (to redirect to /onboarding or /accueil)
-        const { isOnboarded } = await api.getOfferer(response.id)
-        dispatch(updateOffererIsOnboarded(isOnboarded))
-        if (!isOnboarded) {
+        // Else, we should get the new offererId onboarded status (to redirect to /onboarding or /accueil)
+        const fullOfferer = await getOffererData(
+          response.id,
+          currentOfferer,
+          () => api.getOfferer(response.id)
+        )
+        dispatch(updateCurrentOfferer(fullOfferer))
+        if (!fullOfferer?.isOnboarded) {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           navigate('/onboarding')
         } else {

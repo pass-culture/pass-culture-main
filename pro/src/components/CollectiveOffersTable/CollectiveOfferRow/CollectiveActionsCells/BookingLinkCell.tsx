@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { CollectiveBookingStatus } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
@@ -26,7 +26,8 @@ export const BookingLinkCell = ({
   offerId,
 }: BookingLinkCellProps) => {
   const { logEvent } = useAnalytics()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const currentOfferer = useSelector(selectCurrentOfferer)
+  const selectedOffererId = currentOfferer?.id ?? null
 
   if (!isDateValid(offerEventDate)) {
     return null

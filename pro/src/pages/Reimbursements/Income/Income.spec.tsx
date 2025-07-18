@@ -3,10 +3,10 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import {
-  type StatisticsModel,
+  type AggregatedRevenueModel,
   type GetOffererResponseModel,
   type GetOffererVenueResponseModel,
-  type AggregatedRevenueModel,
+  type StatisticsModel,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import {
@@ -15,8 +15,8 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 import { statisticsFactory } from 'commons/utils/factories/statisticsFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
@@ -75,7 +75,7 @@ const renderIncome = () => {
     storeOverrides: {
       user: { currentUser: sharedCurrentUserFactory() },
       offerer: currentOffererFactory({
-        selectedOffererId: MOCK_DATA.selectedOffererId,
+        currentOfferer: { id: MOCK_DATA.selectedOffererId },
       }),
     },
   })

@@ -15,14 +15,16 @@ import {
 
 import { OnboardingCollectiveModal } from './OnboardingCollectiveModal'
 
-
 const renderOnboardingCollectiveModal = (
   options?: RenderWithProvidersOptions
 ) => {
   return renderWithProviders(<OnboardingCollectiveModal />, {
     storeOverrides: {
       user: { currentUser: sharedCurrentUserFactory() },
-      offerer: { selectedOffererId: 1, offererNames: [], isOnboarded: false },
+      offerer: {
+        currentOfferer: { id: 1, isOnboarded: false },
+        offererNames: [],
+      },
     },
     user: sharedCurrentUserFactory(),
     ...options,

@@ -35,7 +35,7 @@ const renderCollectiveOfferCreation = (
     storeOverrides: {
       user: { currentUser: sharedCurrentUserFactory() },
       offerer: currentOffererFactory({
-        selectedOffererId: 10,
+        currentOfferer: { id: 10 },
       }),
     },
   })
@@ -50,7 +50,7 @@ describe('CollectiveOfferCreation', () => {
   })
   const defaultProps = {
     offer: getCollectiveOfferFactory({
-      venue: { ...venue, managingOfferer: {...offerer, siren: '123456789'} },
+      venue: { ...venue, managingOfferer: { ...offerer, siren: '123456789' } },
     }),
     isTemplate: false,
   }

@@ -10,8 +10,8 @@ import {
   defaultGetOffererVenueResponseModel,
 } from 'commons/utils/factories/individualApiFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
@@ -140,7 +140,7 @@ describe('SideNavLinks', () => {
       localStorage.setItem(
         SAVED_PARTNER_PAGE_VENUE_ID_KEYS,
         JSON.stringify({
-          [offerer.selectedOffererId as number]:
+          [offerer.currentOfferer!.id as number]:
             locallyStoredVenueId.toString(),
         })
       )
@@ -159,7 +159,7 @@ describe('SideNavLinks', () => {
       const link = await screen.findByRole('link', { name: linkLabel })
       expect(link).toHaveAttribute(
         'href',
-        `/structures/${offerer.selectedOffererId}/lieux/${reduxStoreSelectedVenueId.toString()}/page-partenaire`
+        `/structures/${offerer.currentOfferer!.id}/lieux/${reduxStoreSelectedVenueId.toString()}/page-partenaire`
       )
     })
 
@@ -170,7 +170,7 @@ describe('SideNavLinks', () => {
       localStorage.setItem(
         SAVED_PARTNER_PAGE_VENUE_ID_KEYS,
         JSON.stringify({
-          [offerer.selectedOffererId as number]:
+          [offerer.currentOfferer!.id as number]:
             locallyStoredVenueId.toString(),
         })
       )
@@ -180,7 +180,7 @@ describe('SideNavLinks', () => {
       const link = await screen.findByRole('link', { name: linkLabel })
       expect(link).toHaveAttribute(
         'href',
-        `/structures/${offerer.selectedOffererId}/lieux/${locallyStoredVenueId.toString()}/page-partenaire`
+        `/structures/${offerer.currentOfferer!.id}/lieux/${locallyStoredVenueId.toString()}/page-partenaire`
       )
     })
 
@@ -195,7 +195,7 @@ describe('SideNavLinks', () => {
       localStorage.setItem(
         SAVED_PARTNER_PAGE_VENUE_ID_KEYS,
         JSON.stringify({
-          [offerer.selectedOffererId as number]:
+          [offerer.currentOfferer!.id as number]:
             locallyStoredVenueId.toString(),
         })
       )
@@ -205,7 +205,7 @@ describe('SideNavLinks', () => {
       const link = await screen.findByRole('link', { name: linkLabel })
       expect(link).toHaveAttribute(
         'href',
-        `/structures/${offerer.selectedOffererId}/lieux/${fallbackVenueId}/page-partenaire`
+        `/structures/${offerer.currentOfferer!.id}/lieux/${fallbackVenueId}/page-partenaire`
       )
     })
   })
