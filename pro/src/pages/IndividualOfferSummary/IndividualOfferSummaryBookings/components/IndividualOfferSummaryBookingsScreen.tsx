@@ -25,15 +25,15 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { DownloadBookingsModal } from './DownloadBookingsModal/DownloadBookingsModal'
-import styles from './IndividualOfferBookingsSummaryScreen.module.scss'
+import styles from './IndividualOfferSummaryBookingsScreen.module.scss'
 
-interface IndividualOfferBookingsSummaryScreenProps {
+interface IndividualOfferSummaryBookingsScreenProps {
   offer: GetIndividualOfferResponseModel
 }
 
-export const IndividualOfferBookingsSummaryScreen = ({
+export const IndividualOfferSummaryBookingsScreen = ({
   offer,
-}: IndividualOfferBookingsSummaryScreenProps) => {
+}: IndividualOfferSummaryBookingsScreenProps) => {
   const [bookings, setBookings] = useState<BookingRecapResponseModel[] | null>(
     null
   )

@@ -7,11 +7,9 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import { IndividualOfferBookingsSummaryScreen } from './components/IndividualOfferBookingsSummaryScreen'
+import { IndividualOfferSummaryBookingsScreen } from './components/IndividualOfferSummaryBookingsScreen'
 
-// TODO (igabriele, 2025-07-18): Move this file to `pages/IndividualOffer/IndividualOfferBookings/IndividualOfferBookings.tsx`.
-// + move its related files accordingly = move this directory one level up
-const IndividualOfferBookings = (): JSX.Element | null => {
+const IndividualOfferSummaryBookings = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { offer } = useIndividualOfferContext()
 
@@ -21,7 +19,7 @@ const IndividualOfferBookings = (): JSX.Element | null => {
 
   return (
     <IndividualOfferLayout title="Récapitulatif" offer={offer} mode={mode}>
-      <IndividualOfferBookingsSummaryScreen offer={offer} />
+      <IndividualOfferSummaryBookingsScreen offer={offer} />
       <ActionBar step={OFFER_WIZARD_STEP_IDS.SUMMARY} isDisabled={false} />
     </IndividualOfferLayout>
   )
@@ -29,4 +27,4 @@ const IndividualOfferBookings = (): JSX.Element | null => {
 
 // Below exports are used by react-router
 // ts-unused-exports:disable-next-line
-export const Component = IndividualOfferBookings
+export const Component = IndividualOfferSummaryBookings
