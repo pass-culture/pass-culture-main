@@ -129,7 +129,7 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/IndividualOffer/IndividualOfferSummary/IndividualOfferBookings/IndividualOfferBookings'
+        'pages/IndividualOffer/IndividualOfferBookings/IndividualOfferBookings'
       ),
     path: '/offre/individuelle/:offerId/reservations',
     title: 'Réservations - Consulter une offre individuelle',

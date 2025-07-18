@@ -9,8 +9,6 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { IndividualOfferBookingsSummaryScreen } from './components/IndividualOfferBookingsSummaryScreen'
 
-// TODO (igabriele, 2025-07-18): Move this file to `pages/IndividualOffer/IndividualOfferBookings/IndividualOfferBookings.tsx`.
-// + move its related files accordingly = move this directory one level up
 const IndividualOfferBookings = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { offer } = useIndividualOfferContext()
