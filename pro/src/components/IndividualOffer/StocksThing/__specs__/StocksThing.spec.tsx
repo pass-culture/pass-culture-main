@@ -20,7 +20,10 @@ import {
   IndividualOfferContextValues,
 } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
@@ -34,7 +37,6 @@ import {
   subcategoryFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { Notification } from 'components/Notification/Notification'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 
@@ -65,7 +67,7 @@ const renderStockThingScreen = async (
       <Routes>
         <Route
           path={getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
             mode: OFFER_WIZARD_MODE.CREATION,
           })}
           element={
@@ -77,7 +79,7 @@ const renderStockThingScreen = async (
         />
         <Route
           path={getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
             mode: OFFER_WIZARD_MODE.CREATION,
           })}
           element={<div>Next page</div>}
@@ -92,7 +94,7 @@ const renderStockThingScreen = async (
     {
       initialRouterEntries: [
         getIndividualOfferUrl({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.CREATION,
           offerId: contextValue.offer?.id || undefined,
         }),

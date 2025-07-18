@@ -3,11 +3,11 @@ import { useHeadlineOfferContext } from 'commons/context/HeadlineOfferContext/He
 import {
   OFFER_STATUS_DRAFT,
   OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { CheckboxCell } from 'components/OffersTable/Cells/CheckboxCell'
 
 import { AddressCell } from './components/AddressCell'
@@ -43,13 +43,13 @@ export const IndividualOfferRow = ({
       offer.status === OFFER_STATUS_DRAFT
         ? OFFER_WIZARD_MODE.CREATION
         : OFFER_WIZARD_MODE.READ_ONLY,
-    step: OFFER_WIZARD_STEP_IDS.DETAILS,
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
   })
 
   const editionStockLink = getIndividualOfferUrl({
     offerId: offer.id,
     mode: OFFER_WIZARD_MODE.EDITION,
-    step: OFFER_WIZARD_STEP_IDS.STOCKS,
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
   })
 
   return (

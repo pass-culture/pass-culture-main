@@ -4,11 +4,13 @@ import { api } from 'apiClient/api'
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { GET_MUSIC_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { DisplayOfferInAppLink } from 'components/DisplayOfferInAppLink/DisplayOfferInAppLink'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { Markdown } from 'components/Markdown/Markdown'
 import { OfferAppPreview } from 'components/OfferAppPreview/OfferAppPreview'
 import { SummaryAside } from 'components/SummaryLayout/SummaryAside'
@@ -175,7 +177,7 @@ export function IndividualOfferSummaryDetailsScreen({
             : {
                 editLink: getIndividualOfferUrl({
                   offerId: offer.id,
-                  step: OFFER_WIZARD_STEP_IDS.DETAILS,
+                  step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
                   mode: OFFER_WIZARD_MODE.EDITION,
                 }),
                 'aria-label': 'Modifier les détails de l’offre',

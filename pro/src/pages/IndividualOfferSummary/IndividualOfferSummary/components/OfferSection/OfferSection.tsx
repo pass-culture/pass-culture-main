@@ -8,12 +8,12 @@ import { useIndividualOfferContext } from 'commons/context/IndividualOfferContex
 import {
   OFFER_WITHDRAWAL_TYPE_LABELS,
   OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { getDelayToFrenchText } from 'commons/utils/date'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { Markdown } from 'components/Markdown/Markdown'
 import {
   Description,
@@ -193,7 +193,7 @@ export const OfferSection = ({
       title="Détails de l’offre"
       editLink={getIndividualOfferUrl({
         offerId: offer.id,
-        step: OFFER_WIZARD_STEP_IDS.DETAILS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
         mode:
           mode === OFFER_WIZARD_MODE.READ_ONLY
             ? OFFER_WIZARD_MODE.EDITION
@@ -218,7 +218,7 @@ export const OfferSection = ({
         title="Informations pratiques"
         editLink={getIndividualOfferUrl({
           offerId: offer.id,
-          step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
           mode:
             mode === OFFER_WIZARD_MODE.READ_ONLY
               ? OFFER_WIZARD_MODE.EDITION

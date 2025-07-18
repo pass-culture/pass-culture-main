@@ -2,12 +2,14 @@ import { useLocation, useNavigate } from 'react-router'
 import { mutate } from 'swr'
 
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useNotification } from 'commons/hooks/useNotification'
 import { pluralize } from 'commons/utils/pluralize'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -43,7 +45,7 @@ export function StocksCalendarActionsBar({
       navigate(
         getIndividualOfferUrl({
           offerId: offerId,
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })
@@ -54,7 +56,7 @@ export function StocksCalendarActionsBar({
     navigate(
       getIndividualOfferUrl({
         offerId: offerId,
-        step: OFFER_WIZARD_STEP_IDS.TARIFS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
         mode,
         isOnboarding,
       })
@@ -73,7 +75,7 @@ export function StocksCalendarActionsBar({
     navigate(
       getIndividualOfferUrl({
         offerId: offerId,
-        step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
         mode,
         isOnboarding,
       })
@@ -126,7 +128,7 @@ export function StocksCalendarActionsBar({
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             handleNextStep()
           }}
-          step={OFFER_WIZARD_STEP_IDS.STOCKS}
+          step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS}
           dirtyForm={false}
         />
       )}

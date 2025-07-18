@@ -1,10 +1,10 @@
 /* istanbul ignore file: DEBT, TO FIX */
 
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from 'commons/core/Offers/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { IndividualOfferLayout } from 'components/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
+import { IndividualOfferLayout } from 'components/IndividualOfferLayout/IndividualOfferLayout'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -30,7 +30,10 @@ const IndividualOfferSummaryStocks = (): JSX.Element | null => {
       ) : (
         <IndividualOfferSummaryStocksScreen />
       )}
-      <ActionBar step={OFFER_WIZARD_STEP_IDS.SUMMARY} isDisabled={false} />
+      <ActionBar
+        step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY}
+        isDisabled={false}
+      />
     </IndividualOfferLayout>
   )
 }

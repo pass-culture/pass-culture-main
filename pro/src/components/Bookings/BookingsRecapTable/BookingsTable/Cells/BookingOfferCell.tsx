@@ -8,6 +8,7 @@ import {
 import {
   OFFER_STATUS_PENDING,
   OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import {
@@ -21,7 +22,6 @@ import {
   getRemainingTime,
   shouldDisplayWarning,
 } from 'components/Bookings/BookingsRecapTable/utils/utils'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import fullErrorIcon from 'icons/full-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -45,7 +45,7 @@ export const BookingOfferCell = ({
     : getIndividualOfferUrl({
         offerId: booking.stock.offerId,
         mode: OFFER_WIZARD_MODE.READ_ONLY,
-        step: OFFER_WIZARD_STEP_IDS.DETAILS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
       })
 
   const eventBeginningDatetime = isCollectiveBooking(booking)

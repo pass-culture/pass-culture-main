@@ -3,10 +3,12 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { GET_STOCKS_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useNotification } from 'commons/hooks/useNotification'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { getStockWarningText } from 'pages/IndividualOfferSummary/commons/getStockWarningText'
@@ -39,7 +41,7 @@ export const IndividualOfferSummaryStocksScreen = () => {
 
   const editLink = getIndividualOfferUrl({
     offerId: offer.id,
-    step: OFFER_WIZARD_STEP_IDS.STOCKS,
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
     mode: OFFER_WIZARD_MODE.EDITION,
   })
 

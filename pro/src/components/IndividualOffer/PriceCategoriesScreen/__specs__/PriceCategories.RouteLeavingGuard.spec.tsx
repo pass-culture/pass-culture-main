@@ -7,11 +7,13 @@ import {
   GetIndividualOfferResponseModel,
   GetIndividualOfferWithAddressResponseModel,
 } from 'apiClient/v1'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 
 import {
@@ -23,7 +25,7 @@ const renderPriceCategories = (
   props: PriceCategoriesScreenProps,
   url = generatePath(
     getIndividualOfferPath({
-      step: OFFER_WIZARD_STEP_IDS.TARIFS,
+      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
       mode: OFFER_WIZARD_MODE.CREATION,
     }),
     { offerId: 'AA' }
@@ -35,7 +37,7 @@ const renderPriceCategories = (
         <Route
           key={mode}
           path={getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.TARIFS,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
             mode,
           })}
           element={
@@ -44,7 +46,7 @@ const renderPriceCategories = (
               <ButtonLink to="/outside">Go outside !</ButtonLink>
               <ButtonLink
                 to={getIndividualOfferPath({
-                  step: OFFER_WIZARD_STEP_IDS.STOCKS,
+                  step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
                   mode: OFFER_WIZARD_MODE.CREATION,
                 })}
               >
@@ -61,7 +63,7 @@ const renderPriceCategories = (
 
       <Route
         path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}
         element={<div>There is the informations route content</div>}
@@ -69,7 +71,7 @@ const renderPriceCategories = (
 
       <Route
         path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}
         element={<div>There is the stock create route content</div>}
@@ -77,7 +79,7 @@ const renderPriceCategories = (
 
       <Route
         path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
         })}
         element={<div>This is the summary route content</div>}
@@ -130,7 +132,7 @@ describe('PriceCategories', () => {
       { offer: getIndividualOfferFactory() },
       generatePath(
         getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
         { offerId: 'AA' }
@@ -153,7 +155,7 @@ describe('PriceCategories', () => {
       { offer: getIndividualOfferFactory() },
       generatePath(
         getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
         { offerId: 'AA' }

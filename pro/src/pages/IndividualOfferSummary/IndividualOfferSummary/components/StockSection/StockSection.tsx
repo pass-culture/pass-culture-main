@@ -7,12 +7,14 @@ import {
   GetOfferStockResponseModel,
   StockStatsResponseModel,
 } from 'apiClient/v1'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { getStockWarningText } from 'pages/IndividualOfferSummary/commons/getStockWarningText'
@@ -85,7 +87,7 @@ export const StockSection = ({
 
   const editLink = getIndividualOfferUrl({
     offerId: offer.id,
-    step: OFFER_WIZARD_STEP_IDS.STOCKS,
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
     mode:
       mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
     isOnboarding,

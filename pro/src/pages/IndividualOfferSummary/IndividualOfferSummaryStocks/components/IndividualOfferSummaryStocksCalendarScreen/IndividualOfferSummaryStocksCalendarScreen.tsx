@@ -1,9 +1,11 @@
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { StocksCalendar } from 'components/IndividualOffer/StocksEventCreation/StocksCalendar/StocksCalendar'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { getStockWarningText } from 'pages/IndividualOfferSummary/commons/getStockWarningText'
 import { Callout } from 'ui-kit/Callout/Callout'
@@ -20,7 +22,7 @@ export function IndividualOfferSummaryStocksCalendarScreen({
 }: StocksCalendarSummaryScreenProps) {
   const editLink = getIndividualOfferUrl({
     offerId: offer.id,
-    step: OFFER_WIZARD_STEP_IDS.STOCKS,
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
     mode: OFFER_WIZARD_MODE.EDITION,
   })
 

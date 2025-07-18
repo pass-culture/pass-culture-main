@@ -17,7 +17,7 @@ import { Notification } from 'components/Notification/Notification'
 import {
   IndividualOfferLayout,
   IndividualOfferLayoutProps,
-} from '../IndividualOfferLayout'
+} from './IndividualOfferLayout'
 
 const renderIndividualOfferLayout = (
   props: Partial<IndividualOfferLayoutProps>,

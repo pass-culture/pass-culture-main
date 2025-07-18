@@ -1,8 +1,8 @@
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { IndividualOfferLayout } from 'components/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
-import { getTitle } from 'components/IndividualOffer/IndividualOfferLayout/utils/getTitle'
 import { PriceCategoriesScreen } from 'components/IndividualOffer/PriceCategoriesScreen/PriceCategoriesScreen'
+import { IndividualOfferLayout } from 'components/IndividualOfferLayout/IndividualOfferLayout'
+import { getTitle } from 'components/IndividualOfferLayout/utils/getTitle'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const PriceCategories = (): JSX.Element | null => {

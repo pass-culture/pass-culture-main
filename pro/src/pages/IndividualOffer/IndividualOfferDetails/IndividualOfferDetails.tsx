@@ -7,8 +7,8 @@ import { useIndividualOfferContext } from 'commons/context/IndividualOfferContex
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { IndividualOfferLayout } from 'components/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
-import { getTitle } from 'components/IndividualOffer/IndividualOfferLayout/utils/getTitle'
+import { IndividualOfferLayout } from 'components/IndividualOfferLayout/IndividualOfferLayout'
+import { getTitle } from 'components/IndividualOfferLayout/utils/getTitle'
 import { IndividualOfferDetailsScreen } from 'pages/IndividualOffer/IndividualOfferDetails/components/IndividualOfferDetailsScreen'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 

@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
+import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from 'commons/core/Offers/constants'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 
 import { ActionBar, ActionBarProps } from './ActionBar'
 
@@ -30,14 +30,14 @@ describe('IndividualOffer::ActionBar', () => {
     props = {
       onClickPrevious: onClickPreviousMock,
       onClickNext: onClickNextMock,
-      step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
       isDisabled: false,
     }
   })
 
   describe('on creation', () => {
     it('should always display a "Retour" button', async () => {
-      props.step = OFFER_WIZARD_STEP_IDS.DETAILS
+      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS
       renderActionBar({ props })
 
       const previousStepButton = screen.getByText(/Retour/)
@@ -46,7 +46,7 @@ describe('IndividualOffer::ActionBar', () => {
     })
 
     it('should display "Sauvegarder le brouillon" and "Publier l’offre" buttons on summary page', () => {
-      props.step = OFFER_WIZARD_STEP_IDS.SUMMARY
+      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY
       renderActionBar({ props })
 
       const saveDraftButton = screen.getByText(/Sauvegarder le brouillon/)
@@ -57,7 +57,7 @@ describe('IndividualOffer::ActionBar', () => {
     })
 
     it('should display "Enregistrer et continuer" button on other pages', () => {
-      props.step = OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
+      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
       renderActionBar({ props })
 
       const submitButton = screen.getByText(/Enregistrer et continuer/)
@@ -85,7 +85,7 @@ describe('IndividualOffer::ActionBar', () => {
 
   describe('on edition', () => {
     it('should render the component for details page', async () => {
-      props.step = OFFER_WIZARD_STEP_IDS.DETAILS
+      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS
 
       renderActionBar({ props, url: '/edition/url' })
 
@@ -98,7 +98,7 @@ describe('IndividualOffer::ActionBar', () => {
     })
 
     it('should render the component for stock page', async () => {
-      props.step = OFFER_WIZARD_STEP_IDS.STOCKS
+      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
 
       renderActionBar({ props, url: '/edition/url' })
 
@@ -111,7 +111,7 @@ describe('IndividualOffer::ActionBar', () => {
     })
 
     it('should render the component for summary page', () => {
-      props.step = OFFER_WIZARD_STEP_IDS.SUMMARY
+      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY
 
       renderActionBar({ props, url: '/edition/url' })
 
@@ -120,7 +120,7 @@ describe('IndividualOffer::ActionBar', () => {
     })
 
     it('should show a button to go back read only when editing stocks with the WIP_ENABLE_EVENT_WITH_OPENING_HOUR FF enabled', async () => {
-      props.step = OFFER_WIZARD_STEP_IDS.STOCKS
+      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
 
       renderActionBar({
         props,

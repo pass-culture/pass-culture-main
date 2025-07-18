@@ -8,14 +8,16 @@ import { api } from 'apiClient/api'
 import { getHumanReadableApiError } from 'apiClient/helpers'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
 import { getOfferConditionalFields } from 'commons/utils/getOfferConditionalFields'
 import { DisplayOfferInAppLink } from 'components/DisplayOfferInAppLink/DisplayOfferInAppLink'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OfferAppPreview } from 'components/OfferAppPreview/OfferAppPreview'
 import { RedirectToBankAccountDialog } from 'components/RedirectToBankAccountDialog/RedirectToBankAccountDialog'
 import { SummaryAside } from 'components/SummaryLayout/SummaryAside'
@@ -132,7 +134,7 @@ export const IndividualOfferSummaryScreen = () => {
     ? '/accueil'
     : getIndividualOfferUrl({
         offerId: offer.id,
-        step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.CONFIRMATION,
         mode,
         isOnboarding,
       })
@@ -143,7 +145,7 @@ export const IndividualOfferSummaryScreen = () => {
     navigate(
       getIndividualOfferUrl({
         offerId: offer.id,
-        step: OFFER_WIZARD_STEP_IDS.STOCKS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
         mode,
         isOnboarding,
       })
@@ -218,7 +220,7 @@ export const IndividualOfferSummaryScreen = () => {
         </SummaryLayout>
         <ActionBar
           onClickPrevious={handlePreviousStep}
-          step={OFFER_WIZARD_STEP_IDS.SUMMARY}
+          step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY}
           publicationMode={methods.watch('publicationMode')}
           isDisabled={
             (mode !== OFFER_WIZARD_MODE.CREATION

@@ -1,13 +1,15 @@
 import { screen } from '@testing-library/react'
 
 import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { individualOfferContextValuesFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { OFFER_WIZARD_STEP_IDS } from '../constants'
-import { IndividualOfferNavigation } from '../IndividualOfferNavigation'
+import { IndividualOfferNavigation } from './IndividualOfferNavigation'
 
 type IndividualOfferNavigationTestProps = {
   mode?: OFFER_WIZARD_MODE
@@ -60,7 +62,7 @@ const renderIndividualOfferNavigation = ({
       storeOverrides,
       initialRouterEntries: [
         getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
           mode,
         }),
       ],

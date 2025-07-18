@@ -19,7 +19,10 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
@@ -32,7 +35,6 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { Notification } from 'components/Notification/Notification'
 import { STOCKS_PER_PAGE } from 'components/StocksEventList/StocksEventList'
 import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
@@ -70,7 +72,7 @@ const renderStockEventScreen = async (
       <Routes>
         <Route
           path={getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
             mode: OFFER_WIZARD_MODE.EDITION,
           })}
           element={
@@ -82,7 +84,7 @@ const renderStockEventScreen = async (
         />
         <Route
           path={getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
             mode: OFFER_WIZARD_MODE.READ_ONLY,
           })}
           element={<div>This is the read only route content</div>}
@@ -98,7 +100,7 @@ const renderStockEventScreen = async (
       user: sharedCurrentUserFactory(),
       initialRouterEntries: [
         getIndividualOfferUrl({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.EDITION,
           offerId: 12,
         }) + searchParams,

@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { IndividualOfferLayout } from 'components/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
+import { IndividualOfferLayout } from 'components/IndividualOfferLayout/IndividualOfferLayout'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { PriceCategoriesSection } from '../components/PriceCategoriesSection/PriceCategoriesSection'

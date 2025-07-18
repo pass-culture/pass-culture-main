@@ -16,7 +16,7 @@ import {
 import {
   StatusToggleButton,
   StatusToggleButtonProps,
-} from '../StatusToggleButton'
+} from './StatusToggleButton'
 
 const mockLogEvent = vi.fn()
 

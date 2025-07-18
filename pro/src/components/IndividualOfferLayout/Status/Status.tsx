@@ -1,7 +1,7 @@
 import cn from 'classnames'
 
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import { StatusToggleButton } from 'components/IndividualOffer/Status/StatusToggleButton'
+import { StatusToggleButton } from 'components/IndividualOfferLayout/Status/StatusToggleButton'
 import { StatusLabel } from 'components/StatusLabel/StatusLabel'
 
 import styles from './Status.module.scss'

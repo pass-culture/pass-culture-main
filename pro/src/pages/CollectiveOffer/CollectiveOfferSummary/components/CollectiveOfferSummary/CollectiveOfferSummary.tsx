@@ -13,10 +13,10 @@ import {
   isCollectiveStockEditable,
 } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
-import { SynchronizedProviderInformation } from 'components/IndividualOffer/SynchronisedProviderInfos/SynchronizedProviderInformation'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
 import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
+import { SynchronizedProviderInformation } from 'components/SynchronisedProviderInformation/SynchronizedProviderInformation'
 
 import styles from './CollectiveOfferSummary.module.scss'
 import { CollectiveOfferContactSection } from './components/CollectiveOfferContactSection'
@@ -34,8 +34,8 @@ import { OldCollectiveOfferLocationSection } from './components/OldCollectiveOff
 
 export interface CollectiveOfferSummaryProps {
   offer:
-  | GetCollectiveOfferTemplateResponseModel
-  | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel
   offerEditLink?: string
   stockEditLink?: string
   visibilityEditLink?: string

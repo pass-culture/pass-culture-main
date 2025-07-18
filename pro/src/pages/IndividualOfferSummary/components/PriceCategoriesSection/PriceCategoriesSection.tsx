@@ -1,11 +1,13 @@
 import { useLocation } from 'react-router'
 
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { formatPrice } from 'commons/utils/formatPrice'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 
@@ -23,7 +25,7 @@ export const PriceCategoriesSection = ({ offer, canBeDuo }: Props) => {
 
   const editLink = getIndividualOfferUrl({
     offerId: offer.id,
-    step: OFFER_WIZARD_STEP_IDS.TARIFS,
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
     mode:
       mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
     isOnboarding,

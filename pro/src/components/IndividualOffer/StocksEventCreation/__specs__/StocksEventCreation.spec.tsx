@@ -5,7 +5,10 @@ import { Route, Routes } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { GetOfferStockResponseModel } from 'apiClient/v1'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import {
+  OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+} from 'commons/core/Offers/constants'
 import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
@@ -16,7 +19,6 @@ import {
   getOfferStockFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { Notification } from 'components/Notification/Notification'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 
@@ -46,7 +48,7 @@ const renderStockEventCreation = async (
     <Routes>
       <Route
         path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}
         element={
@@ -59,7 +61,7 @@ const renderStockEventCreation = async (
       />
       <Route
         path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}
         element={
@@ -71,7 +73,7 @@ const renderStockEventCreation = async (
       />
       <Route
         path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}
         element={<div>Previous page</div>}
@@ -81,7 +83,7 @@ const renderStockEventCreation = async (
     {
       initialRouterEntries: [
         getIndividualOfferUrl({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.CREATION,
           offerId: 1,
         }),
@@ -98,7 +100,9 @@ const renderStockEventCreation = async (
 const tomorrow = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
 describe('StocksEventCreation', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValue({ stocks_count: 0 })
+    vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValue({
+      stocks_count: 0,
+    })
   })
 
   it('should notify when clicking on Enregistrer et continuer without stock', async () => {
@@ -140,7 +144,9 @@ describe('StocksEventCreation', () => {
     await userEvent.click(screen.getByText('Ajouter un créneau'))
     await userEvent.type(screen.getByLabelText('Horaire 2 *'), '12:30')
 
-    vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValue({ stocks_count: 2 })
+    vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValue({
+      stocks_count: 2,
+    })
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
       stocks: [getOfferStockFactory(), getOfferStockFactory()],
       stockCount: 2,
