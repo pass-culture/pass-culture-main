@@ -78,6 +78,16 @@ export const EventPublicationForm = () => {
     'Date de publication'
   )
 
+  const updatePublicationDate = async (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    const nextPublicationDate = event.target.value
+
+    setValue('publicationDate', nextPublicationDate)
+
+    await trigger('publicationDate')
+  }
+
   const updatePublicationTime = async (
     event: ChangeEvent<HTMLSelectElement>
   ) => {
@@ -122,7 +132,9 @@ export const EventPublicationForm = () => {
                         minDate={today}
                         className={styles['date-picker']}
                         required
-                        {...register('publicationDate')}
+                        {...register('publicationDate', {
+                          onChange: updatePublicationDate,
+                        })}
                         error={formState.errors.publicationDate?.message}
                       />
                       <Select
