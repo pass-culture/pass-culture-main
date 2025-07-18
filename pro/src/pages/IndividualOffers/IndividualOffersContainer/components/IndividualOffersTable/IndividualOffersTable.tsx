@@ -1,12 +1,14 @@
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { isSameOffer } from 'commons/utils/isSameOffer'
 import { OffersTable } from 'components/OffersTable/OffersTable'
 import { OffersTableHead } from 'components/OffersTable/OffersTableHead/OffersTableHead'
 import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 
-import { IndividualOffersTableBody } from './components/IndividualOffersTableBody/IndividualOffersTableBody'
+import { IndividualOfferRow } from './components/IndividualOfferRow/IndividualOfferRow'
+import styles from './IndividualOffersTable.module.scss'
 
 type IndividualOffersTableProps = {
   applySelectedFiltersAndRedirect: (
@@ -96,11 +98,21 @@ export const IndividualOffersTable = ({
             : []
         )}
       />
-      <IndividualOffersTableBody
-        offers={currentPageOffersSubset}
-        selectOffer={setSelectedOffer}
-        selectedOffers={selectedOffers}
-      />
+      <tbody role="rowgroup" className={styles['individual-tbody']}>
+        {currentPageOffersSubset.map((offer) => {
+          const isSelected = selectedOffers.some((selectedOffer) =>
+            isSameOffer(selectedOffer, offer)
+          )
+          return (
+            <IndividualOfferRow
+              isSelected={isSelected}
+              key={offer.id}
+              offer={offer}
+              selectOffer={setSelectedOffer}
+            />
+          )
+        })}
+      </tbody>
     </OffersTable>
   )
 }
