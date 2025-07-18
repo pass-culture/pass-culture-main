@@ -478,9 +478,7 @@ def validate_passwordless_token(token: str) -> dict:
 
     if not results[0]:
         logger.error(
-            "Token doesn’t exist or was already used. Token: %s",
-            token,
-        )
+            "Token doesn’t exist or was already used.")
         raise users_exceptions.InvalidToken
     redis_value = json.loads(results[0])
     # The below statement are purely defensive code.

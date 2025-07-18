@@ -36,12 +36,40 @@ class SpecificPath(enum.Enum):
 
 
 def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
+    breakpoint()
     if _is_flask_shell_event():
         return None
+    
+    if "/users/validate_signup/" in event["request"]["url"]:
+        res = event["request"]["url"].split('/')
+        res = res[:-1]
+        temp = ""
+        for x in res:
+            temp += x + '/'
+        temp += "TOKEN"
+        event["request"]["url"] = temp
 
     if custom_fingerprint := get_custom_fingerprint(_hint):
         event["fingerprint"] = ["{{ default }}", custom_fingerprint]
     return event
+"""liste degeu d url ou reco JWT token
+tester si avec filtre ici on peut trouver path dans l event et test modif check sentry_test
+before request (pas que sentry) serait + general + couvrirait gcloud
+
+def test_wrapper_redacts_url(requests_mock, caplog):
+    cf cmt ds _redact_url dans utils/requests.py
+    
+    
+    bulle
+    tester dans before_send infos recues dans event pour check
+    a valider avec francois
+    a discuter en journée back pour voir si + d'infos, si gcp aussi etc
+    poss de gagner des lignes/economiser?
+    pour demain POC avec liste url filtre qui marche pour que lundi on voit
+    avec françois ce qu'on fait
+    
+    faire tests avec erreurs expres pour check qu'on remonte pas données critiques
+    (en staging)"""
 
 
 def custom_traces_sampler(sampling_context: dict) -> float:
