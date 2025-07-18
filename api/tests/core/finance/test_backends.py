@@ -179,6 +179,20 @@ class BaseBackendTest:
                 "CGINDGRANT_17_V3",
                 "Gestes commerciaux",
             ),
+            (
+                None,
+                finance_models.DepositType.GRANT_FREE,
+                finance_models.PricingLineCategory.OFFERER_REVENUE,
+                "ORINDGRANT_FREE",
+                "Réservations",
+            ),
+            (
+                None,
+                finance_models.DepositType.GRANT_FREE,
+                finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+                "OCINDGRANT_FREE",
+                "Réservations",
+            ),
         ],
     )
     def test_get_invoice_line_indiv(self, used_recredit_type, deposit_type, pricing_line_category, product_id, title):
