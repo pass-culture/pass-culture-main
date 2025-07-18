@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 
 import { StockStatsResponseModel } from 'apiClient/v1'
 
-import { RecurrenceSection } from '../RecurrenceSection'
+import { RecurrenceSection } from './RecurrenceSection'
 
 describe('StockEventSection', () => {
   it('should render all information when there are several stocks', () => {

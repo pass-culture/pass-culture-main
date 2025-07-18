@@ -3,9 +3,9 @@ import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { StocksCalendar } from 'components/IndividualOffer/StocksEventCreation/StocksCalendar/StocksCalendar'
-import { getStockWarningText } from 'components/IndividualOffer/SummaryScreen/StockSection/StockSection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
+import { getStockWarningText } from 'pages/IndividualOfferSummary/IndividualOfferSummary/components/StockSection/StockSection'
 import { Callout } from 'ui-kit/Callout/Callout'
 
 type StocksCalendarSummaryScreenProps = {

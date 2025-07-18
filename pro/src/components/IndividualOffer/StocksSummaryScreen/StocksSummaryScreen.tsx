@@ -12,8 +12,8 @@ import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import { getStockWarningText } from '../SummaryScreen/StockSection/StockSection'
-import { StockThingSection } from '../SummaryScreen/StockSection/StockThingSection/StockThingSection'
+import { getStockWarningText } from '../../../pages/IndividualOfferSummary/IndividualOfferSummary/components/StockSection/StockSection'
+import { StockThingSection } from '../../../pages/IndividualOfferSummary/IndividualOfferSummary/components/StockSection/StockThingSection/StockThingSection'
 
 import { RecurrenceSummary } from './RecurrenceSummary'
 import styles from './StocksSummary.module.scss'

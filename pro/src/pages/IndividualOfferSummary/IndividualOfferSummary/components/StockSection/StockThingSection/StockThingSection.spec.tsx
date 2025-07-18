@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import { getOfferStockFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { StockThingSection } from '../StockThingSection'
+import { StockThingSection } from './StockThingSection'
 
 describe('StockThingSection', () => {
   it('should render correctly', () => {
