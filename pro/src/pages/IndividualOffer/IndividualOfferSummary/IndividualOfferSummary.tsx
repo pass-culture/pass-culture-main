@@ -8,9 +8,7 @@ import { getTitle } from 'components/IndividualOffer/IndividualOfferLayout/utils
 import { SummaryScreen } from 'components/IndividualOffer/SummaryScreen/SummaryScreen'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-// TODO (igabriele, 2025-07-18): Move this file to `pages/IndividualOffer/IndividualOfferSummary/IndividualOfferSummary.tsx`.
-// + move all the related files accordingly
-const Summary = (): JSX.Element | null => {
+const IndividualOfferSummary = (): JSX.Element | null => {
   const { offer, publishedOfferWithSameEAN } = useIndividualOfferContext()
 
   const mode = useOfferWizardMode()
@@ -42,4 +40,4 @@ const Summary = (): JSX.Element | null => {
 
 // Below exports are used by react-router
 // ts-unused-exports:disable-next-line
-export const Component = Summary
+export const Component = IndividualOfferSummary
