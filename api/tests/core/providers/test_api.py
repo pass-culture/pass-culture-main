@@ -1,7 +1,6 @@
 from dataclasses import asdict
 from decimal import Decimal
 from unittest import mock
-from unittest.mock import patch
 
 import pytest
 
@@ -10,7 +9,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core import search
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.categories import subcategories
@@ -31,42 +29,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class CreateVenueProviderTest:
-    @pytest.mark.features(WIP_IS_OPEN_TO_PUBLIC=False)
-    @pytest.mark.parametrize(
-        "venue_type, is_permanent",
-        (
-            (offerers_models.VenueTypeCode.BOOKSTORE, True),
-            (offerers_models.VenueTypeCode.MOVIE, True),
-            (offerers_models.VenueTypeCode.DIGITAL, False),
-        ),
-    )
-    @patch("pcapi.core.search.async_index_venue_ids")
-    def test_permanent_venue_marking(
-        self,
-        mocked_async_index_venue_ids,
-        venue_type,
-        is_permanent,
-    ):
-        # Given
-        venue = offerers_factories.VenueFactory(venueTypeCode=venue_type, isPermanent=False)
-        provider = providers_factories.ProviderFactory(
-            enabledForPro=True,
-            isActive=True,
-            localClass=None,
-        )
-        author = users_factories.UserFactory()
-
-        # When
-        api.create_venue_provider(provider, venue, current_user=author)
-
-        # Then
-        assert venue.isPermanent == is_permanent
-        if is_permanent:
-            mocked_async_index_venue_ids.assert_called_with(
-                [venue.id],
-                reason=search.IndexationReason.VENUE_PROVIDER_CREATION,
-            )
-
     @pytest.mark.parametrize(
         "venue_type",
         (
@@ -75,7 +37,7 @@ class CreateVenueProviderTest:
             offerers_models.VenueTypeCode.DIGITAL,
         ),
     )
-    def test_permanent_venue_marking_ff_wip_is_open_to_public_activated(self, venue_type):
+    def test_permanent_venue_marking(self, venue_type):
         venue = offerers_factories.VenueFactory(venueTypeCode=venue_type, isPermanent=False)
         provider = providers_factories.ProviderFactory(
             enabledForPro=True,

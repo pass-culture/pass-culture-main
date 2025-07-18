@@ -4,7 +4,6 @@ import { FormProvider, Resolver, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
 import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { removeQuotes } from 'commons/utils/removeQuotes'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
@@ -21,7 +20,6 @@ import { validationSchema } from './validationSchema'
 
 export const OffererAuthentication = (): JSX.Element => {
   const navigate = useNavigate()
-  const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
 
   const { offerer, setOfferer } = useSignupJourneyContext()
 
@@ -58,7 +56,7 @@ export const OffererAuthentication = (): JSX.Element => {
   const methods = useForm<OffererAuthenticationFormValues>({
     defaultValues: initialValues,
     resolver: yupResolver(
-      validationSchema(isOpenToPublicEnabled)
+      validationSchema()
     ) as unknown as Resolver<OffererAuthenticationFormValues>,
   })
 

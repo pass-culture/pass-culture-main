@@ -516,7 +516,7 @@ def create_venue(
 
     if venue.siret:
         link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
-    if FeatureToggle.WIP_IS_OPEN_TO_PUBLIC.is_active() and (venue.siret or venue.isOpenToPublic):
+    if venue.siret or venue.isOpenToPublic:
         venue.isPermanent = True
 
     on_commit(

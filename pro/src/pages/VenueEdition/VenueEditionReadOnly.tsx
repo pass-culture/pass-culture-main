@@ -1,5 +1,4 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { getVenuePagePathToNavigateTo } from 'commons/utils/getVenuePagePathToNavigateTo'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
@@ -12,25 +11,7 @@ interface VenueEditionReadOnlyProps {
   venue: GetVenueResponseModel
 }
 
-const PublicWelcomeSection = ({
-  isOpenToPublicEnabled,
-  children,
-}: {
-  isOpenToPublicEnabled: boolean
-  children: React.ReactNode | React.ReactNode[]
-}): JSX.Element => {
-  return isOpenToPublicEnabled ? (
-    <SummarySubSection title="Accueil du public" shouldShowDivider={false}>
-      {children}
-    </SummarySubSection>
-  ) : (
-    <>{children}</>
-  )
-}
-
 export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
-  const isOpenToPublicEnabled = useActiveFeature('WIP_IS_OPEN_TO_PUBLIC')
-
   return (
     <SummarySection
       title="Vos informations pour le grand public"
@@ -53,24 +34,20 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
           ]}
         />
       </SummarySubSection>
-      <PublicWelcomeSection isOpenToPublicEnabled={isOpenToPublicEnabled}>
-        {isOpenToPublicEnabled && !venue.isOpenToPublic && (
+      <SummarySubSection title="Accueil du public" shouldShowDivider={false}>
+        {!venue.isOpenToPublic && (
           <span>Accueil du public dans la structure : Non</span>
         )}
-        {(!isOpenToPublicEnabled || venue.isOpenToPublic) && (
+        {venue.isOpenToPublic && (
           <>
             <OpeningHoursReadOnly
-              isOpenToPublicEnabled={isOpenToPublicEnabled}
               openingHours={venue.openingHours}
               address={venue.address}
             />
-            <AccessibilityReadOnly
-              isOpenToPublicEnabled={isOpenToPublicEnabled}
-              venue={venue}
-            />
+            <AccessibilityReadOnly venue={venue} />
           </>
         )}
-      </PublicWelcomeSection>
+      </SummarySubSection>
       <SummarySubSection
         title="Informations de contact"
         shouldShowDivider={false}
