@@ -243,6 +243,7 @@ class Returns200Test:
             },
             "hasOffers": True,
             "isOpenToPublic": True,
+            "isCaledonian": False,
         }
         db.session.expire_all()
 
@@ -814,6 +815,15 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert response.json["hasOffers"]
+
+    def should_return_is_caledonian(self, client):
+        venue = offerers_factories.CaledonianVenueFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+        response = client.with_session_auth(email=user_offerer.user.email).get(f"/venues/{venue.id}")
+        assert response.status_code == 200
+
+        assert response.json["isCaledonian"] is True
 
 
 class Returns403Test:

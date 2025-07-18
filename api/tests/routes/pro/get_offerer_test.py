@@ -130,6 +130,7 @@ class GetOffererTest:
             "siren": offerer.siren,
             "street": offerer.street,
             "venuesWithNonFreeOffersWithoutBankAccounts": [],
+            "isCaledonian": False,
         }
         assert response.json == expected_serialized_offerer
 
@@ -733,3 +734,14 @@ class GetOffererTest:
             assert response.status_code == 200
 
         assert response.json["hasPartnerPage"] is has_partner_page
+
+    def test_offerer_is_caledonian(self, client):
+        offerer = offerers_factories.CaledonianOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offerers/{offerer.id}")
+            assert response.status_code == 200
+
+        assert response.json["isCaledonian"] is True
