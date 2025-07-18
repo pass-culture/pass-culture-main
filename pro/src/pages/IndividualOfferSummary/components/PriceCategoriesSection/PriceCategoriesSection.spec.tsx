@@ -3,9 +3,9 @@ import { screen } from '@testing-library/react'
 import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { PriceCategoriesSection } from '../PriceCategoriesSection'
+import { PriceCategoriesSection } from './PriceCategoriesSection'
 
-describe('StockEventSection', () => {
+describe('IndividualOfferSummary:PriceCategoriesSection', () => {
   it('should render correctly', () => {
     const offer = getIndividualOfferFactory()
 

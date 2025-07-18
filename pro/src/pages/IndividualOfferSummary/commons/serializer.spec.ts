@@ -12,9 +12,9 @@ import {
   subcategoryFactory,
 } from 'commons/utils/factories/individualApiFactories'
 
-import { serializeOfferSectionData } from '../../../../../pages/IndividualOfferSummary/commons/serializer'
+import { serializeOfferSectionData } from './serializer'
 
-describe('routes::Summary::serializers', () => {
+describe('IndividualOfferSummary:serializer', () => {
   let offer: GetIndividualOfferWithAddressResponseModel
   let categories: CategoryResponseModel[]
   let subCategoryList: SubcategoryResponseModel[]

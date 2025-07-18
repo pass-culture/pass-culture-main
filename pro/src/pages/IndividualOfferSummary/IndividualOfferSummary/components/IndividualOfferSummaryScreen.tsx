@@ -22,24 +22,22 @@ import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
 import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
+import { PriceCategoriesSection } from 'pages/IndividualOfferSummary/components/PriceCategoriesSection/PriceCategoriesSection'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { serializeDateTimeToUTCFromLocalDepartment } from '../StocksEventEdition/serializers'
-import { getDepartmentCode } from '../utils/getDepartmentCode'
+import { serializeDateTimeToUTCFromLocalDepartment } from '../../../../components/IndividualOffer/StocksEventEdition/serializers'
+import { getDepartmentCode } from '../../../../components/IndividualOffer/utils/getDepartmentCode'
 
 import { EventPublicationForm } from './EventPublicationForm/EventPublicationForm'
 import { EventPublicationFormValues } from './EventPublicationForm/types'
 import { validationSchema } from './EventPublicationForm/validationSchema'
+import styles from './IndividualOfferSummaryScreen.module.scss'
 import { OfferSection } from './OfferSection/OfferSection'
-import { PriceCategoriesSection } from './PriceCategoriesSection/PriceCategoriesSection'
 import { StockSection } from './StockSection/StockSection'
-import styles from './SummaryScreen.module.scss'
 
-// TODO (igabriele, 2025-07-18): Move this file to `pages/IndividualOffer/IndividualOfferSummary/components/IndividualOfferSummaryScreen.tsx`.
-// + move all the related files accordingly
-export const SummaryScreen = () => {
+export const IndividualOfferSummaryScreen = () => {
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
   const notification = useNotification()
   const mode = useOfferWizardMode()

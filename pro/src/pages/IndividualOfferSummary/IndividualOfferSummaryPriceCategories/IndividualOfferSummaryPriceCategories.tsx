@@ -2,10 +2,11 @@
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { IndividualOfferLayout } from 'components/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
-import { PriceCategoriesSection } from 'components/IndividualOffer/SummaryScreen/PriceCategoriesSection/PriceCategoriesSection'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-const PriceCategoriesSummary = (): JSX.Element | null => {
+import { PriceCategoriesSection } from '../components/PriceCategoriesSection/PriceCategoriesSection'
+
+const IndividualOfferSummaryPriceCategories = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { offer, subCategories } = useIndividualOfferContext()
 
@@ -26,4 +27,4 @@ const PriceCategoriesSummary = (): JSX.Element | null => {
 
 // Below exports are used by react-router
 // ts-unused-exports:disable-next-line
-export const Component = PriceCategoriesSummary
+export const Component = IndividualOfferSummaryPriceCategories

@@ -77,7 +77,7 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/IndividualOfferWizard/PriceCategoriesSummary/PriceCategoriesSummary'
+        'pages/IndividualOfferSummary/IndividualOfferSummaryPriceCategories/IndividualOfferSummaryPriceCategories'
       ),
     path: '/offre/individuelle/:offerId/tarifs',
     title: 'Tarifs - Consulter une offre individuelle',
@@ -98,17 +98,6 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
       import('pages/IndividualOfferWizard/StocksSummary/StocksSummary'),
     path: '/offre/individuelle/:offerId/stocks',
     title: 'Stocks et prix - Consulter une offre individuelle',
-  },
-  // Summary pages
-  {
-    lazy: () => import('pages/IndividualOfferWizard/Summary/Summary'),
-    path: '/offre/individuelle/:offerId/creation/recapitulatif',
-    title: 'Récapitulatif - Créer une offre individuelle',
-  },
-  {
-    lazy: () => import('pages/IndividualOfferWizard/Summary/Summary'),
-    path: '/offre/individuelle/:offerId/recapitulatif',
-    title: 'Récapitulatif - Modifier une offre individuelle',
   },
   // confirmation pages
   {
@@ -135,6 +124,23 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
       ),
     path: '/offre/individuelle/:offerId/reservations',
     title: 'Réservations - Consulter une offre individuelle',
+  },
+  // Summary pages
+  {
+    lazy: () =>
+      import(
+        'pages/IndividualOfferSummary/IndividualOfferSummary/IndividualOfferSummary'
+      ),
+    path: '/offre/individuelle/:offerId/creation/recapitulatif',
+    title: 'Récapitulatif - Créer une offre individuelle',
+  },
+  {
+    lazy: () =>
+      import(
+        'pages/IndividualOfferSummary/IndividualOfferSummary/IndividualOfferSummary'
+      ),
+    path: '/offre/individuelle/:offerId/recapitulatif',
+    title: 'Récapitulatif - Modifier une offre individuelle',
   },
 ]
 
@@ -181,7 +187,10 @@ export const routesOnboardingIndividualOfferWizard: RouteConfig[] = [
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {
-    lazy: () => import('pages/IndividualOfferWizard/Summary/Summary'),
+    lazy: () =>
+      import(
+        'pages/IndividualOfferSummary/IndividualOfferSummary/IndividualOfferSummary'
+      ),
     path: '/onboarding/offre/individuelle/:offerId/creation/recapitulatif',
     title: 'Récapitulatif - Créer une offre individuelle - Onboarding',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
