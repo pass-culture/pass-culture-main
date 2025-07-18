@@ -10,21 +10,21 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { StocksSummaryScreen } from '../StocksSummaryScreen'
+import { IndividualOfferSummaryStocksScreen } from './IndividualOfferSummaryStocksScreen'
 
 const render = (offer: GetIndividualOfferWithAddressResponseModel) => {
   const contextValue = individualOfferContextValuesFactory({ offer })
 
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
-      <StocksSummaryScreen />
+      <IndividualOfferSummaryStocksScreen />
     </IndividualOfferContext.Provider>
   )
 }
 
 const offer = getIndividualOfferFactory({ name: 'Offre de test' })
 
-describe('StocksSummaryScreen', () => {
+describe('IndividualOfferSummaryStocksScreen', () => {
   beforeEach(() => {
     vi.mock('apiClient/api', () => ({
       api: {

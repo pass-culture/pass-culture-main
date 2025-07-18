@@ -12,7 +12,7 @@ import {
   subcategoryFactory,
 } from 'commons/utils/factories/individualApiFactories'
 
-import { serializeOfferSectionData } from './serializer'
+import { serializeOfferSectionData } from '../serializer'
 
 describe('IndividualOfferSummary:serializer', () => {
   let offer: GetIndividualOfferWithAddressResponseModel

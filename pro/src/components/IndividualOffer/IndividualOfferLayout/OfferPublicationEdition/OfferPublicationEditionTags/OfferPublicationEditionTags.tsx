@@ -5,8 +5,8 @@ import {
   OfferStatus,
 } from 'apiClient/v1'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
+import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
-import { getDepartmentCode } from 'components/IndividualOffer/utils/getDepartmentCode'
 import { StatusLabel } from 'components/StatusLabel/StatusLabel'
 import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import fullWaitIcon from 'icons/full-wait.svg'

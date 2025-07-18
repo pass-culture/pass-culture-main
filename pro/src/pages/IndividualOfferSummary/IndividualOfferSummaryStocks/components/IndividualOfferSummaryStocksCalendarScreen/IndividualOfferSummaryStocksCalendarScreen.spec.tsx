@@ -4,12 +4,12 @@ import { OfferStatus } from 'apiClient/v1'
 import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { StocksCalendarSummaryScreen } from './StocksCalendarSummaryScreen'
+import { IndividualOfferSummaryStocksCalendarScreen } from './IndividualOfferSummaryStocksCalendarScreen'
 
-describe('StocksCalendarSummaryScreen', () => {
+describe('IndividualOfferSummaryStocksCalendarScreen', () => {
   it('should show an information banner if the offer is not disabled', () => {
     renderWithProviders(
-      <StocksCalendarSummaryScreen
+      <IndividualOfferSummaryStocksCalendarScreen
         offer={getIndividualOfferFactory({ status: OfferStatus.ACTIVE })}
       />
     )

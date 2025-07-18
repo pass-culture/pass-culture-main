@@ -5,7 +5,7 @@ import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { StocksCalendar } from 'components/IndividualOffer/StocksEventCreation/StocksCalendar/StocksCalendar'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
-import { getStockWarningText } from 'pages/IndividualOfferSummary/IndividualOfferSummary/components/StockSection/StockSection'
+import { getStockWarningText } from 'pages/IndividualOfferSummary/commons/getStockWarningText'
 import { Callout } from 'ui-kit/Callout/Callout'
 
 type StocksCalendarSummaryScreenProps = {
@@ -15,7 +15,7 @@ type StocksCalendarSummaryScreenProps = {
 const HOW_TO_CANCEL_EVENT_URL =
   'https://aide.passculture.app/hc/fr/articles/4411992053649--Acteurs-Culturels-Comment-annuler-ou-reporter-un-%C3%A9v%C3%A9nement-'
 
-export function StocksCalendarSummaryScreen({
+export function IndividualOfferSummaryStocksCalendarScreen({
   offer,
 }: StocksCalendarSummaryScreenProps) {
   const editLink = getIndividualOfferUrl({

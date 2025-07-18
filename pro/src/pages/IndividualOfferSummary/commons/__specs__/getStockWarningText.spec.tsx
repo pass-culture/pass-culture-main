@@ -1,7 +1,7 @@
 import { OfferStatus } from 'apiClient/v1'
 import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
 
-import { getStockWarningText } from '../StockSection'
+import { getStockWarningText } from '../getStockWarningText'
 
 describe('getStockWarningText', () => {
   const testData = [

@@ -7,8 +7,7 @@ import {
   serializeApiErrors,
 } from 'apiClient/helpers'
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
-
-import { getDepartmentCode } from '../utils/getDepartmentCode'
+import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
 
 import {
   serializeUpdateThingStock,

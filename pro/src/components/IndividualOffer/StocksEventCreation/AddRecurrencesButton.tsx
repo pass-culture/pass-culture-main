@@ -4,12 +4,11 @@ import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useNotification } from 'commons/hooks/useNotification'
+import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-
-import { getDepartmentCode } from '../utils/getDepartmentCode'
 
 import { onSubmit } from './form/onSubmit'
 import { RecurrenceFormValues } from './form/types'

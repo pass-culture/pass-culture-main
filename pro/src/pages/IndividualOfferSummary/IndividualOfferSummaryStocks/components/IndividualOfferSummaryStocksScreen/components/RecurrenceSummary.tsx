@@ -1,11 +1,10 @@
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
+import { EventCancellationBanner } from 'components/EventCancellationBanner/EventCancellationBanner'
 import {
   StocksEvent,
   StocksEventList,
 } from 'components/StocksEventList/StocksEventList'
-
-import { EventCancellationBanner } from '../StocksEventEdition/EventCancellationBanner'
-import { getDepartmentCode } from '../utils/getDepartmentCode'
 
 interface RecurrenceSummaryProps {
   offer: GetIndividualOfferWithAddressResponseModel
