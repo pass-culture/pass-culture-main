@@ -32,6 +32,14 @@ INVOICE_LINE_INDIV_DICT = {
     ): "CGINDGRANT_15_17",
     (
         finance_models.PricingLineCategory.OFFERER_REVENUE,
+        finance_models.DepositType.GRANT_FREE.name,
+    ): "ORINDGRANT_FREE",
+    (
+        finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+        finance_models.DepositType.GRANT_FREE.name,
+    ): "OCINDGRANT_FREE",
+    (
+        finance_models.PricingLineCategory.OFFERER_REVENUE,
         bookings_models.BookingRecreditType.RECREDIT_18.name,
     ): "ORINDGRANT_18_V3",
     (
@@ -88,6 +96,8 @@ TITLES = {
     "ORINDGRANT_17_V3": "Réservations",
     "OCINDGRANT_17_V3": "Réservations",
     "CGINDGRANT_17_V3": "Gestes commerciaux",
+    "ORINDGRANT_FREE": "Réservations",
+    "OCINDGRANT_FREE": "Réservations",
     "ORCOLEDUC_NAT": "Réservations",
     "CGCOLEDUC_NAT": "Gestes commerciaux",
     "ORCOLAGRI": "Réservations",
