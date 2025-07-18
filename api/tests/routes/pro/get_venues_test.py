@@ -65,6 +65,7 @@ def test_response_serialization(client):
                 "postalCode": venue.offererAddress.address.postalCode,
                 "street": venue.offererAddress.address.street,
             },
+            "isCaledonian": False,
         },
         {
             "id": venue_with_accessibility_provider.id,
@@ -121,6 +122,7 @@ def test_response_serialization(client):
                 "postalCode": venue_with_accessibility_provider.offererAddress.address.postalCode,
                 "street": venue_with_accessibility_provider.offererAddress.address.street,
             },
+            "isCaledonian": False,
         },
     ]
 
@@ -259,3 +261,21 @@ def test_only_return_non_softdeleted_venues(client):
 
     assert "venues" in response.json
     assert len(response.json["venues"]) == 1
+
+
+def test_is_caledonian(client):
+    pro_user = users_factories.ProFactory()
+    venue = offerers_factories.CaledonianVenueFactory()
+    offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user=pro_user)
+
+    client = client.with_session_auth(pro_user.email)
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # select venues
+    num_queries += 1  # select venue_ids with validated offers
+    with testing.assert_num_queries(num_queries):
+        response = client.get("/venues")
+        assert response.status_code == 200
+
+    assert "venues" in response.json
+    assert len(response.json["venues"]) == 1
+    assert response.json["venues"][0]["isCaledonian"] is True

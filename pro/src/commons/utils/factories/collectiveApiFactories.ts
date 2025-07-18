@@ -368,6 +368,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   venueTypeCode: VenueTypeCode.CENTRE_CULTUREL,
   visualDisabilityCompliant: true,
   openingHours: null,
+  isCaledonian: false,
 }
 
 export const defaultGetCollectiveOfferRequest: GetCollectiveOfferRequestResponseModel =

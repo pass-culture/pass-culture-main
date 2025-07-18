@@ -170,14 +170,19 @@ class LegalStatusResponseModel(BaseModel):
 class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
     def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
         venue: offerers_models.Venue = self._obj
+
         if key == "bankAccount":
             return venue.current_bank_account
+
         if key == "collectiveLegalStatus":
             return venue.venueEducationalStatus
+
         if key == "dmsToken":
             return DMS_TOKEN_PRO_PREFIX + venue.dmsToken
+
         if key == "hasAdageId":
             return bool(venue.adageId)
+
         if key == "pricingPoint":
             now = datetime.utcnow()
             for pricing_link in venue.pricing_point_links:
@@ -186,20 +191,25 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
                 ):
                     return pricing_link.pricingPoint
             return None
+
         if key == "address":
-            offerer_address = self._obj.offererAddress
+            offerer_address = venue.offererAddress
             if not offerer_address:
                 return None
             return address_serialize.AddressResponseIsLinkedToVenueModel(
                 **address_serialize.retrieve_address_info_from_oa(offerer_address),
-                label=self._obj.common_name,
+                label=venue.common_name,
                 isLinkedToVenue=True,
             )
+
         if key == "collectiveDmsApplications":
             return [
-                DMSApplicationForEAC.from_orm(collective_ds_application, self._obj.id)
-                for collective_ds_application in self._obj.collectiveDmsApplications
+                DMSApplicationForEAC.from_orm(collective_ds_application, venue.id)
+                for collective_ds_application in venue.collectiveDmsApplications
             ]
+
+        if key == "isCaledonian":
+            return venue.is_caledonian
 
         return super().get(key, default)
 
@@ -236,6 +246,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     hasOffers: bool
     address: address_serialize.AddressResponseIsLinkedToVenueModel | None
     hasActiveIndividualOffer: bool
+    isCaledonian: bool
 
     class Config:
         orm_mode = True
@@ -360,8 +371,10 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
 
 class VenueListItemResponseGetterDict(GetterDict):
     def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
+        venue: offerers_models.Venue = self._obj
+
         if key == "address":
-            offerer_address = self._obj.offererAddress
+            offerer_address = venue.offererAddress
             if not offerer_address:
                 return None
             data = {
@@ -374,12 +387,16 @@ class VenueListItemResponseGetterDict(GetterDict):
                 "postalCode": offerer_address.address.postalCode,
                 "street": offerer_address.address.street,
                 "city": offerer_address.address.city,
-                "label": self._obj.common_name,
+                "label": venue.common_name,
                 "isLinkedToVenue": True,
                 "isManualEdition": offerer_address.address.isManualEdition,
                 "departmentCode": offerer_address.address.departmentCode,
             }
             return address_serialize.AddressResponseIsLinkedToVenueModel(**data)
+
+        if key == "isCaledonian":
+            return venue.is_caledonian
+
         return super().get(key, default)
 
 
@@ -398,6 +415,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
     address: address_serialize.AddressResponseIsLinkedToVenueModel | None
     isPermanent: bool
+    isCaledonian: bool
 
     @classmethod
     def from_orm(
