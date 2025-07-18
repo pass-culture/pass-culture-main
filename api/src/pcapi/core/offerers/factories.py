@@ -182,7 +182,9 @@ class VenueFactory(BaseFactory):
                     timespan = timespan_str_to_numrange(OPENING_HOURS)
                 else:
                     timespan = None
-                opening_hours.append(OpeningHoursFactory.create(venue=self, weekday=weekday, timespan=timespan))
+                opening_hours.append(
+                    OpeningHoursFactory.create(venue=self, offer=None, weekday=weekday, timespan=timespan)
+                )
         return opening_hours
 
     @factory.post_generation
@@ -308,7 +310,11 @@ class OpeningHoursFactory(BaseFactory):
     class Meta:
         model = models.OpeningHours
 
+    # TODO(jbaudet::2025-07) make both optional and check that only one
+    # is set at a time
     venue = factory.SubFactory(VenueFactory)
+    offer: factory.SubFactory | None = None
+
     weekday = models.Weekday.MONDAY
     timespan = timespan_str_to_numrange(OPENING_HOURS)
 

@@ -4,6 +4,8 @@ import typing
 from pydantic.v1 import EmailStr
 from pydantic.v1 import Field
 from pydantic.v1 import HttpUrl
+from pydantic.v1 import conlist
+from pydantic.v1 import constr
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
@@ -183,3 +185,101 @@ class UpdateOffer(BaseModel):
         arbitrary_types_allowed = True
         alias_generator = serialization_utils.to_camel
         extra = "forbid"
+
+
+class StartEndOpeningHours(BaseModel):
+    start: datetime.time
+    end: datetime.time
+
+    @root_validator
+    def validate_order(cls, values: dict) -> dict:
+        start = values["start"]
+        end = values["end"]
+
+        if start >= end:
+            raise ValueError(f"opening hours start ({start}) cannot be after end ({end})")
+        return values
+
+
+if typing.TYPE_CHECKING:
+    Hour = str
+    OpeningHours = list[Hour]
+    OpeningHoursTimespans = list[OpeningHours]
+else:
+    # defines start and end opening hours
+    # eg. ["10:00", "18:00"] (from 10:00 to 18:00)
+    Hour = constr(regex=r"^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$", strip_whitespace=True, strict=True)
+    OpeningHours = conlist(item_type=Hour, min_items=2, max_items=2, unique_items=True)
+
+    # defines a whole day's opening hours
+    # eg. [["10:00", "13:00"], ["14:00", "18:00"]]
+    OpeningHoursTimespans = conlist(item_type=OpeningHours, min_items=1, max_items=2, unique_items=True)
+
+
+def validate_timespans(timespans: OpeningHoursTimespans | None) -> OpeningHoursTimespans | None:
+    """Check that timespans are well-formed (if any)
+
+    -> Each timespan is a (start, end) pair.
+    -> Check that start is always before end.
+    -> Check that there is no overlapping pair, eg. from 10:00 to
+    14:00 and from 13:00 to 17:00.
+    """
+    if timespans is None:
+        return None
+
+    # check that start and end pairs are well ordered
+    ranges = _parse_timespans(timespans)
+
+    # check that there is no overlapping (start, end) pair
+    ranges = sorted(ranges, key=lambda oh: oh.start)
+    previous_end = ranges[0].end
+
+    for oh in ranges[1:]:
+        if oh.start < previous_end:
+            raise ValueError(f"overlapping opening hours: {oh.start} <> {previous_end}")
+        previous_end = oh.end
+
+    return timespans
+
+
+def _parse_timespans(timespans: OpeningHoursTimespans) -> list[StartEndOpeningHours]:
+    def unpack_and_parse(ts: OpeningHours) -> StartEndOpeningHours:
+        raw_start, raw_end = ts
+
+        try:
+            start = datetime.time.fromisoformat(raw_start)
+            end = datetime.time.fromisoformat(raw_end)
+        except Exception as err:
+            raise ValueError(f"invalid time format: [{ts}] -> {err}")
+        else:
+            return StartEndOpeningHours(start=start, end=end)
+
+    return [unpack_and_parse(ts) for ts in timespans]
+
+
+class WeekdayOpeningHoursTimespans(BaseModel):
+    MONDAY: OpeningHoursTimespans | None
+    TUESDAY: OpeningHoursTimespans | None
+    WEDNESDAY: OpeningHoursTimespans | None
+    THURSDAY: OpeningHoursTimespans | None
+    FRIDAY: OpeningHoursTimespans | None
+    SATURDAY: OpeningHoursTimespans | None
+    SUNDAY: OpeningHoursTimespans | None
+
+    _validate_monday = validator("MONDAY", allow_reuse=True)(validate_timespans)
+    _validate_tuesday = validator("TUESDAY", allow_reuse=True)(validate_timespans)
+    _validate_wednesday = validator("WEDNESDAY", allow_reuse=True)(validate_timespans)
+    _validate_thursday = validator("THURSDAY", allow_reuse=True)(validate_timespans)
+    _validate_friday = validator("FRIDAY", allow_reuse=True)(validate_timespans)
+    _validate_saturday = validator("SATURDAY", allow_reuse=True)(validate_timespans)
+    _validate_sunday = validator("SUNDAY", allow_reuse=True)(validate_timespans)
+
+    class Config:
+        extra = "forbid"
+
+
+class OfferOpeningHoursSchema(BaseModel):
+    openingHours: WeekdayOpeningHoursTimespans
+
+    class Config:
+        use_enum_values = True

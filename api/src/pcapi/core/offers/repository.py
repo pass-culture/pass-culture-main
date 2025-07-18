@@ -54,6 +54,7 @@ OFFER_LOAD_OPTIONS = typing.Iterable[
         "stock",
         "venue",
         "meta_data",
+        "openingHours",
     ]
 ]
 
@@ -952,6 +953,8 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
                     get_pending_bookings_subquery(offer_id),
                 )
             )
+        if "openingHours" in load_options:
+            query = query.options(sa_orm.joinedload(models.Offer.openingHours))
 
         return query.one()
     except sa_orm.exc.NoResultFound:
