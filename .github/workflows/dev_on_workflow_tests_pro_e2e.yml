@@ -1,4 +1,4 @@
-name: '3 [on_workflow] Tests E2E'
+name: "3 [on_workflow] Tests E2E"
 
 on:
   workflow_call:
@@ -31,7 +31,7 @@ defaults:
 
 jobs:
   install:
-    name: 'Install E2E 🔧'
+    name: "Install E2E 🔧"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -41,13 +41,13 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version-file: 'pro/.nvmrc'
+          node-version-file: "pro/.nvmrc"
 
-      - name: 'Cache the node_modules'
-        id: 'yarn-modules-cache'
+      - name: "Cache the node_modules"
+        id: "yarn-modules-cache"
         uses: pass-culture-github-actions/cache@v1.0.0
         with:
-          compression-method: 'gzip'
+          compression-method: "gzip"
           bucket: ${{ inputs.CACHE_BUCKET_NAME }}
           path: |
             ~/.cache/Cypress
@@ -59,7 +59,7 @@ jobs:
       - name: install
         run: yarn install --immutable
 
-      - name: 'Build vite application'
+      - name: "Build vite application"
         run: yarn build:${{ inputs.ENV }}
 
       - name: Save build folder
@@ -99,7 +99,7 @@ jobs:
           -cM .)" >> $GITHUB_OUTPUT
 
   playwright-run:
-    name: 'Run E2E (Playwright)'
+    name: "Run E2E (Playwright)"
     runs-on: ubuntu-24.04
     needs: [setup, install]
     strategy:
@@ -110,7 +110,7 @@ jobs:
         #chunk: ${{ fromJson(needs.setup.outputs['test-chunks']) }}
         # Manually setting tests to have them have (approximatively) the same duration
         chunk: [
-            'playwright/e2e/desk.spec.ts',
+            "playwright/e2e/desk.spec.ts",
             # 'playwright/e2e/desk.spec.ts playwright/e2e/signupJourneyCreateOfferer.spec.ts playwright/e2e/adageConfirmation.spec.ts',
             # 'playwright/e2e/editDigitalIndividualOffer.spec.ts playwright/e2e/searchCollectiveOffer.spec.ts playwright/e2e/navigation.spec.ts playwright/e2e/createIndividualOffer.spec.ts',
             # 'playwright/e2e/oaIndividualOffer.spec.ts playwright/e2e/didacticOnboarding.spec.ts playwright/e2e/createAccount.spec.ts playwright/e2e/cookieBanner.spec.ts playwright/e2e/collaborator.spec.ts',
@@ -122,15 +122,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: 'Authentification to Google'
-        uses: 'google-github-actions/auth@v2'
+      - name: "Authentification to Google"
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-      - name: 'Get Secret'
+      - name: "Get Secret"
         id: secrets
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
@@ -138,13 +138,13 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version-file: 'pro/.nvmrc'
+          node-version-file: "pro/.nvmrc"
 
       - uses: KengoTODA/actions-setup-docker-compose@v1
         with:
-          version: '2.23.3'
+          version: "2.23.3"
 
-      - name: 'Fix local permissions'
+      - name: "Fix local permissions"
         run: sudo chown -R $PCAPI_UID:$PCAPI_GID .
         working-directory: api
         env:
@@ -155,43 +155,43 @@ jobs:
           yarn install --immutable
           yarn playwright install chromium
 
-      - name: 'OpenID Connect Authentication'
+      - name: "OpenID Connect Authentication"
         id: openid-auth
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           create_credentials_file: false
-          token_format: 'access_token'
+          token_format: "access_token"
           workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER  }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
 
-      - name: 'Docker login'
+      - name: "Docker login"
         id: docker-login
-        uses: 'docker/login-action@v3'
+        uses: "docker/login-action@v3"
         with:
-          registry: 'europe-west1-docker.pkg.dev'
-          username: 'oauth2accesstoken'
-          password: '${{ steps.openid-auth.outputs.access_token }}'
+          registry: "europe-west1-docker.pkg.dev"
+          username: "oauth2accesstoken"
+          password: "${{ steps.openid-auth.outputs.access_token }}"
 
-      - name: 'Compute docker image name:tag'
+      - name: "Compute docker image name:tag"
         id: compute-image-name
         run: |
           echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
           echo "::notice:: Running e2e-tests with ${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}"
 
-      - name: 'Run postgres and redis server'
+      - name: "Run postgres and redis server"
         run: docker-compose -f ../docker-compose-backend.yml up postgres redis -d
 
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v2'
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v2"
 
-      - name: 'Download artifact'
+      - name: "Download artifact"
         if: ${{ inputs.tag != 'latest' }}
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.image }}-${{ inputs.tag }}.tar
           path: ${{ runner.temp }}
 
-      - name: 'Run API server'
+      - name: "Run API server"
         run: |
           if [ "${{ inputs.tag }}" != "latest" ]; then
             docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
@@ -210,7 +210,7 @@ jobs:
             ${{ steps.compute-image-name.outputs.image_name }} \
             -c "set -e ; flask install_postgres_extensions ; alembic upgrade pre@head ; alembic upgrade post@head ; flask install_data ; FLASK_USE_RELOADER=0 python src/pcapi/app.py"
 
-      - name: 'Wait for migrations to be run'
+      - name: "Wait for migrations to be run"
         uses: iFaxity/wait-on-action@v1
         with:
           resource: http://localhost:5001/health/api
@@ -222,21 +222,21 @@ jobs:
           name: build
           path: pro/build
 
-      - name: 'Serve vite preview'
+      - name: "Serve vite preview"
         run: yarn serve &
 
       # Using wait-on does not work well for this service, we use curl
-      - name: 'Wait for front-end to listen'
+      - name: "Wait for front-end to listen"
         run: |
           timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:3001)" != "200" ]]; do sleep 5; done' || false
 
-      - name: 'Playwright run'
+      - name: "Playwright run"
         run: yarn test:e2e:playwright ${{ matrix.chunk }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           #DEBUG: 'cypress:server:socket-base,cypress:server:socket-e2e'
           # see https://github.com/cypress-io/github-action/issues/1408#issuecomment-2744425883
-          NODE_OPTIONS: '--no-experimental-require-module --no-experimental-detect-module'
+          NODE_OPTIONS: "--no-experimental-require-module --no-experimental-detect-module"
 
       # - uses: actions/upload-artifact@v4
       #   if: ${{ !cancelled() }}
@@ -257,7 +257,7 @@ jobs:
       #     path: "pro/cypress/videos"
       #     destination: "${{ inputs.CACHE_BUCKET_NAME }}/pro/cypress/videos/e2e-artifacts"
 
-      - name: 'Show pcapi log when it fails'
+      - name: "Show pcapi log when it fails"
         if: failure()
         run: docker logs pc-api
 
