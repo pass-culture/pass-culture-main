@@ -1,6 +1,6 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test'
 
-const IS_CI = !!process.env.CI;
+const IS_CI = !!process.env.CI
 
 /**
  * @see https://playwright.dev/docs/test-configuration.
@@ -10,14 +10,15 @@ export default defineConfig({
   testDir: './e2e',
   fullyParallel: IS_CI,
   forbidOnly: IS_CI,
+  globalSetup: './playwright.globalSetup.ts',
+  reporter: 'list',
   retries: IS_CI ? 2 : 0,
   workers: IS_CI ? 1 : undefined,
-  reporter: 'list',
+
   use: {
     baseURL: 'http://localhost:3001',
     browserName: 'chromium',
     headless: IS_CI,
-    // headless: true,
     trace: 'on-first-retry',
   },
 
@@ -27,10 +28,4 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
-});
+})
