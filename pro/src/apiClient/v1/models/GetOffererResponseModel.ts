@@ -20,6 +20,7 @@ export type GetOffererResponseModel = {
   hasValidBankAccount: boolean;
   id: number;
   isActive: boolean;
+  isCaledonian: boolean;
   isOnboarded: boolean;
   isValidated: boolean;
   managedVenues?: Array<GetOffererVenueResponseModel>;

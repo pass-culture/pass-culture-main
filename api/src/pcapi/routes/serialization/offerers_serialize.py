@@ -121,6 +121,7 @@ class GetOffererResponseModel(BaseModel):
     isOnboarded: bool
     hasHeadlineOffer: bool
     hasPartnerPage: bool
+    isCaledonian: bool
 
     @classmethod
     def from_orm(cls, row: Row) -> "GetOffererResponseModel":
@@ -155,6 +156,7 @@ class GetOffererResponseModel(BaseModel):
         offerer.isOnboarded = row.isOnboarded
         offerer.hasHeadlineOffer = row.hasHeadlineOffer
         offerer.hasPartnerPage = row.hasPartnerPage
+        offerer.isCaledonian = offerer.is_caledonian
         # We would like the response attribute to be called
         # `managedVenues` but we don't want to use the
         # `Offerer.managedVenues` relationship which does not

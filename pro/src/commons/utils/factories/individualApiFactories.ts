@@ -246,6 +246,7 @@ export const venueListItemFactory = (
     motorDisabilityCompliant: true,
     audioDisabilityCompliant: true,
     isPermanent: true,
+    isCaledonian: false,
     ...customVenueListItem,
   }
 }
@@ -351,6 +352,7 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   allowedOnAdage: true,
   isOnboarded: true,
   hasPartnerPage: false,
+  isCaledonian: false,
 }
 
 export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
