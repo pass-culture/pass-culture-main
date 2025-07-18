@@ -14,15 +14,9 @@
 
 .select-all-container {
   display: flex;
-  width: 100%;
-}
-
-.add-recurrences-button {
-  margin-bottom: rem.torem(32px);
-}
-
-.stocks-count {
-  margin-left: auto;
+  gap: rem.torem(16px); 
+  align-items: center;
+  margin-bottom: rem.torem(24px); 
 }
 
 .header {
@@ -32,7 +26,7 @@
 }
 
 .row-head {
-  display: flex;
+  display: none;
   flex-direction: column;
 }
 
@@ -79,11 +73,28 @@
   z-index: zIndex.$recurrence-sticky-bar;
 }
 
+.recurrences-container {
+  display: flex;
+  flex-direction: column;
+}
+
 .visually-hidden {
   @include a11y.visually-hidden;
 }
 
+.filter-input {
+  margin-bottom: rem.torem(16px);
+}
+
+.recurrences-button {
+  margin: 0 auto rem.torem(24px) auto;
+}
+
 @media (min-width: size.$tablet) {
+  .recurrences-button {
+    margin: rem.torem(32px) auto rem.torem(32px) auto;
+  }
+
   .stock-event-table {
     margin-top: rem.torem(16px);
     margin-bottom: rem.torem(32px);

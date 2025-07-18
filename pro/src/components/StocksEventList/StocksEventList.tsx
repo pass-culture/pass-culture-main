@@ -363,13 +363,11 @@ export const StocksEventList = ({
   }
 
   return (
-    <>
+    <div className={styles['recurrences-container']}>
       {canAddStocks && (
-        <AddRecurrencesButton
-          className={styles['add-recurrences-button']}
-          offer={offer}
-          reloadStocks={reloadStocks}
-        />
+        <div className={styles['recurrences-button']}>
+          <AddRecurrencesButton offer={offer} reloadStocks={reloadStocks} />
+        </div>
       )}
 
       {(!canAddStocks || offerHasStocks) && (
@@ -384,7 +382,7 @@ export const StocksEventList = ({
               />
             )}
 
-            <div className={styles['stocks-count']}>
+            <div>
               {new Intl.NumberFormat('fr-FR').format(stocksCountWithFilters)}{' '}
               {pluralizeString('date', stocksCountWithFilters)}
             </div>
@@ -563,7 +561,9 @@ export const StocksEventList = ({
                           ? currentSortingMode
                           : SortingMode.NONE
                       }
-                    />
+                    >
+                      <div className={styles['header-name']}>Réservations</div>
+                    </SortArrow>
                   </th>
                 ) : (
                   <th
@@ -718,6 +718,6 @@ export const StocksEventList = ({
           </ActionsBarSticky.Right>
         </ActionsBarSticky>
       )}
-    </>
+    </div>
   )
 }
