@@ -1,3 +1,5 @@
+import uuid
+
 import factory
 
 from pcapi.core.factories import BaseFactory
@@ -19,6 +21,7 @@ class ArtistFactory(BaseFactory):
     class Meta:
         model = models.Artist
 
+    id = factory.LazyFunction(lambda: str(uuid.uuid4()))
     name = factory.Faker("name")
     description = factory.Faker("text")
     image_license_url = factory.Faker("url")
