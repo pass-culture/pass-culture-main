@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { act, fireEvent, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { add, format, set, sub } from 'date-fns'
 import { Route, Routes } from 'react-router'
@@ -238,22 +238,13 @@ describe('SummaryScreen', () => {
         await screen.findByText(ERROR_MESSAGES.publicationDateMustBeInFuture)
       ).toBeVisible()
 
-      await userEvent.type(
-        publicationDateInput,
-        format(inOneMonth, 'yyyy-MM-dd')
+      await act(() =>
+        fireEvent.input(publicationDateInput, {
+          target: {
+            value: format(inOneMonth, 'yyyy-MM-dd'),
+          },
+        })
       )
-
-      // -----------------------------------------------------------------------
-      // Hack to force value update within RTL
-      await userEvent.selectOptions(
-        publicationTimeSelect,
-        format(inOneMonth, 'HH:mm')
-      )
-      await userEvent.type(
-        publicationDateInput,
-        format(inOneMonth, 'yyyy-MM-dd')
-      )
-      // -----------------------------------------------------------------------
 
       expect(
         screen.queryByTestId('error-publicationDate')
@@ -304,22 +295,13 @@ describe('SummaryScreen', () => {
         )
       ).toBeVisible()
 
-      await userEvent.type(
-        publicationDateInput,
-        format(inOneMonth, 'yyyy-MM-dd')
+      await act(() =>
+        fireEvent.input(publicationDateInput, {
+          target: {
+            value: format(inOneMonth, 'yyyy-MM-dd'),
+          },
+        })
       )
-
-      // -----------------------------------------------------------------------
-      // Hack to force value update within RTL
-      await userEvent.selectOptions(
-        publicationTimeSelect,
-        format(inOneMonth, 'HH:mm')
-      )
-      await userEvent.type(
-        publicationDateInput,
-        format(inOneMonth, 'yyyy-MM-dd')
-      )
-      // -----------------------------------------------------------------------
 
       expect(
         screen.queryByTestId('error-publicationDate')
