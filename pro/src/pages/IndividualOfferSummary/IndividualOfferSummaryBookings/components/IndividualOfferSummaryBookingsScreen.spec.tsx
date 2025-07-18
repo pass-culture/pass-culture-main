@@ -12,19 +12,19 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { IndividualOfferBookingsSummaryScreen } from './IndividualOfferBookingsSummaryScreen'
+import { IndividualOfferSummaryBookingsScreen } from './IndividualOfferSummaryBookingsScreen'
 
 const render = (offer: GetIndividualOfferWithAddressResponseModel) => {
   const contextValue = individualOfferContextValuesFactory({ offer })
 
   renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
-      <IndividualOfferBookingsSummaryScreen offer={offer} />
+      <IndividualOfferSummaryBookingsScreen offer={offer} />
     </IndividualOfferContext.Provider>
   )
 }
 
-describe('IndividualOfferBookingsSummaryScreen', () => {
+describe('IndividualOfferSummaryBookingsScreen', () => {
   beforeEach(() => {
     vi.spyOn(
       api,
