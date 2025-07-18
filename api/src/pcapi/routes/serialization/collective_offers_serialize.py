@@ -186,18 +186,15 @@ def _serialize_offer_paginated(
     institution = getattr(offer, "institution", None)
     templateId = getattr(offer, "templateId", None)
 
-    return CollectiveOfferResponseModel(  # type: ignore[call-arg]
+    return CollectiveOfferResponseModel(
         hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,
         id=offer.id,
         isActive=offer.isActive,
-        isEditable=offer.isEditable,
         isEducational=True,
         name=offer.name,
         stocks=serialized_stocks,  # type: ignore[arg-type]
         booking=last_booking,
-        thumbUrl=None,
         venue=_serialize_venue(offer.venue),
-        status=offer.status.name,
         displayedStatus=offer.displayedStatus,
         allowedActions=offer.allowedActions,
         isShowcase=is_offer_template,

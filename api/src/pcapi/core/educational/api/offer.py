@@ -150,7 +150,7 @@ def list_collective_offers_for_pro_user(
 
     merged_offers = offers + templates
 
-    merged_offers.sort(key=lambda offer: offer.sort_criterion, reverse=True)
+    merged_offers.sort(key=lambda offer: offer.get_sort_criterion(), reverse=True)
 
     return merged_offers[0:OFFERS_RECAP_LIMIT]
 
@@ -679,8 +679,13 @@ def edit_collective_offer_public(
     offer: educational_models.CollectiveOffer,
     location_body: public_api_collective_offers_serialize.CollectiveOfferLocation | None,
 ) -> educational_models.CollectiveOffer:
-    if not feature.FeatureToggle.WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API.is_active() and not offer.isEditable:
-        raise exceptions.CollectiveOfferNotEditable()
+    if not feature.FeatureToggle.WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API.is_active():
+        is_editable = offer.validation not in [
+            offer_mixin.OfferValidationStatus.PENDING,
+            offer_mixin.OfferValidationStatus.REJECTED,
+        ]
+        if not is_editable:
+            raise exceptions.CollectiveOfferNotEditable()
 
     if provider_id != offer.providerId:
         raise exceptions.CollectiveOfferNotEditable()
