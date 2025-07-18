@@ -92,9 +92,6 @@
       {{ clipboard.copy_to_clipboard(collective_offer.id, "Copier l'ID de l'offre") }}
     {% endcall %}
     {% call description_detail_vertical("Statut") %}
-      {{ collective_offer.status | format_offer_status }}
-    {% endcall %}
-    {% call description_detail_vertical("Statut PC Pro") %}
       {{ collective_offer.displayedStatus | format_collective_offer_displayed_status }}
     {% endcall %}
     <hr />

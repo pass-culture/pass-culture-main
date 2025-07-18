@@ -18,6 +18,7 @@ from werkzeug.exceptions import NotFound
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.api import offer as collective_offer_api
 from pcapi.core.finance import api as finance_api
@@ -52,6 +53,23 @@ blueprint = utils.child_backoffice_blueprint(
 
 
 aliased_stock = sa_orm.aliased(educational_models.CollectiveStock)
+
+
+def _filter_collective_offer_status_query_modifier(query: sa_orm.Query, statuses: typing.Iterable[str]) -> sa_orm.Query:
+    # as a collective offer status is a computed property (without a hybrid expression), we cannot simply filter on this field
+    # instead we modify the query to apply filters depending on the required status values, as in PC Pro
+    return educational_repository.filter_collective_offers_by_statuses(
+        query=query,
+        statuses=[educational_models.CollectiveOfferDisplayedStatus(s) for s in statuses],
+    )
+
+
+# this should be in sync with the status field in forms
+collective_offer_status_choices = [
+    status.name
+    for status in educational_models.CollectiveOfferDisplayedStatus
+    if status != educational_models.CollectiveOfferDisplayedStatus.HIDDEN
+]
 
 SEARCH_FIELD_TO_PYTHON = {
     "FORMATS": {
@@ -108,7 +126,10 @@ SEARCH_FIELD_TO_PYTHON = {
     },
     "STATUS": {
         "field": "status",
-        "column": educational_models.CollectiveOffer.status,
+        "query_modifier": {
+            "function": _filter_collective_offer_status_query_modifier,
+            "choices": collective_offer_status_choices,
+        },
     },
     "VENUE": {
         "field": "venue",
@@ -301,11 +322,22 @@ def _get_collective_offers(
                 educational_models.CollectiveOffer.authorId,
                 educational_models.CollectiveOffer.rejectionReason,
                 educational_models.CollectiveOffer.providerId,
+                educational_models.CollectiveOffer.isActive,
+                educational_models.CollectiveOffer.dateArchived,
             ),
-            sa_orm.contains_eager(educational_models.CollectiveOffer.collectiveStock).load_only(
-                educational_models.CollectiveStock.startDatetime,
-                educational_models.CollectiveStock.endDatetime,
-                educational_models.CollectiveStock.price,
+            sa_orm.contains_eager(educational_models.CollectiveOffer.collectiveStock).options(
+                sa_orm.load_only(
+                    educational_models.CollectiveStock.startDatetime,
+                    educational_models.CollectiveStock.endDatetime,
+                    educational_models.CollectiveStock.bookingLimitDatetime,
+                    educational_models.CollectiveStock.price,
+                ),
+                # bookings are needed to compute displayedStatus
+                sa_orm.selectinload(educational_models.CollectiveStock.collectiveBookings).load_only(
+                    educational_models.CollectiveBooking.dateCreated,
+                    educational_models.CollectiveBooking.status,
+                    educational_models.CollectiveBooking.cancellationReason,
+                ),
             ),
             sa_orm.contains_eager(educational_models.CollectiveOffer.venue).options(
                 sa_orm.load_only(
