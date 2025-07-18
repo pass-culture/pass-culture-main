@@ -13,6 +13,7 @@ from pcapi.core.educational import factories
 from pcapi.core.educational.models import ALLOWED_ACTIONS_BY_DISPLAYED_STATUS
 from pcapi.core.educational.models import COLLECTIVE_OFFER_TEMPLATE_STATUSES
 from pcapi.core.educational.models import TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS
+from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveDmsApplication
 from pcapi.core.educational.models import CollectiveOffer
@@ -672,6 +673,41 @@ class EducationalInstitutionProgramTest:
 
 
 class CollectiveOfferDisplayedStatusTest:
+    @pytest.mark.parametrize("status", ALL_DISPLAYED_STATUSES)
+    def test_get_offer_displayed_status_hybrid(self, status):
+        offer = factories.create_collective_offer_by_status(status)
+
+        displayed_status = CollectiveOffer.get_displayed_status_expression()
+        last_booking_id = CollectiveOffer.get_last_booking_id_subquery()
+        [hybrid_status] = (
+            db.session.query(displayed_status)
+            .outerjoin(CollectiveOffer.collectiveStock)
+            .outerjoin(CollectiveBooking, CollectiveBooking.id == last_booking_id)
+            .filter(CollectiveOffer.id == offer.id)
+            .one()
+        )
+        assert offer.displayedStatus.value == hybrid_status
+
+    @pytest.mark.parametrize("status", ALL_DISPLAYED_STATUSES)
+    def test_get_offer_displayed_status_hybrid_filter(self, status):
+        offer = factories.create_collective_offer_by_status(status)
+
+        # add an offer with another status that will not be present in the result
+        other_status = next((s for s in CollectiveOfferDisplayedStatus if s != status))
+        factories.create_collective_offer_by_status(other_status, venue=offer.venue)
+
+        displayed_status = CollectiveOffer.get_displayed_status_expression()
+        last_booking_id = CollectiveOffer.get_last_booking_id_subquery()
+        result = (
+            db.session.query(CollectiveOffer)
+            .outerjoin(CollectiveOffer.collectiveStock)
+            .outerjoin(CollectiveBooking, CollectiveBooking.id == last_booking_id)
+            .filter(displayed_status == status.value)
+            .one()
+        )
+
+        assert result.id == offer.id
+
     @pytest.mark.parametrize(
         "status",
         ALL_DISPLAYED_STATUSES - {CollectiveOfferDisplayedStatus.CANCELLED},
