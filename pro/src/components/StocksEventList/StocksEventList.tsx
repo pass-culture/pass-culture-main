@@ -363,33 +363,15 @@ export const StocksEventList = ({
   }
 
   return (
-    <>
+    <div className={styles['recurrences-container']}>
       {canAddStocks && (
-        <AddRecurrencesButton
-          className={styles['add-recurrences-button']}
-          offer={offer}
-          reloadStocks={reloadStocks}
-        />
+        <div className={styles['recurrences-button']}>
+          <AddRecurrencesButton offer={offer} reloadStocks={reloadStocks} />
+        </div>
       )}
 
       {(!canAddStocks || offerHasStocks) && (
         <>
-          <div className={styles['select-all-container']}>
-            {!readonly && (
-              <Checkbox
-                label="Tout sélectionner"
-                checked={allStocksChecked !== PartialCheck.UNCHECKED}
-                indeterminate={allStocksChecked === PartialCheck.PARTIAL}
-                onChange={onAllStocksCheckChange}
-              />
-            )}
-
-            <div className={styles['stocks-count']}>
-              {new Intl.NumberFormat('fr-FR').format(stocksCountWithFilters)}{' '}
-              {pluralizeString('date', stocksCountWithFilters)}
-            </div>
-          </div>
-
           <div className={cn(styles['filter-input'])}>
             <div>
               <DatePicker
@@ -441,6 +423,22 @@ export const StocksEventList = ({
             Réinitialiser les filtres
           </Button>
 
+          <div className={styles['select-all-container']}>
+            {!readonly && (
+              <Checkbox
+                label="Tout sélectionner"
+                checked={allStocksChecked !== PartialCheck.UNCHECKED}
+                indeterminate={allStocksChecked === PartialCheck.PARTIAL}
+                onChange={onAllStocksCheckChange}
+              />
+            )}
+
+            <div>
+              {new Intl.NumberFormat('fr-FR').format(stocksCountWithFilters)}{' '}
+              {pluralizeString('date', stocksCountWithFilters)}
+            </div>
+          </div>
+
           <table className={styles['stock-event-table']}>
             <caption className={styles['visually-hidden']}>
               Liste des dates et capacités
@@ -452,6 +450,7 @@ export const StocksEventList = ({
                   scope="col"
                   className={cn(styles['date-column'], styles['header'])}
                   colSpan={2}
+                  onClick={() => sortTableColumn(StocksOrderedBy.DATE)}
                 >
                   <span className={styles['header-name']}>Date</span>
 
@@ -468,6 +467,7 @@ export const StocksEventList = ({
                 <th
                   scope="col"
                   className={cn(styles['time-column'], styles['header'])}
+                  onClick={() => sortTableColumn(StocksOrderedBy.TIME)}
                 >
                   <span className={styles['header-name']}>Horaire</span>
 
@@ -484,6 +484,9 @@ export const StocksEventList = ({
                 <th
                   scope="col"
                   className={cn(styles['price-column'], styles['header'])}
+                  onClick={() =>
+                    sortTableColumn(StocksOrderedBy.PRICE_CATEGORY_ID)
+                  }
                 >
                   <span className={styles['header-name']}>Tarif</span>
 
@@ -505,11 +508,12 @@ export const StocksEventList = ({
                     styles['booking-limit-date-column'],
                     styles['header']
                   )}
+                  onClick={() =>
+                    sortTableColumn(StocksOrderedBy.BOOKING_LIMIT_DATETIME)
+                  }
                 >
                   <span className={styles['header-name']}>
-                    Date limite
-                    <br />
-                    de réservation
+                    Date limite de réservation
                   </span>
 
                   <SortArrow
@@ -528,6 +532,9 @@ export const StocksEventList = ({
                 <th
                   scope="col"
                   className={cn(styles['quantity-column'], styles['header'])}
+                  onClick={() =>
+                    sortTableColumn(StocksOrderedBy.REMAINING_QUANTITY)
+                  }
                 >
                   <span className={styles['header-name']}>Places</span>
 
@@ -550,6 +557,9 @@ export const StocksEventList = ({
                       styles['bookings-quantity-column'],
                       styles['header']
                     )}
+                    onClick={() =>
+                      sortTableColumn(StocksOrderedBy.DN_BOOKED_QUANTITY)
+                    }
                   >
                     <span className={styles['header-name']}>Réservations</span>
 
@@ -718,6 +728,6 @@ export const StocksEventList = ({
           </ActionsBarSticky.Right>
         </ActionsBarSticky>
       )}
-    </>
+    </div>
   )
 }

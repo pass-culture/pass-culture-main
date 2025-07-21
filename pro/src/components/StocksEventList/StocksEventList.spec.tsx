@@ -12,7 +12,7 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { StocksEventList, StocksEventListProps } from '../StocksEventList'
+import { StocksEventList, StocksEventListProps } from './StocksEventList'
 
 const mockMutate = vi.fn()
 
@@ -517,5 +517,31 @@ describe('StocksEventList', () => {
       Events.UPDATED_EVENT_STOCK_FILTERS,
       expect.objectContaining({ formType: 'readonly' })
     )
+  })
+
+  it('should display NoResultsRow when no stocks are found', async () => {
+    await renderStocksEventList([])
+
+    expect(await screen.findByText('Aucune date trouvée')).toBeInTheDocument() // assuming "Aucun résultat" is rendered in NoResultsRow
+  })
+
+  it('should show select all checkbox as indeterminate when only some stocks are selected', async () => {
+    await renderStocksEventList([stock1, stock2, stock3])
+    const checkboxes = screen.getAllByRole('checkbox')
+
+    // Select only the second one
+    await userEvent.click(checkboxes[2])
+
+    // selectAllCheckbox is the first one
+    const selectAllCheckbox = checkboxes[0] as HTMLInputElement
+    expect(selectAllCheckbox.indeterminate).toBe(true)
+  })
+
+  it('should not render delete buttons in readonly mode', async () => {
+    await renderStocksEventList([stock1], { readonly: true })
+
+    expect(
+      screen.queryByRole('button', { name: 'Supprimer' })
+    ).not.toBeInTheDocument()
   })
 })

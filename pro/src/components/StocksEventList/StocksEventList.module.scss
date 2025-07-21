@@ -14,15 +14,9 @@
 
 .select-all-container {
   display: flex;
-  width: 100%;
-}
-
-.add-recurrences-button {
-  margin-bottom: rem.torem(32px);
-}
-
-.stocks-count {
-  margin-left: auto;
+  gap: rem.torem(16px); 
+  align-items: center;
+  margin-top: rem.torem(24px); 
 }
 
 .header {
@@ -32,7 +26,7 @@
 }
 
 .row-head {
-  display: flex;
+  display: none;
   flex-direction: column;
 }
 
@@ -51,6 +45,10 @@
   justify-content: space-between;
   padding: rem.torem(12px) rem.torem(8px);
   align-items: center;
+
+  &:last-child {
+    text-align: center;
+  }
 }
 
 .data::before {
@@ -83,7 +81,22 @@
   @include a11y.visually-hidden;
 }
 
+.filter-input {
+  margin-bottom: rem.torem(16px);
+}
+
+.recurrences-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 rem.torem(24px);
+}
+
 @media (min-width: size.$tablet) {
+  .recurrences-button {
+    margin: rem.torem(32px) auto rem.torem(32px) auto;
+  }
+
   .stock-event-table {
     margin-top: rem.torem(16px);
     margin-bottom: rem.torem(32px);
@@ -97,6 +110,7 @@
   .row-head {
     display: table-row;
     padding: rem.torem(16px);
+    background-color: var(--color-background-subtle);
   }
 
   .row {
@@ -107,7 +121,18 @@
   .header {
     @include fonts.body-accent-xs;
 
-    padding-right: rem.torem(16px);
+    cursor: pointer;
+    padding:  rem.torem(8px) rem.torem(8px) rem.torem(8px) 0;
+
+    &:first-child {
+      padding-left: rem.torem(8px);
+      border-top-left-radius: rem.torem(8px);
+    }
+
+    &:last-child {
+      border-top-right-radius: rem.torem(8px);
+      padding-right: rem.torem(8px);
+    }
   }
 
   .data {
@@ -140,11 +165,11 @@
   }
 
   .date-column {
-    width: rem.torem(192px);
+    min-width: rem.torem(192px);
   }
 
   .price-column {
-    width: rem.torem(300px);
+    min-width: rem.torem(200px);
   }
 
   .filter-input {
@@ -154,22 +179,22 @@
   }
 
   .time-column {
-    width: rem.torem(88px);
+    min-width: rem.torem(88px);
   }
 
   .booking-limit-date-column {
-    width: rem.torem(136px);
+    min-width: rem.torem(200px);
   }
 
   .quantity-column {
-    width: rem.torem(116px);
+    min-width: rem.torem(100px);
   }
 
   .bookings-quantity-column {
-    width: rem.torem(120px);
+    min-width: rem.torem(120px);
   }
 
   .actions-column {
-    width: $icon-size;
+    min-width: $icon-size;
   }
 }

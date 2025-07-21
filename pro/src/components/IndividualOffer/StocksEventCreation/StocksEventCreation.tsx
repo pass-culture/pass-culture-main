@@ -68,21 +68,19 @@ export const StocksEventCreation = ({
 
   return (
     <>
-      <div className={styles['container']}>
-        <>
-          {hasStocks === false && (
-            <HelpSection className={styles['help-section']} />
-          )}
+      <>
+        {hasStocks === false && (
+          <HelpSection className={styles['help-section']} />
+        )}
 
-          <StocksEventList
-            priceCategories={offer.priceCategories ?? []}
-            departmentCode={departmentCode}
-            offer={offer}
-            onStocksLoad={setHasStocks}
-            canAddStocks
-          />
-        </>
-      </div>
+        <StocksEventList
+          priceCategories={offer.priceCategories ?? []}
+          departmentCode={departmentCode}
+          offer={offer}
+          onStocksLoad={setHasStocks}
+          canAddStocks
+        />
+      </>
       <ActionBar
         isDisabled={false}
         onClickPrevious={handlePreviousStep}
