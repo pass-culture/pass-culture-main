@@ -113,20 +113,23 @@ export function getVenuesAsOptions(
 export function getInitialValuesFromVenues(
   availableVenues: VenueListItemResponseModel[],
   isNewOfferCreationFlowFeatureActive: boolean
-) {
+): DetailsFormValues {
   //  When there is only one venue available, we can automatically use this venue as the initially selected one.
   const onlyVenue =
     availableVenues.length === 1 ? availableVenues[0] : undefined
   const venueId = onlyVenue?.id.toString() ?? ''
 
-  const maybeAccessibility = isNewOfferCreationFlowFeatureActive
-    ? getAccessibilityInfoFromVenue(onlyVenue).accessibility
-    : undefined
+  if (isNewOfferCreationFlowFeatureActive) {
+    return {
+      ...DEFAULT_DETAILS_FORM_VALUES,
+      venueId,
+      accessibility: getAccessibilityInfoFromVenue(onlyVenue).accessibility,
+    }
+  }
 
   return {
     ...DEFAULT_DETAILS_FORM_VALUES,
     venueId,
-    ...(maybeAccessibility ? { accessibility: maybeAccessibility } : {}),
   }
 }
 
