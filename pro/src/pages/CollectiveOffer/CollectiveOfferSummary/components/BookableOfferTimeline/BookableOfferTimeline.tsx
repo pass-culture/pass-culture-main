@@ -3,11 +3,10 @@ import {
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
 import { getDateToFrenchText } from 'commons/utils/date'
-import fullEditIcon from 'icons/full-edit.svg'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
 import { Timeline, TimelineStepType } from 'ui-kit/Timeline/Timeline'
 
+import { BookingWaitingBanner } from './banners/BookingWaitingBanner'
+import { DraftBanner } from './banners/DraftBanner'
 import styles from './BookableOfferTimeline.module.scss'
 
 type BookableOfferTimeline = {
@@ -49,24 +48,7 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
         content: (
           <>
             <StatusWithDate status={statusLabel} />
-            {isCurrentStep && (
-              <Callout
-                className={styles['callout']}
-                variant={CalloutVariant.INFO}
-                shouldShowIcon={false}
-                links={[
-                  {
-                    icon: { src: fullEditIcon, alt: 'Modifier' },
-                    href: `/offre/collectif/${offer.id}/creation`,
-                    label: 'Reprendre mon brouillon',
-                  },
-                ]}
-              >
-                {
-                  "Vous avez commencé à rédiger un brouillon. Vous pouvez le reprendre à tout moment afin de finaliser sa rédaction et l'envoyer à un établissement."
-                }
-              </Callout>
-            )}
+            {isCurrentStep && <DraftBanner offerId={offer.id} />}
           </>
         ),
       }
@@ -217,29 +199,51 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
     const lastPastStep = past[past.length - 1]
     const lastPastStepStatus = lastPastStep.status
 
-    if (
-      waitingWording[lastPastStepStatus] &&
-      lastPastStepStatus === CollectiveOfferDisplayedStatus.ENDED &&
-      lastPastStep.datetime &&
-      isMoreThan48hAgo(lastPastStep.datetime)
-    ) {
-      const waitingStep = {
-        type: TimelineStepType.WAITING,
-        content: <StatusWithDate status={waitingWording[lastPastStepStatus]} />,
+    if (waitingWording[lastPastStepStatus]) {
+      if (
+        lastPastStepStatus === CollectiveOfferDisplayedStatus.ENDED &&
+        lastPastStep.datetime &&
+        isMoreThan48hAgo(lastPastStep.datetime)
+      ) {
+        const waitingStep = {
+          type: TimelineStepType.WAITING,
+          content: (
+            <StatusWithDate status={waitingWording[lastPastStepStatus]} />
+          ),
+        }
+        return [...pastSteps, waitingStep, ...futureSteps]
       }
-      return [...pastSteps, waitingStep, ...futureSteps]
+
+      if (
+        (lastPastStepStatus === CollectiveOfferDisplayedStatus.PUBLISHED ||
+          lastPastStepStatus === CollectiveOfferDisplayedStatus.PREBOOKED) &&
+        offer.collectiveStock?.bookingLimitDatetime
+      ) {
+        const waitingStep = {
+          type: TimelineStepType.WAITING,
+          content: (
+            <>
+              <StatusWithDate status={waitingWording[lastPastStepStatus]} />
+              <BookingWaitingBanner
+                offerStatus={lastPastStepStatus}
+                offerId={offer.id}
+                bookingLimitDatetime={
+                  offer.collectiveStock.bookingLimitDatetime
+                }
+                departmentCode={offer.venue.departementCode}
+                contactEmail={
+                  offer.booking?.educationalRedactor?.email ??
+                  offer.teacher?.email
+                }
+              />
+            </>
+          ),
+        }
+
+        return [...pastSteps, waitingStep, ...futureSteps]
+      }
     }
 
-    if (
-      waitingWording[lastPastStepStatus] &&
-      lastPastStepStatus !== CollectiveOfferDisplayedStatus.ENDED
-    ) {
-      const waitingStep = {
-        type: TimelineStepType.WAITING,
-        content: <StatusWithDate status={waitingWording[lastPastStepStatus]} />,
-      }
-      return [...pastSteps, waitingStep, ...futureSteps]
-    }
     return [...pastSteps, ...futureSteps]
   }
 
