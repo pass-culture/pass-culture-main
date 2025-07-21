@@ -69,6 +69,7 @@ export const IndividualOffers = (): JSX.Element => {
   }
 
   const offererAddressQuery = useOffererAddresses()
+  // TODO (igabriele, 2025-07-21): offererAddresses should be unique (which is not guaranteed in current code).
   const offererAddresses = formatAndOrderAddresses(offererAddressQuery.data)
 
   const apiFilters = computeIndividualApiFilters(
