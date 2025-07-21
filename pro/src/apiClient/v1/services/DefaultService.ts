@@ -38,6 +38,7 @@ import type { EventStocksBulkCreateBodyModel } from '../models/EventStocksBulkCr
 import type { EventStocksBulkUpdateBodyModel } from '../models/EventStocksBulkUpdateBodyModel';
 import type { FinanceBankAccountListResponseModel } from '../models/FinanceBankAccountListResponseModel';
 import type { GetActiveEANOfferResponseModel } from '../models/GetActiveEANOfferResponseModel';
+import type { GetBookingResponse } from '../models/GetBookingResponse';
 import type { GetCollectiveOfferRequestResponseModel } from '../models/GetCollectiveOfferRequestResponseModel';
 import type { GetCollectiveOfferResponseModel } from '../models/GetCollectiveOfferResponseModel';
 import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetCollectiveOfferTemplateResponseModel';
@@ -242,6 +243,30 @@ export class DefaultService {
     });
   }
   /**
+   * patch_booking_keep_by_token <PATCH>
+   * @param token
+   * @returns void
+   * @throws ApiError
+   */
+  public patchBookingKeepByToken(
+    token: string,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/bookings/keep/token/{token}',
+      path: {
+        'token': token,
+      },
+      errors: {
+        401: `Authentification nécessaire`,
+        403: `Vous n'avez pas les droits nécessaires pour voir cette contremarque`,
+        404: `La contremarque n'existe pas`,
+        410: `La requête est refusée car la contremarque n'a pas encore été validée, a été annulée, ou son remboursement a été initié`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * export_bookings_for_offer_as_csv <GET>
    * @param offerId
    * @param status
@@ -358,6 +383,56 @@ export class DefaultService {
       url: '/bookings/pro/userHasBookings',
       errors: {
         403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_booking_by_token <GET>
+   * @param token
+   * @returns GetBookingResponse La contremarque existe et n’est pas validée
+   * @throws ApiError
+   */
+  public getBookingByToken(
+    token: string,
+  ): CancelablePromise<GetBookingResponse> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/bookings/token/{token}',
+      path: {
+        'token': token,
+      },
+      errors: {
+        401: `Authentification nécessaire`,
+        403: `Vous n'avez pas les droits nécessaires pour voir cette contremarque`,
+        404: `La contremarque n'existe pas`,
+        410: `Cette contremarque a été validée.
+        En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * patch_booking_use_by_token <PATCH>
+   * @param token
+   * @returns void
+   * @throws ApiError
+   */
+  public patchBookingUseByToken(
+    token: string,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/bookings/use/token/{token}',
+      path: {
+        'token': token,
+      },
+      errors: {
+        401: `Authentification nécessaire`,
+        403: `Vous n'avez pas les droits nécessaires pour voir cette contremarque`,
+        404: `La contremarque n'existe pas`,
+        410: `Cette contremarque a été validée.
+        En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.`,
         422: `Unprocessable Entity`,
       },
     });

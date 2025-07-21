@@ -1,6 +1,6 @@
 import cx from 'classnames'
 
-import { GetBookingResponse } from 'apiClient/v2'
+import { GetBookingResponse } from 'apiClient/v1'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import strokeDuoIcon from 'icons/stroke-duo.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

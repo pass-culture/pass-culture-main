@@ -22,6 +22,8 @@ export { BankAccountApplicationStatus } from './models/BankAccountApplicationSta
 export type { BankAccountResponseModel } from './models/BankAccountResponseModel';
 export type { BannerMetaModel } from './models/BannerMetaModel';
 export { BookingExportType } from './models/BookingExportType';
+export { BookingFormula } from './models/BookingFormula';
+export { BookingOfferType } from './models/BookingOfferType';
 export type { BookingRecapResponseBeneficiaryModel } from './models/BookingRecapResponseBeneficiaryModel';
 export type { BookingRecapResponseBookingStatusHistoryModel } from './models/BookingRecapResponseBookingStatusHistoryModel';
 export type { BookingRecapResponseModel } from './models/BookingRecapResponseModel';
@@ -104,6 +106,7 @@ export type { FinanceBankAccountListResponseModel } from './models/FinanceBankAc
 export type { FinanceBankAccountResponseModel } from './models/FinanceBankAccountResponseModel';
 export { GenderEnum } from './models/GenderEnum';
 export type { GetActiveEANOfferResponseModel } from './models/GetActiveEANOfferResponseModel';
+export type { GetBookingResponse } from './models/GetBookingResponse';
 export type { GetCollectiveOfferBookingResponseModel } from './models/GetCollectiveOfferBookingResponseModel';
 export type { GetCollectiveOfferCollectiveStockResponseModel } from './models/GetCollectiveOfferCollectiveStockResponseModel';
 export type { GetCollectiveOfferLocationModel } from './models/GetCollectiveOfferLocationModel';

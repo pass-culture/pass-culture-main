@@ -6,7 +6,11 @@ from flask_login import current_user
 from flask_login import login_required
 
 import pcapi.core.bookings.repository as booking_repository
+from pcapi.core.bookings import api as bookings_api
+from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.bookings import repository as bookings_repository
+from pcapi.core.bookings import validation as bookings_validation
 from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -14,6 +18,7 @@ from pcapi.core.users import repository as users_repository
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.repository.session_management import atomic
+from pcapi.routes.serialization import bookings as serialization_bookings
 from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportStatusFilter
 from pcapi.routes.serialization.bookings_recap_serialize import EventDateScheduleAndPriceCategoriesCountModel
@@ -23,6 +28,8 @@ from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsResp
 from pcapi.routes.serialization.bookings_recap_serialize import UserHasBookingResponse
 from pcapi.routes.serialization.bookings_recap_serialize import serialize_bookings
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.serialization.spec_tree import ExtendResponse
+from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings_v2
 
 from . import blueprint
 
@@ -253,3 +260,99 @@ def _create_booking_export_file(query: ListBookingsQueryModel, export_type: Book
     if export_type == BookingExportType.CSV:
         return cast(str, export_data).encode("utf-8-sig")
     return cast(bytes, export_data)
+
+
+def _get_booking_by_token_or_404(token: str) -> bookings_models.Booking:
+    booking = bookings_repository.get_booking_by_token(token, load_options=["offerer", "venue", "offer", "address"])
+    if not booking:
+        raise api_errors.ResourceNotFoundError({"global": ["Cette contremarque n'a pas été trouvée"]})
+
+    return booking
+
+
+_BASE_CODE_DESCRIPTIONS = {
+    "HTTP_401": (None, "Authentification nécessaire"),
+    "HTTP_403": (None, "Vous n'avez pas les droits nécessaires pour voir cette contremarque"),
+    "HTTP_404": (None, "La contremarque n'existe pas"),
+    "HTTP_410": (
+        None,
+        "Cette contremarque a été validée.\n En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.",
+    ),
+}
+
+
+@blueprint.pro_private_api.route("/bookings/token/<token>", methods=["GET"])
+@atomic()
+@login_required
+@spectree_serialize(
+    api=blueprint.pro_private_schema,
+    response_model=serialization_bookings.GetBookingResponse,
+    resp=ExtendResponse(
+        **(
+            _BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_200": (serialization_bookings.GetBookingResponse, "La contremarque existe et n’est pas validée"),
+            }
+        )
+    ),
+)
+def get_booking_by_token(token: str) -> serialization_bookings.GetBookingResponse:
+    booking = _get_booking_by_token_or_404(token)
+    check_user_can_validate_bookings_v2(current_user, booking.offererId)
+    bookings_validation.check_is_usable(booking)
+    return serialization_bookings.get_booking_response(booking)
+
+
+@blueprint.pro_private_api.route("/bookings/use/token/<token>", methods=["PATCH"])
+@atomic()
+@login_required
+@spectree_serialize(
+    api=blueprint.pro_private_schema,
+    on_success_status=204,
+    resp=ExtendResponse(
+        **(
+            _BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_204": (None, "La contremarque a bien été validée"),
+            }
+        )
+    ),
+)
+def patch_booking_use_by_token(token: str) -> None:
+    booking = _get_booking_by_token_or_404(token)
+    check_user_can_validate_bookings_v2(current_user, booking.offererId)
+    bookings_api.mark_as_used(booking, bookings_models.BookingValidationAuthorType.OFFERER)
+
+
+@blueprint.pro_private_api.route("/bookings/keep/token/<token>", methods=["PATCH"])
+@atomic()
+@login_required
+@spectree_serialize(
+    api=blueprint.pro_private_schema,
+    on_success_status=204,
+    resp=ExtendResponse(
+        **(
+            _BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_204": (None, "L'annulation de la validation de la contremarque a bien été effectuée"),
+                "HTTP_410": (
+                    None,
+                    "La requête est refusée car la contremarque n'a pas encore été validée, a été annulée, ou son remboursement a été initié",
+                ),
+            }
+        )
+    ),
+)
+def patch_booking_keep_by_token(token: str) -> None:
+    booking = _get_booking_by_token_or_404(token)
+    check_user_can_validate_bookings_v2(current_user, booking.offererId)
+    try:
+        bookings_api.mark_as_unused(booking)
+    except bookings_exceptions.BookingIsAlreadyCancelled:
+        raise api_errors.ResourceGoneError({"booking": ["Cette réservation a été annulée"]})
+    except bookings_exceptions.BookingIsNotUsed:
+        raise api_errors.ResourceGoneError({"booking": ["Cette réservation n'a pas encore été validée"]})
+    except bookings_exceptions.BookingHasActivationCode:
+        raise api_errors.ForbiddenError({"booking": ["Cette réservation ne peut pas être marquée comme inutilisée"]})
+    except bookings_exceptions.BookingIsAlreadyRefunded:
+        raise api_errors.ResourceGoneError({"payment": ["Le remboursement est en cours de traitement"]})

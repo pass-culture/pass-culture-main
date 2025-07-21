@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { api, apiContremarque } from 'apiClient/api'
+import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
@@ -77,13 +77,13 @@ describe('Desk', () => {
     })
 
     it('should check that token is valid and display booking details', async () => {
-      vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockResolvedValue(
+      vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
         defaultGetBookingResponse
       )
       renderDesk()
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AAAAAA')
-      expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith('AAAAAA')
+      expect(api.getBookingByToken).toHaveBeenCalledWith('AAAAAA')
       expect(
         await screen.findByText(
           'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
@@ -95,7 +95,7 @@ describe('Desk', () => {
     })
 
     it('should display error message when validation fails', async () => {
-      vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
+      vi.spyOn(api, 'getBookingByToken').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           {
@@ -116,15 +116,12 @@ describe('Desk', () => {
 
   describe('should validate contremarque when the user submits the form', () => {
     beforeEach(() => {
-      vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockResolvedValueOnce(
+      vi.spyOn(api, 'getBookingByToken').mockResolvedValueOnce(
         defaultGetBookingResponse
       )
     })
     it('should display confirmation message and empty field when contremarque is validated', async () => {
-      vi.spyOn(
-        apiContremarque,
-        'patchBookingUseByToken'
-      ).mockResolvedValueOnce()
+      vi.spyOn(api, 'patchBookingUseByToken').mockResolvedValueOnce()
       renderDesk()
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AAAAAA')
@@ -136,7 +133,7 @@ describe('Desk', () => {
     })
 
     it('should display error message and empty field when contremarque could not be validated', async () => {
-      vi.spyOn(apiContremarque, 'patchBookingUseByToken').mockRejectedValue(
+      vi.spyOn(api, 'patchBookingUseByToken').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           {
@@ -159,7 +156,7 @@ describe('Desk', () => {
 
   describe('should invalidate contremarque when the user submits the form', () => {
     beforeEach(() => {
-      vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
+      vi.spyOn(api, 'getBookingByToken').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           {
@@ -172,10 +169,7 @@ describe('Desk', () => {
     })
 
     it('should display invalidating message when waiting for invalidation and display invalidation confirmation', async () => {
-      vi.spyOn(
-        apiContremarque,
-        'patchBookingKeepByToken'
-      ).mockResolvedValueOnce()
+      vi.spyOn(api, 'patchBookingKeepByToken').mockResolvedValueOnce()
       renderDesk()
 
       await userEvent.type(screen.getByLabelText('Contremarque'), 'AAAAAA')
@@ -194,7 +188,7 @@ describe('Desk', () => {
     })
 
     it('should display error message when invalidation failed', async () => {
-      vi.spyOn(apiContremarque, 'patchBookingKeepByToken').mockRejectedValue(
+      vi.spyOn(api, 'patchBookingKeepByToken').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           {

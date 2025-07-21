@@ -1,5 +1,5 @@
+import { ApiError } from 'apiClient/v1'
 import { HTTP_STATUS } from 'apiClient/helpers'
-import { ApiError } from 'apiClient/v2'
 
 type DeskGetFailure = {
   isTokenValidated: boolean
@@ -45,6 +45,7 @@ export const getBookingFailure = (
       }
     }
   }
+
   return {
     isTokenValidated: false,
     message: errorMessage,
