@@ -52,7 +52,7 @@
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "dompurify": "^3.2.6",
-    "downshift": "^9.0.9",
+    "downshift": "^9.0.10",
     "eslint-plugin-cypress": "^4.3.0",
     "libphonenumber-js": "^1.12.9",
     "react": "^18.3.1",
