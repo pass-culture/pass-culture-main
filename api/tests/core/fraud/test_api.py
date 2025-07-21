@@ -352,6 +352,12 @@ class FindDuplicateUserTest:
         assert link.format(id=user1.id, url=pcapi_settings.BACKOFFICE_URL) in sent_mail3["html_content"]
         assert link.format(id=user3.id, url=pcapi_settings.BACKOFFICE_URL) in sent_mail3["html_content"]
 
+        comment_template = "Compte automatiquement suspendu pour suspicion de doublon avec le user %s"
+        assert user2.action_history[-1].extraData == {"reason": "fraud suspicion"}
+        assert user2.action_history[-1].comment in {comment_template % i for i in (user1.id, user3.id)}
+        assert user3.action_history[-1].extraData == {"reason": "fraud suspicion"}
+        assert user3.action_history[-1].comment in {comment_template % i for i in (user1.id, user2.id)}
+
 
 @pytest.mark.usefixtures("db_session")
 class EduconnectFraudTest:
