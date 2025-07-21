@@ -15,6 +15,16 @@
   border-spacing: 0 rem.torem(24px);
 }
 
+.table-separate {
+  border-collapse: separate;
+  border-spacing: 0 rem.torem(24px);
+}
+
+.table-collapse {
+  border-collapse: collapse;
+  border-spacing: 0 rem.torem(24px);
+}
+
 .table-header {
   @include fonts.body-accent-xs;
 
