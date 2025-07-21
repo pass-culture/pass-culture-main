@@ -302,7 +302,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
     expect(icon).toHaveClass('icon-disabled')
   })
 
-  it('should render a infobox if current step is draft', () => {
+  it('should render a infobox when current step is draft', () => {
     renderWithProviders(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
@@ -324,5 +324,58 @@ describe('BookableOfferTimeline - step type rendering', () => {
       )
     ).toBeInTheDocument()
     expect(screen.getByText('Reprendre mon brouillon')).toBeInTheDocument()
+  })
+
+  it('should render a infobox when current step is published', () => {
+    renderWithProviders(
+      <BookableOfferTimeline
+        offer={getCollectiveOfferFactory({
+          history: {
+            past: [
+              {
+                status: CollectiveOfferDisplayedStatus.PUBLISHED,
+              },
+            ],
+            future: [CollectiveOfferDisplayedStatus.PREBOOKED],
+          },
+        })}
+      />
+    )
+
+    expect(
+      screen.getByText(
+        /L'enseignant doit impérativement préréserver l'offre avant le/
+      )
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Modifier la date limite de réservation')
+    ).toBeInTheDocument()
+  })
+
+  it('should render a infobox when current step is prebooked', () => {
+    renderWithProviders(
+      <BookableOfferTimeline
+        offer={getCollectiveOfferFactory({
+          history: {
+            past: [
+              {
+                status: CollectiveOfferDisplayedStatus.PREBOOKED,
+              },
+            ],
+            future: [CollectiveOfferDisplayedStatus.BOOKED],
+          },
+        })}
+      />
+    )
+
+    expect(screen.getByText('expire dans 1 jour')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        /Le chef d'établissement doit impérativement confirmer la préréservation de l'offre avant le/
+      )
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Modifier la date limite de réservation')
+    ).toBeInTheDocument()
   })
 })
