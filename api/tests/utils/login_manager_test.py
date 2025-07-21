@@ -66,7 +66,6 @@ class ManageProSessionTest:
             auth_blueprint.name,
             native_blueprint.name,
             public_blueprint.public_api.name,
-            public_blueprint.deprecated_v2_prefixed_public_api.name,
             saml_blueprint_blueprint.name,
         ],
     )

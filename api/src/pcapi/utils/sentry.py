@@ -13,7 +13,6 @@ from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 import pcapi.routes.apis as routes_apis
 import pcapi.routes.backoffice.blueprint as backoffice_blueprint
 import pcapi.routes.pro.blueprint as pro_blueprint
-import pcapi.routes.public.blueprints as public_api_blueprints
 import pcapi.tasks.decorator as tasks_decorator
 from pcapi import settings
 from pcapi.routes import UrlPrefix
@@ -83,9 +82,6 @@ def custom_traces_sampler(sampling_context: dict) -> float:
         # All paths starting with "/public" are for public_api blueprint routes,
         # but not all of this blueprint routes start with "/public"
         case _ if path.startswith("/public"):
-            score = LOWEST_SAMPLE_RATE
-        # public V2 : "/v2"
-        case _ if path.startswith(public_api_blueprints.DEPRECATED_PUBLIC_API_URL_PREFIX):
             score = LOWEST_SAMPLE_RATE
 
         # native routes

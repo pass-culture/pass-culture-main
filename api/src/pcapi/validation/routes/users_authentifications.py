@@ -7,7 +7,6 @@ import sentry_sdk
 from flask import _request_ctx_stack
 from flask import g
 from flask import request
-from flask_login import current_user
 from werkzeug.local import LocalProxy
 
 from pcapi import settings
@@ -24,30 +23,6 @@ logger = logging.getLogger(__name__)
 
 API_KEY_AUTH_NAME = "ApiKeyAuth"
 COOKIE_AUTH_NAME = "SessionAuth"
-
-
-def login_or_api_key_required(function: typing.Callable) -> typing.Callable:
-    add_security_scheme(function, API_KEY_AUTH_NAME)
-    add_security_scheme(function, COOKIE_AUTH_NAME)
-
-    @wraps(function)
-    def wrapper(*args: typing.Any, **kwds: typing.Any) -> flask.Response:
-        _fill_current_api_key()
-        basic_authentication()
-
-        if not g.current_api_key and not current_user.is_authenticated:
-            raise api_errors.UnauthorizedError(errors={"auth": "API key or login required"})
-        if g.current_api_key:
-            # The api using this decorator will be deprecated
-            # log calls with an api_key, they are the only one not coming from our PRO front
-            logger.info(
-                "Call to CM v2 api",
-                extra={"offerer_id": g.current_api_key.offerer.id, "offerer_name": g.current_api_key.offerer.name},
-            )
-            _check_active_offerer(g.current_api_key)
-        return function(*args, **kwds)
-
-    return wrapper
 
 
 def brevo_webhook(route_function: typing.Callable) -> typing.Callable:

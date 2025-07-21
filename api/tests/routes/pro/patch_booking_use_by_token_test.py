@@ -17,7 +17,7 @@ class Returns204Test:
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
-        response = client.with_session_auth("pro@example.com").patch(f"/v2/bookings/use/token/{booking.token}")
+        response = client.with_session_auth("pro@example.com").patch(f"/bookings/use/token/{booking.token}")
 
         assert response.status_code == 204
         booking = db.session.query(Booking).one()
@@ -28,7 +28,7 @@ class Returns204Test:
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
-        response = client.with_session_auth("pro@example.com").patch(f"/v2/bookings/use/token/{booking.token}")
+        response = client.with_session_auth("pro@example.com").patch(f"/bookings/use/token/{booking.token}")
 
         assert response.status_code == 204
         booking = db.session.query(Booking).one()
@@ -37,7 +37,7 @@ class Returns204Test:
 
 class Returns401Test:
     def test_when_user_not_logged_in(self, client):
-        response = client.patch("/v2/bookings/use/token/TOKEN")
+        response = client.patch("/bookings/use/token/TOKEN")
         assert response.status_code == 401
 
 
@@ -46,7 +46,7 @@ class Returns403Test:
         booking = bookings_factories.BookingFactory()
         another_pro_user = offerers_factories.UserOffererFactory().user
 
-        response = client.with_session_auth(another_pro_user.email).patch(f"/v2/bookings/use/token/{booking.token}")
+        response = client.with_session_auth(another_pro_user.email).patch(f"/bookings/use/token/{booking.token}")
 
         assert response.status_code == 403
         assert response.json["user"] == [
@@ -60,7 +60,7 @@ class Returns403Test:
         booking = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer)
         pro_user = offerers_factories.UserOffererFactory(offerer=offerer).user
 
-        response = client.with_session_auth(pro_user.email).patch(f"/v2/bookings/use/token/{booking.token}")
+        response = client.with_session_auth(pro_user.email).patch(f"/bookings/use/token/{booking.token}")
 
         assert response.status_code == 403
         assert response.json["booking"] == ["Vous ne pouvez plus valider de contremarque sur une structure fermée"]
@@ -70,12 +70,12 @@ class Returns403Test:
 
 class Returns404Test:
     def test_missing_token(self, client):
-        response = client.patch("/v2/bookings/use/token/")
+        response = client.patch("/bookings/use/token/")
         assert response.status_code == 404
 
     def test_unknown_token(self, client):
         pro_user = users_factories.ProFactory()
-        response = client.with_basic_auth(pro_user.email).patch("/v2/bookings/use/token/UNKNOWN")
+        response = client.with_session_auth(pro_user.email).patch("/bookings/use/token/UNKNOWN")
         assert response.status_code == 404
         assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
 
@@ -86,7 +86,7 @@ class Returns410Test:
         user = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=booking.offerer)
 
-        response = client.with_session_auth(user.email).patch(f"/v2/bookings/use/token/{booking.token}")
+        response = client.with_session_auth(user.email).patch(f"/bookings/use/token/{booking.token}")
 
         assert response.status_code == 410
         assert response.json["booking_cancelled"] == ["Cette réservation a été annulée"]
