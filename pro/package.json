@@ -93,7 +93,7 @@
     "@vitejs/plugin-react": "^4.7.0",
     "@vitest/coverage-istanbul": "^3.1.4",
     "@vitest/runner": "^3.2.4",
-    "allure-js-commons": "^3.3.1",
+    "allure-js-commons": "^3.3.2",
     "allure-vitest": "^3.3.0",
     "axe-core": "^4.10.3",
     "cypress": "14.5.2",

@@ -2776,10 +2776,10 @@ allure-js-commons@3.3.0:
   dependencies:
     md5 "^2.3.0"
 
-allure-js-commons@^3.3.1:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/allure-js-commons/-/allure-js-commons-3.3.1.tgz#092b9712f59f016639de86e27fbe9a2d9e0c368d"
-  integrity sha512-7czRvcYQ3YNDsctvlqkUfh+0BbdlThUzzErojqngXRhd8wbOhiS5YfFrOPB2ab/PcJhjPjGmalcCmWFQS+zw5g==
+allure-js-commons@^3.3.2:
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/allure-js-commons/-/allure-js-commons-3.3.2.tgz#88569de87315fca46531726011b18ecf75db491f"
+  integrity sha512-bBQW/G0Fas6Q+Ubixtk0OWP2Bywr1U5Mbei7paOezCPJpCZ47/xZvmUeuwBH0ekufi3ePCUHzDjXuwUK4iXZlg==
   dependencies:
     md5 "^2.3.0"
 
