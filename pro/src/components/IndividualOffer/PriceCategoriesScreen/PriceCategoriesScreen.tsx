@@ -235,12 +235,6 @@ export const PriceCategoriesScreen = ({
     const priceCategoryId = priceCategories[index].id
     const hasOnlyTwo = priceCategories.length === 2
 
-    if (hasOnlyTwo) {
-      setValue(`priceCategories.0.label`, UNIQUE_PRICE, {
-        shouldValidate: true,
-      })
-    }
-
     if (priceCategoryId) {
       if (currentDeletionIndex === null && offer.hasStocks) {
         setCurrentDeletionIndex(index)
@@ -253,25 +247,6 @@ export const PriceCategoriesScreen = ({
         await api.deletePriceCategory(offer.id, priceCategoryId)
         remove(index)
         notify.success('Le tarif a été supprimé.')
-
-        if (hasOnlyTwo) {
-          const remaining = priceCategories.filter(
-            (pC) => pC.id !== priceCategoryId
-          )
-
-          if (remaining[0]?.id) {
-            const requestBody = {
-              priceCategories: [
-                {
-                  label: UNIQUE_PRICE,
-                  id: remaining[0]?.id,
-                },
-              ],
-            }
-
-            await api.postPriceCategories(offer.id, requestBody)
-          }
-        }
       } catch {
         notify.error(
           'Une erreur est survenue lors de la suppression de votre tarif'
@@ -279,6 +254,35 @@ export const PriceCategoriesScreen = ({
       }
     } else {
       remove(index)
+    }
+
+    if (hasOnlyTwo) {
+      setValue(`priceCategories.0.label`, UNIQUE_PRICE, {
+        shouldValidate: true,
+      })
+
+      const remaining = priceCategories.filter(
+        (pC) => pC.id !== priceCategoryId
+      )
+
+      if (remaining[0]?.id) {
+        const requestBody = {
+          priceCategories: [
+            {
+              label: UNIQUE_PRICE,
+              id: remaining[0]?.id,
+            },
+          ],
+        }
+
+        try {
+          await api.postPriceCategories(offer.id, requestBody)
+        } catch {
+          notify.error(
+            'Une erreur est survenue lors de la suppression de votre tarif'
+          )
+        }
+      }
     }
   }
 

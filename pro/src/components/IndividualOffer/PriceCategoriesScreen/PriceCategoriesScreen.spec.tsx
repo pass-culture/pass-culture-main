@@ -126,16 +126,16 @@ describe('PriceCategoriesScreen', () => {
     await renderPriceCategoriesScreen(apiOffer)
 
     await userEvent.click(screen.getByText(/ajouter un tarif/i))
-    expect(screen.getByTestId('priceCategories.1.label')).toBeInTheDocument()
+    expect(screen.getByTestId('priceCategories.0.label')).toBeInTheDocument()
 
     const deleteButtons = screen.getAllByTestId('delete-button')
 
-    await userEvent.click(deleteButtons[1])
+    await userEvent.click(deleteButtons[0])
 
     await waitFor(() => {
       expect(
-        screen.queryByTestId('priceCategories.1.label')
-      ).not.toBeInTheDocument()
+        screen.queryByTestId('priceCategories.0.label')
+      ).toBeInTheDocument()
     })
   })
 
