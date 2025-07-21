@@ -5,14 +5,6 @@ title: Pass Culture API change logs
 # Change logs
 
 :::warning
-💡 Important notice some old resources are going to be removed in the coming months.
-
-- If you were using `/v2/bookings` to manage bookings, you will have to migrate to those endpoints [/public/bookings/v1/bookings](/rest-api#tag/Bookings).  The endpoint `/v2/bookings` will not be available anymore starting from June, the 30th 2025.
-
-**You can find a migration tutorial [here](/docs/tutorials/migrate-to-the-new-api).**
-:::
-
-:::warning
 💡 Important notice concerning the **collective offers**.
 
 - Offers location
