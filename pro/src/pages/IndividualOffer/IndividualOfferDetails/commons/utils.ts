@@ -86,21 +86,17 @@ export const completeSubcategoryConditionalFields = (
     ...(subcategory?.isEvent ? ['durationMinutes'] : []),
   ] as (keyof DetailsFormValues)[]
 
-/**
- * **Rules**
- * 1. Virtual venues are shown **only when no physical venue exists**.
- * 2. When this is a **physical** offer (`isOfferVirtual === false`), virtual venues are never shown.
- */
 export function filterAvailableVenues(
-  venues: readonly VenueListItemResponseModel[],
+  venues: VenueListItemResponseModel[],
   isOfferVirtual: boolean
 ): VenueListItemResponseModel[] {
-  const hasAtLeastOnePhysicalVenue = venues.some((v) => !v.isVirtual)
-  // Virtual venues are allowed only if *all* venues are virtual *and* the offer is virtual.
-  const shouldIncludeVirtualVenues =
-    !hasAtLeastOnePhysicalVenue && isOfferVirtual
+  const physicalVenues = venues.filter((v) => !v.isVirtual)
 
-  return venues.filter((v) => shouldIncludeVirtualVenues || !v.isVirtual)
+  if (isOfferVirtual && physicalVenues.length === 0) {
+    return venues
+  }
+
+  return physicalVenues
 }
 
 export function getVenuesAsOptions(
@@ -219,7 +215,7 @@ export function getFormReadOnlyFields(
   const hasPendingOrRejectedStatus =
     offer && [OfferStatus.REJECTED, OfferStatus.PENDING].includes(offer.status)
 
-  // An EAS search was performed, so the form is product based.
+  // An EAN search was performed, so the form is product based.
   // Multiple fields are read-only.
   if (isNewOfferDraft && isProductBased) {
     return allFieldsExceptAccessibility.filter((field) => field !== 'venueId')
