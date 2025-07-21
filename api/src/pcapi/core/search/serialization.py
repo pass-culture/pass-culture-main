@@ -9,6 +9,7 @@ import urllib.parse
 import sqlalchemy as sa
 
 from pcapi import settings
+from pcapi.core.artist import api as artist_api
 from pcapi.core.artist import models as artists_models
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories.app_search_tree import NATIVE_CATEGORIES
@@ -145,7 +146,11 @@ class AlgoliaSerializationMixin:
 
         artists = (
             [
-                {"id": artist.id, "image": artist.image or offer.thumbUrl, "name": artist.name}
+                {
+                    "id": artist.id,
+                    "image": artist_api.get_artist_image_url(artist),
+                    "name": artist.name,
+                }
                 for artist in offer.product.artists
             ]
             if offer.product and offer.product.artists

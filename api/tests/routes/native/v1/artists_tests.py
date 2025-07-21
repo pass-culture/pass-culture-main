@@ -21,7 +21,8 @@ class GetArtistsTest:
         artist = artist_factories.ArtistFactory(description=None, image=None)
 
         artist_id = artist.id
-        nb_queries = 1
+        nb_queries = 1  # artist
+        nb_queries += 1  # product mediation
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v1/artists/{artist_id}")
 
