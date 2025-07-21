@@ -7,27 +7,48 @@ export function getAccessibilityInfoFromVenue(
   accessibility: AccessibilityFormValues
   isExternal: boolean
 } {
-  const baseAccessibility = venue?.externalAccessibilityData
-    ? {
-        audio: !!venue.externalAccessibilityData.isAccessibleAudioDisability,
-        mental: !!venue.externalAccessibilityData.isAccessibleMentalDisability,
-        motor: !!venue.externalAccessibilityData.isAccessibleMotorDisability,
-        visual: !!venue.externalAccessibilityData.isAccessibleVisualDisability,
-      }
-    : {
-        audio: !!venue?.audioDisabilityCompliant,
-        mental: !!venue?.mentalDisabilityCompliant,
-        motor: !!venue?.motorDisabilityCompliant,
-        visual: !!venue?.visualDisabilityCompliant,
-      }
-  const hasSomeAccessibility = Object.values(baseAccessibility).some((v) => v)
-  const isExternal = !!venue?.externalAccessibilityData
+  if (!venue) {
+    return {
+      accessibility: {
+        audio: false,
+        mental: false,
+        motor: false,
+        visual: false,
+        none: true,
+      },
+      isExternal: false,
+    }
+  }
+
+  if (!venue.externalAccessibilityData) {
+    return {
+      accessibility: {
+        audio: !!venue.audioDisabilityCompliant,
+        mental: !!venue.mentalDisabilityCompliant,
+        motor: !!venue.motorDisabilityCompliant,
+        visual: !!venue.visualDisabilityCompliant,
+        none: false,
+      },
+      isExternal: false,
+    }
+  }
 
   return {
     accessibility: {
-      ...baseAccessibility,
-      none: !hasSomeAccessibility,
+      audio:
+        venue.externalAccessibilityData.isAccessibleAudioDisability ??
+        !!venue.audioDisabilityCompliant,
+      mental:
+        venue.externalAccessibilityData.isAccessibleMentalDisability ??
+        !!venue.mentalDisabilityCompliant,
+      motor:
+        venue.externalAccessibilityData.isAccessibleMotorDisability ??
+        !!venue.motorDisabilityCompliant,
+      visual:
+        venue.externalAccessibilityData.isAccessibleVisualDisability ??
+        !!venue.visualDisabilityCompliant,
+      none: false,
     },
-    isExternal,
+    isExternal: true,
   }
 }
