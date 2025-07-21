@@ -1,9 +1,9 @@
 import React, { useEffect, useId, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { apiContremarque } from 'apiClient/api'
+import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
-import { GetBookingResponse } from 'apiClient/v2'
+import { GetBookingResponse } from 'apiClient/v1'
 import { Layout } from 'app/App/layout/Layout'
 import { HeadlineOfferContextProvider } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { Button } from 'ui-kit/Button/Button'
@@ -58,7 +58,7 @@ export const Desk = (): JSX.Element => {
     setMessage({ message: 'Validation en cours...' })
 
     try {
-      await apiContremarque.patchBookingUseByToken(formValues.token)
+      await api.patchBookingUseByToken(formValues.token)
 
       setMessage({ message: 'Contremarque validée !' })
       resetField('token')
@@ -95,7 +95,7 @@ export const Desk = (): JSX.Element => {
       setMessage({ message: 'Saisissez une contremarque' })
 
       try {
-        const response = await apiContremarque.getBookingByTokenV2(token)
+        const response = await api.getBookingByToken(token)
         setBooking(response)
         setMessage({
           message: 'Coupon vérifié, cliquez sur "Valider" pour enregistrer',
@@ -118,7 +118,7 @@ export const Desk = (): JSX.Element => {
     setMessage({ message: 'Invalidation en cours...' })
 
     try {
-      await apiContremarque.patchBookingKeepByToken(token)
+      await api.patchBookingKeepByToken(token)
       setMessage({ message: 'Contremarque invalidée !' })
       setIsTokenValidated(false)
       resetField('token')

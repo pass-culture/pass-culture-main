@@ -1,6 +1,10 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
 
 import {
+  BookingFormula,
+  BookingOfferType,
+  GetBookingResponse,
+
   BankAccountApplicationStatus,
   BankAccountResponseModel,
   BookingRecapResponseModel,
@@ -23,13 +27,7 @@ import {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
   VenueProviderResponse,
-  VenueTypeCode,
-} from 'apiClient/v1'
-import {
-  BookingFormula,
-  BookingOfferType,
-  GetBookingResponse,
-} from 'apiClient/v2'
+  VenueTypeCode} from 'apiClient/v1'
 import { IndividualOfferContextValues } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'commons/core/Finances/constants'
 import { CATEGORY_STATUS } from 'commons/core/Offers/constants'

@@ -1,6 +1,6 @@
 import createFetchMock from 'vitest-fetch-mock'
 
-import { api, apiContremarque } from 'apiClient/api'
+import { api } from 'apiClient/api'
 import { URL_FOR_MAINTENANCE } from 'commons/utils/config'
 
 const fetchMock = createFetchMock(vi)
@@ -36,7 +36,7 @@ describe('Maintenance', () => {
       enumerable: true,
       writable: true,
     })
-    await apiContremarque.getBookingByTokenV2('')
+    await api.getBookingByToken('')
 
     expect(mockLocationAssign).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
   })

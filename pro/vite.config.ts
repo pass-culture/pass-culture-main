@@ -55,7 +55,6 @@ export default defineConfig(({ mode }) => {
           'apiClient/adage/*',
           'apiClient/adresse/*',
           'apiClient/v1/*',
-          'apiClient/v2/*',
           ...coverageConfigDefaults.exclude,
         ],
       },
