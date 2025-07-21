@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/CollectiveStatusLabel'
 
-import { Column, Table } from './Table'
+import { Column, Table, TableVariant } from './Table'
 
 // Define sample data type
 type Row = {
@@ -101,6 +101,26 @@ export const Default: StoryObj<typeof Table<Row>> = {
     title: 'Tableau simple',
     columns: baseColumns,
     data: sampleData,
+  },
+}
+
+// 📘 table collapse
+export const Collapse: StoryObj<typeof Table<Row>> = {
+  args: {
+    title: 'Tableau simple',
+    columns: baseColumns,
+    data: sampleData,
+    variant: TableVariant.COLLAPSE,
+  },
+}
+
+// 📘 table separate
+export const Separate: StoryObj<typeof Table<Row>> = {
+  args: {
+    title: 'Tableau simple',
+    columns: baseColumns,
+    data: sampleData,
+    variant: TableVariant.SEPARATE,
   },
 }
 

@@ -8,6 +8,11 @@ import { Skeleton } from 'ui-kit/Skeleton/Skeleton'
 import { SortColumn } from './SortColumn/SortColumn'
 import styles from './Table.module.scss'
 
+export enum TableVariant {
+  COLLAPSE = 'collapse',
+  SEPARATE = 'separate',
+}
+
 export interface Column<T> {
   id: string
   label: string
@@ -34,6 +39,7 @@ export interface TableProps<T extends { id: string | number }> {
   isRowSelectable?: (row: T) => boolean
   isLoading: boolean
   isSticky?: boolean
+  variant: TableVariant
 }
 
 function getValue<T>(
@@ -70,6 +76,7 @@ export function Table<
   isRowSelectable,
   isLoading,
   isSticky,
+  variant,
 }: TableProps<T>) {
   const [sortKey, setSortKey] = useState<string | null>(null)
   const [sortDir, setSortDir] = useState<SortDirection>(SortingMode.NONE)
@@ -184,7 +191,13 @@ export function Table<
         </div>
       )}
 
-      <table role="table" className={styles.table}>
+      <table
+        role="table"
+        className={classNames(styles['table'], {
+          [styles['table-separate']]: variant === TableVariant.SEPARATE,
+          [styles['table-collapse']]: variant === TableVariant.COLLAPSE,
+        })}
+      >
         <caption className={styles['table-caption-no-display']}>
           {title}
         </caption>
