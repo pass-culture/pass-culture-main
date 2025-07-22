@@ -11,7 +11,7 @@ import { isAllocineProvider } from 'commons/core/Providers/utils/utils'
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
 import { StockThingFormValues } from '../types'
 
-export const setFormReadOnlyFields = (
+export const getFormReadOnlyFields = (
   offer: GetIndividualOfferResponseModel,
   stocks: GetOfferStockResponseModel[],
   currentStock: StockThingFormValues
