@@ -1348,7 +1348,9 @@ class OffererAddress(PcObject, Base, Model):
 
     @isLinkedToVenue.expression  # type: ignore[no-redef]
     def isLinkedToVenue(cls) -> sa.sql.elements.BooleanClauseList:
-        return sa.select(1).where(Venue.offererAddressId == cls.id).exists()
+        aliased_venue = sa_orm.aliased(Venue)
+
+        return sa.select(1).where(aliased_venue.offererAddressId == cls.id).exists()
 
 
 class OffererConfidenceLevel(enum.Enum):
