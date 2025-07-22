@@ -47,7 +47,7 @@ import styles from './StockThing.module.scss'
 import { submitToApi } from './submitToApi'
 import { StockThingFormValues } from './types'
 import { buildInitialValues } from './utils/buildInitialValues'
-import { setFormReadOnlyFields } from './utils/setFormReadOnlyFields'
+import { getFormReadOnlyFields } from './utils/getFormReadOnlyFields'
 import { getValidationSchema } from './validationSchema'
 
 export interface StocksThingProps {
@@ -330,7 +330,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
   const readOnlyFields = publishedOfferWithSameEAN
     ? Object.keys(STOCK_THING_FORM_DEFAULT_VALUES)
-    : setFormReadOnlyFields(offer, stocks, watch())
+    : getFormReadOnlyFields(offer, stocks, watch())
 
   const showExpirationDate = isDateValid(
     watch('activationCodesExpirationDatetime')

@@ -5,9 +5,9 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 
 import { StockThingFormValues } from '../../types'
-import { setFormReadOnlyFields } from '../setFormReadOnlyFields'
+import { getFormReadOnlyFields } from '../getFormReadOnlyFields'
 
-describe('StockThingForm::utils::setFormReadOnlyFields', () => {
+describe('StockThingForm::utils::getFormReadOnlyFields', () => {
   let offer: GetIndividualOfferResponseModel
   let currentStock: StockThingFormValues
   beforeEach(() => {
@@ -19,7 +19,7 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
     'should disabled field for disable statuts "%s"',
     (status: OfferStatus) => {
       offer.status = status
-      const readOnlyFields = setFormReadOnlyFields(
+      const readOnlyFields = getFormReadOnlyFields(
         offer,
         [getOfferStockFactory()],
         currentStock
@@ -42,7 +42,7 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
     offer.lastProvider = {
       name: 'any provider',
     }
-    const readOnlyFields = setFormReadOnlyFields(
+    const readOnlyFields = getFormReadOnlyFields(
       offer,
       [getOfferStockFactory()],
       currentStock
@@ -65,7 +65,7 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
     currentStock = {
       activationCodes: new Array<string>(),
     } as StockThingFormValues
-    const readOnlyFields = setFormReadOnlyFields(
+    const readOnlyFields = getFormReadOnlyFields(
       offer,
       [getOfferStockFactory()],
       currentStock
