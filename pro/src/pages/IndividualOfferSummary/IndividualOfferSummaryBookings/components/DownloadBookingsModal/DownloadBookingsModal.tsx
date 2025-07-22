@@ -56,7 +56,7 @@ export const DownloadBookingsModal = ({
       downloadFile(
         await api.exportBookingsForOfferAsCsv(
           offerId,
-          selectedBookingType!,
+          selectedBookingType,
           selectedDate!
         ),
         `reservations-${selectedBookingType}-${selectedDate}.csv`
@@ -65,7 +65,7 @@ export const DownloadBookingsModal = ({
       downloadFile(
         await api.exportBookingsForOfferAsExcel(
           offerId,
-          selectedBookingType!,
+          selectedBookingType,
           selectedDate!
         ),
         `reservations-${selectedBookingType}-${selectedDate}.xlsx`

@@ -20,6 +20,7 @@ import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
   CATEGORY_STATUS,
   OFFER_WIZARD_MODE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import {
@@ -38,7 +39,6 @@ import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import * as imageUploadModule from 'pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 
 import {
@@ -154,7 +154,7 @@ const renderDetailsScreen = ({
   mode = DEFAULTS.mode,
   options = {},
   path = getIndividualOfferPath({
-    step: OFFER_WIZARD_STEP_IDS.DETAILS,
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
     mode,
   }),
 }: {
@@ -189,14 +189,14 @@ const renderDetailsScreen = ({
     <Routes>
       <Route
         path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
           mode,
         })}
         element={element}
       />
       <Route
         path={`/onboarding${getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
           mode,
         })}`}
         element={element}
@@ -691,7 +691,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
           },
           contextValue: context,
           path: getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.DETAILS,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
         })
@@ -717,7 +717,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
           },
           contextValue: context,
           path: getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.DETAILS,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
         })
@@ -755,7 +755,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
             },
             contextValue: context,
             path: getIndividualOfferPath({
-              step: OFFER_WIZARD_STEP_IDS.DETAILS,
+              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
               mode: OFFER_WIZARD_MODE.CREATION,
             }),
           })
@@ -812,7 +812,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
             },
             contextValue: context,
             path: getIndividualOfferPath({
-              step: OFFER_WIZARD_STEP_IDS.DETAILS,
+              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
               mode: OFFER_WIZARD_MODE.CREATION,
             }),
           })
@@ -867,7 +867,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
             },
             contextValue: context,
             path: getIndividualOfferPath({
-              step: OFFER_WIZARD_STEP_IDS.DETAILS,
+              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
               mode: OFFER_WIZARD_MODE.CREATION,
             }),
           })
@@ -903,7 +903,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
             },
             contextValue: context,
             path: getIndividualOfferPath({
-              step: OFFER_WIZARD_STEP_IDS.DETAILS,
+              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
               mode: OFFER_WIZARD_MODE.CREATION,
             }),
           })
@@ -1273,7 +1273,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
         options: {},
         mode: OFFER_WIZARD_MODE.CREATION,
         path: `/onboarding${getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}`,
       })

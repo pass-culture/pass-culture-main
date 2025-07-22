@@ -23,7 +23,7 @@ type DetailsSummaryScreenProps = {
 
 export function IndividualOfferSummaryInformationsScreen({
   offer,
-}: DetailsSummaryScreenProps) {
+}: Readonly<DetailsSummaryScreenProps>) {
   const practicalInfoDescriptions: Description[] = []
 
   if (offer.withdrawalType) {

@@ -19,7 +19,7 @@ export type OfferPublicationEditionProps = {
 
 export function OfferPublicationEditionTags({
   offer,
-}: OfferPublicationEditionProps) {
+}: Readonly<OfferPublicationEditionProps>) {
   if (offer.status === OfferStatus.INACTIVE) {
     return <StatusLabel status={offer.status} />
   }
