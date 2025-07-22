@@ -23,7 +23,6 @@ logger = logging.getLogger(__name__)
 class AbstractEMSConnector:
     def __init__(self, enable_debug: bool = False):
         super().__init__()
-        self.enable_debug = enable_debug or settings.ENABLE_CINEMA_PROVIDER_DEBUG
 
     def build_url(self) -> str:
         raise NotImplementedError
@@ -72,16 +71,15 @@ class EMSScheduleConnector(AbstractEMSConnector):
             timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
         )
 
-        if self.enable_debug:
-            logger.debug(
-                "[CINEMA] Call to external API",
-                extra={
-                    "api_client": "EMSScheduleConnector",
-                    "method": "get_schedules",
-                    "method_params": {"version": version},
-                    "response": response.json(),
-                },
-            )
+        logger.debug(
+            "[CINEMA] Call to external API",
+            extra={
+                "api_client": "EMSScheduleConnector",
+                "method": "get_schedules",
+                "method_params": {"version": version},
+                "response": response.json(),
+            },
+        )
 
         self._check_response_is_ok(response)
         return pydantic_v1.parse_obj_as(ems_serializers.ScheduleResponse, response.json())
@@ -109,16 +107,15 @@ class EMSSitesConnector(AbstractEMSConnector):
             timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
         )
 
-        if self.enable_debug:
-            logger.debug(
-                "[CINEMA] Call to external API",
-                extra={
-                    "api_client": "EMSSitesConnector",
-                    "method": "get_available_sites",
-                    "method_params": {"version": version},
-                    "response": response.json(),
-                },
-            )
+        logger.debug(
+            "[CINEMA] Call to external API",
+            extra={
+                "api_client": "EMSSitesConnector",
+                "method": "get_available_sites",
+                "method_params": {"version": version},
+                "response": response.json(),
+            },
+        )
 
         self._check_response_is_ok(response)
         serialized_site_response = pydantic_v1.parse_obj_as(ems_serializers.SitesResponse, response.json())

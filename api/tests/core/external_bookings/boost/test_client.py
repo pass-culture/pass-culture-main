@@ -59,46 +59,7 @@ class GetPcuPricingIfExistsTest:
 
 
 class GetShowtimesTest:
-    @pytest.mark.parametrize(
-        "enable_debug,expected_logs",
-        [
-            (False, {}),
-            (
-                True,
-                {
-                    0: {
-                        "message": "[CINEMA] Call to external API",
-                        "extra": {
-                            "api_client": "BoostClientAPI",
-                            "method": "get_collection_items",
-                            "cinema_id": "test_id",
-                            "method_params": {
-                                "page": 1,
-                                "per_page": 2,
-                                "resource": boost_connector.ResourceBoost.SHOWTIMES,
-                            },
-                            "response": fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
-                        },
-                    },
-                    1: {
-                        "message": "[CINEMA] Call to external API",
-                        "extra": {
-                            "api_client": "BoostClientAPI",
-                            "method": "get_collection_items",
-                            "method_params": {
-                                "page": 2,
-                                "per_page": 2,
-                                "resource": boost_connector.ResourceBoost.SHOWTIMES,
-                            },
-                            "cinema_id": "test_id",
-                            "response": fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
-                        },
-                    },
-                },
-            ),
-        ],
-    )
-    def test_should_return_showtimes(self, enable_debug, expected_logs, caplog, requests_mock):
+    def test_should_return_showtimes(self, caplog, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(
             cinemaUrl="https://cinema-0.example.com/", cinemaProviderPivot__idAtProvider="test_id"
         )
@@ -113,15 +74,36 @@ class GetShowtimesTest:
             f"https://cinema-0.example.com/api/showtimes/between/{start_date.strftime('%Y-%m-%d')}/{end_date}?paymentMethod=external%3Acredit%3Apassculture&hideFullReservation=1&page=2&per_page=2",
             json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
         )
-        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=14, enable_debug=enable_debug)
+        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=14)
 
         with caplog.at_level(logging.DEBUG, logger="pcapi.core.external_bookings.boost.client"):
             showtimes = boost.get_showtimes(per_page=2, start_date=start_date, interval_days=10)
 
-        assert len(caplog.records) == len(expected_logs.keys())
-        for record_number in expected_logs.keys():
-            for attribute in expected_logs[record_number].keys():
-                assert getattr(caplog.records[record_number], attribute) == expected_logs[record_number][attribute]
+        assert len(caplog.records) == 2
+        assert caplog.records[0].message == "[CINEMA] Call to external API"
+        assert caplog.records[0].extra == {
+            "api_client": "BoostClientAPI",
+            "method": "get_collection_items",
+            "cinema_id": "test_id",
+            "method_params": {
+                "page": 1,
+                "per_page": 2,
+                "resource": boost_connector.ResourceBoost.SHOWTIMES,
+            },
+            "response": fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
+        }
+        assert caplog.records[1].message == "[CINEMA] Call to external API"
+        assert caplog.records[1].extra == {
+            "api_client": "BoostClientAPI",
+            "method": "get_collection_items",
+            "method_params": {
+                "page": 2,
+                "per_page": 2,
+                "resource": boost_connector.ResourceBoost.SHOWTIMES,
+            },
+            "cinema_id": "test_id",
+            "response": fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
+        }
 
         assert requests_mock.request_history[-1].method == "GET"
         assert requests_mock.request_history[-1].timeout == 14

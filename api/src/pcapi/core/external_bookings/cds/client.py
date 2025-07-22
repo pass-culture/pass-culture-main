@@ -54,9 +54,8 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         cinema_api_token: str | None,
         *,
         request_timeout: int | None = None,
-        enable_debug: bool = False,
     ):
-        super().__init__(cinema_id=cinema_id, request_timeout=request_timeout, enable_debug=enable_debug)
+        super().__init__(cinema_id=cinema_id, request_timeout=request_timeout)
         if not cinema_api_token:
             raise ValueError(f"Missing token for {cinema_id}")
         self.token = cinema_api_token
@@ -81,8 +80,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             request_timeout=self.request_timeout,
         )
 
-        if self.enable_debug:
-            _log_external_call(self, method="get_internet_sale_gauge_active", response=data)
+        _log_external_call(self, method="get_internet_sale_gauge_active", response=data)
 
         cinemas = parse_obj_as(list[cds_serializers.CinemaCDS], data)
         for cinema in cinemas:
@@ -105,8 +103,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             request_timeout=self.request_timeout,
         )
 
-        if self.enable_debug:
-            _log_external_call(self, method="get_shows_remaining_places", response=data)
+        _log_external_call(self, method="get_shows_remaining_places", response=data)
 
         shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
         if self.get_internet_sale_gauge_active():
@@ -116,8 +113,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
     def get_shows(self) -> list[cds_serializers.ShowCDS]:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SHOWS)
 
-        if self.enable_debug:
-            _log_external_call(self, method="get_shows", response=data)
+        _log_external_call(self, method="get_shows", response=data)
 
         shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
         if shows:
@@ -132,8 +128,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             self.api_url, self.account_id, self.token, ResourceCDS.SHOWS, request_timeout=self.request_timeout
         )
 
-        if self.enable_debug:
-            _log_external_call(self, method="get_show", response=data)
+        _log_external_call(self, method="get_show", response=data)
 
         shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
         for show in shows:
@@ -146,8 +141,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
     def get_venue_movies(self) -> list[cds_serializers.MediaCDS]:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.MEDIA)
 
-        if self.enable_debug:
-            _log_external_call(self, method="get_venue_movies", response=data)
+        _log_external_call(self, method="get_venue_movies", response=data)
 
         return parse_obj_as(list[cds_serializers.MediaCDS], data)
 
@@ -173,8 +167,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             request_timeout=self.request_timeout,
         )
 
-        if self.enable_debug:
-            _log_external_call(self, method="get_voucher_payment_type", response=data)
+        _log_external_call(self, method="get_voucher_payment_type", response=data)
 
         payment_types = parse_obj_as(list[cds_serializers.PaymentTypeCDS], data)
         for payment_type in payment_types:
@@ -196,8 +189,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             request_timeout=self.request_timeout,
         )
 
-        if self.enable_debug:
-            _log_external_call(self, method="get_pc_voucher_types", response=data)
+        _log_external_call(self, method="get_pc_voucher_types", response=data)
 
         voucher_types = parse_obj_as(list[cds_serializers.VoucherTypeCDS], data)
         return [
@@ -215,8 +207,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             request_timeout=self.request_timeout,
         )
 
-        if self.enable_debug:
-            _log_external_call(self, method="get_screen", response=data)
+        _log_external_call(self, method="get_screen", response=data)
 
         screens = parse_obj_as(list[cds_serializers.ScreenCDS], data)
 
@@ -294,8 +285,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
     def get_seatmap(self, show_id: int) -> cds_serializers.SeatmapCDS:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SEATMAP, {"show_id": show_id})
 
-        if self.enable_debug:
-            _log_external_call(self, method="get_seatmap", response=data)
+        _log_external_call(self, method="get_seatmap", response=data)
 
         seatmap_cds = parse_obj_as(cds_serializers.SeatmapCDS, data)
         return seatmap_cds
@@ -469,8 +459,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
     def get_cinema_infos(self) -> cds_serializers.CinemaCDS:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.CINEMAS)
 
-        if self.enable_debug:
-            _log_external_call(self, method="get_cinema_infos", response=data)
+        _log_external_call(self, method="get_cinema_infos", response=data)
 
         cinemas = parse_obj_as(list[cds_serializers.CinemaCDS], data)
         for cinema in cinemas:
@@ -484,8 +473,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
     def get_media_options(self) -> dict[int, str]:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.MEDIA_OPTIONS)
 
-        if self.enable_debug:
-            _log_external_call(self, method="get_media_options", response=data)
+        _log_external_call(self, method="get_media_options", response=data)
 
         media_options = parse_obj_as(list[cds_serializers.MediaOptionCDS], data)
         return {media_option.id: media_option.ticketlabel for media_option in media_options if media_option.ticketlabel}

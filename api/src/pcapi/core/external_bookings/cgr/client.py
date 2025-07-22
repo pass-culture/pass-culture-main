@@ -37,21 +37,15 @@ def _log_external_call(
 
 
 class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
-    def __init__(
-        self,
-        cinema_id: str,
-        request_timeout: None | int = None,
-        enable_debug: bool = False,
-    ):
-        super().__init__(cinema_id=cinema_id, request_timeout=request_timeout, enable_debug=enable_debug)
+    def __init__(self, cinema_id: str, request_timeout: None | int = None):
+        super().__init__(cinema_id=cinema_id, request_timeout=request_timeout)
         self.cgr_cinema_details = get_cgr_cinema_details(cinema_id)
 
     def get_films(self) -> list[cgr_serializers.Film]:
         logger.info("Fetching CGR movies", extra={"cinema_id": self.cinema_id})
         response = get_seances_pass_culture(self.cgr_cinema_details)
 
-        if self.enable_debug:
-            _log_external_call(self, "get_films", response)
+        _log_external_call(self, "get_films", response)
 
         return response.ObjetRetour.Films
 
@@ -66,8 +60,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             request_timeout=self.request_timeout,
         )
 
-        if self.enable_debug:
-            _log_external_call(self, "get_film_showtimes_stocks", response)
+        _log_external_call(self, "get_film_showtimes_stocks", response)
 
         try:
             film = response.ObjetRetour.Films[0]

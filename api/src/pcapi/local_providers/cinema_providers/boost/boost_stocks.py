@@ -45,17 +45,12 @@ class BoostStocks(LocalProvider):
     name = "Boost"
     can_create = True
 
-    def __init__(
-        self,
-        venue_provider: VenueProvider,
-        enable_debug: bool = False,
-    ):
+    def __init__(self, venue_provider: VenueProvider):
         super().__init__(venue_provider)
         self.venue = venue_provider.venue
         self._boost_api_client = BoostClientAPI(
             venue_provider.venueIdAtOfferProvider,
             request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
-            enable_debug=enable_debug,
         )
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
         self.attributs: list[boost_serializers.CinemaAttribut] = self._boost_api_client.get_cinemas_attributs()

@@ -26,36 +26,23 @@ class MockedResponse:
 
 
 class GetMovieListTest:
-    @pytest.mark.parametrize(
-        "enable_debug,expected_logs",
-        [
-            (False, {}),
-            (
-                True,
-                {
-                    0: {
-                        "api_client": "api_allocine",
-                        "method": "get_movie_list_page",
-                        "method_params": {"after": ""},
-                        "response": fixtures.MOVIE_LIST,
-                    },
-                },
-            ),
-        ],
-    )
-    def test_returns_request_response_from_api(self, enable_debug, expected_logs, requests_mock, caplog):
+    def test_returns_request_response_from_api(self, requests_mock, caplog):
         expected_result = fixtures.MOVIE_LIST
         requests_mock.get(
             "https://graph-api-proxy.allocine.fr/api/query/movieList?after=",
             json=expected_result,
         )
         with caplog.at_level(logging.DEBUG, logger="pcapi.connectors.api_allocine"):
-            api_response = get_movie_list_page(enable_debug=enable_debug)
+            api_response = get_movie_list_page()
 
-        assert len(caplog.records) == len(expected_logs.keys())
-        for record_number in expected_logs.keys():
-            for attribute in expected_logs[record_number].keys():
-                assert getattr(caplog.records[record_number], attribute) == expected_logs[record_number][attribute]
+        assert len(caplog.records) == 1
+        assert caplog.records[0].message == "[CINEMA] Call to external API"
+        assert caplog.records[0].extra == {
+            "api_client": "api_allocine",
+            "method": "get_movie_list_page",
+            "method_params": {"after": ""},
+            "response": fixtures.MOVIE_LIST,
+        }
 
         assert api_response == allocine_serializers.AllocineMovieListResponse.model_validate(expected_result)
 
@@ -117,24 +104,7 @@ class GetMovieListTest:
 
 
 class GetMovieShowtimeListTest:
-    @pytest.mark.parametrize(
-        "enable_debug,expected_logs",
-        [
-            (False, {}),
-            (
-                True,
-                {
-                    0: {
-                        "api_client": "api_allocine",
-                        "method": "get_movies_showtimes_from_allocine",
-                        "cinema_id": "test_id",
-                        "response": fixtures.MOVIE_SHOWTIME_LIST,
-                    },
-                },
-            ),
-        ],
-    )
-    def test_should_return_request_response_from_api(self, enable_debug, expected_logs, requests_mock, caplog):
+    def test_should_return_request_response_from_api(self, requests_mock, caplog):
         theater_id = "test_id"
         expected_result = fixtures.MOVIE_SHOWTIME_LIST
         requests_mock.get(
@@ -143,12 +113,16 @@ class GetMovieShowtimeListTest:
         )
 
         with caplog.at_level(logging.DEBUG, logger="pcapi.connectors.api_allocine"):
-            api_response = get_movies_showtimes_from_allocine(theater_id, enable_debug=enable_debug)
+            api_response = get_movies_showtimes_from_allocine(theater_id)
 
-        assert len(caplog.records) == len(expected_logs.keys())
-        for record_number in expected_logs.keys():
-            for attribute in expected_logs[record_number].keys():
-                assert getattr(caplog.records[record_number], attribute) == expected_logs[record_number][attribute]
+        assert len(caplog.records) == 1
+        assert caplog.records[0].message == "[CINEMA] Call to external API"
+        assert caplog.records[0].extra == {
+            "api_client": "api_allocine",
+            "method": "get_movies_showtimes_from_allocine",
+            "cinema_id": "test_id",
+            "response": fixtures.MOVIE_SHOWTIME_LIST,
+        }
 
         assert api_response == allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(expected_result)
 

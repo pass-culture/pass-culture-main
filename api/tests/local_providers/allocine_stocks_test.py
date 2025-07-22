@@ -36,9 +36,9 @@ class AllocineStocksTest:
                 venue=venue, venueIdAtOfferProvider=theater_token
             )
 
-            AllocineStocks(allocine_venue_provider, enable_debug=True)
+            AllocineStocks(allocine_venue_provider)
 
-            mock_call_allocine_api.assert_called_once_with(theater_token, enable_debug=True)
+            mock_call_allocine_api.assert_called_once_with(theater_token)
 
     class NextTest:
         @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")

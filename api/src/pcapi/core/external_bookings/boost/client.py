@@ -179,17 +179,16 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
                 request_timeout=self.request_timeout,
             )
 
-            if self.enable_debug:
-                _log_external_call(
-                    self,
-                    "get_collection_items",
-                    json_data,
-                    method_params={
-                        "page": current_page,
-                        "per_page": per_page,
-                        "resource": resource,
-                    },
-                )
+            _log_external_call(
+                self,
+                "get_collection_items",
+                json_data,
+                method_params={
+                    "page": current_page,
+                    "per_page": per_page,
+                    "resource": resource,
+                },
+            )
 
             collection = parse_obj_as(collection_class, json_data)
             items.extend(collection.data)
@@ -233,8 +232,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             request_timeout=self.request_timeout,
         )
 
-        if self.enable_debug:
-            _log_external_call(self, "get_showtime", json_data)
+        _log_external_call(self, "get_showtime", json_data)
 
         showtime_details = parse_obj_as(boost_serializers.ShowTimeDetails, json_data)
         return showtime_details.data
@@ -257,7 +255,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             self.cinema_id,
             boost.ResourceBoost.CINEMAS_ATTRIBUTS,
         )
-        if self.enable_debug:
-            _log_external_call(self, "get_cinemas_attributs", json_data)
+
+        _log_external_call(self, "get_cinemas_attributs", json_data)
         attributs = parse_obj_as(boost_serializers.CinemaAttributCollection, json_data)
         return attributs.data

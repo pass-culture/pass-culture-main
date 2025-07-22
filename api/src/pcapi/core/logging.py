@@ -271,6 +271,17 @@ def install_logging() -> None:
 
     _silence_noisy_loggers()
 
+    if settings.ENABLE_CINEMA_PROVIDER_DEBUG:
+        _enable_cinema_provider_debug_logging()
+
+
+def _enable_cinema_provider_debug_logging() -> None:
+    logging.getLogger("pcapi.connectors.api_allocine").setLevel(logging.DEBUG)
+    logging.getLogger("pcapi.core.external_bookings.boost.client").setLevel(logging.DEBUG)
+    logging.getLogger("pcapi.core.external_bookings.cds.client").setLevel(logging.DEBUG)
+    logging.getLogger("pcapi.core.external_bookings.cgr.client").setLevel(logging.DEBUG)
+    logging.getLogger("pcapi.connectors.ems").setLevel(logging.DEBUG)
+
 
 def _silence_noisy_loggers() -> None:
     logging.getLogger("spectree.config").setLevel(logging.WARNING)
