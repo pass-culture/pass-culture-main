@@ -4,6 +4,7 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { GET_VENUES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { IndividualOfferLayout } from 'components/IndividualOffer/IndividualOfferLayout/IndividualOfferLayout'
@@ -11,9 +12,14 @@ import { getTitle } from 'components/IndividualOffer/IndividualOfferLayout/utils
 import { IndividualOfferDetailsScreen } from 'pages/IndividualOffer/IndividualOfferDetails/components/IndividualOfferDetailsScreen'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
+import { IndividualOfferDetailsScreenNext } from './components/IndividualOfferDetailsScreenNext'
+
 const IndividualOfferDetails = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { offer, publishedOfferWithSameEAN } = useIndividualOfferContext()
+  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
 
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
@@ -38,7 +44,11 @@ const IndividualOfferDetails = (): JSX.Element | null => {
       mode={mode}
       venueHasPublishedOfferWithSameEan={Boolean(publishedOfferWithSameEAN)}
     >
-      <IndividualOfferDetailsScreen venues={venuesQuery.data.venues} />
+      {isNewOfferCreationFlowFeatureActive ? (
+        <IndividualOfferDetailsScreenNext venues={venuesQuery.data.venues} />
+      ) : (
+        <IndividualOfferDetailsScreen venues={venuesQuery.data.venues} />
+      )}
     </IndividualOfferLayout>
   )
 }

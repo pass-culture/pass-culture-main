@@ -88,11 +88,11 @@ export const completeSubcategoryConditionalFields = (
 
 export function filterAvailableVenues(
   venues: VenueListItemResponseModel[],
-  isOfferVirtual: boolean
+  isOfferVirtual: boolean | undefined = undefined
 ): VenueListItemResponseModel[] {
   const physicalVenues = venues.filter((v) => !v.isVirtual)
 
-  if (isOfferVirtual && physicalVenues.length === 0) {
+  if (isOfferVirtual !== false && physicalVenues.length === 0) {
     return venues
   }
 
@@ -203,7 +203,7 @@ export function getAccessibilityFormValuesFromOffer(
 
 export function getFormReadOnlyFields(
   offer: GetIndividualOfferResponseModel | null,
-  isProductBased: boolean,
+  hasSelectedProduct: boolean,
   isNewOfferCreationFlowFeatureActive: boolean
 ): string[] {
   const isNewOfferDraft = offer === null
@@ -220,7 +220,7 @@ export function getFormReadOnlyFields(
 
   // An EAN search was performed, so the form is product based.
   // Multiple fields are read-only.
-  if (isNewOfferDraft && isProductBased) {
+  if (isNewOfferDraft && hasSelectedProduct) {
     return allFieldsExceptAccessibility.filter((field) => field !== 'venueId')
   }
 
@@ -232,7 +232,7 @@ export function getFormReadOnlyFields(
     return [...allFieldsExceptAccessibility, ...maybeAccessibilityFields]
   }
 
-  if (isProductBased || isOfferSynchronized(offer)) {
+  if (hasSelectedProduct || isOfferSynchronized(offer)) {
     return allFieldsExceptAccessibility
   }
 
