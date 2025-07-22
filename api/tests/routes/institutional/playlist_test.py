@@ -59,7 +59,7 @@ class PlaylistTest:
         assert response.status_code == 200, response.json
         assert response.json == []
 
-    def test_unbookable_offers_are_ignored(self, client):
+    def test_unbookable_offers_are_not_ignored(self, client):
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         unbookable_offer = offers_factories.EventOfferFactory()
         offers_factories.EventStockFactory(offer=unbookable_offer, isSoftDeleted=True)
@@ -71,7 +71,18 @@ class PlaylistTest:
         response = client.get(f"/institutional/playlist/{criterion.name}")
 
         assert response.status_code == 200, response.json
-        assert response.json == []
+        assert response.json == [
+            {
+                "id": unbookable_offer.id,
+                "image": None,
+                "name": unbookable_offer.name,
+                "stocks": [],
+                "venue": {
+                    "id": unbookable_offer.venue.id,
+                    "commonName": unbookable_offer.venue.common_name,
+                },
+            }
+        ]
 
     def test_unbookable_stocks_are_ignored(self, client):
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
