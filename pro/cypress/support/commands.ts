@@ -169,6 +169,8 @@ Cypress.Commands.add(
         // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(4000)
         cy.sandboxCall(method, url, onRequest, false)
+      } else {
+        throw new Error(`Sandbox call error: ${JSON.stringify(response)}`)
       }
     })
   }

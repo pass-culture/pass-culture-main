@@ -76,7 +76,7 @@ function doLogin(
   if (setDefaultCookieOrejime) {
     cy.setCookie(
       'orejime',
-      '{"firebase":true,"hotjar":true,"beamer":true,"sentry":true}'
+      '{"firebase":false,"hotjar":false,"beamer":false,"sentry":true}'
     )
   }
 

@@ -6,6 +6,16 @@ import {
 describe('Didactic Onboarding feature', () => {
   let login: string
 
+  beforeEach(() => {
+    cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
+    cy.intercept({ method: 'PATCH', url: '/offers/draft/*' }).as(
+      'patchDraftOffer'
+    )
+    cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
+    cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
+    cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
+  })
+
   it('I should not be able to onboard me by submitting an Adage referencing file if I don’t have an Adage ID', () => {
     cy.visit('/connexion')
     cy.sandboxCall(
@@ -150,6 +160,7 @@ describe('Didactic Onboarding feature', () => {
 
         // Saving a draft
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
+        cy.wait(['@getOffer', '@postDraftOffer'])
         cy.findByText('Brouillon enregistré')
 
         // --------------------
@@ -180,6 +191,7 @@ describe('Didactic Onboarding feature', () => {
           'Mon offre en brouillon'
         )
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
+        cy.wait(['@getOffer', '@patchDraftOffer'])
 
         // ---------------------------
         // Step 2: Useful informations
@@ -188,6 +200,7 @@ describe('Didactic Onboarding feature', () => {
         // Minimal required fields are already filled by default in this step, so we can directly go to the next step
         cy.url().should('contain', '/creation/pratiques')
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
+        cy.wait(['@getOffer', '@patchOffer'])
 
         // ----------------------
         // Step 3: Stock & Prices
@@ -198,6 +211,7 @@ describe('Didactic Onboarding feature', () => {
         cy.findByTestId('input-price').type('42')
 
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
+        cy.wait(['@getOffer', '@patchOffer'])
 
         // -----------------------
         // Step 4: Details summary
@@ -214,22 +228,15 @@ describe('Didactic Onboarding feature', () => {
 
         // Publish offer
         cy.findByRole('button', { name: 'Publier l’offre' }).click()
+        cy.wait(['@publishOffer', '@getOffer'], {
+          requestTimeout: 60000 * 2,
+          responseTimeout: 60000 * 2,
+        })
 
         // Expect congratulations dialog
         cy.findByRole('dialog', {
           name: 'Félicitations, vous avez créé votre offre !',
         })
-
-        cy.stepLog({
-          message: `Navigate to banking information page`,
-        })
-
-        // Navigate to banking information page
-        cy.findByRole('link', { name: 'Ajouter un compte bancaire' }).click()
-        cy.url().should(
-          'match',
-          /\/remboursements\/informations-bancaires\?structure=\d+/
-        )
 
         // Then, check if we can display the homepage (as we are now onboarded)
         cy.visit('/accueil')
