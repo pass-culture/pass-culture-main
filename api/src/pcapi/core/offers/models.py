@@ -550,48 +550,6 @@ class Weekday(enum.Enum):
     SUNDAY = "SUNDAY"
 
 
-class EventOpeningHours(PcObject, Base, Model, SoftDeletableMixin):
-    __tablename__ = "event_opening_hours"
-
-    offerId: sa_orm.Mapped[int] = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), nullable=False, index=True)
-    offer: sa_orm.Mapped["Offer"] = relationship("Offer", foreign_keys=[offerId], back_populates="eventOpeningHours")
-
-    # To track
-    dateCreated: sa_orm.Mapped[datetime.datetime] = sa.Column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
-    )
-    dateUpdated: sa_orm.Mapped[datetime.datetime | None] = sa.Column(
-        sa.DateTime, nullable=True, onupdate=datetime.datetime.utcnow
-    )
-
-    # Event parameters
-    startDatetime: sa_orm.Mapped[datetime.datetime] = sa.Column(sa.DateTime, nullable=False)
-    endDatetime: sa_orm.Mapped[datetime.datetime | None] = sa.Column(sa.DateTime, nullable=True)
-    weekDayOpeningHours: sa_orm.Mapped[list["EventWeekDayOpeningHours"]] = relationship(
-        "EventWeekDayOpeningHours", passive_deletes=True
-    )
-
-
-class EventWeekDayOpeningHours(PcObject, Base, Model):
-    __tablename__ = "event_week_day_opening_hours"
-
-    eventOpeningHoursId: sa_orm.Mapped[int] = sa.Column(
-        sa.BigInteger, sa.ForeignKey("event_opening_hours.id", ondelete="CASCADE"), nullable=False, index=True
-    )
-    eventOpeningHours: sa_orm.Mapped[EventOpeningHours] = relationship(
-        "EventOpeningHours", foreign_keys=[eventOpeningHoursId], back_populates="weekDayOpeningHours"
-    )
-    weekday: sa_orm.Mapped[Weekday] = sa.Column(db_utils.MagicEnum(Weekday), nullable=False)
-    timeSpans: sa_orm.Mapped[list[psycopg2.extras.NumericRange]] = sa.Column(
-        postgresql.ARRAY(postgresql.ranges.NUMRANGE)
-    )
-
-    __table_args__ = (
-        sa.CheckConstraint(sa.func.cardinality(timeSpans) <= 2, name="max_timespan_is_2"),
-        sa.UniqueConstraint("weekday", "eventOpeningHoursId", name="unique_weekday_eventOpeningHoursDetailsId"),
-    )
-
-
 class HeadlineOffer(PcObject, Base, Model):
     __tablename__ = "headline_offer"
 
@@ -816,10 +774,6 @@ class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
     )
     headlineOffers: sa_orm.Mapped[list["HeadlineOffer"]] = sa_orm.relationship(
         "HeadlineOffer", back_populates="offer", uselist=True, cascade="all, delete-orphan", passive_deletes=True
-    )
-    # eventOpeningHours is a list, but will only contain at most ONE element that is not soft deleted
-    eventOpeningHours: sa_orm.Mapped[list["EventOpeningHours"]] = relationship(
-        "EventOpeningHours", passive_deletes=True
     )
 
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
