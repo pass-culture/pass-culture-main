@@ -3,10 +3,8 @@ import { differenceInCalendarDays } from 'date-fns'
 import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import { FORMAT_DD_MM_YYYY } from 'commons/utils/date'
 import { pluralize } from 'commons/utils/pluralize'
-import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullMailIcon from 'icons/full-mail.svg'
-import fullWarningIcon from 'icons/full-warning.svg'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 
@@ -37,9 +35,17 @@ export const BookingWaitingBanner = ({
 
   return (
     <Callout
+      title={
+        isExpiringSoon
+          ? `expire ${
+              daysCountBeforeExpiration > 0
+                ? `dans ${pluralize(daysCountBeforeExpiration, 'jour')}`
+                : 'aujourd’hui'
+            }`
+          : undefined
+      }
       testId="callout-booking-waiting"
       className={styles['callout']}
-      shouldShowIcon={false}
       variant={isExpiringSoon ? CalloutVariant.WARNING : CalloutVariant.INFO}
       links={[
         {
@@ -59,33 +65,20 @@ export const BookingWaitingBanner = ({
           : []),
       ]}
     >
-      <>
-        {isExpiringSoon && (
-          <Tag
-            variant={TagVariant.WARNING}
-            icon={fullWarningIcon}
-            label={`expire ${
-              daysCountBeforeExpiration > 0
-                ? `dans ${pluralize(daysCountBeforeExpiration, 'jour')}`
-                : 'aujourd’hui'
-            }`}
-          />
-        )}
-        <div>
-          {offerStatus === CollectiveOfferDisplayedStatus.PUBLISHED
-            ? "L'enseignant doit impérativement préréserver l'offre avant le "
-            : "Le chef d'établissement doit impérativement confirmer la préréservation de l'offre avant le "}
-          <span className={styles['callout-accent']}>
-            {formatDateTime(
-              bookingLimitDatetime,
-              FORMAT_DD_MM_YYYY,
-              departmentCode
-            )}
-          </span>
-          . Sinon, elle sera automatiquement annulée et vous ne pourrez pas en
-          obtenir le remboursement par la suite.
-        </div>
-      </>
+      <div>
+        {offerStatus === CollectiveOfferDisplayedStatus.PUBLISHED
+          ? "L'enseignant doit impérativement préréserver l'offre avant le "
+          : "Le chef d'établissement doit impérativement confirmer la préréservation de l'offre avant le "}
+        <span className={styles['callout-accent']}>
+          {formatDateTime(
+            bookingLimitDatetime,
+            FORMAT_DD_MM_YYYY,
+            departmentCode
+          )}
+        </span>
+        . Sinon, elle sera automatiquement annulée et vous ne pourrez pas en
+        obtenir le remboursement par la suite.
+      </div>
     </Callout>
   )
 }

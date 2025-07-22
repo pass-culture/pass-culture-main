@@ -43,24 +43,3 @@ export const WithLink: StoryObj<typeof Callout> = {
     ],
   },
 }
-
-export const WithoutIcon: StoryObj<typeof Callout> = {
-  args: {
-    children:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    title: 'With link warning callout',
-    links: [
-      {
-        href: 'https://pro.testing.passculture.team',
-        label: 'Lien interne au pass culture pro',
-        isExternal: true,
-      },
-      {
-        href: 'https://pro.testing.passculture.team',
-        label: 'Lien externe',
-        isExternal: true,
-      },
-    ],
-    shouldShowIcon: false,
-  },
-}
