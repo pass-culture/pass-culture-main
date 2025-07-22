@@ -33,7 +33,15 @@ class UserGenerationGetRouteTest(GetEndpointWithoutPermissionHelper):
 
     def test_contains_link_to_app_if_token_and_names(self, authenticated_client):
         generated_user = users_factories.ProfileCompletedUserFactory()
-        response = authenticated_client.get(url_for(self.endpoint, userId=generated_user.id, accessToken="0"))
+        response = authenticated_client.get(
+            url_for(
+                self.endpoint,
+                userId=generated_user.id,
+                accessToken="0",
+                email=generated_user.email,
+                expirationTimestamp=123,
+            )
+        )
 
         assert response.status_code == 200
         assert (
@@ -43,7 +51,15 @@ class UserGenerationGetRouteTest(GetEndpointWithoutPermissionHelper):
 
     def test_contains_link_to_app_if_token_and_no_names(self, authenticated_client):
         generated_user = users_factories.BaseUserFactory()
-        response = authenticated_client.get(url_for(self.endpoint, userId=generated_user.id, accessToken="0"))
+        response = authenticated_client.get(
+            url_for(
+                self.endpoint,
+                userId=generated_user.id,
+                accessToken="0",
+                email=generated_user.email,
+                expirationTimestamp=123,
+            )
+        )
 
         assert response.status_code == 200
         assert f"Aller sur l'app en tant que User {generated_user.id}" in html_parser.content_as_text(response.data)

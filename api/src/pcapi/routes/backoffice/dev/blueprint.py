@@ -67,10 +67,15 @@ def get_generated_user() -> utils.BackofficeResponse:
         path = "signup-confirmation"
         universal_link_url = f"{settings.WEBAPP_V2_URL}/{path}"
         params = {"token": token}
-        link_to_app = universal_link_url + f"?{urlencode(params)}"
+        if expiration_timestamp := utils.get_query_params().get("expirationTimestamp"):
+            params["expiration_timestamp"] = expiration_timestamp
+        if user:
+            params["email"] = user.email
+        if set(params) == {"email", "expiration_timestamp", "token"}:
+            link_to_app = f"{universal_link_url}?{urlencode(params)}"
 
     if user and settings.UBBLE_MOCK_CONFIG_URL:
-        link_to_ubble_mock = settings.UBBLE_MOCK_CONFIG_URL + f"?{urlencode({'userId': user.id})}"
+        link_to_ubble_mock = f"{settings.UBBLE_MOCK_CONFIG_URL}?{urlencode({'userId': user.id})}"
 
     if user:
         birth_date = user.dateOfBirth.date() if user.dateOfBirth else None
@@ -152,8 +157,19 @@ def generate_user() -> utils.BackofficeResponse:
     token = token_utils.Token.create(
         token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME, user.id
     )
+    expiration_date = (
+        token.get_expiration_date_from_token()
+        or datetime.datetime.utcnow() + users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
+    )
+    expiration_timestamp = int(expiration_date.timestamp())
     return redirect(
-        url_for("backoffice_web.dev.get_generated_user", userId=user.id, accessToken=token.encoded_token), code=303
+        url_for(
+            "backoffice_web.dev.get_generated_user",
+            userId=user.id,
+            accessToken=token.encoded_token,
+            expirationTimestamp=expiration_timestamp,
+        ),
+        code=303,
     )
 
 
@@ -254,7 +270,13 @@ def configure_ubble_v2_response(user_id: int) -> utils.BackofficeResponse:
     flash("La réponse d'Ubble v2 a été configurée pour cet utilisateur", "success")
 
     token = token_utils.Token.get_token(token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, user.id)
-    access_token = token.encoded_token if token else None
-    return redirect(
-        url_for("backoffice_web.dev.get_generated_user", userId=user.id, accessToken=access_token), code=303
-    )
+    params = {}
+    if token:
+        params["accessToken"] = token.encoded_token
+        expiration_date = (
+            token.get_expiration_date_from_token()
+            or datetime.datetime.utcnow() + users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
+        )
+        params["expirationTimestamp"] = str(int(expiration_date.timestamp()))
+        params["email"] = user.email
+    return redirect(url_for("backoffice_web.dev.get_generated_user", userId=user.id, **params), code=303)
