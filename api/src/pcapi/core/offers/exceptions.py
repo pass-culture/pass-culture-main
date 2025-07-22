@@ -240,13 +240,3 @@ class OfferWithoutImageCanNotBeHeadline(Exception):
 class CannotRemoveHeadlineOffer(Exception):
     def __init__(self) -> None:
         super().__init__("headlineOffer", "Error during removal of this headline offer")
-
-
-class EventOpeningHoursException(Exception):
-    default_field = "global"
-    default_msg = "event opening hours error"
-
-    def __init__(self, field: str, msg: str, *args: typing.Any, **kwargs: typing.Any):
-        self.field = field if field else self.default_field
-        self.msg = msg if msg else self.default_msg
-        super().__init__(*args, **kwargs)

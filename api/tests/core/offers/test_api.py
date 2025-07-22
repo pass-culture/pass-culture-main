@@ -5224,7 +5224,6 @@ def assert_offers_have_been_completely_cleaned(offer_ids):
         assert offer_id not in search_testing.search_store["offers"]
 
         assert db.session.query(finance_models.CustomReimbursementRule).filter_by(offerId=offer_id).count() == 0
-        assert db.session.query(models.EventOpeningHours).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(users_models.Favorite).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(models.HeadlineOffer).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(models.Mediation).filter_by(offerId=offer_id).count() == 0
