@@ -276,8 +276,8 @@ class AlgoliaSerializationMixin:
                 "name": offer.name,
                 "nativeCategoryId": native_categories,
                 "prices": sorted(prices),
-                "publicationDate": (
-                    offer.publicationDate.timestamp() if offer.publicationDate and not offer.isReleased else None
+                "bookingAllowedDatetime": (
+                    offer.bookingAllowedDatetime.timestamp() if offer.bookingAllowedDatetime else None
                 ),
                 "rankingWeight": offer.rankingWeight,
                 "releaseDate": release_date,
