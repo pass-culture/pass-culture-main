@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import React, { KeyboardEvent, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import { SortingMode } from 'commons/hooks/useColumnSorting'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
@@ -7,17 +7,23 @@ import { Skeleton } from 'ui-kit/Skeleton/Skeleton'
 
 import { SortColumn } from './SortColumn/SortColumn'
 import styles from './Table.module.scss'
+import { TableNoFilterResult } from './TableNoFilterResult/TableNoFilterResult'
 
 export enum TableVariant {
   COLLAPSE = 'collapse',
   SEPARATE = 'separate',
 }
 
+type NoResultProps = {
+  message: string
+  resetFilter: () => void
+}
+
 export interface Column<T> {
   id: string
   label: string
   sortable?: boolean
-  accessor?: keyof T | ((row: T) => React.ReactNode)
+  ordererField?: keyof T | ((row: T) => React.ReactNode)
   render?: (row: T) => React.ReactNode
   headerColSpan?: number
   bodyHidden?: boolean
@@ -31,31 +37,32 @@ export interface TableProps<T extends { id: string | number }> {
   columns: Column<T>[]
   data: T[]
   selectable?: boolean
-  onSelectionChange?: (rows: T[]) => void
-  getRowLink?: (row: T) => string | undefined | null
-  getFullRowContent?: (row: T) => React.ReactNode | null
-  hover?: boolean
   className?: string
-  isRowSelectable?: (row: T) => boolean
   isLoading: boolean
   isSticky?: boolean
   variant: TableVariant
+  selectedNumber?: string
+  selectedIds?: Set<string | number>
+  onSelectionChange?: (rows: T[]) => void
+  getFullRowContent?: (row: T) => React.ReactNode | null
+  isRowSelectable?: (row: T) => boolean
+  noResult: NoResultProps
 }
 
 function getValue<T>(
   row: T,
-  accessor?: keyof T | string | ((r: T) => unknown)
+  ordererField?: keyof T | string | ((r: T) => unknown)
 ) {
-  if (!accessor) {
+  if (!ordererField) {
     return undefined
   }
-  if (typeof accessor === 'function') {
-    return accessor(row)
+  if (typeof ordererField === 'function') {
+    return ordererField(row)
   }
-  if (typeof accessor === 'string') {
-    return accessor.split('.').reduce<any>((obj, key) => obj?.[key], row)
+  if (typeof ordererField === 'string') {
+    return ordererField.split('.').reduce<any>((obj, key) => obj?.[key], row)
   }
-  return (row as any)[accessor]
+  return (row as any)[ordererField]
 }
 
 export function Table<
@@ -68,21 +75,28 @@ export function Table<
   columns,
   data,
   selectable = false,
-  onSelectionChange,
-  getRowLink,
-  getFullRowContent,
-  hover = true,
+  selectedNumber,
+  selectedIds: controlledSelectedIds,
   className,
-  isRowSelectable,
   isLoading,
   isSticky,
   variant,
+  noResult,
+  onSelectionChange,
+  getFullRowContent,
+  isRowSelectable,
 }: TableProps<T>) {
   const [sortKey, setSortKey] = useState<string | null>(null)
   const [sortDir, setSortDir] = useState<SortDirection>(SortingMode.NONE)
   const [selectedIds, setSelectedIds] = useState<Set<string | number>>(
-    new Set()
+    new Set(controlledSelectedIds || [])
   )
+
+  useEffect(() => {
+    if (controlledSelectedIds) {
+      setSelectedIds(new Set(controlledSelectedIds))
+    }
+  }, [controlledSelectedIds])
 
   const selectableRows = useMemo(
     () => (isRowSelectable ? data.filter(isRowSelectable) : data),
@@ -99,8 +113,8 @@ export function Table<
     }
 
     return [...data].sort((a, b) => {
-      const va = getValue(a, col.accessor)
-      const vb = getValue(b, col.accessor)
+      const va = getValue(a, col.ordererField)
+      const vb = getValue(b, col.ordererField)
       if (va === vb) {
         return 0
       }
@@ -147,25 +161,6 @@ export function Table<
     onSelectionChange?.(data.filter((r) => newSet.has(r.id)))
   }
 
-  const handleRowNavigation = (row: T) => {
-    const href = getRowLink?.(row)
-    if (!href) {
-      return
-    }
-    window.location.assign(href)
-  }
-
-  const handleRowKeyDown =
-    (row: T) => (e: KeyboardEvent<HTMLTableRowElement>) => {
-      if (!getRowLink) {
-        return
-      }
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault()
-        handleRowNavigation(row)
-      }
-    }
-
   return (
     <div className={classNames(styles.wrapper, className)} tabIndex={0}>
       {selectable && (
@@ -188,6 +183,8 @@ export function Table<
           <span className={styles['visually-hidden']}>
             Sélectionner toutes les lignes
           </span>
+
+          <div>{selectedNumber}</div>
         </div>
       )}
 
@@ -216,7 +213,7 @@ export function Table<
                 <span className={styles['visually-hidden']}>Sélectionner</span>
               </th>
             )}
-            {columns.map((col) => {
+            {columns.map((col, index) => {
               if (col.headerHidden) {
                 return null
               }
@@ -225,7 +222,7 @@ export function Table<
                   scope="col"
                   id={col.id}
                   colSpan={col.headerColSpan || 1}
-                  key={col.id}
+                  key={`col-${index}`}
                   className={classNames(styles.columnWidth, {
                     [styles['table-header-th']]: !col.sortable,
                     [styles['table-header-sortable-th']]: col.sortable,
@@ -257,20 +254,23 @@ export function Table<
               </tr>
             ))}
 
+          {!sortedData.length && (
+            <TableNoFilterResult
+              colSpan={columns.length}
+              message={noResult.message}
+              resetFilters={noResult.resetFilter}
+            />
+          )}
+
           {sortedData.map((row) => {
             const isSelected = selectedIds.has(row.id)
             const tableFullRowContent = getFullRowContent?.(row)
-            const isClickableRow = Boolean(getRowLink?.(row))
 
             return (
               <React.Fragment key={row.id}>
                 <tr
                   role="row"
-                  tabIndex={isClickableRow ? 0 : undefined}
-                  onClick={() => handleRowNavigation(row)}
-                  onKeyDown={handleRowKeyDown(row)}
                   className={classNames(styles['table-row'], {
-                    [styles.hover]: hover && isClickableRow,
                     [styles.selected]: isSelected,
                   })}
                 >
@@ -301,27 +301,18 @@ export function Table<
                     </td>
                   )}
 
-                  {columns.map((col) => {
+                  {columns.map((col, index) => {
                     if (col.bodyHidden) {
                       return null
                     }
                     const value = col.render
                       ? col.render(row)
-                      : getValue(row, col.accessor)
+                      : getValue(row, col.ordererField)
                     return (
                       <td
                         className={styles['table-cell']}
-                        key={col.id}
+                        key={`col-${index}`}
                         data-label={col.label}
-                        onClick={(e) => {
-                          if (
-                            (e.target as HTMLElement).closest(
-                              'button, a, input, [data-stop-propagation]'
-                            )
-                          ) {
-                            e.stopPropagation()
-                          }
-                        }}
                       >
                         <div
                           className={classNames({

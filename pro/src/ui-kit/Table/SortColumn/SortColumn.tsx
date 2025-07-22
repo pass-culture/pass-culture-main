@@ -10,25 +10,28 @@ import styles from './SortColumn.module.scss'
 interface SortColumnProps {
   sortingMode: SortingMode
   onClick: () => void
-  children?: React.ReactNode
+  children: React.ReactNode
 }
 
 export const SortColumn = ({
   sortingMode,
   onClick,
   children,
-}: SortColumnProps) => (
-  <button type="button" className={styles['sorting-icons']} onClick={onClick}>
-    {children}
-    {sortingMode !== SortingMode.NONE ? (
-      sortingMode === SortingMode.DESC ? (
+}: SortColumnProps) => {
+  const renderIcon = () => {
+    if (sortingMode === SortingMode.DESC) {
+      return (
         <SvgIcon
           className={styles['sort-icon']}
           src={fullUpIcon}
           alt="Ne plus trier"
           width="10"
         />
-      ) : (
+      )
+    }
+
+    if (sortingMode === SortingMode.ASC) {
+      return (
         <SvgIcon
           className={styles['sort-icon']}
           src={fullDownIcon}
@@ -36,11 +39,20 @@ export const SortColumn = ({
           width="10"
         />
       )
-    ) : (
+    }
+
+    return (
       <span className={cn(styles['sort-icon'], styles['both-icons'])}>
         <SvgIcon src={fullUpIcon} alt="Trier par ordre croissant" width="10" />
         <SvgIcon src={fullDownIcon} alt="" width="10" />
       </span>
-    )}
-  </button>
-)
+    )
+  }
+
+  return (
+    <button type="button" className={styles['sorting-icons']} onClick={onClick}>
+      {children}
+      {renderIcon()}
+    </button>
+  )
+}

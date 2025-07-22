@@ -2,7 +2,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
-import { Column, Table } from './Table'
+import { Column, Table, TableVariant } from './Table'
 
 interface RowType {
   id: number
@@ -11,8 +11,8 @@ interface RowType {
 }
 
 const columns: Column<RowType>[] = [
-  { id: 'name', label: 'Name', accessor: 'name' },
-  { id: 'value', label: 'Value', accessor: 'value', sortable: true },
+  { id: 'name', label: 'Name', ordererField: 'name' },
+  { id: 'value', label: 'Value', ordererField: 'value', sortable: true },
 ]
 
 const data: RowType[] = [
@@ -32,6 +32,13 @@ describe('<Table />', () => {
         data={[]}
         isLoading
         selectable={false}
+        variant={TableVariant.COLLAPSE}
+        noResult={{
+          message: '',
+          resetFilter: function (): void {
+            throw new Error('Function not implemented.')
+          },
+        }}
       />
     )
     expect(
@@ -40,7 +47,20 @@ describe('<Table />', () => {
   })
 
   it('sorts rows ASC then DESC when clicking on sortable column header twice', () => {
-    render(<Table<RowType> columns={columns} data={data} isLoading={false} />)
+    render(
+      <Table<RowType>
+        columns={columns}
+        data={data}
+        isLoading={false}
+        variant={TableVariant.COLLAPSE}
+        noResult={{
+          message: '',
+          resetFilter: function (): void {
+            throw new Error('Function not implemented.')
+          },
+        }}
+      />
+    )
 
     // initial order: Alpha (2) then Beta (1)
     let rows = screen.getAllByRole('row')
@@ -70,6 +90,13 @@ describe('<Table />', () => {
         selectable
         isLoading={false}
         onSelectionChange={handleSelection}
+        variant={TableVariant.COLLAPSE}
+        noResult={{
+          message: '',
+          resetFilter: function (): void {
+            throw new Error('Function not implemented.')
+          },
+        }}
       />
     )
 
@@ -84,27 +111,6 @@ describe('<Table />', () => {
     expect(handleSelection).toHaveBeenCalledWith(data)
   })
 
-  it('navigates when clicking a row with getRowLink', () => {
-    const assignMock = vi.fn()
-    // @ts-expect-error patch JSDOM
-    delete window.location
-    // @ts-expect-error
-    window.location = { assign: assignMock }
-
-    render(
-      <Table<RowType>
-        columns={columns}
-        data={data}
-        isLoading={false}
-        getRowLink={(row) => `/items/${row.id}`}
-      />
-    )
-
-    const rows = screen.getAllByRole('row')
-    fireEvent.click(rows[1])
-    expect(assignMock).toHaveBeenCalledWith('/items/1')
-  })
-
   it('has no accessibility violations', async () => {
     const { container } = render(
       <Table<RowType>
@@ -113,6 +119,13 @@ describe('<Table />', () => {
         isLoading={false}
         selectable
         title="Accessible table"
+        variant={TableVariant.COLLAPSE}
+        noResult={{
+          message: '',
+          resetFilter: function (): void {
+            throw new Error('Function not implemented.')
+          },
+        }}
       />
     )
 

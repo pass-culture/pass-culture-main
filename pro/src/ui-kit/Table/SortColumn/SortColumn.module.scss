@@ -13,19 +13,8 @@
   gap: rem.torem(8px);
   padding: rem.torem(8px);
 
-  &:hover {
-    background-color: var(--color-background-brand-primary-selected);
-  }
-
   &:focus {
-    background-color: var(--color-background-brand-primary-selected);
-  }
-
-  &:focus > .sort-icon {
     @include outline.focus-outline;
-
-    background-color: var(--color-background-brand-primary-selected);
-    border-radius: rem.torem(4px);
   }
 }
 
