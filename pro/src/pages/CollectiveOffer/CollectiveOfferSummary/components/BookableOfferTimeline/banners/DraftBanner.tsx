@@ -9,7 +9,6 @@ export const DraftBanner = ({ offerId }: { offerId: number }) => {
     <Callout
       className={styles['callout']}
       variant={CalloutVariant.INFO}
-      shouldShowIcon={false}
       links={[
         {
           icon: { src: fullEditIcon, alt: 'Modifier' },
