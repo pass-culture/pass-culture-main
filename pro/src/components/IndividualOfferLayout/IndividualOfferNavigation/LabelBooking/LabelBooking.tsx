@@ -4,7 +4,7 @@ type LabelBookingProps = {
   bookingsCount: number
 }
 
-export function LabelBooking({ bookingsCount }: LabelBookingProps) {
+export function LabelBooking({ bookingsCount }: Readonly<LabelBookingProps>) {
   return (
     <>
       Réservations

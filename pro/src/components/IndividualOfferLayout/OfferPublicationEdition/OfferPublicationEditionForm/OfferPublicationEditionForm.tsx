@@ -32,6 +32,17 @@ function getDefaultValuesFromOffer(
   offer: GetIndividualOfferWithAddressResponseModel,
   publicationHoursOptions: SelectOption[]
 ) {
+  let publicationMode: EventPublicationEditionFormValues['publicationMode'] =
+    null
+  if (
+    offer.publicationDatetime &&
+    isAfter(offer.publicationDatetime, new Date())
+  ) {
+    publicationMode = 'later'
+  } else {
+    publicationMode = 'now'
+  }
+
   const publicationTime = offer.publicationDatetime
     ? format(
         getLocalDepartementDateTimeFromUtc(offer.publicationDatetime),
@@ -40,13 +51,7 @@ function getDefaultValuesFromOffer(
     : undefined
 
   return {
-    publicationMode:
-      offer.publicationDatetime === null
-        ? null
-        : offer.publicationDatetime &&
-            isAfter(offer.publicationDatetime, new Date())
-          ? 'later'
-          : 'now',
+    publicationMode,
     publicationDate: offer.publicationDatetime
       ? formatShortDateForInput(
           getLocalDepartementDateTimeFromUtc(offer.publicationDatetime)
@@ -81,7 +86,7 @@ function getDefaultValuesFromOffer(
 export function OfferPublicationEditionForm({
   offer,
   onSubmit,
-}: OfferPublicationEditionFormProps) {
+}: Readonly<OfferPublicationEditionFormProps>) {
   const publicationHoursOptions = getPublicationHoursOptions()
 
   const form = useForm<EventPublicationEditionFormValues>({

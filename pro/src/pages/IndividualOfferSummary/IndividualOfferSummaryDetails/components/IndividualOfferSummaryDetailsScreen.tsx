@@ -36,7 +36,7 @@ type IndividualOfferSummaryDetailsScreenProps = {
 
 export function IndividualOfferSummaryDetailsScreen({
   offer,
-}: IndividualOfferSummaryDetailsScreenProps) {
+}: Readonly<IndividualOfferSummaryDetailsScreenProps>) {
   const mode = useOfferWizardMode()
   const { categories, subCategories } = useIndividualOfferContext()
 

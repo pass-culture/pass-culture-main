@@ -37,7 +37,7 @@ export const IndividualOfferSummaryBookingsScreen = ({
   const [bookings, setBookings] = useState<BookingRecapResponseModel[] | null>(
     null
   )
-  const [bookingsStatusFilters, setBookingsStatusFilter] = useState<string[]>(
+  const [bookingsStatusFilters, setBookingsStatusFilters] = useState<string[]>(
     []
   )
 
@@ -102,8 +102,7 @@ export const IndividualOfferSummaryBookingsScreen = ({
         <h2 className={styles['header-title']}>Réservations</h2>
         {!stockSchedulesAndPricesByDateQuery.isLoading &&
           offer.isEvent &&
-          bookings !== null &&
-          bookings.length && (
+          !!bookings?.length && (
             <DialogBuilder
               variant="drawer"
               onOpenChange={setIsDownloadBookingModalOpen}
@@ -130,9 +129,9 @@ export const IndividualOfferSummaryBookingsScreen = ({
           bookings={filteredBookings}
           bookingStatuses={bookingsStatusFilters}
           updateGlobalFilters={({ bookingStatus }) => {
-            setBookingsStatusFilter(bookingStatus ?? [])
+            setBookingsStatusFilters(bookingStatus ?? [])
           }}
-          resetFilters={() => setBookingsStatusFilter([])}
+          resetFilters={() => setBookingsStatusFilters([])}
         />
       ) : (
         <Spinner />

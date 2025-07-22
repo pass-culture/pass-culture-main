@@ -19,7 +19,7 @@ const HOW_TO_CANCEL_EVENT_URL =
 
 export function IndividualOfferSummaryStocksCalendarScreen({
   offer,
-}: StocksCalendarSummaryScreenProps) {
+}: Readonly<StocksCalendarSummaryScreenProps>) {
   const editLink = getIndividualOfferUrl({
     offerId: offer.id,
     step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,

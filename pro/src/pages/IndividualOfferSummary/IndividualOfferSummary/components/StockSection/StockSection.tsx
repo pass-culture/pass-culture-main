@@ -96,32 +96,30 @@ export const StockSection = ({
   const stockWarningText = getStockWarningText(offer)
 
   return (
-    <>
-      <SummarySection
-        title={offer.isEvent ? 'Dates et capacité' : 'Stocks et prix'}
-        editLink={editLink}
-        aria-label="Modifier les stocks et prix"
-      >
-        {stockWarningText && (
-          <SummaryDescriptionList
-            className={styles['stock-section-warning']}
-            descriptions={[{ text: stockWarningText }]}
-          />
-        )}
+    <SummarySection
+      title={offer.isEvent ? 'Dates et capacité' : 'Stocks et prix'}
+      editLink={editLink}
+      aria-label="Modifier les stocks et prix"
+    >
+      {stockWarningText && (
+        <SummaryDescriptionList
+          className={styles['stock-section-warning']}
+          descriptions={[{ text: stockWarningText }]}
+        />
+      )}
 
-        {offer.isEvent ? (
-          <RecurrenceSection
-            stocksStats={stocksEventsStats}
-            departementCode={departmentCode}
-          />
-        ) : (
-          <StockThingSection
-            stock={stockThing}
-            canBeDuo={canBeDuo}
-            isDuo={offer.isDuo}
-          />
-        )}
-      </SummarySection>
-    </>
+      {offer.isEvent ? (
+        <RecurrenceSection
+          stocksStats={stocksEventsStats}
+          departementCode={departmentCode}
+        />
+      ) : (
+        <StockThingSection
+          stock={stockThing}
+          canBeDuo={canBeDuo}
+          isDuo={offer.isDuo}
+        />
+      )}
+    </SummarySection>
   )
 }

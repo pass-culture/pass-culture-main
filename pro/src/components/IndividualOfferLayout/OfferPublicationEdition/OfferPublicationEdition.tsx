@@ -57,7 +57,7 @@ export function getPatchOfferPayloadFromFormValues(
 
 export function OfferPublicationEdition({
   offer,
-}: OfferPublicationEditionProps) {
+}: Readonly<OfferPublicationEditionProps>) {
   const notify = useNotification()
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
