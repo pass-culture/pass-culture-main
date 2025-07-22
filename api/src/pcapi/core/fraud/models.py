@@ -291,6 +291,7 @@ class DMSContent(common_models.IdentityCheckContent):
     annotation: DmsAnnotation | None
     application_number: int = pydantic_v1.Field(..., alias="application_id")  # keep alias for old data
     birth_date: datetime.date | None
+    birth_place: str | None
     city: str | None
     civility: users_models.GenderEnum | None
     deletion_datetime: datetime.datetime | None
@@ -321,6 +322,9 @@ class DMSContent(common_models.IdentityCheckContent):
 
     def get_birth_date(self) -> datetime.date | None:
         return self.birth_date
+
+    def get_birth_place(self) -> str | None:
+        return self.birth_place
 
     def get_civility(self) -> str | None:
         return self.civility.value if self.civility else None

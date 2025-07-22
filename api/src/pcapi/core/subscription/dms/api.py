@@ -586,6 +586,7 @@ def compute_dms_checksum(content: fraud_models.DMSContent) -> str:
         content.activity,
         content.address,
         content.birth_date.isoformat() if content.birth_date else None,
+        content.birth_place,
         content.city,
         content.civility.value if content.civility else None,
         content.department,

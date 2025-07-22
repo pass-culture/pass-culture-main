@@ -87,6 +87,7 @@ class FieldLabelKeyword(enum.Enum):
     ACTIVITY = "statut"
     ADDRESS = "adresse de résidence"
     BIRTH_DATE = "date de naissance"
+    BIRTH_PLACE = "lieu de naissance"
     CITY_1 = "ville de résidence"
     CITY_2 = "commune de résidence"
     ID_PIECE_NUMBER = "numéro de la pièce"

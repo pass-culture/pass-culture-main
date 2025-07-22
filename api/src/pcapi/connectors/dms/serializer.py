@@ -68,6 +68,7 @@ def parse_beneficiary_information_graphql(
     activity = None
     address = None
     birth_date = None
+    birth_place = None
     city = None
     department = None
     id_piece_number = None
@@ -108,6 +109,9 @@ def parse_beneficiary_information_graphql(
                     fraud_models.DmsFieldErrorDetails(key=fraud_models.DmsFieldErrorKeyEnum.birth_date, value=value)
                 )
                 logger.error("Could not parse birth date %s for DMS application %s", value, application_number)
+
+        elif dms_models.FieldLabelKeyword.BIRTH_PLACE.value in label:
+            birth_place = value
 
         elif dms_models.FieldLabelKeyword.ID_PIECE_NUMBER.value in label:
             value = _sanitize_id_piece_number(value.strip())
@@ -166,6 +170,7 @@ def parse_beneficiary_information_graphql(
         annotation=annotation,
         application_number=application_number,
         birth_date=birth_date,
+        birth_place=birth_place,
         city=city,
         civility=_parse_dms_civility(civility),
         department=department,

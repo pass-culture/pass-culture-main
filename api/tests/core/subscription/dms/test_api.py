@@ -136,22 +136,49 @@ class HandleDmsApplicationTest:
             "user_id": applicant.id,
         }
 
-    def test_handle_dms_application_updates_birth_date(self):
-        beneficiary = users_factories.ExUnderageBeneficiaryFactory()
-        seventeen_years_ago = datetime.datetime.utcnow() - relativedelta(years=17, months=1)
+    def test_handle_dms_application_serializes_dms_response(self):
+        user = users_factories.ProfileCompletedUserFactory(age=18)
         dms_response = make_parsed_graphql_application(
             application_number=1234,
             state=dms_models.GraphQLApplicationStates.accepted,
-            email=beneficiary.email,
-            birth_date=seventeen_years_ago,
+            email=user.email,
+            birth_date=user.dateOfBirth,
             construction_datetime=datetime.datetime.utcnow().isoformat(),
-            first_name="little",
-            last_name="sister",
         )
 
         dms_subscription_api.handle_dms_application(dms_response)
 
-        assert beneficiary.validatedBirthDate == seventeen_years_ago.date()
+        fraud_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter_by(userId=user.id, type=fraud_models.FraudCheckType.DMS)
+            .one()
+        )
+        dms_content = fraud_check.resultContent
+        assert dms_content["application_number"] == 1234
+        assert dms_content["birth_date"] == user.birth_date.isoformat()
+        assert dms_content["birth_place"] == "Paris"
+        assert dms_content["civility"] == "Mme"
+        assert dms_content["email"] == user.email
+        assert dms_content["id_piece_number"] == "123123123"
+        assert dms_content["state"] == dms_models.GraphQLApplicationStates.accepted.value
+
+    def test_handle_dms_application_updates_birth_info(self):
+        user = users_factories.ProfileCompletedUserFactory(age=17)
+        seventeen_years_ago = datetime.datetime.utcnow() - relativedelta(years=17, months=1)
+        dms_response = make_parsed_graphql_application(
+            application_number=1234,
+            state=dms_models.GraphQLApplicationStates.accepted,
+            email=user.email,
+            birth_date=seventeen_years_ago,
+            birth_place="Casablanca",
+            construction_datetime=datetime.datetime.utcnow().isoformat(),
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response)
+
+        assert user.is_beneficiary
+        assert user.validatedBirthDate == seventeen_years_ago.date()
+        assert user.birthPlace == "Casablanca"
 
     def test_concurrent_accepted_calls(self):
         user = users_factories.UserFactory(
@@ -988,7 +1015,7 @@ class DmsSubscriptionMessageTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class IsFraudCheckUpdToDateUnitTest:
+class IsFraudCheckUpToDateUnitTest:
     def test_is_fraud_check_up_to_date_empty(self):
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.DMS,
@@ -1005,6 +1032,7 @@ class IsFraudCheckUpdToDateUnitTest:
             "activity": "Étudiant",
             "address": "21B Baker Street",
             "birth_date": (datetime.datetime.today() - relativedelta(years=18)).date(),
+            "birth_place": "Edinborough",
             "city": "Londres",
             "civility": users_models.GenderEnum.F,
             "department": "92",

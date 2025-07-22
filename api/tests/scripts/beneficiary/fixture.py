@@ -30,6 +30,7 @@ def make_graphql_application(
     *,
     activity: str = "Étudiant",
     birth_date: datetime.datetime | None = AGE18_ELIGIBLE_BIRTH_DATE,
+    birth_place: str = "Paris",
     civility: str = "Mme",
     city: str | None = None,
     construction_datetime: str = "2020-05-13T09:09:46+02:00",
@@ -85,6 +86,11 @@ def make_graphql_application(
                 "id": "Q2hhbXAtNTgyMjIw",
                 "label": labels.get("birth_date") or "Quelle est votre date de naissance",
                 "stringValue": babel.dates.format_date(birth_date, format="long", locale="fr"),
+            },
+            {
+                "id": "Q2hhbXAtNTQ1NzkzMQ==",
+                "label": labels.get("birth_place") or "Lieu de naissance",
+                "stringValue": birth_place,
             },
             {"id": "Q2hhbXAtNzE4MjIy", "label": "Pièces justificatives acceptées", "stringValue": ""},
             {
