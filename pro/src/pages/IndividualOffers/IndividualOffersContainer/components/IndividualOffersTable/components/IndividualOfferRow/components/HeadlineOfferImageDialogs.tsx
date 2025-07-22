@@ -10,7 +10,7 @@ import { useQuerySearchFilters } from 'commons/core/Offers/hooks/useQuerySearchF
 import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import {
@@ -32,8 +32,7 @@ export const HeadlineOfferImageDialogs = ({
   setIsFirstDialogOpen,
   offer,
 }: HeadlineOfferImageDialogsProps) => {
-  const currentOfferer = useSelector(selectCurrentOfferer)
-  const selectedOffererId = currentOfferer?.id ?? null
+  const selectedOffererId = useSelector(selectCurrentOffererId)
   const { mutate } = useSWRConfig()
 
   const { headlineOffer, upsertHeadlineOffer } = useHeadlineOfferContext()

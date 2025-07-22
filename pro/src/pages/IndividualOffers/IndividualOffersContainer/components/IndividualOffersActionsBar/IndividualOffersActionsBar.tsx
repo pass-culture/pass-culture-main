@@ -13,7 +13,7 @@ import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { serializeApiFilters } from 'commons/core/Offers/utils/serializer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { computeActivationSuccessMessage } from 'components/OffersTable/utils/computeActivationSuccessMessage'
@@ -147,8 +147,7 @@ export const IndividualOffersActionsBar = ({
   }
 
   const { mutate } = useSWRConfig()
-  const currentOfferer = useSelector(selectCurrentOfferer)
-  const selectedOffererId = currentOfferer?.id.toString() ?? null
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const deleteButtonRef = useRef<HTMLButtonElement>(null)
   const dactivateButtonRef = useRef<HTMLButtonElement>(null)
@@ -160,7 +159,7 @@ export const IndividualOffersActionsBar = ({
 
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
-    selectedOffererId
+    selectedOffererId?.toString()
   )
 
   const handleClose = () => {

@@ -14,7 +14,7 @@ import { useQueryCollectiveSearchFilters } from 'commons/core/Offers/hooks/useQu
 import { getCollectiveOffersSwrKeys } from 'commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
@@ -89,8 +89,7 @@ export function CollectiveOffersActionsBar({
     useState(false)
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false)
 
-  const currentOfferer = useSelector(selectCurrentOfferer)
-  const selectedOffererId = currentOfferer?.id.toString() ?? null
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
@@ -105,7 +104,7 @@ export function CollectiveOffersActionsBar({
     isNewOffersAndBookingsActive,
     isInTemplateOffersPage: areTemplateOffers,
     urlSearchFilters,
-    selectedOffererId,
+    selectedOffererId: selectedOffererId?.toString(),
   })
 
   async function updateOfferStatus(

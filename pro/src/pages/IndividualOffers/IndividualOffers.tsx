@@ -17,7 +17,7 @@ import { serializeApiFilters } from 'commons/core/Offers/utils/serializer'
 import { Audience } from 'commons/core/shared/types'
 import { useOffererAddresses } from 'commons/hooks/swr/useOffererAddresses'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { sortByLabel } from 'commons/utils/strings'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { formatAndOrderAddresses } from 'repository/venuesService'
@@ -40,8 +40,7 @@ export const IndividualOffers = (): JSX.Element => {
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
-  const currentOfferer = useSelector(selectCurrentOfferer)
-  const selectedOffererId = currentOfferer?.id ?? null
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const categoriesQuery = useSWR(
     [GET_CATEGORIES_QUERY_KEY],

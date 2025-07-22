@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 
 import { useVenuesFromOfferer } from 'commons/hooks/swr/useVenuesFromOfferer'
-import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { useIncome } from 'pages/Reimbursements/Income/useIncome'
 import { MultiSelect } from 'ui-kit/MultiSelect/MultiSelect'
@@ -27,8 +27,7 @@ type VenueFormValues = {
 export const Income = () => {
   const firstYearFilterRef = useRef<HTMLButtonElement>(null)
   const [activeYear, setActiveYear] = useState<number>()
-  const currentOfferer = useSelector(selectCurrentOfferer)
-  const selectedOffererId = currentOfferer?.id ?? null
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const {
     data: venues,

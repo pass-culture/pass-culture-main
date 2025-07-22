@@ -7,7 +7,7 @@ import { api } from 'apiClient/api'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { OnboardingDidacticEvents } from 'commons/core/FirebaseEvents/constants'
 import { updateCurrentOffererOnboardingStatus } from 'commons/store/offerer/reducer'
-import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -29,8 +29,7 @@ export const OnboardingCollectiveModal = ({
 }: OnboardingCollectiveModalProps): JSX.Element => {
   const [errorMessage, setErrorMessage] = useState<null | string>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const currentOfferer = useSelector(selectCurrentOfferer)
-  const currentOffererId = currentOfferer?.id ?? null
+  const currentOffererId = useSelector(selectCurrentOffererId)
   const navigate = useNavigate()
   const { logEvent } = useAnalytics()
   const dispatch = useDispatch()

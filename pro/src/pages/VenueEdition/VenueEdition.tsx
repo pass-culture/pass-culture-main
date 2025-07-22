@@ -12,7 +12,7 @@ import {
 import { SelectOption } from 'commons/custom_types/form'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { setSelectedPartnerPageId } from 'commons/store/nav/reducer'
-import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { getVenuePagePathToNavigateTo } from 'commons/utils/getVenuePagePathToNavigateTo'
 import { setSavedPartnerPageVenueId } from 'commons/utils/savedPartnerPageVenueId'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -34,8 +34,7 @@ export const VenueEdition = (): JSX.Element | null => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
-  const currentOfferer = useSelector(selectCurrentOfferer)
-  const selectedOffererId = currentOfferer?.id ?? null
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const venueQuery = useSWR(
     [GET_VENUE_QUERY_KEY, venueId],

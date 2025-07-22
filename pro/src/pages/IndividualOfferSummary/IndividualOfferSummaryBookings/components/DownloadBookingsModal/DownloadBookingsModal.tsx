@@ -11,7 +11,7 @@ import {
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FORMAT_DD_MM_YYYY, mapDayToFrench } from 'commons/utils/date'
 import { downloadFile } from 'commons/utils/downloadFile'
 import { pluralize } from 'commons/utils/pluralize'
@@ -43,8 +43,7 @@ export const DownloadBookingsModal = ({
       ? priceCategoryAndScheduleCountByDate[0].eventDate
       : undefined
   )
-  const currentOfferer = useSelector(selectCurrentOfferer)
-  const selectedOffererId = currentOfferer?.id ?? null
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const { logEvent } = useAnalytics()
 

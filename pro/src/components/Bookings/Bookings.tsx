@@ -22,7 +22,7 @@ import { Audience } from 'commons/core/shared/types'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useOffererAddresses } from 'commons/hooks/swr/useOffererAddresses'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { isEqual } from 'commons/utils/isEqual'
 import { stringify } from 'commons/utils/query-string'
 import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/CollectiveBudgetCallout'
@@ -72,8 +72,7 @@ export const BookingsContainer = <
   const notify = useNotification()
   const { logEvent } = useAnalytics()
 
-  const currentOfferer = useSelector(selectCurrentOfferer)
-  const selectedOffererId = currentOfferer?.id ?? null
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const initialAppliedFilters = {
     ...DEFAULT_PRE_FILTERS,

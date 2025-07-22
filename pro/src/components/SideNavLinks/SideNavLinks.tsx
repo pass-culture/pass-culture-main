@@ -18,7 +18,7 @@ import {
   selectIsIndividualSectionOpen,
   selectSelectedPartnerPageId,
 } from 'commons/store/nav/selector'
-import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { getSavedPartnerPageVenueId } from 'commons/utils/savedPartnerPageVenueId'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
@@ -51,9 +51,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const dispatch = useDispatch()
   const isIndividualSectionOpen = useSelector(selectIsIndividualSectionOpen)
   const isCollectiveSectionOpen = useSelector(selectIsCollectiveSectionOpen)
-  const currentOfferer = useSelector(selectCurrentOfferer)
-  const selectedOffererId = currentOfferer?.id ?? null
-  const offererId = currentOfferer?.id ?? null
+  const selectedOffererId = useSelector(selectCurrentOffererId)
   const sideNavCollapseSize = useMediaQuery(
     SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY
   )
@@ -221,7 +219,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               {selectedPartnerPageVenueId && (
                 <li>
                   <NavLink
-                    to={`/structures/${offererId}/lieux/${selectedPartnerPageVenueId}/page-partenaire`}
+                    to={`/structures/${selectedOffererId}/lieux/${selectedPartnerPageVenueId}/page-partenaire`}
                     className={({ isActive }) =>
                       classnames(styles['nav-links-item'], {
                         [styles['nav-links-item-active']]: isActive,
@@ -321,7 +319,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               {venueId && (
                 <li>
                   <NavLink
-                    to={`/structures/${offererId}/lieux/${venueId}/collectif`}
+                    to={`/structures/${selectedOffererId}/lieux/${venueId}/collectif`}
                     className={({ isActive }) =>
                       classnames(styles['nav-links-item'], {
                         [styles['nav-links-item-active']]: isActive,

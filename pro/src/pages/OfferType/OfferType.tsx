@@ -4,7 +4,7 @@ import { Navigate, useLocation } from 'react-router'
 import { Layout } from 'app/App/layout/Layout'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
-import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 
 import { OfferTypeScreen } from './OfferType/OfferType'
@@ -14,9 +14,9 @@ export const OfferType = (): JSX.Element => {
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
 
-  const currentOfferer = useSelector(selectCurrentOfferer)
-  const queryOffererId = currentOfferer?.id.toString() ?? null
-  const { data: offerer } = useOfferer(queryOffererId)
+  const selectedOffererId = useSelector(selectCurrentOffererId)
+
+  const { data: offerer } = useOfferer(selectedOffererId?.toString())
 
   if (isOnboarding && isDidacticOnboardingEnabled === false) {
     return <Navigate to="/accueil" />
