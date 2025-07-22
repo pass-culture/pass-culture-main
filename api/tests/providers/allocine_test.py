@@ -167,7 +167,7 @@ class GetMovieShowtimeListFromAllocineTest:
 
         movie_showtimes = get_movies_showtimes(self.theater_id)
 
-        mock_get_movies_showtimes.assert_called_once_with(self.theater_id, enable_debug=False)
+        mock_get_movies_showtimes.assert_called_once_with(self.theater_id)
         assert next(movie_showtimes).movie.internalId == 131136
         assert next(movie_showtimes, None) is None
 

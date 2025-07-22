@@ -1,4 +1,6 @@
 import logging
+from collections.abc import Generator
+from contextlib import contextmanager
 from time import time
 
 import click
@@ -17,6 +19,17 @@ blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
 
 
+@contextmanager
+def _set_debug_level(target_logger: logging.Logger, level: int) -> Generator[None, None, None]:
+    old_level = target_logger.level
+    target_logger.setLevel(level)
+
+    try:
+        yield
+    finally:
+        target_logger.setLevel(old_level)
+
+
 @blueprint.cli.command("synchronize_allocine_products")
 def synchronize_allocine_products() -> None:
     allocine.synchronize_products()
@@ -26,16 +39,23 @@ def synchronize_allocine_products() -> None:
 @click.option("-vp", "--venue-provider-id", required=True, help="Venue provider id", type=int)
 def debug_synchronize_venue_provider(venue_provider_id: int) -> None:
     """
-    Start synchronize_venue_provider with `enable_debug=True` to log all the calls made to the external provider API
+    Start synchronize_venue_provider with `pcapi` logger at DEBUG level
     """
-    venue_provider: providers_models.VenueProvider = (
-        db.session.query(providers_models.VenueProvider).filter_by(id=venue_provider_id).one()
-    )
-    if venue_provider.provider.localClass == "EMSStocks":
-        provider_manager.synchronize_ems_venue_provider(venue_provider=venue_provider, enable_debug=True)
-        return
+    with _set_debug_level(logging.getLogger("pcapi"), level=logging.DEBUG):
+        venue_provider: providers_models.VenueProvider = (
+            db.session.query(providers_models.VenueProvider).filter_by(id=venue_provider_id).one()
+        )
 
-    provider_manager.synchronize_venue_provider(venue_provider=venue_provider, enable_debug=True)
+        if venue_provider.provider.localClass == "EMSStocks":
+            ems_cinema_details = providers_repository.get_ems_cinema_details(venue_provider.venueIdAtOfferProvider)
+            target_version = ems_cinema_details.lastVersion - 1  # retry from previous version
+
+            provider_manager.synchronize_ems_venue_provider(
+                venue_provider=venue_provider, target_version=target_version
+            )
+            return
+
+        provider_manager.synchronize_venue_provider(venue_provider=venue_provider)
 
 
 @blueprint.cli.command("update_providables")

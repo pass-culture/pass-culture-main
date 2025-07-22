@@ -6,7 +6,6 @@ from functools import wraps
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.users.models as users_models
-from pcapi import settings
 from pcapi.utils.cache import get_from_cache
 
 
@@ -29,10 +28,9 @@ class Movie:
 
 
 class ExternalBookingsClientAPI:
-    def __init__(self, cinema_id: str, request_timeout: None | int = None, enable_debug: bool = False) -> None:
+    def __init__(self, cinema_id: str, request_timeout: None | int = None) -> None:
         self.cinema_id = cinema_id
         self.request_timeout = request_timeout
-        self.enable_debug = enable_debug or settings.ENABLE_CINEMA_PROVIDER_DEBUG
 
     # Fixme (yacine, 2022-12-19) remove this method from ExternalBookingsClientAPI. Unlike CDS, on Boost API
     #  we can't get shows remaining places from list of shows ids

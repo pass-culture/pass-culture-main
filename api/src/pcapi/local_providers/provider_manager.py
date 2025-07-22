@@ -71,22 +71,17 @@ def synchronize_venue_providers(venue_providers: list[provider_models.VenueProvi
             logger.exception("Unexpected error while synchronizing venue provider", extra=log_data)
 
 
-def synchronize_venue_provider(
-    venue_provider: provider_models.VenueProvider,
-    limit: int | None = None,
-    enable_debug: bool = False,
-) -> None:
+def synchronize_venue_provider(venue_provider: provider_models.VenueProvider, limit: int | None = None) -> None:
     assert venue_provider.provider.localClass in _NAME_TO_LOCAL_PROVIDER_CLASS.keys(), (
         f"Only {', '.join(_NAME_TO_LOCAL_PROVIDER_CLASS.keys())} should reach this code"
     )
     provider_class = _NAME_TO_LOCAL_PROVIDER_CLASS[venue_provider.provider.localClass]
-
     logger.info(
         "Starting synchronization of venue_provider=%s with provider=%s",
         venue_provider.id,
         venue_provider.provider.localClass,
     )
-    provider = provider_class(venue_provider, enable_debug=enable_debug)
+    provider = provider_class(venue_provider)
     provider.updateObjects(limit)
     logger.info(
         "Ended synchronization of venue_provider=%s with provider=%s",
@@ -138,13 +133,14 @@ def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:
         db.session.commit()
 
 
-def synchronize_ems_venue_provider(venue_provider: provider_models.VenueProvider, enable_debug: bool = False) -> None:
-    connector = ems_connectors.EMSScheduleConnector(enable_debug=enable_debug)
+def synchronize_ems_venue_provider(
+    venue_provider: provider_models.VenueProvider,
+    target_version: int | None = None,
+) -> None:
+    connector = ems_connectors.EMSScheduleConnector()
     ems_cinema_details = providers_repository.get_ems_cinema_details(venue_provider.venueIdAtOfferProvider)
-    last_version = ems_cinema_details.lastVersion
-    if enable_debug and last_version:
-        last_version -= 1  # retry from previous version
-    schedules = connector.get_schedules(last_version)
+    target_version = target_version or ems_cinema_details.lastVersion
+    schedules = connector.get_schedules(target_version)
     new_version = schedules.version
     for site in schedules.sites:
         if site.id != venue_provider.venueIdAtOfferProvider:
