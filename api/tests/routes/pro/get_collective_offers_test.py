@@ -1,16 +1,42 @@
 import datetime
-import random
 
 import dateutil
 import pytest
 import time_machine
 
-import pcapi.core.educational.factories as educational_factories
-import pcapi.core.educational.models as educational_models
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.providers.factories as providers_factories
-import pcapi.core.users.factories as users_factories
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models as educational_models
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.users import factories as users_factories
+
+
+def _get_serialized_address(
+    offerer_address: offerers_models.OffererAddress, label: str, is_linked_to_venue: bool
+) -> dict:
+    address = offerer_address.address
+
+    return {
+        "address": {
+            "id": address.id,
+            "id_oa": offerer_address.id,
+            "inseeCode": address.inseeCode,
+            "isLinkedToVenue": is_linked_to_venue,
+            "isManualEdition": False,
+            "city": address.city,
+            "label": label,
+            "latitude": float(address.latitude),
+            "longitude": float(address.longitude),
+            "postalCode": address.postalCode,
+            "departmentCode": address.departmentCode,
+            "street": address.street,
+            "banId": address.banId,
+        },
+        "locationComment": None,
+        "locationType": "ADDRESS",
+    }
 
 
 @pytest.mark.usefixtures("db_session")
@@ -34,27 +60,113 @@ class Returns200Test:
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         client = client.with_session_auth(user.email)
-        with assert_num_queries(self.expected_num_queries + 1):  # + national_program
+        with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers")
             assert response.status_code == 200
 
-        response_json = response.json
-        assert isinstance(response_json, list)
-        assert len(response_json) == 1
-        assert response_json[0]["venue"]["id"] == venue.id
-        assert response_json[0]["id"] == offer.id
-        assert len(response_json[0]["stocks"]) == 1
-        assert response_json[0]["isShowcase"] is False
-        assert response_json[0]["educationalInstitution"]["name"] == institution.name
-        assert response_json[0]["imageCredit"] is None
-        assert response_json[0]["imageUrl"] is None
-        assert response_json[0]["displayedStatus"] == "PUBLISHED"
-        assert response_json[0]["isActive"] is True
-        assert response_json[0]["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
+        assert response.json == [
+            {
+                "id": offer.id,
+                "allowedActions": [
+                    "CAN_EDIT_DETAILS",
+                    "CAN_EDIT_DATES",
+                    "CAN_EDIT_DISCOUNT",
+                    "CAN_DUPLICATE",
+                    "CAN_ARCHIVE",
+                ],
+                "booking": None,
+                "dates": {
+                    "start": offer.collectiveStock.startDatetime.isoformat() + "Z",
+                    "end": offer.collectiveStock.endDatetime.isoformat() + "Z",
+                },
+                "venue": {
+                    "id": venue.id,
+                    "departementCode": venue.offererAddress.address.departmentCode,
+                    "isVirtual": False,
+                    "name": venue.name,
+                    "offererName": venue.managingOfferer.name,
+                    "publicName": venue.publicName,
+                },
+                "location": {
+                    "address": None,
+                    "locationComment": None,
+                    "locationType": "TO_BE_DEFINED",
+                },
+                "hasBookingLimitDatetimesPassed": False,
+                "name": offer.name,
+                "stocks": [
+                    {
+                        "hasBookingLimitDatetimePassed": offer.collectiveStock.hasBookingLimitDatetimePassed,
+                        "remainingQuantity": 0,
+                        "bookingLimitDatetime": offer.collectiveStock.bookingLimitDatetime.isoformat() + "Z",
+                        "startDatetime": offer.collectiveStock.startDatetime.isoformat() + "Z",
+                        "endDatetime": offer.collectiveStock.endDatetime.isoformat() + "Z",
+                        "price": float(offer.collectiveStock.price),
+                        "numberOfTickets": offer.collectiveStock.numberOfTickets,
+                    }
+                ],
+                "isShowcase": False,
+                "educationalInstitution": {
+                    "name": institution.name,
+                    "city": institution.city,
+                    "id": institution.id,
+                    "institutionId": institution.institutionId,
+                    "institutionType": institution.institutionType,
+                    "phoneNumber": institution.phoneNumber,
+                    "postalCode": institution.postalCode,
+                },
+                "imageUrl": None,
+                "displayedStatus": "PUBLISHED",
+                "isActive": True,
+                "isEducational": True,
+            }
+        ]
+
+    def test_one_collective_offer_location_school(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        educational_factories.CollectiveOfferOnSchoolLocationFactory(venue=venue)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/collective/offers")
+            assert response.status_code == 200
+
+        [offer_json] = response.json
+        assert offer_json["location"] == {"address": None, "locationComment": None, "locationType": "SCHOOL"}
+
+    def test_one_collective_offer_location_venue_address(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer = educational_factories.CollectiveOfferOnAddressVenueLocationFactory(venue=venue)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/collective/offers")
+            assert response.status_code == 200
+
+        [offer_json] = response.json
+        assert offer_json["location"] == _get_serialized_address(
+            offerer_address=offer.offererAddress, label=venue.common_name, is_linked_to_venue=True
+        )
+
+    def test_one_collective_offer_location_other_address(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer = educational_factories.CollectiveOfferOnOtherAddressLocationFactory(venue=venue)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/collective/offers")
+            assert response.status_code == 200
+
+        [offer_json] = response.json
+        assert offer_json["location"] == _get_serialized_address(
+            offerer_address=offer.offererAddress, label=offer.offererAddress.label, is_linked_to_venue=False
+        )
 
     @time_machine.travel("2024-06-1")
     def test_one_simple_collective_offer_dates(self, client):
-        # Given
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
@@ -72,18 +184,9 @@ class Returns200Test:
 
         client = client.with_session_auth(user.email)
 
-        # When
-        queries = 0
-        queries += 1  # load session
-        queries += 1  # load user
-        queries += 1  # load collective offers
-        queries += 1  # load collective offers template
-        queries += 1  # load national program
-
-        with assert_num_queries(queries):
+        with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers")
 
-            # Then
             assert response.status_code == 200
             response_json = response.json
             assert isinstance(response_json, list)
@@ -168,32 +271,110 @@ class Returns200Test:
             assert response.status_code == 200
 
     def test_one_simple_collective_offer_template(self, client):
-        # Given
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
 
-        # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers")
             assert response.status_code == 200
 
-        # Then
-        response_json = response.json
-        assert isinstance(response_json, list)
-        assert len(response_json) == 1
-        assert response_json[0]["venue"]["id"] == venue.id
-        assert response_json[0]["id"] == offer.id
-        assert len(response_json[0]["stocks"]) == 1
-        assert response_json[0]["isShowcase"] is True
-        assert response_json[0]["imageCredit"] is None
-        assert response_json[0]["imageUrl"] is None
+        assert response.json == [
+            {
+                "allowedActions": [
+                    "CAN_EDIT_DETAILS",
+                    "CAN_ARCHIVE",
+                    "CAN_CREATE_BOOKABLE_OFFER",
+                    "CAN_HIDE",
+                ],
+                "booking": None,
+                "dates": {
+                    "start": offer.dateRange.lower.isoformat() + "Z",
+                    "end": offer.dateRange.upper.isoformat() + "Z",
+                },
+                "displayedStatus": "PUBLISHED",
+                "educationalInstitution": None,
+                "hasBookingLimitDatetimesPassed": False,
+                "id": offer.id,
+                "imageUrl": None,
+                "isActive": True,
+                "isEducational": True,
+                "isShowcase": True,
+                "location": {
+                    "address": None,
+                    "locationComment": None,
+                    "locationType": "TO_BE_DEFINED",
+                },
+                "name": offer.name,
+                "stocks": [
+                    {
+                        "bookingLimitDatetime": None,
+                        "endDatetime": None,
+                        "hasBookingLimitDatetimePassed": False,
+                        "numberOfTickets": None,
+                        "price": None,
+                        "remainingQuantity": 1,
+                        "startDatetime": None,
+                    },
+                ],
+                "venue": {
+                    "departementCode": venue.offererAddress.address.departmentCode,
+                    "id": venue.id,
+                    "isVirtual": venue.isVirtual,
+                    "name": venue.name,
+                    "offererName": venue.managingOfferer.name,
+                    "publicName": venue.publicName,
+                },
+            }
+        ]
+
+    def test_one_collective_offer_template_location_school(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        educational_factories.CollectiveOfferTemplateOnSchoolLocationFactory(venue=venue)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/collective/offers")
+            assert response.status_code == 200
+
+        [offer_json] = response.json
+        assert offer_json["location"] == {"address": None, "locationComment": None, "locationType": "SCHOOL"}
+
+    def test_one_collective_offer_template_location_venue_address(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer = educational_factories.CollectiveOfferTemplateOnAddressVenueLocationFactory(venue=venue)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/collective/offers")
+            assert response.status_code == 200
+
+        [offer_json] = response.json
+        assert offer_json["location"] == _get_serialized_address(
+            offerer_address=offer.offererAddress, label=venue.common_name, is_linked_to_venue=True
+        )
+
+    def test_one_collective_offer_template_location_other_address(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer = educational_factories.CollectiveOfferTemplateOnOtherAddressLocationFactory(venue=venue)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/collective/offers")
+            assert response.status_code == 200
+
+        [offer_json] = response.json
+        assert offer_json["location"] == _get_serialized_address(
+            offerer_address=offer.offererAddress, label=offer.offererAddress.label, is_linked_to_venue=False
+        )
 
     def test_mix_collective_offer_and_template(self, client):
-        # Given
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
@@ -202,25 +383,21 @@ class Returns200Test:
             venue=venue,
             dateCreated=datetime.datetime.utcnow(),
             imageId="00000125999998",
-            imageCredit="offer",
         )
 
         template = educational_factories.CollectiveOfferTemplateFactory(
             venue=venue,
             dateCreated=datetime.datetime.utcnow(),
             imageId="00000125999999",
-            imageCredit="template",
         )
 
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers")
             assert response.status_code == 200
 
-        # Then
         response_json = response.json
         assert isinstance(response_json, list)
         assert len(response_json) == 2
@@ -228,75 +405,16 @@ class Returns200Test:
         assert response_json[0]["id"] == offer.id
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["isShowcase"] is False
-        assert response_json[0]["imageCredit"] == "offer"
         assert response_json[0]["imageUrl"] == f"http://localhost/storage/thumbs/collectiveoffer/{offer.imageId}.jpg"
 
         assert response_json[1]["venue"]["id"] == venue.id
         assert response_json[1]["id"] == template.id
         assert len(response_json[1]["stocks"]) == 1
         assert response_json[1]["isShowcase"] is True
-        assert response_json[1]["imageCredit"] == "template"
         assert (
             response_json[1]["imageUrl"]
             == f"http://localhost/storage/thumbs/collectiveoffertemplate/{template.imageId}.jpg"
         )
-
-    def test_one_collective_offer_with_template_id(self, client):
-        # Given
-        user = users_factories.UserFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        template = educational_factories.CollectiveOfferTemplateFactory()
-        educational_factories.CollectiveOfferFactory(venue=venue, template=template)
-
-        # When
-        client = client.with_session_auth(email=user.email)
-        with assert_num_queries(self.expected_num_queries):
-            response = client.get("/collective/offers")
-            assert response.status_code == 200
-
-        # Then
-        response_json = response.json
-        assert isinstance(response_json, list)
-        assert len(response_json) == 1
-        assert response_json[0]["templateId"] == str(template.id)
-
-    @pytest.mark.skip(reason="Too long to be played each time")
-    def test_max_offers_limit_mix_template(self, client):
-        # Given
-        offers = []
-        user = users_factories.UserFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-
-        for i in range(510):
-            if random.randrange(10) % 2:
-                offer = educational_factories.CollectiveOfferFactory(
-                    venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=i)
-                )
-                educational_factories.CollectiveStockFactory(collectiveOffer=offer)
-            else:
-                offer = educational_factories.CollectiveOfferTemplateFactory(
-                    venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=i)
-                )
-
-            offers.append(offer)
-
-        # When
-        client = client.with_session_auth(user.email)
-        with assert_num_queries(self.expected_num_queries + 1):  # + national_program
-            response = client.with_session_auth(user.email).get("/collective/offers")
-            assert response.status_code == 200
-
-        # Then
-        response_json = response.json
-        assert isinstance(response_json, list)
-        assert len(response_json) == 501
-        for i in range(501):
-            assert response_json[i]["id"] == offers[-(i + 1)].id
-            assert response_json[i]["isShowcase"] != isinstance(offers[-(i + 1)], educational_models.CollectiveOffer)
 
     def test_mix_collective_offer_and_template_no_user(self, client):
         # Given

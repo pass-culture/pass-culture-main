@@ -578,9 +578,7 @@ def get_collective_offers_by_filters(
         search = name_keywords
         if len(name_keywords) > 3:
             search = "%{}%".format(name_keywords)
-        # We should really be using `union` instead of `union_all` here since we don't want duplicates but
-        # 1. it's unlikely that a book will contain its EAN in its name
-        # 2. we need to migrate models.Offer.extraData to JSONB in order to use `union`
+
         query = query.filter(educational_models.CollectiveOffer.name.ilike(search))
 
     if statuses:
@@ -674,9 +672,7 @@ def get_collective_offers_template_by_filters(
         search = name_keywords
         if len(name_keywords) > 3:
             search = "%{}%".format(name_keywords)
-        # We should really be using `union` instead of `union_all` here since we don't want duplicates but
-        # 1. it's unlikely that a book will contain its EAN in its name
-        # 2. we need to migrate models.Offer.extraData to JSONB in order to use `union`
+
         query = query.filter(educational_models.CollectiveOfferTemplate.name.ilike(search))
 
     if statuses:
@@ -955,7 +951,8 @@ def get_collective_offers_for_filters(
                 sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
                     offerers_models.OffererAddress.address
                 ),
-            )
+            ),
+            *_get_collective_offer_address_joinedload_with_expression(),
         )
         .options(
             sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
@@ -964,6 +961,7 @@ def get_collective_offers_for_filters(
         )
         .options(sa_orm.joinedload(educational_models.CollectiveOffer.institution))
         .limit(offers_limit)
+        .populate_existing()
         .all()
     )
     return offers
@@ -994,9 +992,6 @@ def get_collective_offers_template_for_filters(
         formats=formats,
     )
 
-    if query is None:
-        return []
-
     query = query.order_by(educational_models.CollectiveOfferTemplate.dateCreated.desc())
 
     offers = (
@@ -1006,9 +1001,11 @@ def get_collective_offers_template_for_filters(
                 sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
                     offerers_models.OffererAddress.address
                 ),
-            )
+            ),
+            *_get_collective_offer_template_address_joinedload_with_expression(),
         )
         .limit(offers_limit)
+        .populate_existing()
         .all()
     )
     return offers
