@@ -45,7 +45,6 @@ export const OffererAuthenticationForm = (): JSX.Element => {
 
   return (
     <FormLayout.Section>
-      <h1 className={styles['title']}>Identification</h1>
       <FormLayout.Row mdSpaceAfter>
         <TextInput
           {...register('siret')}

@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router'
 import { api } from 'apiClient/api'
 import { isError } from 'apiClient/helpers'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { MainHeading } from 'app/App/layout/Layout'
 import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
@@ -177,9 +178,14 @@ export const Offerer = (): JSX.Element => {
           data-testid="signup-offerer-form"
         >
           <FormLayout.Section>
-            <h1 className={styles['title']}>
-              Renseignez le SIRET de votre structure
-            </h1>
+            <MainHeading
+              mainHeading="Votre structure"
+              className={styles['main-heading-wrapper']}
+            />
+            <h2 className={styles['subtitle']}>
+              Dites-nous pour quelle structure vous travaillez
+            </h2>
+
             <FormLayout.MandatoryInfo className={styles['mandatory-info']} />
             <FormLayout.Row>
               <TextInput

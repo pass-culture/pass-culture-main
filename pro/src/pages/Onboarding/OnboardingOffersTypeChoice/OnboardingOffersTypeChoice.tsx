@@ -1,3 +1,4 @@
+import { MainHeading } from 'app/App/layout/Layout'
 import { OnboardingOffersChoice } from 'components/OnboardingOffersChoice/OnboardingOffersChoice'
 
 import { OnboardingLayout } from '../components/OnboardingLayout/OnboardingLayout'
@@ -9,11 +10,12 @@ export const OnboardingOffersTypeChoice = () => {
     <OnboardingLayout verticallyCentered stickyActionsAndFooter={false}>
       <div className={styles['onboarding-offer-container']}>
         <div className={styles['onboarding-offer-header']}>
-          <h1 className={styles['onboarding-offer-header-title']}>
-            Bienvenue sur le pass Culture Pro !
-          </h1>
+          <MainHeading
+            mainHeading="Bienvenue sur le pass Culture Pro !"
+            className={styles['onboarding-offer-main-heading-wrapper']}
+          />
           <h2 className={styles['onboarding-offer-header-subtitle']}>
-            À qui souhaitez-vous proposer votre première offre ?{' '}
+            Où souhaitez-vous diffuser votre première offre ?
           </h2>
         </div>
         <OnboardingOffersChoice />

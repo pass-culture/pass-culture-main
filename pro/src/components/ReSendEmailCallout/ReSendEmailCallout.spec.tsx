@@ -21,7 +21,7 @@ describe('ReSendEmailCallout', () => {
   it('should render correctly', () => {
     renderComponent()
     expect(
-      screen.getByText(/Vous n’avez pas reçu d’email ?/)
+      screen.getByText(/Vous n’avez pas reçu notre email ?/)
     ).toBeInTheDocument()
     expect(screen.getByText('cliquez ici')).toBeEnabled()
   })

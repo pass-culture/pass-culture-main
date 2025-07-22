@@ -52,7 +52,6 @@ export const ActivityForm = ({
 
   return (
     <FormLayout.Section>
-      <h1 className={styles['activity-form-wrapper']}>Activité</h1>
       <FormLayout.Row mdSpaceAfter>
         <Select
           options={[

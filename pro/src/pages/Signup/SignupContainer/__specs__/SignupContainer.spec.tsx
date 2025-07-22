@@ -87,13 +87,7 @@ describe('Signup', () => {
       // when the user sees the form
       renderSignUp()
 
-      // then it should have a title
-      expect(
-        screen.getByRole('heading', {
-          name: /Créez votre compte/,
-        })
-      ).toBeInTheDocument()
-      // and an external link to the help center
+      // the it should have an external link to the help center
       expect(
         screen.getByRole('link', {
           name: /Consulter notre centre d’aide/,

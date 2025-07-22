@@ -159,7 +159,7 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     expect(
-      screen.getByText('Renseignez le SIRET de votre structure')
+      screen.getByText('Dites-nous pour quelle structure vous travaillez')
     ).toBeInTheDocument()
 
     await userEvent.type(
@@ -173,7 +173,7 @@ describe('Offerer', () => {
     expect(api.getSiretInfo).toHaveBeenCalled()
     expect(screen.queryByText('Authentication screen')).not.toBeInTheDocument()
     expect(
-      screen.getByText('Renseignez le SIRET de votre structure')
+      screen.getByText('Dites-nous pour quelle structure vous travaillez')
     ).toBeInTheDocument()
   })
 
@@ -181,7 +181,9 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     expect(
-      await screen.findByText('Renseignez le SIRET de votre structure')
+      await screen.findByText(
+        'Dites-nous pour quelle structure vous travaillez'
+      )
     ).toBeInTheDocument()
     await userEvent.type(
       screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
@@ -449,7 +451,9 @@ describe('Offerer', () => {
     renderOffererScreen(contextValue)
 
     expect(
-      await screen.findByText('Renseignez le SIRET de votre structure')
+      await screen.findByText(
+        'Dites-nous pour quelle structure vous travaillez'
+      )
     ).toBeInTheDocument()
 
     expect(

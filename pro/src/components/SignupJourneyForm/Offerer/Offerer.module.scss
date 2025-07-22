@@ -6,7 +6,13 @@
   padding: rem.torem(24px);
 }
 
-.title {
+.main-heading {
+  &-wrapper {
+    margin-bottom: rem.torem(24px);
+  }
+}
+
+.subtitle {
   @include fonts.title3;
 }
 

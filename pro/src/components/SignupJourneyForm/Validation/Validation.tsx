@@ -6,6 +6,7 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import { SaveNewOnboardingDataQueryModel, Target } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { MainHeading } from 'app/App/layout/Layout'
 import { GET_VENUE_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { defaultActivityValues } from 'commons/context/SignupJourneyContext/constants'
 import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
@@ -192,9 +193,12 @@ export const Validation = (): JSX.Element => {
   return (
     <div className={styles['validation-screen']}>
       <section>
-        <h1 className={styles['title']}>Validation</h1>
+        <MainHeading
+          mainHeading="Votre structure"
+          className={styles['main-heading-wrapper']}
+        />
         <div className={styles['validation-screen-subtitle']}>
-          <h2 className={styles['subtitle']}>Identification</h2>
+          <h2 className={styles['subtitle']}>Vos informations</h2>
           <ButtonLink
             to="/parcours-inscription/identification"
             onClick={() => {
@@ -225,7 +229,7 @@ export const Validation = (): JSX.Element => {
       </section>
       <section className={styles['validation-screen']}>
         <div className={styles['validation-screen-subtitle']}>
-          <h2 className={styles['subtitle']}>Activité</h2>
+          <h2 className={styles['subtitle']}>Votre activité</h2>
           <ButtonLink
             to="/parcours-inscription/activite"
             onClick={() => {

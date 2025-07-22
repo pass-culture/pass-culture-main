@@ -13,14 +13,11 @@
 }
 
 .offers-title {
-  @include fonts.title3;
-
-  text-align: center;
-  margin-bottom: rem.torem(8px);
+  margin-bottom: rem.torem(16px);
 }
 
 .offers-subtitle {
-  @include fonts.title1;
+  @include fonts.title3;
 
   text-align: center;
   margin-bottom: rem.torem(32px);
@@ -36,7 +33,7 @@
   margin-bottom: 0;
 
   .offer-choice {
-    min-width: rem.torem(207px);
+    min-width: rem.torem(230px);
     flex: 1;
     margin-bottom: 0;
   }

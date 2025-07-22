@@ -3,9 +3,8 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1/models/OfferStatus'
-import {
-  GET_OFFERS_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
+import { MainHeading } from 'app/App/layout/Layout'
+import { GET_OFFERS_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -24,7 +23,8 @@ export const MAX_DRAFT_TO_DISPLAY = 50
 export const OnboardingOfferIndividual = (): JSX.Element => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
-  const { data: offerer, isLoading: isOffererLoading } = useOfferer(selectedOffererId)
+  const { data: offerer, isLoading: isOffererLoading } =
+    useOfferer(selectedOffererId)
 
   const offersQuery = useSWR(
     [GET_OFFERS_QUERY_KEY, { status: 'DRAFT' }],
@@ -53,7 +53,10 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
 
   return (
     <OnboardingLayout verticallyCentered={draftOffers.length <= 1}>
-      <h1 className={styles['offers-title']}>Offre à destination des jeunes</h1>
+      <MainHeading
+        mainHeading="Offre à destination des jeunes"
+        className={styles['offers-title']}
+      />
       <h2 className={styles['offers-subtitle']}>
         Comment souhaitez-vous créer votre 1ère offre ?
       </h2>

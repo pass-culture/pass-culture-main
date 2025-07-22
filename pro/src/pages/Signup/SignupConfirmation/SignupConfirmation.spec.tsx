@@ -28,10 +28,12 @@ describe('SignupConfirmation', () => {
   it('Should render correctly with new signup FF', () => {
     renderSignup(['WIP_2025_SIGN_UP'])
     expect(
-      screen.getByText('Cliquez sur le lien envoyé par email')
+      screen.getByText(
+        'Cliquez sur le lien que nous vous avons envoyé par email'
+      )
     ).toBeInTheDocument()
     expect(
-      screen.getByText(/Vous n’avez pas reçu d’email ?/)
+      screen.getByText(/Vous n’avez pas reçu notre email ?/)
     ).toBeInTheDocument()
   })
 })

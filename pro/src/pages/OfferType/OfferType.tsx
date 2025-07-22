@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { useLocation, Navigate } from 'react-router'
+import { Navigate, useLocation } from 'react-router'
 
 import { Layout } from 'app/App/layout/Layout'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'

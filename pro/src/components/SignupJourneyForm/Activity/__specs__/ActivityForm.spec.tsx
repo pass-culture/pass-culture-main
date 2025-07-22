@@ -85,7 +85,6 @@ describe('screens:SignupJourney::ActivityForm', () => {
   it('should render activity form', async () => {
     renderActivityForm(initialValues, props, contextValue)
 
-    expect(await screen.findByText('Activité')).toBeInTheDocument()
     expect(screen.getByLabelText('Activité principale *')).toHaveValue('')
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)
     expect(
@@ -134,20 +133,16 @@ describe('screens:SignupJourney::ActivityForm', () => {
   it('should not navigate to the next step if activity form is not valid', async () => {
     renderActivityForm(initialValues, props, contextValue)
 
-    expect(await screen.findByText('Activité')).toBeInTheDocument()
-
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
     )
 
-    expect(await screen.findByText('Activité')).toBeInTheDocument()
     expect(screen.queryByText('Validation screen')).not.toBeInTheDocument()
   })
 
   it('should add social url input on click add url button', async () => {
     renderActivityForm(initialValues, props, contextValue)
 
-    expect(await screen.findByText('Activité')).toBeInTheDocument()
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)
     await userEvent.click(screen.getByText('Ajouter un lien'))
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(2)
