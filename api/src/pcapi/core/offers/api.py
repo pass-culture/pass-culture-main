@@ -808,8 +808,6 @@ def edit_stock(
     """If anything has changed, return the stock and whether the
     "beginning datetime" has changed. Otherwise, return `(None, False)`.
     """
-    validation.check_stock_is_updatable(stock, editing_provider)
-
     modifications: dict[str, typing.Any] = {}
 
     if beginning_datetime is not UNCHANGED or booking_limit_datetime is not UNCHANGED:
@@ -867,6 +865,8 @@ def edit_stock(
             extra={"offer_id": stock.offerId, "stock_id": stock.id},
         )
         return None, False  # False is for `"beginningDatetime" in modifications`
+
+    validation.check_stock_is_updatable(stock, editing_provider, modifications_set=set(modifications.keys()))
 
     if stock.offer.isFromAllocine:
         updated_fields = set(modifications)

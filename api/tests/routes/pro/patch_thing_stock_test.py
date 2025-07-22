@@ -6,6 +6,7 @@ import pytest
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core import search
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
@@ -28,7 +29,7 @@ class Returns200Test:
                 },
                 {"price", "quantity", "bookingLimitDatetime"},
             ),
-            ({"price": 0}, {"price", "quantity"}),
+            ({"price": 0, "quantity": None}, {"price", "quantity"}),
         ],
     )
     def test_update_one_product_stock(
@@ -56,13 +57,21 @@ class Returns200Test:
             log_extra={"changes": expected_log_extra_changes},
         )
 
+    def test_should_be_able_to_update_synchronized_stock_quantity(self, client):
+        public_api_provider = providers_factories.PublicApiProviderFactory()
+        stock = offers_factories.ThingStockFactory(offer__lastProvider=public_api_provider)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        response = client.with_session_auth("user@example.com").patch(f"/stocks/{stock.id}", json={"quantity": 3456})
+
+        assert response.status_code == 200
+        assert stock.quantity == 3456
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
     @pytest.mark.parametrize(
         "input_json,error_json",
         [
-            ({}, {"price": ["Ce champ est obligatoire"]}),
             ({"price": "coucou"}, {"price": ["Saisissez un nombre valide"]}),
             ({"price": 12, "bookingLimitDatetime": ""}, {"bookingLimitDatetime": ["Format de date invalide"]}),
             ({"price": float("NaN")}, {"price": ["La valeur n'est pas un nombre décimal valide"]}),
@@ -75,6 +84,24 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == error_json
+
+    @pytest.mark.parametrize(
+        "input_json",
+        [
+            {"price": 20},
+            {"bookingLimitDatetime": format_into_utc_date(datetime.datetime.utcnow() + datetime.timedelta(days=1))},
+        ],
+    )
+    def test_should_raise_because_you_cannot_update_stock_attribute_except_quantity_for_synchronized_offers(
+        self, input_json, client
+    ):
+        public_api_provider = providers_factories.PublicApiProviderFactory()
+        stock = offers_factories.ThingStockFactory(offer__lastProvider=public_api_provider)
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        response = client.with_session_auth("user@example.com").patch(f"/stocks/{stock.id}", json=input_json)
+
+        assert response.status_code == 400
+        assert response.json == {"global": ["Les offres importées ne sont pas modifiables"]}
 
 
 @pytest.mark.usefixtures("db_session")

@@ -4,7 +4,7 @@
 /* eslint-disable */
 export type ThingStockUpdateBodyModel = {
   bookingLimitDatetime?: string | null;
-  price: number;
+  price?: number | null;
   quantity?: number | null;
 };
 

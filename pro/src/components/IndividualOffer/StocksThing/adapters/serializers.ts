@@ -1,9 +1,6 @@
 import { endOfDay } from 'date-fns'
 
-import {
-  ThingStockCreateBodyModel,
-  ThingStockUpdateBodyModel,
-} from 'apiClient/v1'
+import { ThingStockCreateBodyModel } from 'apiClient/v1'
 import {
   isDateValid,
   toISOStringWithoutMilliseconds,
@@ -24,10 +21,16 @@ export const serializeThingBookingLimitDatetime = (
   return toISOStringWithoutMilliseconds(endOfBookingLimitDayUtcDatetime)
 }
 
+type ThingStockUpdateBody = {
+  bookingLimitDatetime: string | null
+  price: number
+  quantity: number | null
+}
+
 export const serializeUpdateThingStock = (
   formValues: StockThingFormValues,
   departementCode?: string | null
-): ThingStockUpdateBodyModel => {
+): ThingStockUpdateBody => {
   const [
     yearBookingLimitDatetime,
     monthBookingLimitDatetime,

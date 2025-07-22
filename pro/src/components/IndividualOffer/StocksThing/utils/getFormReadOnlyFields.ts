@@ -23,11 +23,17 @@ export const getFormReadOnlyFields = (
   const isOfferSynchronized = !!offer.lastProvider
   const isOfferSynchronizedAllocine =
     offer.lastProvider && isAllocineProvider(offer.lastProvider)
-  if (
-    isDisabledStatus ||
-    (isOfferSynchronized && !isOfferSynchronizedAllocine)
-  ) {
+  if (isDisabledStatus) {
     return Object.keys(STOCK_THING_FORM_DEFAULT_VALUES)
+  }
+
+  if (isOfferSynchronized && !isOfferSynchronizedAllocine) {
+    const readOnlyFields = Object.keys(STOCK_THING_FORM_DEFAULT_VALUES)
+    // we authorize the edition of stock quantity for synchronized offers
+    // to avoid the creation of fake offers by pro users when
+    // there is a discrepancy between their actual stock quantity
+    // and the quantity sent by their provider
+    return readOnlyFields.filter((field) => field !== 'quantity')
   }
 
   if (
