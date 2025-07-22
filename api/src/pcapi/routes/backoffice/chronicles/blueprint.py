@@ -39,13 +39,7 @@ chronicles_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-@chronicles_blueprint.route("", methods=["GET"])
-def list_chronicles() -> utils.BackofficeResponse:
-    form = forms.GetChronicleSearchForm(formdata=utils.get_query_params())
-    if not form.validate():
-        mark_transaction_as_invalid()
-        return render_template("chronicles/list.html", rows=[], form=form), 400
-
+def _get_chronicle_query() -> sa.orm.Query:
     product_subquery = (
         sa.select(sa.func.array_agg(offers_models.Product.name))
         .select_from(chronicles_models.ProductChronicle)
@@ -63,6 +57,18 @@ def list_chronicles() -> utils.BackofficeResponse:
         chronicles_models.Chronicle.isSocialMediaDiffusible,
         product_subquery.label("products"),
     )
+    return query
+
+
+@chronicles_blueprint.route("", methods=["GET"])
+def list_chronicles() -> utils.BackofficeResponse:
+    form = forms.GetChronicleSearchForm(formdata=utils.get_query_params())
+    if not form.validate():
+        mark_transaction_as_invalid()
+        return render_template("chronicles/list.html", rows=[], form=form), 400
+
+    query = _get_chronicle_query()
+
     q_filters = []
     product_identifier = string_utils.format_ean_or_visa(form.q.data) if form.q.data else None
     if product_identifier and string_utils.is_numeric(product_identifier):
@@ -138,6 +144,11 @@ def list_chronicles() -> utils.BackofficeResponse:
     )
 
 
+def _render_chronicle_row(chronicle_id: int) -> utils.BackofficeResponse:
+    row = _get_chronicle_query().filter(chronicles_models.Chronicle.id == chronicle_id).first()
+    return render_template("chronicles/list_rows.html", chronicles=[row])
+
+
 @chronicles_blueprint.route("/<int:chronicle_id>", methods=["GET"])
 def details(chronicle_id: int) -> utils.BackofficeResponse:
     chronicle = (
@@ -196,14 +207,19 @@ def get_update_chronicle_content_form(chronicle_id: int) -> utils.BackofficeResp
     chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
     form = forms.UpdateContentForm(content=chronicle.content)
 
-    return render_template(
-        "components/turbo/modal_form.html",
-        form=form,
-        dst=url_for(".update_chronicle_content", chronicle_id=chronicle_id),
-        div_id=f"update-chronicle-content-{chronicle_id}",  # must be consistent with parameter passed to build_lazy_modal
-        title="Modifier le contenu de la chronique",
-        button_text="Enregistrer",
-    )
+    kwargs = {
+        "form": form,
+        "dst": url_for(".update_chronicle_content", chronicle_id=chronicle_id),
+        "div_id": f"update-chronicle-content-{chronicle_id}",  # must be consistent with parameter passed to build_lazy_modal
+        "title": "Modifier le contenu de la chronique",
+        "button_text": "Enregistrer",
+    }
+
+    if utils.is_request_from_htmx():
+        return render_template(
+            "components/dynamic/modal_form.html", target_id=f"#chronicle-row-{chronicle_id}", **kwargs
+        )
+    return render_template("components/turbo/modal_form.html", **kwargs)
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/update-content", methods=["POST"])
@@ -226,6 +242,9 @@ def update_chronicle_content(chronicle_id: int) -> utils.BackofficeResponse:
         Markup("Le texte de la chronique <b>{chronicle_id}</b> a été mis à jour").format(chronicle_id=chronicle_id),
         "success",
     )
+
+    if utils.is_request_from_htmx():
+        return _render_chronicle_row(chronicle_id)
     return redirect(
         request.referrer
         or url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="content"),
@@ -246,6 +265,8 @@ def publish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
         chronicle=chronicle,
     )
     flash(f"La chronique {chronicle_id} a été publiée", "success")
+    if utils.is_request_from_htmx():
+        return _render_chronicle_row(chronicle_id)
     return redirect(request.referrer or url_for("backoffice_web.chronicles.list_chronicles"), code=303)
 
 
@@ -262,6 +283,9 @@ def unpublish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
         chronicle=chronicle,
     )
     flash(f"La chronique {chronicle_id} a été dépubliée", "success")
+
+    if utils.is_request_from_htmx():
+        return _render_chronicle_row(chronicle_id)
     return redirect(request.referrer or url_for("backoffice_web.chronicles.list_chronicles"), code=303)
 
 

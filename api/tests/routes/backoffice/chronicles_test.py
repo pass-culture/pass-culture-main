@@ -341,15 +341,18 @@ class UpdateChronicleContentTest(PostEndpointHelper):
     # current user
     # get chronicle
     # update chronicle
+    expected_num_queries = 4
     # GetChronicleDetailsTest.expected_num_queries (follow redirect)
-    expected_num_queries = 4 + GetChronicleDetailsTest.expected_num_queries
+    expected_route_queries = expected_num_queries + GetChronicleDetailsTest.expected_num_queries
+    # one query to regenerate the table line
+    expected_htmx_queries = expected_num_queries + 1
 
     def test_update_chronicle_content(self, authenticated_client, legit_user):
         chronicle = chronicles_factories.ChronicleFactory(content="some old content")
 
         response = self.post_to_endpoint(
             follow_redirects=True,
-            expected_num_queries=self.expected_num_queries,
+            expected_num_queries=self.expected_route_queries,
             chronicle_id=chronicle.id,
             client=authenticated_client,
             form={"content": "new content"},
@@ -363,6 +366,24 @@ class UpdateChronicleContentTest(PostEndpointHelper):
             f"Le texte de la chronique {chronicle.id} a été mis à jour"
         ]
 
+    def test_update_chronicle_content_with_htmx(self, authenticated_client, legit_user):
+        chronicle = chronicles_factories.ChronicleFactory(content="some old content")
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_htmx_queries,
+            chronicle_id=chronicle.id,
+            client=authenticated_client,
+            form={"content": "new content"},
+            headers={"hx-request": "true"},
+        )
+        db.session.refresh(chronicle)
+
+        # ensure that the row is rendered
+        row = html_parser.get_tag(response.data, tag="tr", id=f"chronicle-row-{chronicle.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[3] == "new content"
+
 
 class PublishChronicleTest(PostEndpointHelper):
     endpoint = "backoffice_web.chronicles.publish_chronicle"
@@ -373,8 +394,11 @@ class PublishChronicleTest(PostEndpointHelper):
     # get chronicle
     # update chronicle
     # reload chronicle
+    expected_num_queries = 5
     # ListChroniclesTest.expected_num_queries (follow redirect)
-    expected_num_queries = 5 + ListChroniclesTest.expected_num_queries
+    expected_route_queries = expected_num_queries + ListChroniclesTest.expected_num_queries
+    # one query to regenerate the table line
+    expected_htmx_queries = expected_num_queries + 1
 
     def test_publish_chronicle(self, authenticated_client, legit_user):
         chronicle = chronicles_factories.ChronicleFactory(
@@ -383,7 +407,7 @@ class PublishChronicleTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(
             follow_redirects=True,
-            expected_num_queries=self.expected_num_queries,
+            expected_num_queries=self.expected_route_queries,
             chronicle_id=chronicle.id,
             client=authenticated_client,
         )
@@ -396,10 +420,37 @@ class PublishChronicleTest(PostEndpointHelper):
         assert action_log.chronicle is chronicle
         assert action_log.authorUser is legit_user
 
+    def test_publish_chronicle_htmx(self, authenticated_client, legit_user):
+        chronicle = chronicles_factories.ChronicleFactory(
+            isActive=False,
+        )
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_htmx_queries,
+            chronicle_id=chronicle.id,
+            client=authenticated_client,
+            headers={"hx-request": "true"},
+        )
+        db.session.refresh(chronicle)
+
+        assert response.status_code == 200
+        assert chronicle.isActive
+
+        # ensure that the row is rendered
+        row = html_parser.get_tag(response.data, tag="tr", id=f"chronicle-row-{chronicle.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[5] == "Oui"
+
+        action_log = db.session.query(history_models.ActionHistory).one()
+        assert action_log.actionType == history_models.ActionType.CHRONICLE_PUBLISHED
+        assert action_log.chronicle is chronicle
+        assert action_log.authorUser is legit_user
+
     def test_publish_chronicle_does_not_exist(self, authenticated_client):
         response = self.post_to_endpoint(
             follow_redirects=True,
-            expected_num_queries=self.expected_num_queries - (1 + ListChroniclesTest.expected_num_queries),
+            expected_num_queries=self.expected_num_queries - 1,
             chronicle_id=0,
             client=authenticated_client,
         )
@@ -415,8 +466,11 @@ class UnpublishChronicleTest(PostEndpointHelper):
     # get chronicle
     # update chronicle
     # reload chronicle
+    expected_num_queries = 5
     # ListChroniclesTest.expected_num_queries (follow redirect)
-    expected_num_queries = 5 + ListChroniclesTest.expected_num_queries
+    expected_route_queries = expected_num_queries + ListChroniclesTest.expected_num_queries
+    # one query to regenerate the table line
+    expected_htmx_queries = expected_num_queries + 1
 
     def test_unpublish_chronicle(self, authenticated_client, legit_user):
         chronicle = chronicles_factories.ChronicleFactory(
@@ -425,7 +479,7 @@ class UnpublishChronicleTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(
             follow_redirects=True,
-            expected_num_queries=self.expected_num_queries,
+            expected_num_queries=self.expected_route_queries,
             chronicle_id=chronicle.id,
             client=authenticated_client,
         )
@@ -438,10 +492,37 @@ class UnpublishChronicleTest(PostEndpointHelper):
         assert action_log.chronicle is chronicle
         assert action_log.authorUser is legit_user
 
+    def test_unpublish_chronicle_htmx(self, authenticated_client, legit_user):
+        chronicle = chronicles_factories.ChronicleFactory(
+            isActive=True,
+        )
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_htmx_queries,
+            chronicle_id=chronicle.id,
+            client=authenticated_client,
+            headers={"hx-request": "true"},
+        )
+        db.session.refresh(chronicle)
+
+        assert response.status_code == 200
+        assert not chronicle.isActive
+
+        # ensure that the row is rendered
+        row = html_parser.get_tag(response.data, tag="tr", id=f"chronicle-row-{chronicle.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[5] == "Non"
+
+        action_log = db.session.query(history_models.ActionHistory).one()
+        assert action_log.actionType == history_models.ActionType.CHRONICLE_UNPUBLISHED
+        assert action_log.chronicle is chronicle
+        assert action_log.authorUser is legit_user
+
     def test_unpublish_chronicle_does_not_exist(self, authenticated_client):
         response = self.post_to_endpoint(
             follow_redirects=True,
-            expected_num_queries=self.expected_num_queries - (1 + ListChroniclesTest.expected_num_queries),
+            expected_num_queries=self.expected_num_queries - 1,
             chronicle_id=0,
             client=authenticated_client,
         )
