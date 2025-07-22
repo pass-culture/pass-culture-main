@@ -298,18 +298,6 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
     # FIXME: mageoffray (2024-01-05) : remove this column when Provider API is not used anymore
     rawProviderQuantity = sa.Column(sa.Integer, nullable=True)
     features: list[str] = sa.Column(postgresql.ARRAY(sa.Text), nullable=False, server_default=sa.text("'{}'::text[]"))
-    eventOpeningHoursId: sa_orm.Mapped[int] = sa.Column(
-        sa.BigInteger,
-        sa.ForeignKey("event_opening_hours.id"),
-        sa.CheckConstraint(
-            '"eventOpeningHoursId" IS NULL OR "beginningDatetime" IS NULL',
-            name="check_stock_with_opening_hours_does_not_have_beginningDatetime",
-        ),
-        nullable=True,
-    )
-    eventOpeningHours: sa_orm.Mapped["EventOpeningHours"] = relationship(
-        "EventOpeningHours", foreign_keys=[eventOpeningHoursId]
-    )
 
     @declared_attr
     def lastProviderId(cls) -> sa_orm.Mapped[int | None]:
