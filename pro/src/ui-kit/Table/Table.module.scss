@@ -1,0 +1,163 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_a11y.scss" as a11y;
+
+.wrapper {
+  width: 100%;
+}
+
+.table {
+  @include fonts.body;
+
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 rem.torem(24px);
+}
+
+.table-separate {
+  border-collapse: separate;
+  border-spacing: 0 rem.torem(24px);
+}
+
+.table-collapse {
+  border-collapse: collapse;
+  border-spacing: 0 rem.torem(24px);
+}
+
+.table-header {
+  @include fonts.body-accent-xs;
+  background-color: var(--color-background-subtle);
+
+  &-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  &-th {
+    text-align: left;
+    padding: rem.torem(8px);
+    color: var(--color-text-subtle);
+    white-space: nowrap;
+
+    &:first-child {
+      border-top-left-radius: var(--size-border-radius-m);
+      padding-left: rem.torem(16px);
+    }
+
+    &:last-child {
+      border-top-right-radius: var(--size-border-radius-m);
+      padding-right: rem.torem(16px);
+    }
+  }
+
+  &-sortable-th {
+    text-align: left;
+    white-space: nowrap;
+  }
+}
+
+.table-fullrow-wrapper {
+  padding-bottom: rem.torem(43px);
+}
+
+.table-fullrow-content {
+  position: absolute;
+  bottom: 0;
+  left: rem.torem(1px);
+  right: rem.torem(1px);
+}
+
+.table-select-all {
+  display: flex;
+  margin: rem.torem(16px) 0;
+  gap: rem.torem(8px);
+}
+
+.table-cell {
+  padding: rem.torem(8px);
+  text-align: left;
+
+  // Add visible border
+  border-top: 1px solid var(--color-border-subtle);
+  border-bottom: 1px solid var(--color-border-subtle);
+
+  &:first-child {
+    border-left: 1px solid var(--color-border-subtle);
+    border-top-left-radius: var(--size-border-radius-m, 8px);
+    border-bottom-left-radius: var(--size-border-radius-m, 8px);
+  }
+
+  &:last-child {
+    border-right: 1px solid var(--color-border-subtle);
+    border-top-right-radius: var(--size-border-radius-m, 8px);
+    border-bottom-right-radius: var(--size-border-radius-m, 8px);
+  }
+}
+
+.table-checkbox-label {
+  *:not(input) {
+    @include a11y.visually-hidden;
+  }
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
+}
+
+.table-caption-no-display {
+  display: none;
+}
+
+@media (max-width: size.$tablet) {
+  .table-header {
+    display: none;
+  }
+
+  .table-select-all {
+    margin: rem.torem(8px) 0;
+  }
+
+  .table-row {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    border: 1px solid var(--color-background-subtle);
+    margin-top: rem.torem(8px);
+  }
+
+  .table-cell {
+    display: flex;
+    justify-content: space-between;
+    gap: rem.torem(8px);
+    align-items: center;
+    border: 1px solid var(--color-background-subtle);
+    padding: rem.torem(8px);
+
+    &:first-child {
+      border: none;
+      border-radius: none;
+    }
+  
+    &:last-child {
+      border: none;
+      border-radius: none;
+    }
+  }
+
+  .table-cell::before {
+    @include fonts.body-accent-xs;
+
+    display: flex;
+    content: attr(data-label);
+    color: var(--color-text-subtle);
+  }
+
+  .table-fullrow-wrapper {
+    padding-bottom: 0;
+  }
+
+  .table-fullrow-content {
+    margin-bottom: 0;
+  }
+}

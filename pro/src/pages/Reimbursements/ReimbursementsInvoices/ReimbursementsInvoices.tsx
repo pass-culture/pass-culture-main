@@ -119,7 +119,41 @@ export const ReimbursementsInvoices = (): JSX.Element => {
     }))
   )
 
-  const invoices = getInvoicesQuery.data
+  const invoices = [
+    {
+      reference: 'INV-001',
+      date: '2024-06-01',
+      amount: 150,
+      bankAccountLabel: 'Bank A',
+      cashflowLabels: ['VIRE-001'],
+      url: '',
+    },
+    {
+      reference: 'INV-002',
+      date: '2024-05-15',
+      amount: -50,
+      bankAccountLabel: 'Bank B',
+      cashflowLabels: ['VIRE-002'],
+      url: '',
+    },
+    {
+      reference: 'INV-003',
+      date: '2024-05-15',
+      amount: -50,
+      bankAccountLabel: 'Bank B',
+      cashflowLabels: ['VIRE-002'],
+      url: '',
+    },
+    {
+      reference: 'INV-004',
+      date: '2024-05-15',
+      amount: -50,
+      bankAccountLabel: 'Bank B',
+      cashflowLabels: ['VIRE-002'],
+      url: '',
+    },
+  ]
+
   const hasInvoice = Boolean(hasInvoiceQuery.data.hasInvoice)
   const hasNoSearchResult =
     (!getInvoicesQuery.error && !invoices.length && hasSearchedOnce) ||
