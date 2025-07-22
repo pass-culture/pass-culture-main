@@ -12,7 +12,7 @@ import {
 } from 'commons/config/swrQueryKeys'
 import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
 import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
+import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { ReimbursementBankAccount } from 'components/ReimbursementBankAccount/ReimbursementBankAccount'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -29,8 +29,7 @@ export const BankInformations = (): JSX.Element => {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const location = useLocation()
-  const currentOfferer = useSelector(selectCurrentOfferer)
-  const selectedOffererId = currentOfferer?.id ?? null
+  const selectedOffererId = useSelector(selectCurrentOffererId)
   const { mutate } = useSWRConfig()
 
   const [showAddBankInformationsDialog, setShowAddBankInformationsDialog] =
