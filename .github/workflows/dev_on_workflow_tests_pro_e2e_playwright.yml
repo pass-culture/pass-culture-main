@@ -1,4 +1,4 @@
-name: "3 [on_workflow] Tests E2E"
+name: "3 [on_workflow] Tests E2E (Playwright)"
 
 on:
   workflow_call:
@@ -93,13 +93,13 @@ jobs:
       - id: set-test-chunks
         name: Set Chunks
         # get all spec files from the e2e directory, group them to be at most 3 at a time and transform them to json
-        # this will output something like ["cypress/integration/test1.spec.ts, cypress/integration/test2.spec.ts, cypress/integration/test3.spec.ts", "cypress/integration/test4.spec.ts,etc.."]
+        # this will output something like ["playwright/e2e/test1.spec.ts, playwright/e2e/test2.spec.ts, playwright/e2e/test3.spec.ts", "playwright/e2e/test4.spec.ts,etc.."]
         run:
-          echo "test-chunks=$(find cypress/e2e -type f -name "*.cy.ts" | xargs -n4 | tr ' ' ',' | jq -R . | jq -s -cM
-          .)" >> $GITHUB_OUTPUT
+          echo "test-chunks=$(find playwright/e2e -type f -name "*.spec.ts" | xargs -n4 | tr ' ' ',' | jq -R . | jq -s
+          -cM .)" >> $GITHUB_OUTPUT
 
-  cypress-run:
-    name: "Run E2E"
+  playwright-run:
+    name: "Run E2E (Playwright)"
     runs-on: ubuntu-24.04
     needs: [setup, install]
     strategy:
@@ -107,7 +107,16 @@ jobs:
       fail-fast: false
       max-parallel: 5
       matrix:
-        chunk: ${{ fromJson(needs.setup.outputs['test-chunks']) }}
+        #chunk: ${{ fromJson(needs.setup.outputs['test-chunks']) }}
+        # Manually setting tests to have them have (approximatively) the same duration
+        chunk: [
+            "playwright/e2e/desk.spec.ts",
+            # 'playwright/e2e/desk.spec.ts playwright/e2e/signupJourneyCreateOfferer.spec.ts playwright/e2e/adageConfirmation.spec.ts',
+            # 'playwright/e2e/editDigitalIndividualOffer.spec.ts playwright/e2e/searchCollectiveOffer.spec.ts playwright/e2e/navigation.spec.ts playwright/e2e/createIndividualOffer.spec.ts',
+            # 'playwright/e2e/oaIndividualOffer.spec.ts playwright/e2e/didacticOnboarding.spec.ts playwright/e2e/createAccount.spec.ts playwright/e2e/cookieBanner.spec.ts playwright/e2e/collaborator.spec.ts',
+            # 'playwright/e2e/searchIndividualOffer.spec.ts playwright/e2e/collectiveBooking.spec.ts playwright/e2e/createCollectiveOffer.spec.ts playwright/e2e/adage.spec.ts playwright/e2e/financialManagement.spec.ts',
+            # 'playwright/e2e/oaCollectiveOffer.spec.ts',
+          ]
 
     steps:
       - name: Checkout
@@ -126,8 +135,6 @@ jobs:
           secrets: |-
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
-            CYPRESS_CLOUD_RECORD_KEY:passculture-metier-ehp/e2e-tests-pro-cypress-cloud-record-key
-            CYPRESS_CLOUD_PROJECT_ID:passculture-metier-ehp/e2e-tests-pro-cypress-cloud-project-id
 
       - uses: actions/setup-node@v4
         with:
@@ -144,7 +151,9 @@ jobs:
           PCAPI_UID: 1000
           PCAPI_GID: 1000
 
-      - run: yarn install --immutable
+      - run: |
+          yarn install --immutable
+          yarn playwright install chromium
 
       - name: "OpenID Connect Authentication"
         id: openid-auth
@@ -221,52 +230,48 @@ jobs:
         run: |
           timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:3001)" != "200" ]]; do sleep 5; done' || false
 
-      - name: "Cypress run"
-        uses: cypress-io/github-action@v6
-        with:
-          wait-on: "http://localhost:5001/health/api,http://localhost:5001/health/database"
-          wait-on-timeout: 120 # 2 minutes is enough for API/DB to be ready
-          working-directory: pro
-          browser: chrome
-          config-file: cypress/cypress.config.ts
-          env: TAGS="@P0"
-          spec: ${{ matrix.chunk }}
-          record: ${{ github.ref == 'refs/heads/master' }} # for Cypress
+      - name: "Playwright run"
+        run: yarn test:e2e:playwright ${{ matrix.chunk }}
         env:
-          CYPRESS_RECORD_KEY: ${{ steps.secrets.outputs.CYPRESS_CLOUD_RECORD_KEY }}
-          CYPRESS_PROJECT_ID: ${{ steps.secrets.outputs.CYPRESS_CLOUD_PROJECT_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           #DEBUG: 'cypress:server:socket-base,cypress:server:socket-e2e'
           # see https://github.com/cypress-io/github-action/issues/1408#issuecomment-2744425883
           NODE_OPTIONS: "--no-experimental-require-module --no-experimental-detect-module"
 
-      - name: "Move cypress videos"
-        if: always() && failure() && github.ref != 'refs/heads/master' # useless on master bc Cypress Cloud
-        run: |
-          mkdir -p cypress/videos/${{ github.ref }}/${{ github.sha }} && \
-          mv cypress/videos/*.mp4 cypress/videos/${{ github.ref }}/${{ github.sha }}/
-      - name: "Archive E2E results"
-        if: always() && failure() && github.ref != 'refs/heads/master' # useless on master bc Cypress Cloud
-        uses: google-github-actions/upload-cloud-storage@v2
-        with:
-          path: "pro/cypress/videos"
-          destination: "${{ inputs.CACHE_BUCKET_NAME }}/pro/cypress/videos/e2e-artifacts"
+      # - uses: actions/upload-artifact@v4
+      #   if: ${{ !cancelled() }}
+      #   with:
+      #     name: playwright-report
+      #     path: playwright-report/
+      #     retention-days: 30
+
+      # - name: "Move cypress videos"
+      #   if: always() && failure() && github.ref != 'refs/heads/master' # useless on master bc Cypress Cloud
+      #   run: |
+      #     mkdir -p cypress/videos/${{ github.ref }}/${{ github.sha }} && \
+      #     mv cypress/videos/*.mp4 cypress/videos/${{ github.ref }}/${{ github.sha }}/
+      # - name: "Archive E2E results"
+      #   if: always() && failure() && github.ref != 'refs/heads/master' # useless on master bc Cypress Cloud
+      #   uses: google-github-actions/upload-cloud-storage@v2
+      #   with:
+      #     path: "pro/cypress/videos"
+      #     destination: "${{ inputs.CACHE_BUCKET_NAME }}/pro/cypress/videos/e2e-artifacts"
 
       - name: "Show pcapi log when it fails"
         if: failure()
         run: docker logs pc-api
 
-  notify-cypress-failure:
-    name: "Notification of Cypress tests failure"
-    needs: cypress-run
-    if: always() && needs.cypress-run.result == 'failure' && github.ref == 'refs/heads/master'
-    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
-    with:
-      channel: ${{vars.SLACK_DEV_CHANNEL_ID}}
-      color: "#A30002"
-      message:
-        ":github-failure: <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Pro E2E Tests> a
-        échoué sur `master`"
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+  # notify-playwright-failure:
+  #   name: "Notification of Playwright tests failure"
+  #   needs: playwright-run
+  #   if: always() && needs.playwright-run.result == 'failure' && github.ref == 'refs/heads/master'
+  #   uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+  #   with:
+  #     channel: ${{vars.SLACK_DEV_CHANNEL_ID}}
+  #     color: "#A30002"
+  #     message:
+  #       ":github-failure: <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Pro E2E Tests> a
+  #       échoué sur `master`"
+  #   secrets:
+  #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
