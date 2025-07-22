@@ -31,7 +31,7 @@ class ThingStockCreateBodyModel(BaseModel):
 
 
 class ThingStockUpdateBodyModel(BaseModel):
-    price: decimal.Decimal
+    price: decimal.Decimal | None
     booking_limit_datetime: datetime | None
     quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
 

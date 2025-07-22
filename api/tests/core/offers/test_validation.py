@@ -25,19 +25,19 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class CheckProviderCanEditStockTest:
+class CheckCanEditStockSynchronizedStockTest:
     def test_allocine_offer(self):
         provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
 
-        validation.check_provider_can_edit_stock(offer)
+        validation.check_can_edit_synchronized_stock(offer)
 
     def test_non_allocine_provider_offer(self):
         offerer = providers_factories.PublicApiProviderFactory()
         provider_offer = offers_factories.OfferFactory(lastProvider=offerer, idAtProvider="1")
 
-        with pytest.raises(ApiErrors) as error:
-            validation.check_provider_can_edit_stock(provider_offer)
+        with pytest.raises(exceptions.OfferException) as error:
+            validation.check_can_edit_synchronized_stock(provider_offer)
 
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
 
@@ -45,7 +45,26 @@ class CheckProviderCanEditStockTest:
         provider = providers_factories.PublicApiProviderFactory()
         provider_offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
 
-        validation.check_provider_can_edit_stock(provider_offer, provider)
+        validation.check_can_edit_synchronized_stock(provider_offer, provider)
+
+    def test_synchronized_offer_stock_quantity(self):
+        provider = providers_factories.PublicApiProviderFactory()
+        provider_offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
+
+        validation.check_can_edit_synchronized_stock(provider_offer, None, {"quantity"})
+
+    @pytest.mark.parametrize(
+        "attribute",
+        ["price", "beginning_datetime", "booking_limit_datetime", "price_category", "id_at_provider"],
+    )
+    def test_non_allocine_provider_offer_stock_other_attribute(self, attribute):
+        offerer = providers_factories.PublicApiProviderFactory()
+        provider_offer = offers_factories.OfferFactory(lastProvider=offerer, idAtProvider="1")
+
+        with pytest.raises(exceptions.OfferException) as error:
+            validation.check_can_edit_synchronized_stock(provider_offer, None, {attribute})
+
+        assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
 
 
 class CheckCanInputIdAtProviderTest:
@@ -346,7 +365,7 @@ class CheckStockIsUpdatableTest:
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = offers_factories.StockFactory(offer=offer)
 
-        with pytest.raises(ApiErrors) as error:
+        with pytest.raises(exceptions.OfferException) as error:
             validation.check_stock_is_updatable(stock)
 
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]

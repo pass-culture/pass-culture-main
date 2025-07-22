@@ -52,7 +52,6 @@ describe('StockThingForm::utils::getFormReadOnlyFields', () => {
       'remainingQuantity',
       'bookingsQuantity',
       'bookingLimitDatetime',
-      'quantity',
       'price',
       'activationCodes',
       'activationCodesExpirationDatetime',

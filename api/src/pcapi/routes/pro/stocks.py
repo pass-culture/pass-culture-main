@@ -116,7 +116,7 @@ def update_thing_stock(
 ) -> stock_serialize.StockIdResponseModel:
     stock: offers_models.Stock = get_or_404(offers_models.Stock, stock_id)
     check_user_has_access_to_offerer(current_user, stock.offer.venue.managingOffererId)
-    offers_api.edit_stock(stock, **body.dict())
+    offers_api.edit_stock(stock, **body.dict(exclude_unset=True))
     return stock_serialize.StockIdResponseModel.from_orm(stock)
 
 

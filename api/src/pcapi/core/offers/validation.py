@@ -77,18 +77,23 @@ ACCEPTED_THUMBNAIL_FORMATS = ("png", "jpg", "jpeg", "mpo", "webp")
 AnyCollectiveOffer = educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate
 
 
-def check_provider_can_edit_stock(
-    offer: models.Offer, editing_provider: providers_models.Provider | None = None
+def check_can_edit_synchronized_stock(
+    offer: models.Offer,
+    editing_provider: providers_models.Provider | None = None,
+    modifications_set: set[str] | None = None,
 ) -> None:
     if not offer.isFromProvider:
         return
     if offer.isFromAllocine or offer.isFromCinemaProvider:
         return
+    # we authorize the edition of stock quantity for synchronized thing offer
+    # as sometimes this piece of data is not correctly synchronized and pro users
+    # have a tendency to create fake offers to circumvent the issue (which is worse
+    # than allowing them to modify the stock)
+    if offer.isThing and editing_provider == None and modifications_set == {"quantity"}:
+        return
     if offer.lastProvider != editing_provider:
-        error = api_errors.ApiErrors()
-        error.status_code = 400
-        error.add_error("global", "Les offres importées ne sont pas modifiables")
-        raise error
+        raise exceptions.OfferException({"global": ["Les offres importées ne sont pas modifiables"]})
 
 
 def check_update_only_allowed_fields_for_offer_from_provider(
@@ -278,11 +283,18 @@ def check_provider_can_create_stock(
         raise errors
 
 
-def check_stock_is_updatable(stock: models.Stock, editing_provider: providers_models.Provider | None = None) -> None:
+def check_stock_is_updatable(
+    stock: models.Stock,
+    editing_provider: providers_models.Provider | None = None,
+    modifications_set: set[str] | None = None,
+) -> None:
+    """
+    :modifications_set: set of attributes that are going to be updated
+    """
     if stock.offer.validation == models.OfferValidationStatus.DRAFT:
         return
     check_validation_status(stock.offer)
-    check_provider_can_edit_stock(stock.offer, editing_provider)
+    check_can_edit_synchronized_stock(stock.offer, editing_provider, modifications_set)
     check_event_expiration(stock)
 
 
@@ -290,7 +302,7 @@ def check_price_category_is_updatable(
     price_category: models.PriceCategory, editing_provider: providers_models.Provider | None = None
 ) -> None:
     check_validation_status(price_category.offer)
-    check_provider_can_edit_stock(price_category.offer, editing_provider)
+    check_can_edit_synchronized_stock(price_category.offer, editing_provider)
 
 
 def check_event_expiration(stock: educational_models.CollectiveStock | models.Stock) -> None:
