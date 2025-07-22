@@ -593,6 +593,25 @@ def test_serialize_venue_with_one_bookable_offer():
     assert serialized["has_at_least_one_bookable_offer"]
 
 
+def test_serialize_future_offer():
+    publication_date = datetime.datetime.utcnow() - datetime.timedelta(days=5)
+    booking_allowed_dt = publication_date + datetime.timedelta(days=30)
+    beginning_date = datetime.datetime(2032, 1, 4, 12, 15)
+
+    offer_1 = offers_factories.OfferFactory(
+        subcategoryId=subcategories.FESTIVAL_MUSIQUE.id,
+        publicationDatetime=publication_date,
+        bookingAllowedDatetime=booking_allowed_dt,
+    )
+    offers_factories.EventStockFactory(offer=offer_1, price=10, beginningDatetime=beginning_date)
+
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer_1, 0)
+    assert serialized["offer"]["prices"] == [decimal.Decimal("10.00")]
+    assert serialized["offer"]["dates"] == [beginning_date.timestamp()]
+    assert serialized["offer"]["times"] == [12 * 60 * 60 + 15 * 60]
+    assert serialized["offer"]["bookingAllowedDatetime"] == booking_allowed_dt.timestamp()
+
+
 def test_serialize_collective_offer_template_offerer_venue():
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
     domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
