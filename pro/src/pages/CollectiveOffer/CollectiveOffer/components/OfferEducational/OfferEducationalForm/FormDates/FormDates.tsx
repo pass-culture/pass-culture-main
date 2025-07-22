@@ -1,4 +1,4 @@
-import { ChangeEvent, useId } from 'react'
+import { ChangeEvent } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import {
@@ -7,9 +7,9 @@ import {
 } from 'commons/core/OfferEducational/types'
 import { isDateValid } from 'commons/utils/date'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 
 import styles from './FormDates.module.scss'
@@ -28,8 +28,6 @@ export const FormDates = ({
 
   const beginningDateValue = watch('beginningDate')
 
-  const subtitleId = useId()
-
   const minBeginningDate = dateCreated ? new Date(dateCreated) : new Date()
   const minDateForEndingDate = isDateValid(beginningDateValue)
     ? new Date(beginningDateValue)
@@ -47,17 +45,16 @@ export const FormDates = ({
 
   return (
     <div className={styles['container']}>
-      <h2 id={subtitleId} className={styles['subtitle']}>
-        Quand votre offre peut-elle avoir lieu ? *
-      </h2>
-      <RadioGroup
+      <RadioButtonGroup
         disabled={disableForm}
+        label="Quand votre offre peut-elle avoir lieu ?"
+        labelTag="h2"
         checkedOption={watch('datesType')}
         variant="detailed"
         onChange={(e) => {
           setValue('datesType', e.target.value as OfferDatesType)
         }}
-        group={[
+        options={[
           {
             label: 'Tout au long de l’année scolaire, l’offre est permanente',
             value: 'permanent',
@@ -100,8 +97,8 @@ export const FormDates = ({
             ),
           },
         ]}
-        describedBy={subtitleId}
         name="datesType"
+        required
       />
     </div>
   )

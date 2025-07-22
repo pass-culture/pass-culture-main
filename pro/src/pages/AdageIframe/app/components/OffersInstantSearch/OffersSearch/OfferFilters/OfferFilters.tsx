@@ -12,6 +12,7 @@ import { apiAdage } from 'apiClient/api'
 import { GET_COLLECTIVE_ACADEMIES } from 'commons/config/swrQueryKeys'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeFranceIcon from 'icons/stroke-france.svg'
 import strokeNearIcon from 'icons/stroke-near.svg'
@@ -24,7 +25,6 @@ import {
   AdageMultiselect,
   ItemProps,
 } from 'ui-kit/form/AdageMultiselect/AdageMultiselect'
-import { RadioGroup, RadioGroupProps } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Slider } from 'ui-kit/form/Slider/Slider'
 
 import { SearchFormValues } from '../../OffersInstantSearch'
@@ -141,24 +141,21 @@ export const OfferFilters = ({
     onSubmit()
   }
 
-  const adressTypeRadios: RadioGroupProps['group'] = [
+  const adressTypeRadios = [
     {
       label: 'Je n’ai pas de préférence (Voir tout)',
-      sizing: 'fill',
       value: isCollectiveOaActive
         ? CollectiveLocationType.TO_BE_DEFINED
         : OfferAddressType.OTHER,
     },
     {
       label: 'Sortie chez un partenaire culturel',
-      sizing: 'fill',
       value: isCollectiveOaActive
         ? CollectiveLocationType.ADDRESS
         : OfferAddressType.OFFERER_VENUE,
     },
     {
       label: 'Intervention d’un partenaire culturel dans mon établissement',
-      sizing: 'fill',
       value: isCollectiveOaActive
         ? CollectiveLocationType.SCHOOL
         : OfferAddressType.SCHOOL,
@@ -232,17 +229,15 @@ export const OfferFilters = ({
                   }
                   onSearch={() => onSearch(locationFieldKey)}
                 >
-                  <RadioGroup
+                  <RadioButtonGroup
                     name={locationFieldKey}
                     key={form.watch(locationFieldKey)}
-                    group={adressTypeRadios}
-                    className={styles['filter-container-evenement']}
-                    legend="Choisir un type d'intervention"
+                    options={adressTypeRadios}
+                    label="Choisir un type d'intervention"
                     checkedOption={form.watch(locationFieldKey)}
                     onChange={(e) =>
                       form.setValue(locationFieldKey, e.target.value)
                     }
-                    variant={'default'}
                   />
                 </ModalFilterLayout>
               </AdageButtonFilter>

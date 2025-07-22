@@ -3,11 +3,11 @@ import { useFormContext } from 'react-hook-form'
 import { useLocation } from 'react-router'
 
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'commons/core/Offers/constants'
+import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import strokeDateIcon from 'icons/stroke-date.svg'
 import thingStrokeIcon from 'icons/stroke-thing.svg'
 import strokeVirtualEventIcon from 'icons/stroke-virtual-event.svg'
 import strokeVirtualThingIcon from 'icons/stroke-virtual-thing.svg'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 
 import styles from './IndividualOfferType.module.scss'
 
@@ -17,16 +17,17 @@ export const IndividualOfferType = () => {
   const isOnboarding = location.pathname.includes('onboarding')
 
   return (
-    <RadioGroup
+    <RadioButtonGroup
       variant="detailed"
       name="individualOfferSubtype"
       className={cn(styles['container'], {
         [styles['container-onboarding']]: isOnboarding,
       })}
-      legend={<h2 className={styles['legend']}>Votre offre est</h2>}
+      label="Votre offre est"
+      labelTag="h2"
       onChange={(e) => setValue('offer.individualOfferSubtype', e.target.value)}
       checkedOption={getValues('offer.individualOfferSubtype')}
-      group={[
+      options={[
         {
           label: 'Un bien physique',
           value: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
@@ -36,7 +37,6 @@ export const IndividualOfferType = () => {
             variant: 'icon',
             src: thingStrokeIcon,
           },
-          sizing: 'fill',
         },
         {
           label: 'Un bien numérique',
@@ -46,7 +46,6 @@ export const IndividualOfferType = () => {
             variant: 'icon',
             src: strokeVirtualThingIcon,
           },
-          sizing: 'fill',
         },
         {
           label: 'Un évènement physique daté',
@@ -56,7 +55,6 @@ export const IndividualOfferType = () => {
             variant: 'icon',
             src: strokeDateIcon,
           },
-          sizing: 'fill',
         },
         {
           label: 'Un évènement numérique daté',
@@ -66,7 +64,6 @@ export const IndividualOfferType = () => {
             variant: 'icon',
             src: strokeVirtualEventIcon,
           },
-          sizing: 'fill',
         },
       ]}
     />
