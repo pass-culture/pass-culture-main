@@ -1965,6 +1965,16 @@ class OffersV2Test:
         assert response.status_code == 200
         assert response.json["chroniclesCount"] == 1
 
+    def test_get_offer_with_video_url(self, client):
+        metadata = offers_factories.OfferMetaDataFactory(videoUrl="https://www.youtube.com/watch?v=fAkeV1de0")
+        offer_id = metadata.offer.id
+
+        with assert_num_queries(self.base_num_queries):
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["videoUrl"] == "https://www.youtube.com/watch?v=fAkeV1de0"
+
 
 class OffersStocksV2Test:
     def test_return_empty_on_empty_request(self, client):

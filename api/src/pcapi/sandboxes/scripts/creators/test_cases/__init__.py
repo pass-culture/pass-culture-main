@@ -71,6 +71,7 @@ def save_test_cases_sandbox() -> None:
     create_offers_with_same_ean()
     create_cinema_data()
     create_offers_interactions()
+    create_offers_with_video_url()
     create_venues_across_cities()
     create_offers_for_each_subcategory()
     create_offers_with_same_author()
@@ -742,6 +743,14 @@ def create_offers_interactions() -> None:
     offers_factories.HeadlineOfferFactory.create(offer=offer_2_likes_headline_1)
     offers_factories.HeadlineOfferFactory.create(offer=offer_2_likes_headline_2)
     offers_factories.HeadlineOfferFactory.create(offer=offer_5_likes_headline)
+
+
+@log_func_duration
+def create_offers_with_video_url() -> None:
+    metadata = offers_factories.OfferMetaDataFactory(
+        videoUrl="https://www.youtube.com/watch?v=hWdLhB2okqA", offer__name="Offre avec video"
+    )
+    offers_factories.StockFactory.create(offer=metadata.offer)
 
 
 @log_func_duration

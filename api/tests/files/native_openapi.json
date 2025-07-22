@@ -3110,6 +3110,11 @@
                     "venue": {
                         "$ref": "#/components/schemas/OfferVenueResponse"
                     },
+                    "videoUrl": {
+                        "nullable": true,
+                        "title": "Videourl",
+                        "type": "string"
+                    },
                     "withdrawalDetails": {
                         "nullable": true,
                         "title": "Withdrawaldetails",
@@ -3287,6 +3292,11 @@
                     },
                     "venue": {
                         "$ref": "#/components/schemas/OfferVenueResponse"
+                    },
+                    "videoUrl": {
+                        "nullable": true,
+                        "title": "Videourl",
+                        "type": "string"
                     },
                     "withdrawalDetails": {
                         "nullable": true,

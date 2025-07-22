@@ -355,6 +355,9 @@ class BaseOfferResponseGetterDict(GetterDict):
         if key == "publicationDate":
             return offer.bookingAllowedDatetime  # FIXME: to be removed when min app version stop using publicationDate
 
+        if key == "videoUrl":
+            return offer.metaData.videoUrl if offer.metaData else None
+
         return super().get(key, default)
 
 
@@ -449,6 +452,7 @@ class BaseOfferResponse(ConfiguredBaseModel):
     stocks: list[OfferStockResponse]
     subcategoryId: subcategories.SubcategoryIdEnum
     venue: OfferVenueResponse
+    videoUrl: str | None
     withdrawalDetails: str | None
 
     class Config:

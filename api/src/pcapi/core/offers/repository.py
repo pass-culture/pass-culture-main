@@ -351,6 +351,7 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query:
             )
             .joinedload(models.Product.productMediations)
         )
+        .options(sa_orm.joinedload(models.Offer.metaData))
         .options(sa_orm.joinedload(models.Offer.product).selectinload(models.Product.artists))
         .options(sa_orm.joinedload(models.Offer.headlineOffers))
         .outerjoin(models.Offer.lastProvider)
