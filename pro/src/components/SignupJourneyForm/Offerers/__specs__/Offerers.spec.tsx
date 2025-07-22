@@ -10,7 +10,6 @@ import {
   SignupJourneyContext,
   SignupJourneyContextValues,
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
-import * as getSirenData from 'commons/core/Offerers/getSirenData'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
@@ -68,6 +67,9 @@ describe('screens:SignupJourney::Offerers', () => {
         name: 'Offerer Name',
         siret: '12345678933333',
         apeCode: '5610C',
+        city: 'lille',
+        postalCode: '59000',
+        siren: '123456789',
       },
       setActivity: () => {},
       setOfferer: () => {},
@@ -446,16 +448,6 @@ describe('screens:SignupJourney::Offerers', () => {
     it('should link offerer to user when they confirm', async () => {
       renderOfferersScreen(contextValue)
       vi.spyOn(api, 'createOfferer').mockResolvedValue(expect.anything())
-      vi.spyOn(getSirenData, 'getSirenData').mockResolvedValue({
-        values: {
-          address: '',
-          city: 'lille',
-          name: '',
-          postalCode: '59000',
-          siren: '',
-          apeCode: '',
-        },
-      })
 
       await userEvent.click(await screen.findByText('Rejoindre cet espace'))
 

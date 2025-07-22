@@ -14,7 +14,6 @@ import {
   Offerer,
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { getSirenData } from 'commons/core/Offerers/getSirenData'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { useNotification } from 'commons/hooks/useNotification'
@@ -110,12 +109,11 @@ export const Offerers = (): JSX.Element => {
     /* istanbul ignore next: venuesOfOfferer will always be defined here or else,
      the user would have been redirected */
     try {
-      const response = await getSirenData(venuesOfOfferer?.offererSiren ?? '')
       const request: CreateOffererQueryModel = {
-        city: response.values?.city ?? '',
+        city: offerer.city,
         name: venuesOfOfferer?.offererName ?? '',
-        postalCode: response.values?.postalCode ?? '',
-        siren: venuesOfOfferer?.offererSiren ?? '',
+        postalCode: offerer.postalCode,
+        siren: offerer.siren ?? '',
       }
       await api.createOfferer(request)
       dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))

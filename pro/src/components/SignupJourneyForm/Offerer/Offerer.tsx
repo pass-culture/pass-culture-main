@@ -129,6 +129,7 @@ export const Offerer = (): JSX.Element => {
             (venue) => venue.siret === formattedSiret
           ) !== undefined,
         apeCode: offererSiretData.values.apeCode,
+        siren: venueOfOffererProvidersResponse.offererSiren,
       })
     } catch (error) {
       notify.error(
