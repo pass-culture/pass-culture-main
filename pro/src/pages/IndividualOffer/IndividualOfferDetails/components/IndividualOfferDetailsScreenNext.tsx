@@ -15,7 +15,6 @@ import { useIndividualOfferContext } from 'commons/context/IndividualOfferContex
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
   CATEGORY_STATUS,
-  INDIVIDUAL_OFFER_SUBTYPE,
   OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
@@ -27,12 +26,6 @@ import { getIndividualOfferImage } from 'components/IndividualOffer/utils/getInd
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import {
-  filterCategories,
-  getCategoryStatusFromOfferSubtype,
-  getOfferSubtypeFromParam,
-  isOfferSubtypeEvent,
-} from 'pages/IndividualOffer/commons/filterCategories'
 import { isRecordStore } from 'pages/IndividualOffer/commons/isRecordStore'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import type {
@@ -41,14 +34,14 @@ import type {
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import { useIndividualOfferImageUpload } from 'pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 import {
-  filterAvailableVenues,
   getInitialValuesFromOffer,
   getInitialValuesFromVenues,
   getVenuesAsOptions,
   hasMusicType,
   getFormReadOnlyFields,
+  filterAvailableVenues,
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
-import { getValidationSchema } from 'pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
+import { getValidationSchemaForNewOfferCreationFlow } from 'pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
 
 import {
   serializeDetailsPatchData,
@@ -59,28 +52,27 @@ import { DetailsEanSearch } from './DetailsEanSearch/DetailsEanSearch'
 import { DetailsForm } from './DetailsForm/DetailsForm'
 import { EanSearchCallout } from './EanSearchCallout/EanSearchCallout'
 
-export type IndividualOfferDetailsScreenProps = {
+export type IndividualOfferDetailsScreenNextProps = {
   venues: VenueListItemResponseModel[]
 }
 
-export const IndividualOfferDetailsScreen = ({
+export const IndividualOfferDetailsScreenNext = ({
   venues,
-}: IndividualOfferDetailsScreenProps): JSX.Element => {
+}: IndividualOfferDetailsScreenNextProps): JSX.Element => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
-  const { search } = useLocation()
   const mode = useOfferWizardMode()
-  const queryParams = new URLSearchParams(search)
-  const queryOfferType = queryParams.get('offer-type')
-  const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
-  const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
 
-  const { categories, subCategories, offer, publishedOfferWithSameEAN } =
-    useIndividualOfferContext()
-  const initialImageOffer = getIndividualOfferImage(offer)
+  const {
+    categories,
+    subCategories,
+    offer: initialOffer,
+    publishedOfferWithSameEAN,
+  } = useIndividualOfferContext()
+  const initialOfferImage = getIndividualOfferImage(initialOffer)
   const {
     displayedImage,
     hasUpsertedImage,
@@ -88,44 +80,44 @@ export const IndividualOfferDetailsScreen = ({
     onImageUpload,
     handleEanImage,
     handleImageOnSubmit,
-  } = useIndividualOfferImageUpload(initialImageOffer)
-  const isDraftOffer = !offer
-  const isNewOfferCreationFlowFeatureActive = false
+  } = useIndividualOfferImageUpload(initialOfferImage)
 
-  const [filteredCategories, filteredSubcategories] = filterCategories(
-    categories,
-    subCategories,
-    categoryStatus,
-    isOfferSubtypeEvent(offerSubtype)
-  )
+  const isNewOfferDraft = !initialOffer
+  const isNewOfferCreationFlowFeatureActive = true
+  const availableVenues = filterAvailableVenues(venues)
+  const venuesAsOptions = getVenuesAsOptions(availableVenues)
 
-  const isOfferVirtual =
-    categoryStatus === CATEGORY_STATUS.ONLINE || Boolean(offer?.isDigital)
-  const availableVenues = filterAvailableVenues(venues, isOfferVirtual)
-  const availableVenuesAsOptions = getVenuesAsOptions(availableVenues)
-
-  const initialValues = isDraftOffer
+  const initialValues = isNewOfferDraft
     ? getInitialValuesFromVenues(
         availableVenues,
         isNewOfferCreationFlowFeatureActive
       )
     : getInitialValuesFromOffer({
-        offer,
+        offer: initialOffer,
         subcategories: subCategories,
         isNewOfferCreationFlowFeatureActive,
       })
-
   const form = useForm<DetailsFormValues>({
     defaultValues: initialValues,
     resolver: yupResolver<DetailsFormValues>(
-      getValidationSchema(isOfferVirtual)
+      getValidationSchemaForNewOfferCreationFlow(subCategories)
     ),
     mode: 'onBlur',
   })
 
-  // Either draft or already created product-based offer.
-  const isProductBased = !!form.watch('productId')
-  const isOfferProductBased = !isDraftOffer && isProductBased
+  const hasSelectedProduct = !!form.watch('productId')
+  const selectedSubcategoryId = form.watch('subcategoryId')
+  const selectedSubcategory = subCategories.find(
+    (subcategory) => subcategory.id === selectedSubcategoryId
+  )
+  const isEanSearchAvailable = isRecordStore(availableVenues)
+  const isEanSearchInputDisplayed =
+    isEanSearchAvailable && mode === OFFER_WIZARD_MODE.CREATION
+  const isEanSearchCalloutDisplayed =
+    isEanSearchAvailable && mode === OFFER_WIZARD_MODE.EDITION
+  const isUrlInputDisplayed =
+    !!selectedSubcategory &&
+    selectedSubcategory.onlineOfflinePlatform !== CATEGORY_STATUS.OFFLINE
 
   const onSubmit = async (formValues: DetailsFormValues): Promise<void> => {
     try {
@@ -133,13 +125,14 @@ export const IndividualOfferDetailsScreen = ({
       // and synchronized / provider offers since neither of the inputs displayed in
       // DetailsScreen can be edited at all
       const shouldNotPatchData =
-        isOfferSynchronized(offer) || isOfferProductBased
-      const initialOfferId = offer?.id
+        isOfferSynchronized(initialOffer) ||
+        (!isNewOfferDraft && hasSelectedProduct)
+      const initialOfferId = initialOffer?.id
 
       let response: GetIndividualOfferResponseModel | undefined
       let offerId = initialOfferId
 
-      if (isDraftOffer) {
+      if (isNewOfferDraft) {
         response = await api.postDraftOffer(
           serializeDetailsPostData(
             formValues,
@@ -161,7 +154,7 @@ export const IndividualOfferDetailsScreen = ({
       // Images can never be uploaded for product-based offers,
       // the drag & drop should not be displayed / enabled so
       // this is a safeguard.
-      if (!!offerId && !isProductBased) {
+      if (!!offerId && !hasSelectedProduct) {
         await handleImageOnSubmit(offerId)
         await mutate([GET_OFFER_QUERY_KEY, offerId])
       }
@@ -221,7 +214,7 @@ export const IndividualOfferDetailsScreen = ({
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
-          offerId: offer?.id,
+          offerId: initialOffer?.id,
           step: OFFER_WIZARD_STEP_IDS.DETAILS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
@@ -231,24 +224,12 @@ export const IndividualOfferDetailsScreen = ({
   }
 
   const readOnlyFields = getFormReadOnlyFields(
-    offer,
-    isProductBased,
+    initialOffer,
+    hasSelectedProduct,
     isNewOfferCreationFlowFeatureActive
   )
 
-  const isEanSearchAvailable =
-    isRecordStore(venues) &&
-    queryOfferType === INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
-  const isEanSearchDisplayed =
-    isEanSearchAvailable &&
-    mode === OFFER_WIZARD_MODE.CREATION &&
-    (isDraftOffer || isProductBased)
-  const isEanSearchCalloutAloneDisplayed =
-    isEanSearchAvailable &&
-    mode === OFFER_WIZARD_MODE.EDITION &&
-    isOfferProductBased
-
-  const onEanSearch = (ean: string, product: Product) => {
+  const updateProduct = (ean: string, product: Product) => {
     const {
       id,
       name,
@@ -268,8 +249,7 @@ export const IndividualOfferDetailsScreen = ({
       throw new Error('Unknown or missing subcategoryId')
     }
 
-    const { categoryId, conditionalFields: subcategoryConditionalFields } =
-      subCategory
+    const { categoryId, conditionalFields } = subCategory
 
     const imageUrl = images.recto
     if (imageUrl) {
@@ -277,7 +257,7 @@ export const IndividualOfferDetailsScreen = ({
     }
 
     let gtl_id = ''
-    if (hasMusicType(categoryId, subcategoryConditionalFields)) {
+    if (hasMusicType(categoryId, conditionalFields)) {
       // Fallback to "Autre" in case of missing gtlId
       // to define "Genre musical" when relevant.
       gtl_id = gtlId || '19000000'
@@ -293,12 +273,12 @@ export const IndividualOfferDetailsScreen = ({
     form.setValue('performer', performer)
     form.setValue(
       'subcategoryConditionalFields',
-      subcategoryConditionalFields as (keyof DetailsFormValues)[]
+      conditionalFields as Array<keyof DetailsFormValues>
     )
-    form.setValue('productId', id.toString() || '')
+    form.setValue('productId', id.toString())
   }
 
-  const onEanReset = () => {
+  const resetFormAndEanImage = () => {
     handleEanImage()
     form.reset()
   }
@@ -306,55 +286,57 @@ export const IndividualOfferDetailsScreen = ({
   return (
     <>
       <FormLayout.MandatoryInfo />
-      {isEanSearchDisplayed && (
+
+      {isEanSearchInputDisplayed && (
         <DetailsEanSearch
-          isDraftOffer={isDraftOffer}
-          isProductBased={isProductBased}
-          subcategoryId={form.watch('subcategoryId')}
-          initialEan={offer?.extraData?.ean}
-          onEanSearch={onEanSearch}
-          onEanReset={onEanReset}
+          isDraftOffer={isNewOfferDraft}
+          initialEan={initialOffer?.extraData?.ean}
+          isProductBased={hasSelectedProduct}
+          onEanReset={resetFormAndEanImage}
+          onEanSearch={updateProduct}
+          subcategoryId={selectedSubcategoryId}
         />
       )}
-      {isEanSearchCalloutAloneDisplayed && (
-        <EanSearchCallout isDraftOffer={false} />
-      )}
+      {isEanSearchCalloutDisplayed && <EanSearchCallout isDraftOffer={false} />}
+
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FormLayout fullWidthActions>
             <ScrollToFirstHookFormErrorAfterSubmit />
             <DetailsForm
-              isEanSearchDisplayed={isEanSearchDisplayed}
-              filteredCategories={filteredCategories}
-              filteredSubcategories={filteredSubcategories}
-              hasSelectedProduct={isProductBased}
+              displayedImage={displayedImage}
+              filteredCategories={categories}
+              filteredSubcategories={subCategories}
+              hasSelectedProduct={hasSelectedProduct}
+              isEanSearchDisplayed={isEanSearchInputDisplayed}
+              onImageDelete={onImageDelete}
+              onImageUpload={onImageUpload}
               readOnlyFields={readOnlyFields}
               venues={venues}
-              venuesOptions={availableVenuesAsOptions}
-              displayedImage={displayedImage}
-              onImageUpload={onImageUpload}
-              onImageDelete={onImageDelete}
-              withUrlInput={isOfferVirtual}
+              venuesOptions={venuesAsOptions}
+              withUrlInput={isUrlInputDisplayed}
             />
           </FormLayout>
+
           <ActionBar
-            onClickPrevious={handlePreviousStepOrBackToReadOnly}
-            step={OFFER_WIZARD_STEP_IDS.DETAILS}
+            dirtyForm={form.formState.isDirty || isNewOfferDraft}
             isDisabled={
               form.formState.isSubmitting ||
-              Boolean(offer && isOfferDisabled(offer.status)) ||
+              Boolean(initialOffer && isOfferDisabled(initialOffer.status)) ||
               Boolean(publishedOfferWithSameEAN)
             }
-            dirtyForm={form.formState.isDirty || offer === null}
+            onClickPrevious={handlePreviousStepOrBackToReadOnly}
+            step={OFFER_WIZARD_STEP_IDS.DETAILS}
           />
         </form>
-        <RouteLeavingGuardIndividualOffer
-          when={
-            (form.formState.isDirty || hasUpsertedImage) &&
-            !form.formState.isSubmitting
-          }
-        />
       </FormProvider>
+
+      <RouteLeavingGuardIndividualOffer
+        when={
+          (form.formState.isDirty || hasUpsertedImage) &&
+          !form.formState.isSubmitting
+        }
+      />
     </>
   )
 }

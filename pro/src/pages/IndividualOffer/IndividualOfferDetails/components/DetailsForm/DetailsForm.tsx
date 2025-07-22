@@ -7,9 +7,7 @@ import {
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 import { IndividualOfferImage } from 'commons/core/Offers/types'
 import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
@@ -36,30 +34,30 @@ import { Subcategories } from './Subcategories/Subcategories'
 
 type DetailsFormProps = {
   isEanSearchDisplayed: boolean
-  isProductBased: boolean
+  hasSelectedProduct: boolean
   venues: VenueListItemResponseModel[]
   venuesOptions: { label: string; value: string }[]
   filteredCategories: CategoryResponseModel[]
   filteredSubcategories: SubcategoryResponseModel[]
   readOnlyFields: string[]
-  categoryStatus: CATEGORY_STATUS
   displayedImage?: IndividualOfferImage | OnImageUploadArgs
   onImageUpload: (values: OnImageUploadArgs) => void
   onImageDelete: () => void
+  withUrlInput: boolean
 }
 
 export const DetailsForm = ({
   isEanSearchDisplayed,
-  isProductBased,
+  hasSelectedProduct,
   venues,
   venuesOptions,
   filteredCategories,
   filteredSubcategories,
   readOnlyFields,
-  categoryStatus,
   displayedImage,
   onImageUpload,
   onImageDelete,
+  withUrlInput,
 }: DetailsFormProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const {
@@ -71,7 +69,6 @@ export const DetailsForm = ({
   } = useFormContext<DetailsFormValues>()
 
   const subcategoryId = watch('subcategoryId')
-  const { offer } = useIndividualOfferContext()
   const accessibility = watch('accessibility')
 
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
@@ -95,7 +92,7 @@ export const DetailsForm = ({
 
   // TODO (igabriele, 2025-07-16): Use a `watch` flow once the FF is enabled in production.
   const updateVenue = (event: ChangeEvent<HTMLSelectElement>) => {
-    if (!isNewOfferCreationFlowFeatureActive && isProductBased) {
+    if (!isNewOfferCreationFlowFeatureActive && hasSelectedProduct) {
       return
     }
 
@@ -145,7 +142,7 @@ export const DetailsForm = ({
             {venuesOptions.length > 1 && (
               <FormLayout.Row className={styles.row}>
                 <Select
-                  label="Qui propose l’offre ?"
+                  label="Qui propose l’offre ? *"
                   options={venuesOptions}
                   defaultOption={{
                     value: '',
@@ -185,8 +182,7 @@ export const DetailsForm = ({
                 error={errors.description?.message}
               />
             </FormLayout.Row>
-            {(categoryStatus === CATEGORY_STATUS.ONLINE ||
-              offer?.isDigital) && (
+            {withUrlInput && (
               <FormLayout.Row className={styles.row}>
                 <TextInput
                   label="URL d’accès à l’offre"
@@ -207,8 +203,8 @@ export const DetailsForm = ({
         onImageUpload={onImageUpload}
         onImageDelete={onImageDelete}
         onImageDropOrSelected={logOnImageDropOrSelected}
-        hideActionButtons={isProductBased}
-        isDisabled={isProductBased}
+        hideActionButtons={hasSelectedProduct}
+        isDisabled={hasSelectedProduct}
       />
       {!showAddVenueBanner && (
         <Subcategories
@@ -220,7 +216,7 @@ export const DetailsForm = ({
       {isSubCategorySelected && (
         <DetailsSubForm
           isEanSearchDisplayed={isEanSearchDisplayed}
-          isProductBased={isProductBased}
+          isProductBased={hasSelectedProduct}
           isOfferCD={isSubCategoryCD(subcategoryId)}
           readOnlyFields={readOnlyFields}
         />
