@@ -1,11 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_fonts.scss" as fonts;
-
-.legend {
-  @include fonts.title2;
-
-  margin-bottom: rem.torem(16px);
-}
 
 .offer-type-container {
   max-width: rem.torem(486px);

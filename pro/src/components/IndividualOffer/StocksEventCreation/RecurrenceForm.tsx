@@ -14,13 +14,10 @@ import { SelectOption } from 'commons/custom_types/form'
 import { isDateValid, mapDayToFrench } from 'commons/utils/date'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
-import strokeBookedIcon from 'icons/stroke-booked.svg'
-import strokeClockIcon from 'icons/stroke-clock.svg'
-import strokeDateIcon from 'icons/stroke-date.svg'
-import strokeEventsIcon from 'icons/stroke-events.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -28,7 +25,6 @@ import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { DayCheckbox } from 'ui-kit/form/DayCheckbox/DayCheckbox'
 import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/form/Select/Select'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
@@ -123,11 +119,6 @@ const BeginningTimesForm = (): JSX.Element => {
     <fieldset>
       <div className={styles['section']}>
         <h2 className={styles['legend']}>
-          <SvgIcon
-            alt=""
-            src={strokeClockIcon}
-            className={styles['legend-icon']}
-          />{' '}
           Horaires pour l’ensemble de ces dates
         </h2>
 
@@ -203,14 +194,7 @@ const PriceCategoriesForm = ({
   return (
     <fieldset>
       <div className={styles['section']}>
-        <h2 className={styles['legend']}>
-          <SvgIcon
-            src={strokeEventsIcon}
-            alt=""
-            className={styles['legend-icon']}
-          />
-          Places et tarifs par horaire
-        </h2>
+        <h2 className={styles['legend']}>Places et tarifs par horaire</h2>
         {fields.map((field, index) => (
           <FormLayout.Row
             key={field.id}
@@ -330,25 +314,19 @@ export const RecurrenceForm = ({
           </div>
 
           <div className={styles['recurrence-section']}>
-            <RadioGroup
-              legend={
-                <h2 className={styles['legend']}>
-                  <SvgIcon
-                    alt=""
-                    src={strokeDateIcon}
-                    className={styles['legend-icon']}
-                  />{' '}
-                  Cet évènement aura lieu
-                </h2>
-              }
-              displayMode="inline"
-              group={[
+            <RadioButtonGroup
+              labelClassName={styles['legend']}
+              label="Cet évènement aura lieu"
+              labelTag="h2"
+              display="horizontal"
+              options={[
                 { label: 'Une seule fois', value: RecurrenceType.UNIQUE },
                 { label: 'Tous les jours', value: RecurrenceType.DAILY },
                 { label: 'Toutes les semaines', value: RecurrenceType.WEEKLY },
                 { label: 'Tous les mois', value: RecurrenceType.MONTHLY },
               ]}
               variant="detailed"
+              sizing="hug"
               name="recurrenceType"
               checkedOption={recurrenceType}
               onChange={onRecurrenceTypeChange}
@@ -462,14 +440,7 @@ export const RecurrenceForm = ({
 
           <fieldset>
             <div className={styles['section']}>
-              <h2 className={styles['legend']}>
-                <SvgIcon
-                  alt=""
-                  src={strokeBookedIcon}
-                  className={styles['legend-icon']}
-                />{' '}
-                Date limite de réservation
-              </h2>
+              <h2 className={styles['legend']}>Date limite de réservation</h2>
 
               <div className={styles['booking-date-limit-container']}>
                 <TextInput

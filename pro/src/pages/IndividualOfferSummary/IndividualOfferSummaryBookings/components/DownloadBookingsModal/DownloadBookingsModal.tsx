@@ -16,12 +16,12 @@ import { FORMAT_DD_MM_YYYY, mapDayToFrench } from 'commons/utils/date'
 import { downloadFile } from 'commons/utils/downloadFile'
 import { pluralize } from 'commons/utils/pluralize'
 import { RadioButton } from 'design-system/RadioButton/RadioButton'
+import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import strokeDeskIcon from 'icons/stroke-desk.svg'
 import { daysOfWeek } from 'pages/VenueEdition/OpeningHoursForm/OpeningHoursForm'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 
 import style from './DownloadBookingsModal.module.scss'
 
@@ -158,15 +158,15 @@ export const DownloadBookingsModal = ({
           </>
         )}
       </fieldset>
-      <RadioGroup
+      <RadioButtonGroup
         variant="detailed"
-        legend="Sélectionnez le type de réservations :"
+        label="Sélectionnez le type de réservations :"
         name="selectedBookingType"
         onChange={(e) => {
           setSelectedBookingType(e.target.value as BookingsExportStatusFilter)
         }}
         checkedOption={selectedBookingType}
-        group={[
+        options={[
           {
             label: 'Réservations confirmées et validées uniquement',
             value: BookingsExportStatusFilter.VALIDATED,

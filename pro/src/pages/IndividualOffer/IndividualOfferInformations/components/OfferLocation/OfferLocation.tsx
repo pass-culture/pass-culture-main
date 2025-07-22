@@ -4,6 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import { VenueListItemResponseModel } from 'apiClient/v1'
 import { AddressFormValues } from 'commons/core/shared/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
@@ -12,7 +13,6 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { AddressManual } from 'ui-kit/form/AddressManual/AddressManual'
 import { AddressSelect } from 'ui-kit/form/AddressSelect/AddressSelect'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { UsefulInformationFormValues } from '../../commons/types'
@@ -109,20 +109,18 @@ export const OfferLocation = ({
       title="Localisation de l’offre"
       className={styles['offer-location-wrapper']}
     >
-      <RadioGroup
-        legend="Il s’agit de l’adresse à laquelle les jeunes devront se présenter."
+      <RadioButtonGroup
+        label="Il s’agit de l’adresse à laquelle les jeunes devront se présenter."
         name="offerLocation"
         variant="detailed"
-        group={[
+        options={[
           {
             label: venueFullText,
             value: venue?.address?.id_oa.toString() ?? '',
-            sizing: 'fill',
           },
           {
             label: 'À une autre adresse',
             value: OFFER_LOCATION.OTHER_ADDRESS,
-            sizing: 'fill',
           },
         ]}
         checkedOption={offerLocation}

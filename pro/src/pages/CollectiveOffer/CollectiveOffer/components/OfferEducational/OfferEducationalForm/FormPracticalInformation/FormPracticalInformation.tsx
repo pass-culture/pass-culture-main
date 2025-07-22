@@ -10,7 +10,7 @@ import { offerInterventionOptions } from 'commons/core/shared/interventionOption
 import { SelectOption } from 'commons/custom_types/form'
 import { selectInterventionAreas } from 'commons/utils/selectInterventionAreas'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { RadioGroup, RadioGroupProps } from 'ui-kit/form/RadioGroup/RadioGroup'
+import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
@@ -85,11 +85,10 @@ export const FormPracticalInformation = ({
       (venue) => venue.id === Number(eventAddressValue.venueId)
     ) || null
 
-  const adressTypeRadios: RadioGroupProps['group'] = [
+  const adressTypeRadios = [
     {
       label: EVENT_ADDRESS_VENUE_LABEL,
       value: OfferAddressType.OFFERER_VENUE,
-      sizing: 'fill',
       collapsed: (
         <FormLayout.Row>
           <Select
@@ -114,7 +113,6 @@ export const FormPracticalInformation = ({
     {
       label: EVENT_ADDRESS_SCHOOL_LABEL,
       value: OfferAddressType.SCHOOL,
-      sizing: 'fill',
       collapsed: (
         <FormLayout.Row
           sideComponent={
@@ -131,7 +129,6 @@ export const FormPracticalInformation = ({
     {
       label: EVENT_ADDRESS_OTHER_LABEL,
       value: OfferAddressType.OTHER,
-      sizing: 'fill',
       collapsed: (
         <FormLayout.Row
           sideComponent={
@@ -158,7 +155,7 @@ export const FormPracticalInformation = ({
 
   return (
     <FormLayout.Row>
-      <RadioGroup
+      <RadioButtonGroup
         variant="detailed"
         checkedOption={watch('eventAddress.addressType')}
         onChange={(e) =>
@@ -167,12 +164,12 @@ export const FormPracticalInformation = ({
             e.target.value as OfferAddressType
           )
         }
-        group={adressTypeRadios}
-        legend={
-          <h2 className={styles['subtitle']}>Où se déroule votre offre ? *</h2>
-        }
+        options={adressTypeRadios}
+        label="Où se déroule votre offre ?"
+        labelTag="h2"
         name="eventAddress.addressType"
         disabled={disableForm}
+        required
       />
     </FormLayout.Row>
   )

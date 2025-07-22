@@ -130,18 +130,8 @@ export const DetailedWithCollapsed: StoryObj<typeof RadioButton> = {
     onChange: () => {},
     collapsed: (
       <div style={{ display: 'flex', flexDirection: 'row', gap: 16 }}>
-        <RadioButton
-          variant="detailed"
-          name="subchoice"
-          label="Sous-label 1"
-          value="1"
-        />
-        <RadioButton
-          variant="detailed"
-          name="subchoice"
-          label="Sous-label 2"
-          value="2"
-        />
+        <RadioButton name="subchoice" label="Sous-label 1" value="1" />
+        <RadioButton name="subchoice" label="Sous-label 2" value="2" />
       </div>
     ),
   },

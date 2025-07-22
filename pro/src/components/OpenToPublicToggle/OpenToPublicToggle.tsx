@@ -1,9 +1,4 @@
-import cn from 'classnames'
-import { useId } from 'react'
-
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
-
-import styles from './OpenToPublicToggle.module.scss'
+import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 
 export interface OpenToPublicToggleProps {
   className?: string
@@ -29,48 +24,39 @@ export const OpenToPublicToggle = ({
   isOpenToPublic,
   showDescription = true,
 }: OpenToPublicToggleProps): JSX.Element => {
-  const descriptionId = useId()
-
   const finalRadioDescriptions = {
     ...DEFAULT_RADIO_DESCRIPTIONS,
     ...radioDescriptions,
   }
 
+  const description =
+    isOpenToPublic === 'true'
+      ? finalRadioDescriptions.yes
+      : isOpenToPublic === 'false'
+        ? finalRadioDescriptions.no
+        : ''
+
   return (
-    <>
-      <RadioGroup
-        name="isOpenToPublic"
-        className={cn(styles['open-to-public-toggle'], className)}
-        legend="Accueillez-vous du public dans votre structure ?"
-        describedBy={descriptionId}
-        variant="detailed"
-        group={[
-          {
-            label: 'Oui',
-            value: 'true',
-          },
-          {
-            label: 'Non',
-            value: 'false',
-          },
-        ]}
-        displayMode="inline"
-        onChange={onChange}
-        checkedOption={isOpenToPublic?.toString()}
-      />
-      {showDescription && (
-        <span
-          id={descriptionId}
-          className={styles['open-to-public-toggle-description']}
-          aria-live="polite"
-        >
-          {isOpenToPublic === 'true'
-            ? finalRadioDescriptions.yes
-            : isOpenToPublic === 'false'
-              ? finalRadioDescriptions.no
-              : ''}
-        </span>
-      )}
-    </>
+    <RadioButtonGroup
+      name="isOpenToPublic"
+      className={className}
+      label="Accueillez-vous du public dans votre structure ?"
+      {...(showDescription ? { description } : {})}
+      variant="detailed"
+      sizing="hug"
+      options={[
+        {
+          label: 'Oui',
+          value: 'true',
+        },
+        {
+          label: 'Non',
+          value: 'false',
+        },
+      ]}
+      display="horizontal"
+      onChange={onChange}
+      checkedOption={isOpenToPublic?.toString()}
+    />
   )
 }

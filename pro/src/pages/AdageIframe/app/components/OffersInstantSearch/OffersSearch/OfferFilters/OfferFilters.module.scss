@@ -43,16 +43,6 @@
   &-button-clear {
     margin-top: rem.torem(16px);
   }
-
-  &-evenement {
-    @include fonts.body;
-
-    margin-bottom: rem.torem(24px);
-
-    legend {
-      color: var(--color-text-subtle);
-    }
-  }
 }
 
 .geoloc-slider {

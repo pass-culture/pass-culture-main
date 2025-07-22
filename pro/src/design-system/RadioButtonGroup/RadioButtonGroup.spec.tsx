@@ -132,13 +132,13 @@ describe('<RadioButtonGroup />', () => {
   })
 
   it('sets one option as selected by default when initial value is provided', () => {
-    options[1].checked = true
     render(
       <RadioButtonGroup
         name="radio-button-group"
         label="Radio Button Group with Initial Value"
         options={options}
         onChange={() => {}}
+        checkedOption={options[1].value}
       />
     )
 

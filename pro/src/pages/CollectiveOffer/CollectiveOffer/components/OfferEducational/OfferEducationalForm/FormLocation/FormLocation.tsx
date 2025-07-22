@@ -9,13 +9,13 @@ import {
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { resetReactHookFormAddressFields } from 'commons/utils/resetAddressFields'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { AddressManual } from 'ui-kit/form/AddressManual/AddressManual'
 import { AddressSelect } from 'ui-kit/form/AddressSelect/AddressSelect'
-import { RadioGroup, RadioGroupProps } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
@@ -94,32 +94,29 @@ export const FormLocation = ({
     setValue('coords', `${data.latitude}, ${data.longitude}`)
   }
 
-  const locationTypeRadios: RadioGroupProps['group'] = [
+  const locationTypeRadios = [
     {
       label: 'À une adresse précise',
       value: CollectiveLocationType.ADDRESS,
-      sizing: 'fill',
       collapsed: (
-        <RadioGroup
+        <RadioButtonGroup
           onChange={handleAddressLocationChange}
           disabled={disableForm}
-          legend="Type d'adresse *"
+          label="Type d'adresse"
           variant="detailed"
           checkedOption={watch('location.address.id_oa')}
           name="location.address.id_oa"
-          group={[
+          options={[
             {
               label: selectedVenue
                 ? `${selectedVenue.address?.label} - ${selectedVenue.address?.street}
                   ${selectedVenue.address?.postalCode} ${selectedVenue.address?.city}`
                 : 'Adresse du lieu sélectionné',
               value: selectedVenue?.address?.id_oa.toString() ?? '',
-              sizing: 'fill',
             },
             {
               label: 'Autre adresse',
               value: 'SPECIFIC_ADDRESS',
-              sizing: 'fill',
               collapsed: (
                 <div className={styles['specific-address']}>
                   <TextInput
@@ -170,13 +167,13 @@ export const FormLocation = ({
               ),
             },
           ]}
+          required
         />
       ),
     },
     {
       label: 'En établissement scolaire',
       value: CollectiveLocationType.SCHOOL,
-      sizing: 'fill',
       collapsed: (
         <InterventionAreaMultiSelect
           label="Indiquez aux enseignants les départements dans lesquels vous
@@ -188,7 +185,6 @@ export const FormLocation = ({
     {
       label: 'À déterminer avec l’enseignant',
       value: CollectiveLocationType.TO_BE_DEFINED,
-      sizing: 'fill',
       collapsed: (
         <>
           <InterventionAreaMultiSelect
@@ -248,18 +244,16 @@ export const FormLocation = ({
   return (
     <FormLayout.Row>
       <div ref={radioGroupRef}>
-        <RadioGroup
+        <RadioButtonGroup
           onChange={handleLocationTypeChange}
-          group={locationTypeRadios}
+          options={locationTypeRadios}
           variant="detailed"
-          legend={
-            <h2 className={styles['subtitle']}>
-              Où se déroule votre offre ? *
-            </h2>
-          }
+          label="Où se déroule votre offre ?"
+          labelTag="h2"
           name="location.locationType"
           disabled={disableForm}
           checkedOption={watch('location.locationType')}
+          required
         />
       </div>
     </FormLayout.Row>
