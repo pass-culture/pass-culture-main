@@ -9,13 +9,13 @@ import { FORMAT_HH_mm, formatShortDateForInput } from 'commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import { getPublicationHoursOptions } from 'pages/IndividualOfferSummary/IndividualOfferSummary/components/EventPublicationForm/EventPublicationForm'
 import { EventPublicationFormValues } from 'pages/IndividualOfferSummary/IndividualOfferSummary/components/EventPublicationForm/types'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/form/Select/Select'
 import { Toggle } from 'ui-kit/Toggle/Toggle'
 
@@ -115,20 +115,19 @@ export function OfferPublicationEditionForm({
               }}
             />
           </div>
-          <RadioGroup
+          <RadioButtonGroup
             className={styles['group']}
-            legend="Quand votre offre doit-elle être publiée dans l’application ?"
+            label="Quand votre offre doit-elle être publiée dans l’application ?"
             name="publicationMode"
             variant="detailed"
             disabled={isPaused}
-            group={[
-              { label: 'Publier maintenant', value: 'now', sizing: 'fill' },
+            options={[
+              { label: 'Publier maintenant', value: 'now' },
               {
                 label: 'Publier plus tard',
                 description:
                   'L’offre restera secrète pour le public jusqu’à sa publication.',
                 value: 'later',
-                sizing: 'fill',
                 collapsed: (
                   <div className={styles['inputs-row']}>
                     <DatePicker
@@ -165,24 +164,22 @@ export function OfferPublicationEditionForm({
               )
             }}
           />
-          <RadioGroup
+          <RadioButtonGroup
             className={styles['group']}
-            legend="Quand votre offre pourra être réservable ?"
+            label="Quand votre offre pourra être réservable ?"
             name="bookingAllowedMode"
             variant="detailed"
             disabled={isPaused}
-            group={[
+            options={[
               {
                 label: 'Rendre réservable dès la publication',
                 value: 'now',
-                sizing: 'fill',
               },
               {
                 label: 'Rendre réservable plus tard',
                 description:
                   'En activant cette option, vous permettez au public de visualiser l’entièreté de votre offre, de la mettre en favori et pouvoir la suivre mais sans qu’elle puisse être réservable.',
                 value: 'later',
-                sizing: 'fill',
                 collapsed: form.watch('bookingAllowedMode') === 'later' && (
                   <div className={styles['inputs-row']}>
                     <DatePicker

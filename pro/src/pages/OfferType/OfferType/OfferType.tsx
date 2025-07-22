@@ -20,7 +20,7 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
+import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { ActionsBar } from './ActionsBar/ActionsBar'
@@ -152,31 +152,26 @@ export const OfferTypeScreen = () => {
             <FormLayout>
               {/* If we're on boarding process, we don't need to ask for offer type (we already chose individual at previous step) */}
               {!isOnboarding && (
-                <RadioGroup
+                <RadioButtonGroup
                   variant="detailed"
                   name="offerType"
-                  legend={
-                    <h2 className={styles['legend']}>
-                      À qui destinez-vous cette offre ?
-                    </h2>
-                  }
+                  label="À qui destinez-vous cette offre ?"
+                  labelTag="h2"
                   onChange={(e) =>
                     setValue('offer.offerType', e.target.value as OFFER_TYPES)
                   }
                   checkedOption={getValues('offer.offerType')}
-                  group={[
+                  options={[
                     {
                       label: 'Au grand public',
                       value: OFFER_TYPES.INDIVIDUAL_OR_DUO,
-                      sizing: 'fill',
                     },
                     {
                       label: 'À un groupe scolaire',
                       value: OFFER_TYPES.EDUCATIONAL,
-                      sizing: 'fill',
                     },
                   ]}
-                  displayMode="inline-grow"
+                  display="horizontal"
                 />
               )}
 

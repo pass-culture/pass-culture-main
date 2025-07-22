@@ -7,6 +7,8 @@ import {
   RadioButtonVariantProps,
   RadioButtonSizing,
 } from 'design-system/RadioButton/RadioButton'
+import fullErrorIcon from 'icons/full-error.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './RadioButtonGroup.module.scss'
 
@@ -46,12 +48,22 @@ export type RadioButtonGroupProps<
   asset?: V['asset']
   /** Display style of the radio button group, defaults to 'vertical' */
   display?: 'horizontal' | 'vertical'
+  /** Selected option, required if the group is non-controlled */
+  checkedOption?: string
+  /** Custom CSS class for the radio button group */
+  className?: string
+  /** Custom CSS class for the label */
+  labelClassName?: string
   /** If the radio button group is disabled, making all options unselectable */
   disabled?: D
   /** Event handler for change */
   onChange?: onChange
   /** Event handler for blur */
   onBlur?: onBlur
+  /** Whether the checkbox is required or not */
+  required?: boolean
+  /** Whether the required asterisk is displayed or not */
+  asterisk?: boolean
 }
 
 export const RadioButtonGroup = ({
@@ -65,9 +77,14 @@ export const RadioButtonGroup = ({
   sizing = 'fill',
   display = 'vertical',
   disabled = false,
+  checkedOption,
+  className,
+  labelClassName,
   asset,
   onChange,
   onBlur,
+  required,
+  asterisk = true,
 }: RadioButtonGroupProps<
   string,
   RadioButtonVariantProps,
@@ -97,26 +114,41 @@ export const RadioButtonGroup = ({
       role="radiogroup"
       aria-labelledby={labelId}
       aria-describedby={describedBy}
-      className={styles['radio-button-group']}
+      aria-required={required}
+      aria-invalid={!!error}
+      className={cn(styles['radio-button-group'], className)}
+      data-testid={`wrapper-${name}`}
     >
       <div className={styles['radio-button-group-header']}>
         <LabelTag
           id={labelId}
-          className={styles[`radio-button-group-label-${LabelTag}`]}
+          className={cn(
+            styles[`radio-button-group-label-${LabelTag}`],
+            labelClassName
+          )}
         >
           {label}
+          {required && asterisk ? ' *' : ''}
         </LabelTag>
-        {description && (
-          <span
-            id={descriptionId}
-            className={styles['radio-button-group-description']}
-          >
-            {description}
-          </span>
-        )}
+        <span
+          id={descriptionId}
+          className={styles['radio-button-group-description']}
+          // Description might change based on selection,
+          // so an aria-live is needed to announce changes.
+          aria-live="polite"
+        >
+          {description}
+        </span>
         <div role="alert" id={errorId}>
           {error && (
-            <span className={styles['radio-button-group-error']}>{error}</span>
+            <span className={styles['radio-button-group-error']}>
+              <SvgIcon
+                className={styles['radio-button-group-error-icon']}
+                src={fullErrorIcon}
+                alt="Erreur"
+              />
+              {error}
+            </span>
           )}
         </div>
       </div>
@@ -140,6 +172,9 @@ export const RadioButtonGroup = ({
             onChange={onChange}
             onBlur={onBlur}
             asset={asset}
+            {...(onChange && {
+              checked: checkedOption === optionProps.value,
+            })}
           />
         ))}
       </div>

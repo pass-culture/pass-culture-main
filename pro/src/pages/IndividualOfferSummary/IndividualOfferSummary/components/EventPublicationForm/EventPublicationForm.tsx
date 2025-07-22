@@ -4,10 +4,10 @@ import { useFormContext } from 'react-hook-form'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import { Divider } from 'ui-kit/Divider/Divider'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TipsBanner } from 'ui-kit/TipsBanner/TipsBanner'
 
@@ -109,18 +109,17 @@ export const EventPublicationForm = () => {
               </TipsBanner>
             }
           >
-            <RadioGroup
-              legend="Quand votre offre doit-elle être publiée dans l’application ?"
+            <RadioButtonGroup
+              label="Quand votre offre doit-elle être publiée dans l’application ?"
               name="publicationMode"
               variant="detailed"
-              group={[
-                { label: 'Publier maintenant', value: 'now', sizing: 'fill' },
+              options={[
+                { label: 'Publier maintenant', value: 'now' },
                 {
                   label: 'Publier plus tard',
                   description:
                     'L’offre restera secrète pour le public jusqu’à sa publication.',
                   value: 'later',
-                  sizing: 'fill',
                   collapsed: publicationMode === 'later' && (
                     <FormLayout.Row inline className={styles['publish-later']}>
                       <DatePicker
@@ -161,22 +160,20 @@ export const EventPublicationForm = () => {
         </FormLayout.Section>
         {isNewPublicationDatetimeEnabled && (
           <FormLayout.Section>
-            <RadioGroup
-              legend="Quand votre offre pourra être réservable ?"
+            <RadioButtonGroup
+              label="Quand votre offre pourra être réservable ?"
               name="bookingAllowedMode"
               variant="detailed"
-              group={[
+              options={[
                 {
                   label: 'Rendre réservable dès la publication',
                   value: 'now',
-                  sizing: 'fill',
                 },
                 {
                   label: 'Rendre réservable plus tard',
                   description:
                     'En activant cette option, vous permettez au public de visualiser l’entièreté de votre offre, de la mettre en favori et pouvoir la suivre mais sans qu’elle puisse être réservable.',
                   value: 'later',
-                  sizing: 'fill',
                   collapsed: watch('bookingAllowedMode') === 'later' && (
                     <FormLayout.Row inline className={styles['publish-later']}>
                       <DatePicker

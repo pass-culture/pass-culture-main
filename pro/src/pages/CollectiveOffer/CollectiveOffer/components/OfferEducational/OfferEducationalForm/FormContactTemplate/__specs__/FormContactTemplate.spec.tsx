@@ -61,13 +61,13 @@ describe('FormContactTemplate', () => {
 
   it('should show the custom contact form when the custom contact checkbox is checked', async () => {
     renderFormContactTemplate({ isTemplate: true })
-    expect(screen.queryByText('mon propre formulaire')).not.toBeInTheDocument()
+    expect(screen.queryByText('Mon propre formulaire')).not.toBeInTheDocument()
 
     const customContactCheckbox = screen.getByRole('checkbox', {
       name: /un formulaire/,
     })
     await userEvent.click(customContactCheckbox)
 
-    expect(screen.getByText('mon propre formulaire')).toBeInTheDocument()
+    expect(screen.getByText('Mon propre formulaire')).toBeInTheDocument()
   })
 })
