@@ -22,7 +22,7 @@ describe('OnboardingOffersChoice Component', () => {
     ).toBeInTheDocument()
 
     expect(
-      screen.getByText('À qui souhaitez-vous proposer votre première offre ?')
+      screen.getByText('Où souhaitez-vous diffuser votre première offre ?')
     ).toBeInTheDocument()
 
     // Check that the first title is displayed

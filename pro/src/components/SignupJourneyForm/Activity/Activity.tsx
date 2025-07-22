@@ -5,6 +5,7 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { Target } from 'apiClient/v1'
+import { MainHeading } from 'app/App/layout/Layout'
 import { GET_VENUE_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
   ActivityContext,
@@ -19,6 +20,7 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 
+import styles from './Activity.module.scss'
 import { ActivityForm, ActivityFormValues } from './ActivityForm'
 import { defaultActivityFormValues } from './constants'
 import { validationSchema } from './validationSchema'
@@ -113,6 +115,13 @@ export const Activity = (): JSX.Element => {
           onSubmit={methods.handleSubmit(onSubmit)}
           data-testid="signup-activity-form"
         >
+          <MainHeading
+            mainHeading="Votre structure"
+            className={styles['main-heading-wrapper']}
+          />
+          <h2 className={styles['subtitle']}>
+            Et enfin, définissez l’activité de votre structure
+          </h2>
           <FormLayout.MandatoryInfo />
           <ActivityForm venueTypes={venueTypes} />
           <ActionBar

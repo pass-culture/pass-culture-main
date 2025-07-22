@@ -39,7 +39,10 @@ describe('SignupJourneyRoutes', () => {
     renderSignupJourneyRoutes()
     await waitFor(() => {
       expect(
-        screen.getByText('Renseignez le SIRET de votre structure')
+        screen.getByRole('heading', {
+          level: 2,
+          name: 'Dites-nous pour quelle structure vous travaillez',
+        })
       ).toBeInTheDocument()
     })
   })

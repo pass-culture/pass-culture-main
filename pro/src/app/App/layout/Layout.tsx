@@ -50,6 +50,44 @@ export interface LayoutProps {
   showFooter?: boolean
 }
 
+interface MainHeadingProps {
+  className?: string
+  mainHeading: React.ReactNode
+  mainSubHeading?: string
+  isConnected?: boolean
+}
+export const MainHeading = ({
+  className,
+  mainHeading,
+  mainSubHeading,
+  isConnected = true,
+}: MainHeadingProps): JSX.Element => {
+  return (
+    <div
+      className={cn(className, styles['main-heading-wrapper'], {
+        [styles['main-heading-wrapper-with-subtitle']]: mainSubHeading,
+      })}
+    >
+      <h1 className={styles['main-heading-title']}>
+        {mainHeading}
+        {mainSubHeading && (
+          <span className={styles['main-heading-subtitle']}>
+            {mainSubHeading}
+          </span>
+        )}
+      </h1>
+      {isConnected && (
+        <BackToNavLink
+          className={cn(styles['main-heading-back-to-nav-link'], {
+            [styles['main-heading-back-to-nav-link-with-subtitle']]:
+              mainSubHeading,
+          })}
+        />
+      )}
+    </div>
+  )
+}
+
 export const Layout = ({
   children,
   mainHeading,
@@ -71,28 +109,11 @@ export const Layout = ({
     areMainHeadingAndBackToNavLinkInChild || (mainHeading && isConnected)
 
   const mainHeadingWrapper = mainHeading ? (
-    <div
-      className={cn(styles['main-heading-wrapper'], {
-        [styles['main-heading-wrapper-with-subtitle']]: mainSubHeading,
-      })}
-    >
-      <h1 className={styles['main-heading-title']}>
-        {mainHeading}
-        {mainSubHeading && (
-          <span className={styles['main-heading-subtitle']}>
-            {mainSubHeading}
-          </span>
-        )}
-      </h1>
-      {isConnected && (
-        <BackToNavLink
-          className={cn(styles['main-heading-back-to-nav-link'], {
-            [styles['main-heading-back-to-nav-link-with-subtitle']]:
-              mainSubHeading,
-          })}
-        />
-      )}
-    </div>
+    <MainHeading
+      mainHeading={mainHeading}
+      mainSubHeading={mainSubHeading}
+      isConnected={isConnected}
+    />
   ) : null
 
   return (

@@ -138,7 +138,10 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     expect(screen.queryByRole('button', { name: 'Retour' })).toBeInTheDocument()
 
     expect(
-      screen.getByRole('heading', { level: 1, name: 'Identification' })
+      screen.getByRole('heading', {
+        level: 2,
+        name: 'Complétez les informations de votre structure',
+      })
     ).toBeInTheDocument()
 
     const siretField = screen.getByLabelText('Numéro de SIRET *')
@@ -159,7 +162,12 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
 
   it('should display activity screen on submit', async () => {
     renderOffererAuthenticationScreen(contextValue)
-    expect(await screen.findByText('Identification')).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', {
+        level: 2,
+        name: 'Complétez les informations de votre structure',
+      })
+    ).toBeInTheDocument()
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
     )
@@ -170,7 +178,12 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
 
   it('should display offerer screen on submit', async () => {
     renderOffererAuthenticationScreen(contextValue)
-    expect(await screen.findByText('Identification')).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', {
+        level: 2,
+        name: 'Complétez les informations de votre structure',
+      })
+    ).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Retour' }))
     expect(screen.getByText('Offerer screen')).toBeInTheDocument()
   })

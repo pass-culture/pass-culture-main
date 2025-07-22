@@ -1,12 +1,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 
-.title {
-  @include fonts.title3;
-
-  margin-bottom: rem.torem(24px);
-}
-
 .open-to-public-toggle {
   margin-top: rem.torem(16px);
 

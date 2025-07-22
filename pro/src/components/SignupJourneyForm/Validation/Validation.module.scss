@@ -1,12 +1,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 
-.title {
-  @include fonts.title3;
-
-  margin-bottom: 0;
-}
-
 .subtitle {
   @include fonts.title4;
 }

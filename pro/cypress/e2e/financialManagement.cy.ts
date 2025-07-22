@@ -96,7 +96,7 @@ describe('Financial Management - messages, links to external help page, reimburs
           'We must be redirected on the homepage of the new offerer, who’s not onboarded',
       })
       cy.findByText('Bienvenue sur le pass Culture Pro !')
-      cy.findByText('À qui souhaitez-vous proposer votre première offre ?')
+      cy.findByText('Où souhaitez-vous diffuser votre première offre ?')
     })
   })
 

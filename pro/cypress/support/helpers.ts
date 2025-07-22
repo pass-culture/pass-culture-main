@@ -142,7 +142,7 @@ export function logInAndSeeDidacticOnboarding(
     cy.findAllByTestId('spinner').should('not.exist')
 
     cy.findByText('Bienvenue sur le pass Culture Pro !')
-    cy.findByText('À qui souhaitez-vous proposer votre première offre ?')
+    cy.findByText('Où souhaitez-vous diffuser votre première offre ?')
     cy.findByText('Aux jeunes sur l’application mobile pass Culture')
     cy.findByText('Aux enseignants sur la plateforme ADAGE')
     cy.findAllByText('Commencer').should('have.length', 2)

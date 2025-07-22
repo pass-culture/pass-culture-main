@@ -66,7 +66,12 @@ describe('screens:SignupJourney::Activity', () => {
 
     renderActivityScreen(contextValue)
 
-    expect(await screen.findByText('Activité')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', {
+        level: 2,
+        name: 'Et enfin, définissez l’activité de votre structure',
+      })
+    ).toBeInTheDocument()
     expect(
       screen.getByText('Tous les champs suivis d’un * sont obligatoires.')
     ).toBeInTheDocument()
@@ -113,7 +118,12 @@ describe('screens:SignupJourney::Activity', () => {
 
     renderActivityScreen(contextValue)
 
-    expect(await screen.findByText('Activité')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', {
+        level: 2,
+        name: 'Et enfin, définissez l’activité de votre structure',
+      })
+    ).toBeInTheDocument()
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
@@ -132,7 +142,12 @@ describe('screens:SignupJourney::Activity', () => {
 
     renderActivityScreen(contextValue)
 
-    expect(await screen.findByText('Activité')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', {
+        level: 2,
+        name: 'Et enfin, définissez l’activité de votre structure',
+      })
+    ).toBeInTheDocument()
     expect(screen.getByLabelText('Au grand public')).toBeChecked()
     expect(screen.getByLabelText('À des groupes scolaires')).not.toBeChecked()
 
@@ -153,7 +168,12 @@ describe('screens:SignupJourney::Activity', () => {
 
     renderActivityScreen(contextValue)
 
-    expect(await screen.findByText('Activité')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', {
+        level: 2,
+        name: 'Et enfin, définissez l’activité de votre structure',
+      })
+    ).toBeInTheDocument()
     expect(screen.getByLabelText('Au grand public')).not.toBeChecked()
     expect(screen.getByLabelText('À des groupes scolaires')).toBeChecked()
 
@@ -167,7 +187,12 @@ describe('screens:SignupJourney::Activity', () => {
   it('should display authentification screen on click previous step button', async () => {
     renderActivityScreen(contextValue)
 
-    expect(await screen.findByText('Activité')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', {
+        level: 2,
+        name: 'Et enfin, définissez l’activité de votre structure',
+      })
+    ).toBeInTheDocument()
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape précédente' })
@@ -179,7 +204,12 @@ describe('screens:SignupJourney::Activity', () => {
   it('should display error notification', async () => {
     renderActivityScreen(contextValue)
 
-    expect(await screen.findByText('Activité')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', {
+        level: 2,
+        name: 'Et enfin, définissez l’activité de votre structure',
+      })
+    ).toBeInTheDocument()
 
     await userEvent.click(screen.getByText('Au grand public'))
     await userEvent.click(
@@ -191,7 +221,12 @@ describe('screens:SignupJourney::Activity', () => {
         'Une ou plusieurs erreurs sont présentes dans le formulaire'
       )
     ).toBeInTheDocument()
-    expect(await screen.findByText('Activité')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', {
+        level: 2,
+        name: 'Et enfin, définissez l’activité de votre structure',
+      })
+    ).toBeInTheDocument()
     expect(screen.queryByText('Validation screen')).not.toBeInTheDocument()
   })
 })

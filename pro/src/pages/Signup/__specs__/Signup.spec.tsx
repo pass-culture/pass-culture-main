@@ -5,8 +5,8 @@ import { api } from 'apiClient/api'
 import { routesSignup } from 'app/AppRouter/subroutesSignupMap'
 import { getOffererNameFactory } from 'commons/utils/factories/individualApiFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
@@ -82,7 +82,7 @@ describe('src | components | pages | Signup', () => {
     })
 
     expect(
-      screen.getByText(/Votre compte est en cours de création./)
+      screen.getByText(/Votre compte est en cours de création/)
     ).toBeInTheDocument()
 
     expect(
