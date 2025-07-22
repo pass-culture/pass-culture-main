@@ -1,0 +1,50 @@
+{% from "components/collapsable_text.html" import collapsable_text with context %}
+{% for chronicle in chronicles %}
+  <tr id="chronicle-row-{{ chronicle.id }}">
+    {% if has_permission("MANAGE_CHRONICLE") %}
+      <td>
+        <div class="dropdown">
+          <button type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  class="btn p-0">
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+          <ul class="dropdown-menu">
+            {% if chronicle.isActive %}
+              <li class="dropdown-item">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#unpublish-chronicle-modal-{{ chronicle.id }}-modal">Dépublier</a>
+              </li>
+            {% else %}
+              <li class="dropdown-item">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#publish-chronicle-modal-{{ chronicle.id }}-modal">Publier</a>
+              </li>
+            {% endif %}
+            <li class="dropdown-item">
+              <a class="btn btn-sm d-block w-100 text-start px-3"
+                 data-bs-toggle="modal"
+                 data-bs-target="#update-chronicle-content-{{ chronicle.id }}">Modifier le contenu</a>
+            </li>
+          </ul>
+        </div>
+      </td>
+    {% endif %}
+    <td>
+      <a class="link-primary"
+         href="{{ url_for('backoffice_web.chronicles.details', chronicle_id=chronicle.id) }}">{{ chronicle.id }}</a>
+    </td>
+    <td>
+      {% if chronicle.products %}
+        {% for product in chronicle.products %}<div>{{ product }}</div>{% endfor %}
+      {% endif %}
+    </td>
+    <td class="pc-mw-50-vw">{{ collapsable_text(chronicle.id, chronicle.short_content|trim, chronicle.content|trim) }}</td>
+    <td>{{ chronicle.dateCreated | format_date }}</td>
+    <td>{{ chronicle.isActive | format_bool_badge }}</td>
+    <td>{{ chronicle.isSocialMediaDiffusible | format_bool_badge }}</td>
+  </tr>
+{% endfor %}
