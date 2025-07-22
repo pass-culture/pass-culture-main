@@ -2,7 +2,7 @@
   {% if form %}
     <form name="{{ dst | action_to_name }}"
           method="{% if form.method %}form.method{% else %}post{% endif %}"
-          {% if (ajax_submit is not defined) or ajax_submit %} hx-target="{{ target_id }}" hx-post="{{ dst }}" hx-swap="outerHTML" hx-trigger="submit" {% endif %}
+          {% if (ajax_submit is not defined) or ajax_submit %} hx-target="{{ target_id }}" hx-post="{{ dst }}" hx-swap="outerHTML" hx-trigger="submit" {% endif %}
           action="{{ dst }}">
       {% if form.meta.csrf %}{{ csrf_token }}{% endif %}
     {% endif %}

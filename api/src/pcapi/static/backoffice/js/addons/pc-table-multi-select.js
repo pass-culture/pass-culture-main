@@ -154,6 +154,10 @@ class PcTableMultiSelect extends PcAddOn {
 
   batchSelect = ($table, checked) => {
     const { tableMultiSelectId } = $table.dataset
+    if (!this.state[tableMultiSelectId]){
+      // ignore if the table does not support batch select
+      return
+    }
     const selectableCheckboxes = this.#getSelectableCheckboxes($table)
 
     selectableCheckboxes.forEach(($checkbox) => {
