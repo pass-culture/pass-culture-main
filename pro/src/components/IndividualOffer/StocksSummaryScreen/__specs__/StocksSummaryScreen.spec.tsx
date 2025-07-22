@@ -5,8 +5,8 @@ import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   getIndividualOfferFactory,
-  individualOfferContextValuesFactory,
   getOfferStockFactory,
+  individualOfferContextValuesFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 

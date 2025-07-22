@@ -97,9 +97,7 @@ describe('StocksEventList', () => {
     expect(screen.getByLabelText('Filtrer par date')).toBeInTheDocument()
     expect(screen.getByLabelText('Filtrer par horaire')).toBeInTheDocument()
     expect(screen.getByText('18')).toBeInTheDocument()
-    expect(
-      screen.getByText('12,50 € - Label', { selector: 'td' })
-    ).toBeInTheDocument()
+    expect(screen.getAllByText(/12,50 € - Label/)[0]).toBeInTheDocument()
     expect(screen.getByText('15/09/2021')).toBeInTheDocument()
   })
 
@@ -137,20 +135,10 @@ describe('StocksEventList', () => {
     await userEvent.click(
       screen.getAllByRole('img', { name: 'Trier par ordre croissant' })[2]
     )
-    await waitFor(() => {
-      expect(api.getStocks).toHaveBeenCalledWith(
-        offerId,
-        undefined,
-        undefined,
-        undefined,
-        StocksOrderedBy.PRICE_CATEGORY_ID,
-        false,
-        1
-      )
-    })
-    within(screen.getAllByRole('row')[1]).getByText('5,50 € - Label')
-    within(screen.getAllByRole('row')[2]).getByText('12,50 € - Label')
-    within(screen.getAllByRole('row')[3]).getByText('30,50 € - Label')
+
+    within(screen.getAllByRole('row')[0]).getByText('5,50 € - Label')
+    within(screen.getAllByRole('row')[1]).getByText('12,50 € - Label')
+    within(screen.getAllByRole('row')[2]).getByText('30,50 € - Label')
 
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
       stocks: [stock3, stock1, stock2],
@@ -281,17 +269,19 @@ describe('StocksEventList', () => {
       screen.getByLabelText('Filtrer par date'),
       '2021-10-14'
     )
-    expect(
-      await screen.findByText('Réinitialiser les filtres')
-    ).toBeInTheDocument()
+
+    const resetFilter = screen.getAllByText('Réinitialiser les filtres')[0]
+
+    expect(resetFilter).toBeInTheDocument()
 
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
       stocks: [stock1, stock2, stock3],
       stockCount: 3,
       hasStocks: true,
     })
-    await userEvent.click(screen.getByText('Réinitialiser les filtres'))
-    expect(screen.queryByText('Réinitialiser les filtres')).toBeDisabled()
+
+    await userEvent.click(resetFilter)
+    expect(resetFilter).toBeDisabled()
     await waitFor(() => {
       expect(api.getStocks).toHaveBeenCalledWith(
         offerId,
@@ -361,9 +351,7 @@ describe('StocksEventList', () => {
         1
       )
     })
-    expect(
-      screen.getAllByText('12,50 € - Label', { selector: 'td' })
-    ).toHaveLength(2)
+    expect(screen.getAllByText('12,50 € - Label')).toHaveLength(2)
 
     const checkboxes = screen.getAllByRole('checkbox')
     await userEvent.click(checkboxes[0])

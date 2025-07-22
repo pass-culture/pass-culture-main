@@ -28,7 +28,6 @@ import {
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { AddRecurrencesButton } from 'components/IndividualOffer/StocksEventCreation/AddRecurrencesButton'
 import { getPriceCategoryOptions } from 'components/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
-import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
@@ -38,10 +37,8 @@ import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+import { Table, TableVariant } from 'ui-kit/Table/Table'
 
-import { NoResultsRow } from './NoResultsRow'
-import { SortArrow } from './SortArrow'
 import styles from './StocksEventList.module.scss'
 
 export const STOCKS_PER_PAGE = 20
@@ -63,12 +60,6 @@ export interface StocksEventListProps {
   readonly?: boolean
   onStocksLoad?: (hasStocks: boolean) => void
   canAddStocks?: boolean
-}
-
-enum PartialCheck {
-  CHECKED = 'checked',
-  PARTIAL = 'partial',
-  UNCHECKED = 'unchecked',
 }
 
 const DELETE_STOCKS_CHUNK_SIZE = 50
@@ -94,15 +85,13 @@ export const StocksEventList = ({
   const { mutate } = useSWRConfig()
   const selectedOffererId = useSelector(selectCurrentOffererId)
   // states
-  const [allStocksChecked, setAllStocksChecked] = useState<PartialCheck>(
-    PartialCheck.UNCHECKED
-  )
   const [checkedStocks, setCheckedStocks] = useState<boolean[]>([])
   const [stocks, setStocks] = useState<StocksEvent[]>([])
   const [offerHasStocks, setOfferHasStocks] = useState<boolean | null>(null)
   const [stocksCountWithFilters, setStocksCountWithFilters] =
     useState<number>(0)
   const [isDeleteAllLoading, setIsDeleteAllLoading] = useState(false)
+
   const [dateFilter, setDateFilter] = useState(searchParams.get('date'))
   const [timeFilter, setTimeFilter] = useState<string>(
     searchParams.get('time') || ''
@@ -110,22 +99,14 @@ export const StocksEventList = ({
   const [priceCategoryIdFilter, setPriceCategoryIdFilter] = useState(
     searchParams.get('priceCategoryId')
   )
-  const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
+  const { currentSortingColumn, currentSortingMode } =
     useColumnSorting<StocksOrderedBy>()
+
   const { page, previousPage, nextPage, pageCount, firstPage } =
     usePaginationWithSearchParams(STOCKS_PER_PAGE, stocksCountWithFilters)
 
-  function sortTableColumn(col: StocksOrderedBy) {
-    logEvent(Events.CLICKED_SORT_STOCKS_TABLE, {
-      formType: readonly ? 'readonly' : 'creation',
-      sortBy: col,
-      offerId: offer.id,
-      venueId: offer.venue.id,
-    })
-    onColumnHeaderClick(col)
-  }
+  const areAllSelected = checkedStocks.length === stocks.length
 
-  // Effects
   const loadStocksFromCurrentFilters = () =>
     api.getStocks(
       offer.id,
@@ -174,13 +155,6 @@ export const StocksEventList = ({
     } else {
       searchParams.delete('orderBy')
     }
-    if (currentSortingMode === SortingMode.DESC) {
-      searchParams.set('orderByDesc', '1')
-    } else if (currentSortingMode === SortingMode.ASC) {
-      searchParams.set('orderByDesc', '0')
-    } else {
-      searchParams.delete('orderByDesc')
-    }
 
     setSearchParams(searchParams)
 
@@ -189,8 +163,6 @@ export const StocksEventList = ({
 
       if (!ignore) {
         handleStocksResponse(response)
-        setCheckedStocks(response.stocks.map(() => false))
-        setAllStocksChecked(PartialCheck.UNCHECKED)
       }
     }
 
@@ -214,14 +186,7 @@ export const StocksEventList = ({
 
   // Derived data
   const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
-  const selectedDateText =
-    allStocksChecked === PartialCheck.CHECKED
-      ? pluralize(stocksCountWithFilters, 'dates sélectionnées')
-      : pluralize(
-          checkedStocks.filter((stock) => stock).length,
-          'dates sélectionnées'
-        )
-  const isAtLeastOneStockChecked = checkedStocks.some((e) => e)
+
   const areFiltersActive = Boolean(
     dateFilter || timeFilter || priceCategoryIdFilter
   )
@@ -234,29 +199,9 @@ export const StocksEventList = ({
     })
   }
 
-  const onStockCheckChange = (index: number) => {
-    const newArray = checkedStocks.map((isChecked) => isChecked)
-    newArray[index] = !newArray[index]
-    setCheckedStocks(newArray)
-    setAllStocksChecked(
-      newArray.some((check) => check)
-        ? PartialCheck.PARTIAL
-        : PartialCheck.UNCHECKED
-    )
-  }
-
-  const onAllStocksCheckChange = () => {
-    if (allStocksChecked === PartialCheck.CHECKED) {
-      setAllStocksChecked(PartialCheck.UNCHECKED)
-      setCheckedStocks(stocks.map(() => false))
-    } else {
-      setAllStocksChecked(PartialCheck.CHECKED)
-      setCheckedStocks(stocks.map(() => true))
-    }
-  }
-
   const onDeleteStock = async (selectIndex: number, stockId: number) => {
     await api.deleteStock(stockId)
+
     logEvent(Events.CLICKED_DELETE_STOCK, {
       offererId: selectedOffererId?.toString(),
       offerId: offer.id,
@@ -286,17 +231,12 @@ export const StocksEventList = ({
 
   const onBulkDelete = async () => {
     setIsDeleteAllLoading(true)
-    const stocksIdToDelete = stocks
-      .filter((stock, index) => checkedStocks[index])
-      .map((stock) => stock.id)
-    const deletionCount =
-      allStocksChecked === PartialCheck.CHECKED
-        ? stocksCountWithFilters
-        : stocksIdToDelete.length
 
-    // If all stocks are checked without any stock unchecked,
-    // use the delete all route with filters
-    if (allStocksChecked === PartialCheck.CHECKED) {
+    const stocksIdToDelete = stocks
+      .filter((_stock, index) => checkedStocks[index])
+      .map((stock) => stock.id)
+
+    if (areAllSelected) {
       await api.deleteAllFilteredStocks(offer.id, {
         date: dateFilter ? dateFilter : undefined,
         time: timeFilter
@@ -307,6 +247,12 @@ export const StocksEventList = ({
             ? null
             : parseInt(priceCategoryIdFilter),
       })
+
+      notify.success(
+        `${new Intl.NumberFormat('fr-FR').format(
+          stocksCountWithFilters
+        )} dates ont été supprimées`
+      )
       // We don't know how many stocks are left after the deletion,
       // so we reload the first page
       if (page !== 1) {
@@ -328,38 +274,134 @@ export const StocksEventList = ({
         } else {
           await reloadStocks()
         }
+
+        notify.success(
+          pluralize(stocksIdToDelete.length, 'date a été supprimée')
+        )
       }
     }
 
-    setCheckedStocks(stocks.map(() => false))
-    setAllStocksChecked(PartialCheck.UNCHECKED)
+    setCheckedStocks([])
     setIsDeleteAllLoading(false)
     logEvent(Events.CLICKED_BULK_DELETE_STOCK, {
       offererId: selectedOffererId?.toString(),
       offerId: offer.id,
       offerType: 'individual',
-      deletionCount: deletionCount,
+      deletionCount: checkedStocks.length,
     })
 
     // When all stocks are deleted, we need to reload the offer
     // to disable the stepper
     await mutate([GET_OFFER_QUERY_KEY, offer.id])
-    notify.success(
-      stocksIdToDelete.length === 1
-        ? '1 date a été supprimée'
-        : `${new Intl.NumberFormat('fr-FR').format(
-            stocksIdToDelete.length
-          )} dates ont été supprimées`
-    )
   }
 
   const onCancelClick = () => {
-    setCheckedStocks(stocks.map(() => false))
-    setAllStocksChecked(PartialCheck.UNCHECKED)
+    setCheckedStocks([])
   }
 
-  if (offerHasStocks === null) {
-    return <Spinner />
+  const columns = [
+    {
+      label: 'Date',
+      id: 'beginningDatetime',
+      ordererField: 'beginningDatetime',
+      sortable: true,
+      render: (stock: { beginningDatetime: string | number | Date }) => {
+        const beginningDay = formatLocalTimeDateString(
+          stock.beginningDatetime,
+          departmentCode,
+          'eee'
+        ).replace('.', '')
+        const beginningDate = formatLocalTimeDateString(
+          stock.beginningDatetime,
+          departmentCode,
+          'dd/MM/yyyy'
+        )
+
+        return (
+          <div className={styles['date-cell-wrapper']}>
+            <div className={styles['day']}>
+              <strong>{beginningDay}</strong>
+            </div>
+            <div>{beginningDate}</div>
+          </div>
+        )
+      },
+    },
+    {
+      label: 'Horaire',
+      id: 'beginningDatetime',
+      sortable: true,
+      ordererField: 'beginningDatetime',
+      render: (stock: { beginningDatetime: string | number | Date }) =>
+        formatLocalTimeDateString(
+          stock.beginningDatetime,
+          departmentCode,
+          'HH:mm'
+        ),
+    },
+    {
+      label: 'Tarif',
+      id: 'priceCategoryId',
+      sortable: true,
+      ordererField: 'priceCategoryId',
+      render: (stock: { priceCategoryId: number }) => {
+        const category = priceCategories.find(
+          (p) => p.id === stock.priceCategoryId
+        )
+        return category
+          ? `${formatPrice(category.price)} - ${category.label}`
+          : ''
+      },
+    },
+    {
+      label: 'Date limite de réservation',
+      id: 'bookingLimitDatetime',
+      sortable: true,
+      ordererField: 'bookingLimitDatetime',
+      render: (stock: { bookingLimitDatetime: string | number | Date }) =>
+        formatLocalTimeDateString(
+          stock.bookingLimitDatetime,
+          departmentCode,
+          'dd/MM/yyyy'
+        ),
+    },
+    {
+      label: 'Places',
+      id: 'quantity',
+      sortable: true,
+      ordererField: 'quantity',
+      render: (stock: { quantity: number | null }) =>
+        stock.quantity === null
+          ? 'Illimité'
+          : new Intl.NumberFormat('fr-FR').format(stock.quantity),
+    },
+    readonly && {
+      label: 'Réservations',
+      id: 'bookingsQuantity',
+      sortable: true,
+      ordererField: 'bookingsQuantity',
+      render: (stock: { bookingsQuantity: number | string }) =>
+        stock.bookingsQuantity,
+    },
+    !readonly && {
+      label: '',
+      id: 'deleteAction',
+      render: (stock: { id: number }, index: number) => (
+        <Button
+          variant={ButtonVariant.TERNARY}
+          onClick={() => onDeleteStock(index, stock.id)}
+          icon={fullTrashIcon}
+          tooltipContent="Supprimer"
+        />
+      ),
+    },
+  ].filter(Boolean)
+
+  const onResetFilter = () => {
+    setDateFilter('')
+    setTimeFilter('')
+    setPriceCategoryIdFilter('')
+    onFilterChange()
   }
 
   return (
@@ -412,294 +454,31 @@ export const StocksEventList = ({
           <Button
             icon={fullRefreshIcon}
             variant={ButtonVariant.TERNARY}
-            onClick={() => {
-              setDateFilter('')
-              setTimeFilter('')
-              setPriceCategoryIdFilter('')
-              onFilterChange()
-            }}
+            onClick={onResetFilter}
             disabled={!areFiltersActive}
           >
             Réinitialiser les filtres
           </Button>
 
-          <div className={styles['select-all-container']}>
-            {!readonly && (
-              <Checkbox
-                label="Tout sélectionner"
-                checked={allStocksChecked !== PartialCheck.UNCHECKED}
-                indeterminate={allStocksChecked === PartialCheck.PARTIAL}
-                onChange={onAllStocksCheckChange}
-              />
-            )}
-
-            <div>
-              {new Intl.NumberFormat('fr-FR').format(stocksCountWithFilters)}{' '}
-              {pluralizeString('date', stocksCountWithFilters)}
-            </div>
+          <div className={styles['table-wrapper']}>
+            <Table
+              columns={columns}
+              data={stocks}
+              isLoading={offerHasStocks === null}
+              variant={TableVariant.COLLAPSE}
+              selectable={!readonly}
+              selectedNumber={`${new Intl.NumberFormat('fr-FR').format(stocksCountWithFilters)} ${' '}
+            ${pluralizeString('date', stocksCountWithFilters)}`}
+              selectedIds={checkedStocks}
+              onSelectionChange={(rows) => {
+                setCheckedStocks(rows.map((r) => r.id))
+              }}
+              noResult={{
+                resetFilter: onResetFilter,
+                message: 'Aucune date trouvée',
+              }}
+            />
           </div>
-
-          <table className={styles['stock-event-table']}>
-            <caption className={styles['visually-hidden']}>
-              Liste des dates et capacités
-            </caption>
-
-            <thead>
-              <tr className={styles['row-head']}>
-                <th
-                  scope="col"
-                  className={cn(styles['date-column'], styles['header'])}
-                  colSpan={2}
-                  onClick={() => sortTableColumn(StocksOrderedBy.DATE)}
-                >
-                  <span className={styles['header-name']}>Date</span>
-
-                  <SortArrow
-                    onClick={() => sortTableColumn(StocksOrderedBy.DATE)}
-                    sortingMode={
-                      currentSortingColumn === StocksOrderedBy.DATE
-                        ? currentSortingMode
-                        : SortingMode.NONE
-                    }
-                  />
-                </th>
-
-                <th
-                  scope="col"
-                  className={cn(styles['time-column'], styles['header'])}
-                  onClick={() => sortTableColumn(StocksOrderedBy.TIME)}
-                >
-                  <span className={styles['header-name']}>Horaire</span>
-
-                  <SortArrow
-                    onClick={() => sortTableColumn(StocksOrderedBy.TIME)}
-                    sortingMode={
-                      currentSortingColumn === StocksOrderedBy.TIME
-                        ? currentSortingMode
-                        : SortingMode.NONE
-                    }
-                  />
-                </th>
-
-                <th
-                  scope="col"
-                  className={cn(styles['price-column'], styles['header'])}
-                  onClick={() =>
-                    sortTableColumn(StocksOrderedBy.PRICE_CATEGORY_ID)
-                  }
-                >
-                  <span className={styles['header-name']}>Tarif</span>
-
-                  <SortArrow
-                    onClick={() =>
-                      sortTableColumn(StocksOrderedBy.PRICE_CATEGORY_ID)
-                    }
-                    sortingMode={
-                      currentSortingColumn === StocksOrderedBy.PRICE_CATEGORY_ID
-                        ? currentSortingMode
-                        : SortingMode.NONE
-                    }
-                  />
-                </th>
-
-                <th
-                  scope="col"
-                  className={cn(
-                    styles['booking-limit-date-column'],
-                    styles['header']
-                  )}
-                  onClick={() =>
-                    sortTableColumn(StocksOrderedBy.BOOKING_LIMIT_DATETIME)
-                  }
-                >
-                  <span className={styles['header-name']}>
-                    Date limite de réservation
-                  </span>
-
-                  <SortArrow
-                    onClick={() =>
-                      sortTableColumn(StocksOrderedBy.BOOKING_LIMIT_DATETIME)
-                    }
-                    sortingMode={
-                      currentSortingColumn ===
-                      StocksOrderedBy.BOOKING_LIMIT_DATETIME
-                        ? currentSortingMode
-                        : SortingMode.NONE
-                    }
-                  />
-                </th>
-
-                <th
-                  scope="col"
-                  className={cn(styles['quantity-column'], styles['header'])}
-                  onClick={() =>
-                    sortTableColumn(StocksOrderedBy.REMAINING_QUANTITY)
-                  }
-                >
-                  <span className={styles['header-name']}>Places</span>
-
-                  <SortArrow
-                    onClick={() =>
-                      sortTableColumn(StocksOrderedBy.REMAINING_QUANTITY)
-                    }
-                    sortingMode={
-                      currentSortingColumn ===
-                      StocksOrderedBy.REMAINING_QUANTITY
-                        ? currentSortingMode
-                        : SortingMode.NONE
-                    }
-                  />
-                </th>
-
-                {readonly ? (
-                  <th
-                    className={cn(
-                      styles['bookings-quantity-column'],
-                      styles['header']
-                    )}
-                    onClick={() =>
-                      sortTableColumn(StocksOrderedBy.DN_BOOKED_QUANTITY)
-                    }
-                  >
-                    <span className={styles['header-name']}>Réservations</span>
-
-                    <SortArrow
-                      onClick={() =>
-                        sortTableColumn(StocksOrderedBy.DN_BOOKED_QUANTITY)
-                      }
-                      sortingMode={
-                        currentSortingColumn ===
-                        StocksOrderedBy.DN_BOOKED_QUANTITY
-                          ? currentSortingMode
-                          : SortingMode.NONE
-                      }
-                    />
-                  </th>
-                ) : (
-                  <th
-                    className={cn(styles['actions-column'], styles['header'])}
-                  />
-                )}
-              </tr>
-            </thead>
-
-            <tbody className={styles['body']}>
-              {stocks.map((stock) => {
-                const beginningDay = formatLocalTimeDateString(
-                  stock.beginningDatetime,
-                  departmentCode,
-                  'eee'
-                ).replace('.', '')
-
-                const beginningDate = formatLocalTimeDateString(
-                  stock.beginningDatetime,
-                  departmentCode,
-                  'dd/MM/yyyy'
-                )
-
-                const beginningHour = formatLocalTimeDateString(
-                  stock.beginningDatetime,
-                  departmentCode,
-                  'HH:mm'
-                )
-                const bookingLimitDate = formatLocalTimeDateString(
-                  stock.bookingLimitDatetime,
-                  departmentCode,
-                  'dd/MM/yyyy'
-                )
-                const priceCategory = priceCategories.find(
-                  (pC) => pC.id === stock.priceCategoryId
-                )
-
-                let price = ''
-                /* istanbul ignore next priceCategory would never be null */
-                if (priceCategory) {
-                  price = `${formatPrice(
-                    priceCategory.price
-                  )} - ${priceCategory.label}`
-                }
-
-                const stockIndex = stocks.findIndex((s) => s.id === stock.id)
-                return (
-                  <tr key={stock.id} className={styles['row']}>
-                    <td
-                      className={cn(styles['data'], styles['checkbox-column'])}
-                      data-label="Sélection du stock"
-                    >
-                      {!readonly && (
-                        <Checkbox
-                          checked={checkedStocks[stockIndex]}
-                          onChange={() => onStockCheckChange(stockIndex)}
-                          label={beginningDay}
-                        />
-                      )}
-                    </td>
-                    <td
-                      className={cn(styles['data'], styles['date-column'])}
-                      data-label="Date"
-                    >
-                      <div
-                        className={cn(
-                          styles['date-cell-wrapper'],
-                          styles['capitalize']
-                        )}
-                      >
-                        {readonly && (
-                          <div className={styles['day']}>
-                            <strong>{beginningDay}</strong>
-                          </div>
-                        )}
-                        <div>{beginningDate}</div>
-                      </div>
-                    </td>
-
-                    <td className={styles['data']} data-label="Horaire">
-                      {beginningHour}
-                    </td>
-
-                    <td className={styles['data']} data-label="Tarif">
-                      {price}
-                    </td>
-
-                    <td className={styles['data']} data-label="Date limite">
-                      {bookingLimitDate}
-                    </td>
-
-                    <td className={styles['data']} data-label="Places">
-                      {stock.quantity === null
-                        ? 'Illimité'
-                        : new Intl.NumberFormat('fr-FR').format(stock.quantity)}
-                    </td>
-
-                    {readonly ? (
-                      <td className={styles['data']} data-label="Réservations">
-                        {stock.bookingsQuantity}
-                      </td>
-                    ) : (
-                      <td
-                        className={cn(styles['data'], styles['clear-icon'])}
-                        data-label="Supprimer"
-                      >
-                        <Button
-                          variant={ButtonVariant.TERNARY}
-                          onClick={async () => {
-                            if (stock.id.toString()) {
-                              await onDeleteStock(stockIndex, stock.id)
-                            }
-                          }}
-                          icon={fullTrashIcon}
-                          tooltipContent={<>Supprimer</>}
-                        />
-                      </td>
-                    )}
-                  </tr>
-                )
-              })}
-
-              {stocks.length === 0 && <NoResultsRow colSpan={6} />}
-            </tbody>
-          </table>
-
           <Pagination
             currentPage={page}
             pageCount={pageCount}
@@ -708,9 +487,14 @@ export const StocksEventList = ({
           />
         </>
       )}
-      {isAtLeastOneStockChecked && (
+
+      {checkedStocks.length > 0 && (
         <ActionsBarSticky className={styles['actions']}>
-          <ActionsBarSticky.Left>{selectedDateText}</ActionsBarSticky.Left>
+          <ActionsBarSticky.Left>
+            {areAllSelected
+              ? pluralize(stocksCountWithFilters, 'dates sélectionnées')
+              : pluralize(checkedStocks.length, 'dates sélectionnées')}
+          </ActionsBarSticky.Left>
           <ActionsBarSticky.Right>
             {
               <>
