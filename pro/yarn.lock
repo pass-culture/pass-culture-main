@@ -1191,10 +1191,10 @@
     "@inquirer/type" "^3.0.8"
     ansi-escapes "^4.3.2"
 
-"@inquirer/prompts@^7.7.0":
-  version "7.7.0"
-  resolved "https://registry.yarnpkg.com/@inquirer/prompts/-/prompts-7.7.0.tgz#4b45d1f275c603014ba5be19b77355a33c5ffbba"
-  integrity sha512-8/7fOJA/Q5qqxznIvYjEvUCeRE6pncc1OHEmeA5JdNIKfOBC3a0EE5lFBofTWK/WXKfsjMkIz28y/uL6A3frYA==
+"@inquirer/prompts@^7.7.1":
+  version "7.7.1"
+  resolved "https://registry.yarnpkg.com/@inquirer/prompts/-/prompts-7.7.1.tgz#e735651b28c6d6a4f6e90b950d3fbd0ad26d20e8"
+  integrity sha512-XDxPrEWeWUBy8scAXzXuFY45r/q49R0g72bUzgQXZ1DY/xEFX+ESDMkTQolcb5jRBzaNJX2W8XQl6krMNDTjaA==
   dependencies:
     "@inquirer/checkbox" "^4.2.0"
     "@inquirer/confirm" "^5.1.14"
@@ -1205,7 +1205,7 @@
     "@inquirer/password" "^4.0.17"
     "@inquirer/rawlist" "^4.1.5"
     "@inquirer/search" "^3.0.17"
-    "@inquirer/select" "^4.3.0"
+    "@inquirer/select" "^4.3.1"
 
 "@inquirer/rawlist@^4.1.5":
   version "4.1.5"
@@ -1226,10 +1226,10 @@
     "@inquirer/type" "^3.0.8"
     yoctocolors-cjs "^2.1.2"
 
-"@inquirer/select@^4.3.0":
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/@inquirer/select/-/select-4.3.0.tgz#caaf8a8b52660aa2b4924467c80928845cd87b25"
-  integrity sha512-dY4sPBAfGH6Cv435gOSbNbMsLd6v1ItNmhjsLY+LTY4h8L+SAOERL2L/VtvjZFSVpVcY4dcu8fo6Uq8H8vNvzQ==
+"@inquirer/select@^4.3.1":
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/@inquirer/select/-/select-4.3.1.tgz#b49e76dab47f7c729e4e1e520fedc268e5b88cdc"
+  integrity sha512-Gfl/5sqOF5vS/LIrSndFgOh7jgoe0UXEizDqahFRkq5aJBLegZ6WjuMh/hVEJwlFQjyLq1z9fRtvUMkb7jM1LA==
   dependencies:
     "@inquirer/core" "^10.1.15"
     "@inquirer/figures" "^1.0.13"
@@ -1387,46 +1387,6 @@
   dependencies:
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
-
-"@oxlint/darwin-arm64@1.7.0":
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/@oxlint/darwin-arm64/-/darwin-arm64-1.7.0.tgz#0816b2d86ac0ed0020f015d82117bcb4643e535f"
-  integrity sha512-51vhCSQO4NSkedwEwOyqThiYqV0DAUkwNdqMQK0d29j5zmtNJJJRRBLeQuLGdstNmn3F7WMQ75Ci0/3Nq4ff8A==
-
-"@oxlint/darwin-x64@1.7.0":
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/@oxlint/darwin-x64/-/darwin-x64-1.7.0.tgz#3652261854b54d66651091cafe214f396d9cd020"
-  integrity sha512-c0GN52yehYZ4TYuh4lBH9wYbBOI/RDOxZhJdBsttG0GwfvKYg/tiPNrNEsPzu0/rd1j6x3yT0zt6vezDMeC1sQ==
-
-"@oxlint/linux-arm64-gnu@1.7.0":
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/@oxlint/linux-arm64-gnu/-/linux-arm64-gnu-1.7.0.tgz#6e6a73b7ebae35c301cca8b737ff38e37412d56f"
-  integrity sha512-pam/lbzbzVMDzc3f1hoRPtnUMEIqkn0dynlB5nUll/MVBSIvIPLS9kJLrRA48lrlqbkS9LGiF37JvpwXA58A9A==
-
-"@oxlint/linux-arm64-musl@1.7.0":
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/@oxlint/linux-arm64-musl/-/linux-arm64-musl-1.7.0.tgz#a864e288e476b96b3c846d2dd3542b42f6ffed61"
-  integrity sha512-LTyPy9FYS3SZ2XxJx+ITvlAq/ek5PtZK9Z2m3W72TA8hchGhJy5eQ+aotYjd/YVXOpGRpB12RdOpOTsZRu50bA==
-
-"@oxlint/linux-x64-gnu@1.7.0":
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/@oxlint/linux-x64-gnu/-/linux-x64-gnu-1.7.0.tgz#bc1fd2435ec6880aed05ec36b917d65b92e9848d"
-  integrity sha512-YtZ4DiAgjaEiqUiwnvtJ/znZMAAVPKR7pnsi6lqbA3BfXJ/IwMaNpdoGlCGVdDGeN4BuGCwnFtBVqKVvVg3DDg==
-
-"@oxlint/linux-x64-musl@1.7.0":
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/@oxlint/linux-x64-musl/-/linux-x64-musl-1.7.0.tgz#c5ecfb8c3a0a22c4bba53ed2a05f6d276b3b3c00"
-  integrity sha512-5aIpemNUBvwMMk4MCx1V3M6R9eMB1/SS6/24Orax9FqaI1lDX08tySdv696sr4Lms9ocA+rotxIPW9NP9439vA==
-
-"@oxlint/win32-arm64@1.7.0":
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/@oxlint/win32-arm64/-/win32-arm64-1.7.0.tgz#276e715f3a8b66ff3205868c249e40ad3cfc867e"
-  integrity sha512-fpFpkHwbAu0NcR5bc1WapCPcM9qSYi5lCRVOp1WwDoFLKI2b9/UWB8OEg8UHWV5dnBu7HZAWH/SEslYGkZNsbQ==
-
-"@oxlint/win32-x64@1.7.0":
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/@oxlint/win32-x64/-/win32-x64-1.7.0.tgz#65a9773ff3659ef0b49b1142b4c88b9eeb350d90"
-  integrity sha512-0EPWBWOiD3wZHgeWDlTUaiFzhzIonXykxYUC+NRerPQFkO/G+bd9uLMJddHDKqfP/7g8s3E5V6KvBvvFpb7U6g==
 
 "@parcel/watcher-android-arm64@2.5.1":
   version "2.5.1"
@@ -5198,17 +5158,17 @@ inquirer-fuzzy-path@^2.3.0:
     inquirer-autocomplete-prompt "^1.0.2"
     strip-ansi "^4.0.0"
 
-inquirer@^12.8.0:
-  version "12.8.0"
-  resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-12.8.0.tgz#994ebf3cf2408562de769775304b4730c06de635"
-  integrity sha512-gPBPq0MpYIBxYFNbJqvoYGw/n8sgmsgmN36MSQn0yocCnCg09cFlFLLd9CZ13zdAm6S8en4nttMbuD1UjWjW4Q==
+inquirer@^12.8.2:
+  version "12.8.2"
+  resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-12.8.2.tgz#d3f4843cf594aea2a8a965fa1d273d6fd0d34097"
+  integrity sha512-oBDL9f4+cDambZVJdfJu2M5JQfvaug9lbo6fKDlFV40i8t3FGA1Db67ov5Hp5DInG4zmXhHWTSnlXBntnJ7GMA==
   dependencies:
     "@inquirer/core" "^10.1.15"
-    "@inquirer/prompts" "^7.7.0"
+    "@inquirer/prompts" "^7.7.1"
     "@inquirer/type" "^3.0.8"
     ansi-escapes "^4.3.2"
     mute-stream "^2.0.0"
-    run-async "^4.0.4"
+    run-async "^4.0.5"
     rxjs "^7.8.2"
 
 inquirer@^6.0.0:
@@ -6299,20 +6259,6 @@ own-keys@^1.0.1:
     object-keys "^1.1.1"
     safe-push-apply "^1.0.0"
 
-oxlint@^1.2.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/oxlint/-/oxlint-1.7.0.tgz#ecd408641965085ad2d46a0589698380ff667780"
-  integrity sha512-krJN1fIRhs3xK1FyVyPtYIV9tkT4WDoIwI7eiMEKBuCjxqjQt5ZemQm1htPvHqNDOaWFRFt4btcwFdU8bbwgvA==
-  optionalDependencies:
-    "@oxlint/darwin-arm64" "1.7.0"
-    "@oxlint/darwin-x64" "1.7.0"
-    "@oxlint/linux-arm64-gnu" "1.7.0"
-    "@oxlint/linux-arm64-musl" "1.7.0"
-    "@oxlint/linux-x64-gnu" "1.7.0"
-    "@oxlint/linux-x64-musl" "1.7.0"
-    "@oxlint/win32-arm64" "1.7.0"
-    "@oxlint/win32-x64" "1.7.0"
-
 p-limit@^3.0.2:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/p-limit/-/p-limit-3.1.0.tgz#e1daccbe78d0d1388ca18c64fea38e3e57e3706b"
@@ -6525,7 +6471,7 @@ prettier-linter-helpers@^1.0.0:
   dependencies:
     fast-diff "^1.1.2"
 
-prettier@^3.5.3, prettier@^3.6.2:
+prettier@^3.6.2:
   version "3.6.2"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.6.2.tgz#ccda02a1003ebbb2bfda6f83a074978f608b9393"
   integrity sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==
@@ -6983,13 +6929,10 @@ run-async@^2.2.0, run-async@^2.4.0:
   resolved "https://registry.yarnpkg.com/run-async/-/run-async-2.4.1.tgz#8440eccf99ea3e70bd409d49aab88e10c189a455"
   integrity sha512-tvVnVv01b8c1RrA6Ep7JkStj85Guv/YrMcwqYQnwjsAS2cTmmPGBBjAjpCW7RrSodNSoE2/qg9O4bceNvUuDgQ==
 
-run-async@^4.0.4:
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/run-async/-/run-async-4.0.4.tgz#6855326c7ba59358979f7be96d30b972484d63db"
-  integrity sha512-2cgeRHnV11lSXBEhq7sN7a5UVjTKm9JTb9x8ApIT//16D7QL96AgnNeWSGoB4gIHc0iYw/Ha0Z+waBaCYZVNhg==
-  dependencies:
-    oxlint "^1.2.0"
-    prettier "^3.5.3"
+run-async@^4.0.5:
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/run-async/-/run-async-4.0.5.tgz#8856ec2986c6e20372f5edf0416f9c1140e7f56e"
+  integrity sha512-oN9GTgxUNDBumHTTDmQ8dep6VIJbgj9S3dPP+9XylVLIK4xB9XTXtKWROd5pnhdXR9k0EgO1JRcNh0T+Ny2FsA==
 
 run-parallel@^1.1.9:
   version "1.2.0"
