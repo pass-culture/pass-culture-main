@@ -1,5 +1,6 @@
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
+import { EventCancellationBanner } from 'components/EventCancellationBanner/EventCancellationBanner'
 import { StocksCalendar } from 'components/IndividualOffer/StocksEventCreation/StocksCalendar/StocksCalendar'
 import { StocksThing } from 'components/IndividualOffer/StocksThing/StocksThing'
 import { IndividualOfferLayout } from 'components/IndividualOfferLayout/IndividualOfferLayout'
@@ -24,7 +25,12 @@ export const Stocks = (): JSX.Element | null => {
       return <StocksThing offer={offer} />
     }
 
-    return <StocksCalendar offer={offer} mode={mode} />
+    return (
+      <>
+        <EventCancellationBanner offer={offer} />
+        <StocksCalendar offer={offer} mode={mode} />
+      </>
+    )
   }
 
   return (
