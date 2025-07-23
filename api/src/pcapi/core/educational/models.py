@@ -81,6 +81,11 @@ class OfferAddressType(enum.Enum):
     OTHER = "other"
 
 
+class CollectiveOfferExportType(enum.Enum):
+    CSV = "csv"
+    EXCEL = "excel"
+
+
 class OfferVenueDict(typing.TypedDict):
     addressType: OfferAddressType
     venueId: int | None
