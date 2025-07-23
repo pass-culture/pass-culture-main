@@ -57,7 +57,7 @@
       {% if button_text %}
         <button class="btn btn-primary"
                 type="submit"
-                data-bs-dismiss="modal">{{ button_text }}</button>
+                data-modal-selector="#{{ div_id }}">{{ button_text }}</button>
       {% endif %}
     </div>
     {% if form %}</form>{% endif %}

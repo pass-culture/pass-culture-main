@@ -54,6 +54,14 @@ def _redirect_after_offerer_validation_action(code: int = 303) -> utils.Backoffi
     return redirect(url_for("backoffice_web.validation.list_offerers_to_validate"), code)
 
 
+def _render_offerers_to_validate(offerers_id: list[int]) -> utils.BackofficeResponse:
+    items = validation_repository.list_offerers_to_be_validated(offerers_id=offerers_id)
+    return render_template(
+        "offerer/validation_rows.html",
+        items=items,
+    )
+
+
 @validation_blueprint.route("/offerer", methods=["GET"])
 def list_offerers_to_validate() -> utils.BackofficeResponse:
     stats = offerers_api.count_offerers_by_validation_status()
@@ -157,15 +165,19 @@ def get_validate_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
     offerer = get_or_404(offerers_models.Offerer, offerer_id)
     information = _get_validation_action_information([offerer_id])
 
-    return render_template(
-        "components/turbo/modal_form.html",
-        information=information,
-        form=offerer_forms.OffererValidationForm(),
-        dst=url_for("backoffice_web.validation.validate_offerer", offerer_id=offerer.id),
-        div_id=f"validate-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
-        title=f"Valider l'entité juridique {offerer.name.upper()}",
-        button_text="Valider l'entité juridique",
-    )
+    kwargs = {
+        "information": information,
+        "form": offerer_forms.OffererValidationForm(),
+        "dst": url_for("backoffice_web.validation.validate_offerer", offerer_id=offerer.id),
+        "div_id": f"validate-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
+        "title": f"Valider l'entité juridique {offerer.name.upper()}",
+        "button_text": "Valider l'entité juridique",
+    }
+
+    if utils.is_request_from_htmx():
+        return render_template("components/dynamic/modal_form.html", target_id=f"#offerer-row-{offerer.id}", **kwargs)
+
+    return render_template("components/turbo/modal_form.html", **kwargs)
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/validate", methods=["POST"])
@@ -185,6 +197,8 @@ def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
+        if utils.is_request_from_htmx():
+            return _render_offerers_to_validate([offerer_id])
         return _redirect_after_offerer_validation_action()
 
     try:
@@ -194,9 +208,13 @@ def validate_offerer(offerer_id: int) -> utils.BackofficeResponse:
     except offerers_exceptions.OffererAlreadyValidatedException:
         mark_transaction_as_invalid()
         flash(Markup("L'entité juridique <b>{name}</b> est déjà validée").format(name=offerer.name), "warning")
+        if utils.is_request_from_htmx():
+            return _render_offerers_to_validate([offerer_id])
         return _redirect_after_offerer_validation_action()
 
     flash(Markup("L'entité juridique <b>{name}</b> a été validée").format(name=offerer.name), "success")
+    if utils.is_request_from_htmx():
+        return _render_offerers_to_validate([offerer_id])
     return _redirect_after_offerer_validation_action()
 
 
@@ -206,15 +224,19 @@ def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
     offerer = get_or_404(offerers_models.Offerer, offerer_id)
     information = _get_validation_action_information([offerer_id])
 
-    return render_template(
-        "components/turbo/modal_form.html",
-        information=information,
-        form=offerer_forms.OffererRejectionForm(),
-        dst=url_for("backoffice_web.validation.reject_offerer", offerer_id=offerer.id),
-        div_id=f"reject-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
-        title=f"Rejeter l'entité juridique {offerer.name.upper()}",
-        button_text="Rejeter l'entité juridique",
-    )
+    kwargs = {
+        "information": information,
+        "form": offerer_forms.OffererRejectionForm(),
+        "dst": url_for("backoffice_web.validation.reject_offerer", offerer_id=offerer.id),
+        "div_id": f"reject-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
+        "title": f"Rejeter l'entité juridique {offerer.name.upper()}",
+        "button_text": "Rejeter l'entité juridique",
+    }
+
+    if utils.is_request_from_htmx():
+        return render_template("components/dynamic/modal_form.html", target_id=f"#offerer-row-{offerer.id}", **kwargs)
+
+    return render_template("components/turbo/modal_form.html", **kwargs)
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["POST"])
@@ -234,6 +256,8 @@ def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
+        if utils.is_request_from_htmx():
+            return _render_offerers_to_validate([offerer_id])
         return _redirect_after_offerer_validation_action()
 
     try:
@@ -246,9 +270,13 @@ def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
     except offerers_exceptions.OffererAlreadyRejectedException:
         mark_transaction_as_invalid()
         flash(Markup("L'entité juridique <b>{name}</b> est déjà rejetée").format(name=offerer.name), "warning")
+        if utils.is_request_from_htmx():
+            return _render_offerers_to_validate([offerer_id])
         return _redirect_after_offerer_validation_action()
 
     flash(Markup("L'entité juridique <b>{name}</b> a été rejetée").format(name=offerer.name), "success")
+    if utils.is_request_from_htmx():
+        return _render_offerers_to_validate([offerer_id])
     return _redirect_after_offerer_validation_action()
 
 
@@ -270,14 +298,18 @@ def get_offerer_pending_form(offerer_id: int) -> utils.BackofficeResponse:
 
     form = offerer_forms.CommentAndTagOffererForm(tags=_filter_homologation_tags(offerer.tags))
 
-    return render_template(
-        "components/turbo/modal_form.html",
-        form=form,
-        dst=url_for("backoffice_web.validation.set_offerer_pending", offerer_id=offerer.id),
-        div_id=f"pending-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
-        title=f"Mettre en attente l'entité juridique {offerer.name.upper()}",
-        button_text="Mettre en attente",
-    )
+    kwargs = {
+        "form": form,
+        "dst": url_for("backoffice_web.validation.set_offerer_pending", offerer_id=offerer.id),
+        "div_id": f"pending-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
+        "title": f"Mettre en attente l'entité juridique {offerer.name.upper()}",
+        "button_text": "Mettre en attente",
+    }
+
+    if utils.is_request_from_htmx():
+        return render_template("components/dynamic/modal_form.html", target_id=f"#offerer-row-{offerer.id}", **kwargs)
+
+    return render_template("components/turbo/modal_form.html", **kwargs)
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/pending", methods=["POST"])
@@ -297,6 +329,8 @@ def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
+        if utils.is_request_from_htmx():
+            return _render_offerers_to_validate([offerer_id])
         return _redirect_after_offerer_validation_action()
 
     # Don't pass directly form.tags.data to set_offerer_pending() because this would remove non-homologation tags
@@ -309,6 +343,8 @@ def set_offerer_pending(offerer_id: int) -> utils.BackofficeResponse:
     )
 
     flash(Markup("L'entité juridique <b>{name}</b> a été mise en attente").format(name=offerer.name), "success")
+    if utils.is_request_from_htmx():
+        return _render_offerers_to_validate([offerer_id])
     return _redirect_after_offerer_validation_action()
 
 
@@ -320,7 +356,7 @@ def _offerer_batch_action(
     form = form_class()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return _redirect_after_offerer_validation_action()
+        return _render_offerers_to_validate(offerers_id=form.object_ids_list)
 
     offerers = (
         db.session.query(offerers_models.Offerer)
@@ -353,7 +389,7 @@ def _offerer_batch_action(
 
     flash(success_message, "success")
 
-    return _redirect_after_offerer_validation_action()
+    return _render_offerers_to_validate(offerers_id=form.object_ids_list)
 
 
 @validation_blueprint.route("/offerer/batch-validate-form", methods=["GET", "POST"])
@@ -367,7 +403,8 @@ def get_batch_validate_offerer_form() -> utils.BackofficeResponse:
         information = None
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#offerers-table",
         information=information,
         form=form,
         dst=url_for("backoffice_web.validation.batch_validate_offerer"),
@@ -389,7 +426,7 @@ def batch_validate_offerer() -> utils.BackofficeResponse:
     except offerers_exceptions.OffererAlreadyValidatedException:
         mark_transaction_as_invalid()
         flash("Au moins une des entités juridiques a déjà été validée", "warning")
-        return _redirect_after_offerer_validation_action()
+        return ""
 
 
 @validation_blueprint.route("/offerer/batch-pending-form", methods=["GET", "POST"])
@@ -419,7 +456,8 @@ def get_batch_offerer_pending_form() -> utils.BackofficeResponse:
             form.tags.data = tags
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#offerers-table",
         form=form,
         dst=url_for("backoffice_web.validation.batch_set_offerer_pending"),
         div_id="batch-pending-modal",
@@ -449,7 +487,8 @@ def get_batch_reject_offerer_form() -> utils.BackofficeResponse:
         information = None
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#offerers-table",
         information=information,
         form=form,
         dst=url_for("backoffice_web.validation.batch_reject_offerer"),
@@ -471,7 +510,7 @@ def batch_reject_offerer() -> utils.BackofficeResponse:
     except offerers_exceptions.OffererAlreadyRejectedException:
         mark_transaction_as_invalid()
         flash("Une des entités juridiques a déjà été rejetée", "warning")
-        return _redirect_after_offerer_validation_action()
+        return ""
 
 
 # #
