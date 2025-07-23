@@ -177,6 +177,7 @@ export const Offerer = (): JSX.Element => {
           data-testid="signup-offerer-form"
         >
           <FormLayout.Section>
+            {/* eslint-disable-next-line react/forbid-elements */}
             <MainHeading
               mainHeading="Votre structure"
               className={styles['main-heading-wrapper']}

@@ -1,12 +1,12 @@
-import { fixupPluginRules } from '@eslint/compat';
+import { fixupPluginRules } from '@eslint/compat'
 import eslint from '@eslint/js'
 
+import cypressPlugin from 'eslint-plugin-cypress/flat'
 import importPlugin from 'eslint-plugin-import'
 import reactPlugin from 'eslint-plugin-react'
 import reactHooksPlugin from 'eslint-plugin-react-hooks'
-import cypressPlugin from 'eslint-plugin-cypress/flat'
 
-import tseslint from 'typescript-eslint';
+import tseslint from 'typescript-eslint'
 
 import globals from 'globals'
 import path from 'node:path'
@@ -24,7 +24,7 @@ export default tseslint.config(
       ['import']: importPlugin,
       ['react']: reactPlugin,
       ['react-hooks']: fixupPluginRules(reactHooksPlugin),
-    }
+    },
   },
   // config with just ignores is the replacement for `.eslintignore`
   {
@@ -45,7 +45,7 @@ export default tseslint.config(
       '**/vite.config.ts',
       '.storybook/*',
       'src/**/*.gif',
-    ]
+    ],
   },
   // extends ...
   eslint.configs.recommended,
@@ -111,13 +111,28 @@ export default tseslint.config(
       '@typescript-eslint/no-unnecessary-condition': 'error',
       '@typescript-eslint/prefer-ts-expect-error': 'error',
       '@typescript-eslint/switch-exhaustiveness-check': 'error',
-      'eqeqeq': 'error',
-      'curly': ['error', 'all'],
+      eqeqeq: 'error',
+      curly: ['error', 'all'],
       'import/export': 'error',
       'import/no-default-export': 'error',
       'no-console': 'error',
       'require-await': 'error',
-      'react/forbid-elements': [2, { forbid: [{ element: "DevTool", message: "Don't forget to remove before commit" }], }],
+      'react/forbid-elements': [
+        2,
+        {
+          forbid: [
+            {
+              element: 'DevTool',
+              message: "Don't forget to remove before commit",
+            },
+            {
+              element: 'MainHeading',
+              message:
+                'Avoid the use of `<MainHeading>` inside a component. Rather use the `<Layout>` component with the `mainHeading` prop whenever possible',
+            },
+          ],
+        },
+      ],
       'react/no-unescaped-entities': [
         'error',
         {
@@ -182,5 +197,5 @@ export default tseslint.config(
     rules: {
       'import/no-default-export': 'off',
     },
-  },
-);
+  }
+)

@@ -10,6 +10,7 @@ export const OnboardingOffersTypeChoice = () => {
     <OnboardingLayout verticallyCentered stickyActionsAndFooter={false}>
       <div className={styles['onboarding-offer-container']}>
         <div className={styles['onboarding-offer-header']}>
+          {/* eslint-disable-next-line react/forbid-elements */}
           <MainHeading
             mainHeading="Bienvenue sur le pass Culture Pro !"
             className={styles['onboarding-offer-main-heading-wrapper']}
