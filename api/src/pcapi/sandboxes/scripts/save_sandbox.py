@@ -1,4 +1,5 @@
 import logging
+import typing
 
 from pcapi.core import search
 from pcapi.core.offerers import models as offerer_models
@@ -7,12 +8,18 @@ from pcapi.models import db
 from pcapi.repository.clean_database import clean_all_database
 from pcapi.sandboxes import scripts
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations import clean_industrial_mediations_bucket
+from pcapi.sandboxes.scripts.utils import helpers
 
 
 logger = logging.getLogger(__name__)
 
 
-def save_sandbox(name: str, with_clean: bool = True, with_clean_bucket: bool = False) -> None:
+def save_sandbox(
+    name: str,
+    with_clean: bool = True,
+    with_clean_bucket: bool = False,
+    steps_to_skip: typing.Iterable[str] | None = None,
+) -> None:
     if with_clean:
         logger.info("Cleaning database")
         clean_all_database(reset_ids=True)
@@ -22,7 +29,10 @@ def save_sandbox(name: str, with_clean: bool = True, with_clean_bucket: bool = F
 
     script_name = "sandbox_" + name
     sandbox_module = getattr(scripts, script_name)
-    sandbox_module.save_sandbox()
+
+    with helpers.skip_steps(steps=steps_to_skip):
+        sandbox_module.save_sandbox()
+
     logger.info("Sandbox %s saved", name)
     _index_all_offers()
     _index_all_venues()
