@@ -101,7 +101,6 @@ import type { ResetPasswordBodyModel } from '../models/ResetPasswordBodyModel';
 import type { SaveNewOnboardingDataQueryModel } from '../models/SaveNewOnboardingDataQueryModel';
 import type { SharedCurrentUserResponseModel } from '../models/SharedCurrentUserResponseModel';
 import type { SharedLoginUserResponseModel } from '../models/SharedLoginUserResponseModel';
-import type { SirenInfo } from '../models/SirenInfo';
 import type { SiretInfo } from '../models/SiretInfo';
 import type { StatisticsModel } from '../models/StatisticsModel';
 import type { StockIdResponseModel } from '../models/StockIdResponseModel';
@@ -2247,27 +2246,6 @@ export class DefaultService {
         'bankAccountId': bankAccountId,
         'reimbursementPeriodBeginningDate': reimbursementPeriodBeginningDate,
         'reimbursementPeriodEndingDate': reimbursementPeriodEndingDate,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * get_siren_info <GET>
-   * @param siren
-   * @returns SirenInfo OK
-   * @throws ApiError
-   */
-  public getSirenInfo(
-    siren: string,
-  ): CancelablePromise<SirenInfo> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/sirene/siren/{siren}',
-      path: {
-        'siren': siren,
       },
       errors: {
         403: `Forbidden`,

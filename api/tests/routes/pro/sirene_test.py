@@ -14,31 +14,6 @@ def get_siret_raises(siret):
     raise sirene_exceptions.NonPublicDataException()
 
 
-class GetSirenTest:
-    def test_siren_ok(self, client):
-        siren = "123456789"
-        response = client.get(f"/sirene/siren/{siren}")
-        assert response.status_code == 200
-        assert response.json == {
-            "siren": siren,
-            "name": "MINISTERE DE LA CULTURE",
-            "address": {
-                "street": "3 RUE DE VALOIS",
-                "postalCode": "75001",
-                "city": "PARIS",
-            },
-            "ape_code": "90.03A",
-        }
-
-    @mock.patch("pcapi.connectors.entreprise.sirene.get_siren", get_siren_raises)
-    def test_siren_error(self, client):
-        siren = "123456789"
-        response = client.get(f"/sirene/siren/{siren}")
-        assert response.status_code == 400
-        msg = "Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles."
-        assert response.json == {"global": [msg]}
-
-
 class GetSiretTest:
     @pytest.mark.usefixtures("db_session")
     def test_siret_ok(self, client):

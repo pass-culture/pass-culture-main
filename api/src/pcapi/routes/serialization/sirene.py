@@ -12,13 +12,6 @@ class Address(serialization.BaseModel):
         allow_population_by_field_name = True
 
 
-class SirenInfo(serialization.BaseModel):
-    siren: str
-    name: str
-    address: Address
-    ape_code: str
-
-
 class SiretInfo(serialization.BaseModel):
     siret: str
     name: str

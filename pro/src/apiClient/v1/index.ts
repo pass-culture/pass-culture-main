@@ -226,7 +226,6 @@ export type { ResetPasswordBodyModel } from './models/ResetPasswordBodyModel';
 export type { SaveNewOnboardingDataQueryModel } from './models/SaveNewOnboardingDataQueryModel';
 export type { SharedCurrentUserResponseModel } from './models/SharedCurrentUserResponseModel';
 export type { SharedLoginUserResponseModel } from './models/SharedLoginUserResponseModel';
-export type { SirenInfo } from './models/SirenInfo';
 export type { SiretInfo } from './models/SiretInfo';
 export type { StatisticsModel } from './models/StatisticsModel';
 export type { StatisticsQueryModel } from './models/StatisticsQueryModel';
