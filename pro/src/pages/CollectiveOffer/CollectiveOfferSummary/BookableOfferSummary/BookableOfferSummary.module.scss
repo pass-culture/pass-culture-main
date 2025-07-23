@@ -129,3 +129,9 @@
 .partial-timeline-container {
   flex: 0.7;
 }
+
+.container {
+  display: flex;
+  flex-direction: row;
+  gap: rem.torem(16px);
+}
