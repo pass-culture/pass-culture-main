@@ -14,6 +14,7 @@ const renderActionBar = ({
   props: ActionBarProps
   url?: string
   features?: string[]
+  isEvent?: boolean
 }) => {
   return renderWithProviders(<ActionBar {...props} />, {
     features: features,
@@ -119,13 +120,13 @@ describe('IndividualOffer::ActionBar', () => {
       expect(buttonBack).toHaveAttribute('href', '/offres')
     })
 
-    it('should show a button to go back read only when editing stocks with the WIP_ENABLE_EVENT_WITH_OPENING_HOUR FF enabled', async () => {
+    it('should show a button to go back read only when editing stocks', async () => {
       props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
+      props.isEvent = true
 
       renderActionBar({
         props,
         url: '/edition/url',
-        features: ['WIP_ENABLE_EVENT_WITH_OPENING_HOUR'],
       })
 
       await userEvent.click(
