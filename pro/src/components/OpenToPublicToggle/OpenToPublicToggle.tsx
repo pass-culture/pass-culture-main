@@ -13,6 +13,7 @@ export interface OpenToPublicToggleProps {
   }
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   isOpenToPublic?: string | null
+  showDescription?: boolean
 }
 
 const DEFAULT_RADIO_DESCRIPTIONS: OpenToPublicToggleProps['radioDescriptions'] =
@@ -26,6 +27,7 @@ export const OpenToPublicToggle = ({
   radioDescriptions = {},
   onChange,
   isOpenToPublic,
+  showDescription = true,
 }: OpenToPublicToggleProps): JSX.Element => {
   const descriptionId = useId()
 
@@ -56,17 +58,19 @@ export const OpenToPublicToggle = ({
         onChange={onChange}
         checkedOption={isOpenToPublic?.toString()}
       />
-      <span
-        id={descriptionId}
-        className={styles['open-to-public-toggle-description']}
-        aria-live="polite"
-      >
-        {isOpenToPublic === 'true'
-          ? finalRadioDescriptions.yes
-          : isOpenToPublic === 'false'
-            ? finalRadioDescriptions.no
-            : ''}
-      </span>
+      {showDescription && (
+        <span
+          id={descriptionId}
+          className={styles['open-to-public-toggle-description']}
+          aria-live="polite"
+        >
+          {isOpenToPublic === 'true'
+            ? finalRadioDescriptions.yes
+            : isOpenToPublic === 'false'
+              ? finalRadioDescriptions.no
+              : ''}
+        </span>
+      )}
     </>
   )
 }
