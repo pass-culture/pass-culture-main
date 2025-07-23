@@ -18,4 +18,7 @@ export const createStore = (initialState = {}) => {
   return { store }
 }
 
+// We expose the store so that it can be used outside of the Redux context
+export const { store: rootStore } = createStore()
+
 export type AppDispatch = ReturnType<typeof createStore>['store']['dispatch']
