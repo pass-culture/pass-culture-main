@@ -1,6 +1,9 @@
 import decimal
 import enum
-import typing
+from typing import Any
+from typing import Collection
+from typing import Mapping
+from typing import MutableMapping
 
 from sqlalchemy.ext.mutable import MutableDict
 
@@ -27,7 +30,7 @@ def add_action(
     rule: offers_models.OfferValidationRule | None = None,
     chronicle: chronicles_models.Chronicle | None = None,
     comment: str | None = None,
-    **extra_data: typing.Any,
+    **extra_data: Any,
 ) -> models.ActionHistory:
     legit_actions = (
         models.ActionType.BLACKLIST_DOMAIN_NAME,
@@ -91,14 +94,14 @@ class ObjectUpdateSnapshot:
         self.author = author
         self.add_action_target = {obj.__class__.__tablename__: obj}
 
-    def set(self, field_name: str, old: typing.Any, new: typing.Any) -> "ObjectUpdateSnapshot":
+    def set(self, field_name: str, old: Any, new: Any) -> "ObjectUpdateSnapshot":
         """
         Add a single field update to the update snapshot.
         """
         self.snapshot.set(field_name, old, new)
         return self
 
-    def _is_different(self, field_name: str, old_value: typing.Any, new_value: typing.Any) -> bool:
+    def _is_different(self, field_name: str, old_value: Any, new_value: Any) -> bool:
         if (
             ("latitude" in field_name.lower() or "longitude" in field_name.lower())
             and old_value is not None
@@ -111,8 +114,8 @@ class ObjectUpdateSnapshot:
 
     def trace_update(
         self,
-        data: typing.Mapping,
-        target: typing.Any | None = None,
+        data: Mapping,
+        target: Any | None = None,
         field_name_template: str = "{}",
         filter_fields: bool = False,
     ) -> "ObjectUpdateSnapshot":
@@ -156,7 +159,18 @@ class ObjectUpdateSnapshot:
 
         return self
 
-    def to_dict(self) -> typing.Mapping[str, typing.Any]:
+    def trace_update_raw(self, data: Mapping[str, Mapping[str, Any]]) -> "ObjectUpdateSnapshot":
+        """Trace update without any target object with already formatted data
+
+        Might be useful when the target object might be deleted or in a
+        not very SQLA session friendly state. In such case,
+        `trace_update` might not be suited.
+        """
+        for field_name, changes in data.items():
+            self.snapshot.set(field_name, changes["old"], changes["new"])
+        return self
+
+    def to_dict(self) -> Mapping[str, Any]:
         return self.snapshot.to_dict()
 
     @property
@@ -186,9 +200,9 @@ class UpdateSnapshot:
     """
 
     def __init__(self) -> None:
-        self._fields: typing.MutableMapping[str, typing.Any] = {}
+        self._fields: MutableMapping[str, Any] = {}
 
-    def set(self, field_name: str, old: typing.Any, new: typing.Any) -> None:
+    def set(self, field_name: str, old: Any, new: Any) -> None:
         if old in ("", {}, []):
             old = None
         if new in ("", {}, []):
@@ -196,7 +210,7 @@ class UpdateSnapshot:
         if old != new:
             self._fields[field_name] = {"old_info": old, "new_info": new}
 
-    def to_dict(self) -> typing.Mapping[str, typing.Any]:
+    def to_dict(self) -> Mapping[str, Any]:
         return serialize_fields(self._fields)
 
     @property
@@ -204,21 +218,21 @@ class UpdateSnapshot:
         return not self._fields
 
 
-def _serialize_value(data: typing.Any) -> typing.Any:
+def _serialize_value(data: Any) -> Any:
     # Warning: str is a Collection
     if data is None or isinstance(data, (bool, int, str)):
         return data
     if isinstance(data, enum.Enum):
         return data.value
-    if isinstance(data, typing.Mapping):
+    if isinstance(data, Mapping):
         return serialize_fields(data)
-    if isinstance(data, typing.Collection):
+    if isinstance(data, Collection):
         return list(serialize_collection(data))
     return str(data)
 
 
-def serialize_fields(fields: typing.Mapping[str, typing.Any]) -> typing.Mapping[str, typing.Any]:
-    res: typing.MutableMapping[str, typing.Any] = {}
+def serialize_fields(fields: Mapping[str, Any]) -> Mapping[str, Any]:
+    res: MutableMapping[str, Any] = {}
 
     for column, data in fields.items():
         res[column] = _serialize_value(data)
@@ -226,8 +240,8 @@ def serialize_fields(fields: typing.Mapping[str, typing.Any]) -> typing.Mapping[
     return res
 
 
-def serialize_collection(items: typing.Collection) -> typing.Collection:
-    res: list[typing.Any] = []
+def serialize_collection(items: Collection) -> Collection:
+    res: list[Any] = []
 
     for item in items:
         serialized_item = _serialize_value(item)

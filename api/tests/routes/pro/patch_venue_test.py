@@ -637,12 +637,12 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_data = populate_missing_data_from_venue(
             {
-                "openingHours": [
+                "openingHours": {
                     # We are only changing MONDAY and FRIDAY opening Hours, TUESDAY is already like following
-                    {"weekday": "MONDAY", "timespan": [["10:00", "13:00"], ["14:00", "19:30"]]},
-                    {"weekday": "TUESDAY", "timespan": [["10:00", "13:00"], ["14:00", "19:30"]]},
-                    {"weekday": "FRIDAY", "timespan": None},
-                ],
+                    "MONDAY": [["10:00", "13:00"], ["14:00", "19:30"]],
+                    "TUESDAY": [["10:00", "13:00"], ["14:00", "19:30"]],
+                    "FRIDAY": None,
+                },
                 "contact": None,
             },
             venue,

@@ -66,6 +66,7 @@ def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
             .load_only(aliased_venue.id, aliased_venue.name, aliased_venue.publicName),
         )
         .options(sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
+        .options(sa_orm.selectinload(models.Venue.openingHours))
     ).one_or_none()
     if not venue:
         flask.abort(404)
