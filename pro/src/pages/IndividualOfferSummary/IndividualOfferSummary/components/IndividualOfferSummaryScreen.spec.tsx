@@ -573,7 +573,6 @@ describe('IndividualOfferSummaryScreen', () => {
           }),
           { offerId: 'AA' }
         ),
-        options: { features: ['WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'] },
       })
 
       await userEvent.click(
@@ -620,9 +619,7 @@ describe('IndividualOfferSummaryScreen', () => {
           }),
           { offerId: 'AA' }
         ),
-        options: {
-          features: ['WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'],
-        },
+        options: {},
       })
 
       await userEvent.click(
@@ -666,9 +663,7 @@ describe('IndividualOfferSummaryScreen', () => {
           }),
           { offerId: 'AA' }
         ),
-        options: {
-          features: ['WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'],
-        },
+        options: {},
       })
 
       await userEvent.click(
@@ -700,9 +695,7 @@ describe('IndividualOfferSummaryScreen', () => {
           }),
           { offerId: 'AA' }
         ),
-        options: {
-          features: ['WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'],
-        },
+        options: {},
       })
 
       await userEvent.click(
@@ -735,9 +728,7 @@ describe('IndividualOfferSummaryScreen', () => {
           }),
           { offerId: 'AA' }
         ),
-        options: {
-          features: ['WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'],
-        },
+        options: {},
       })
 
       await userEvent.click(
