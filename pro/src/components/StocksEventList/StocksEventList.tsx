@@ -1,20 +1,19 @@
-import cn from 'classnames'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useSearchParams } from 'react-router'
-import { useSWRConfig } from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
   GetIndividualOfferWithAddressResponseModel,
-  GetStocksResponseModel,
   PriceCategoryResponseModel,
   StocksOrderedBy,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { SortingMode, useColumnSorting } from 'commons/hooks/useColumnSorting'
+import {
+  GET_OFFER_QUERY_KEY,
+  GET_STOCKS_QUERY_KEY,
+} from 'commons/config/swrQueryKeys'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { useNotification } from 'commons/hooks/useNotification'
 import { usePaginationWithSearchParams } from 'commons/hooks/usePagination'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
@@ -23,19 +22,17 @@ import { pluralize, pluralizeString } from 'commons/utils/pluralize'
 import {
   convertTimeFromVenueTimezoneToUtc,
   formatLocalTimeDateString,
-  isValidTime,
 } from 'commons/utils/timezone'
-import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { AddRecurrencesButton } from 'components/IndividualOffer/StocksEventCreation/AddRecurrencesButton'
-import { getPriceCategoryOptions } from 'components/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
-import fullRefreshIcon from 'icons/full-refresh.svg'
+import {
+  StocksTableFilters,
+  StocksTableSort,
+} from 'components/IndividualOffer/StocksEventCreation/form/types'
+import { StocksCalendarActionsBar } from 'components/IndividualOffer/StocksEventCreation/StocksCalendar/StocksCalendarActionsBar/StocksCalendarActionsBar'
+import { StocksCalendarFilters } from 'components/IndividualOffer/StocksEventCreation/StocksCalendar/StocksCalendarFilters/StocksCalendarFilters'
 import fullTrashIcon from 'icons/full-trash.svg'
-import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
-import { Select } from 'ui-kit/form/Select/Select'
-import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 import { Table, TableVariant } from 'ui-kit/Table/Table'
 
@@ -75,236 +72,102 @@ export const StocksEventList = ({
   departmentCode,
   offer,
   readonly = false,
-  onStocksLoad,
   canAddStocks = false,
 }: StocksEventListProps) => {
   // utilities
   const { logEvent } = useAnalytics()
-  const notify = useNotification()
-  const [searchParams, setSearchParams] = useSearchParams()
+  //const notify = useNotification()
+  // const [searchParams, setSearchParams] = useSearchParams()
   const { mutate } = useSWRConfig()
   const selectedOffererId = useSelector(selectCurrentOffererId)
   // states
-  const [checkedStocks, setCheckedStocks] = useState<boolean[]>([])
-  const [stocks, setStocks] = useState<StocksEvent[]>([])
-  const [offerHasStocks, setOfferHasStocks] = useState<boolean | null>(null)
-  const [stocksCountWithFilters, setStocksCountWithFilters] =
-    useState<number>(0)
+  // const [checkedStocks, setCheckedStocks] = useState<boolean[]>([])
+  // const [stocks, setStocks] = useState<StocksEvent[]>([])
+  // const [offerHasStocks, setOfferHasStocks] = useState<boolean | null>(null)
+  // const [stocksCountWithFilters, setStocksCountWithFilters] =
+  //   useState<number>(0)
   const [isDeleteAllLoading, setIsDeleteAllLoading] = useState(false)
 
-  const [dateFilter, setDateFilter] = useState(searchParams.get('date'))
-  const [timeFilter, setTimeFilter] = useState<string>(
-    searchParams.get('time') || ''
-  )
-  const [priceCategoryIdFilter, setPriceCategoryIdFilter] = useState(
-    searchParams.get('priceCategoryId')
-  )
-  const { currentSortingColumn, currentSortingMode } =
-    useColumnSorting<StocksOrderedBy>()
+  // const [dateFilter, setDateFilter] = useState(searchParams.get('date'))
+  // const [timeFilter, setTimeFilter] = useState<string>(
+  //   searchParams.get('time') || ''
+  // )
+  // const [priceCategoryIdFilter, setPriceCategoryIdFilter] = useState(
+  //   searchParams.get('priceCategoryId')
+  // )
+  // const { currentSortingColumn, currentSortingMode } =
+  //   useColumnSorting<StocksOrderedBy>()
 
-  const { page, previousPage, nextPage, pageCount, firstPage } =
-    usePaginationWithSearchParams(STOCKS_PER_PAGE, stocksCountWithFilters)
+  const { previousPage, nextPage, pageCount, firstPage } =
+    usePaginationWithSearchParams(STOCKS_PER_PAGE)
 
-  const areAllSelected = checkedStocks.length === stocks.length
+  const [page, setPage] = useState(1)
+  const [checkedStocks, setCheckedStocks] = useState(new Set<number>())
+  const [appliedFilters, setAppliedFilters] = useState<StocksTableFilters>({})
+  const [appliedSort, setAppliedSort] = useState<StocksTableSort>({
+    sort: StocksOrderedBy.DATE,
+  })
+  const notify = useNotification()
 
-  const loadStocksFromCurrentFilters = () =>
-    api.getStocks(
-      offer.id,
-      dateFilter ? dateFilter : undefined,
-      isValidTime(timeFilter)
-        ? convertTimeFromVenueTimezoneToUtc(timeFilter, departmentCode)
-        : undefined,
-      priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
-      currentSortingColumn ?? undefined,
-      currentSortingMode === SortingMode.DESC,
-      Number(page || 1)
-    )
+  const queryKeys: [
+    string,
+    number,
+    number,
+    StocksTableFilters,
+    StocksTableSort,
+  ] = [GET_STOCKS_QUERY_KEY, offer.id, page, appliedFilters, appliedSort]
 
-  const handleStocksResponse = (response: GetStocksResponseModel) => {
-    setStocks(serializeStockEvents(response.stocks))
-    setOfferHasStocks(response.hasStocks)
-    setStocksCountWithFilters(response.stockCount)
-    if (onStocksLoad) {
-      onStocksLoad(response.hasStocks)
-    }
-  }
-
-  const reloadStocks = async () => {
-    const response = await loadStocksFromCurrentFilters()
-    handleStocksResponse(response)
-  }
-
-  useEffect(() => {
-    if (dateFilter) {
-      searchParams.set('date', dateFilter)
-    } else {
-      searchParams.delete('date')
-    }
-    if (timeFilter) {
-      searchParams.set('time', timeFilter)
-    } else {
-      searchParams.delete('time')
-    }
-    if (priceCategoryIdFilter) {
-      searchParams.set('priceCategoryId', priceCategoryIdFilter)
-    } else {
-      searchParams.delete('priceCategoryId')
-    }
-    if (currentSortingColumn) {
-      searchParams.set('orderBy', currentSortingColumn)
-    } else {
-      searchParams.delete('orderBy')
-    }
-
-    setSearchParams(searchParams)
-
-    async function loadStocks() {
-      const response = await loadStocksFromCurrentFilters()
-
-      if (!ignore) {
-        handleStocksResponse(response)
-      }
-    }
-
-    // we set ignore variable to avoid race conditions
-    // see react doc:  https://react.dev/reference/react/useEffect#fetching-data-with-effects
-    let ignore = false
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadStocks()
-    return () => {
-      ignore = true
-    }
-  }, [
-    dateFilter,
-    timeFilter,
-    priceCategoryIdFilter,
-    currentSortingColumn,
-    currentSortingMode,
-    page,
-  ])
-
-  // Derived data
-  const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
-
-  const areFiltersActive = Boolean(
-    dateFilter || timeFilter || priceCategoryIdFilter
-  )
-
-  // Handlers
-  const onFilterChange = () => {
-    firstPage()
-    logEvent(Events.UPDATED_EVENT_STOCK_FILTERS, {
-      formType: readonly ? 'readonly' : 'creation',
-    })
-  }
-
-  const onDeleteStock = async (selectIndex: number, stockId: number) => {
-    await api.deleteStock(stockId)
-
-    logEvent(Events.CLICKED_DELETE_STOCK, {
-      offererId: selectedOffererId?.toString(),
-      offerId: offer.id,
-      offerType: 'individual',
-      stockId: stockId,
-    })
-
-    // If it was the last stock of the page, go to previous page
-    if (stocks.length === 1 && page > 1) {
-      previousPage()
-    } else {
-      await reloadStocks()
-
-      // handle checkbox selection
-      const newArray = [...checkedStocks]
-      newArray.splice(selectIndex, 1)
-      setCheckedStocks(newArray)
-    }
-
-    // When all stocks are deleted, we need to reload the offer
-    // to disable the stepper
-    if (stocks.length === 1 && page === 1) {
-      await mutate([GET_OFFER_QUERY_KEY, offer.id])
-    }
-    notify.success('1 date a été supprimée')
-  }
-
-  const onBulkDelete = async () => {
-    setIsDeleteAllLoading(true)
-
-    const stocksIdToDelete = stocks
-      .filter((_stock, index) => checkedStocks[index])
-      .map((stock) => stock.id)
-
-    if (areAllSelected) {
-      await api.deleteAllFilteredStocks(offer.id, {
-        date: dateFilter ? dateFilter : undefined,
-        time: timeFilter
-          ? convertTimeFromVenueTimezoneToUtc(timeFilter, departmentCode)
+  const { data, isLoading } = useSWR(
+    queryKeys,
+    ([, offerId, pageNum, filters, sortType]) =>
+      api.getStocks(
+        offerId,
+        filters.date || undefined,
+        filters.time
+          ? convertTimeFromVenueTimezoneToUtc(filters.time, departmentCode)
           : undefined,
-        price_category_id:
-          priceCategoryIdFilter === null
-            ? null
-            : parseInt(priceCategoryIdFilter),
-      })
+        filters.priceCategoryId ? Number(filters.priceCategoryId) : undefined,
+        sortType.sort,
+        sortType.orderByDesc,
+        pageNum || 1,
+        STOCKS_PER_PAGE
+      ),
+    {
+      //  Display previous data in the table until the new data has loaded so that
+      //  the scroll position in the table remains the same in-between pagination loads
+      keepPreviousData: true,
+      onSuccess: () => {
+        setCheckedStocks(new Set())
+      },
+    }
+  )
 
-      notify.success(
-        `${new Intl.NumberFormat('fr-FR').format(
-          stocksCountWithFilters
-        )} dates ont été supprimées`
-      )
-      // We don't know how many stocks are left after the deletion,
-      // so we reload the first page
-      if (page !== 1) {
-        firstPage()
-      } else {
-        await reloadStocks()
-      }
-    } else {
-      // Otherwise, use the bulk delete stocks by id route
-      if (stocksIdToDelete.length > 0) {
-        await Promise.all(
-          [...chunks(stocksIdToDelete, DELETE_STOCKS_CHUNK_SIZE)].map((ids) =>
-            api.deleteStocks(offer.id, { ids_to_delete: ids })
-          )
-        )
-        // If it was the last stock of the page, go to previous page
-        if (stocks.length === stocksIdToDelete.length && page > 1) {
-          previousPage()
-        } else {
-          await reloadStocks()
-        }
+  console.log(data)
 
-        notify.success(
-          pluralize(stocksIdToDelete.length, 'date a été supprimée')
-        )
-      }
+  async function onDeleteStock(ids: number[]) {
+    await api.deleteStocks(offer.id, { ids_to_delete: ids })
+
+    if (
+      page > 1 &&
+      data?.stockCount &&
+      data.stockCount - ids.length <= (page - 1) * STOCKS_PER_PAGE
+    ) {
+      //  Descrease the page number if deleting the ids would leave the user on an empty stocks page
+      setPage((p) => p - 1)
     }
 
-    setCheckedStocks([])
-    setIsDeleteAllLoading(false)
-    logEvent(Events.CLICKED_BULK_DELETE_STOCK, {
-      offererId: selectedOffererId?.toString(),
-      offerId: offer.id,
-      offerType: 'individual',
-      deletionCount: checkedStocks.length,
-    })
+    notify.success(pluralize(ids.length, 'date a été supprimée'))
 
-    // When all stocks are deleted, we need to reload the offer
-    // to disable the stepper
+    await mutate(queryKeys)
     await mutate([GET_OFFER_QUERY_KEY, offer.id])
   }
 
-  const onCancelClick = () => {
-    setCheckedStocks([])
-  }
+  const stocks = data?.stocks || []
 
   const columns = [
     {
       label: 'Date',
       id: 'beginningDatetime',
-      ordererField: 'beginningDatetime',
-      sortable: true,
       render: (stock: { beginningDatetime: string | number | Date }) => {
         const beginningDay = formatLocalTimeDateString(
           stock.beginningDatetime,
@@ -330,8 +193,6 @@ export const StocksEventList = ({
     {
       label: 'Horaire',
       id: 'beginningDatetime',
-      sortable: true,
-      ordererField: 'beginningDatetime',
       render: (stock: { beginningDatetime: string | number | Date }) =>
         formatLocalTimeDateString(
           stock.beginningDatetime,
@@ -342,8 +203,6 @@ export const StocksEventList = ({
     {
       label: 'Tarif',
       id: 'priceCategoryId',
-      sortable: true,
-      ordererField: 'priceCategoryId',
       render: (stock: { priceCategoryId: number }) => {
         const category = priceCategories.find(
           (p) => p.id === stock.priceCategoryId
@@ -356,8 +215,6 @@ export const StocksEventList = ({
     {
       label: 'Date limite de réservation',
       id: 'bookingLimitDatetime',
-      sortable: true,
-      ordererField: 'bookingLimitDatetime',
       render: (stock: { bookingLimitDatetime: string | number | Date }) =>
         formatLocalTimeDateString(
           stock.bookingLimitDatetime,
@@ -368,8 +225,6 @@ export const StocksEventList = ({
     {
       label: 'Places',
       id: 'quantity',
-      sortable: true,
-      ordererField: 'quantity',
       render: (stock: { quantity: number | null }) =>
         stock.quantity === null
           ? 'Illimité'
@@ -378,18 +233,16 @@ export const StocksEventList = ({
     readonly && {
       label: 'Réservations',
       id: 'bookingsQuantity',
-      sortable: true,
-      ordererField: 'bookingsQuantity',
       render: (stock: { bookingsQuantity: number | string }) =>
         stock.bookingsQuantity,
     },
     !readonly && {
       label: '',
       id: 'deleteAction',
-      render: (stock: { id: number }, index: number) => (
+      render: (stock: { id: number }) => (
         <Button
           variant={ButtonVariant.TERNARY}
-          onClick={() => onDeleteStock(index, stock.id)}
+          onClick={() => onDeleteStock([stock.id])}
           icon={fullTrashIcon}
           tooltipContent="Supprimer"
         />
@@ -397,121 +250,78 @@ export const StocksEventList = ({
     },
   ].filter(Boolean)
 
-  const onResetFilter = () => {
-    setDateFilter('')
-    setTimeFilter('')
-    setPriceCategoryIdFilter('')
-    onFilterChange()
-  }
-
   return (
     <div className={styles['recurrences-container']}>
       {canAddStocks && (
         <div className={styles['recurrences-button']}>
-          <AddRecurrencesButton offer={offer} reloadStocks={reloadStocks} />
+          <AddRecurrencesButton
+            offer={offer}
+            reloadStocks={async () => {
+              await mutate(queryKeys, data, {
+                revalidate: true,
+              })
+              await mutate([GET_OFFER_QUERY_KEY, offer.id])
+            }}
+          />
         </div>
       )}
 
-      {(!canAddStocks || offerHasStocks) && (
+      {(!canAddStocks || data?.hasStocks) && (
         <>
-          <div className={cn(styles['filter-input'])}>
-            <div>
-              <DatePicker
-                name={'dateFilter'}
-                label="Filtrer par date"
-                onChange={(event) => {
-                  setDateFilter(event.target.value)
-                  onFilterChange()
-                }}
-                value={dateFilter ?? ''}
-              />
-            </div>
-            <div>
-              <TimePicker
-                name={'timeFilter'}
-                label="Filtrer par horaire"
-                onChange={(event) => {
-                  setTimeFilter(event.target.value)
-                  onFilterChange()
-                }}
-                value={timeFilter}
-              />
-            </div>
-            <div>
-              <Select
-                name="priceCategoryFilter"
-                label="Filtrer par tarif"
-                defaultOption={{ label: '', value: '' }}
-                options={priceCategoryOptions}
-                value={priceCategoryIdFilter ?? ''}
-                onChange={(event) => {
-                  setPriceCategoryIdFilter(event.target.value)
-                  onFilterChange()
-                }}
-              />
-            </div>
-          </div>
-          <Button
-            icon={fullRefreshIcon}
-            variant={ButtonVariant.TERNARY}
-            onClick={onResetFilter}
-            disabled={!areFiltersActive}
-          >
-            Réinitialiser les filtres
-          </Button>
+          <StocksCalendarFilters
+            priceCategories={offer.priceCategories}
+            filters={appliedFilters}
+            sortType={appliedSort}
+            onUpdateFilters={setAppliedFilters}
+            onUpdateSort={(sort, desc) => {
+              setAppliedSort({
+                sort: sort ? sort : undefined,
+                orderByDesc: Boolean(desc),
+              })
+            }}
+            mode={OFFER_WIZARD_MODE.CREATION}
+          />
 
           <div className={styles['table-wrapper']}>
             <Table
               columns={columns}
               data={stocks}
-              isLoading={offerHasStocks === null}
+              isLoading={isLoading}
               variant={TableVariant.COLLAPSE}
               selectable={!readonly}
-              selectedNumber={`${new Intl.NumberFormat('fr-FR').format(stocksCountWithFilters)} ${' '}
-            ${pluralizeString('date', stocksCountWithFilters)}`}
+              selectedNumber={`${new Intl.NumberFormat('fr-FR').format(stocks.length)} ${' '}
+            ${pluralizeString('date', stocks.length)}`}
               selectedIds={checkedStocks}
-              onSelectionChange={(rows) => {
-                setCheckedStocks(rows.map((r) => r.id))
-              }}
+              onSelectionChange={setCheckedStocks}
               noResult={{
-                resetFilter: onResetFilter,
+                resetFilter: setAppliedFilters,
                 message: 'Aucune date trouvée',
               }}
             />
           </div>
-          <Pagination
-            currentPage={page}
-            pageCount={pageCount}
-            onPreviousPageClick={previousPage}
-            onNextPageClick={nextPage}
-          />
+          <div className={styles['pagination']}>
+            <Pagination
+              currentPage={page}
+              onNextPageClick={() => setPage((p) => p + 1)}
+              onPreviousPageClick={() => setPage((p) => p - 1)}
+              pageCount={
+                data.stockCount % STOCKS_PER_PAGE === 0
+                  ? data.stockCount / STOCKS_PER_PAGE
+                  : Math.trunc(data.stockCount / STOCKS_PER_PAGE) + 1
+              }
+            />
+          </div>
         </>
       )}
 
-      {checkedStocks.length > 0 && (
-        <ActionsBarSticky className={styles['actions']}>
-          <ActionsBarSticky.Left>
-            {areAllSelected
-              ? pluralize(stocksCountWithFilters, 'dates sélectionnées')
-              : pluralize(checkedStocks.length, 'dates sélectionnées')}
-          </ActionsBarSticky.Left>
-          <ActionsBarSticky.Right>
-            {
-              <>
-                <Button
-                  onClick={onCancelClick}
-                  variant={ButtonVariant.SECONDARY}
-                >
-                  Annuler
-                </Button>
-                <Button onClick={onBulkDelete} isLoading={isDeleteAllLoading}>
-                  Supprimer ces dates
-                </Button>
-              </>
-            }
-          </ActionsBarSticky.Right>
-        </ActionsBarSticky>
-      )}
+      <StocksCalendarActionsBar
+        checkedStocks={checkedStocks}
+        hasStocks={Boolean(data?.hasStocks)}
+        deleteStocks={onDeleteStock}
+        updateCheckedStocks={setCheckedStocks}
+        mode={OFFER_WIZARD_MODE.CREATION}
+        offerId={offer.id}
+      />
     </div>
   )
 }

@@ -2,9 +2,9 @@ import { isBefore } from 'date-fns'
 import { useRef, useState } from 'react'
 
 import {
+  EventStockCreateBodyModel,
   GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
-  EventStockCreateBodyModel,
 } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'

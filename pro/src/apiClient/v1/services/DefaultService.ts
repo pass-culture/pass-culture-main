@@ -2,6 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { BaseHttpRequest } from '../core/BaseHttpRequest';
+import type { CancelablePromise } from '../core/CancelablePromise';
 import type { AdageCulturalPartnersResponseModel } from '../models/AdageCulturalPartnersResponseModel';
 import type { AttachImageFormModel } from '../models/AttachImageFormModel';
 import type { AttachImageResponseModel } from '../models/AttachImageResponseModel';
@@ -120,8 +122,6 @@ import type { VenueLabelListResponseModel } from '../models/VenueLabelListRespon
 import type { VenueProviderResponse } from '../models/VenueProviderResponse';
 import type { VenuesEducationalStatusesResponseModel } from '../models/VenuesEducationalStatusesResponseModel';
 import type { VenueTypeListResponseModel } from '../models/VenueTypeListResponseModel';
-import type { CancelablePromise } from '../core/CancelablePromise';
-import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class DefaultService {
   constructor(public readonly httpRequest: BaseHttpRequest) {}
   /**

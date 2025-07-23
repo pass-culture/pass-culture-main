@@ -3,8 +3,8 @@ import useSWR, { mutate } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
-  GetIndividualOfferWithAddressResponseModel,
   EventStockCreateBodyModel,
+  GetIndividualOfferWithAddressResponseModel,
   StocksOrderedBy,
 } from 'apiClient/v1'
 import {

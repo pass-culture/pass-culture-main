@@ -4,6 +4,7 @@ import { useSWRConfig } from 'swr'
 
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
@@ -14,6 +15,7 @@ import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { getDepartmentCode } from '../utils/getDepartmentCode'
 
 import { HelpSection } from './HelpSection/HelpSection'
+import { StocksCalendar } from './StocksCalendar/StocksCalendar'
 import styles from './StocksEventCreation.module.scss'
 
 export interface StocksEventCreationProps {
@@ -80,6 +82,7 @@ export const StocksEventCreation = ({
           onStocksLoad={setHasStocks}
           canAddStocks
         />
+        <StocksCalendar offer={offer} mode={OFFER_WIZARD_MODE.CREATION} />
       </>
       <ActionBar
         isDisabled={false}
