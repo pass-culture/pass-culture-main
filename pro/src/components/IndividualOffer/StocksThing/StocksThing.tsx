@@ -506,6 +506,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
             isSubmitting || isDisabled || Boolean(publishedOfferWithSameEAN)
           }
           dirtyForm={isDirty}
+          isEvent={false}
         />
       </form>
       <RouteLeavingGuardIndividualOffer when={isDirty && !isSubmitting} />

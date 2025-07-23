@@ -26,6 +26,7 @@ export interface ActionBarProps {
   step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
   dirtyForm?: boolean
   saveEditionChangesButtonRef?: React.RefObject<HTMLButtonElement>
+  isEvent?: boolean
 }
 
 export const ActionBar = ({
@@ -36,6 +37,7 @@ export const ActionBar = ({
   step,
   dirtyForm,
   saveEditionChangesButtonRef,
+  isEvent = false,
 }: ActionBarProps) => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
@@ -59,7 +61,8 @@ export const ActionBar = ({
 
     if (
       mode === OFFER_WIZARD_MODE.EDITION &&
-      step === INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
+      step === INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS &&
+      isEvent
     ) {
       return (
         <Button onClick={onClickPrevious} variant={ButtonVariant.SECONDARY}>

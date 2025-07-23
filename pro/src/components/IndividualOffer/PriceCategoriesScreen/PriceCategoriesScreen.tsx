@@ -440,6 +440,7 @@ export const PriceCategoriesScreen = ({
           step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS}
           isDisabled={isSubmitting}
           dirtyForm={isDirty}
+          isEvent={offer.isEvent}
         />
       </form>
 
