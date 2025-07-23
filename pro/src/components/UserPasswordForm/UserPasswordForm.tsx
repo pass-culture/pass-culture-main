@@ -134,7 +134,7 @@ export const UserPasswordForm = ({
               <PasswordInput
                 {...register('newConfirmationPassword')}
                 error={errors.newConfirmationPassword?.message}
-                label="Confirmer votre nouveau mot de passe"
+                label="Confirmez votre nouveau mot de passe"
               />
             </div>
           </FormLayout>

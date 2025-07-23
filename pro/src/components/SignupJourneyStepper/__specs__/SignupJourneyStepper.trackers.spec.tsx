@@ -48,8 +48,8 @@ const renderSignupJourneyStepper = (
     { user: sharedCurrentUserFactory(), initialRouterEntries: [url] }
   )
 
-  const tabAuthentication = screen.queryByText('Identification')
-  const tabActivity = screen.queryByText('Activité')
+  const tabAuthentication = screen.queryByText('Vos informations')
+  const tabActivity = screen.queryByText('Votre activité')
   const tabValidation = screen.queryByText('Validation')
 
   return {

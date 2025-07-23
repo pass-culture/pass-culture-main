@@ -91,7 +91,7 @@ describe('ResetPassword', () => {
         'MyN3wP4$$w0rd'
       )
       await userEvent.type(
-        await screen.findByLabelText(/Confirmer votre nouveau mot de passe/),
+        await screen.findByLabelText(/Confirmez votre nouveau mot de passe/),
         'MyN3wP4$$w0rd'
       )
       await userEvent.click(screen.getByText('Confirmer'))

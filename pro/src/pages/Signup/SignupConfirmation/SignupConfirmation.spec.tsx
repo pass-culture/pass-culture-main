@@ -33,7 +33,7 @@ describe('SignupConfirmation', () => {
       )
     ).toBeInTheDocument()
     expect(
-      screen.getByText(/Vous n’avez pas reçu notre email ?/)
+      screen.getByText(/Vous n’avez pas reçu d’email ?/)
     ).toBeInTheDocument()
   })
 })

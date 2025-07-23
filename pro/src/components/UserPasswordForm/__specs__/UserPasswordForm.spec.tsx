@@ -32,7 +32,7 @@ describe('components:UserPasswordForm', () => {
     expect(screen.getByLabelText(/Mot de passe actuel/)).toBeInTheDocument()
     expect(screen.getByLabelText(/Nouveau mot de passe/)).toBeInTheDocument()
     expect(
-      screen.getByLabelText(/Confirmer votre nouveau mot de passe/)
+      screen.getByLabelText(/Confirmez votre nouveau mot de passe/)
     ).toBeInTheDocument()
   })
 
@@ -48,7 +48,7 @@ describe('components:UserPasswordForm', () => {
       'MyNewSuper1Password,'
     )
     await userEvent.type(
-      screen.getByLabelText(/Confirmer votre nouveau mot de passe/),
+      screen.getByLabelText(/Confirmez votre nouveau mot de passe/),
       'MyNewSuper1Password,'
     )
     await userEvent.tab()
@@ -86,7 +86,7 @@ describe('components:UserPasswordForm', () => {
       'MyNewSuper1Password,'
     )
     await userEvent.type(
-      screen.getByLabelText(/Confirmer votre nouveau mot de passe/),
+      screen.getByLabelText(/Confirmez votre nouveau mot de passe/),
       'MyNewSuper1Password,'
     )
     await userEvent.tab()

@@ -30,7 +30,7 @@ export const ReSendEmailCallout = ({
   return (
     <Callout>
       <p className={styles['re-send-callout']}>
-        Vous n’avez pas reçu notre email ? <br /> Vérifiez vos spams
+        Vous n’avez pas reçu d’email ? <br /> Vérifiez vos spams
         {hideLink ? (
           '.'
         ) : (

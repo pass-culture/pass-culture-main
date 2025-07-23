@@ -16,11 +16,11 @@ export const SignupConfirmation = () => {
   return isNewSignupEnabled ? (
     <section className={styles['signup-confirmation']}>
       <p className={styles['signup-confirmation-body']}>
-        Cliquez sur le lien que nous vous avons envoyé par email
+        Cliquez sur le lien envoyé par email
         {location.state?.email && (
           <>
             {' '}
-            à <br />
+            à<br />
             <b>{location.state.email}</b>
           </>
         )}
