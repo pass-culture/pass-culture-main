@@ -248,6 +248,12 @@ def numranges_to_readble_str(numranges: list[NumericRange] | None) -> str:
     )
 
 
+def timespan_str_to_readable_str(timespans: list[list[str]] | None = None) -> str:
+    if timespans is None:
+        return ""
+    return ", ".join(f"{ts[0]}-{ts[1]}" for ts in timespans)
+
+
 def days_ago_timestamp(days: int) -> int:
     """Get a timestamp from a date `days` ago"""
     days_ago = datetime.now(tz.utc) - timedelta(days=days)

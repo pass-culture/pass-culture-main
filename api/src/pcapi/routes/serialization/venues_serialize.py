@@ -20,6 +20,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
 from pcapi.core.offers.validation import ACCEPTED_THUMBNAIL_FORMATS
+from pcapi.core.opening_hours import schemas as opening_hours_schemas
 from pcapi.domain.demarches_simplifiees import DMS_TOKEN_PRO_PREFIX
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -313,7 +314,7 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     isManualEdition: bool | None
     description: offerers_schemas.VenueDescription | None
     contact: offerers_schemas.VenueContactModel | None
-    openingHours: list[base.OpeningHoursModel] | None
+    openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None
     isOpenToPublic: bool | None
 
     # TODO: move and rationalize Venue validation after serialization refactoring

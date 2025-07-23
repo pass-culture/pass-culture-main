@@ -156,6 +156,17 @@ class ObjectUpdateSnapshot:
 
         return self
 
+    def trace_update_raw(self, data: typing.Mapping[str, typing.Mapping[str, typing.Any]]) -> "ObjectUpdateSnapshot":
+        """Trace update without any target object with already formatted data
+
+        Might be useful when the target object might be deleted or in a
+        not very SQLA session friendly state. In such case,
+        `trace_update` might not be suited.
+        """
+        for field_name, changes in data.items():
+            self.snapshot.set(field_name, changes["old"], changes["new"])
+        return self
+
     def to_dict(self) -> typing.Mapping[str, typing.Any]:
         return self.snapshot.to_dict()
 
@@ -205,7 +216,7 @@ class UpdateSnapshot:
 
 
 def _serialize_value(data: typing.Any) -> typing.Any:
-    # Warning: str is a Collection
+    # Warning: str is a typing.Collection
     if data is None or isinstance(data, (bool, int, str)):
         return data
     if isinstance(data, enum.Enum):

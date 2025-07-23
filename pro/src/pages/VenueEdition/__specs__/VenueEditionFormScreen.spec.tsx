@@ -406,15 +406,12 @@ describe('VenueEditionFormScreen', () => {
       expect(editVenueSpy).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
-          openingHours: expect.arrayContaining([
-            {
-              weekday: 'monday',
-              timespan: [
-                ['09:00', '12:00'],
-                ['13:00', '18:00'],
-              ],
-            },
-          ]),
+          openingHours: expect.objectContaining({
+            'MONDAY': [
+              ['09:00', '12:00'],
+              ['13:00', '18:00'],
+            ],
+          }),
         })
       )
     })
