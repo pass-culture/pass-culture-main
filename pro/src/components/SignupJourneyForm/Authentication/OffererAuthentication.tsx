@@ -75,6 +75,7 @@ export const OffererAuthentication = (): JSX.Element => {
           onSubmit={methods.handleSubmit(onSubmit)}
           data-testid="signup-offerer-authentication-form"
         >
+          {/* eslint-disable-next-line react/forbid-elements */}
           <MainHeading
             mainHeading="Votre structure"
             className={styles['main-heading-wrapper']}

@@ -115,6 +115,7 @@ export const Activity = (): JSX.Element => {
           onSubmit={methods.handleSubmit(onSubmit)}
           data-testid="signup-activity-form"
         >
+          {/* eslint-disable-next-line react/forbid-elements */}
           <MainHeading
             mainHeading="Votre structure"
             className={styles['main-heading-wrapper']}

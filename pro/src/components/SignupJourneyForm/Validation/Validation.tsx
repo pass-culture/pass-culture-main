@@ -193,6 +193,7 @@ export const Validation = (): JSX.Element => {
   return (
     <div className={styles['validation-screen']}>
       <section>
+        {/* eslint-disable-next-line react/forbid-elements */}
         <MainHeading
           mainHeading="Votre structure"
           className={styles['main-heading-wrapper']}

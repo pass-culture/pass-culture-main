@@ -109,6 +109,7 @@ export const Layout = ({
     areMainHeadingAndBackToNavLinkInChild || (mainHeading && isConnected)
 
   const mainHeadingWrapper = mainHeading ? (
+    // eslint-disable-next-line react/forbid-elements
     <MainHeading
       mainHeading={mainHeading}
       mainSubHeading={mainSubHeading}

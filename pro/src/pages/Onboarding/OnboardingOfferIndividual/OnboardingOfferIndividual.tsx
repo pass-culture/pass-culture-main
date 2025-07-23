@@ -53,6 +53,7 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
 
   return (
     <OnboardingLayout verticallyCentered={draftOffers.length <= 1}>
+      {/* eslint-disable-next-line react/forbid-elements */}
       <MainHeading
         mainHeading="Offre à destination des jeunes"
         className={styles['offers-title']}
