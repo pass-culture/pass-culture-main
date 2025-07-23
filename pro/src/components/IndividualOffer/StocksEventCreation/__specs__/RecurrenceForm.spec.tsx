@@ -215,4 +215,35 @@ describe('RecurrenceForm', () => {
 
     expect(mockLogEvent).not.toHaveBeenCalled()
   })
+
+  it('should handle error message for hour and minute', async () => {
+    renderRecurrenceForm()
+
+    const dateInput = screen.getByLabelText(/date de l’évènement/i)
+    await userEvent.type(dateInput, new Date().toISOString())
+
+    await userEvent.click(screen.getByText(/valider/i))
+    expect(
+      screen.getByText(/veuillez renseigner un horaire/i)
+    ).toBeInTheDocument()
+
+    const timeInput = screen.getByLabelText(/horaire 1/i)
+    await userEvent.type(timeInput, '12:00')
+    expect(
+      screen.queryByText(/veuillez renseigner un horaire/i)
+    ).not.toBeInTheDocument()
+  })
+
+  it('should handle error message for multiple hours', async () => {
+    renderRecurrenceForm()
+
+    const dateInput = screen.getByLabelText(/date de l’évènement/i)
+    await userEvent.type(dateInput, new Date().toISOString())
+
+    await userEvent.click(screen.getByText(/ajouter un créneau/i))
+    await userEvent.click(screen.getByText(/valider/i))
+
+    const errorMessages = screen.getAllByText(/Veuillez renseigner un horaire/i)
+    expect(errorMessages.length).toBe(2)
+  })
 })

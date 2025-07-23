@@ -71,19 +71,15 @@ export const getValidationSchema = () =>
       .array()
       .required()
       .of(
-        yup
-          .object()
-          .shape({
-            beginningTime: yup
-              .string()
-              .required('Veuillez renseigner un horaire'),
-          })
-          .nullable()
-          .required()
+        yup.object({
+          beginningTime: yup
+            .string()
+            .required('Veuillez renseigner un horaire'),
+        })
       )
-      .test('arebeginningTimesUnique', function (list) {
-        const beginningTimesMap = [...list]
-        const duplicateIndex = beginningTimesMap
+      // TODO(cnormant, 2025-07-23): create and use a custom test, its certainly not the only place where we need to check for duplicate values
+      .test('arebeginningTimesUnique', (list) => {
+        const duplicateIndex = list
           .map((time) => time.beginningTime)
           .reduce<yup.ValidationError[]>(
             (accumulator, currentValue, index, self) => {
@@ -94,7 +90,7 @@ export const getValidationSchema = () =>
                   new yup.ValidationError(
                     'Veuillez renseigner des horaires différents',
                     null,
-                    `beginningTimes[${index}]`
+                    `beginningTimes[${index}].beginningTime`
                   )
                 )
               }
