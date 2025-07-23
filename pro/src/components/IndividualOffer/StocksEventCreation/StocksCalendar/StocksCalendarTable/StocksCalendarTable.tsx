@@ -2,9 +2,9 @@ import { isBefore } from 'date-fns'
 import { useRef, useState } from 'react'
 
 import {
+  EventStockUpdateBodyModel,
   GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
-  EventStockCreateBodyModel,
 } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
@@ -31,7 +31,7 @@ export type StocksCalendarTableProps = {
   updateCheckedStocks: (newStocks: Set<number>) => void
   departmentCode: string
   mode: OFFER_WIZARD_MODE
-  onUpdateStock: (stock: EventStockCreateBodyModel) => Promise<void>
+  onUpdateStock: (stock: EventStockUpdateBodyModel) => Promise<void>
 }
 
 export function StocksCalendarTable({
@@ -62,7 +62,7 @@ export function StocksCalendarTable({
     updateCheckedStocks(newChecked)
   }
 
-  async function handleUpdateStock(stock: EventStockCreateBodyModel) {
+  async function handleUpdateStock(stock: EventStockUpdateBodyModel) {
     try {
       await onUpdateStock(stock)
     } catch {

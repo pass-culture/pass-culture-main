@@ -1,7 +1,11 @@
 import { PropsWithChildren, useState } from 'react'
 
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import { useAnalytics } from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { useNotification } from 'commons/hooks/useNotification'
+import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
 import fullMoreIcon from 'icons/full-more.svg'
 import strokeAddCalendarIcon from 'icons/stroke-add-calendar.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -9,7 +13,9 @@ import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { StocksCalendarForm } from '../StocksCalendarForm/StocksCalendarForm'
+import { onSubmit } from '../../form/onSubmit'
+import { RecurrenceFormValues } from '../../form/types'
+import { RecurrenceForm } from '../../RecurrenceForm'
 
 import styles from './StocksCalendarLayout.module.scss'
 
@@ -27,7 +33,24 @@ export function StocksCalendarLayout({
   mode: OFFER_WIZARD_MODE
   onAfterCloseDialog: () => void
 }>) {
+  const notify = useNotification()
+  const { logEvent } = useAnalytics()
+
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  const handleSubmit = async (values: RecurrenceFormValues) => {
+    const departmentCode = getDepartmentCode(offer)
+
+    logEvent(Events.CLICKED_VALIDATE_ADD_RECURRENCE_DATES, {
+      recurrenceType: values.recurrenceType,
+      offerId: offer.id,
+      venueId: offer.venue.id,
+    })
+
+    await onSubmit(values, departmentCode, offer.id, notify)
+    onAfterCloseDialog()
+    setIsDialogOpen(false)
+  }
 
   const getDialogBuilderButton = (buttonLabel: string) => (
     <DialogBuilder
@@ -41,12 +64,9 @@ export function StocksCalendarLayout({
       variant="drawer"
       title="Définir le calendrier de votre offre"
     >
-      <StocksCalendarForm
-        offer={offer}
-        onAfterValidate={() => {
-          onAfterCloseDialog()
-          setIsDialogOpen(false)
-        }}
+      <RecurrenceForm
+        priceCategories={offer.priceCategories ?? []}
+        handleSubmit={handleSubmit}
       />
     </DialogBuilder>
   )
