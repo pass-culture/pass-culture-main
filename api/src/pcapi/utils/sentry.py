@@ -31,39 +31,31 @@ LOWEST_SAMPLE_RATE = DEFAULT_SAMPLE_RATE / 1000
 NO_SAMPLE_RATE = 0.0
 
 SCRUBBED_INFO_PLACEHOLDER = "[REDACTED]"
-PRO_AUTOLOGIN_SIGNUP = "/users/validate_signup/"
+
 
 class SpecificPath(enum.Enum):
     BACKOFFICE_HOME = f"{backoffice_blueprint.BACKOFFICE_WEB_BLUEPRINT_NAME}.home"
+    PRO_AUTOLOGIN_SIGNUP = "/users/validate_signup/"
+
 
 def scrub_token_from_url_in_event(event: "Event") -> "Event":
-    full_url = event["request"]["url"]
-    if full_url.__contains__(PRO_AUTOLOGIN_SIGNUP):
-        # event["request"]["url"] = full_url.replace(full_url[full_url.rfind("/")+1:len(full_url)], SCRUBBED_INFO_PLACEHOLDER)
+    full_url = str(event["request"]["url"])
+    if SpecificPath.PRO_AUTOLOGIN_SIGNUP.value in full_url:
         token_start = full_url.rfind("/") + 1
-        token_placement = full_url[token_start : len(full_url)]
-        event["request"]["url"] = full_url.replace(token_placement, SCRUBBED_INFO_PLACEHOLDER)
-    # event["request"]["url"] = full_url.replace(full_url[full_url.rfind("/")+1:len(full_url)], SCRUBBED_INFO_PLACEHOLDER)
+        event["request"]["url"] = full_url[:token_start] + SCRUBBED_INFO_PLACEHOLDER
     return event
+
 
 def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
     if _is_flask_shell_event():
         return None
-    
+
     scrub_token_from_url_in_event(event)
 
     if custom_fingerprint := get_custom_fingerprint(_hint):
         event["fingerprint"] = ["{{ default }}", custom_fingerprint]
     return event
-"""
-class sentry_sdk.scrubber.EventScrubber(denylist=None, recursive=False, send_default_pii=False, pii_denylist=None)[source]
-scrub_dict(d)[source]
-If a dictionary is passed to this method, the method scrubs the dictionary of any sensitive data. The method calls itself recursively on any nested dictionaries ( including dictionaries nested in lists) if self.recursive is True. This method does nothing if the parameter passed to it is not a dictionary.
 
-Return type:
-None
-https://getsentry.github.io/sentry-python/apidocs.html#sentry_sdk.scrubber.EventScrubber.scrub_dict
-"""
 
 def custom_traces_sampler(sampling_context: dict) -> float:
     """
@@ -135,17 +127,20 @@ def custom_traces_sampler(sampling_context: dict) -> float:
 
 
 def before_send_transaction(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
-    event = filter_transactions(event, _hint)
-    # if event:
-    #     return scrub_token_from_url_in_event(event)
-    return event
+    """When we return None, the event is dropped and won't be send to Sentry so no need to remove info"""
+    if not settings.SENTRY_FINE_SAMPLING:
+        return None
+    filtered_event = filter_transactions(event, _hint)
+    if filtered_event:
+        return scrub_token_from_url_in_event(filtered_event)
+    return None
 
 
 def filter_transactions(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
-    if not settings.SENTRY_FINE_SAMPLING or not event.get("transaction"):
-        return None
-
     transaction = event.get("transaction")
+
+    if not transaction:
+        return None
 
     match transaction:
         # BO home
@@ -183,7 +178,7 @@ def init_sentry_sdk() -> None:
         before_send=before_send,
         max_value_length=8192,
         traces_sampler=custom_traces_sampler if settings.SENTRY_FINE_SAMPLING else None,
-        before_send_transaction=before_send_transaction
+        before_send_transaction=before_send_transaction,
     )
 
 
