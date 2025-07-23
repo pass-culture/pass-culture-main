@@ -198,7 +198,6 @@ export type { OffererViewsModel } from './models/OffererViewsModel';
 export type { OfferImage } from './models/OfferImage';
 export type { OfferOpeningHoursSchema } from './models/OfferOpeningHoursSchema';
 export { OfferStatus } from './models/OfferStatus';
-export type { OpeningHoursModel } from './models/OpeningHoursModel';
 export type { PatchAllOffersActiveStatusBodyModel } from './models/PatchAllOffersActiveStatusBodyModel';
 export type { PatchCollectiveOfferActiveStatusBodyModel } from './models/PatchCollectiveOfferActiveStatusBodyModel';
 export type { PatchCollectiveOfferArchiveBodyModel } from './models/PatchCollectiveOfferArchiveBodyModel';

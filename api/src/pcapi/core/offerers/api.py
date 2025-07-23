@@ -18,7 +18,6 @@ import pytz
 import schwifty
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
-from psycopg2.extras import NumericRange
 from sqlalchemy.dialects.postgresql import INTERVAL
 
 import pcapi.connectors.acceslibre as accessibility_provider
@@ -33,7 +32,6 @@ import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
 import pcapi.core.users.models as users_models
-import pcapi.routes.serialization.base as serialize_base
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
 import pcapi.utils.email as email_utils
@@ -64,6 +62,8 @@ from pcapi.core.geography import utils as geography_utils
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.opening_hours import api as opening_hours_api
+from pcapi.core.opening_hours import schemas as opening_hours_schemas
 from pcapi.core.users import repository as users_repository
 from pcapi.models import db
 from pcapi.models import feature
@@ -111,7 +111,7 @@ def update_venue(
     location_modifications: dict,
     author: users_models.User,
     *,
-    opening_hours: list[serialize_base.OpeningHoursModel] | None = None,
+    opening_hours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None = None,
     contact_data: offerers_schemas.VenueContactModel | None = None,
     criteria: list[criteria_models.Criterion] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     external_accessibility_url: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
@@ -177,20 +177,21 @@ def update_venue(
         venue_snapshot.trace_update(contact_data.dict(), target=target, field_name_template="contact.{}")
         upsert_venue_contact(venue, contact_data)
 
-    for daily_opening_hours in opening_hours or []:
-        weekday = models.Weekday(daily_opening_hours.weekday)
-        target = get_venue_opening_hours_by_weekday(venue, weekday)
-        target.timespan = date_utils.numranges_to_readble_str(target.timespan)
-        opening_hours_readable = {
-            "weekday": daily_opening_hours.weekday,
-            "timespan": date_utils.numranges_to_readble_str(daily_opening_hours.timespan),
+    if opening_hours:
+        current = opening_hours_api.get_current_opening_hours(venue)
+        updates = opening_hours_api.deprecated.get_venue_openings_hours_updates(opening_hours)
+        changes = opening_hours_api.compute_upsert_changes(current, updates)
+
+        opening_hours_api.deprecated.upsert_venue_opening_hours(venue, updates)
+
+        raw_trace_data = {
+            f"openingHours.{weekday.value}.timespan": {
+                "old": date_utils.timespan_str_to_readable_str(change["old"]),
+                "new": date_utils.timespan_str_to_readable_str(change["new"]),
+            }
+            for weekday, change in changes.items()
         }
-        venue_snapshot.trace_update(
-            opening_hours_readable,
-            target=target,
-            field_name_template=f"openingHours.{daily_opening_hours.weekday}.{{}}",
-        )
-        upsert_venue_opening_hours(venue, daily_opening_hours)
+        venue_snapshot.trace_update_raw(raw_trace_data)
 
     if external_accessibility_url is not offerers_constants.UNCHANGED:
         external_accessibility_id = external_accessibility_url.split("/")[-2] if external_accessibility_url else None
@@ -421,27 +422,6 @@ def upsert_venue_contact(venue: models.Venue, contact_data: offerers_schemas.Ven
     venue_contact.social_medias = contact_data.social_medias or {}
 
     repository.save(venue_contact)
-    return venue
-
-
-def upsert_venue_opening_hours(venue: models.Venue, opening_hours: serialize_base.OpeningHoursModel) -> models.Venue:
-    """
-    Create and attach OpeningHours for a given weekday to a Venue if it has none.
-    Update (replace) an existing OpeningHours list otherwise.
-    """
-    weekday = models.Weekday(opening_hours.weekday)
-    venue_opening_hours = get_venue_opening_hours_by_weekday(venue, weekday)
-
-    modifications = {
-        field: value
-        for field, value in opening_hours.dict().items()
-        if venue_opening_hours.field_exists_and_has_changed(field, value)
-    }
-    if not modifications:
-        return venue
-    venue_opening_hours.venue = venue
-    venue_opening_hours.timespan = opening_hours.timespan
-    repository.save(venue_opening_hours)
     return venue
 
 
@@ -2694,27 +2674,6 @@ def get_offerer_v2_stats(offerer_id: int) -> OffererV2Stats:
             offerer_id=offerer_id
         ),
     )
-
-
-def add_timespan(opening_hours: models.OpeningHours, new_timespan: NumericRange) -> None:
-    existing_timespan = opening_hours.timespan
-    if existing_timespan:
-        if len(existing_timespan) == 2:
-            raise ValueError("Maximum size for opening hours reached")
-        if existing_timespan[0].lower <= new_timespan.upper and existing_timespan[0].upper >= new_timespan.lower:
-            raise ValueError("New opening hours overlaps existing one")
-        existing_timespan.append(new_timespan)
-        existing_timespan.sort()
-    else:
-        opening_hours.timespan = [new_timespan]
-    db.session.commit()
-
-
-def get_venue_opening_hours_by_weekday(venue: models.Venue, weekday: models.Weekday) -> models.OpeningHours:
-    for opening_hours in venue.openingHours:
-        if opening_hours.weekday == weekday:
-            return opening_hours
-    return models.OpeningHours(weekday=weekday)
 
 
 def delete_venue_accessibility_provider(venue: models.Venue) -> None:

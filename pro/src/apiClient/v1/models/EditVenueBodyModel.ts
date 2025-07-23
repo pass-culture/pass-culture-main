@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { OpeningHoursModel } from './OpeningHoursModel';
 import type { VenueContactModel } from './VenueContactModel';
 import type { VenueTypeCode } from './VenueTypeCode';
+import type { WeekdayOpeningHoursTimespans } from './WeekdayOpeningHoursTimespans';
 export type EditVenueBodyModel = {
   audioDisabilityCompliant?: boolean | null;
   banId?: string | null;
@@ -22,7 +22,7 @@ export type EditVenueBodyModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name?: string | null;
-  openingHours?: Array<OpeningHoursModel> | null;
+  openingHours?: WeekdayOpeningHoursTimespans | null;
   postalCode?: string | null;
   publicName?: string | null;
   siret?: string | null;

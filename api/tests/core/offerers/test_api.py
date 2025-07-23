@@ -47,7 +47,6 @@ from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
-from pcapi.utils.date import timespan_str_to_numrange
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -3328,31 +3327,6 @@ class AcceptOffererInvitationTest:
 
         assert len(user_offerers) == 2
         assert db.session.query(history_models.ActionHistory).count() == 0
-
-
-class OpeningHoursTest:
-    def test_opening_hours_timespan_must_be_maximum_two(self):
-        timespan_list = timespan_str_to_numrange([("10:00", "13:00"), ("14:00", "19:00"), ("23:30", "5:00")])
-        opening_hours = offerers_models.OpeningHours(weekday=offerers_models.Weekday.SATURDAY)
-        with pytest.raises(ValueError):
-            offerers_api.add_timespan(opening_hours, timespan_list[0])
-            offerers_api.add_timespan(opening_hours, timespan_list[1])
-            offerers_api.add_timespan(opening_hours, timespan_list[2])
-
-    def test_opening_hours_timespan_overlapping(self):
-        timespan_list = timespan_str_to_numrange([("10:00", "14:00"), ("13:00", "19:00")])
-        opening_hours = offerers_models.OpeningHours(weekday=offerers_models.Weekday.SATURDAY)
-        with pytest.raises(ValueError):
-            offerers_api.add_timespan(opening_hours, timespan_list[0])
-            offerers_api.add_timespan(opening_hours, timespan_list[1])
-
-    def test_add_opening_hours_timespan_is_sorted_chronogicaly(self):
-        timespan_list = timespan_str_to_numrange([("10:00", "13:00"), ("14:00", "19:00")])
-        opening_hours = offerers_models.OpeningHours(weekday=offerers_models.Weekday.SATURDAY)
-        offerers_api.add_timespan(opening_hours, timespan_list[1])
-        offerers_api.add_timespan(opening_hours, timespan_list[0])
-        assert opening_hours.timespan[0] == timespan_list[0]
-        assert opening_hours.timespan[1] == timespan_list[1]
 
 
 class AccessibilityProviderTest:

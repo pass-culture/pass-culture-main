@@ -9,8 +9,8 @@ from flask_login import login_required
 
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offers.api as offers_api
-import pcapi.core.offers.opening_hours.api as opening_hours_api
 import pcapi.core.offers.repository as offers_repository
+import pcapi.core.opening_hours.api as opening_hours_api
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -20,6 +20,7 @@ from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers import validation
+from pcapi.core.opening_hours import schemas as opening_hours_schemas
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.models import api_errors
 from pcapi.models import db
@@ -699,7 +700,7 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
 
 def _format_offer_opening_hours(
     opening_hours: list[offerers_models.OpeningHours] | None,
-) -> offers_schemas.WeekdayOpeningHoursTimespans:
+) -> opening_hours_schemas.WeekdayOpeningHoursTimespans:
     """Format DB data to the expected pydantic model format
 
     From: [NumericRange(600, 720), NumericRange(780, 1200)]
@@ -718,7 +719,7 @@ def _format_offer_opening_hours(
             timespans.append((start, end))
         formatted[oh.weekday.value] = timespans
 
-    return offers_schemas.WeekdayOpeningHoursTimespans(**formatted)  # type: ignore[arg-type]
+    return opening_hours_schemas.WeekdayOpeningHoursTimespans(**formatted)  # type: ignore[arg-type]
 
 
 @private_api.route("/offers/<int:offer_id>/opening-hours", methods=["PATCH"])
@@ -750,7 +751,7 @@ def upsert_offer_opening_hours(
     offer = offers_repository.get_offer_by_id(offer_id, load_options={"venue", "openingHours"})
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    opening_hours_api.upsert_opening_hours(offer, body.openingHours)
+    opening_hours_api.upsert_opening_hours(offer, opening_hours=body.openingHours)
 
     offer = offers_repository.get_offer_by_id(offer.id, load_options={"openingHours"})
     opening_hours = _format_offer_opening_hours(offer.openingHours)

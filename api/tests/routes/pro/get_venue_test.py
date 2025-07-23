@@ -835,6 +835,7 @@ class Returns403Test:
         auth_request = client.with_session_auth(email=pro.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue's opening hours
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         venue_id = venue.id
