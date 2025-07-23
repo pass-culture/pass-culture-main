@@ -104,6 +104,7 @@ export enum COLLECTIVE_OFFER_DUPLICATION_ENTRIES {
   OFFERS_MODAL = 'OffersListModal',
   OFFERS = 'OffersList',
   OFFER_RECAP = 'OfferRecap',
+  OFFER_TIMELINE = 'OfferTimeline',
 }
 
 export enum SynchronizationEvents {

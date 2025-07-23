@@ -57,8 +57,9 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+import { DetailItem } from '../components/DetailItem/DetailItem'
+
 import styles from './BookableOfferSummary.module.scss'
-import { DetailItem } from './DetailItem/DetailItem'
 
 export type BookableOfferSummaryProps = {
   offer: GetCollectiveOfferResponseModel
