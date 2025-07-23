@@ -1,16 +1,15 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
 
 import {
-  BookingFormula,
-  BookingOfferType,
-  GetBookingResponse,
-
   BankAccountApplicationStatus,
   BankAccountResponseModel,
+  BookingFormula,
+  BookingOfferType,
   BookingRecapResponseModel,
   BookingRecapResponseStockModel,
   BookingRecapStatus,
   CategoryResponseModel,
+  GetBookingResponse,
   GetIndividualOfferWithAddressResponseModel,
   GetOffererNameResponseModel,
   GetOffererResponseModel,
@@ -27,11 +26,12 @@ import {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
   VenueProviderResponse,
-  VenueTypeCode} from 'apiClient/v1'
+  VenueTypeCode
+} from 'apiClient/v1'
 import { IndividualOfferContextValues } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'commons/core/Finances/constants'
 import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
-import { StocksEvent } from 'components/StocksEventList/StocksEventList'
+import { StocksEvent } from 'components/IndividualOffer/StocksEventCreation/form/types'
 
 import { listOffersVenueFactory } from './collectiveApiFactories'
 

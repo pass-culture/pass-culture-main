@@ -9,7 +9,7 @@ import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import { priceCategoryFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { RecurrenceForm, RecurrenceFormProps } from '../RecurrenceForm'
+import { RecurrenceForm, RecurrenceFormProps } from './RecurrenceForm'
 
 const mockSubmit = vi.fn()
 

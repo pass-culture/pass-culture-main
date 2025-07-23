@@ -7,7 +7,7 @@ import {
   toISOStringWithoutMilliseconds,
 } from 'commons/utils/date'
 import { getUtcDateTimeFromLocalDepartement } from 'commons/utils/timezone'
-import { StockEventFormValues } from 'components/IndividualOffer/StocksEventEdition/StockFormList/types'
+import { StockEventFormValues } from 'components/IndividualOffer/StocksEventEdition/types'
 
 export const serializeBookingLimitDatetime = (
   beginningDate: string,

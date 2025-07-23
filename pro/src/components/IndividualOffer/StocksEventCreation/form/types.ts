@@ -1,5 +1,15 @@
 import { StocksOrderedBy } from 'apiClient/v1'
 
+export interface StocksEvent {
+  id: number
+  beginningDatetime: string
+  bookingLimitDatetime: string
+  priceCategoryId: number
+  quantity: number | null
+  bookingsQuantity: number
+  isEventDeletable: boolean
+}
+
 export enum RecurrenceType {
   UNIQUE = 'UNIQUE',
   DAILY = 'DAILY',

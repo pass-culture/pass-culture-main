@@ -9,14 +9,13 @@ import {
   toISOStringWithoutMilliseconds,
 } from 'commons/utils/date'
 import { serializeDateTimeToUTCFromLocalDepartment } from 'components/IndividualOffer/StocksEventEdition/serializers'
-import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 
 import {
   getDatesInInterval,
   getDatesWithMonthlyOption,
   isTimeInTheFuture,
 } from './recurrenceUtils'
-import { RecurrenceFormValues, RecurrenceType } from './types'
+import { RecurrenceFormValues, RecurrenceType, StocksEvent } from './types'
 
 type StocksEventWithOptionalId = Omit<StocksEvent, 'id'> & { id?: number }
 
