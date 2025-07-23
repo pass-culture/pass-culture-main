@@ -18,6 +18,7 @@ vi.mock('apiClient/api', () => ({
     getStocks: vi.fn(),
     deleteStocks: vi.fn(),
     bulkCreateEventStocks: vi.fn(),
+    bulkUpdateEventStocks: vi.fn(),
   },
 }))
 
@@ -152,7 +153,7 @@ describe('StocksCalendar', () => {
     )
 
     await userEvent.type(
-      screen.getByLabelText('Date *'),
+      screen.getByLabelText('Date de l’évènement *'),
       addDays(new Date(), 1).toISOString().split('T')[0]
     )
 
@@ -238,7 +239,7 @@ describe('StocksCalendar', () => {
       screen.getByRole('button', { name: 'Modifier la date' })
     )
 
-    const updateStockSpy = vi.spyOn(api, 'bulkCreateEventStocks')
+    const updateStockSpy = vi.spyOn(api, 'bulkUpdateEventStocks')
 
     await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
 
@@ -263,7 +264,7 @@ describe('StocksCalendar', () => {
     )
 
     await userEvent.type(
-      screen.getByLabelText('Date *'),
+      screen.getByLabelText('Date de l’évènement *'),
       new Date().toISOString().split('T')[0]
     )
 
@@ -274,7 +275,7 @@ describe('StocksCalendar', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
 
     expect(
-      screen.getByText("Vous ne pouvez pas ajouter d'horaires dans le passé")
+      screen.getByText('L’évènement doit être à venir')
     ).toBeInTheDocument()
   })
 })
