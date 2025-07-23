@@ -4,6 +4,7 @@ import base64
 import json
 import os
 from datetime import datetime
+from datetime import timedelta
 from logging import INFO as LOG_LEVEL_INFO
 from pathlib import Path
 
@@ -137,6 +138,10 @@ SUGGEST_REACTION_LONG_COOLDOWN_IN_SECONDS = int(
     os.environ.get("SUGGEST_REACTION_LONG_COOLDOWN_IN_SECONDS", 31 * 24 * 3600)
 )
 
+# USERS SESSION TIME
+PRO_SESSION_GRACE_TIME = timedelta(hours=int(os.environ.get("PRO_SESSION_GRACE_TIME", 1)))
+PRO_SESSION_LOGIN_TIMEOUT = timedelta(days=int(os.environ.get("PRO_SESSION_LOGIN_TIMEOUT", 14)))
+PRO_SESSION_FORCE_TIMEOUT = timedelta(days=int(os.environ.get("PRO_SESSION_FORCE_TIMEOUT", 15)))
 
 # MAIL
 FRAUD_EMAIL_ADDRESS = os.environ.get("FRAUD_EMAIL_ADDRESS", "")
