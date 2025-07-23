@@ -42,7 +42,7 @@ export const OnboardingOffersChoice = () => {
     <div className={styles['card-container']}>
       <Card
         imageSrc={individuelle}
-        title="Aux jeunes sur l’application mobile pass Culture"
+        title="Sur l’application mobile à destination des jeunes"
         actions={
           <ButtonLink
             variant={ButtonVariant.PRIMARY}
@@ -58,12 +58,12 @@ export const OnboardingOffersChoice = () => {
         <strong className={styles['card-description-highlight']}>
           + de 4 millions de jeunes
         </strong>
-        .
+        inscrits sur l’application mobile pass Culture.
       </Card>
 
       <Card
         imageSrc={collective}
-        title="Aux enseignants sur la plateforme ADAGE"
+        title="Sur ADAGE à destination des enseignants"
         actions={
           <Dialog
             title=""
@@ -90,9 +90,9 @@ export const OnboardingOffersChoice = () => {
           </Dialog>
         }
       >
-        Vos offres seront visibles par{' '}
+        Vos offres seront visibles{' '}
         <strong className={styles['card-description-highlight']}>
-          tous les enseignants
+          par tous les enseignants
         </strong>{' '}
         des collèges et lycées publics et privés sous contrat.
       </Card>

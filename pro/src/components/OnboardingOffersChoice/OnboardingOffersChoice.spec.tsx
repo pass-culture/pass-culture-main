@@ -35,7 +35,7 @@ describe('OnboardingOffersChoice Component', () => {
   it('renders the first card with correct title, description, and button', () => {
     // Check for the first card's title
     const firstCardTitle = screen.getByText(
-      'Aux jeunes sur l’application mobile pass Culture'
+      'Sur l’application mobile à destination des jeunes'
     )
     expect(firstCardTitle).toBeInTheDocument()
 
@@ -47,7 +47,7 @@ describe('OnboardingOffersChoice Component', () => {
   it('renders the second card with correct title, description, and button', () => {
     // Check for the second card's title
     const secondCardTitle = screen.getByText(
-      'Aux enseignants sur la plateforme ADAGE'
+      'Sur ADAGE à destination des enseignants'
     )
     expect(secondCardTitle).toBeInTheDocument()
 

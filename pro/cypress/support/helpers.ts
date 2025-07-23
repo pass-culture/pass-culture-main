@@ -143,8 +143,8 @@ export function logInAndSeeDidacticOnboarding(
 
     cy.findByText('Bienvenue sur le pass Culture Pro !')
     cy.findByText('Où souhaitez-vous diffuser votre première offre ?')
-    cy.findByText('Aux jeunes sur l’application mobile pass Culture')
-    cy.findByText('Aux enseignants sur la plateforme ADAGE')
+    cy.findByText('Sur l’application mobile à destination des jeunes')
+    cy.findByText('Sur ADAGE à destination des enseignants')
     cy.findAllByText('Commencer').should('have.length', 2)
   })
 }

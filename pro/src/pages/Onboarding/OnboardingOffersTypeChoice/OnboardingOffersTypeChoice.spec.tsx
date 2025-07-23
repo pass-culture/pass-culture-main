@@ -27,12 +27,12 @@ describe('OnboardingOffersChoice Component', () => {
 
     // Check that the first title is displayed
     expect(
-      screen.getByText('Aux jeunes sur l’application mobile pass Culture')
+      screen.getByText('Sur l’application mobile à destination des jeunes')
     ).toBeInTheDocument()
 
     // Check that the second title is displayed
     expect(
-      screen.getByText('Aux enseignants sur la plateforme ADAGE')
+      screen.getByText('Sur ADAGE à destination des enseignants')
     ).toBeInTheDocument()
   })
 })
