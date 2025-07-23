@@ -48,7 +48,6 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
 from pcapi.core.educational import models as educational_models
-from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.external import compliance
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.external_bookings.boost.exceptions import BoostAPIException
@@ -94,7 +93,7 @@ from . import validation
 
 logger = logging.getLogger(__name__)
 
-AnyOffer = educational_api_offer.AnyCollectiveOffer | models.Offer
+AnyOffer = educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | models.Offer
 
 OFFERS_RECAP_LIMIT = 101
 

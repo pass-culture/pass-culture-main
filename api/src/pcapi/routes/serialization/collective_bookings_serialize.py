@@ -20,6 +20,7 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.collective_offers_serialize import CollectiveOfferOfferVenueResponseModel
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
 from pcapi.serialization.utils import to_camel
+from pcapi.utils import export as utils_export
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -378,9 +379,9 @@ def serialize_collective_booking_excel_report(query: sa_orm.Query) -> bytes:
     output = BytesIO()
     workbook = xlsxwriter.Workbook(output)
 
-    bold = workbook.add_format({"bold": 1})
-    currency_format = workbook.add_format({"num_format": "###0.00[$€-fr-FR]"})
-    col_width = 18
+    bold = workbook.add_format(utils_export.EXCEL_BOLD_FORMAT)
+    currency_format = workbook.add_format(utils_export.EXCEL_CURRENCY_FORMAT)
+    col_width = utils_export.EXCEL_COL_WIDTH
 
     worksheet = workbook.add_worksheet()
     row = 0
