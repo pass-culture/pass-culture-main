@@ -1,8 +1,8 @@
 import { useLocation } from 'react-router'
 
 import {
-  OFFER_WIZARD_MODE,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { computeIndividualOffersUrl } from 'commons/core/Offers/utils/computeIndividualOffersUrl'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
