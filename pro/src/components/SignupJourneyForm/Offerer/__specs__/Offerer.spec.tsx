@@ -457,10 +457,6 @@ describe('Offerer', () => {
     ).toBeInTheDocument()
 
     expect(
-      screen.getByText('Tous les champs suivis d’un * sont obligatoires.')
-    ).toBeInTheDocument()
-
-    expect(
       screen.getByLabelText('Numéro de SIRET à 14 chiffres *')
     ).toHaveValue('')
   })

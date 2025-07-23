@@ -186,7 +186,6 @@ export const Offerer = (): JSX.Element => {
               Dites-nous pour quelle structure vous travaillez
             </h2>
 
-            <FormLayout.MandatoryInfo className={styles['mandatory-info']} />
             <FormLayout.Row>
               <TextInput
                 label="Numéro de SIRET à 14 chiffres"

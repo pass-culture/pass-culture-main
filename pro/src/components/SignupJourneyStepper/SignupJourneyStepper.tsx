@@ -44,7 +44,7 @@ export const SignupJourneyStepper = () => {
   const signupJourneyBreadcrumbSteps: Step[] = [
     {
       id: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
-      label: 'Identification',
+      label: 'Vos informations',
       url: '/parcours-inscription/identification',
       onClick: () =>
         logBreadcrumbClick(
@@ -54,7 +54,7 @@ export const SignupJourneyStepper = () => {
     },
     {
       id: SIGNUP_JOURNEY_STEP_IDS.ACTIVITY,
-      label: 'Activité',
+      label: 'Votre activité',
       url: isActivityStepDisabled
         ? undefined
         : '/parcours-inscription/activite',
