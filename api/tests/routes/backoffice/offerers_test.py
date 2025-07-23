@@ -2865,6 +2865,21 @@ class ValidateOffererTest(ActivateOffererHelper):
                 "confidenceRule.confidenceLevel": {"old_info": None, "new_info": confidence_level.name}
             }
 
+    def test_validate_offerer_from_htmx(self, legit_user, authenticated_client):
+        offerer = offerers_factories.RejectedOffererFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offerer_id=offerer.id,
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+
+        row = html_parser.get_tag(response.data, tag="tr", id=f"offerer-row-{offerer.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(offerer.id)
+
     def test_validate_rejected_offerer(self, legit_user, authenticated_client):
         offerer = offerers_factories.RejectedOffererFactory()
 
@@ -3014,6 +3029,24 @@ class RejectOffererTest(DeactivateOffererHelper):
         assert action.offererId == offerer.id
         assert action.venueId is None
 
+    def test_reject_offerer_htmx(self, legit_user, authenticated_client):
+        user = users_factories.NonAttachedProFactory()
+        offerer = offerers_factories.NewOffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        form = {"rejection_reason": "ELIGIBILITY"}
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offerer_id=offerer.id,
+            form=form,
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"offerer-row-{offerer.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(offerer.id)
+
     def test_reject_offerer_keep_pro_role(self, authenticated_client):
         user = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=user)  # already validated
@@ -3130,6 +3163,23 @@ class SetOffererPendingTest(DeactivateOffererHelper):
                 "tags": {"old_info": offerer_tags[1].label, "new_info": offerer_tags[2].label},
             }
         }
+
+    def test_set_offerer_pending_from_htmx(self, legit_user, authenticated_client, offerer_tags):
+        non_homologation_tag = offerers_factories.OffererTagFactory(name="Tag conservé")
+        offerer = offerers_factories.NewOffererFactory(tags=[non_homologation_tag, offerer_tags[0], offerer_tags[1]])
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offerer_id=offerer.id,
+            form={"comment": "En attente de documents", "tags": [offerer_tags[0].id, offerer_tags[2].id]},
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+
+        row = html_parser.get_tag(response.data, tag="tr", id=f"offerer-row-{offerer.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(offerer.id)
 
     def test_set_offerer_pending_keep_pro_role(self, authenticated_client):
         user = users_factories.ProFactory()
@@ -3885,7 +3935,7 @@ class BatchOffererValidateTest(PostEndpointHelper):
             form={"object_ids": parameter_ids, "comment": "Test", "review_all_offers": review_all_offers},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
         for offerer in _offerers:
             db.session.refresh(offerer)
             assert offerer.isValidated
@@ -3910,6 +3960,11 @@ class BatchOffererValidateTest(PostEndpointHelper):
                 assert action.extraData["modified_info"] == {
                     "confidenceRule.confidenceLevel": {"old_info": None, "new_info": confidence_level.name}
                 }
+
+            # ensure that the row is rendered
+            row = html_parser.get_tag(response.data, tag="tr", id=f"offerer-row-{offerer.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(offerer.id)
 
 
 class GetBatchOffererPendingFormTest(GetEndpointHelper):
@@ -3944,7 +3999,7 @@ class SetBatchOffererPendingTest(PostEndpointHelper):
             form={"object_ids": parameter_ids, "comment": comment, "tags": [offerer_tags[0].id, offerer_tags[2].id]},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
         for offerer in _offerers:
             db.session.refresh(offerer)
             assert not offerer.isValidated
@@ -3973,6 +4028,10 @@ class SetBatchOffererPendingTest(PostEndpointHelper):
                     },
                 }
             }
+            # ensure that the row is rendered
+            row = html_parser.get_tag(response.data, tag="tr", id=f"offerer-row-{offerer.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(offerer.id)
 
 
 class GetBatchOffererRejectFormTest(GetBatchValidateOrRejectOffererFormTestHelper):
@@ -4005,7 +4064,7 @@ class BatchOffererRejectTest(PostEndpointHelper):
             form={"object_ids": parameter_ids, "comment": comment, "rejection_reason": rejection_reason},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
 
         for offerer in _offerers:
             action = (
@@ -4023,6 +4082,11 @@ class BatchOffererRejectTest(PostEndpointHelper):
             assert action.venueId is None
             assert action.comment == comment
             assert action.extraData == {"rejection_reason": rejection_reason}
+
+            # ensure that the row is rendered
+            row = html_parser.get_tag(response.data, tag="tr", id=f"offerer-row-{offerer.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(offerer.id)
 
 
 class BatchOffererAttachmentValidateTest(PostEndpointHelper):

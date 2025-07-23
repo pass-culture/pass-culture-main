@@ -40,6 +40,7 @@ def _apply_query_filters(
     dms_adage_status: list[GraphQLApplicationStates] | None,
     from_datetime: datetime | None,
     to_datetime: datetime | None,
+    offerers_id: list[int] | None,
     user_offerers_id: list[int] | None,
     cls: type[offerers_models.Offerer | offerers_models.UserOfferer],
     offerer_id_column: sa_orm.InstrumentedAttribute,
@@ -143,6 +144,8 @@ def _apply_query_filters(
                 )
             )
 
+    if offerers_id:
+        query = query.filter(offerers_models.Offerer.id.in_(offerers_id))
     if user_offerers_id:
         query = query.filter(offerers_models.UserOfferer.id.in_(user_offerers_id))
 
@@ -183,7 +186,7 @@ def _get_tags_subquery() -> sa.sql.selectable.ScalarSelect:
 
 def list_offerers_to_be_validated(
     *,
-    q: str | None,  # search query
+    q: str | None = None,  # search query
     regions: list[str] | None = None,
     tags: list[offerers_models.OffererTag] | None = None,
     status: list[ValidationStatus] | None = None,
@@ -192,6 +195,7 @@ def list_offerers_to_be_validated(
     dms_adage_status: list[GraphQLApplicationStates] | None = None,
     from_datetime: datetime | None = None,
     to_datetime: datetime | None = None,
+    offerers_id: list[int] | None = None,
 ) -> sa_orm.Query:
     # Fetch only the single last comment to avoid loading the full history (joinedload would fetch 1 row per action)
     # This replaces lookup for last comment in offerer.action_history after joining with all actions
@@ -284,6 +288,7 @@ def list_offerers_to_be_validated(
         dms_adage_status=dms_adage_status,
         from_datetime=from_datetime,
         to_datetime=to_datetime,
+        offerers_id=offerers_id,
         user_offerers_id=None,
         cls=offerers_models.Offerer,
         offerer_id_column=offerers_models.Offerer.id,
@@ -409,9 +414,10 @@ def list_users_offerers_to_be_validated(
         dms_adage_status=None,  # no dms_adage_status for UserOfferer
         from_datetime=from_datetime,
         to_datetime=to_datetime,
+        offerers_id=None,
+        user_offerers_id=user_offerers_ids,
         cls=offerers_models.UserOfferer,
         offerer_id_column=offerers_models.UserOfferer.offererId,
-        user_offerers_id=user_offerers_ids,
     )
 
     if last_instructor_ids:
