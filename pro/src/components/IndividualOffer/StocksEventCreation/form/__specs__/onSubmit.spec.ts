@@ -1,4 +1,5 @@
 import { api } from 'apiClient/api'
+import { isError } from 'apiClient/helpers'
 import { StocksEventFactory } from 'commons/utils/factories/individualApiFactories'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 
@@ -371,6 +372,84 @@ describe('onSubmit', () => {
         expect(mockSuccessNotification).toBeCalledWith(expectedNotification)
       })
     }
+  )
+
+  const defautFormValues = {
+    recurrenceType: RecurrenceType.UNIQUE,
+    days: [],
+    startingDate: '2020-03-03',
+    endingDate: '',
+    beginningTimes: [{ beginningTime: '10:00' }, { beginningTime: '10:30' }],
+    quantityPerPriceCategories: [
+      { quantity: 5, priceCategory: '1' },
+      { priceCategory: '2' },
+    ],
+    bookingLimitDateInterval: 2,
+    monthlyOption: null,
+  }
+
+  const errorCases = [
+    {
+      errorMessage: 'Starting date is empty',
+      formValues: {
+        ...defautFormValues,
+        startingDate: '2020-03-033',
+      },
+    },
+    {
+      errorMessage: 'Starting or ending date is empty',
+      formValues: {
+        ...defautFormValues,
+        recurrenceType: RecurrenceType.DAILY,
+        endingDate: '',
+      },
+    },
+    {
+      errorMessage: 'Starting, ending date or days is empty',
+      formValues: {
+        ...defautFormValues,
+        recurrenceType: RecurrenceType.WEEKLY,
+        days: [],
+      },
+    },
+    {
+      errorMessage: 'Starting or ending date is empty',
+      formValues: {
+        ...defautFormValues,
+        recurrenceType: RecurrenceType.MONTHLY,
+        startingDate: '',
+      },
+    },
+    {
+      errorMessage: 'Starting or ending date is empty',
+      formValues: {
+        ...defautFormValues,
+        recurrenceType: RecurrenceType.MONTHLY,
+        endingDate: '',
+      },
+    },
+    {
+      errorMessage: 'Monthly option is empty',
+      formValues: {
+        ...defautFormValues,
+        recurrenceType: RecurrenceType.MONTHLY,
+        endingDate: '2020-03-10',
+        monthlyOption: null,
+      },
+    },
+  ]
+
+  errorCases.forEach(({ errorMessage, formValues }) =>
+    it(`should raise error if ${errorMessage}`, async () => {
+      try {
+        await onSubmit(formValues, '75', 66, notify)
+      } catch (error) {
+        expect(isError(error)).toBeTruthy()
+        if (isError(error)) {
+          expect(error.message).toBe(errorMessage)
+        }
+      }
+    })
   )
 
   it(`should create nothing when creation limit is reach`, async () => {
