@@ -66,7 +66,6 @@ function renderVenueSettingsForm(
 
   options = {
     user: sharedCurrentUserFactory(),
-    features: ['WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'],
   }
 
   renderWithProviders(<Wrapper />, options)
@@ -83,7 +82,7 @@ describe('VenueSettingsForm', () => {
   it('toggles manuallySetAddress and resets fields with clearErrors', () => {
     const mockSetValue = vi.fn()
     const mockClearErrors = vi.fn()
-    let manuallySetAddress = false
+    const manuallySetAddress = false
 
     // Function under test (mimicking your implementation)
     const toggleManuallySetAddress = () => {
