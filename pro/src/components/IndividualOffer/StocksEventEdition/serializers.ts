@@ -1,15 +1,12 @@
 import { endOfDay } from 'date-fns'
 
-import { EventStockUpdateBodyModel } from 'apiClient/v1'
 import {
-  getToday,
   isDateValid,
-  toISOStringWithoutMilliseconds,
+  toISOStringWithoutMilliseconds
 } from 'commons/utils/date'
 import { getUtcDateTimeFromLocalDepartement } from 'commons/utils/timezone'
-import { StockEventFormValues } from 'components/IndividualOffer/StocksEventEdition/types'
 
-export const serializeBookingLimitDatetime = (
+const serializeBookingLimitDatetime = (
   beginningDate: string,
   beginningTime: string,
   bookingLimitDatetime: string,
@@ -72,64 +69,4 @@ export const serializeDateTimeToUTCFromLocalDepartment = (
   return toISOStringWithoutMilliseconds(beginningDateTimeInUTCTimezone)
 }
 
-const serializeStockEvent = (
-  formValues: StockEventFormValues,
-  departementCode?: string | null
-): EventStockUpdateBodyModel => {
-  if (!isDateValid(formValues.beginningDate)) {
-    throw Error("La date de début d'évenement est invalide")
-  }
-  if (formValues.beginningTime === '') {
-    throw Error("L'heure de début d'évenement est invalide")
-  }
-  if (formValues.priceCategoryId === '') {
-    throw Error('Le tarif est invalide')
-  }
 
-  const serializedbeginningDatetime = serializeDateTimeToUTCFromLocalDepartment(
-    formValues.beginningDate,
-    formValues.beginningTime,
-    departementCode
-  )
-
-  return {
-    id: formValues.stockId,
-    beginningDatetime: serializedbeginningDatetime,
-    bookingLimitDatetime: isDateValid(formValues.bookingLimitDatetime)
-      ? serializeBookingLimitDatetime(
-          formValues.beginningDate,
-          formValues.beginningTime,
-          formValues.bookingLimitDatetime,
-          departementCode
-        )
-      : serializedbeginningDatetime,
-    priceCategoryId: parseInt(formValues.priceCategoryId),
-    quantity:
-      // eslint-disable-next-line
-      formValues.remainingQuantity != null
-        ? formValues.remainingQuantity + formValues.bookingsQuantity
-        : null,
-  }
-}
-
-export const serializeStockEventEdition = (
-  formValuesList: StockEventFormValues[],
-  departementCode?: string | null
-): EventStockUpdateBodyModel[] => {
-  const today = getToday()
-  return formValuesList
-    .filter((stockFormValues) => {
-      const beginningDatetime =
-        stockFormValues.beginningDate !== '' &&
-        stockFormValues.beginningTime !== ''
-          ? buildDateTime(
-              stockFormValues.beginningDate,
-              stockFormValues.beginningTime
-            )
-          : null
-      return beginningDatetime === null || beginningDatetime >= today
-    })
-    .map((formValues: StockEventFormValues) =>
-      serializeStockEvent(formValues, departementCode)
-    )
-}
