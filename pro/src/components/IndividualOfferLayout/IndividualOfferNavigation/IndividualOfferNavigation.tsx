@@ -7,7 +7,6 @@ import {
   OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useActiveStep } from 'commons/hooks/useActiveStep'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { Step, StepPattern, Stepper } from 'components/Stepper/Stepper'
@@ -32,9 +31,6 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
   const { offer, isEvent: isEventOfferContext } = useIndividualOfferContext()
   const activeStep = useActiveStep(
     Object.values(INDIVIDUAL_OFFER_WIZARD_STEP_IDS)
-  )
-  const isEventWithOpeningHoursEnabled = useActiveFeature(
-    'WIP_ENABLE_EVENT_WITH_OPENING_HOUR'
   )
   const mode = useOfferWizardMode()
   const hasOffer = offer !== null
@@ -88,9 +84,7 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
       },
       {
         id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
-        label: isEventWithOpeningHoursEnabled
-          ? 'Calendrier'
-          : 'Dates & Capacités',
+        label: 'Dates & Capacités',
         path: getIndividualOfferPath({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           mode,

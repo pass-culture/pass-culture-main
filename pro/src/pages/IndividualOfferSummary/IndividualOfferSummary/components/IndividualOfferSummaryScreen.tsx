@@ -1,7 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
 import { useLocation, useNavigate, useSearchParams } from 'react-router'
 import { useSWRConfig } from 'swr'
 
@@ -35,6 +34,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { serializeDateTimeToUTCFromLocalDepartment } from '../../../../components/IndividualOffer/StocksEventEdition/serializers'
 
+import { useSelector } from 'react-redux'
 import { EventPublicationForm } from './EventPublicationForm/EventPublicationForm'
 import { EventPublicationFormValues } from './EventPublicationForm/types'
 import { validationSchema } from './EventPublicationForm/validationSchema'

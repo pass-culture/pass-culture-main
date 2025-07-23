@@ -1,5 +1,5 @@
 import { GetOfferStockResponseModel } from 'apiClient/v1'
-import { StocksEvent } from 'components/StocksEventList/StocksEventList'
+import { StocksEvent } from 'components/IndividualOffer/StocksEventCreation/form/types'
 
 export const serializeStockEvents = (
   stocks: GetOfferStockResponseModel[]

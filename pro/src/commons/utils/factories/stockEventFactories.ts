@@ -1,5 +1,5 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
-import { StockEventFormValues } from 'components/IndividualOffer/StocksEventEdition/StockFormList/types'
+import { StockEventFormValues } from 'components/IndividualOffer/StocksEventEdition/types'
 
 export const stockEventFactory = (
   customStockEvent: Partial<StockEventFormValues> = {}

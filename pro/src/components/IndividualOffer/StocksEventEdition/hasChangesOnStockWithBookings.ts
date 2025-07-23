@@ -1,4 +1,4 @@
-import { StockEventFormValues } from './StockFormList/types'
+import { StockEventFormValues } from './types'
 
 export const hasChangesOnStockWithBookings = (
   submittedStocks: StockEventFormValues[],

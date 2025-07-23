@@ -1,7 +1,7 @@
 import { api } from 'apiClient/api'
 
 import { serializeStockEventEdition } from './serializers'
-import { StockEventFormValues } from './StockFormList/types'
+import { StockEventFormValues } from './types'
 
 export const submitToApi = async (
   allStockValues: StockEventFormValues[],
