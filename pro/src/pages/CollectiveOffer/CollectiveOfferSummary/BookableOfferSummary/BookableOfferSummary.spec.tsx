@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import {
+  CollectiveLocationType,
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
 } from 'apiClient/v1'
@@ -54,14 +55,16 @@ describe('BookableOfferSummary', () => {
   beforeEach(() => {
     const offer = getCollectiveOfferFactory({
       name: 'Test Offer',
-      venue: getCollectiveOfferVenueFactory({ publicName: 'Test Venue' }),
+      venue: getCollectiveOfferVenueFactory({ publicName: 'Test Venue', departementCode: '75' }),
       collectiveStock: {
         id: 1,
         isBooked: false,
         isCancellable: true,
         numberOfTickets: 50,
         price: 1000,
-        bookingLimitDatetime: '2023-12-31T23:59:59',
+        startDatetime: '2023-12-21T10:00:00Z',
+        endDatetime: '2023-12-21T10:00:00Z',
+        bookingLimitDatetime: '2023-12-31T22:59:59Z',
       },
       allowedActions: [
         CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
@@ -116,6 +119,60 @@ describe('BookableOfferSummary', () => {
     renderBookableOfferSummary(props)
     expect(
       screen.getByText('Date limite de réservation : 31/12/2023')
+    ).toBeInTheDocument()
+  })
+
+  it('should render the location when location type is school', () => {
+    const testProps = {
+      offer: getCollectiveOfferFactory({
+        location: {
+          locationType: CollectiveLocationType.SCHOOL,
+        }
+      })
+    }
+    renderBookableOfferSummary(testProps, {
+      features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'],
+    })
+    expect(
+      screen.getByText('Dans l’établissement scolaire')
+    ).toBeInTheDocument()
+  })
+
+  it('should render the location when location type is to be defined', () => {
+    const testProps = {
+      offer: getCollectiveOfferFactory({
+        location: {
+          locationType: CollectiveLocationType.TO_BE_DEFINED,
+        }
+      })
+    }
+    renderBookableOfferSummary(testProps, {
+      features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'],
+    })
+    expect(
+      screen.getByText('À déterminer avec l’enseignant')
+    ).toBeInTheDocument()
+  })
+
+  it('should render the date of the offer when start and end date are not the same', () => {
+    const testProps = {
+      offer: getCollectiveOfferFactory({
+        venue: getCollectiveOfferVenueFactory({ publicName: 'Test Venue', departementCode: '75' }),
+        collectiveStock: {
+          id: 1,
+          isBooked: false,
+          isCancellable: true,
+          numberOfTickets: 50,
+          price: 1000,
+          startDatetime: '2023-12-21T10:00:00Z', // 11:00 in Paris (UTC+1)
+          endDatetime: '2023-12-22T10:00:00Z', // 11:00 in Paris (UTC+1)
+        },
+      }),
+    }
+
+    renderBookableOfferSummary(testProps)
+    expect(
+      screen.getByText("Du 21/12/2023 au 22/12/2023 - 11h00")
     ).toBeInTheDocument()
   })
 

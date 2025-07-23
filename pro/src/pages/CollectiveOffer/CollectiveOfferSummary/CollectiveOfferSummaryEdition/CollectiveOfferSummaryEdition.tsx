@@ -7,13 +7,14 @@ import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils
 import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
-import { BookableOfferSummary } from 'components/BookableOfferSummary/BookableOfferSummary'
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
 import { withCollectiveOfferFromParams } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 import { CollectiveOfferSummary } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/CollectiveOfferSummary'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
+
+import { BookableOfferSummary } from '../BookableOfferSummary/BookableOfferSummary'
 
 import styles from './CollectiveOfferSummaryEdition.module.scss'
 

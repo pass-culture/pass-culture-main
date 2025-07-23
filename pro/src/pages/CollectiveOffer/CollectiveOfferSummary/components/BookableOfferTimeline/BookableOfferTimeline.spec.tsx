@@ -302,80 +302,105 @@ describe('BookableOfferTimeline - step type rendering', () => {
     expect(icon).toHaveClass('icon-disabled')
   })
 
-  it('should render a infobox when current step is draft', () => {
-    renderWithProviders(
-      <BookableOfferTimeline
-        offer={getCollectiveOfferFactory({
-          history: {
-            past: [
-              {
-                status: CollectiveOfferDisplayedStatus.DRAFT,
-              },
-            ],
-            future: [CollectiveOfferDisplayedStatus.PUBLISHED],
-          },
-        })}
-      />
-    )
-
-    expect(
-      screen.getByText(
-        "Vous avez commencé à rédiger un brouillon. Vous pouvez le reprendre à tout moment afin de finaliser sa rédaction et l'envoyer à un établissement."
+  describe('timeline banners', () => {
+    it('should render a banner when current step is draft', () => {
+      renderWithProviders(
+        <BookableOfferTimeline
+          offer={getCollectiveOfferFactory({
+            history: {
+              past: [
+                {
+                  status: CollectiveOfferDisplayedStatus.DRAFT,
+                },
+              ],
+              future: [CollectiveOfferDisplayedStatus.PUBLISHED],
+            },
+          })}
+        />
       )
-    ).toBeInTheDocument()
-    expect(screen.getByText('Reprendre mon brouillon')).toBeInTheDocument()
-  })
 
-  it('should render a infobox when current step is published', () => {
-    renderWithProviders(
-      <BookableOfferTimeline
-        offer={getCollectiveOfferFactory({
-          history: {
-            past: [
-              {
-                status: CollectiveOfferDisplayedStatus.PUBLISHED,
-              },
-            ],
-            future: [CollectiveOfferDisplayedStatus.PREBOOKED],
-          },
-        })}
-      />
-    )
+      expect(
+        screen.getByText(
+          "Vous avez commencé à rédiger un brouillon. Vous pouvez le reprendre à tout moment afin de finaliser sa rédaction et l'envoyer à un établissement."
+        )
+      ).toBeInTheDocument()
+      expect(screen.getByText('Reprendre mon brouillon')).toBeInTheDocument()
+    })
 
-    expect(
-      screen.getByText(
-        /L'enseignant doit impérativement préréserver l'offre avant le/
+    it('should render a banner when current step is published', () => {
+      renderWithProviders(
+        <BookableOfferTimeline
+          offer={getCollectiveOfferFactory({
+            history: {
+              past: [
+                {
+                  status: CollectiveOfferDisplayedStatus.PUBLISHED,
+                },
+              ],
+              future: [CollectiveOfferDisplayedStatus.PREBOOKED],
+            },
+          })}
+        />
       )
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('Modifier la date limite de réservation')
-    ).toBeInTheDocument()
-  })
 
-  it('should render a infobox when current step is prebooked', () => {
-    renderWithProviders(
-      <BookableOfferTimeline
-        offer={getCollectiveOfferFactory({
-          history: {
-            past: [
-              {
-                status: CollectiveOfferDisplayedStatus.PREBOOKED,
-              },
-            ],
-            future: [CollectiveOfferDisplayedStatus.BOOKED],
-          },
-        })}
-      />
-    )
+      expect(
+        screen.getByText(
+          /L'enseignant doit impérativement préréserver l'offre avant le/
+        )
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('Modifier la date limite de réservation')
+      ).toBeInTheDocument()
+    })
 
-    expect(screen.getByText('expire dans 1 jour')).toBeInTheDocument()
-    expect(
-      screen.getByText(
-        /Le chef d'établissement doit impérativement confirmer la préréservation de l'offre avant le/
+    it('should render a banner when current step is prebooked', () => {
+      renderWithProviders(
+        <BookableOfferTimeline
+          offer={getCollectiveOfferFactory({
+            history: {
+              past: [
+                {
+                  status: CollectiveOfferDisplayedStatus.PREBOOKED,
+                },
+              ],
+              future: [CollectiveOfferDisplayedStatus.BOOKED],
+            },
+          })}
+        />
       )
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('Modifier la date limite de réservation')
-    ).toBeInTheDocument()
+
+      expect(screen.getByText('expire dans 1 jour')).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          /Le chef d'établissement doit impérativement confirmer la préréservation de l'offre avant le/
+        )
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('Modifier la date limite de réservation')
+      ).toBeInTheDocument()
+    })
+
+    it('should render a banner when current step is rejected', () => {
+      renderWithProviders(
+        <BookableOfferTimeline
+          offer={getCollectiveOfferFactory({
+            history: {
+              past: [
+                {
+                  status: CollectiveOfferDisplayedStatus.REJECTED,
+                },
+              ],
+              future: [CollectiveOfferDisplayedStatus.BOOKED],
+            },
+          })}
+        />
+      )
+
+      expect(
+        screen.getByText(
+          /Votre offre a été rejetée par notre équipe en charge du contrôle de conformité./
+        )
+      ).toBeInTheDocument()
+    })
   })
 })

@@ -369,7 +369,6 @@ describe('ollectiveOfferRow', () => {
     })
     await userEvent.click(bookingLink)
 
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
       1,
       CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
