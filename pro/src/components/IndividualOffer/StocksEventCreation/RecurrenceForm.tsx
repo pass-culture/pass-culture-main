@@ -32,7 +32,7 @@ import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 
-import { getPriceCategoryOptions } from '../StocksEventEdition/getPriceCategoryOptions'
+import { getPriceCategoryOptions } from '../PriceCategoriesScreen/form/getPriceCategoryOptions'
 
 import { computeInitialValues } from './form/computeInitialValues'
 import { INITIAL_QUANTITY_PER_PRICE_CATEGORY } from './form/constants'

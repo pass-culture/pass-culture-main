@@ -1,7 +1,6 @@
 import { api } from 'apiClient/api'
 import { isError } from 'apiClient/helpers'
 import { StocksEventFactory } from 'commons/utils/factories/individualApiFactories'
-import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 
 import { onSubmit } from '../onSubmit'
 import {
@@ -9,6 +8,7 @@ import {
   RecurrenceDays,
   RecurrenceFormValues,
   RecurrenceType,
+  StocksEvent,
 } from '../types'
 
 const mockSuccessNotification = vi.fn()

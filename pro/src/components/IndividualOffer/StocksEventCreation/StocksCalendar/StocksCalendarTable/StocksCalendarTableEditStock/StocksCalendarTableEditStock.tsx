@@ -9,7 +9,7 @@ import {
   GetOfferStockResponseModel,
 } from 'apiClient/v1'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
-import { getPriceCategoryOptions } from 'components/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
+import { getPriceCategoryOptions } from 'components/IndividualOffer/PriceCategoriesScreen/form/getPriceCategoryOptions'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'

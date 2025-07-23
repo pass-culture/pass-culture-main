@@ -1,8 +1,8 @@
 import { useFieldArray, UseFormReturn } from 'react-hook-form'
 
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import { getPriceCategoryOptions } from 'components/IndividualOffer/PriceCategoriesScreen/form/getPriceCategoryOptions'
 import { StocksCalendarFormValues } from 'components/IndividualOffer/StocksEventCreation/form/types'
-import { getPriceCategoryOptions } from 'components/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { Button } from 'ui-kit/Button/Button'
