@@ -26,6 +26,7 @@ from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
 from pcapi.models import db
+from pcapi.utils import export as utils_export
 from pcapi.utils.token import random_token
 
 
@@ -852,9 +853,9 @@ def _write_bookings_to_excel(query: sa_orm.Query) -> bytes:
     output = BytesIO()
     workbook = xlsxwriter.Workbook(output)
 
-    bold = workbook.add_format({"bold": 1})
-    currency_format = workbook.add_format({"num_format": "###0.00[$€-fr-FR]"})
-    col_width = 18
+    bold = workbook.add_format(utils_export.EXCEL_BOLD_FORMAT)
+    currency_format = workbook.add_format(utils_export.EXCEL_CURRENCY_FORMAT)
+    col_width = utils_export.EXCEL_COL_WIDTH
 
     worksheet = workbook.add_worksheet()
     row = 0
@@ -955,9 +956,9 @@ def _serialize_excel_report(query: sa_orm.Query) -> bytes:
     output = BytesIO()
     workbook = xlsxwriter.Workbook(output)
 
-    bold = workbook.add_format({"bold": 1})
-    currency_format = workbook.add_format({"num_format": "###0.00[$€-fr-FR]"})
-    col_width = 18
+    bold = workbook.add_format(utils_export.EXCEL_BOLD_FORMAT)
+    currency_format = workbook.add_format(utils_export.EXCEL_CURRENCY_FORMAT)
+    col_width = utils_export.EXCEL_COL_WIDTH
 
     worksheet = workbook.add_worksheet()
     row = 0

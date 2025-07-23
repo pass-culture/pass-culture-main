@@ -11,6 +11,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.api import adage as educational_api_adage
+from pcapi.core.educational.api import export as educational_api_export
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -60,6 +61,62 @@ def get_collective_offers(
     return collective_offers_serialize.ListCollectiveOffersResponseModel(
         __root__=collective_offers_serialize.serialize_collective_offers_capped(capped_offers)
     )
+
+
+@private_api.route("/collective/offers/csv", methods=["GET"])
+@atomic()
+@login_required
+@spectree_serialize(
+    json_format=False,
+    response_headers={
+        "Content-Type": "text/csv; charset=utf-8-sig;",
+        "Content-Disposition": "attachment; filename=offres_collectives_reservables_pass_culture.csv",
+    },
+    api=blueprint.pro_private_schema,
+)
+def get_collective_offers_csv(
+    query: collective_offers_serialize.ListCollectiveOffersQueryModel,
+) -> bytes:
+    return _get_collective_offers_export(query, educational_models.CollectiveOfferExportType.CSV)
+
+
+@private_api.route("/collective/offers/excel", methods=["GET"])
+@login_required
+@spectree_serialize(
+    json_format=False,
+    response_headers={
+        "Content-Type": "application/vnd.ms-excel",
+        "Content-Disposition": "attachment; filename=offres_collectives_reservables_pass_culture.xlsx",
+    },
+    api=blueprint.pro_private_schema,
+)
+@atomic()
+def get_collective_offers_excel(
+    query: collective_offers_serialize.ListCollectiveOffersQueryModel,
+) -> bytes:
+    return _get_collective_offers_export(query, educational_models.CollectiveOfferExportType.EXCEL)
+
+
+def _get_collective_offers_export(
+    query: collective_offers_serialize.ListCollectiveOffersQueryModel,
+    export_type: educational_models.CollectiveOfferExportType,
+) -> bytes:
+    offers_query = educational_repository.get_collective_offers_by_filters(
+        user_id=current_user.id,
+        user_is_admin=current_user.has_admin_role,
+        offerer_id=query.offerer_id,
+        statuses=query.status,
+        venue_id=query.venue_id,
+        name_keywords=query.nameOrIsbn,
+        period_beginning_date=query.period_beginning_date,
+        period_ending_date=query.period_ending_date,
+        formats=[query.format] if query.format else None,
+    )
+
+    if export_type == educational_models.CollectiveOfferExportType.CSV:
+        return educational_api_export.generate_csv_for_collective_offers(collective_offers_query=offers_query)
+
+    return educational_api_export.generate_excel_for_collective_offers(collective_offers_query=offers_query)
 
 
 @private_api.route("/collective/offers/<int:offer_id>", methods=["GET"])
