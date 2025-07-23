@@ -19,7 +19,7 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { Stocks } from '../Stocks'
+import { Stocks } from './Stocks'
 
 vi.mock('apiClient/api', () => ({
   api: {

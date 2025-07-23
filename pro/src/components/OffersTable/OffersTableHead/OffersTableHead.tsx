@@ -2,7 +2,7 @@ import classNames from 'classnames'
 
 import { CollectiveOffersSortingColumn } from 'commons/core/OfferEducational/types'
 import { SortingMode } from 'commons/hooks/useColumnSorting'
-import { SortArrow } from 'components/StocksEventList/SortArrow'
+import { SortArrow } from 'ui-kit/SortArrow/SortArrow'
 
 import { CellDefinition, getCellsDefinition } from '../utils/cellDefinitions'
 
