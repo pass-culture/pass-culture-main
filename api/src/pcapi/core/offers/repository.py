@@ -779,7 +779,7 @@ def get_pending_bookings_subquery(offer_id: int) -> sa.sql.selectable.Exists:
 
 def get_offer_chronicles_count_subquery() -> sa.sql.selectable.ScalarSelect:
     return (
-        sa.select(sa.func.count(chronicles_models.OfferChronicle.id))
+        sa.select(sa.func.count())
         .select_from(chronicles_models.OfferChronicle)
         .where(chronicles_models.OfferChronicle.offerId == models.Offer.id)
         .correlate(models.Offer)
@@ -789,7 +789,7 @@ def get_offer_chronicles_count_subquery() -> sa.sql.selectable.ScalarSelect:
 
 def get_offer_reaction_count_subquery() -> sa.sql.selectable.ScalarSelect:
     return (
-        sa.select(sa.func.count(reactions_models.Reaction.id))
+        sa.select(sa.func.count())
         .select_from(reactions_models.Reaction)
         .where(reactions_models.Reaction.offerId == models.Offer.id)
         .where(reactions_models.Reaction.reactionType == reactions_models.ReactionTypeEnum.LIKE)
