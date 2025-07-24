@@ -157,6 +157,17 @@ export const getValidationSchemaForNewOfferCreationFlow = (
           ),
       otherwise: (schema) => schema.nullable(),
     }),
+    videoUrl: yup
+      .string()
+      .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
+      .test({
+        name: 'videoUrl',
+        message:
+          'Veuillez renseigner une URL provenant de la plateforme Youtube',
+        test: (videoUrl?: string) =>
+          videoUrl ? videoUrl.match(youtubeVideoRegex) !== null : true,
+      })
+      .nullable(),
   })
 }
 
