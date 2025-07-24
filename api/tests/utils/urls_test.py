@@ -5,14 +5,36 @@ from pcapi.utils import urls
 
 
 class FirebaseLinksTest:
+    @pytest.mark.features(USE_UNIVERSAL_LINKS=True)
+    def test_generate_universal_link_without_params(self):
+        url = urls.generate_app_link(path="signup-confirmation", params=None)
+        assert url == "https://webapp-v2.example.com/signup-confirmation"
+
+    @pytest.mark.features(USE_UNIVERSAL_LINKS=True)
+    def test_generate_universal_link_with_params(self):
+        url = urls.generate_app_link(
+            path="signup-confirmation",
+            params={
+                "token": "2sD3hu6DRhqhqeg4maVxJq0LGh88CkkBlrywgowuMp0",
+                "expiration_timestamp": "1620905607",
+                "email": "testemail@example.com",
+            },
+        )
+        assert (
+            url
+            == "https://webapp-v2.example.com/signup-confirmation?token=2sD3hu6DRhqhqeg4maVxJq0LGh88CkkBlrywgowuMp0&expiration_timestamp=1620905607&email=testemail%40example.com"
+        )
+
+    @pytest.mark.features(USE_UNIVERSAL_LINKS=False)
     def test_generate_firebase_dynamic_link_without_params(self):
-        url = urls.generate_firebase_dynamic_link(path="signup-confirmation", params=None)
+        url = urls.generate_app_link(path="signup-confirmation", params=None)
         assert url == (
             "https://passcultureapptestauto.page.link/?link=https%3A%2F%2Fwebapp-v2.example.com%2Fsignup-confirmation"
         )
 
+    @pytest.mark.features(USE_UNIVERSAL_LINKS=False)
     def test_generate_firebase_dynamic_link_with_params(self):
-        url = urls.generate_firebase_dynamic_link(
+        url = urls.generate_app_link(
             path="signup-confirmation",
             params={
                 "token": "2sD3hu6DRhqhqeg4maVxJq0LGh88CkkBlrywgowuMp0",

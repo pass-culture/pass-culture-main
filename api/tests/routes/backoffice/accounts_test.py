@@ -5128,7 +5128,8 @@ class SendPublicAccountPasswordResetEmailTest(PostEndpointHelper):
     # authenticated user session
     # authenticated user
     # targeted user by id
-    expected_queries = 3
+    # feature
+    expected_queries = 4
 
     def test_send_public_account_reset_password_email(self, authenticated_client, legit_user):
         user = users_factories.BeneficiaryFactory()
@@ -5144,7 +5145,7 @@ class SendPublicAccountPasswordResetEmailTest(PostEndpointHelper):
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == user.email
         assert mails_testing.outbox[0]["template"] == TransactionalEmail.NEW_PASSWORD_REQUEST.value.__dict__
-        assert "2Fmot-de-passe-perdu%3Ftoken%3" in mails_testing.outbox[0]["params"]["RESET_PASSWORD_LINK"]
+        assert "mot-de-passe-perdu" in mails_testing.outbox[0]["params"]["RESET_PASSWORD_LINK"]
 
         response = authenticated_client.get(response.location)
         assert html_parser.extract_alert(response.data) == "L'envoi du mail de changement de mot de passe a été initié"
