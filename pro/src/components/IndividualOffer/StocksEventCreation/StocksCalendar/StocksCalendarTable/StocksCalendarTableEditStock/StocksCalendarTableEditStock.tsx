@@ -18,11 +18,11 @@ import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 
-import styles from './StocksCalendarTableEditStock.module.scss'
 import {
   getStockFormDefaultValues,
   serializeStockFormValuesForUpdate,
-} from './utils'
+} from './serializers'
+import styles from './StocksCalendarTableEditStock.module.scss'
 import { validationSchema } from './validationSchema'
 
 export type EditStockFormValues = {
