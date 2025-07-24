@@ -120,9 +120,6 @@ export const ReimbursementsInvoices = (): JSX.Element => {
 
   const invoices = getInvoicesQuery.data
   const hasInvoice = Boolean(hasInvoiceQuery.data.hasInvoice)
-  const hasNoSearchResult =
-    (!getInvoicesQuery.error && !invoices.length && hasSearchedOnce) ||
-    (!invoices.length && hasInvoice)
   const hasNoInvoicesYet = !hasSearchedOnce && !hasInvoice
 
   return (
@@ -138,7 +135,7 @@ export const ReimbursementsInvoices = (): JSX.Element => {
       />
       {getInvoicesQuery.error && <InvoicesServerError />}
       {hasNoInvoicesYet && <NoInvoicesYet />}
-      {invoices.length > 0 && (
+      {hasInvoice && (
         <InvoiceTable
           data={invoices}
           isLoading={hasInvoiceQuery.isLoading}

@@ -5,14 +5,9 @@ import { vi } from 'vitest'
 import * as apiModule from 'apiClient/api'
 import { InvoiceResponseV2Model } from 'apiClient/v1'
 import * as analyticsHook from 'app/App/analytics/firebase'
-import * as notificationHook from 'commons/hooks/useNotification'
+import * as useNotification from 'commons/hooks/useNotification'
 
 import { InvoiceTable } from './InvoiceTable'
-
-// Mocks
-vi.mock('commons/hooks/useNotification', () => ({
-  useNotification: vi.fn(),
-}))
 
 vi.mock('app/App/analytics/firebase', () => ({
   useAnalytics: vi.fn(),
@@ -34,12 +29,18 @@ vi.mock('commons/utils/downloadFile', () => ({
   downloadFile: vi.fn(),
 }))
 
-const mockNotify = { error: vi.fn() }
+const notifyError = vi.fn()
 const mockLogEvent = vi.fn()
 
 beforeEach(() => {
   vi.clearAllMocks()
-  vi.spyOn(notificationHook, 'useNotification').mockReturnValue(mockNotify)
+  vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
+    success: vi.fn(),
+    error: notifyError,
+    information: vi.fn(),
+    close: vi.fn(),
+  }))
+
   vi.spyOn(analyticsHook, 'useAnalytics').mockReturnValue({
     logEvent: mockLogEvent,
   })
@@ -149,7 +150,7 @@ describe('InvoiceTable', () => {
     await user.click(screen.getByLabelText('Tout sélectionner'))
     await user.click(screen.getByText('Télécharger les justificatifs'))
 
-    expect(mockNotify.error).toHaveBeenCalledWith(
+    expect(notifyError).toHaveBeenCalledWith(
       'Vous ne pouvez pas télécharger plus de 24 documents en une fois.'
     )
   })
