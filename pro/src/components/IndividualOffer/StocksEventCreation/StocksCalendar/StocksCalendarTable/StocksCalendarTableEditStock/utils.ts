@@ -44,7 +44,7 @@ export function getStockFormDefaultValues(
     quantity:
       stock.quantity === null || stock.quantity === undefined
         ? undefined
-        : stock.quantity - stock.bookingsQuantity,
+        : stock.quantity,
   }
 }
 
