@@ -95,12 +95,13 @@ export function StocksCalendarTableEditStock({
                 error={form.formState.errors.quantity?.message}
                 label="Nombre de places"
                 value={quantity}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const value = e.target.value
                   form.setValue(
                     `quantity`,
-                    e.target.value ? Number(e.target.value) : undefined
+                    value === '' ? undefined : Number(value)
                   )
-                }
+                }}
               />
             </div>
             <Select

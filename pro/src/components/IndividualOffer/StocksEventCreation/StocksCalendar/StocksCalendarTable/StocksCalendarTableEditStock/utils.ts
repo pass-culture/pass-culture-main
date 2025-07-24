@@ -58,7 +58,7 @@ export function serializeStockFormValuesForUpdate(
   return {
     id: stockId,
     priceCategoryId: Number(priceCategory),
-    quantity: quantity || undefined,
+    quantity: quantity,
     beginningDatetime: serializeDateTimeToUTCFromLocalDepartment(
       format(date, FORMAT_ISO_DATE_ONLY),
       time,
