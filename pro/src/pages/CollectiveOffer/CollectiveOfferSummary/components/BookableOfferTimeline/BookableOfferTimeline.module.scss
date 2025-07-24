@@ -42,4 +42,8 @@
   &-accent {
     @include fonts.body-accent;
   }
+
+  &-margin {
+    padding-top: rem.torem(10px);
+  }
 }
