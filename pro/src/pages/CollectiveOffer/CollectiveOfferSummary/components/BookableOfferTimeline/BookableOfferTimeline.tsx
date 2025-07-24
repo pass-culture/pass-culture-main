@@ -7,6 +7,7 @@ import { Timeline, TimelineStepType } from 'ui-kit/Timeline/Timeline'
 
 import { BookingWaitingBanner } from './banners/BookingWaitingBanner'
 import { DraftBanner } from './banners/DraftBanner'
+import { UnderReviewBanner } from './banners/UnderReviewBanner'
 import styles from './BookableOfferTimeline.module.scss'
 
 type BookableOfferTimeline = {
@@ -57,7 +58,12 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
     if (status === CollectiveOfferDisplayedStatus.UNDER_REVIEW) {
       return {
         type: TimelineStepType.WAITING,
-        content: <StatusWithDate status={statusLabel} />,
+        content: (
+          <>
+            <StatusWithDate status={statusLabel} />
+            {isCurrentStep && <UnderReviewBanner />}
+          </>
+        ),
       }
     }
 
