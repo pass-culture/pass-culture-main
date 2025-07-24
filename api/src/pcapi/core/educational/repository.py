@@ -549,7 +549,7 @@ def get_collective_offers_by_filters(
     period_beginning_date: date | None = None,
     period_ending_date: date | None = None,
     formats: list[EacFormat] | None = None,
-) -> sa_orm.Query:
+) -> "sa_orm.Query[educational_models.CollectiveOffer]":
     query = db.session.query(educational_models.CollectiveOffer)
 
     if not user_is_admin:
