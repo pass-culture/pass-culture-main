@@ -34,6 +34,26 @@ export const initializeSentry = () => {
     ],
     tracesSampleRate: parseFloat(SENTRY_SAMPLE_RATE),
     beforeSend: (event, hint) => {
+      // scrub the user autologin token from the url
+      if (event.tags) {
+        event.tags['url'] = removeTokenFromFrontURL(event.tags['url'] as string)
+      }
+      if (event.request) {
+        event.request.url = removeTokenFromFrontURL(event.request.url)
+      }
+      if (event.transaction) {
+        event.transaction = removeTokenFromFrontURL(event.transaction)
+      }
+      // Not really sure if these are sent to sentry or not.
+      if (
+        event.sdkProcessingMetadata &&
+        event.sdkProcessingMetadata.normalizedRequest
+      ) {
+        event.sdkProcessingMetadata.normalizedRequest.url =
+          removeTokenFromFrontURL(
+            event.sdkProcessingMetadata.normalizedRequest.url
+          )
+      }
       // To ignore a google recaptcha issue
       // and Google analytics issue
       if (
@@ -43,6 +63,42 @@ export const initializeSentry = () => {
         return null
       }
       return event
+    },
+    beforeSendTransaction: (transactionEvent) => {
+      if (transactionEvent.request) {
+        transactionEvent.request.url = removeTokenFromFrontURL(
+          transactionEvent.request.url
+        )
+      }
+      if (transactionEvent.transaction) {
+        transactionEvent.transaction = removeTokenFromFrontURL(
+          transactionEvent.transaction
+        )
+      }
+      // Not really sure if these are sent to sentry or not.
+      if (
+        transactionEvent.sdkProcessingMetadata &&
+        transactionEvent.sdkProcessingMetadata.normalizedRequest
+      ) {
+        transactionEvent.sdkProcessingMetadata.normalizedRequest.url =
+          removeTokenFromFrontURL(
+            transactionEvent.sdkProcessingMetadata.normalizedRequest.url
+          )
+      }
+      return transactionEvent
+    },
+    beforeBreadcrumb(breadcrumb) {
+      if (breadcrumb.data) {
+        breadcrumb.data.url = removeTokenFromBackURL(breadcrumb.data.url)
+      }
+      return breadcrumb
+    },
+    beforeSendSpan(span) {
+      if (span.description) {
+        span.description = removeTokenFromFrontURL(span.description)
+        span.description = removeTokenFromBackURL(span.description)
+      }
+      return span
     },
     // List of common errors to ignore
     // https://docs.sentry.io/platforms/javascript/configuration/filtering/#decluttering-sentry
@@ -120,3 +176,24 @@ export const useSentry = () => {
     }
   }, [currentUser])
 }
+
+function createURLRewriter(
+  pattern: RegExp,
+  replacement: string
+): (url?: string) => string | undefined {
+  return (url?: string) => {
+    if (url?.match(pattern)) {
+      return url.replace(pattern, replacement)
+    }
+    return url
+  }
+}
+
+const removeTokenFromFrontURL = createURLRewriter(
+  /\/inscription\/compte\/confirmation\/(.*)/g,
+  '/inscription/compte/confirmation/[TOKEN]'
+)
+const removeTokenFromBackURL = createURLRewriter(
+  /\/users\/validate_signup\/.*/g,
+  '/users/validate_signup/[TOKEN]'
+)
