@@ -4,40 +4,7 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 
 .invoices-table {
-  margin-top: rem.torem(32px);
-  width: 100%;
-}
-
-.header {
-  @include a11y.visually-hidden;
-}
-
-.row {
-  display: flex;
-  flex-direction: column;
-}
-
-.data {
-  display: flex;
-  justify-content: space-between;
-  padding: rem.torem(12px) rem.torem(8px);
-  align-items: center;
-}
-
-.data::before {
-  @include fonts.body-accent-xs;
-
-  content: attr(data-label) " :";
-  text-align: left;
-  margin-right: rem.torem(16px);
-}
-
-.body .row:nth-child(n + 1):nth-child(odd) {
-  background-color: var(--color-background-subtle);
-}
-
-.date-data {
-  @include fonts.body-accent;
+  margin: rem.torem(32px) 0;
 }
 
 .more-icon {
@@ -70,15 +37,13 @@
   }
 }
 
-.document-type-content {
+.cell-document-type {
   display: flex;
   gap: rem.torem(4px);
 }
 
-.header-sort {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.cell-actions {
+  text-align: center;
 }
 
 .visually-hidden {
@@ -86,68 +51,18 @@
 }
 
 @media (min-width: size.$tablet) {
-  .invoices-table {
-    margin-top: 0;
-  }
-
-  .row {
-    display: table-row;
-    padding: rem.torem(16px);
-  }
-
-  .header {
-    @include fonts.body-accent-xs;
-    @include a11y.visually-hidden-reset;
-  }
-
-  .header-cell {
-    text-align: left;
-    padding: rem.torem(16px) rem.torem(8px);
-  }
-
-  .data {
-    display: table-cell;
-    padding-left: rem.torem(8px);
-    padding-right: rem.torem(8px);
-    line-height: 1;
-
-    &:first-child {
-      white-space: nowrap;
-    }
-  }
-
-  .data::before {
-    content: none;
-    display: none;
-  }
-
-  .document-type-content {
+  .cell-document-type {
     text-align: left;
     white-space: nowrap;
   }
 
-  .bank-account-column {
-    text-align: left;
+  .cell-bank-account {
+    min-width: 250px;
   }
 
-  .amount-column {
+  .cell-amount {
     cursor: default;
     justify-content: right;
     text-align: right;
-  }
-
-  .invoice-column {
-    margin-right: 0;
-  }
-
-  .download-actions {
-    flex-direction: row;
-    gap: rem.torem(16px);
-
-    .first-action {
-      border-left: solid 1px var(--color-border-subtle);
-      border-radius: 0;
-      padding-left: rem.torem(8px);
-    }
   }
 }
