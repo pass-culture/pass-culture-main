@@ -8,12 +8,16 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import Offer
+from pcapi.models.feature import FeatureToggle
 
 
-def generate_firebase_dynamic_link(path: str, params: dict | None) -> str:
+def generate_app_link(path: str, params: dict | None) -> str:
     universal_link_url = f"{settings.WEBAPP_V2_URL}/{path}"
     if params:
         universal_link_url = universal_link_url + f"?{urlencode(params)}"
+
+    if FeatureToggle.USE_UNIVERSAL_LINKS.is_active():
+        return universal_link_url
 
     firebase_dynamic_query_string = urlencode({"link": universal_link_url})
     return f"{settings.FIREBASE_DYNAMIC_LINKS_URL}/?{firebase_dynamic_query_string}"

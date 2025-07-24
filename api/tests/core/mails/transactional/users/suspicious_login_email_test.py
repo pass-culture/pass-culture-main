@@ -56,7 +56,8 @@ class SendinblueSuspiciousLoginEmailTest:
             assert suspicious_email_data.params["LOGIN_DATE"] == "29/05/2023"
             assert suspicious_email_data.params["LOGIN_TIME"] == "19h05"
 
-    def should_return_sendinblue_template_data_account_securing_link(self):
+    @pytest.mark.features(USE_UNIVERSAL_LINKS=False)
+    def should_return_sendinblue_template_data_account_securing_firebase_dynamic_link(self):
         reset_password_token = token_utils.Token.create(
             token_utils.TokenType.RESET_PASSWORD, constants.RESET_PASSWORD_TOKEN_LIFE_TIME, self.user.id
         )
@@ -67,6 +68,27 @@ class SendinblueSuspiciousLoginEmailTest:
                 + urlencode({"email": self.user.email})
             }
         )
+        suspicious_email_data = get_suspicious_login_email_data(
+            self.user, self.login_info, self.account_suspension_token, reset_password_token
+        )
+        assert suspicious_email_data.params["ACCOUNT_SECURING_LINK"] == ACCOUNT_SECURING_LINK
+
+    @pytest.mark.features(USE_UNIVERSAL_LINKS=True)
+    def should_return_sendinblue_template_data_account_securing_universal_link(self):
+        reset_password_token = token_utils.Token.create(
+            token_utils.TokenType.RESET_PASSWORD, constants.RESET_PASSWORD_TOKEN_LIFE_TIME, self.user.id
+        )
+        url_params = urlencode(
+            {
+                "token": self.account_suspension_token.encoded_token,
+                "reset_password_token": reset_password_token.encoded_token,
+                "reset_token_expiration_timestamp": int(
+                    reset_password_token.get_expiration_date_from_token().timestamp()
+                ),
+                "email": self.user.email,
+            }
+        )
+        ACCOUNT_SECURING_LINK = f"https://webapp-v2.example.com/securisation-compte?{url_params}"
         suspicious_email_data = get_suspicious_login_email_data(
             self.user, self.login_info, self.account_suspension_token, reset_password_token
         )
@@ -86,7 +108,8 @@ class SendinblueSuspiciousLoginEmailTest:
             assert mails_testing.outbox[0]["params"]["LOGIN_DATE"] == "29/05/2023"
             assert mails_testing.outbox[0]["params"]["LOGIN_TIME"] == "19h05"
 
-    def should_send_suspicious_login_email_account_securing_link(self):
+    @pytest.mark.features(USE_UNIVERSAL_LINKS=False)
+    def should_send_suspicious_login_email_account_securing_firebase_dynamic_link(self):
         reset_password_token = token_utils.Token.create(
             token_utils.TokenType.RESET_PASSWORD, constants.RESET_PASSWORD_TOKEN_LIFE_TIME, self.user.id
         )
@@ -97,6 +120,26 @@ class SendinblueSuspiciousLoginEmailTest:
                 + urlencode({"email": self.user.email})
             }
         )
+        send_suspicious_login_email(self.user, self.login_info, self.account_suspension_token, reset_password_token)
+        assert mails_testing.outbox[0]["params"]["ACCOUNT_SECURING_LINK"] == ACCOUNT_SECURING_LINK
+
+    @pytest.mark.features(USE_UNIVERSAL_LINKS=True)
+    def should_send_suspicious_login_email_account_securing_universal_link(self):
+        reset_password_token = token_utils.Token.create(
+            token_utils.TokenType.RESET_PASSWORD, constants.RESET_PASSWORD_TOKEN_LIFE_TIME, self.user.id
+        )
+
+        url_params = urlencode(
+            {
+                "token": self.account_suspension_token.encoded_token,
+                "reset_password_token": reset_password_token.encoded_token,
+                "reset_token_expiration_timestamp": int(
+                    reset_password_token.get_expiration_date_from_token().timestamp()
+                ),
+                "email": self.user.email,
+            }
+        )
+        ACCOUNT_SECURING_LINK = f"https://webapp-v2.example.com/securisation-compte?{url_params}"
         send_suspicious_login_email(self.user, self.login_info, self.account_suspension_token, reset_password_token)
         assert mails_testing.outbox[0]["params"]["ACCOUNT_SECURING_LINK"] == ACCOUNT_SECURING_LINK
 

@@ -7,7 +7,7 @@ from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.date import utc_datetime_to_department_timezone
-from pcapi.utils.urls import generate_firebase_dynamic_link
+from pcapi.utils.urls import generate_app_link
 
 
 def get_suspicious_login_email_data(
@@ -21,7 +21,7 @@ def get_suspicious_login_email_data(
     assert user.id == reset_password_token.user_id
     expiration_date = reset_password_token.get_expiration_date_from_token()
     assert expiration_date is not None  # helps mypy
-    ACCOUNT_SECURING_LINK = generate_firebase_dynamic_link(
+    ACCOUNT_SECURING_LINK = generate_app_link(
         path="securisation-compte",
         params={
             "token": account_suspension_token.encoded_token,
