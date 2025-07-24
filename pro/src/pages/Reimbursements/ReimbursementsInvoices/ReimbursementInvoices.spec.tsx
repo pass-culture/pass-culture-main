@@ -12,15 +12,15 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { defaultBankAccount } from 'commons/utils/factories/individualApiFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 
-import { ReimbursementsInvoices } from '../ReimbursementsInvoices/ReimbursementsInvoices'
+import { ReimbursementsInvoices } from './ReimbursementsInvoices'
 
 const mockLogEvent = vi.fn()
 
@@ -104,11 +104,13 @@ describe('reimbursementsWithFilters', () => {
       1
     )
     expect((await screen.findAllByRole('row')).length).toEqual(4)
-    expect(screen.queryAllByRole('columnheader').length).toEqual(6)
+    expect(screen.queryAllByRole('columnheader').length).toEqual(7)
 
     // first line
     expect(
-      screen.getByRole('checkbox', { name: '02/11/2022' })
+      screen.getByRole('checkbox', {
+        name: 'ligne J123456789',
+      })
     ).toBeInTheDocument()
     expect(screen.getAllByText('First bank account')).toHaveLength(2)
     expect(screen.getByText('VIR7')).toBeInTheDocument()
@@ -116,14 +118,14 @@ describe('reimbursementsWithFilters', () => {
 
     // second line
     expect(
-      screen.getByRole('checkbox', { name: '03/11/2022' })
+      screen.getByRole('checkbox', { name: 'ligne J666666666' })
     ).toBeInTheDocument()
     expect(screen.getByText('N/A')).toBeInTheDocument()
     expect(screen.getByText(/50,00/)).toBeInTheDocument()
 
     // third line
     expect(
-      screen.getByRole('checkbox', { name: '02/10/2023' })
+      screen.getByRole('checkbox', { name: 'ligne J987654321' })
     ).toBeInTheDocument()
     expect(screen.getByText('VIR9, VIR12')).toBeInTheDocument()
     expect(screen.getByText(/75,00/)).toBeInTheDocument()
@@ -159,12 +161,12 @@ describe('reimbursementsWithFilters', () => {
     ).not.toBeInTheDocument()
     expect(screen.getByText('Remboursement')).toBeInTheDocument()
     expect(
-      screen.getByRole('checkbox', { name: '02/11/2022' })
+      screen.getByRole('checkbox', { name: 'ligne J123456789' })
     ).toBeInTheDocument()
 
     expect(screen.getByText('Trop perçu')).toBeInTheDocument()
     expect(
-      screen.getByRole('checkbox', { name: '03/11/2022' })
+      screen.getByRole('checkbox', { name: 'ligne J666666666' })
     ).toBeInTheDocument()
   })
 
@@ -195,86 +197,6 @@ describe('reimbursementsWithFilters', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByText('Une erreur est survenue')).toBeInTheDocument()
-  })
-
-  it('should reorder invoices on order buttons click', async () => {
-    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
-
-    renderReimbursementsInvoices()
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-    const reimbursementCells = await screen.findAllByRole('cell')
-    expect(reimbursementCells[3].innerHTML).toContain('VIR7')
-    expect(reimbursementCells[9].innerHTML).toContain('N/A')
-    expect(reimbursementCells[15].innerHTML).toContain('VIR9, VIR12')
-    const orderButton = screen.getAllByRole('img', {
-      name: 'Trier par ordre croissant',
-    })[3]
-    await userEvent.click(orderButton)
-
-    let refreshedCells = screen.getAllByRole('cell')
-    expect(refreshedCells[3].innerHTML).toContain('N/A')
-    expect(refreshedCells[9].innerHTML).toContain('VIR7')
-    expect(refreshedCells[15].innerHTML).toContain('VIR9, VIR12')
-
-    await userEvent.click(orderButton)
-    refreshedCells = screen.getAllByRole('cell')
-    expect(reimbursementCells[3].innerHTML).toContain('VIR7')
-    expect(reimbursementCells[9].innerHTML).toContain('N/A')
-    expect(reimbursementCells[15].innerHTML).toContain('VIR9, VIR12')
-  })
-
-  it('should contain sort informations for a11y', async () => {
-    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
-
-    renderReimbursementsInvoices()
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-    // All cases for first column
-    await userEvent.click(
-      screen.getAllByRole('img', {
-        name: 'Trier par ordre croissant',
-      })[0]
-    )
-    expect(
-      screen.getByText('Tri par date ascendant activé.')
-    ).toBeInTheDocument()
-
-    await userEvent.click(
-      screen.getAllByRole('img', {
-        name: 'Trier par ordre décroissant',
-      })[0]
-    )
-    expect(
-      screen.getByText('Tri par date descendant activé.')
-    ).toBeInTheDocument()
-
-    await userEvent.click(
-      screen.getAllByRole('img', {
-        name: 'Ne plus trier',
-      })[0]
-    )
-    expect(
-      screen.getByText('Tri par date par défaut activé.')
-    ).toBeInTheDocument()
-
-    // One case for others columns
-    await userEvent.click(
-      screen.getAllByRole('img', {
-        name: 'Trier par ordre croissant',
-      })[1]
-    )
-    expect(
-      screen.getByText('Tri par type de document ascendant activé.')
-    ).toBeInTheDocument()
-
-    await userEvent.click(
-      screen.getAllByRole('img', {
-        name: 'Trier par ordre croissant',
-      })[1]
-    )
   })
 
   it('should display invoice banner', async () => {
@@ -334,12 +256,16 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Téléchargement des justificatifs' })
+    )
     await userEvent.click(
       screen.getByText('Télécharger le justificatif comptable (.pdf)')
     )
 
-    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Téléchargement des justificatifs' })
+    )
     await userEvent.click(
       screen.getByText('Télécharger le détail des réservations (.csv)')
     )

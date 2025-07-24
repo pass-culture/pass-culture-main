@@ -3,8 +3,6 @@
 
 .filters {
   margin-top: rem.torem(30px);
-  display: flex;
-  flex-wrap: wrap;
   margin-bottom: rem.torem(36px);
 }
 
@@ -15,12 +13,10 @@
 
 .reset-filters {
   margin-top: rem.torem(30px);
-  margin-left: auto;
-  align-items: center;
 }
 
 .button-group {
-  margin-top: rem.torem(16px);
+  margin: rem.torem(32px) 0;
   position: relative;
 
   &-separator {
@@ -39,24 +35,5 @@
   &-search-button {
     margin: 0 rem.torem(12px);
     min-width: rem.torem(148px);
-  }
-}
-
-@media (min-width: size.$tablet) {
-  .button-group {
-    margin-top: 0;
-    position: relative;
-
-    &-separator {
-      border-bottom: rem.torem(1px) solid var(--color-border-subtle);
-      position: absolute;
-      top: 50%;
-      width: 100%;
-    }
-  }
-
-  .reset-filters {
-    margin-left: rem.torem(8px);
-    margin-top: rem.torem(12px);
   }
 }

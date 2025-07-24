@@ -132,4 +132,98 @@ describe('<Table />', () => {
     const results = await axe(container)
     expect(results).toHaveNoViolations()
   })
+
+  it('renders no-result message when no data and not loading', () => {
+    const resetFilter = vi.fn()
+
+    render(
+      <Table<RowType>
+        columns={columns}
+        data={[]}
+        isLoading={false}
+        variant={TableVariant.COLLAPSE}
+        noResult={{
+          message: 'Aucun résultat trouvé',
+          resetFilter,
+        }}
+      />
+    )
+
+    expect(screen.getByText('Aucun résultat trouvé')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /Réinitialiser les filtres/i })
+    ).toBeInTheDocument()
+  })
+
+  it('calls resetFilter when clicking reset button in no-result state', () => {
+    const resetFilter = vi.fn()
+
+    render(
+      <Table<RowType>
+        columns={columns}
+        data={[]}
+        isLoading={false}
+        variant={TableVariant.COLLAPSE}
+        noResult={{
+          message: 'Aucun résultat trouvé',
+          resetFilter,
+        }}
+      />
+    )
+
+    const button = screen.getByRole('button', {
+      name: /Réinitialiser les filtres/i,
+    })
+    fireEvent.click(button)
+    expect(resetFilter).toHaveBeenCalledTimes(1)
+  })
+
+  it('respects externally controlled selectedIds prop', () => {
+    const selectedIds = new Set<number>([1])
+
+    render(
+      <Table<RowType>
+        columns={columns}
+        data={data}
+        isLoading={false}
+        selectable
+        selectedIds={selectedIds}
+        variant={TableVariant.COLLAPSE}
+        noResult={{
+          message: '',
+          resetFilter: vi.fn(),
+        }}
+      />
+    )
+
+    const checkbox = screen.getByLabelText('Alpha') // id = 1
+    expect((checkbox as HTMLInputElement).checked).toBe(true)
+  })
+
+  it('does not allow selection of non-selectable rows', () => {
+    const handleSelection = vi.fn()
+
+    render(
+      <Table<RowType>
+        columns={columns}
+        data={data}
+        isLoading={false}
+        selectable
+        onSelectionChange={handleSelection}
+        isRowSelectable={(row) => row.name !== 'Beta'}
+        variant={TableVariant.COLLAPSE}
+        noResult={{
+          message: '',
+          resetFilter: vi.fn(),
+        }}
+      />
+    )
+
+    const betaCheckbox = screen.getByLabelText('Beta')
+    expect((betaCheckbox as HTMLInputElement).disabled).toBe(true)
+
+    const alphaCheckbox = screen.getByLabelText('Alpha')
+    fireEvent.click(alphaCheckbox)
+    expect(handleSelection).toHaveBeenCalledWith([data[0]])
+  })
 })
