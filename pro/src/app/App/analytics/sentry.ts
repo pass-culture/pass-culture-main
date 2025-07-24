@@ -34,6 +34,28 @@ export const initializeSentry = () => {
     ],
     tracesSampleRate: parseFloat(SENTRY_SAMPLE_RATE),
     beforeSend: (event, hint) => {
+      // scrub the user autologin token from the url
+      if (event.tags) {
+        event.tags['url'] = removeTokenFromFrontUrlIfPresent(
+          event.tags['url'] as string
+        )
+      }
+      if (event.request) {
+        event.request.url = removeTokenFromFrontUrlIfPresent(event.request.url)
+      }
+      if (event.transaction) {
+        event.transaction = removeTokenFromFrontUrlIfPresent(event.transaction)
+      }
+      // Not really sure if these are sent to sentry or not.
+      if (
+        event.sdkProcessingMetadata &&
+        event.sdkProcessingMetadata.normalizedRequest
+      ) {
+        event.sdkProcessingMetadata.normalizedRequest.url =
+          removeTokenFromFrontUrlIfPresent(
+            event.sdkProcessingMetadata.normalizedRequest.url
+          )
+      }
       // To ignore a google recaptcha issue
       // and Google analytics issue
       if (
@@ -43,6 +65,44 @@ export const initializeSentry = () => {
         return null
       }
       return event
+    },
+    beforeSendTransaction: (transactionEvent) => {
+      if (transactionEvent.request) {
+        transactionEvent.request.url = removeTokenFromFrontUrlIfPresent(
+          transactionEvent.request.url
+        )
+      }
+      if (transactionEvent.transaction) {
+        transactionEvent.transaction = removeTokenFromFrontUrlIfPresent(
+          transactionEvent.transaction
+        )
+      }
+      // Not really sure if these are sent to sentry or not.
+      if (
+        transactionEvent.sdkProcessingMetadata &&
+        transactionEvent.sdkProcessingMetadata.normalizedRequest
+      ) {
+        transactionEvent.sdkProcessingMetadata.normalizedRequest.url =
+          removeTokenFromFrontUrlIfPresent(
+            transactionEvent.sdkProcessingMetadata.normalizedRequest.url
+          )
+      }
+      return transactionEvent
+    },
+    beforeBreadcrumb(breadcrumb) {
+      if (breadcrumb.data) {
+        breadcrumb.data.url = removeTokenFromBackUrlIfPresent(
+          breadcrumb.data.url
+        )
+      }
+      return breadcrumb
+    },
+    beforeSendSpan(span) {
+      if (span.description) {
+        span.description = removeTokenFromFrontUrlIfPresent(span.description)
+        span.description = removeTokenFromBackUrlIfPresent(span.description)
+      }
+      return span
     },
     // List of common errors to ignore
     // https://docs.sentry.io/platforms/javascript/configuration/filtering/#decluttering-sentry
@@ -109,6 +169,26 @@ export const initializeSentry = () => {
       /metrics\.itunes\.apple\.com\.edgesuite\.net\//i,
     ],
   })
+}
+
+function removeTokenFromFrontUrlIfPresent(url?: string) {
+  if (url && url.indexOf('/inscription/compte/confirmation/') !== -1) {
+    return url.replace(
+      /\/inscription\/compte\/confirmation\/(.*)/g,
+      '/inscription/compte/confirmation/[TOKEN]'
+    )
+  }
+  return url
+}
+
+function removeTokenFromBackUrlIfPresent(url?: string) {
+  if (url && url.indexOf('/users/validate_signup/') !== -1) {
+    return url.replace(
+      /\/users\/validate_signup\/.*/g,
+      '/users/validate_signup/[TOKEN]'
+    )
+  }
+  return url
 }
 
 export const useSentry = () => {
