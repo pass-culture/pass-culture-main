@@ -26,4 +26,4 @@ class SendinblueAddressEmailChangeConfirmationTest:
         # Then
         assert activation_email_data.template == TransactionalEmail.EMAIL_CONFIRMATION.value
         assert activation_email_data.params["CONFIRMATION_LINK"]
-        assert "email%3Dfabien%252Btest%2540example.net" in activation_email_data.params["CONFIRMATION_LINK"]
+        assert "email=fabien%2Btest%40example.net" in activation_email_data.params["CONFIRMATION_LINK"]

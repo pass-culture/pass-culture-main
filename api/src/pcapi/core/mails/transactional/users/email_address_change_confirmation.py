@@ -5,7 +5,7 @@ from pcapi.core import token as token_utils
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users import constants
-from pcapi.utils.urls import generate_firebase_dynamic_link
+from pcapi.utils.urls import generate_app_link
 
 
 def get_email_confirmation_email_data(email: str, token: token_utils.Token) -> models.TransactionalEmailData:
@@ -13,7 +13,7 @@ def get_email_confirmation_email_data(email: str, token: token_utils.Token) -> m
         token.get_expiration_date_from_token() or datetime.utcnow() + constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
     )
     expiration_timestamp = int(expiration_date.timestamp())
-    email_confirmation_link = generate_firebase_dynamic_link(
+    email_confirmation_link = generate_app_link(
         path="signup-confirmation",
         params={"token": token.encoded_token, "expiration_timestamp": expiration_timestamp, "email": email},
     )
