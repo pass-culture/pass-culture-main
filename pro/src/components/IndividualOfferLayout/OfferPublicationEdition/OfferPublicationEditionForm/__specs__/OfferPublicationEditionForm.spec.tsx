@@ -31,7 +31,7 @@ describe('OfferPublicationEditionForm', () => {
     })
 
     expect(
-      screen.getAllByRole('group', {
+      screen.getAllByRole('radiogroup', {
         name: 'Quand votre offre doit-elle être publiée dans l’application ?',
       })[0]
     ).toBeInTheDocument()

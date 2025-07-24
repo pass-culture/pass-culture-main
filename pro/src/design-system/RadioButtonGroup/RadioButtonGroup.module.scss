@@ -41,7 +41,17 @@
 .radio-button-group-error {
   @include fonts.body-accent-s;
 
+  display: flex;
+  align-items: center;
+  gap: rem.torem(4px);
   color: var(--color-text-error);
+
+  &-icon {
+    width: rem.torem(16px);
+    height: rem.torem(16px);
+    min-width: rem.torem(16px);
+    color: var(--color-icon-error);
+  }
 }
 
 .radio-button-group-options {

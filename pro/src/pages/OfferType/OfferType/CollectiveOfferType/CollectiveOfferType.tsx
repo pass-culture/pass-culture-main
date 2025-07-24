@@ -10,13 +10,13 @@ import {
 } from 'commons/core/Offers/constants'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { getLastDmsApplicationForOfferer } from 'commons/utils/getLastCollectiveDmsApplication'
+import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
 import strokeDuplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
 import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 
 import styles from './CollectiveOfferType.module.scss'
 
@@ -40,18 +40,17 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
   return (
     <>
       {offerer?.isValidated && offerer.allowedOnAdage && (
-        <RadioGroup
+        <RadioButtonGroup
           variant="detailed"
           name="collectiveOfferSubtype"
           className={styles['container']}
-          legend={
-            <h2 className={styles['legend']}>Quel est le type de l’offre ?</h2>
-          }
+          label="Quel est le type de l’offre ?"
+          labelTag="h2"
           onChange={(e) =>
             setValue('offer.collectiveOfferSubtype', e.target.value)
           }
           checkedOption={getValues('offer.collectiveOfferSubtype')}
-          group={[
+          options={[
             {
               label: 'Une offre réservable',
               value: COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE,
@@ -79,20 +78,17 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
       {offerer?.allowedOnAdage &&
         getValues('offer.collectiveOfferSubtype') ===
           COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE && (
-          <RadioGroup
+          <RadioButtonGroup
             variant="detailed"
             name="collectiveOfferSubtypeDuplicate"
             className={styles['container']}
-            legend={
-              <h2 className={styles['legend']}>
-                Créer une nouvelle offre ou dupliquer une offre ?
-              </h2>
-            }
+            label="Créer une nouvelle offre ou dupliquer une offre ?"
+            labelTag="h2"
             onChange={(e) =>
               setValue('offer.collectiveOfferSubtypeDuplicate', e.target.value)
             }
             checkedOption={getValues('offer.collectiveOfferSubtypeDuplicate')}
-            group={[
+            options={[
               {
                 label: 'Créer une nouvelle offre',
                 value: COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER,

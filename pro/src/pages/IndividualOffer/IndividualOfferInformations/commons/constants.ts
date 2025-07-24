@@ -35,17 +35,14 @@ export const ticketWithdrawalTypeRadios: RadioGroupProps['group'] = [
   {
     label: 'Aucun billet n’est nécessaire',
     value: WithdrawalTypeEnum.NO_TICKET,
-    sizing: 'fill',
   },
   {
     label: 'Les billets seront envoyés par email',
     value: WithdrawalTypeEnum.BY_EMAIL,
-    sizing: 'fill',
   },
   {
     label: 'Retrait sur place (guichet, comptoir...)',
     value: WithdrawalTypeEnum.ON_SITE,
-    sizing: 'fill',
   },
 ]
 
@@ -54,7 +51,6 @@ export const providedTicketWithdrawalTypeRadios: RadioGroupProps['group'] = [
   {
     label: 'Les billets seront affichés dans l’application',
     value: WithdrawalTypeEnum.IN_APP,
-    sizing: 'fill',
   },
 ]
 

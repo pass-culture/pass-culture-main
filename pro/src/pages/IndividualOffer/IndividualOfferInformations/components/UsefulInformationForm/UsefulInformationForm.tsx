@@ -12,8 +12,8 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
+import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
@@ -134,16 +134,16 @@ export const UsefulInformationForm = ({
                 IN_APP withdrawal type is only selectable by offers created by the event API
                 Theses offers are not editable by the user
               */}
-              <RadioGroup
+              <RadioButtonGroup
                 variant="detailed"
                 name="withdrawalType"
                 checkedOption={withdrawalType}
-                group={
+                options={
                   withdrawalType === WithdrawalTypeEnum.IN_APP
                     ? providedTicketWithdrawalTypeRadios
                     : ticketWithdrawalTypeRadios
                 }
-                legend="Précisez la façon dont vous distribuerez les billets :"
+                label="Précisez la façon dont vous distribuerez les billets :"
                 // when withdrawal Type is IN_APP the field should also be readOnly.
                 // I find it better to be explicit about it
                 disabled={

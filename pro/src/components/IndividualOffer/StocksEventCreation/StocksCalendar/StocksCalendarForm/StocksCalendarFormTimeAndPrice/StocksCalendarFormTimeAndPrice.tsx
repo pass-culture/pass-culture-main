@@ -7,9 +7,9 @@ import {
   StocksCalendarFormValues,
   TimeSlotTypeOption,
 } from 'components/IndividualOffer/StocksEventCreation/form/types'
+import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 
 import { StocksCalendarFormSpecificTimeSlots } from './StocksCalendarFormSpecificTimeSlots/StocksCalendarFormSpecificTimeSlots'
 import styles from './StocksCalendarFormTimeAndPrice.module.scss'
@@ -57,26 +57,28 @@ export function StocksCalendarFormTimeAndPrice({
 
   return (
     <>
-      <RadioGroup
+      <RadioButtonGroup
         name="timeSlotType"
-        legend={
-          <h2 className={styles['title']}>Le public doit se présenter :</h2>
-        }
+        label="Le public doit se présenter :"
+        labelTag="h2"
         variant="detailed"
         className={styles['time-slot-type-group']}
-        displayMode="inline-grow"
+        display="horizontal"
+        sizing="hug"
         checkedOption={form.watch('timeSlotType')}
         onChange={(e) =>
           form.setValue('timeSlotType', e.target.value as TimeSlotTypeOption)
         }
-        group={[
+        options={[
           {
+            className: styles['time-slot-type-group-option'],
             label: 'À un horaire précis',
             value: TimeSlotTypeOption.SPECIFIC_TIME,
             description:
               'Le jeune doit réserver et se présenter sur un des horaires précis que vous avez défini.',
           },
           {
+            className: styles['time-slot-type-group-option'],
             label: 'Aux horaires d’ouverture',
             value: TimeSlotTypeOption.OPENING_HOURS,
             description:

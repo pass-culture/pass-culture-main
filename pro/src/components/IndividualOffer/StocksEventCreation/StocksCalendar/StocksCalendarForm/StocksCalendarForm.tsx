@@ -7,8 +7,8 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 
 import {
   DurationTypeOption,
@@ -113,37 +113,37 @@ export function StocksCalendarForm({
         <ScrollToFirstHookFormErrorAfterSubmit />
         <div className={styles['form-content']}>
           <MandatoryInfo />
-          <RadioGroup
+          <RadioButtonGroup
             name="durationType"
-            displayMode="inline-grow"
+            display="horizontal"
             checkedOption={form.watch('durationType')}
             className={styles['duration-type-group']}
             variant="detailed"
+            sizing="hug"
+            label="Votre évènement se déroule sur :"
+            labelTag="h2"
             onChange={(e) =>
               form.setValue(
                 'durationType',
                 e.target.value as DurationTypeOption
               )
             }
-            group={[
+            options={[
               {
+                className: styles['duration-type-group-option'],
                 label: '1 jour',
                 value: DurationTypeOption.ONE_DAY,
                 description:
                   'Planifiez un événement sur une journée entière ou une partie.',
               },
               {
+                className: styles['duration-type-group-option'],
                 label: 'Plusieurs jours, semaines',
                 value: DurationTypeOption.MULTIPLE_DAYS_WEEKS,
                 description:
                   'Planifier un événement sur plusieurs jours, semaines ou mois.',
               },
             ]}
-            legend={
-              <h2 className={styles['title']}>
-                Votre évènement se déroule sur :
-              </h2>
-            }
           />
           {form.watch('durationType') === DurationTypeOption.ONE_DAY && (
             <StocksCalendarFormOneDay form={form} offer={offer} />

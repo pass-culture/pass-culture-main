@@ -31,12 +31,12 @@ describe('FormContactTemplateCustomForm', () => {
     renderFormContactCustomForm()
 
     expect(
-      screen.getByRole('radio', { name: 'le formulaire standard' })
+      screen.getByRole('radio', { name: 'Le formulaire standard' })
     ).toBeInTheDocument()
 
     expect(
       screen.getByRole('radio', {
-        name: 'mon propre formulaire',
+        name: 'Mon propre formulaire',
       })
     ).toBeInTheDocument()
   })
@@ -62,7 +62,7 @@ describe('FormContactTemplateCustomForm', () => {
       contactUrl: 'http://www.test-url.com',
     })
 
-    await userEvent.click(screen.getByLabelText('le formulaire standard'))
+    await userEvent.click(screen.getByLabelText('Le formulaire standard'))
 
     expect(
       screen.queryByRole('textbox', {
