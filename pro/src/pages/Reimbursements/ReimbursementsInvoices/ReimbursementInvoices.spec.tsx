@@ -90,6 +90,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('shoud render a table with invoices', async () => {
+    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
 
     renderReimbursementsInvoices()
@@ -132,6 +133,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should display the invoice table', async () => {
+    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue([
       {
         reference: 'J123456789',
@@ -251,6 +253,7 @@ describe('reimbursementsWithFilters', () => {
       },
     ])
     vi.spyOn(api, 'getReimbursementsCsvV2')
+    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
 
     renderReimbursementsInvoices()
 
@@ -293,6 +296,7 @@ describe('reimbursementsWithFilters', () => {
 
   it('should let download several invoices at same time', async () => {
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
+    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
     vi.spyOn(api, 'getCombinedInvoices').mockResolvedValue({})
     renderReimbursementsInvoices()
 
@@ -323,6 +327,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should block download several invoices at same time for more than 24 invoices', async () => {
+    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(
       new Array(25).fill(null).map((_, i) => ({
         reference: `J${i + 1}`,
@@ -350,6 +355,7 @@ describe('reimbursementsWithFilters', () => {
 
   it('should let download several reimbursment csv at same time', async () => {
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
+    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
     vi.spyOn(api, 'getReimbursementsCsvV2').mockResolvedValueOnce('data')
 
     renderReimbursementsInvoices()

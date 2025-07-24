@@ -26,10 +26,10 @@ const columns: Column<InvoiceResponseV2Model>[] = [
     id: 'documentType',
     label: 'Type de document',
     sortable: true,
-    ordererField: (row) => (row.amount >= 0 ? 1 : -1),
+    ordererField: 'amount',
     render: (invoice) =>
       invoice.amount >= 0 ? (
-        <span className={styles['document-type-content']}>
+        <span className={styles['cell-document-type']}>
           <SvgIcon
             src={strokeMoreIcon}
             alt=""
@@ -39,7 +39,7 @@ const columns: Column<InvoiceResponseV2Model>[] = [
           Remboursement
         </span>
       ) : (
-        <span className={styles['document-type-content']}>
+        <span className={styles['cell-document-type']}>
           <SvgIcon
             src={strokeLessIcon}
             alt=""
@@ -56,7 +56,9 @@ const columns: Column<InvoiceResponseV2Model>[] = [
     sortable: true,
     ordererField: 'bankAccountLabel',
     render: (invoice: InvoiceResponseV2Model) => (
-      <div>{invoice.bankAccountLabel}</div>
+      <div className={styles['cell-bank-account']}>
+        {invoice.bankAccountLabel}
+      </div>
     ),
   },
   {
@@ -72,7 +74,7 @@ const columns: Column<InvoiceResponseV2Model>[] = [
     label: 'Montant remboursé',
     render: (invoice: InvoiceResponseV2Model) => (
       <div
-        className={cn(styles['amount-column'], {
+        className={cn(styles['cell-amount'], {
           [styles['negative-amount']]: invoice.amount < 0,
         })}
       >
@@ -86,7 +88,9 @@ const columns: Column<InvoiceResponseV2Model>[] = [
     id: 'actions',
     label: 'Actions',
     render: (invoice: InvoiceResponseV2Model) => (
-      <InvoiceActions invoice={invoice} />
+      <div className={styles['cell-actions']}>
+        <InvoiceActions invoice={invoice} />
+      </div>
     ),
   },
 ]
@@ -110,7 +114,7 @@ export const InvoiceTable = ({
   }))
 
   return (
-    <>
+    <div className={styles['invoices-table']}>
       <InvoiceDownloadActionsButton checkedInvoices={checkedInvoices} />
       <Table
         title="Justificatif de remboursement ou de trop perçu"
@@ -128,6 +132,6 @@ export const InvoiceTable = ({
           resetFilter,
         }}
       />
-    </>
+    </div>
   )
 }
