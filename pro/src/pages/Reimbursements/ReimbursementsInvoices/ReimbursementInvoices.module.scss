@@ -1,0 +1,38 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_a11y.scss" as a11y;
+
+.date-data {
+  @include fonts.body-accent;
+}
+
+.more-icon {
+  color: var(--color-icon-success);
+  flex-shrink: 0;
+}
+
+.less-icon {
+  color: var(--color-icon-error);
+  flex-shrink: 0;
+}
+
+.negative-amount {
+  color: var(--color-text-error);
+}
+
+.document-type-content {
+  display: flex;
+  gap: rem.torem(4px);
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
+}
+
+@media (min-width: size.$tablet) {
+  .document-type-content {
+    text-align: left;
+    white-space: nowrap;
+  }
+}
