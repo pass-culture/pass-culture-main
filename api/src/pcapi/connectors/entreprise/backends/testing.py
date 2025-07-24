@@ -229,3 +229,68 @@ class TestingBackend(BaseBackend):
 
     def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[str]:
         return ["000099002", "900099003", "109599001"]
+
+    def get_siren_open_data(self, siren: str, with_address: bool = True) -> models.SirenInfo:
+        self._check_siren(siren)
+
+        year_created = datetime.date.today().year - int(siren[4])
+
+        if not self._is_diffusible(siren):
+            return models.SirenInfo(
+                siren=siren,
+                name="[ND]",
+                head_office_siret=siren_utils.complete_siren_or_siret(siren + "0001"),
+                ape_code="90.01Z",
+                ape_label="Arts du spectacle vivant",
+                legal_category_code=self._legal_category_code(siren),
+                address=self.nd_address if with_address else None,
+                active=self._is_active(siren),
+                diffusible=False,
+                creation_date=datetime.date(year_created, 1, 1),
+                closure_date=self._get_closure_date(siren),
+            )
+
+        ape_code, ape_label = self._ape_code_and_label(siren)
+
+        return models.SirenInfo(
+            siren=siren,
+            name="MINISTERE DE LA CULTURE",
+            head_office_siret=siren_utils.complete_siren_or_siret(siren + "0001"),
+            ape_code=ape_code,
+            ape_label=ape_label,
+            legal_category_code=self._legal_category_code(siren),
+            address=self.address if with_address else None,
+            active=self._is_active(siren),
+            diffusible=True,
+            creation_date=datetime.date(year_created, 1, 1),
+            closure_date=self._get_closure_date(siren),
+        )
+
+    def get_siret_open_data(self, siret: str) -> models.SiretInfo:
+        assert len(siret) == siren_utils.SIRET_LENGTH
+        self._check_siren(siret[:9])
+        ape_code, ape_label = self._ape_code_and_label(siret)
+
+        # allows to get a non-diffusible offerer in dev/testing environments: any SIRET which starts with '9'
+        if not self._is_diffusible(siret):
+            return models.SiretInfo(
+                siret=siret,
+                active=self._is_active(siret),
+                diffusible=False,
+                name="[ND]",
+                address=self.nd_address,
+                ape_code=ape_code,
+                ape_label=ape_label,
+                legal_category_code=self._legal_category_code(siret),
+            )
+
+        return models.SiretInfo(
+            siret=siret,
+            active=self._is_active(siret),
+            diffusible=True,
+            name="MINISTERE DE LA CULTURE",
+            address=self.address,
+            ape_code=ape_code,
+            ape_label=ape_label,
+            legal_category_code=self._legal_category_code(siret),
+        )

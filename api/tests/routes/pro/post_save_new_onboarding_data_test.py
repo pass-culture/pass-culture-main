@@ -11,7 +11,7 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.history import models as history_models
 from pcapi.models import db
 
-from tests.connectors import sirene_test_data
+from tests.connectors import api_entreprise_test_data
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -229,8 +229,10 @@ class Returns200Test:
 
 
 class Returns400Test:
-    @patch("pcapi.connectors.entreprise.sirene.get_siret", side_effect=sirene_exceptions.UnknownEntityException())
-    def test_siret_unknown(self, _get_siret_mock, client):
+    @patch(
+        "pcapi.connectors.entreprise.api.get_siret_open_data", side_effect=sirene_exceptions.UnknownEntityException()
+    )
+    def test_siret_unknown(self, _get_siret_open_data_mock, client):
         user = users_factories.UserFactory()
 
         client = client.with_session_auth(user.email)
@@ -241,8 +243,10 @@ class Returns400Test:
         assert db.session.query(offerers_models.UserOfferer).count() == 0
         assert db.session.query(offerers_models.Venue).count() == 0
 
-    @patch("pcapi.connectors.entreprise.sirene.get_siret", side_effect=sirene_exceptions.NonPublicDataException())
-    def test_non_diffusible_siret(self, _get_siret_mock, client):
+    @patch(
+        "pcapi.connectors.entreprise.api.get_siret_open_data", side_effect=sirene_exceptions.NonPublicDataException()
+    )
+    def test_non_diffusible_siret(self, _get_siret_open_data_mock, client):
         user = users_factories.UserFactory()
 
         client = client.with_session_auth(user.email)
@@ -254,15 +258,15 @@ class Returns400Test:
         assert db.session.query(offerers_models.UserOfferer).count() == 0
         assert db.session.query(offerers_models.Venue).count() == 0
 
-    @pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
+    @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
     def test_inactive_siret(self, requests_mock, client):
-        siret = REQUEST_BODY["siret"]
+        siret = "77789988800021"
+        REQUEST_BODY["siret"] = siret
 
         requests_mock.get(
-            f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siret}",
-            json=sirene_test_data.RESPONSE_SIRET_INACTIVE_COMPANY,
+            f"https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/diffusibles/{siret}",
+            json=api_entreprise_test_data.RESPONSE_SIRET_INACTIVE_COMPANY,
         )
-
         user = users_factories.UserFactory()
 
         client = client.with_session_auth(user.email)
@@ -276,8 +280,8 @@ class Returns400Test:
 
 
 class Returns500Test:
-    @patch("pcapi.connectors.entreprise.sirene.get_siret", side_effect=sirene_exceptions.ApiException())
-    def test_sirene_api_ko(self, _get_siret_mock, client):
+    @patch("pcapi.connectors.entreprise.api.get_siret_open_data", side_effect=sirene_exceptions.ApiException())
+    def test_sirene_api_ko(self, _get_siret_open_data_mock, client):
         user = users_factories.UserFactory()
 
         client = client.with_session_auth(user.email)

@@ -41,9 +41,10 @@ import pcapi.utils.string as string_utils
 from pcapi import settings
 from pcapi.connectors import api_adresse
 from pcapi.connectors import virustotal
+from pcapi.connectors.entreprise import api as api_entreprise
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.connectors.entreprise import models as sirene_models
-from pcapi.connectors.entreprise import sirene
+from pcapi.connectors.entreprise.api import PROTECTED_DATA_PLACEHOLDER
 from pcapi.core import search
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import constants as bookings_constants
@@ -452,24 +453,7 @@ def create_venue(
     venue = models.Venue()
     address = venue_data.address
 
-    if offerer_address:
-        pass
-    elif utils_regions.NON_DIFFUSIBLE_TAG in address.street:
-        address_info = api_adresse.get_municipality_centroid(address.city, address.postalCode)
-        address_info.street = utils_regions.NON_DIFFUSIBLE_TAG
-        address = get_or_create_address(
-            LocationData(
-                city=address_info.city,
-                postal_code=address_info.postcode,
-                latitude=address_info.latitude,
-                longitude=address_info.longitude,
-                street=address_info.street,
-                insee_code=address_info.citycode,
-                ban_id=address_info.id,
-            )
-        )
-        offerer_address = create_offerer_address(venue_data.managingOffererId, address.id)
-    else:
+    if not offerer_address:
         offerer_address = get_offerer_address_from_address(venue_data.managingOffererId, address)
 
     venue.offererAddressId = offerer_address.id
@@ -923,7 +907,9 @@ def _initialize_offerer(offerer: offerers_models.Offerer) -> None:
 
 
 def auto_tag_new_offerer(
-    offerer: offerers_models.Offerer, siren_info: sirene_models.SirenInfo | None, user: users_models.User
+    offerer: offerers_models.Offerer,
+    siren_info: sirene_models.SirenInfo | sirene_models.SiretInfo | None,
+    user: users_models.User,
 ) -> None:
     tag_names_to_apply = set()
 
@@ -983,9 +969,12 @@ def create_offerer(
     new_onboarding_info: NewOnboardingInfo | None = None,
     author: users_models.User | None = None,
     comment: str | None = None,
+    insee_data: sirene_models.SirenInfo | sirene_models.SiretInfo | None = None,
     **kwargs: typing.Any,
 ) -> models.UserOfferer:
     offerer = offerers_repository.find_offerer_by_siren(offerer_informations.siren)
+    if not insee_data:
+        insee_data = api_entreprise.get_siren_open_data(offerer_informations.siren)
     is_new = False
 
     if author is None:
@@ -998,10 +987,13 @@ def create_offerer(
             db.session.query(offerers_models.UserOfferer).filter_by(userId=user.id, offererId=offerer.id).one_or_none()
         )
         if not user_offerer:
-            if not offerer.isRejected and FeatureToggle.WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY:
-                ape_code = sirene.get_siren(offerer_informations.siren, raise_if_non_public=False).ape_code
-                if ape_code and not APE_TAG_MAPPING.get(ape_code, False):
-                    raise offerers_exceptions.NotACollectivity()
+            if (
+                FeatureToggle.WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY
+                and not offerer.isRejected
+                and insee_data.ape_code
+                and not APE_TAG_MAPPING.get(insee_data.ape_code, False)
+            ):
+                raise offerers_exceptions.NotACollectivity()
             user_offerer = models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.NEW)
             db.session.add(user_offerer)
             db.session.flush()
@@ -1060,16 +1052,16 @@ def create_offerer(
 
     if is_new:
         try:
-            siren_info = sirene.get_siren(offerer.siren, raise_if_non_public=False)
+            insee_data = api_entreprise.get_siren_open_data(offerer.siren)
         except sirene_exceptions.SireneException as exc:
             logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
-            siren_info = None
 
-        auto_tag_new_offerer(offerer, siren_info, user)
+        auto_tag_new_offerer(offerer, insee_data, user)
 
+        # FIXME: these data do not seem to be very useful, usage will be checked
         extra_data = {}
-        if siren_info:
-            extra_data = {"sirene_info": dict(siren_info)}
+        if insee_data:
+            extra_data = {"sirene_info": dict(insee_data)}
         _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
         extra_data.update(kwargs)
 
@@ -2268,7 +2260,7 @@ def create_from_onboarding_data(
     onboarding_data: offerers_serialize.SaveNewOnboardingDataQueryModel,
 ) -> models.UserOfferer:
     # Get name (raison sociale) from Sirene API
-    siret_info = sirene.get_siret(onboarding_data.siret)
+    siret_info = find_siret_info(onboarding_data.siret)
     if not siret_info.active:
         raise exceptions.InactiveSirenException()
     name = siret_info.name
@@ -2290,7 +2282,7 @@ def create_from_onboarding_data(
         venueTypeCode=onboarding_data.venueTypeCode,
         webPresence=onboarding_data.webPresence,
     )
-    user_offerer = create_offerer(user, offerer_creation_info, new_onboarding_info)
+    user_offerer = create_offerer(user, offerer_creation_info, new_onboarding_info, insee_data=siret_info)
 
     # Create Venue with siret if it's not in DB yet, or Venue without siret if requested
     venue = offerers_repository.find_venue_by_siret(onboarding_data.siret)
@@ -3377,3 +3369,25 @@ def is_allowed_on_adage(offerer_id: int) -> bool:
         .filter(offerers_models.Offerer.allowedOnAdage.is_(True))
     )
     return db.session.query(query.exists()).scalar()
+
+
+def find_siret_info(search_input: str) -> sirene_models.SiretInfo:
+    data = api_entreprise.get_siret_open_data(search_input)
+
+    if not FeatureToggle.WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE.is_active() and not data.diffusible:
+        raise sirene_exceptions.NonPublicDataException()
+
+    # TODO: this part is to not introduce any breaking change, BAN address will be called here instead
+    insee_address = data.address
+    formatted_address = sirene_models.SireneAddress(
+        street=insee_address.street
+        if PROTECTED_DATA_PLACEHOLDER not in insee_address.street
+        else "Adresse non diffusée",
+        postal_code=insee_address.postal_code
+        if PROTECTED_DATA_PLACEHOLDER not in insee_address.postal_code
+        else insee_address.insee_code,
+        city=insee_address.city,
+        insee_code=insee_address.insee_code,
+    )
+    data.address = formatted_address
+    return data

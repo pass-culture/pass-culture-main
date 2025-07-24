@@ -12,7 +12,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 
-from tests.connectors import sirene_test_data
+from tests.connectors import api_entreprise_test_data
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -250,16 +250,12 @@ def test_create_offerer_action_is_logged(client):
     assert action.offererId == response.json["id"]
 
 
-@pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_with_inactive_siren(requests_mock, client):
     siren = "123456789"
     requests_mock.get(
-        f"https://api.insee.fr/entreprises/sirene/V3.11/siren/{siren}",
-        json=sirene_test_data.RESPONSE_SIREN_INACTIVE_COMPANY,
-    )
-    requests_mock.get(
-        f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siren}00018",
-        json=sirene_test_data.RESPONSE_SIRET_INACTIVE_COMPANY,
+        f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/diffusibles/{siren}/siege_social",
+        json=api_entreprise_test_data.RESPONSE_SIRET_INACTIVE_COMPANY,
     )
     user = users_factories.UserFactory()
 
@@ -278,37 +274,3 @@ def test_with_inactive_siren(requests_mock, client):
 
     assert response.status_code == 400
     assert response.json["siren"] == ["SIREN is no longer active"]
-
-
-@pytest.mark.usefixtures("db_session")
-@pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
-def test_saint_martin_offerer_creation_without_postal_code_is_successfull(requests_mock, client):
-    siren = "123456789"
-    requests_mock.get(
-        f"https://api.insee.fr/entreprises/sirene/V3.11/siren/{siren}",
-        json=sirene_test_data.RESPONSE_SIREN_SAINT_MARTIN_COMPANY_WITHOUT_POSTAL_CODE,
-    )
-    requests_mock.get(
-        f"https://api.insee.fr/entreprises/sirene/V3.11/siret/{siren}00011",
-        json=sirene_test_data.RESPONSE_SIRET_SAINT_MARTIN_COMPANY_WITHOUT_POSTAL_CODE,
-    )
-    user = users_factories.ProFactory()
-
-    body = {
-        "address": "RUE DE SAINT MARTIN",
-        "city": "SAINT-MARTIN",
-        "name": "ENTREPRISE SANS CODE POSTAL",
-        "postalCode": "",
-        "siren": siren,
-        "apeCode": "94.99Z",
-        "latitude": 48,
-        "longitude": 2,
-    }
-
-    client = client.with_session_auth(user.email)
-    response = client.post("/offerers", json=body)
-
-    assert response.status_code == 201
-
-    offerer = db.session.query(offerers_models.Offerer).one()
-    assert offerer.postalCode == "97150"
