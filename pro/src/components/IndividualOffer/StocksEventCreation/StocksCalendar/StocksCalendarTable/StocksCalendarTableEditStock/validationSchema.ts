@@ -30,7 +30,7 @@ export const validationSchema = yup.object<EditStockFormValues>().shape({
   quantity: yup
     .number()
     .transform((value) => (Number.isNaN(value) ? undefined : value))
-    .min(1, 'Veuillez indiquer une quantité supérieure à 0')
+    .min(0, 'Veuillez indiquer une quantité positive')
     .max(
       MAX_STOCKS_QUANTITY,
       'Veuillez modifier la quantité. Celle-ci ne peut pas être supérieure à 1 million'
