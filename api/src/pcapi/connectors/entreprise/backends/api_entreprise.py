@@ -223,6 +223,37 @@ class EntrepriseBackend(BaseBackend):
             departement_code=None,
         ).date()
 
+    def get_siren_open_data(self, siren: str, with_address: bool = True) -> models.SirenInfo:
+        """
+        Documentation: https://entreprise.api.gouv.fr/catalogue/insee/unites_legales_diffusibles
+                       https://entreprise.api.gouv.fr/catalogue/insee/siege_social_diffusibles
+        """
+        self._check_siren_can_be_requested(siren)
+        subpath = f"/v3/insee/sirene/unites_legales/diffusibles/{siren}"
+        if with_address:
+            # Also get head office SIRET data to avoid a second API call to get address
+            subpath += "/siege_social"
+        data = self._cached_get(subpath)["data"]
+        siren_data = data["unite_legale"] if with_address else data
+        head_office_siret = siren_data["siret_siege_social"]
+        address = self._get_address_from_sirene_data(data["adresse"]) if with_address else None
+
+        return models.SirenInfo(
+            siren=siren_data["siren"],
+            name=self._get_name_from_sirene_data(siren_data),
+            head_office_siret=head_office_siret,
+            ape_code=siren_data["activite_principale"]["code"],
+            ape_label=data["activite_principale"]["libelle"],
+            active=siren_data["etat_administratif"] == "A",
+            diffusible=self._is_diffusible(siren_data),
+            legal_category_code=siren_data["forme_juridique"]["code"],
+            address=address,
+            creation_date=self._convert_timestamp_to_date(siren_data.get("date_creation")),
+            # Unfortunately, date_cessation is part of unites_legales/{siren} response.
+            # Information in /siege_social ("date_fermeture") may not be the same as the company closure date
+            closure_date=self._convert_timestamp_to_date(siren_data.get("date_cessation")),
+        )
+
     def get_siren(self, siren: str, with_address: bool = True, raise_if_non_public: bool = True) -> models.SirenInfo:
         """
         Documentation: https://entreprise.api.gouv.fr/catalogue/insee/unites_legales
@@ -257,6 +288,25 @@ class EntrepriseBackend(BaseBackend):
             # Unfortunately, date_cessation is part of unites_legales/{siren} response.
             # Information in /siege_social ("date_fermeture") may not be the same as the company closure date
             closure_date=self._convert_timestamp_to_date(siren_data.get("date_cessation")),
+        )
+
+    def get_siret_open_data(self, siret: str) -> models.SiretInfo:
+        """
+        Documentation: https://entreprise.api.gouv.fr/catalogue/insee/etablissements_diffusibles
+        """
+        self._check_siren_can_be_requested(siret[:9])
+        subpath = f"/v3/insee/sirene/etablissements/diffusibles/{siret}"
+        data = self._cached_get(subpath)["data"]
+
+        return models.SiretInfo(
+            siret=siret,
+            active=data["etat_administratif"] == "A",
+            diffusible=self._is_diffusible(data),
+            name=self._get_name_from_sirene_data(data["unite_legale"]),
+            address=self._get_address_from_sirene_data(data["adresse"]),
+            ape_code=data["activite_principale"]["code"],
+            ape_label=data["activite_principale"]["libelle"],
+            legal_category_code=data["unite_legale"]["forme_juridique"]["code"],
         )
 
     def get_siret(self, siret: str, raise_if_non_public: bool = False) -> models.SiretInfo:

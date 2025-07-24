@@ -16,7 +16,7 @@ from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_web_recaptcha_token
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
-from pcapi.connectors.entreprise import sirene
+from pcapi.connectors.entreprise import api as api_entreprise
 from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
 from pcapi.models import db
@@ -151,7 +151,7 @@ def get_offerer_members(offerer_id: int) -> offerers_serialize.GetOffererMembers
     on_success_status=201, response_model=offerers_serialize.PostOffererResponseModel, api=blueprint.pro_private_schema
 )
 def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers_serialize.PostOffererResponseModel:
-    siren_info = sirene.get_siren(body.siren)
+    siren_info = api_entreprise.get_siren_open_data(body.siren)
     if not siren_info.active:
         raise ApiErrors(errors={"siren": ["SIREN is no longer active"]})
     body.name = siren_info.name
@@ -164,7 +164,7 @@ def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers
         raise ApiErrors(errors={"user_offerer": ["Votre compte est déjà rattaché à cette structure."]})
 
     try:
-        user_offerer = api.create_offerer(current_user, body)
+        user_offerer = api.create_offerer(current_user, body, insee_data=siren_info)
     except offerers_exceptions.NotACollectivity:
         raise ApiErrors(errors={"user_offerer": ["Le rattachement est permis seulement pour les collectivités"]})
     return offerers_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)

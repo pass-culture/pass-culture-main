@@ -1,6 +1,6 @@
 from flask_login import login_required
 
-from pcapi.connectors.entreprise import sirene
+from pcapi.core.offerers import api as offerers_api
 from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import sirene as sirene_serializers
@@ -17,7 +17,7 @@ from . import blueprint
     api=blueprint.pro_private_schema,
 )
 def get_siret_info(siret: str) -> sirene_serializers.SiretInfo:
-    info = sirene.get_siret(siret)
+    info = offerers_api.find_siret_info(siret)
     assert info.address  # helps mypy
     info_address_dict = info.address.dict()
     info_address_dict.pop("insee_code")

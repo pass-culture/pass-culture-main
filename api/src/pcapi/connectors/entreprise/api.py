@@ -4,20 +4,41 @@ from . import models
 from .backends.base import get_backend
 
 
+PROTECTED_DATA_PLACEHOLDER = "[ND]"
+
+
+def get_siren_open_data(siren: str) -> models.SirenInfo:
+    """
+    Get INSEE information about the requested SIREN.
+    All returned data is public. If entity is "partially diffusible", name and address are replaced by placeholder value.
+    """
+    return get_backend(settings.ENTREPRISE_BACKEND).get_siren_open_data(siren)
+
+
 def get_siren(siren: str, with_address: bool = True, raise_if_non_public: bool = True) -> models.SirenInfo:
     """
     Get information from INSEE about the requested SIREN.
-    Returned data is public, except name and address when "non-diffusible"
+    Not all returned data is public. If entity is "partially diffusible", name and address are protected data.
+    Use get_siren_open_data instead unless access to protected data is strictly necessary.
     """
     return get_backend(settings.ENTREPRISE_BACKEND).get_siren(
         siren, with_address=with_address, raise_if_non_public=raise_if_non_public
     )
 
 
+def get_siret_open_data(siret: str) -> models.SiretInfo:
+    """
+    Get INSEE information about the requested SIRET.
+    All returned data is public. If entity is "partially diffusible", name and address are replaced by placeholder value.
+    """
+    return get_backend(settings.ENTREPRISE_BACKEND).get_siret_open_data(siret)
+
+
 def get_siret(siret: str, raise_if_non_public: bool = True) -> models.SiretInfo:
     """
     Get information from INSEE about the requested SIRET.
-    Returned data is public, except name and address when "non-diffusible"
+    Not all returned data is public. If entity is "partially diffusible", name and address are protected data.
+    Use get_siret_open_data instead unless access to protected data is strictly necessary.
     """
     return get_backend(settings.ENTREPRISE_BACKEND).get_siret(siret, raise_if_non_public=raise_if_non_public)
 

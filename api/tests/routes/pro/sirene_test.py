@@ -38,7 +38,7 @@ class GetSiretTest:
         }
 
     @pytest.mark.usefixtures("db_session")
-    @mock.patch("pcapi.connectors.entreprise.sirene.get_siret", get_siret_raises)
+    @mock.patch("pcapi.connectors.entreprise.api.get_siret_open_data", get_siret_raises)
     def test_siret_error(self, client):
         pro = users_factories.ProFactory()
         siret = "12345678900001"
