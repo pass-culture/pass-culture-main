@@ -1,7 +1,11 @@
 import classNames from 'classnames'
 import React, { useEffect, useMemo, useState } from 'react'
 
+<<<<<<< Updated upstream
 import { SortingMode } from 'commons/hooks/useColumnSorting'
+=======
+import { SortingMode, useColumnSorting } from 'commons/hooks/useColumnSorting'
+>>>>>>> Stashed changes
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { Skeleton } from 'ui-kit/Skeleton/Skeleton'
 
@@ -259,7 +263,7 @@ export function Table<
 
           {!sortedData.length && (
             <TableNoFilterResult
-              colSpan={columns.length}
+              colSpan={columns.length + (selectable ? 1 : 0)}
               message={noResult.message}
               resetFilters={noResult.resetFilter}
             />
@@ -317,14 +321,7 @@ export function Table<
                         key={`col-${index}`}
                         data-label={col.label}
                       >
-                        <div
-                          className={classNames({
-                            [styles['table-fullrow-wrapper']]:
-                              tableFullRowContent,
-                          })}
-                        >
-                          {value}
-                        </div>
+                        {value}
                         {col.id === columns[1].id && tableFullRowContent && (
                           <div className={styles['table-fullrow-content']}>
                             {tableFullRowContent}

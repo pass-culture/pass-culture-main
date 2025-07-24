@@ -17,25 +17,27 @@ export const TableNoFilterResult = ({
   message = 'Pas de résultat pour votre recherche',
   resetFilters,
 }: NoResultsProps): JSX.Element => (
-  <tr className={styles['search-no-results']}>
+  <tr>
     <td colSpan={colSpan}>
-      <SvgIcon
-        src={strokeSearchIcon}
-        alt="Illustration de recherche"
-        className={styles['search-no-results-icon']}
-        width="124"
-      />
-      <p className={styles['search-no-results-title4']}>{message}</p>
-      <p className={styles['search-no-results-text']}>
-        Vous pouvez modifier votre recherche ou
-      </p>
-      <Button
-        variant={ButtonVariant.TERNARYBRAND}
-        icon={fullRefresh}
-        onClick={resetFilters}
-      >
-        Réinitialiser les filtres
-      </Button>
+      <div className={styles['search-no-results']}>
+        <SvgIcon
+          src={strokeSearchIcon}
+          alt="Illustration de recherche"
+          className={styles['search-no-results-icon']}
+          width="124"
+        />
+        <p className={styles['search-no-results-title4']}>{message}</p>
+        <p className={styles['search-no-results-text']}>
+          Vous pouvez modifier votre recherche ou
+        </p>
+        <Button
+          variant={ButtonVariant.TERNARYBRAND}
+          icon={fullRefresh}
+          onClick={resetFilters}
+        >
+          Réinitialiser les filtres
+        </Button>
+      </div>
     </td>
   </tr>
 )
