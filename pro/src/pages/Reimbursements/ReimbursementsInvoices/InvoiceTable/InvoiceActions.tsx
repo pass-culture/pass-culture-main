@@ -6,6 +6,7 @@ import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import { useNotification } from 'commons/hooks/useNotification'
 import { downloadFile } from 'commons/utils/downloadFile'
 import fullDownloadIcon from 'icons/full-download.svg'
+import fullThreeDotsIcon from 'icons/full-three-dots.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DropdownItem } from 'ui-kit/DropdownMenuWrapper/DropdownItem'
@@ -52,7 +53,11 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
   }
 
   return (
-    <DropdownMenuWrapper title="Téléchargement des justificatifs">
+    <DropdownMenuWrapper
+      title="Téléchargement des justificatifs"
+      triggerIcon={fullThreeDotsIcon}
+      triggerTooltip
+    >
       <>
         <DropdownItem
           title="Télécharger le justificatif comptable (.pdf)"

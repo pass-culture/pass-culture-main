@@ -64,20 +64,28 @@ const invoices: InvoiceResponseV2Model[] = [
   },
 ]
 
+const renderReimbursementsInvoicesTable = (
+  invoices: InvoiceResponseV2Model[]
+) => {
+  return render(
+    <InvoiceTable data={invoices} isLoading={false} resetFilter={vi.fn()} />
+  )
+}
+
 describe('InvoiceTable', () => {
   it('renders invoice rows correctly', () => {
-    render(<InvoiceTable invoices={invoices} />)
+    renderReimbursementsInvoicesTable(invoices)
 
-    const rows = screen.getAllByTestId('invoice-item-row')
+    const rows = screen.getAllByLabelText(/ligne/)
     expect(rows).toHaveLength(invoices.length)
     expect(screen.getByLabelText('Tout sélectionner')).toBeInTheDocument()
   })
 
   it('checks a single invoice', async () => {
     const user = userEvent.setup()
-    render(<InvoiceTable invoices={invoices} />)
+    renderReimbursementsInvoicesTable(invoices)
 
-    const firstCheckbox = screen.getByLabelText('01/06/2024')
+    const firstCheckbox = screen.getByLabelText('ligne INV-001')
     await user.click(firstCheckbox)
 
     expect(firstCheckbox).toBeChecked()
@@ -85,18 +93,18 @@ describe('InvoiceTable', () => {
 
   it('toggles "select all" checkbox', async () => {
     const user = userEvent.setup()
-    render(<InvoiceTable invoices={invoices} />)
+    renderReimbursementsInvoicesTable(invoices)
 
     const selectAll = screen.getByLabelText('Tout sélectionner')
     await user.click(selectAll)
 
-    expect(screen.getByLabelText('01/06/2024')).toBeChecked()
-    expect(screen.getByLabelText('15/05/2024')).toBeChecked()
+    expect(screen.getByLabelText('ligne INV-001')).toBeChecked()
+    expect(screen.getByLabelText('ligne INV-002')).toBeChecked()
 
     await user.click(selectAll)
 
-    expect(screen.getByLabelText('01/06/2024')).not.toBeChecked()
-    expect(screen.getByLabelText('15/05/2024')).not.toBeChecked()
+    expect(screen.getByLabelText('ligne INV-001')).not.toBeChecked()
+    expect(screen.getByLabelText('ligne INV-002')).not.toBeChecked()
   })
 
   it('calls download APIs when clicking buttons', async () => {
@@ -110,7 +118,7 @@ describe('InvoiceTable', () => {
       .spyOn(apiModule.api, 'getReimbursementsCsvV2')
       .mockResolvedValueOnce(new Blob(['dummy-csv']))
 
-    render(<InvoiceTable invoices={invoices} />)
+    renderReimbursementsInvoicesTable(invoices)
 
     await user.click(screen.getByLabelText('Tout sélectionner'))
 
@@ -136,7 +144,7 @@ describe('InvoiceTable', () => {
       url: '',
     }))
 
-    render(<InvoiceTable invoices={manyInvoices} />)
+    renderReimbursementsInvoicesTable(manyInvoices)
 
     await user.click(screen.getByLabelText('Tout sélectionner'))
     await user.click(screen.getByText('Télécharger les justificatifs'))
