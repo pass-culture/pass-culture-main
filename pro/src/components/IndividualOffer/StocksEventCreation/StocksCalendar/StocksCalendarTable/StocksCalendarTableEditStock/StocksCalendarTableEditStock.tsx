@@ -51,9 +51,11 @@ export function StocksCalendarTableEditStock({
     resolver: yupResolver(validationSchema),
   })
 
+  const formValues = form.watch()
+
   function onSubmit() {
     onUpdateStock(
-      serializeStockFormValuesForUpdate(stock.id, form, departmentCode)
+      serializeStockFormValuesForUpdate(stock.id, formValues, departmentCode)
     )
   }
 
