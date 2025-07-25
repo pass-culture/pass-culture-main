@@ -3,7 +3,7 @@ import { GetOfferLastProviderResponseModel } from 'apiClient/v1'
 import { CINEMA_PROVIDER_NAMES } from '../constants'
 
 /* istanbul ignore next: DEBT, TO FIX */
-export const isAllocineProviderName = (
+const isAllocineProviderName = (
   providerName: string | null
 ): boolean => {
   if (providerName === null) {
@@ -13,7 +13,7 @@ export const isAllocineProviderName = (
 }
 
 /* istanbul ignore next: DEBT, TO FIX */
-export const isCinemaProviderName = (providerName: string | null): boolean => {
+const isCinemaProviderName = (providerName: string | null): boolean => {
   return (
     providerName !== null &&
     CINEMA_PROVIDER_NAMES.includes(providerName.toLowerCase())

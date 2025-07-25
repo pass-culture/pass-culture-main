@@ -3,8 +3,8 @@ import { mutate } from 'swr'
 
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
-  OFFER_WIZARD_MODE,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useNotification } from 'commons/hooks/useNotification'
@@ -130,6 +130,7 @@ export function StocksCalendarActionsBar({
           }}
           step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS}
           dirtyForm={false}
+          isEvent={true}
         />
       )}
     </>

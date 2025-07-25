@@ -4,8 +4,8 @@ import { api } from 'apiClient/api'
 import { GET_STOCKS_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
-  OFFER_WIZARD_MODE,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useNotification } from 'commons/hooks/useNotification'
@@ -13,10 +13,8 @@ import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescript
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { getStockWarningText } from 'pages/IndividualOfferSummary/commons/getStockWarningText'
 import { StockThingSection } from 'pages/IndividualOfferSummary/components/StockThingSection/StockThingSection'
-import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import { RecurrenceSummary } from './components/RecurrenceSummary'
 import styles from './IndividualOfferSummaryStocksScreen.module.scss'
 
 export const IndividualOfferSummaryStocksScreen = () => {
@@ -53,7 +51,7 @@ export const IndividualOfferSummaryStocksScreen = () => {
 
   return (
     <SummarySection
-      title={offer.isEvent ? 'Dates et capacité' : 'Stocks et prix'}
+      title="Stocks et prix"
       editLink={editLink}
       aria-label="Modifier les stocks et prix"
     >
@@ -63,18 +61,11 @@ export const IndividualOfferSummaryStocksScreen = () => {
           descriptions={[{ text: stockWarningText }]}
         />
       )}
-      {offer.isEvent ? (
-        <RecurrenceSummary
-          offer={offer}
-          stocks={serializeStockEvents(getStocksQuery.data.stocks)}
-        />
-      ) : (
-        <StockThingSection
-          stock={getStocksQuery.data.stocks[0]}
-          canBeDuo={canBeDuo}
-          isDuo={offer.isDuo}
-        />
-      )}
+      <StockThingSection
+        stock={getStocksQuery.data.stocks[0]}
+        canBeDuo={canBeDuo}
+        isDuo={offer.isDuo}
+      />
     </SummarySection>
   )
 }

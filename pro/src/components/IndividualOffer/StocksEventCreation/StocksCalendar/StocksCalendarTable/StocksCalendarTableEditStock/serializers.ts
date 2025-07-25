@@ -1,5 +1,4 @@
 import { format } from 'date-fns'
-import { UseFormReturn } from 'react-hook-form'
 
 import { GetOfferStockResponseModel } from 'apiClient/v1'
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
@@ -44,21 +43,21 @@ export function getStockFormDefaultValues(
     quantity:
       stock.quantity === null || stock.quantity === undefined
         ? undefined
-        : stock.quantity - stock.bookingsQuantity,
+        : stock.quantity,
   }
 }
 
 export function serializeStockFormValuesForUpdate(
   stockId: number,
-  form: UseFormReturn<EditStockFormValues>,
+  formValues: EditStockFormValues,
   departmentCode: string
 ) {
-  const { priceCategory, quantity, date, time, bookingLimitDate } = form.watch()
+  const { priceCategory, quantity, date, time, bookingLimitDate } = formValues
 
   return {
     id: stockId,
     priceCategoryId: Number(priceCategory),
-    quantity: quantity || undefined,
+    quantity: quantity,
     beginningDatetime: serializeDateTimeToUTCFromLocalDepartment(
       format(date, FORMAT_ISO_DATE_ONLY),
       time,

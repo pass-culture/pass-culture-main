@@ -71,12 +71,12 @@ describe('validationSchema with FF WIP_ENABLE_EVENT_WITH_OPENING_HOUR', () => {
       expectedErrors: ['La date limite de réservation est obligatorie.'],
     },
     {
-      description: 'invalidate form for quantity equal to zero',
+      description: 'invalidate form for negative quantity',
       formValues: {
         ...defaultValues,
-        quantity: 0,
+        quantity: -1,
       },
-      expectedErrors: ['Veuillez indiquer une quantité supérieure à 0'],
+      expectedErrors: ['Veuillez indiquer une quantité positive'],
     },
     {
       description: 'invalidate form for quantity superior to one million',

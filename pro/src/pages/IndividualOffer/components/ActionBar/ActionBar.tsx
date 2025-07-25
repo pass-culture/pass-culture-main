@@ -1,11 +1,10 @@
 import { useLocation } from 'react-router'
 
 import {
-  OFFER_WIZARD_MODE,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { computeIndividualOffersUrl } from 'commons/core/Offers/utils/computeIndividualOffersUrl'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
@@ -27,6 +26,7 @@ export interface ActionBarProps {
   step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
   dirtyForm?: boolean
   saveEditionChangesButtonRef?: React.RefObject<HTMLButtonElement>
+  isEvent?: boolean
 }
 
 export const ActionBar = ({
@@ -37,15 +37,13 @@ export const ActionBar = ({
   step,
   dirtyForm,
   saveEditionChangesButtonRef,
+  isEvent = false,
 }: ActionBarProps) => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const mode = useOfferWizardMode()
   const backOfferUrl = computeIndividualOffersUrl({})
   const notify = useNotification()
-  const isEventWithOpeningHoursEnabled = useActiveFeature(
-    'WIP_ENABLE_EVENT_WITH_OPENING_HOUR'
-  )
 
   const Left = (): JSX.Element => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
@@ -64,7 +62,7 @@ export const ActionBar = ({
     if (
       mode === OFFER_WIZARD_MODE.EDITION &&
       step === INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS &&
-      isEventWithOpeningHoursEnabled
+      isEvent
     ) {
       return (
         <Button onClick={onClickPrevious} variant={ButtonVariant.SECONDARY}>

@@ -9,7 +9,7 @@ import {
   GetOfferStockResponseModel,
 } from 'apiClient/v1'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
-import { getPriceCategoryOptions } from 'components/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
+import { getPriceCategoryOptions } from 'components/IndividualOffer/PriceCategoriesScreen/form/getPriceCategoryOptions'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
@@ -18,11 +18,11 @@ import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 
-import styles from './StocksCalendarTableEditStock.module.scss'
 import {
   getStockFormDefaultValues,
   serializeStockFormValuesForUpdate,
-} from './utils'
+} from './serializers'
+import styles from './StocksCalendarTableEditStock.module.scss'
 import { validationSchema } from './validationSchema'
 
 export type EditStockFormValues = {
@@ -51,9 +51,11 @@ export function StocksCalendarTableEditStock({
     resolver: yupResolver(validationSchema),
   })
 
+  const formValues = form.watch()
+
   function onSubmit() {
     onUpdateStock(
-      serializeStockFormValuesForUpdate(stock.id, form, departmentCode)
+      serializeStockFormValuesForUpdate(stock.id, formValues, departmentCode)
     )
   }
 
@@ -95,12 +97,13 @@ export function StocksCalendarTableEditStock({
                 error={form.formState.errors.quantity?.message}
                 label="Nombre de places"
                 value={quantity}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const value = e.target.value
                   form.setValue(
                     `quantity`,
-                    e.target.value ? Number(e.target.value) : undefined
+                    value === '' ? undefined : Number(value)
                   )
-                }
+                }}
               />
             </div>
             <Select

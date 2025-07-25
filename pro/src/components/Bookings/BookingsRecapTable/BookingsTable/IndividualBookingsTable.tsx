@@ -13,8 +13,8 @@ import {
   sortByBookingDate,
   sortByOfferName,
 } from 'components/Bookings/BookingsRecapTable/utils/sortingFunctions'
-import { SortArrow } from 'components/StocksEventList/SortArrow'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
+import { SortArrow } from 'ui-kit/SortArrow/SortArrow'
 
 import { FilterByBookingStatus } from '../Filters/FilterByBookingStatus'
 import { NoFilteredBookings } from '../NoFilteredBookings/NoFilteredBookings'

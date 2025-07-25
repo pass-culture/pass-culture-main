@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useSearchParams } from 'react-router'
 
 export const usePagination = <T>(
   items: T[],
@@ -27,38 +26,4 @@ export const usePagination = <T>(
   }
 }
 
-export const usePaginationWithSearchParams = (
-  itemsPerPage: number,
-  totalCount: number = 0
-) => {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const page = Number(searchParams.get('page')) || 1
 
-  const pageCount = Math.ceil(totalCount / itemsPerPage)
-
-  const previousPage = () => {
-    searchParams.set('page', (page - 1).toString())
-    setSearchParams(searchParams)
-  }
-  const nextPage = () => {
-    searchParams.set('page', (page + 1).toString())
-    setSearchParams(searchParams)
-  }
-  const firstPage = () => {
-    searchParams.set('page', '1')
-    setSearchParams(searchParams)
-  }
-  const lastPage = () => {
-    searchParams.set('page', pageCount.toString())
-    setSearchParams(searchParams)
-  }
-
-  return {
-    page,
-    previousPage,
-    nextPage,
-    firstPage,
-    lastPage,
-    pageCount,
-  }
-}
