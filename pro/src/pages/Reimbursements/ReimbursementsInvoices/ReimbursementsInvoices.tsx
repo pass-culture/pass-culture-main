@@ -20,7 +20,6 @@ import { DEFAULT_INVOICES_FILTERS } from '../_constants'
 
 import { BannerReimbursementsInfo } from './BannerReimbursementsInfo'
 import { InvoicesFilters } from './InvoicesFilters'
-import { InvoicesNoResult } from './InvoicesNoResult'
 import { InvoicesServerError } from './InvoicesServerError'
 import { InvoiceTable } from './InvoiceTable/InvoiceTable'
 import { NoInvoicesYet } from './NoInvoicesYet'
@@ -121,9 +120,6 @@ export const ReimbursementsInvoices = (): JSX.Element => {
 
   const invoices = getInvoicesQuery.data
   const hasInvoice = Boolean(hasInvoiceQuery.data.hasInvoice)
-  const hasNoSearchResult =
-    (!getInvoicesQuery.error && !invoices.length && hasSearchedOnce) ||
-    (!invoices.length && hasInvoice)
   const hasNoInvoicesYet = !hasSearchedOnce && !hasInvoice
 
   return (
@@ -139,13 +135,13 @@ export const ReimbursementsInvoices = (): JSX.Element => {
       />
       {getInvoicesQuery.error && <InvoicesServerError />}
       {hasNoInvoicesYet && <NoInvoicesYet />}
-      {hasNoSearchResult && !getInvoicesQuery.error && (
-        <InvoicesNoResult
-          areFiltersDefault={isEqual(filters, INITIAL_FILTERS)}
-          onReset={handleResetFilters}
+      {hasInvoice && (
+        <InvoiceTable
+          data={invoices}
+          isLoading={hasInvoiceQuery.isLoading}
+          resetFilter={handleResetFilters}
         />
       )}
-      {invoices.length > 0 && <InvoiceTable invoices={invoices} />}
     </>
   )
 }
