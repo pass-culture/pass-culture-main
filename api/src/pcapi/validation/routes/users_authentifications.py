@@ -1,3 +1,4 @@
+import inspect
 import logging
 import typing
 from functools import wraps
@@ -16,6 +17,7 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import User
 from pcapi.models import api_errors
+from pcapi.routes.public import utils as public_utils
 from pcapi.serialization.spec_tree import add_security_scheme
 
 
@@ -67,6 +69,8 @@ def provider_api_key_required(route_function: typing.Callable) -> typing.Callabl
         sentry_sdk.set_tag("provider-name", g.current_api_key.provider.name)
         sentry_sdk.set_tag("provider-id", g.current_api_key.provider.id)
 
+        _fill_extra_log_data(route_function)
+
         _check_active_offerer(g.current_api_key)
         _check_active_provider(g.current_api_key)
         return route_function(*args, **kwds)
@@ -93,13 +97,34 @@ def _fill_current_api_key() -> None:
         app_authorization_credentials = authorization_header.replace(mandatory_authorization_type, "")
         g.current_api_key = find_api_key(app_authorization_credentials)
 
-        if g.current_api_key is not None:
-            g.log_request_details_extra = {
-                "public_api": {
-                    "api_key": g.current_api_key.id,
-                    "provider_id": g.current_api_key.providerId,
-                }
-            }
+
+def _fill_extra_log_data(route_function: typing.Callable) -> None:
+    if g.current_api_key is None:
+        # should not happen but lets keep things safe
+        return
+
+    # if not hasattr(g, "log_request_details_extra"):
+    # g.log_request_details_extra = {}
+
+    try:
+        # we already log the route which holds this information but it
+        # needs to be computed and it might not always be easy/feasible
+        # to do so.
+        module = inspect.getmodule(route_function)
+        assert module is not None  # makes mypy happy (could only be None if its a C module)
+
+        module_name = module.__name__.split(".")[-1]
+    except Exception:
+        module_name = ""
+
+    g.technical_message_id = "authenticated_public_api_call"
+
+    public_utils.log_public_api_extra_fields(
+        api_key=g.current_api_key.id,
+        provider_id=g.current_api_key.providerId,
+        func=route_function.__name__,
+        module=module_name,
+    )
 
 
 def _get_current_api_key() -> ApiKey | None:

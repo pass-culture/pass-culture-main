@@ -208,25 +208,27 @@ def post_product_offer(body: products_serializers.ProductOfferCreation) -> seria
             label=body.location.address_label,
         )
 
+    create_offer_data = offers_schemas.CreateOffer(
+        name=body.name,
+        subcategoryId=body.category_related_fields.subcategory_id,
+        audioDisabilityCompliant=body.accessibility.audio_disability_compliant,
+        mentalDisabilityCompliant=body.accessibility.mental_disability_compliant,
+        motorDisabilityCompliant=body.accessibility.motor_disability_compliant,
+        visualDisabilityCompliant=body.accessibility.visual_disability_compliant,
+        bookingContact=body.booking_contact,
+        bookingEmail=body.booking_email,
+        description=body.description,
+        externalTicketOfficeUrl=body.external_ticket_office_url,
+        ean=body.category_related_fields.ean if hasattr(body.category_related_fields, "ean") else None,
+        extraData=serialization.deserialize_extra_data(body.category_related_fields, venue_id=venue.id),
+        idAtProvider=body.id_at_provider,
+        isDuo=body.enable_double_bookings,
+        url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
+        withdrawalDetails=body.withdrawal_details,
+    )  # type: ignore[call-arg]
+
     offer = offers_api.create_offer(
-        offers_schemas.CreateOffer(
-            name=body.name,
-            subcategoryId=body.category_related_fields.subcategory_id,
-            audioDisabilityCompliant=body.accessibility.audio_disability_compliant,
-            mentalDisabilityCompliant=body.accessibility.mental_disability_compliant,
-            motorDisabilityCompliant=body.accessibility.motor_disability_compliant,
-            visualDisabilityCompliant=body.accessibility.visual_disability_compliant,
-            bookingContact=body.booking_contact,
-            bookingEmail=body.booking_email,
-            description=body.description,
-            externalTicketOfficeUrl=body.external_ticket_office_url,
-            ean=body.category_related_fields.ean if hasattr(body.category_related_fields, "ean") else None,
-            extraData=serialization.deserialize_extra_data(body.category_related_fields, venue_id=venue.id),
-            idAtProvider=body.id_at_provider,
-            isDuo=body.enable_double_bookings,
-            url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
-            withdrawalDetails=body.withdrawal_details,
-        ),  # type: ignore[call-arg]
+        create_offer_data,
         venue=venue,
         provider=current_api_key.provider,
         offerer_address=offerer_address,
@@ -259,6 +261,14 @@ def post_product_offer(body: products_serializers.ProductOfferCreation) -> seria
             booking_allowed_datetime=body.booking_allowed_datetime,
         )
 
+    public_utils.log_public_api_extra_fields(
+        venue=venue.id,
+        ean=create_offer_data.ean,
+        stock_price=body.stock.price if body.stock else None,
+        stock_quantity=body.stock.quantity if body.stock else None,
+        publication_datetime=body.publication_datetime if publication_datetime else None,
+        booking_allowed_datetime=body.booking_allowed_datetime if publication_datetime else None,
+    )
     return serialization.ProductOfferResponse.build_product_offer(offer)
 
 
@@ -308,6 +318,12 @@ def post_product_offer_by_ean(body: products_serializers.ProductsOfferByEanCreat
         address_label = body.location.address_label
 
     serialized_products_stocks = _serialize_products_from_body(body.products)
+
+    public_utils.log_public_api_extra_fields(
+        venue=venue.id,
+        ean={product.ean for product in body.products},
+    )
+
     offers_tasks.create_or_update_ean_offers(
         serialized_products_stocks=serialized_products_stocks,
         venue_id=venue.id,
@@ -620,6 +636,12 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
         offers_tasks.upsert_product_stock(updated_offer, body.stock, current_api_key.provider)
         db.session.refresh(offer)  # to ensure that `offer.activeStocks` is correctly populated
 
+    public_utils.log_public_api_extra_fields(
+        venue=offer.venueId,
+        name=offer_body.name,
+        publicationDatetime=offer_body.publicationDatetime,
+        bookingAllowedDatetime=offer_body.bookingAllowedDatetime,
+    )
     return serialization.ProductOfferResponse.build_product_offer(offer)
 
 
@@ -703,3 +725,5 @@ def upload_image(offer_id: int, form: serialization.ImageUploadFile) -> None:
         raise api_errors.ApiErrors(
             errors={"file": f"Bad image ratio: expected {str(error.expected)[:4]}, found {str(error.found)[:4]}"}
         )
+    else:
+        public_utils.log_public_api_extra_fields(venue=offer.venueId)

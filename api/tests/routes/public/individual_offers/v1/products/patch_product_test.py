@@ -1,5 +1,6 @@
 import base64
 import datetime
+import logging
 import pathlib
 
 import pytest
@@ -277,7 +278,7 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
         ],
     )
     def test_publication_datetime_param(
-        self, payload, expected_publication_datetime, expected_response_publication_datetime
+        self, payload, expected_publication_datetime, expected_response_publication_datetime, caplog
     ):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer = offers_factories.ThingOfferFactory(
@@ -289,10 +290,18 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
 
         payload["offerId"] = offer.id
 
-        response = self.make_request(plain_api_key, json_body=payload)
+        with caplog.at_level(logging.INFO):
+            response = self.make_request(plain_api_key, json_body=payload)
+            assert response.status_code == 200
+            assert response.json["publicationDatetime"] == expected_response_publication_datetime
 
-        assert response.status_code == 200
-        assert response.json["publicationDatetime"] == expected_response_publication_datetime
+        public_api_extra_log = next(record for record in caplog.records if record.name == "pcapi.flask_app")
+        public_api_extra_log = public_api_extra_log.extra["public_api"]
+
+        assert public_api_extra_log["module"] == "products"
+        assert public_api_extra_log["func"] == "edit_product"
+        assert public_api_extra_log["publicationDatetime"] == expected_publication_datetime
+        assert public_api_extra_log["bookingAllowedDatetime"] is None
 
         update_offer = db.session.query(offers_models.Offer).filter_by(id=offer.id).one()
         assert update_offer.publicationDatetime == expected_publication_datetime
@@ -314,10 +323,7 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
         ],
     )
     def test_booking_allowed_datetime_param(
-        self,
-        payload,
-        expected_booking_allowed_datetime,
-        expected_response_booking_allowed_datetime,
+        self, payload, expected_booking_allowed_datetime, expected_response_booking_allowed_datetime, caplog
     ):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer = self.setup_base_resource(
@@ -326,10 +332,21 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
 
         payload["offerId"] = offer.id
 
-        response = self.make_request(plain_api_key, json_body=payload)
+        with caplog.at_level(logging.INFO):
+            response = self.make_request(plain_api_key, json_body=payload)
+            assert response.status_code == 200
+            assert response.json["bookingAllowedDatetime"] == expected_response_booking_allowed_datetime
 
-        assert response.status_code == 200
-        assert response.json["bookingAllowedDatetime"] == expected_response_booking_allowed_datetime
+        public_api_extra_log = next(record for record in caplog.records if record.name == "pcapi.flask_app")
+        public_api_extra_log = public_api_extra_log.extra["public_api"]
+
+        assert public_api_extra_log["module"] == "products"
+        assert public_api_extra_log["func"] == "edit_product"
+        assert public_api_extra_log["publicationDatetime"] is not None  # real value does not matter within this test
+        assert public_api_extra_log["bookingAllowedDatetime"] is None or (
+            public_api_extra_log["bookingAllowedDatetime"]
+            == datetime.datetime.fromisoformat(expected_response_booking_allowed_datetime).replace(tzinfo=None)
+        )
 
         update_offer = db.session.query(offers_models.Offer).filter_by(id=offer.id).one()
         assert update_offer.bookingAllowedDatetime == expected_booking_allowed_datetime

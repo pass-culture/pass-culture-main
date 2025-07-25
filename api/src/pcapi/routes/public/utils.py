@@ -1,5 +1,8 @@
 import base64
 import binascii
+import typing
+
+from flask import g
 
 from pcapi.core.geography import models as geography_models
 from pcapi.models import api_errors
@@ -26,3 +29,18 @@ def get_bytes_from_base64_string(base64_string: str) -> bytes:
         return base64.b64decode(base64_string.encode("utf-8"))
     except binascii.Error as error:
         raise InvalidBase64Exception() from error
+
+
+def log_public_api_extra_fields(**extra: typing.Any) -> None:
+    """Log extra public api log information.
+
+    Ensure everything is logged under the same key, inside the same
+    dict.
+    """
+    if not hasattr(g, "log_request_details_extra"):
+        g.log_request_details_extra = {}
+
+    if not g.log_request_details_extra.get("public_api"):
+        g.log_request_details_extra["public_api"] = extra
+    else:
+        g.log_request_details_extra["public_api"] = {**g.log_request_details_extra["public_api"], **extra}

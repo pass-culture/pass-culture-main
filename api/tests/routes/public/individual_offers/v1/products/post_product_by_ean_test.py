@@ -86,7 +86,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 404
 
     @time_machine.travel(datetime.datetime(2025, 7, 15), tick=False)
-    def test_valid_ean_with_stock(self):
+    def test_valid_ean_with_stock(self, caplog):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
 
@@ -121,8 +121,17 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
             ],
         }
 
-        response = self.make_request(plain_api_key, json_body=payload)
-        assert response.status_code == 204
+        with caplog.at_level(logging.INFO):
+            response = self.make_request(plain_api_key, json_body=payload)
+            assert response.status_code == 204
+
+        public_api_extra_log = next(record for record in caplog.records if record.name == "pcapi.flask_app")
+        public_api_extra_log = public_api_extra_log.extra["public_api"]
+
+        assert public_api_extra_log["module"] == "products"
+        assert public_api_extra_log["func"] == "post_product_offer_by_ean"
+        assert public_api_extra_log["venue"] == venue.id
+        assert public_api_extra_log["ean"] == {product.ean, unknown_ean}
 
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.bookingEmail == venue.bookingEmail

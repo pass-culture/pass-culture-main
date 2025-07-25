@@ -197,6 +197,9 @@ class JsonFormatter(logging.Formatter):
         impersonator_id = get_logged_impersonator_id() if user_id else None
 
         json_record = {
+            # TODO(jbaudet)[2025-07] remove both api fields, they should
+            # not be added to every log (check user_authentifications
+            # module to these information only when needed)
             "api_key_offerer_id": get_api_key_offerer_id(),
             "api_key_provider_id": get_api_key_provider_id(),
             "logging.googleapis.com/trace": get_or_set_correlation_id(),

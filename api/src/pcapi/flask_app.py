@@ -163,8 +163,8 @@ def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Res
     except Exception:
         logger.warning("g.log_request_details_extra does not seem to contain a valid dict", exc_info=True)
 
-    logger.info("HTTP request at %s", request.path, extra=extra)
-
+    tech_msg_id = getattr(g, "technical_message_id", None)
+    logger.info("HTTP request at %s", request.path, extra=extra, technical_message_id=tech_msg_id)
     return response
 
 

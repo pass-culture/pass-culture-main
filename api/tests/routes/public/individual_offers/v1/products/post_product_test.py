@@ -1,6 +1,7 @@
 import base64
 import datetime
 import decimal
+import logging
 import pathlib
 
 import pytest
@@ -95,10 +96,22 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 404
 
     @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
-    def test_physical_product_minimal_body(self):
+    def test_physical_product_minimal_body(self, caplog):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = self.make_request(plain_api_key, json_body=self._get_base_payload(venue_provider.venue.id))
+        payload = self._get_base_payload(venue_provider.venue.id)
+        with caplog.at_level(logging.INFO):
+            response = self.make_request(plain_api_key, json_body=payload)
+
+        public_api_extra_log = next(record for record in caplog.records if record.name == "pcapi.flask_app")
+        public_api_extra_log = public_api_extra_log.extra["public_api"]
+
+        assert public_api_extra_log["module"] == "products"
+        assert public_api_extra_log["func"] == "post_product_offer"
+        assert public_api_extra_log["venue"] == venue_provider.venueId
+        assert public_api_extra_log["ean"] == payload["categoryRelatedFields"]["ean"]
+        assert not public_api_extra_log["stock_price"]
+        assert not public_api_extra_log["stock_quantity"]
 
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
