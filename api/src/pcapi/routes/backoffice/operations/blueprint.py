@@ -41,6 +41,33 @@ operations_blueprint = utils.child_backoffice_blueprint(
 )
 
 
+def _render_responses_rows(special_event_id: int, responses_ids: list[int]) -> utils.BackofficeResponse:
+    if not responses_ids:
+        return render_template("operations/details/rows.html", items=[])
+
+    if responses_ids:
+        query = _get_response_rows_query()
+        query = search_utils.apply_filter_on_beneficiary_status(query, [])
+        if len(responses_ids) == 1:
+            query = query.filter(operations_models.SpecialEventResponse.id == responses_ids[0])
+        else:
+            query = query.filter(operations_models.SpecialEventResponse.id.in_(responses_ids))
+
+    special_event = (
+        db.session.query(operations_models.SpecialEvent)
+        .filter(operations_models.SpecialEvent.id == special_event_id)
+        .first()
+    )
+    stats = _get_special_event_stats(special_event_id)
+
+    return render_template(
+        "operations/details/partial_response_container.html",
+        items=query.all(),
+        special_event=special_event,
+        stats=stats,
+    )
+
+
 @operations_blueprint.route("", methods=["GET"])
 def list_events() -> utils.BackofficeResponse:
     form = operations_forms.SearchSpecialEventForm(formdata=utils.get_query_params())
@@ -168,10 +195,7 @@ def _get_special_event_stats(special_event_id: int) -> tuple[int]:
     ).one()
 
 
-def _get_special_event_responses(
-    special_event_id: int,
-    response_form: operations_forms.OperationResponseForm,
-) -> typing.Any:
+def _get_response_rows_query() -> sa.orm.Query:
     full_answers_subquery = (
         db.session.query(
             sa.func.jsonb_object_agg(
@@ -200,18 +224,6 @@ def _get_special_event_responses(
         aliased_response.status == operations_models.SpecialEventResponseStatus.VALIDATED
     ).scalar_subquery()
 
-    response_rows_filters = [operations_models.SpecialEventResponse.eventId == special_event_id]
-    if response_status_data := response_form.response_status.data:
-        response_rows_filters.append(operations_models.SpecialEventResponse.status.in_(response_status_data))
-
-    if response_ages_data := response_form.age.data:
-        age_filters = []
-        for age in response_ages_data:
-            start = date.today() - relativedelta(years=int(age) + 1)
-            end = date.today() - relativedelta(years=int(age))
-            age_filters.append(users_models.User.validatedBirthDate.between(start, end))
-        response_rows_filters.append(sa.or_(*age_filters))
-
     account_tags_subquery = (
         sa.select(sa.func.array_agg(sa.func.coalesce(users_models.UserTag.label, users_models.UserTag.name)))
         .select_from(users_models.UserTag)
@@ -221,22 +233,15 @@ def _get_special_event_responses(
         .scalar_subquery()
     )
 
-    response_rows_query = (
-        db.session.query(
-            operations_models.SpecialEventResponse,
-            full_answers_subquery.label("full_answers"),
-            try_count_subquery.label("try_count"),
-            selected_count_subquery.label("selected_count"),
-            account_tags_subquery.label("account_tags"),
-        )
-        .filter(*response_rows_filters)
-        .outerjoin(operations_models.SpecialEventResponse.user)
-    )
-    response_rows_query = search_utils.apply_filter_on_beneficiary_status(
-        response_rows_query,
-        response_form.eligibility.data,
-    )
-    response_rows = response_rows_query.options(
+    response_rows_query = db.session.query(
+        operations_models.SpecialEventResponse,
+        full_answers_subquery.label("full_answers"),
+        try_count_subquery.label("try_count"),
+        selected_count_subquery.label("selected_count"),
+        account_tags_subquery.label("account_tags"),
+    ).outerjoin(operations_models.SpecialEventResponse.user)
+
+    response_rows_query = response_rows_query.options(
         sa_orm.contains_eager(operations_models.SpecialEventResponse.user)
         .load_only(
             users_models.User.id,
@@ -251,8 +256,35 @@ def _get_special_event_responses(
             finance_models.Deposit.version,
         ),
     ).order_by(operations_models.SpecialEventResponse.dateSubmitted.desc())
+    return response_rows_query
+
+
+def _get_special_event_responses(
+    special_event_id: int,
+    response_form: operations_forms.OperationResponseForm,
+) -> typing.Any:
+    response_rows_query = _get_response_rows_query()
+
+    response_rows_filters = [operations_models.SpecialEventResponse.eventId == special_event_id]
+    if response_status_data := response_form.response_status.data:
+        response_rows_filters.append(operations_models.SpecialEventResponse.status.in_(response_status_data))
+
+    if response_ages_data := response_form.age.data:
+        age_filters = []
+        for age in response_ages_data:
+            start = date.today() - relativedelta(years=int(age) + 1)
+            end = date.today() - relativedelta(years=int(age))
+            age_filters.append(users_models.User.validatedBirthDate.between(start, end))
+        response_rows_filters.append(sa.or_(*age_filters))
+
+    response_rows_query = response_rows_query.filter(*response_rows_filters)
+    response_rows_query = search_utils.apply_filter_on_beneficiary_status(
+        response_rows_query,
+        response_form.eligibility.data,
+    )
+
     return paginate(
-        query=response_rows,
+        query=response_rows_query,
         page=int(response_form.page.data),
         per_page=int(response_form.limit.data),
     )
@@ -330,14 +362,11 @@ def _set_responses_status(
 @utils.permission_required(perm_models.Permissions.MANAGE_SPECIAL_EVENTS)
 def set_response_status(special_event_id: int, response_id: int) -> utils.BackofficeResponse:
     form = operations_forms.UpdateResponseStatusForm()
+
     if not form.validate():
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
-        return redirect(
-            request.referrer
-            or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
-            303,
-        )
+        return _render_responses_rows(special_event_id, [])
 
     response_status = form.response_status.data
     if response_status == operations_models.SpecialEventResponseStatus.NEW:
@@ -345,11 +374,7 @@ def set_response_status(special_event_id: int, response_id: int) -> utils.Backof
             'Une réponse ne pas pas être passée à l\'état "{format_special_event_response_status_str(response_status)}"',
             "warning",
         )
-        return redirect(
-            request.referrer
-            or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
-            303,
-        )
+        return _render_responses_rows(special_event_id, [])
 
     updated = _set_responses_status(special_event_id, [response_id], response_status)
 
@@ -361,10 +386,7 @@ def set_response_status(special_event_id: int, response_id: int) -> utils.Backof
     else:
         flash(f"La réponse {response_id} n'existe pas", "warning")
 
-    return redirect(
-        request.referrer or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
-        303,
-    )
+    return _render_responses_rows(special_event_id, [response_id])
 
 
 @operations_blueprint.route(
@@ -380,10 +402,11 @@ def get_batch_update_responses_status_form(special_event_id: int, response_statu
     if not new_status or new_status == operations_models.SpecialEventResponseStatus.NEW:
         raise NotFound()
 
-    form: empty_forms.BatchForm | None = empty_forms.BatchForm()
+    form = empty_forms.BatchForm(request.args)
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#operation-table",
         form=form,
         dst=url_for(
             "backoffice_web.operations.batch_validate_responses_status",
@@ -418,7 +441,7 @@ def batch_validate_responses_status(special_event_id: int, response_status: str)
     if not form.validate():
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
-        return redirect(request.referrer, 303)
+        return _render_responses_rows(special_event_id, [])
 
     _set_responses_status(
         special_event_id=special_event_id,
@@ -427,10 +450,7 @@ def batch_validate_responses_status(special_event_id: int, response_status: str)
     )
 
     flash(f'Les candidatures ont été passées à "{format_special_event_response_status_str(new_status)}".', "success")
-    return redirect(
-        request.referrer or url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id),
-        303,
-    )
+    return _render_responses_rows(special_event_id, form.object_ids_list)
 
 
 @operations_blueprint.route("/<int:special_event_id>/update-event-date", methods=["GET"])

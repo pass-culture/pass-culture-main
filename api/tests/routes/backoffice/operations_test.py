@@ -563,7 +563,12 @@ class SetResponseStatusTest(PostEndpointHelper):
             form={"response_status": response_status.value},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(
+            response.data, tag="tr", id=f"operation-response-row-{event_response.id}", is_xml=True
+        )
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(event_response.id)
         db.session.refresh(event_response)
         assert event_response.status == response_status
 
@@ -579,7 +584,7 @@ class SetResponseStatusTest(PostEndpointHelper):
             form={"response_status": operations_models.SpecialEventResponseStatus.NEW.value},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
         db.session.refresh(event_response)
         assert event_response.status == operations_models.SpecialEventResponseStatus.WITHDRAWN
 
@@ -604,19 +609,25 @@ class BatchValidateResponsesStatusTest(PostEndpointHelper):
         ],
     )
     def test_batch_validate_responses_status(self, response_status, authenticated_client):
-        event_response = operations_factories.SpecialEventResponseFactory()
-        event_response2 = operations_factories.SpecialEventResponseFactory(event=event_response.event)
+        event_response1 = operations_factories.SpecialEventResponseFactory()
+        event_response2 = operations_factories.SpecialEventResponseFactory(event=event_response1.event)
 
         response = self.post_to_endpoint(
             authenticated_client,
-            special_event_id=event_response.eventId,
+            special_event_id=event_response1.eventId,
             response_status=response_status.value,
-            form={"object_ids": f"{event_response.id},{event_response2.id}"},
+            form={"object_ids": f"{event_response1.id},{event_response2.id}"},
         )
-        assert response.status_code == 303
-        db.session.refresh(event_response)
+        assert response.status_code == 200
+        for event_response in (event_response1, event_response2):
+            row = html_parser.get_tag(
+                response.data, tag="tr", id=f"operation-response-row-{event_response.id}", is_xml=True
+            )
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(event_response.id)
+        db.session.refresh(event_response1)
         db.session.refresh(event_response2)
-        assert event_response.status == response_status
+        assert event_response1.status == response_status
         assert event_response2.status == response_status
 
 
