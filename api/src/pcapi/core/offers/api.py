@@ -270,6 +270,12 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
     if body_ean:
         fields["ean"] = fields["extraData"].pop("ean")
 
+    # - An URL must be provided if the offer has an online subcategory and had no URL before.
+    # - The offer URL must not be removed if the offer has an online subcategory.
+    if not offer.url and not body.url:
+        offer_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
+        validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
+
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
     if not updates:
         return offer
