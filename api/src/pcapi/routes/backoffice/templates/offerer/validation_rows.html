@@ -1,0 +1,71 @@
+{% from "components/offerer_validation/extra_row.html" import build_offerer_validation_toggle_extra_row_button with context %}
+{% from "components/offerer_validation/extra_row.html" import build_offerer_validation_extra_row with context %}
+{% import "components/links.html" as links with context %}
+{% set has_validate_permission = has_permission("VALIDATE_OFFERER") %}
+{% set has_read_ae_permission = has_validate_permission or has_permission("READ_PRO_AE_INFO") %}
+{% for item in items %}
+  {% set offerer = item.Offerer %}
+  <tr id="offerer-row-{{ offerer.id }}">
+    {% if has_validate_permission %}
+      <td>
+        <input type="checkbox"
+               class="form-check-input"
+               name="pc-table-multi-select-check-{{ offerer.id }}"
+               data-id="{{ offerer.id }}" />
+      </td>
+    {% endif %}
+    <td>
+      <div class="d-flex">
+        {% if has_validate_permission %}
+          <div class="dropdown">
+            <button type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    class="btn p-0 btn-outline-primary-subtle-bg border-0 px-2 py-1">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <li class="dropdown-item p-0">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#validate-modal-{{ offerer.id }}">Valider</a>
+              </li>
+              <li class="dropdown-item p-0">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#reject-modal-{{ offerer.id }}">Rejeter</a>
+              </li>
+              <li class="dropdown-item p-0">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#pending-modal-{{ offerer.id }}">Mettre en attente</a>
+              </li>
+            </ul>
+          </div>
+        {% endif %}
+        {{ build_offerer_validation_toggle_extra_row_button(offerer.id, item.dms_venues) }}
+      </div>
+    </td>
+    <td>{{ offerer.id }}</td>
+    <td>{{ links.build_offerer_name_to_details_link(offerer) }}</td>
+    <td>{{ offerer | format_offerer_status_badge }}</td>
+    <td>{{ item.tags | map(attribute="label") | format_as_badges }}</td>
+    <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
+    <td>
+      {% if offerer.individualSubscription and offerer.individualSubscription.isEmailSent %}
+        {% if has_read_ae_permission %}
+          <a href="{{ url_for('backoffice_web.offerer.get', offerer_id=offerer.id, active_tab='subscription') }}"
+             title="Parcours auto-entrepreneur">
+          {% endif %}
+          {{ (offerer.individualSubscription.isCriminalRecordReceived and offerer.individualSubscription.isExperienceReceived) | format_bool_badge }}
+          {% if has_read_ae_permission %}</a>{% endif %}
+      {% endif %}
+    </td>
+    <td>{{ item.last_comment | empty_string_if_null | nl2br }}</td>
+    <td>{{ links.build_siren_to_external_link(offerer) }}</td>
+    <td>{{ (item.creator_email) | empty_string_if_null }}</td>
+    <td>{{ links.build_pro_user_name_to_details_link(item.creator_id, item.creator_name) }}</td>
+    <td>{{ offerer.city | empty_string_if_null }}</td>
+  </tr>
+  {{ build_offerer_validation_extra_row(offerer.id, item.dms_venues) }}
+{% endfor %}

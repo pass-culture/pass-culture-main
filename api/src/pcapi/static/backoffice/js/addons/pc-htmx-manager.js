@@ -22,9 +22,8 @@ class PcHtmxManager extends PcAddOn {
     EventHandler.on(document.body, "htmx:afterRequest", this.#hideLoadingSpinner)
     EventHandler.on(document.body, "htmx:afterRequest", this.#hideParentModalOnError)
     EventHandler.on(document.body, "htmx:afterRequest", this.#triggerFetchFlashMessages)
-    EventHandler.on(document.body, "htmx:afterRequest", this.app.addons.PcTomSelectFieldId.bindEvents)
-
-    EventHandler.on(document.body, "htmx:beforeRequest", this.app.addons.PcTomSelectFieldId.unbindEvents)
+    EventHandler.on(document.body, "htmx:afterRequest", this.app.bindEvents)
+    EventHandler.on(document.body, "htmx:beforeRequest", this.app.unbindEvents)
   }
 
   unbindEvents = () => {
@@ -37,9 +36,8 @@ class PcHtmxManager extends PcAddOn {
     EventHandler.off(document.body, "htmx:afterRequest", this.#hideLoadingSpinner)
     EventHandler.off(document.body, "htmx:afterRequest", this.#hideParentModalOnError)
     EventHandler.off(document.body, "htmx:afterRequest", this.#triggerFetchFlashMessages)
-    EventHandler.off(document.body, "htmx:afterRequest", this.app.addons.PcTomSelectFieldId.bindEvents)
-
-    EventHandler.off(document.body, "htmx:beforeRequest", this.app.addons.PcTomSelectFieldId.unbindEvents)
+    EventHandler.off(document.body, "htmx:afterRequest", this.app.bindEvents)
+    EventHandler.off(document.body, "htmx:beforeRequest", this.app.unbindEvents)
   }
 
   #reloadPageOnUnauthorizedError = (event) => {

@@ -7,6 +7,7 @@ class PcForm extends PcAddOn {
   static FORM_WHITE_LIST_CLASS = 'pc-multiple-submit'
   static FORM_ALREADY_VALIDATED = 'pc-form-validated'
   static FORM_SUBMIT_BUTTON = 'button[type=submit]'
+  static FORM_MODALE_SELECTOR = '[data-modal-selector]'
 
   get $forms() {
     return document.querySelectorAll(PcForm.FORM_SELECTORS)
@@ -31,6 +32,7 @@ class PcForm extends PcAddOn {
       }
       else{
         this.#lock(event.target)
+        this.#hideModal(event.target)
       }
     }
   }
@@ -56,5 +58,16 @@ class PcForm extends PcAddOn {
     $lockedForms.forEach(($lockedForm) => {
       this.#unlock($lockedForm)
     })
+  }
+
+  #hideModal = ($element) => {
+    const $modalSelectorElement = $element.querySelector(PcForm.FORM_MODALE_SELECTOR)
+    if (!!$modalSelectorElement){
+      const $modalElement = $element.closest($modalSelectorElement.dataset.modalSelector)
+      if(!!$modalElement){
+        const modal = bootstrap.Modal.getInstance($modalElement)
+        modal.hide()
+      }
+    }
   }
 }
