@@ -41,6 +41,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import get_or_404
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.repository.session_management import on_commit
+from pcapi.routes.backoffice import types_
 from pcapi.routes.backoffice.bookings import forms as bookings_forms
 from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.pro import forms as pro_forms
@@ -289,39 +290,37 @@ def get(offerer_id: int) -> utils.BackofficeResponse:
     return _render_offerer_details(offerer_id)
 
 
-@typing.no_type_check
-def get_stats_data(offerer: offerers_models.Offerer) -> dict:
-    PLACEHOLDER = -1
+def get_stats_data(offerer: offerers_models.Offerer) -> types_.StatsData:
+    PLACEHOLDER = decimal.Decimal(-1)
     offers_stats = offerers_api.get_offerer_offers_stats(offerer.id, max_offer_count=1000)
     is_collective_too_big = offers_stats["collective_offer"]["active"] == -1
     is_collective_too_big = is_collective_too_big or offers_stats["collective_offer_template"]["active"] == -1
     is_individual_too_big = offers_stats["offer"]["active"] == -1
 
-    stats = {
-        "active": {},
-        "inactive": {},
+    stats: types_.StatsData = {
+        "active": {
+            "collective": PLACEHOLDER,
+            "individual": PLACEHOLDER,
+            "total": PLACEHOLDER,
+        },
+        "inactive": {
+            "collective": PLACEHOLDER,
+            "individual": PLACEHOLDER,
+            "total": PLACEHOLDER,
+        },
         "total_revenue": PLACEHOLDER,
+        # TODO (igabriele, 2025-07-25): Is it used?
         "placeholder": PLACEHOLDER,
     }
 
-    if is_collective_too_big:
-        stats["active"]["collective"] = PLACEHOLDER
-        stats["inactive"]["collective"] = PLACEHOLDER
-        stats["active"]["total"] = PLACEHOLDER
-        stats["inactive"]["total"] = PLACEHOLDER
-    else:
+    if not is_collective_too_big:
         stats["active"]["collective"] = (
             offers_stats["collective_offer"]["active"] + offers_stats["collective_offer_template"]["active"]
         )
         stats["inactive"]["collective"] = (
             offers_stats["collective_offer"]["inactive"] + offers_stats["collective_offer_template"]["inactive"]
         )
-    if is_individual_too_big:
-        stats["active"]["individual"] = PLACEHOLDER
-        stats["inactive"]["individual"] = PLACEHOLDER
-        stats["active"]["total"] = PLACEHOLDER
-        stats["inactive"]["total"] = PLACEHOLDER
-    else:
+    if not is_individual_too_big:
         stats["active"]["individual"] = offers_stats["offer"]["active"]
         stats["inactive"]["individual"] = offers_stats["offer"]["inactive"]
 
@@ -331,7 +330,7 @@ def get_stats_data(offerer: offerers_models.Offerer) -> dict:
 
     if FeatureToggle.WIP_ENABLE_CLICKHOUSE_IN_BO.is_active():
         if not offerer.managedVenues:
-            stats["total_revenue"] = 0
+            stats["total_revenue"] = decimal.Decimal(0)
         else:
             try:
                 clickhouse_results = clickhouse_queries.TotalExpectedRevenueQuery().execute(
@@ -341,7 +340,7 @@ def get_stats_data(offerer: offerers_models.Offerer) -> dict:
             except ApiErrors:
                 stats["total_revenue"] = PLACEHOLDER
     elif not (is_collective_too_big or is_individual_too_big):
-        stats["total_revenue"] = offerers_api.get_offerer_total_revenue(offerer.id)
+        stats["total_revenue"] = decimal.Decimal(offerers_api.get_offerer_total_revenue(offerer.id))
 
     return stats
 

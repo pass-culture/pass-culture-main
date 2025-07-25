@@ -1,6 +1,5 @@
 import decimal
 import logging
-import typing
 from datetime import datetime
 from functools import partial
 
@@ -48,6 +47,7 @@ from pcapi.repository.session_management import on_commit
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import search_utils
+from pcapi.routes.backoffice import types_
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
@@ -334,41 +334,38 @@ def get(venue_id: int) -> utils.BackofficeResponse:
     return render_venue_details(venue_row)
 
 
-# mypy doesn't like nested dict
-@typing.no_type_check
-def get_stats_data(venue_id: int) -> dict:
-    PLACEHOLDER = -1
+def get_stats_data(venue_id: int) -> types_.StatsData:
+    PLACEHOLDER = decimal.Decimal(-1)
     offers_stats = offerers_api.get_venue_offers_stats(venue_id, max_offer_count=1000)
 
     is_collective_too_big = offers_stats["collective_offer"]["active"] == -1
     is_collective_too_big = is_collective_too_big or offers_stats["collective_offer_template"]["active"] == -1
     is_individual_too_big = offers_stats["offer"]["active"] == -1
 
-    stats = {
-        "active": {},
-        "inactive": {},
+    stats: types_.StatsData = {
+        "active": {
+            "collective": PLACEHOLDER,
+            "individual": PLACEHOLDER,
+            "total": PLACEHOLDER,
+        },
+        "inactive": {
+            "collective": PLACEHOLDER,
+            "individual": PLACEHOLDER,
+            "total": PLACEHOLDER,
+        },
         "total_revenue": PLACEHOLDER,
+        # TODO (igabriele, 2025-07-25): Is it used?
         "placeholder": PLACEHOLDER,
     }
 
-    if is_collective_too_big:
-        stats["active"]["collective"] = PLACEHOLDER
-        stats["inactive"]["collective"] = PLACEHOLDER
-        stats["active"]["total"] = PLACEHOLDER
-        stats["inactive"]["total"] = PLACEHOLDER
-    else:
+    if not is_collective_too_big:
         stats["active"]["collective"] = (
             offers_stats["collective_offer"]["active"] + offers_stats["collective_offer_template"]["active"]
         )
         stats["inactive"]["collective"] = (
             offers_stats["collective_offer"]["inactive"] + offers_stats["collective_offer_template"]["inactive"]
         )
-    if is_individual_too_big:
-        stats["active"]["individual"] = PLACEHOLDER
-        stats["inactive"]["individual"] = PLACEHOLDER
-        stats["active"]["total"] = PLACEHOLDER
-        stats["inactive"]["total"] = PLACEHOLDER
-    else:
+    if not is_individual_too_big:
         stats["active"]["individual"] = offers_stats["offer"]["active"]
         stats["inactive"]["individual"] = offers_stats["offer"]["inactive"]
 
@@ -383,7 +380,7 @@ def get_stats_data(venue_id: int) -> dict:
         except ApiErrors:
             stats["total_revenue"] = PLACEHOLDER
     elif not (is_collective_too_big or is_individual_too_big):
-        stats["total_revenue"] = offerers_api.get_venue_total_revenue(venue_id)
+        stats["total_revenue"] = decimal.Decimal(offerers_api.get_venue_total_revenue(venue_id))
 
     return stats
 
