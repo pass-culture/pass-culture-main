@@ -25,6 +25,10 @@ const offerFormUrlRegex = new RegExp(
   'i'
 )
 
+const youtubeVideoRegex = new RegExp(
+  /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?([a-zA-Z0-9_-]{11})/
+)
+
 const commonValidationShape = {
   name: yup.string().trim().max(90).required('Veuillez renseigner un titre'),
   description: yup.string(),
@@ -93,6 +97,17 @@ export const getValidationSchema = (isDigitalOffer: boolean) => {
               url ? url.match(offerFormUrlRegex) !== null : true,
           })
       : yup.string().nullable(),
+    videoUrl: yup
+      .string()
+      .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
+      .test({
+        name: 'videoUrl',
+        message:
+          'Veuillez renseigner une URL provenant de la plateforme Youtube',
+        test: (videoUrl?: string) =>
+          videoUrl ? videoUrl.match(youtubeVideoRegex) !== null : true,
+      })
+      .nullable(),
   })
 }
 
@@ -118,7 +133,9 @@ export const getValidationSchemaForNewOfferCreationFlow = (
       .required(),
     url: yup.string().when('subcategoryId', {
       is: (subcategoryId: string) => {
-        if (!subcategoryId) {return false}
+        if (!subcategoryId) {
+          return false
+        }
         const selectedSubcategory = subcategories.find(
           (sc) => sc.id === subcategoryId
         )
@@ -140,6 +157,17 @@ export const getValidationSchemaForNewOfferCreationFlow = (
           ),
       otherwise: (schema) => schema.nullable(),
     }),
+    videoUrl: yup
+      .string()
+      .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
+      .test({
+        name: 'videoUrl',
+        message:
+          'Veuillez renseigner une URL provenant de la plateforme Youtube',
+        test: (videoUrl?: string) =>
+          videoUrl ? videoUrl.match(youtubeVideoRegex) !== null : true,
+      })
+      .nullable(),
   })
 }
 

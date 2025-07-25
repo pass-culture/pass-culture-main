@@ -134,6 +134,7 @@ const MOCK_DATA = {
   showType: 'Cirque',
   showSubType: 'Clown',
   musicType: 'Pop',
+  video: 'https://www.youtube.com/watch?v=D2SoGHFM18I',
 }
 
 const LABELS = {
@@ -146,6 +147,7 @@ const LABELS = {
   showType: /Type de spectacle/,
   showSubType: /Sous-type/,
   musicType: /Genre musical/,
+  video: /Lien URL Youtube/,
 }
 
 const renderDetailsScreen = ({
@@ -169,7 +171,7 @@ const renderDetailsScreen = ({
     ...props,
   }
   const controlledOptions = {
-    features: ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'],
+    features: ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW', 'WIP_ADD_VIDEO'],
     initialRouterEntries: [path],
     storeOverrides: {
       user: { currentUser: sharedCurrentUserFactory() },
@@ -236,6 +238,7 @@ const userFillsEverything = async () => {
   )
 
   await userEvent.type(screen.getByLabelText(LABELS.ean), MOCK_DATA.ean)
+  await userEvent.type(screen.getByLabelText(LABELS.video), MOCK_DATA.video)
   await userEvent.selectOptions(
     await screen.findByLabelText(LABELS.showType),
     MOCK_DATA.showType
@@ -288,7 +291,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
       await screen.findByRole('heading', { name: 'Type d’offre' })
     ).toBeInTheDocument()
     expect(
-      await screen.findByRole('heading', { name: 'Illustrez votre offre' })
+      await screen.findByRole('heading', { name: 'Ajoutez une image' })
     ).toBeInTheDocument()
     expect(screen.getByText(DEFAULTS.submitButtonLabel)).toBeInTheDocument()
   })
@@ -552,6 +555,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
       subcategoryId: 'physical',
       venueId: 189,
       url: null,
+      videoUrl: 'https://www.youtube.com/watch?v=D2SoGHFM18I',
       visualDisabilityCompliant: true,
     })
     expect(mockNavigate).toHaveBeenCalledWith(
@@ -618,6 +622,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
       motorDisabilityCompliant: true,
       name: 'My super offer',
       subcategoryId: 'physicalBis',
+      videoUrl: '',
       visualDisabilityCompliant: true,
     })
   })

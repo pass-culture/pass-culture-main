@@ -74,6 +74,7 @@ describe('IndividualOfferSummaryDetailsScreen', () => {
     const offer = getIndividualOfferFactory({
       name: 'Offre de test',
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
+      videoUrl: 'my video',
     })
 
     renderIndividualOfferSummaryDetailsScreen(offer)
@@ -81,7 +82,22 @@ describe('IndividualOfferSummaryDetailsScreen', () => {
     expect(screen.getAllByText('Offre de test')).toHaveLength(2)
     expect(screen.getByText('Catégorie A')).toBeInTheDocument()
     expect(screen.getByText('1234567891234')).toBeInTheDocument()
+    expect(screen.queryByText('my video')).not.toBeInTheDocument()
     expect(screen.getByText(/Modifier/)).toBeInTheDocument()
+  })
+
+  it('should render video when FF WIP_ADD_VIDEO is active', () => {
+    const offer = getIndividualOfferFactory({
+      name: 'Offre de test',
+      subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
+      videoUrl: 'my video',
+    })
+
+    renderIndividualOfferSummaryDetailsScreen(offer, {
+      features: ['WIP_ADD_VIDEO'],
+    })
+
+    expect(screen.getByText('my video')).toBeInTheDocument()
   })
 
   describe('when the offer is product based', () => {

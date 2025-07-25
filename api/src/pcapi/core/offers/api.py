@@ -257,8 +257,12 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
     aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
 
-    new_video_url = fields.pop("videoUrl", None)
-    if new_video_url:
+    # new_video_url = fields.pop("videoUrl", None)
+
+    # if new_video_url:
+    if "videoUrl" in fields:
+        new_video_url = fields.pop("videoUrl")
+        print("new_video_url : ", new_video_url)
         if offer.metaData:
             offer.metaData.videoUrl = new_video_url
         else:
