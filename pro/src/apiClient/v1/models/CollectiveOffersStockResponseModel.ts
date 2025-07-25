@@ -6,7 +6,9 @@ export type CollectiveOffersStockResponseModel = {
   bookingLimitDatetime?: string | null;
   endDatetime?: string | null;
   hasBookingLimitDatetimePassed: boolean;
-  remainingQuantity: (number | string);
+  numberOfTickets?: number | null;
+  price?: number | null;
+  remainingQuantity?: number;
   startDatetime?: string | null;
 };
 

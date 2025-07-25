@@ -7,10 +7,9 @@ import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedS
 import type { CollectiveOffersBookingResponseModel } from './CollectiveOffersBookingResponseModel';
 import type { CollectiveOffersStockResponseModel } from './CollectiveOffersStockResponseModel';
 import type { CollectiveOfferTemplateAllowedAction } from './CollectiveOfferTemplateAllowedAction';
-import type { EacFormat } from './EacFormat';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
+import type { GetCollectiveOfferLocationModel } from './GetCollectiveOfferLocationModel';
 import type { ListOffersVenueResponseModel } from './ListOffersVenueResponseModel';
-import type { NationalProgramModel } from './NationalProgramModel';
 import type { TemplateDatesModel } from './TemplateDatesModel';
 export type CollectiveOfferResponseModel = {
   allowedActions: (Array<CollectiveOfferAllowedAction> | Array<CollectiveOfferTemplateAllowedAction>);
@@ -18,20 +17,15 @@ export type CollectiveOfferResponseModel = {
   dates?: TemplateDatesModel | null;
   displayedStatus: CollectiveOfferDisplayedStatus;
   educationalInstitution?: EducationalInstitutionResponseModel | null;
-  formats: Array<EacFormat>;
   hasBookingLimitDatetimesPassed: boolean;
   id: number;
-  imageCredit?: string | null;
   imageUrl?: string | null;
-  interventionArea: Array<string>;
   isActive: boolean;
   isEducational: boolean;
-  isPublicApi: boolean;
   isShowcase: boolean;
+  location?: GetCollectiveOfferLocationModel | null;
   name: string;
-  nationalProgram?: NationalProgramModel | null;
   stocks: Array<CollectiveOffersStockResponseModel>;
-  templateId?: string | null;
   venue: ListOffersVenueResponseModel;
 };
 

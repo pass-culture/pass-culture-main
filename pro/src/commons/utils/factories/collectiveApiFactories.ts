@@ -61,12 +61,9 @@ export const collectiveOfferFactory = (
         startDatetime: new Date().toISOString(),
       },
     ],
-    isPublicApi: false,
-    interventionArea: [],
     isShowcase: false,
     allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
     ...customCollectiveOffer,
-    formats: [EacFormat.ATELIER_DE_PRATIQUE],
   }
 }
 export const listOffersVenueFactory = (
