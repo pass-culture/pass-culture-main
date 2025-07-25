@@ -5415,3 +5415,23 @@ class ProductCountsConsistencyTest:
         product.likesCount = 0
 
         assert api.fetch_inconsistent_products() == {product.id}
+
+
+@pytest.mark.parametrize(
+    "url,video_id",
+    [
+        ("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "dQw4w9WgXcQ"),
+        ("https://youtu.be/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
+        ("http://www.youtube.com/watch?v=dQw4w9WgXcQ&t=10s", "dQw4w9WgXcQ"),
+        ("m.youtube.com/watch?v=dQw4w9WgXcQ", "dQw4w9WgXcQ"),
+        ("www.youtube.com/embed/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
+        ("youtube.com/v/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
+        ("https://www.youtube.com/e/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
+        ("https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLUMRshJ8e2c4oQ60D4Ew15A1LgN5C7Y3X", "dQw4w9WgXcQ"),
+        ("https://www.youtube.com/shorts/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
+        ("https://www.other.com", None),
+        ("dQw4w9WgXcQ", None),
+    ],
+)
+def test_extract_youtube_video_id_from_url(url, video_id):
+    assert api.extract_youtube_video_id(url) == video_id

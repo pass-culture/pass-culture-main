@@ -3110,10 +3110,14 @@
                     "venue": {
                         "$ref": "#/components/schemas/OfferVenueResponse"
                     },
-                    "videoUrl": {
+                    "video": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/OfferVideo"
+                            }
+                        ],
                         "nullable": true,
-                        "title": "Videourl",
-                        "type": "string"
+                        "title": "OfferVideo"
                     },
                     "withdrawalDetails": {
                         "nullable": true,
@@ -3293,10 +3297,14 @@
                     "venue": {
                         "$ref": "#/components/schemas/OfferVenueResponse"
                     },
-                    "videoUrl": {
+                    "video": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/OfferVideo"
+                            }
+                        ],
                         "nullable": true,
-                        "title": "Videourl",
-                        "type": "string"
+                        "title": "OfferVideo"
                     },
                     "withdrawalDetails": {
                         "nullable": true,
@@ -3488,6 +3496,17 @@
                     "timezone"
                 ],
                 "title": "OfferVenueResponse",
+                "type": "object"
+            },
+            "OfferVideo": {
+                "properties": {
+                    "id": {
+                        "nullable": true,
+                        "title": "Id",
+                        "type": "string"
+                    }
+                },
+                "title": "OfferVideo",
                 "type": "object"
             },
             "OffererHeadLineOfferResponseModel": {
