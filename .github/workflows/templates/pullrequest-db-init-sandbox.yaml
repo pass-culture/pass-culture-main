@@ -40,5 +40,5 @@ spec:
           - "-c"
           - |
             set -e
-            flask sandbox -n industrial
+            flask sandbox -n industrial ${SANDBOX_ARGS}
       restartPolicy: Never

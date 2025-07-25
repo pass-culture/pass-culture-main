@@ -402,9 +402,10 @@ elif [[ "$CMD" == "python" ]]; then
   fi
 
 # Used to deploy preview environment
-# Usage pc deploy-preview --ref <branch> -f sandbox=empty|industrial -f front-only=true|false
+# Usage pc deploy-preview --ref <branch> -f sandbox=empty|industrial -f sandbox-args='...' -f front-only=true|false
 # -ref <branch> : branch to deploy defaults to current branch
 # -f sandbox : sandbox to use (empty|industrial) defaults to empty
+# -f sandbox-args : arguments to pass to the sandbox command
 # -f front-only : if true, only deploys the front-end, defaults to false
 elif [[ "$CMD" == "deploy-preview" ]]; then
   REF_ARG=""
@@ -426,7 +427,7 @@ elif [[ "$CMD" == "deploy-preview" ]]; then
           echo "Error: -f requires a value (e.g., sandbox=industrial)"
           exit 1
         fi
-        EXTRA_FLAGS="-f $1"
+        EXTRA_FLAGS="$EXTRA_FLAGS -f '$1'"
         ;;
       *)
         shift
