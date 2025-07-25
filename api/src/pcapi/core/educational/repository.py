@@ -262,22 +262,28 @@ def _get_bookings_for_adage_base_query() -> "sa_orm.Query[educational_models.Col
             sa_orm.joinedload(educational_models.CollectiveOffer.domains).load_only(
                 educational_models.EducationalDomain.id
             ),
-            sa_orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
-            .load_only(
-                offerers_models.Venue.city,
-                offerers_models.Venue.postalCode,
-                offerers_models.Venue.latitude,
-                offerers_models.Venue.longitude,
-                offerers_models.Venue.timezone,
-                offerers_models.Venue.departementCode,
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.name,
-                offerers_models.Venue.street,
-            )
-            .joinedload(offerers_models.Venue.managingOfferer, innerjoin=True)
-            .load_only(offerers_models.Offerer.name, offerers_models.Offerer.siren, offerers_models.Offerer.postalCode),
             sa_orm.joinedload(educational_models.CollectiveOffer.offererAddress).joinedload(
                 offerers_models.OffererAddress.address
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True).options(
+                sa_orm.load_only(
+                    # TODO(OA) - remove the address fields when the virtual venues are migrated
+                    offerers_models.Venue.city,
+                    offerers_models.Venue.postalCode,
+                    offerers_models.Venue.latitude,
+                    offerers_models.Venue.longitude,
+                    offerers_models.Venue.timezone,
+                    offerers_models.Venue.departementCode,
+                    offerers_models.Venue.publicName,
+                    offerers_models.Venue.name,
+                    offerers_models.Venue.street,
+                ),
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer, innerjoin=True).load_only(
+                    offerers_models.Offerer.name, offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
+                ),
+                sa_orm.joinedload(offerers_models.Venue.offererAddress)
+                .joinedload(offerers_models.OffererAddress.address)
+                .load_only(geography_models.Address.timezone),
             ),
         )
     )
@@ -408,15 +414,19 @@ def get_paginated_collective_bookings_for_educational_year(
         )
         .options(
             # ... to fetch its venue...
-            sa_orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
-            .load_only(
-                offerers_models.Venue.id,
-                offerers_models.Venue.name,
-                offerers_models.Venue.timezone,
-            )
-            # ... to fetch its offerer.
-            .joinedload(offerers_models.Venue.managingOfferer)
-            .load_only(offerers_models.Offerer.name),
+            sa_orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True).options(
+                sa_orm.load_only(
+                    offerers_models.Venue.id,
+                    offerers_models.Venue.name,
+                    offerers_models.Venue.timezone,  # TODO(OA) - remove this when the virtual venues are migrated
+                ),
+                # ... to fetch its offerer...
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.name),
+                # ... and its address
+                sa_orm.joinedload(offerers_models.Venue.offererAddress)
+                .joinedload(offerers_models.OffererAddress.address)
+                .load_only(geography_models.Address.timezone),
+            ),
             # and the offer's domains
             sa_orm.joinedload(educational_models.CollectiveOffer.domains).load_only(
                 educational_models.EducationalDomain.id
@@ -595,6 +605,7 @@ def get_collective_offers_by_filters(
         if period_beginning_date is not None:
             subquery = subquery.filter(
                 sa.func.timezone(
+                    # TODO(OA) - use Venue.offererAddress.address.timezone when the virtual venues are migrated
                     offerers_models.Venue.timezone,
                     sa.func.timezone("UTC", educational_models.CollectiveStock.startDatetime),
                 )
@@ -603,6 +614,7 @@ def get_collective_offers_by_filters(
         if period_ending_date is not None:
             subquery = subquery.filter(
                 sa.func.timezone(
+                    # TODO(OA) - use Venue.offererAddress.address.timezone when the virtual venues are migrated
                     offerers_models.Venue.timezone,
                     sa.func.timezone("UTC", educational_models.CollectiveStock.startDatetime),
                 )
@@ -1267,8 +1279,11 @@ def get_collective_offer_by_id_query(offer_id: int) -> sa_orm.Query:
         .filter(educational_models.CollectiveOffer.id == offer_id)
         .outerjoin(educational_models.CollectiveStock, educational_models.CollectiveStock.collectiveOfferId == offer_id)
         .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True).joinedload(
-                offerers_models.Venue.managingOfferer, innerjoin=True
+            sa_orm.joinedload(educational_models.CollectiveOffer.venue, innerjoin=True).options(
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer, innerjoin=True),
+                sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
+                    offerers_models.OffererAddress.address
+                ),
             )
         )
         .options(sa_orm.joinedload(educational_models.CollectiveOffer.domains))
@@ -1790,6 +1805,7 @@ def has_collective_offers_for_program_and_venue_ids(program_name: str, venue_ids
 
 
 def field_to_venue_timezone(field: sa_orm.InstrumentedAttribute) -> sa.cast:
+    # TODO(OA) - use Venue.offererAddress.address.timezone when the virtual venues are migrated
     return sa.cast(sa.func.timezone(Venue.timezone, sa.func.timezone("UTC", field)), sa.Date)
 
 

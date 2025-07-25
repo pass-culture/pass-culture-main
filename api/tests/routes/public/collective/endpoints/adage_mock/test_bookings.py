@@ -566,7 +566,7 @@ class BookCollectiveOfferTest(PublicAPIRestrictedEnvEndpointHelper):
         expected_num_queries += 1  # search for offer's bookings
         expected_num_queries += 1  # get educational year (filtered)
         expected_num_queries += 1  # create new booking
-        expected_num_queries += 1  # get educational domain and collective domain
+        expected_num_queries += 1  # re-fetch booking before serialization
         expected_num_queries += 1  # get FF (during booking serialize for adage notify_prebooking)
 
         with assert_num_queries(expected_num_queries):
