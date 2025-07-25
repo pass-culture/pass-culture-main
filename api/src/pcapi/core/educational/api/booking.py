@@ -70,21 +70,25 @@ def book_collective_offer(
     db.session.add(booking)
     db.session.flush()
 
+    # re-fetch the booking to load the relations used during seralization
+    new_booking = educational_repository.find_collective_booking_by_id(booking_id=booking.id)
+    assert new_booking is not None
+
     logger.info(
         "Redactor booked a collective offer",
         extra={
             "redactor": redactor_informations.email,
             "offerId": stock.collectiveOfferId,
             "stockId": stock.id,
-            "bookingId": booking.id,
+            "bookingId": new_booking.id,
         },
     )
 
-    transactional_mails.send_eac_new_collective_prebooking_email_to_pro(booking)
+    transactional_mails.send_eac_new_collective_prebooking_email_to_pro(new_booking)
 
-    on_commit(partial(_notify_prebooking, data=collective_booking_serialize.serialize_collective_booking(booking)))
+    on_commit(partial(_notify_prebooking, data=collective_booking_serialize.serialize_collective_booking(new_booking)))
 
-    return booking
+    return new_booking
 
 
 def _notify_prebooking(data: educational_schemas.EducationalBookingResponse) -> None:

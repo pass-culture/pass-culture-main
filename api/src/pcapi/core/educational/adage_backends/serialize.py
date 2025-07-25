@@ -51,6 +51,12 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
     venue = collective_offer.venue
     institution = collective_offer.institution
 
+    if venue.offererAddress is not None:
+        venue_timezone = venue.offererAddress.address.timezone
+    else:
+        # TODO(OA): remove this when the virtual venues are migrated
+        venue_timezone = venue.timezone
+
     if not institution:
         raise CollectiveOfferNotAssociatedToInstitution()
 
@@ -71,7 +77,7 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
         quantity=1,
         totalAmount=stock.price,
         venueName=venue.name,
-        venueTimezone=venue.timezone,
+        venueTimezone=venue_timezone,
         isDigital=False,
         withdrawalDetails=None,
         redactor=AdageRedactor(
