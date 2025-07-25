@@ -399,6 +399,14 @@ class PcTableManager extends PcAddOn {
         // re-init table selection checkboxes and unselect them all
         this.app.addons.PcTableMultiSelectId.refreshTableState($table)
         this.app.addons.PcTableMultiSelectId.batchSelect($table, false)
+
+        // as we replace the swap function we must handle the oob swap too
+        const container = document.createElement("div")
+        container.innerHTML = event.detail.serverResponse.replace(/<tr.*<\/tr>/s, '')
+        container.querySelectorAll('[hx-swap-oob="outerHTML"]').forEach(($element) => {
+          htmx.swap(`#${$element.id}`, $element.outerHTML, {swapStyle: "outerHTML"})
+        })
+
       }
     }
   }

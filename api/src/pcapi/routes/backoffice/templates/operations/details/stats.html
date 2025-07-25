@@ -1,0 +1,22 @@
+{% from "components/description.html" import description_detail_vertical %}
+<div id="special-event-stats-container"
+     {% if is_partial_response %}hx-swap-oob="outerHTML"{% endif %}>
+  {% call description_detail_vertical("Nombre de candidats total") %}
+    {{ stats.total }}
+  {% endcall %}
+  {% call description_detail_vertical("Nouvelles candidatures") %}
+    {{ stats.new }}
+  {% endcall %}
+  {% call description_detail_vertical("Candidatures en attente") %}
+    {{ stats.waiting }}
+  {% endcall %}
+  {% call description_detail_vertical("Candidatures à contacter") %}
+    {{ stats.to_contact }}
+  {% endcall %}
+  {% call description_detail_vertical("Candidatures confirmées") %}
+    {{ stats.validated }}
+  {% endcall %}
+  {% call description_detail_vertical("Candidatures de backup") %}
+    {{ stats.backup }}
+  {% endcall %}
+</div>

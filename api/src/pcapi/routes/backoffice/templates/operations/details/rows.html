@@ -1,0 +1,123 @@
+{% import "components/badges.html" as badges with context %}
+{% import "components/links.html" as links %}
+{% set table_id = "operation-table" %}
+{% set can_manage_event = has_permission("MANAGE_SPECIAL_EVENTS") %}
+{% macro change_response_status_action_form(response_id, status, text) %}
+  <li class="dropdown-item p-0">
+    <form action="{{ url_for('backoffice_web.operations.set_response_status', special_event_id=special_event.id, response_id=response_id) }}"
+          name="{{ url_for('backoffice_web.operations.set_response_status', special_event_id=special_event.id, response_id=response_id) | action_to_name }}"
+          hx-target="#{{ table_id }}"
+          hx-post="{{ url_for('backoffice_web.operations.set_response_status', special_event_id=special_event.id, response_id=response_id) }}"
+          hx-swap="outerHTML"
+          hx-trigger="submit"
+          method="post">
+      {{ csrf_token }}
+      <input type="hidden"
+             value="{{ status }}"
+             name="response_status">
+      <button type="submit"
+              class="btn btn-sm d-block w-100 text-start px-3">{{ text }}</button>
+    </form>
+  </li>
+{% endmacro %}
+{% for row in items %}
+  {% set response = row.SpecialEventResponse %}
+  <tr id="operation-response-row-{{ response.id }}">
+    {% if can_manage_event %}
+      <td>
+        <input type="checkbox"
+               class="form-check-input"
+               name="pc-table-multi-select-check-{{ response.id }}"
+               data-id="{{ response.id }}" />
+      </td>
+    {% endif %}
+    <td>
+      <div class="d-flex">
+        <button class="btn btn-sm btn-outline-primary-subtle-bg pc-btn-chevron-toggle"
+                data-bs-toggle="collapse"
+                data-bs-target=".pc-response-{{ response.id }}">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+        {% if can_manage_event %}
+          <div class="dropdown">
+            <button type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    class="btn btn-outline-primary-subtle-bg border-0 px-2 py-1">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu">
+              {% if response.status != response.status.PRESELECTED %}
+                {{ change_response_status_action_form(response.id, "PRESELECTED", "À contacter") }}
+              {% endif %}
+              {% if response.status != response.status.REJECTED %}
+                {{ change_response_status_action_form(response.id, "REJECTED", "Rejeter") }}
+              {% endif %}
+              {% if response.status != response.status.WAITING %}
+                {{ change_response_status_action_form(response.id, "WAITING", "En attente") }}
+              {% endif %}
+              {% if response.status != response.status.VALIDATED %}
+                {{ change_response_status_action_form(response.id, "VALIDATED", "Confirmer") }}
+              {% endif %}
+              {% if response.status != response.status.WITHDRAWN %}
+                {{ change_response_status_action_form(response.id, "WITHDRAWN", "Désister") }}
+              {% endif %}
+              {% if response.status != response.status.BACKUP %}{{ change_response_status_action_form(response.id, "BACKUP", "Backup") }}{% endif %}
+            </ul>
+          </div>
+        {% endif %}
+      </div>
+    </td>
+    <td>{{ response.id }}</td>
+    <td>
+      {% if response.user %}
+        {{ links.build_public_user_name_to_details_link(response.user) }}
+      {% else %}
+        {{ response.email }}
+      {% endif %}
+    </td>
+    <td>{{ response.status | format_special_event_response_status }}</td>
+    <td>
+      {% if response.user %}
+        {{ row.try_count }}
+      {% else %}
+        -
+      {% endif %}
+    </td>
+    <td>
+      {% if response.user %}
+        {{ row.selected_count }}
+      {% else %}
+        -
+      {% endif %}
+    </td>
+    <td>
+      {% if response.user %}
+        {% for role in response.user.roles %}{{ role | format_role(deposits=response.user.deposits) | format_badge("primary") }}{% endfor %}
+      {% else %}
+        -
+      {% endif %}
+    </td>
+    <td>
+      {% if response.user and row.account_tags %}
+        {% call badges.badges_container() %}
+          {% for tag in row.account_tags %}{{ tag | format_badge("secondary") }}{% endfor %}
+        {% endcall %}
+      {% endif %}
+    </td>
+    <td>{{ response.dateSubmitted | format_date_time }}</td>
+  </tr>
+  <tr class="collapse accordion-collapse pc-response-{{ response.id }}"
+      id="operation-response-row-{{ response.id }}-details">
+    <td colspan="100%">
+      <div class="row mx-2 vstack gap-4">
+        {% for question in special_event.questions | sort(attribute='id') %}
+          <div>
+            <div class="text-body-secondary fs-7">{{ question.title }}</div>
+            <div>{{ (row.full_answers or {}).get(question.id|string) | empty_string_if_null | nl2br}}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </td>
+  </tr>
+{% endfor %}
