@@ -385,7 +385,6 @@ class Returns200Test:
             name="Name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             venue=venue,
-            url="http://example.com/offer",
             audioDisabilityCompliant=False,
             mentalDisabilityCompliant=False,
             motorDisabilityCompliant=False,
@@ -489,23 +488,45 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["global"] == ["Les extraData des offres avec produit ne sont pas modifiables"]
 
+    def test_fail_when_body_has_null_url_field(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.LIVESTREAM_MUSIQUE.id,
+            venue=venue,
+        )
+
+        data = {
+            "url": None,
+        }
+        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json["url"][0] == 'Une offre de catégorie "Livestream musical" doit contenir un champ `url`'
+
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.LIVESTREAM_MUSIQUE.id,
+            url="http://example.com/offer",
+            venue=venue,
+        )
+
+        data = {
+            "url": None,
+        }
+        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json["url"][0] == 'Une offre de catégorie "Livestream musical" doit contenir un champ `url`'
+
     @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
     def test_fail_when_body_has_null_accessibility_fields(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
-            name="Name",
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
             venue=venue,
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=False,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=False,
         )
 
         data = {
-            "name": "Name",
-            "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "audioDisabilityCompliant": None,
         }
         response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
