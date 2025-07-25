@@ -62,6 +62,9 @@ export default defineConfig(({ mode }) => {
       maxThreads: 6,
       testTimeout: 30000,
       exclude: ['**/*.stories.tsx', ...configDefaults.exclude],
+      env: {
+        TZ: 'UTC',
+      },
     },
     css: {
       devSourcemap: true,
