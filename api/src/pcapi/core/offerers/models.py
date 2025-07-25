@@ -818,10 +818,12 @@ class OpeningHours(PcObject, Base, Model):
     __tablename__ = "opening_hours"
 
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=True, index=True)
-    venue: sa_orm.Mapped[Venue] = sa_orm.relationship("Venue", foreign_keys=[venueId], back_populates="openingHours")
+    venue: sa_orm.Mapped[Venue | None] = sa_orm.relationship(
+        "Venue", foreign_keys=[venueId], back_populates="openingHours"
+    )
 
     offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=True, index=True)
-    offer: sa_orm.Mapped["offers_models.Offer"] = sa_orm.relationship(
+    offer: sa_orm.Mapped["offers_models.Offer | None"] = sa_orm.relationship(
         "Offer", foreign_keys=[offerId], back_populates="openingHours"
     )
 

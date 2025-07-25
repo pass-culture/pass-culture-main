@@ -26,16 +26,11 @@ describe('Venue edition payload serializer', () => {
     })
     expect(serializeEditVenueBodyModel(initialFormValues, true, false)).toEqual(
       expect.objectContaining({
-        openingHours: expect.arrayContaining([
+        openingHours: expect.objectContaining(
           {
-            weekday: 'monday',
-            timespan: [
-              ['01:00', '09:00'],
-              ['10:00', '11:00'],
-            ],
+            'MONDAY': [['01:00', '09:00'], ['10:00', '11:00']],
           },
-          { weekday: 'tuesday', timespan: [] },
-        ]),
+        ),
       })
     )
   })
@@ -46,11 +41,7 @@ describe('Venue edition payload serializer', () => {
       openingHours: null,
     })
     expect(serializeEditVenueBodyModel(initialFormValues, true, true)).toEqual(
-      expect.objectContaining({
-        openingHours: expect.arrayContaining([
-          { weekday: 'tuesday', timespan: [] },
-        ]),
-      })
+      expect.objectContaining({ openingHours: {} }),
     )
   })
 })
