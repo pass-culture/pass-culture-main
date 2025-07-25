@@ -1,11 +1,16 @@
+import csv
 import dataclasses
 import datetime
+import decimal
+import enum
+import io
 import logging
 import typing
 from functools import partial
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+import xlsxwriter
 
 from pcapi import settings
 from pcapi.core import search
@@ -49,6 +54,7 @@ from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequest
 from pcapi.routes.public import utils as public_utils
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
 from pcapi.routes.serialization import collective_offers_serialize
+from pcapi.utils import date as date_utils
 from pcapi.utils import image_conversion
 from pcapi.utils import rest
 
@@ -153,6 +159,183 @@ def list_collective_offers_for_pro_user(
     merged_offers.sort(key=lambda offer: offer.sort_criterion, reverse=True)
 
     return merged_offers[0:OFFERS_RECAP_LIMIT]
+
+
+class CollectiveOfferExportHeader(enum.Enum):
+    offer_name = "Nom de l'offre"
+    offer_id = "Numéro de l'offre"
+    offer_status = "Statut de l'offre"
+    offer_location = "Localisation de l'offre"
+    venue_common_name = "Structure"
+    institution_name = "Etablissement"
+    institution_postal_code = "Code postal de l'établissement"
+    institution_uai = "UAI de l'établissement"
+    institution_contact = "Contact de l'établissement"
+    start_datetime = "Date de début de l'évènement"
+    end_datetime = "Date de fin de l'évènement"
+    price = "Prix"
+    number_of_tickets = "Nombre de participants"
+    booking_datetime = "Date de réservation de l'offre"
+    reimbursement_datetime = "Date de remboursement"
+
+
+COLLECTIVE_OFFERS_EXPORT_HEADER = [header.value for header in CollectiveOfferExportHeader]
+
+
+def _format_export_datetime(date_time: datetime.datetime, timezone: str | None) -> str:
+    if timezone is not None:
+        date_time = date_utils.default_timezone_to_local_datetime(date_time, timezone)
+
+    return date_time.isoformat()
+
+
+@dataclasses.dataclass(kw_only=True, slots=True)
+class CollectiveOfferExportData:
+    offer_name: str
+    offer_id: int
+    offer_status: str
+    offer_location: str = ""
+    venue_common_name: str
+    institution_name: str | None = None
+    institution_postal_code: str | None = None
+    institution_uai: str | None = None
+    institution_contact: str | None = None
+    start_datetime: str | None = None
+    end_datetime: str | None = None
+    price: decimal.Decimal | None = None
+    number_of_tickets: int | None = None
+    booking_datetime: str | None = None
+    reimbursement_datetime: str | None = None
+
+
+def _get_collective_offer_export_data(
+    collective_offer: educational_models.CollectiveOffer,
+) -> CollectiveOfferExportData:
+    venue = collective_offer.venue
+    collective_stock = collective_offer.collectiveStock
+    collective_booking = collective_offer.lastBooking
+    institution = collective_offer.institution
+
+    result = CollectiveOfferExportData(
+        offer_name=collective_offer.name,
+        offer_id=collective_offer.id,
+        offer_status=collective_offer.displayedStatus.value,
+        venue_common_name=venue.common_name,
+    )
+
+    if collective_offer.offererAddress is not None:
+        result.offer_location = collective_offer.offererAddress.address.fullAddress
+
+    if collective_offer.offererAddress is not None:
+        timezone = collective_offer.offererAddress.address.timezone
+    elif venue.offererAddress is not None:
+        timezone = venue.offererAddress.address.timezone
+    else:
+        timezone = None
+
+    if institution is not None:
+        result.institution_name = institution.full_name
+        result.institution_postal_code = institution.postalCode
+        result.institution_uai = institution.institutionId
+
+    if collective_stock is not None:
+        result.start_datetime = _format_export_datetime(collective_stock.startDatetime, timezone)
+        result.end_datetime = _format_export_datetime(collective_stock.endDatetime, timezone)
+        result.price = collective_stock.price
+        result.number_of_tickets = collective_stock.numberOfTickets
+
+    if collective_booking is not None:
+        result.institution_contact = collective_booking.educationalRedactor.email
+
+        result.booking_datetime = _format_export_datetime(collective_booking.dateCreated, timezone)
+
+        if collective_booking.reimbursementDate is not None:
+            result.reimbursement_datetime = _format_export_datetime(collective_booking.reimbursementDate, timezone)
+    elif collective_offer.teacher:
+        result.institution_contact = collective_offer.teacher.email
+    else:
+        result.institution_contact = None
+
+    return result
+
+
+def _get_query_with_loading_for_export(
+    collective_offers_query: "sa_orm.Query[educational_models.CollectiveOffer]",
+) -> "sa_orm.Query[educational_models.CollectiveOffer]":
+    return collective_offers_query.options(
+        sa_orm.joinedload(educational_models.CollectiveOffer.venue)
+        .joinedload(offerers_models.Venue.offererAddress)
+        .joinedload(offerers_models.OffererAddress.address),
+        sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock)
+        .selectinload(educational_models.CollectiveStock.collectiveBookings)
+        .joinedload(educational_models.CollectiveBooking.educationalRedactor),
+        sa_orm.joinedload(educational_models.CollectiveOffer.institution),
+        sa_orm.joinedload(educational_models.CollectiveOffer.offererAddress).joinedload(
+            offerers_models.OffererAddress.address
+        ),
+    )
+
+
+def get_collective_offers_csv_report(
+    collective_offers_query: "sa_orm.Query[educational_models.CollectiveOffer]",
+) -> bytes:
+    output = io.StringIO()
+    writer = csv.DictWriter(
+        output,
+        fieldnames=COLLECTIVE_OFFERS_EXPORT_HEADER,
+        dialect=csv.excel,
+        delimiter=";",
+        quoting=csv.QUOTE_NONNUMERIC,
+    )
+    writer.writeheader()
+
+    collective_offers_query = _get_query_with_loading_for_export(collective_offers_query)
+
+    for collective_offer in collective_offers_query.yield_per(1000):
+        offer_data = _get_collective_offer_export_data(collective_offer)
+
+        writer.writerow({header.value: getattr(offer_data, header.name) for header in CollectiveOfferExportHeader})
+
+    return output.getvalue().encode("utf-8-sig")
+
+
+def get_collective_offers_excel_report(
+    collective_offers_query: "sa_orm.Query[educational_models.CollectiveOffer]",
+) -> bytes:
+    output = io.BytesIO()
+    # from the xlsxwriter doc on "constant_memory" option:
+    # The optimization works by flushing each row after a subsequent row is written
+    options = {"constant_memory": True}
+    workbook = xlsxwriter.Workbook(output, options=options)
+
+    bold = workbook.add_format({"bold": 1})
+    currency_format = workbook.add_format({"num_format": "0.00 [$€-40C]"})
+    col_width = 18
+
+    worksheet = workbook.add_worksheet()
+
+    # set header and columns width
+    worksheet.write_row(row=0, col=0, data=COLLECTIVE_OFFERS_EXPORT_HEADER, cell_format=bold)
+    worksheet.set_column(first_col=0, last_col=len(COLLECTIVE_OFFERS_EXPORT_HEADER) - 1, width=col_width)
+
+    # set price column format
+    price_index = COLLECTIVE_OFFERS_EXPORT_HEADER.index(CollectiveOfferExportHeader.price.value)
+    worksheet.set_column(first_col=price_index, last_col=price_index, cell_format=currency_format)
+
+    collective_offers_query = _get_query_with_loading_for_export(collective_offers_query)
+
+    row = 1
+    for collective_offer in collective_offers_query.yield_per(1000):
+        offer_data = _get_collective_offer_export_data(collective_offer)
+
+        worksheet.write_row(
+            row=row, col=0, data=[getattr(offer_data, header.name) for header in CollectiveOfferExportHeader]
+        )
+
+        row += 1
+
+    workbook.close()
+    return output.getvalue()
 
 
 def get_educational_domains_from_ids(

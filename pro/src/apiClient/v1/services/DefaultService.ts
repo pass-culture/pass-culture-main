@@ -877,6 +877,96 @@ export class DefaultService {
     });
   }
   /**
+   * get_collective_offers_csv <GET>
+   * @param nameOrIsbn
+   * @param offererId
+   * @param status
+   * @param venueId
+   * @param creationMode
+   * @param periodBeginningDate
+   * @param periodEndingDate
+   * @param collectiveOfferType
+   * @param format
+   * @returns any OK
+   * @throws ApiError
+   */
+  public getCollectiveOffersCsv(
+    nameOrIsbn?: string | null,
+    offererId?: number | null,
+    status?: Array<CollectiveOfferDisplayedStatus> | null,
+    venueId?: number | null,
+    creationMode?: string | null,
+    periodBeginningDate?: string | null,
+    periodEndingDate?: string | null,
+    collectiveOfferType?: CollectiveOfferType | null,
+    format?: EacFormat | null,
+  ): CancelablePromise<any> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/collective/offers/csv',
+      query: {
+        'nameOrIsbn': nameOrIsbn,
+        'offererId': offererId,
+        'status': status,
+        'venueId': venueId,
+        'creationMode': creationMode,
+        'periodBeginningDate': periodBeginningDate,
+        'periodEndingDate': periodEndingDate,
+        'collectiveOfferType': collectiveOfferType,
+        'format': format,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_collective_offers_excel <GET>
+   * @param nameOrIsbn
+   * @param offererId
+   * @param status
+   * @param venueId
+   * @param creationMode
+   * @param periodBeginningDate
+   * @param periodEndingDate
+   * @param collectiveOfferType
+   * @param format
+   * @returns any OK
+   * @throws ApiError
+   */
+  public getCollectiveOffersExcel(
+    nameOrIsbn?: string | null,
+    offererId?: number | null,
+    status?: Array<CollectiveOfferDisplayedStatus> | null,
+    venueId?: number | null,
+    creationMode?: string | null,
+    periodBeginningDate?: string | null,
+    periodEndingDate?: string | null,
+    collectiveOfferType?: CollectiveOfferType | null,
+    format?: EacFormat | null,
+  ): CancelablePromise<any> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/collective/offers/excel',
+      query: {
+        'nameOrIsbn': nameOrIsbn,
+        'offererId': offererId,
+        'status': status,
+        'venueId': venueId,
+        'creationMode': creationMode,
+        'periodBeginningDate': periodBeginningDate,
+        'periodEndingDate': periodEndingDate,
+        'collectiveOfferType': collectiveOfferType,
+        'format': format,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * get_autocomplete_educational_redactors_for_uai <GET>
    * @param uai
    * @param candidate
