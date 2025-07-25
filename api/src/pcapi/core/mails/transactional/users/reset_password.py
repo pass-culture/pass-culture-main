@@ -5,7 +5,7 @@ from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users import constants
 from pcapi.models import db
-from pcapi.utils.urls import generate_firebase_dynamic_link
+from pcapi.utils.urls import generate_app_link
 
 
 def send_reset_password_email_to_user(
@@ -34,7 +34,7 @@ def get_reset_password_email_data(
     # passing an empty expiration date. The token hence has one.
     expiration_date = token.get_expiration_date_from_token()
     assert expiration_date  # helps mypy
-    reset_password_link = generate_firebase_dynamic_link(
+    reset_password_link = generate_app_link(
         path="mot-de-passe-perdu",
         params={
             "token": token.encoded_token,

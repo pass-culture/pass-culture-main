@@ -18,7 +18,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.repository import transaction
-from pcapi.utils.urls import generate_firebase_dynamic_link
+from pcapi.utils.urls import generate_app_link
 
 
 logger = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ def _build_link_for_email_change_action(
     if new_email:
         params["new_email"] = new_email
 
-    return generate_firebase_dynamic_link(path, params)
+    return generate_app_link(path, params)
 
 
 def send_confirmation_email_for_email_change(user: models.User) -> None:
