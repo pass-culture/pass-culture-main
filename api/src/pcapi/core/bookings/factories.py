@@ -16,7 +16,7 @@ from . import api
 from . import models
 
 
-class BookingFactory(BaseFactory):
+class BookingFactory(BaseFactory[models.Booking]):
     class Meta:
         model = models.Booking
 
