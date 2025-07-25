@@ -748,7 +748,7 @@ def create_offers_interactions() -> None:
 @log_func_duration
 def create_offers_with_video_url() -> None:
     metadata = offers_factories.OfferMetaDataFactory(
-        videoUrl="https://www.youtube.com/watch?v=hWdLhB2okqA", offer__name="Offre avec video"
+        videoUrl="https://www.youtube.com/watch?v=e_04ZrNroTo", offer__name="Offre avec video"
     )
     offers_factories.StockFactory.create(offer=metadata.offer)
 

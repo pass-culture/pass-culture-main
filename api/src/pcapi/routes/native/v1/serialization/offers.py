@@ -23,6 +23,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models
 from pcapi.core.offers import offer_metadata
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.offers.api import extract_youtube_video_id
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import ReasonMeta
@@ -355,8 +356,12 @@ class BaseOfferResponseGetterDict(GetterDict):
         if key == "publicationDate":
             return offer.bookingAllowedDatetime  # FIXME: to be removed when min app version stop using publicationDate
 
-        if key == "videoUrl":
-            return offer.metaData.videoUrl if offer.metaData else None
+        if key == "video":
+            if not (offer.metaData and offer.metaData.videoUrl):
+                return None
+
+            video_id = extract_youtube_video_id(offer.metaData.videoUrl)
+            return OfferVideo(id=video_id)
 
         return super().get(key, default)
 
@@ -423,6 +428,10 @@ class OfferArtist(ConfiguredBaseModel):
     name: str
 
 
+class OfferVideo(ConfiguredBaseModel):
+    id: str | None
+
+
 class BaseOfferResponse(ConfiguredBaseModel):
     id: int
     accessibility: OfferAccessibilityResponse
@@ -452,7 +461,7 @@ class BaseOfferResponse(ConfiguredBaseModel):
     stocks: list[OfferStockResponse]
     subcategoryId: subcategories.SubcategoryIdEnum
     venue: OfferVenueResponse
-    videoUrl: str | None
+    video: OfferVideo | None
     withdrawalDetails: str | None
 
     class Config:

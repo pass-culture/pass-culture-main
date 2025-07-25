@@ -5,6 +5,7 @@ import difflib
 import enum
 import functools
 import logging
+import re
 import time
 import typing
 from contextlib import suppress
@@ -2599,3 +2600,21 @@ def _likes_count_query(start: int, end: int) -> sa.sql.expression.Select:
         .where(reactions_models.Reaction.productId >= start, reactions_models.Reaction.productId < end)
         .group_by(reactions_models.Reaction.productId)
     )
+
+
+def extract_youtube_video_id(url: str) -> str | None:
+    if not isinstance(url, str):
+        return None
+
+    youtube_regex = (
+        r"(https?://)?"
+        r"(www\.)?"
+        r"(m\.)?"
+        r"(youtube\.com|youtu\.be)"
+        r'(/watch\?v=|/embed/|/v/|/e/|/shorts/|/)(?P<video_id>[^"&?\/\s]{11})'
+    )
+    pattern = re.compile(youtube_regex)
+    if match := pattern.match(url):
+        return match.group("video_id")
+
+    return None
