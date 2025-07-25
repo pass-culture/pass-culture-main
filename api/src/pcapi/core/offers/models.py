@@ -938,6 +938,7 @@ class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
     def isThing(self) -> bool:
         return not self.subcategory.is_event
 
+    # TODO (igabriele, 2025-07-25): Rename that to `hasUrl` to avoid multiplying vocabulary terms related to online/offline offers.
     @hybrid_property
     def isDigital(self) -> bool:
         return self.url is not None and self.url != ""

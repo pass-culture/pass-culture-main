@@ -317,6 +317,29 @@ class Returns201Test:
         assert offer.motorDisabilityCompliant == True
         assert offer.visualDisabilityCompliant == True
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
+    def test_create_offer_skip_url_field_requirement(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        data = {
+            "name": "New Offer",
+            "subcategoryId": subcategories.LIVESTREAM_MUSIQUE.id,
+            "venueId": venue.id,
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": True,
+        }
+        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+
+        assert response.status_code == 201
+
+        offer = db.session.get(Offer, response.json["id"])
+        assert offer.isDigital is True
+        assert offer.url is None
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
@@ -439,6 +462,25 @@ class Returns400Test:
         assert response.status_code == 400
         msg = "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
         assert response.json["subcategory"] == [msg]
+
+    def test_create_offer_require_url_field(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        data = {
+            "name": "New Offer",
+            "subcategoryId": subcategories.LIVESTREAM_MUSIQUE.id,
+            "venueId": venue.id,
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": True,
+        }
+        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+
+        assert response.status_code == 400
+        assert response.json["url"][0] == 'Une offre de catégorie "Livestream musical" doit contenir un champ `url`'
 
     @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
     def test_fail_when_body_is_missing_accessibility_fields(self, client):
