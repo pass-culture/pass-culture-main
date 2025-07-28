@@ -278,4 +278,30 @@ describe('StocksCalendar', () => {
       screen.getByText('L’évènement doit être à venir')
     ).toBeInTheDocument()
   })
+
+  it('should go back to page 1 when filtering', async () => {
+    renderStocksCalendar(
+      Array(50)
+        .fill(null)
+        .map((_, index) =>
+          getOfferStockFactory({ id: index, priceCategoryId: 1 })
+        )
+    )
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))
+
+    expect(screen.getByText('Page 2/3'))
+
+    await userEvent.type(screen.getByLabelText('Horaire'), '00:00')
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Réinitialiser les filtres' })
+    )
+
+    expect(screen.getByText('Page 1/3'))
+  })
 })
