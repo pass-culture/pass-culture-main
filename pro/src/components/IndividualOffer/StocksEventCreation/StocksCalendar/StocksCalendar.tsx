@@ -132,7 +132,12 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
                 priceCategories={offer.priceCategories}
                 filters={appliedFilters}
                 sortType={appliedSort}
-                onUpdateFilters={setAppliedFilters}
+                onUpdateFilters={(filters) => {
+                  //  Go back to the first page.
+                  //  Because the current page may not exist anymore if there are less filtered dates than before
+                  setPage(1)
+                  setAppliedFilters(filters)
+                }}
                 onUpdateSort={(sort, desc) => {
                   setAppliedSort({
                     sort: sort ? sort : undefined,
