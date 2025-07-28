@@ -1,5 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react'
 
+import dog from '../assets/dog.jpg'
+
 import { CheckboxGroup, CheckboxGroupOption } from './CheckboxGroup'
 
 const defaultOptions: CheckboxGroupOption[] = [
@@ -13,19 +15,22 @@ const detailedOptions: CheckboxGroupOption[] = [
     label: 'Detailed 1',
     value: 'a',
     variant: 'detailed',
-    asset: { variant: 'icon', src: 'full-archive' },
+    description: 'Detailed description 1',
+    asset: { variant: 'image', src: dog },
   },
   {
     label: 'Detailed 2',
     value: 'b',
     variant: 'detailed',
-    asset: { variant: 'icon', src: 'full-archive' },
+    description: 'Detailed description 2',
+    asset: { variant: 'image', src: dog },
   },
   {
     label: 'Detailed 3',
     value: 'c',
     variant: 'detailed',
-    asset: { variant: 'icon', src: 'full-archive' },
+    description: 'Detailed description 3',
+    asset: { variant: 'image', src: dog },
   },
 ]
 
