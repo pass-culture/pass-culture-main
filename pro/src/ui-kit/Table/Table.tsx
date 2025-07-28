@@ -1,11 +1,7 @@
 import classNames from 'classnames'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 
-<<<<<<< Updated upstream
-import { SortingMode } from 'commons/hooks/useColumnSorting'
-=======
 import { SortingMode, useColumnSorting } from 'commons/hooks/useColumnSorting'
->>>>>>> Stashed changes
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { Skeleton } from 'ui-kit/Skeleton/Skeleton'
 
@@ -20,7 +16,7 @@ export enum TableVariant {
 
 type NoResultProps = {
   message: string
-  resetFilter: () => void
+  onFilterReset: () => void
 }
 
 export interface Column<T> {
@@ -33,8 +29,6 @@ export interface Column<T> {
   bodyHidden?: boolean
   headerHidden?: boolean
 }
-
-type SortDirection = SortingMode.ASC | SortingMode.DESC | SortingMode.NONE
 
 interface TableProps<T extends { id: string | number }> {
   title?: string
@@ -66,7 +60,7 @@ function getValue<T>(
   if (typeof ordererField === 'string') {
     return ordererField.split('.').reduce<any>((obj, key) => obj?.[key], row)
   }
-  return (row as any)[ordererField]
+  return row[ordererField]
 }
 
 export function Table<
@@ -90,80 +84,72 @@ export function Table<
   getFullRowContent,
   isRowSelectable,
 }: TableProps<T>) {
-  const [sortKey, setSortKey] = useState<string | null>(null)
-  const [sortDir, setSortDir] = useState<SortDirection>(SortingMode.NONE)
-  const [selectedIds, setSelectedIds] = useState<Set<string | number>>(
-    new Set(controlledSelectedIds || [])
-  )
+  const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
+    useColumnSorting<unknown>()
 
-  useEffect(() => {
-    if (controlledSelectedIds) {
-      setSelectedIds(new Set(controlledSelectedIds))
+  const [uncontrolledSelectedIds, setUncontrolledSelectedIds] = useState<
+    Set<string | number>
+  >(new Set())
+
+  const isControlled = controlledSelectedIds !== undefined
+  const selectedIds = isControlled
+    ? controlledSelectedIds
+    : uncontrolledSelectedIds
+
+  const updateSelectedIds = (newSelectedIds: Set<string | number>) => {
+    if (!isControlled) {
+      setUncontrolledSelectedIds(newSelectedIds)
     }
-  }, [controlledSelectedIds])
+    onSelectionChange?.(data.filter((r) => newSelectedIds.has(r.id)))
+  }
+
+  function sortTableColumn(col: unknown) {
+    onColumnHeaderClick(col)
+  }
 
   const selectableRows = useMemo(
     () => (isRowSelectable ? data.filter(isRowSelectable) : data),
     [data, isRowSelectable]
   )
 
-  const sortedData = useMemo(() => {
-    if (!sortKey) {
-      return data
-    }
-    const col = columns.find((c) => c.id === sortKey)
-    if (!col) {
-      return data
-    }
-
-    return [...data].sort((a, b) => {
-      const va = getValue(a, col.ordererField)
-      const vb = getValue(b, col.ordererField)
-      if (va === vb) {
-        return 0
-      }
-      return (va as any) < (vb as any)
-        ? sortDir === SortingMode.ASC
-          ? -1
-          : 1
-        : sortDir === SortingMode.ASC
-          ? 1
-          : -1
-    })
-  }, [data, sortKey, sortDir, columns])
-
-  const toggleSort = (id: string) => {
-    if (sortKey === id) {
-      setSortDir((prev) =>
-        prev === SortingMode.ASC ? SortingMode.DESC : SortingMode.ASC
-      )
-    } else {
-      setSortKey(id)
-      setSortDir(SortingMode.ASC)
-    }
-  }
-
   const toggleSelectAll = () => {
     if (selectedIds.size === selectableRows.length) {
-      setSelectedIds(new Set())
-      onSelectionChange?.([])
+      updateSelectedIds(new Set())
     } else {
-      const all = new Set(selectableRows.map((r) => r.id))
-      setSelectedIds(all)
-      onSelectionChange?.(selectableRows)
+      updateSelectedIds(new Set(selectableRows.map((r) => r.id)))
     }
   }
 
   const toggleSelectRow = (row: T) => {
     const newSet = new Set(selectedIds)
-    if (newSet.has(row.id)) {
-      newSet.delete(row.id)
-    } else {
-      newSet.add(row.id)
-    }
-    setSelectedIds(newSet)
-    onSelectionChange?.(data.filter((r) => newSet.has(r.id)))
+    newSet.has(row.id) ? newSet.delete(row.id) : newSet.add(row.id)
+    updateSelectedIds(newSet)
   }
+
+  const sortedData = useMemo(() => {
+    if (!currentSortingColumn) {
+      return data
+    }
+    const col = columns.find((c) => c.id === currentSortingColumn)
+    if (!col) {
+      return data
+    }
+
+    return [...data].sort((a, b) => {
+      const valueA = getValue(a, col.ordererField)
+      const valueB = getValue(b, col.ordererField)
+      if (valueA === valueB) {
+        return 0
+      }
+      return valueA < valueB
+        ? currentSortingMode === SortingMode.ASC
+          ? -1
+          : 1
+        : currentSortingMode === SortingMode.ASC
+          ? 1
+          : -1
+    })
+  }, [data, currentSortingColumn, currentSortingMode, columns])
 
   return (
     <div className={classNames(styles.wrapper, className)} tabIndex={0}>
@@ -193,7 +179,6 @@ export function Table<
       )}
 
       <table
-        role="table"
         className={classNames(styles['table'], {
           [styles['table-separate']]: variant === TableVariant.SEPARATE,
           [styles['table-collapse']]: variant === TableVariant.COLLAPSE,
@@ -209,11 +194,7 @@ export function Table<
             })}
           >
             {selectable && (
-              <th
-                role="columnheader"
-                scope="col"
-                className={styles['table-header-th']}
-              >
+              <th scope="col" className={styles['table-header-th']}>
                 <span className={styles['visually-hidden']}>Sélectionner</span>
               </th>
             )}
@@ -237,8 +218,12 @@ export function Table<
                 >
                   {col.sortable ? (
                     <SortColumn
-                      onClick={() => toggleSort(col.id)}
-                      sortingMode={sortDir}
+                      onClick={() => sortTableColumn(col.id)}
+                      sortingMode={
+                        currentSortingColumn === col.id
+                          ? currentSortingMode
+                          : SortingMode.NONE
+                      }
                     >
                       {col.label}
                     </SortColumn>
@@ -251,7 +236,7 @@ export function Table<
           </tr>
         </thead>
 
-        <tbody role="rowgroup">
+        <tbody>
           {isLoading &&
             Array.from({ length: 8 }).map((_, index) => (
               <tr key={`loading-row-${index}`}>
@@ -265,7 +250,7 @@ export function Table<
             <TableNoFilterResult
               colSpan={columns.length + (selectable ? 1 : 0)}
               message={noResult.message}
-              resetFilters={noResult.resetFilter}
+              resetFilters={noResult.onFilterReset}
             />
           )}
 
@@ -276,7 +261,6 @@ export function Table<
             return (
               <React.Fragment key={row.id}>
                 <tr
-                  role="row"
                   className={classNames(styles['table-row'], {
                     [styles.selected]: isSelected,
                   })}
@@ -291,7 +275,7 @@ export function Table<
                     >
                       <Checkbox
                         label={
-                          Object.prototype.hasOwnProperty.call(row, 'name')
+                          row.hasOwnProperty.call(row, 'name')
                             ? (row as any).name
                             : `ligne ${row.id}`
                         }

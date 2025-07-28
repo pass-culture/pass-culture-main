@@ -139,7 +139,7 @@ export const ReimbursementsInvoices = (): JSX.Element => {
         <InvoiceTable
           data={invoices}
           isLoading={hasInvoiceQuery.isLoading}
-          resetFilter={handleResetFilters}
+          onFilterReset={handleResetFilters}
         />
       )}
     </>

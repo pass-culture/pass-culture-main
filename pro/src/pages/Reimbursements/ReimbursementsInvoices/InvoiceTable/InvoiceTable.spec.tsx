@@ -69,7 +69,7 @@ const renderReimbursementsInvoicesTable = (
   invoices: InvoiceResponseV2Model[]
 ) => {
   return render(
-    <InvoiceTable data={invoices} isLoading={false} resetFilter={vi.fn()} />
+    <InvoiceTable data={invoices} isLoading={false} onFilterReset={vi.fn()} />
   )
 }
 
