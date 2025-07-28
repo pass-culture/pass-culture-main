@@ -61,7 +61,7 @@ def test_move_batch_offer(_extract_invalid_venues_to_csv_patch):
 
     origin_venue_id = origin_venue.id
 
-    _move_all_venue_offers(not_dry=True, origin=origin_venue.id, destination=destination_venue.id)
+    _move_all_venue_offers(dry_run=False, origin=origin_venue.id, destination=destination_venue.id)
 
     db.session.refresh(collective_offer)
     db.session.refresh(collective_offer2)

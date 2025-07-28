@@ -1,6 +1,7 @@
 import csv
 import logging
 import os
+import traceback
 import typing
 from functools import partial
 
@@ -267,8 +268,11 @@ def _soft_delete_origin_venue(origin_venue: offerers_models.Venue) -> None:
 
 
 @atomic()
-def _move_all_venue_offers(not_dry: bool, origin: int | None, destination: int | None) -> None:
+def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int | None) -> None:
     invalid_venues = []
+    if dry_run:
+        logger.info("Dry run mode enabled, no changes will be made to the database")
+        mark_transaction_as_invalid()
     for row in _get_venue_rows(origin, destination):
         origin_venue_id = int(row[ORIGIN_VENUE_ID_HEADER])
         destination_venue_id = int(row[DESTINATION_VENUE_ID_HEADER])
@@ -308,17 +312,17 @@ def _move_all_venue_offers(not_dry: bool, origin: int | None, destination: int |
                     _create_action_history(
                         origin_venue_id, destination_venue_id, destination_venue_updated_to_permanent
                     )
+                    db.session.flush()
 
-                    if not_dry:
+                    if not dry_run:
                         on_commit(partial(search.reindex_venue_ids, [origin_venue_id]))
-                        logger.info("Transfer done for venue %d to venue %d", origin_venue_id, destination_venue_id)
-                    else:
-                        db.session.flush()
-                        mark_transaction_as_invalid()
-            except sa_exc.SQLAlchemyError as error:
-                invalid_venues.append((origin_venue.id, destination_venue.id, "SQL error: " + str(error)))
-            except Exception as exception:
-                invalid_venues.append((origin_venue.id, destination_venue.id, "Python exception: " + str(exception)))
+                    logger.info("Transfer done for venue %d to venue %d", origin_venue_id, destination_venue_id)
+            except sa_exc.SQLAlchemyError:
+                invalid_venues.append((origin_venue.id, destination_venue.id, "SQL error: " + traceback.format_exc()))
+            except Exception:
+                invalid_venues.append(
+                    (origin_venue.id, destination_venue.id, "Python exception: " + traceback.format_exc())
+                )
     _extract_invalid_venues_to_csv(invalid_venues)
 
 
@@ -327,11 +331,12 @@ def _move_all_venue_offers(not_dry: bool, origin: int | None, destination: int |
 @click.option("--origin", type=int, required=False)
 @click.option("--destination", type=int, required=False)
 def move_batch_offer(not_dry: bool, origin: int | None, destination: int | None) -> None:
+    dry_run = not not_dry
     db.session.execute("SET SESSION statement_timeout = '1200s'")  # 20 minutes
-    _move_all_venue_offers(not_dry=not_dry, origin=origin, destination=destination)
+    _move_all_venue_offers(dry_run=dry_run, origin=origin, destination=destination)
     db.session.execute(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}")
 
-    if not_dry:
+    if not dry_run:
         logger.info("Finished")
     else:
         db.session.rollback()
