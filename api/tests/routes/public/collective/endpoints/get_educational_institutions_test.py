@@ -3,7 +3,6 @@ import pytest
 from pcapi.core import testing
 from pcapi.core.educational import factories as educational_factories
 
-from tests.conftest import TestClient
 from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 
 
@@ -15,11 +14,7 @@ class CollectiveOffersGetEducationalInstitutionTest(PublicAPIEndpointBaseHelper)
     num_queries = 1  # select api_key, offerer and provider
     num_queries += 1  # select educational_institution
 
-    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
-        num_queries = 2  # Select API key + rollback
-        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
-
-    def test_list_educational_institutions(self, client: TestClient):
+    def test_list_educational_institutions(self):
         plain_api_key, _ = self.setup_provider()
         expected_json = []
         for _ in range(0, 6):
@@ -36,22 +31,19 @@ class CollectiveOffersGetEducationalInstitutionTest(PublicAPIEndpointBaseHelper)
             )
 
         with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+            response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
         assert response.json == expected_json
 
-    def test_search_educational_institutions_postal_code(self, client: TestClient):
+    @pytest.mark.parametrize("postal_code_param", ["44100", "41"])
+    def test_search_educational_institutions_postal_code(self, postal_code_param):
         plain_api_key, _ = self.setup_provider()
         educational_institution1 = educational_factories.EducationalInstitutionFactory(postalCode="44100")
         educational_factories.EducationalInstitutionFactory()
 
-        # complete postal code
-        postal_code = educational_institution1.postalCode
         with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(
-                f"/v2/collective/educational-institutions/?postalCode={postal_code}"
-            )
+            response = self.make_request(plain_api_key, query_params={"postalCode": postal_code_param})
             assert response.status_code == 200
 
         assert response.json == [
@@ -65,31 +57,14 @@ class CollectiveOffersGetEducationalInstitutionTest(PublicAPIEndpointBaseHelper)
             },
         ]
 
-        # partial postal code
-        response = client.with_explicit_token(plain_api_key).get(
-            "/v2/collective/educational-institutions/?postalCode=41"
-        )
-
-        assert response.status_code == 200
-        assert response.json == [
-            {
-                "id": educational_institution1.id,
-                "uai": educational_institution1.institutionId,
-                "name": educational_institution1.name,
-                "postalCode": educational_institution1.postalCode,
-                "city": educational_institution1.city,
-                "institutionType": educational_institution1.institutionType,
-            },
-        ]
-
-    def test_search_educational_institutions_id(self, client: TestClient):
+    def test_search_educational_institutions_id(self):
         plain_api_key, _ = self.setup_provider()
         educational_institution1 = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalInstitutionFactory()
 
         institution_id = educational_institution1.id
         with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"id": institution_id})
+            response = self.make_request(plain_api_key, query_params={"id": institution_id})
             assert response.status_code == 200
 
         assert response.json == [
@@ -103,17 +78,15 @@ class CollectiveOffersGetEducationalInstitutionTest(PublicAPIEndpointBaseHelper)
             },
         ]
 
-    def test_search_educational_institutions_name(self, client: TestClient):
+    @pytest.mark.parametrize("institution_param", ["Spirou Magazine", "Spirou"])
+    def test_search_educational_institutions_name(self, institution_param):
         plain_api_key, _ = self.setup_provider()
-        educational_institution1 = educational_factories.EducationalInstitutionFactory(name="pouet")
+        educational_institution1 = educational_factories.EducationalInstitutionFactory(name="Spirou Magazine")
         educational_factories.EducationalInstitutionFactory()
 
-        institution_name = educational_institution1.name
         # test complete name
         with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(
-                self.endpoint_url, params={"name": institution_name}
-            )
+            response = self.make_request(plain_api_key, query_params={"name": institution_param})
             assert response.status_code == 200
 
         assert response.json == [
@@ -127,33 +100,14 @@ class CollectiveOffersGetEducationalInstitutionTest(PublicAPIEndpointBaseHelper)
             },
         ]
 
-        # test incomplete name
-        with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"name": "oue"})
-            assert response.status_code == 200
-
-        assert response.json == [
-            {
-                "id": educational_institution1.id,
-                "uai": educational_institution1.institutionId,
-                "name": educational_institution1.name,
-                "postalCode": educational_institution1.postalCode,
-                "city": educational_institution1.city,
-                "institutionType": educational_institution1.institutionType,
-            },
-        ]
-
-    def test_search_educational_institutions_city(self, client: TestClient):
+    @pytest.mark.parametrize("city_param", ["et_bim", "bim"])
+    def test_search_educational_institutions_city(self, city_param):
         plain_api_key, _ = self.setup_provider()
-        educational_institution1 = educational_factories.EducationalInstitutionFactory(city="pouet")
+        educational_institution1 = educational_factories.EducationalInstitutionFactory(city="et_bim")
         educational_factories.EducationalInstitutionFactory()
 
-        institution_city = educational_institution1.city
-        # test complete city
         with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(
-                self.endpoint_url, params={"city": institution_city}
-            )
+            response = self.make_request(plain_api_key, query_params={"city": city_param})
             assert response.status_code == 200
 
         assert response.json == [
@@ -167,33 +121,14 @@ class CollectiveOffersGetEducationalInstitutionTest(PublicAPIEndpointBaseHelper)
             },
         ]
 
-        # test incomplete city
-        with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"city": "oue"})
-            assert response.status_code == 200
-
-        assert response.json == [
-            {
-                "id": educational_institution1.id,
-                "uai": educational_institution1.institutionId,
-                "name": educational_institution1.name,
-                "postalCode": educational_institution1.postalCode,
-                "city": educational_institution1.city,
-                "institutionType": educational_institution1.institutionType,
-            },
-        ]
-
-    def test_search_educational_institutions_institution_type(self, client: TestClient):
+    @pytest.mark.parametrize("institution_type_param", ["et_paf", "paf"])
+    def test_search_educational_institutions_institution_type(self, institution_type_param):
         plain_api_key, _ = self.setup_provider()
-        educational_institution1 = educational_factories.EducationalInstitutionFactory(institutionType="pouet")
+        educational_institution1 = educational_factories.EducationalInstitutionFactory(institutionType="et_paf")
         educational_factories.EducationalInstitutionFactory()
 
-        # test complete city
-        institution_type = educational_institution1.institutionType
         with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(
-                self.endpoint_url, params={"institutionType": institution_type}
-            )
+            response = self.make_request(plain_api_key, query_params={"institutionType": institution_type_param})
             assert response.status_code == 200
 
         assert response.json == [
@@ -207,26 +142,7 @@ class CollectiveOffersGetEducationalInstitutionTest(PublicAPIEndpointBaseHelper)
             },
         ]
 
-        # test incomplete city
-
-        with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(
-                self.endpoint_url, params={"institutionType": "oue"}
-            )
-            assert response.status_code == 200
-
-        assert response.json == [
-            {
-                "id": educational_institution1.id,
-                "uai": educational_institution1.institutionId,
-                "name": educational_institution1.name,
-                "postalCode": educational_institution1.postalCode,
-                "city": educational_institution1.city,
-                "institutionType": educational_institution1.institutionType,
-            },
-        ]
-
-    def test_search_educational_institutions_multiple_filters(self, client: TestClient):
+    def test_search_educational_institutions_multiple_filters(self):
         plain_api_key, _ = self.setup_provider()
         educational_institution1 = educational_factories.EducationalInstitutionFactory(
             name="tralala",
@@ -240,10 +156,10 @@ class CollectiveOffersGetEducationalInstitutionTest(PublicAPIEndpointBaseHelper)
         educational_factories.EducationalInstitutionFactory(city="plouf")
         educational_factories.EducationalInstitutionFactory()
 
-        # test incomplete city
         with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(
-                self.endpoint_url, params={"institutionType": "oue", "name": "rala", "postalCode": "41", "city": "lou"}
+            response = self.make_request(
+                plain_api_key,
+                query_params={"institutionType": "oue", "name": "rala", "postalCode": "41", "city": "lou"},
             )
             assert response.status_code == 200
 
@@ -258,13 +174,13 @@ class CollectiveOffersGetEducationalInstitutionTest(PublicAPIEndpointBaseHelper)
             },
         ]
 
-    def test_limit_educational_institutions(self, client: TestClient):
+    def test_limit_educational_institutions(self):
         plain_api_key, _ = self.setup_provider()
         educational_institution1 = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalInstitutionFactory()
 
         with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"limit": 1})
+            response = self.make_request(plain_api_key, query_params={"limit": 1})
             assert response.status_code == 200
 
         assert response.json == [
@@ -278,19 +194,19 @@ class CollectiveOffersGetEducationalInstitutionTest(PublicAPIEndpointBaseHelper)
             },
         ]
 
-    def test_max_limit_educational_institutions(self, client: TestClient):
+    def test_max_limit_educational_institutions(self):
         plain_api_key, _ = self.setup_provider()
 
         educational_factories.EducationalInstitutionFactory.create_batch(25)
 
         with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"limit": 23})
+            response = self.make_request(plain_api_key, query_params={"limit": 23})
             assert response.status_code == 200
 
         assert len(response.json) == 20
 
         with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+            response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
         assert len(response.json) == 20

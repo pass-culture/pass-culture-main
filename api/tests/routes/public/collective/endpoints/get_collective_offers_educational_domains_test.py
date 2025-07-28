@@ -16,11 +16,7 @@ class CollectiveOffersGetEducationalDomainsTest(PublicAPIEndpointBaseHelper):
     num_queries = 1  # select api_key, offerer and provider
     num_queries += 1  # select educational_domain
 
-    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
-        num_queries = 2  # Select API key + rollback
-        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
-
-    def test_list_educational_domains(self, client):
+    def test_list_educational_domains(self):
         plain_api_key, _ = self.setup_provider()
 
         active_programs = educational_factories.NationalProgramFactory.create_batch(2)
@@ -34,7 +30,7 @@ class CollectiveOffersGetEducationalDomainsTest(PublicAPIEndpointBaseHelper):
         domain2 = educational_factories.EducationalDomainFactory(name="Cinéma, audiovisuel")
 
         with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+            response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
         response_list = sorted(response.json, key=itemgetter("id"))
@@ -44,12 +40,11 @@ class CollectiveOffersGetEducationalDomainsTest(PublicAPIEndpointBaseHelper):
             {"id": domain2.id, "name": "Cinéma, audiovisuel", "nationalPrograms": []},
         ]
 
-    def test_list_educational_domains_empty(self, client):
+    def test_list_educational_domains_empty(self):
         plain_api_key, _ = self.setup_provider()
 
-        client = client.with_explicit_token(plain_api_key)
         with testing.assert_num_queries(self.num_queries):
-            response = client.get(self.endpoint_url)
+            response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
         assert response.json == []

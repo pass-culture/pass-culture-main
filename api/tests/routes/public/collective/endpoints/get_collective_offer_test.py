@@ -20,14 +20,9 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
     num_queries += 1  # select collective_offer and collective_stock
     num_queries_error = num_queries + 1  # rollback
 
-    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
-        num_queries = 2  # Select API key + rollback
-        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
-
-    def test_get_offer(self, client):
-        venue_provider = provider_factories.VenueProviderFactory()
-
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+    def test_get_offer(self):
+        plain_api_key, provider = self.setup_provider()
+        venue_provider = provider_factories.VenueProviderFactory(provider=provider)
 
         national_program = educational_factories.NationalProgramFactory()
         domain = educational_factories.EducationalDomainFactory()
@@ -45,16 +40,14 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         offer_id = offer.id
 
         with assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                f"/v2/collective/offers/{offer_id}"
-            )
+            response = self.make_request(plain_api_key, {"offer_id": offer_id})
             assert response.status_code == 200
 
         assert sort_response_offer_json(response.json) == expected_serialized_offer(offer)
 
-    def test_get_offer_no_program_no_booking(self, client):
-        venue_provider = provider_factories.VenueProviderFactory()
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+    def test_get_offer_no_program_no_booking(self):
+        plain_api_key, provider = self.setup_provider()
+        venue_provider = provider_factories.VenueProviderFactory(provider=provider)
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer__provider=venue_provider.provider,
             collectiveOffer__nationalProgram=None,
@@ -62,80 +55,61 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         offer_id = stock.collectiveOffer.id
 
         with assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                f"/v2/collective/offers/{offer_id}"
-            )
+            response = self.make_request(plain_api_key, {"offer_id": offer_id})
             assert response.status_code == 200
 
         assert response.json["nationalProgram"] is None
         assert response.json["bookings"] == []
 
     def test_get_offer_on_school_location(self, client):
-        venue_provider = provider_factories.VenueProviderFactory()
-
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        plain_api_key, provider = self.setup_provider()
+        venue_provider = provider_factories.VenueProviderFactory(provider=provider)
 
         offer = educational_factories.CollectiveOfferOnSchoolLocationFactory(
             provider=venue_provider.provider,
         )
-
         offer_id = offer.id
 
         with assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                f"/v2/collective/offers/{offer_id}"
-            )
+            response = self.make_request(plain_api_key, {"offer_id": offer_id})
             assert response.status_code == 200
 
         assert "location" in response.json
+        assert response.json["location"] == {"type": "SCHOOL"}
 
-        assert response.json["location"] == {
-            "type": "SCHOOL",
-        }
-
-    def test_get_offer_on_address_venue_location(self, client):
-        venue_provider = provider_factories.VenueProviderFactory()
+    def test_get_offer_on_address_venue_location(self):
+        plain_api_key, provider = self.setup_provider()
+        venue_provider = provider_factories.VenueProviderFactory(provider=provider)
         venue = offerers_factories.VenueFactory()
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
         offer = educational_factories.CollectiveOfferOnAddressVenueLocationFactory(
             provider=venue_provider.provider,
             venue=venue,
         )
-
         offer_id = offer.id
 
         with assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                f"/v2/collective/offers/{offer_id}"
-            )
+            response = self.make_request(plain_api_key, {"offer_id": offer_id})
             assert response.status_code == 200
 
-        assert response.json["location"] == {
-            "type": "ADDRESS",
-            "isVenueAddress": True,
-        }
+        assert response.json["location"] == {"type": "ADDRESS", "isVenueAddress": True}
 
-    def test_get_offer_on_other_address_location(self, client):
-        venue_provider = provider_factories.VenueProviderFactory()
+    def test_get_offer_on_other_address_location(self):
+        plain_api_key, provider = self.setup_provider()
+        venue_provider = provider_factories.VenueProviderFactory(provider=provider)
         venue = offerers_factories.VenueFactory()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
         offer = educational_factories.CollectiveOfferOnOtherAddressLocationFactory(
             provider=venue_provider.provider,
             venue=venue,
             offererAddress=offerer_address,
         )
-
         offer_id = offer.id
         oa = offerer_address
-        offer.offerVenue
 
         with assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                f"/v2/collective/offers/{offer_id}"
-            )
+            response = self.make_request(plain_api_key, {"offer_id": offer_id})
             assert response.status_code == 200
 
         assert response.json["location"] == {
@@ -146,19 +120,16 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         }
 
     def test_get_offer_on_to_be_defined_location(self, client):
-        venue_provider = provider_factories.VenueProviderFactory()
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        plain_api_key, provider = self.setup_provider()
+        venue_provider = provider_factories.VenueProviderFactory(provider=provider)
 
         offer = educational_factories.CollectiveOfferOnToBeDefinedLocationFactory(
             provider=venue_provider.provider,
         )
-
         offer_id = offer.id
 
         with assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                f"/v2/collective/offers/{offer_id}"
-            )
+            response = self.make_request(plain_api_key, {"offer_id": offer_id})
             assert response.status_code == 200
 
         assert response.json["location"] == {
@@ -166,22 +137,18 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
             "comment": "In space",
         }
 
-    def test_offer_does_not_exists(self, client):
-        venue_provider = provider_factories.VenueProviderFactory()
-
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+    def test_offer_does_not_exists(self):
+        plain_api_key, provider = self.setup_provider()
+        provider_factories.VenueProviderFactory(provider=provider)
 
         with assert_num_queries(self.num_queries_error):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                "/v2/collective/offers/25"
-            )
+            response = self.make_request(plain_api_key, {"offer_id": 25})
             assert response.status_code == 404
 
-    def test_offer_without_stock(self, client):
-        venue_provider = provider_factories.VenueProviderFactory()
+    def test_offer_without_stock(self):
+        plain_api_key, provider = self.setup_provider()
+        venue_provider = provider_factories.VenueProviderFactory(provider=provider)
         offerers_factories.VenueFactory(venueProviders=[venue_provider])
-
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
         educational_factories.EducationalDomainFactory()
         educational_factories.EducationalInstitutionFactory(institutionId="UAI123")
@@ -192,21 +159,12 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         offer_id = offer.id
 
         with assert_num_queries(self.num_queries_error):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                f"/v2/collective/offers/{offer_id}"
-            )
+            response = self.make_request(plain_api_key, {"offer_id": offer_id})
             assert response.status_code == 404
 
-    def test_user_not_logged_in(self, client):
-        offer = educational_factories.CollectiveStockFactory().collectiveOffer
-
-        with assert_num_queries(1):  # rollback
-            response = client.get(f"/v2/collective/offers/{offer.id}")
-            assert response.status_code == 401
-
-    def test_user_no_access_to_user(self, client):
-        venue_provider = provider_factories.VenueProviderFactory()
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+    def test_user_no_access_to_user(self):
+        plain_api_key, provider = self.setup_provider()
+        provider_factories.VenueProviderFactory(provider=provider)
 
         venue_provider2 = provider_factories.VenueProviderFactory()
         stock = educational_factories.CollectiveStockFactory(
@@ -215,9 +173,7 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         offer_id = stock.collectiveOffer.id
 
         with assert_num_queries(self.num_queries_error):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                f"/v2/collective/offers/{offer_id}"
-            )
+            response = self.make_request(plain_api_key, {"offer_id": offer_id})
             assert response.status_code == 403
 
 
