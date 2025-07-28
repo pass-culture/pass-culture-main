@@ -1,5 +1,6 @@
 import base64
 import datetime
+import logging
 import pathlib
 
 import pytest
@@ -24,6 +25,7 @@ from pcapi.utils.date import format_into_utc_date
 import tests
 from tests.routes import image_data
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
+from tests.routes.public.individual_offers.v1 import utils as test_utils
 
 
 @pytest.mark.usefixtures("db_session")
@@ -136,7 +138,7 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
         assert offer.motorDisabilityCompliant is False
         assert offer.visualDisabilityCompliant is False
 
-    def test_create_stock(self, client):
+    def test_create_stock(self, client, caplog):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
         offer = offers_factories.ThingOfferFactory(
@@ -145,12 +147,24 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
 
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url,
-            json={"offerId": offer.id, "stock": {"price": 1000, "quantity": 1}},
+        with caplog.at_level(logging.INFO):
+            response = client.with_explicit_token(plain_api_key).patch(
+                self.endpoint_url,
+                json={"offerId": offer.id, "stock": {"price": 1000, "quantity": 1}},
+            )
+            assert response.status_code == 200
+
+        test_utils.assert_public_api_data_logs_have_been_recorded(
+            caplog,
+            self._api_key,
+            module="products",
+            function="edit_product",
+            venue=venue_provider.venueId,
+            publication_datetime=offer.publicationDatetime,
+            stock_price=1000,
+            stock_quantity=1,
         )
 
-        assert response.status_code == 200
         assert offer.activeStocks[0].quantity == 1
         assert offer.activeStocks[0].price == 10
         assert response.json["stock"] == {

@@ -197,6 +197,8 @@ class JsonFormatter(logging.Formatter):
         impersonator_id = get_logged_impersonator_id() if user_id else None
 
         json_record = {
+            # TODO(jbaudet): remove those two public api key/values since
+            # there is no need to log those outside of an public API call
             "api_key_offerer_id": get_api_key_offerer_id(),
             "api_key_provider_id": get_api_key_provider_id(),
             "logging.googleapis.com/trace": get_or_set_correlation_id(),

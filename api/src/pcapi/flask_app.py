@@ -125,7 +125,7 @@ def setup_sentry_before_request() -> None:
         )
     sentry_sdk.set_tag("correlation-id", get_or_set_correlation_id())
     g.request_start = time.perf_counter()
-    g.log_request_details_extra = {}
+    g.public_api_log_request_details_extra = {}
 
 
 @app.after_request
@@ -157,11 +157,11 @@ def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Res
         extra["duration"] = duration
 
     try:
-        extra.update(g.log_request_details_extra)
+        extra.update(g.public_api_log_request_details_extra)
     except AttributeError:
-        logger.warning("g.log_request_details_extra was not available in log_request_details", exc_info=True)
+        logger.warning("g.public_api_log_request_details_extra was not available in log_request_details", exc_info=True)
     except Exception:
-        logger.warning("g.log_request_details_extra does not seem to contain a valid dict", exc_info=True)
+        logger.warning("g.public_api_log_request_details_extra does not seem to contain a valid dict", exc_info=True)
 
     logger.info("HTTP request at %s", request.path, extra=extra)
 

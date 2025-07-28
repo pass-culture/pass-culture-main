@@ -1,6 +1,7 @@
 import base64
 import datetime
 import decimal
+import logging
 import pathlib
 
 import pytest
@@ -20,6 +21,7 @@ from pcapi.utils import human_ids
 import tests
 from tests.routes import image_data
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
+from tests.routes.public.individual_offers.v1 import utils as test_utils
 
 
 ACCESSIBILITY_FIELDS = {
@@ -95,12 +97,25 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 404
 
     @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
-    def test_physical_product_minimal_body(self):
+    def test_physical_product_minimal_body(self, caplog):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
+        payload = self._get_base_payload(venue_provider.venue.id)
 
-        response = self.make_request(plain_api_key, json_body=self._get_base_payload(venue_provider.venue.id))
+        with caplog.at_level(logging.INFO):
+            response = self.make_request(plain_api_key, json_body=payload)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
+        test_utils.assert_public_api_data_logs_have_been_recorded(
+            caplog,
+            self._api_key,
+            module="products",
+            function="post_product_offer",
+            venue=venue_provider.venueId,
+            ean=payload["categoryRelatedFields"]["ean"],
+            publication_datetime=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
+            booking_allowed_datetime=None,
+        )
+
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.name == "Le champ des possibles"
         assert created_offer.venue == venue_provider.venue
@@ -148,7 +163,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         }
 
     @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
-    def test_product_creation_with_full_body(self, clear_tests_assets_bucket):
+    def test_product_creation_with_full_body(self, clear_tests_assets_bucket, caplog):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
@@ -184,9 +199,23 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             "id_at_provider": "l'id du provider",
         }
 
-        response = self.make_request(plain_api_key, json_body=payload)
+        with caplog.at_level(logging.INFO):
+            response = self.make_request(plain_api_key, json_body=payload)
+            assert response.status_code == 200, response.json
 
-        assert response.status_code == 200, response.json
+        test_utils.assert_public_api_data_logs_have_been_recorded(
+            caplog,
+            self._api_key,
+            module="products",
+            function="post_product_offer",
+            venue=venue_provider.venueId,
+            ean=payload["categoryRelatedFields"]["ean"],
+            publication_datetime=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
+            booking_allowed_datetime=None,
+            stock_booking_limit=date_utils.to_naive_utc_datetime(in_ten_minutes_in_non_utc_tz),
+            stock_price=payload["stock"]["price"],
+            stock_quantity=payload["stock"]["quantity"],
+        )
 
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.name == "Le champ des possibles"
