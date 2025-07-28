@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
@@ -35,7 +36,7 @@ describe('<Table />', () => {
         variant={TableVariant.COLLAPSE}
         noResult={{
           message: '',
-          resetFilter: function (): void {
+          onFilterReset: function (): void {
             throw new Error('Function not implemented.')
           },
         }}
@@ -46,7 +47,7 @@ describe('<Table />', () => {
     ).toBeGreaterThan(6)
   })
 
-  it('sorts rows ASC then DESC when clicking on sortable column header twice', () => {
+  it('sorts rows ASC then DESC when clicking on sortable column header twice', async () => {
     render(
       <Table<RowType>
         columns={columns}
@@ -55,7 +56,7 @@ describe('<Table />', () => {
         variant={TableVariant.COLLAPSE}
         noResult={{
           message: '',
-          resetFilter: function (): void {
+          onFilterReset: function (): void {
             throw new Error('Function not implemented.')
           },
         }}
@@ -67,21 +68,21 @@ describe('<Table />', () => {
     expect(within(rows[1]).getByText('2')).toBeInTheDocument()
 
     // click -> ASC (Beta 1 first)
-    fireEvent.click(
+    await userEvent.click(
       screen.getByRole('img', { name: 'Trier par ordre croissant' })
     )
     rows = screen.getAllByRole('row')
     expect(within(rows[1]).getByText('1')).toBeInTheDocument()
 
     // click again -> DESC (Alpha 2 first)
-    fireEvent.click(
+    await userEvent.click(
       screen.getByRole('img', { name: 'Trier par ordre décroissant' })
     )
     rows = screen.getAllByRole('row')
     expect(within(rows[1]).getByText('2')).toBeInTheDocument()
   })
 
-  it('handles row selection and select‑all', () => {
+  it('handles row selection and select‑all', async () => {
     const handleSelection = vi.fn()
     render(
       <Table<RowType>
@@ -93,7 +94,7 @@ describe('<Table />', () => {
         variant={TableVariant.COLLAPSE}
         noResult={{
           message: '',
-          resetFilter: function (): void {
+          onFilterReset: function (): void {
             throw new Error('Function not implemented.')
           },
         }}
@@ -102,12 +103,12 @@ describe('<Table />', () => {
 
     // select first row via its checkbox label
     const rowCheckbox = screen.getByLabelText('Alpha')
-    fireEvent.click(rowCheckbox)
+    await userEvent.click(rowCheckbox)
     expect(handleSelection).toHaveBeenCalledWith([data[0]])
 
     // select all via master checkbox
     const selectAll = screen.getByLabelText(/Tout sélectionner/i)
-    fireEvent.click(selectAll)
+    await userEvent.click(selectAll)
     expect(handleSelection).toHaveBeenCalledWith(data)
   })
 
@@ -122,7 +123,7 @@ describe('<Table />', () => {
         variant={TableVariant.COLLAPSE}
         noResult={{
           message: '',
-          resetFilter: function (): void {
+          onFilterReset: function (): void {
             throw new Error('Function not implemented.')
           },
         }}
@@ -134,7 +135,7 @@ describe('<Table />', () => {
   })
 
   it('renders no-result message when no data and not loading', () => {
-    const resetFilter = vi.fn()
+    const onFilterReset = vi.fn()
 
     render(
       <Table<RowType>
@@ -144,7 +145,7 @@ describe('<Table />', () => {
         variant={TableVariant.COLLAPSE}
         noResult={{
           message: 'Aucun résultat trouvé',
-          resetFilter,
+          onFilterReset,
         }}
       />
     )
@@ -155,8 +156,8 @@ describe('<Table />', () => {
     ).toBeInTheDocument()
   })
 
-  it('calls resetFilter when clicking reset button in no-result state', () => {
-    const resetFilter = vi.fn()
+  it('calls resetFilter when clicking reset button in no-result state', async () => {
+    const onFilterReset = vi.fn()
 
     render(
       <Table<RowType>
@@ -166,7 +167,7 @@ describe('<Table />', () => {
         variant={TableVariant.COLLAPSE}
         noResult={{
           message: 'Aucun résultat trouvé',
-          resetFilter,
+          onFilterReset,
         }}
       />
     )
@@ -174,12 +175,12 @@ describe('<Table />', () => {
     const button = screen.getByRole('button', {
       name: /Réinitialiser les filtres/i,
     })
-    fireEvent.click(button)
-    expect(resetFilter).toHaveBeenCalledTimes(1)
+    await userEvent.click(button)
+    expect(onFilterReset).toHaveBeenCalledTimes(1)
   })
 
   it('respects externally controlled selectedIds prop', () => {
-    const selectedIds = new Set<number>([1])
+    const selectedIds = new Set([1])
 
     render(
       <Table<RowType>
@@ -191,7 +192,7 @@ describe('<Table />', () => {
         variant={TableVariant.COLLAPSE}
         noResult={{
           message: '',
-          resetFilter: vi.fn(),
+          onFilterReset: vi.fn(),
         }}
       />
     )
@@ -200,7 +201,7 @@ describe('<Table />', () => {
     expect((checkbox as HTMLInputElement).checked).toBe(true)
   })
 
-  it('does not allow selection of non-selectable rows', () => {
+  it('does not allow selection of non-selectable rows', async () => {
     const handleSelection = vi.fn()
 
     render(
@@ -214,7 +215,7 @@ describe('<Table />', () => {
         variant={TableVariant.COLLAPSE}
         noResult={{
           message: '',
-          resetFilter: vi.fn(),
+          onFilterReset: vi.fn(),
         }}
       />
     )
@@ -223,7 +224,7 @@ describe('<Table />', () => {
     expect((betaCheckbox as HTMLInputElement).disabled).toBe(true)
 
     const alphaCheckbox = screen.getByLabelText('Alpha')
-    fireEvent.click(alphaCheckbox)
+    await userEvent.click(alphaCheckbox)
     expect(handleSelection).toHaveBeenCalledWith([data[0]])
   })
 })

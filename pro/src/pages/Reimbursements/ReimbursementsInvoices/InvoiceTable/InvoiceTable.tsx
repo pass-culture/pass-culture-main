@@ -98,13 +98,13 @@ const columns: Column<InvoiceResponseV2Model>[] = [
 type InvoiceTableProps = {
   data: InvoiceResponseV2Model[]
   isLoading: boolean
-  resetFilter: () => void
+  onFilterReset: () => void
 }
 
 export const InvoiceTable = ({
   data,
   isLoading,
-  resetFilter,
+  onFilterReset,
 }: InvoiceTableProps) => {
   const [checkedInvoices, setCheckedInvoices] = useState<string[]>([])
 
@@ -129,7 +129,7 @@ export const InvoiceTable = ({
         noResult={{
           message:
             'Aucun justificatif de remboursement trouvé pour votre recherche',
-          resetFilter,
+          onFilterReset,
         }}
       />
     </div>
