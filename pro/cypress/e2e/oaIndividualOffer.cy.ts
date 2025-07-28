@@ -84,7 +84,7 @@ describe('Create individual offers with OA', () => {
     toDate.setDate(toDate.getDate() + 12)
     const toDateStr = toDate.toISOString().split('T')[0]
     cy.stepLog({ message: 'I fill in recurrence' })
-    cy.findByText('Ajouter une ou plusieurs dates').click()
+    cy.findByText('Définir le calendrier').click()
     cy.findByText('Tous les jours').click()
     cy.findByLabelText('Du *').type(fromDateStr)
     cy.findByLabelText('Au *').type(toDateStr)
@@ -93,7 +93,7 @@ describe('Create individual offers with OA', () => {
 
     cy.stepLog({ message: 'I validate recurrence step' })
     cy.findByText('Valider').click()
-    cy.wait(['@postEventStocks'])
+    cy.wait(['@postEventStocks', '@getStocks'])
 
     cy.findByText('Enregistrer et continuer').click()
     cy.contains('Accepter les réservations "Duo" : Oui')

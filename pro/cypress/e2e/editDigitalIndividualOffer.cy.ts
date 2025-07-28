@@ -103,34 +103,21 @@ describe('Edit digital individual offers', () => {
       cy.contains('Modifier l’offre')
       cy.findAllByTestId('spinner').should('not.exist')
 
-      cy.stepLog({ message: 'Save initial date of events' })
-      cy.findByTestId('stocks.0.beginningDate').then(($elt) => {
-        cy.log('date: ' + $elt.val())
-        cy.stepLog({ message: '=> Date of event was: ' + $elt.val() })
-        cy.stepLog({
-          message:
-            '=> Type new date of event: ' + format(newDate, 'yyyy-MM-dd'),
-        })
-        cy.wrap($elt).type('{selectall}{del}' + format(newDate, 'yyyy-MM-dd'))
-        cy.findByLabelText('Quantité restante').click()
-      })
-      cy.findByTestId('stocks.0.bookingLimitDatetime').then(($elt) => {
-        cy.log('date: ' + $elt.val())
-        cy.stepLog({ message: '=> Date of booking limit was: ' + $elt.val() })
-        cy.stepLog({
-          message:
-            '=> Type new date of booking limit: ' +
-            format(newDate, 'yyyy-MM-dd'),
-        })
-        cy.wrap($elt).type('{selectall}{del}' + format(newDate, 'yyyy-MM-dd'))
-        cy.findByLabelText('Quantité restante').click()
-      })
+      cy.stepLog({ message: 'Save initial date of events and limit date' })
+
+      cy.findAllByRole('button', { name: 'Modifier la date' }).eq(0).click()
+
+      cy.findAllByLabelText('Date *')
+        .eq(0)
+        .type('{selectall}{del}' + format(newDate, 'yyyy-MM-dd'))
+
+      cy.findAllByLabelText('Date *')
+        .eq(1)
+        .type('{selectall}{del}' + format(newDate, 'yyyy-MM-dd'))
 
       cy.stepLog({ message: 'Save modifications' })
-      cy.findByText('Enregistrer les modifications').click()
+      cy.findByText('Valider').click()
 
-      cy.stepLog({ message: 'Confirm modifications' })
-      cy.findByText('Confirmer les modifications').click()
       cy.wait('@patchStock')
       cy.stepLog({ message: 'Check that booking date has been modified' })
       cy.visit('/offre/individuelle/2/reservations')

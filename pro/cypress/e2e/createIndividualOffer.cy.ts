@@ -114,7 +114,7 @@ describe('Create individual offers', { testIsolation: false }, () => {
     })
 
     cy.stepLog({ message: 'I fill in recurrence' })
-    cy.findByText('Ajouter une ou plusieurs dates').click()
+    cy.findByRole('button', { name: 'Définir le calendrier' }).click()
 
     cy.findByText('Toutes les semaines').click()
     cy.findByLabelText('Vendredi').click()
@@ -152,7 +152,7 @@ describe('Create individual offers', { testIsolation: false }, () => {
 
     cy.stepLog({ message: 'I validate recurrence step' })
     cy.findByText('Valider').click()
-    cy.wait(['@postEventStocks'])
+    cy.wait(['@postEventStocks', '@getStocks'])
 
     cy.findByText('Enregistrer et continuer').click()
     cy.contains('Accepter les réservations "Duo" : Oui')
