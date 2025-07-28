@@ -99,14 +99,23 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
   }
 
   async function updateStock(stock: EventStockUpdateBodyModel) {
-    await api.bulkUpdateEventStocks({
-      offerId: offer.id,
-      stocks: [stock],
-    })
+    try {
+      const updatedStocks = await api.bulkUpdateEventStocks({
+        offerId: offer.id,
+        stocks: [stock],
+      })
 
-    notify.success('Les modifications ont été enregistrées')
+      if (updatedStocks.stocks_count === 0) {
+        notify.error('Aucune date n’a pu être modifiée')
+        return
+      }
 
-    await mutate(queryKeys)
+      notify.success('Les modifications ont été enregistrées')
+
+      await mutate(queryKeys)
+    } catch {
+      notify.error('Une erreur est survenue lors de la modification des dates')
+    }
   }
 
   const stocks = data?.stocks || []

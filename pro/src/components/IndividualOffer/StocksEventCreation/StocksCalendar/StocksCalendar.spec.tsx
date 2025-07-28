@@ -304,4 +304,45 @@ describe('StocksCalendar', () => {
 
     expect(screen.getByText('Page 1/3'))
   })
+
+  it('should show an error message when none of the stocks were updated', async () => {
+    vi.spyOn(api, 'bulkUpdateEventStocks').mockResolvedValueOnce({
+      stocks_count: 0,
+    })
+
+    renderStocksCalendar(
+      [
+        getOfferStockFactory({
+          id: 0,
+          priceCategoryId: 0,
+          beginningDatetime: addDays(new Date(), 2).toISOString().split('T')[0],
+        }),
+      ],
+      {
+        offer: getIndividualOfferFactory({
+          priceCategories: [
+            { id: 0, label: 'Tarif 1', price: 1 },
+            { id: 1, label: 'Tarif 2', price: 1 },
+          ],
+        }),
+        mode: OFFER_WIZARD_MODE.EDITION,
+      }
+    )
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Modifier la date' })
+    )
+
+    await userEvent.type(screen.getByLabelText('Tarif *'), '1')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
+
+    expect(
+      screen.getByText('Aucune date n’a pu être modifiée')
+    ).toBeInTheDocument()
+  })
 })
