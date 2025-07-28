@@ -12,8 +12,10 @@ logger = logging.getLogger(__name__)
 def notify_users_offer_is_bookable(offer: Offer) -> None:
     user_ids = get_user_ids_with_reminders(offer.id)
     if not user_ids:
-        logger.info("[Offer bookable] No users to notify", extra={"offerId": offer.id})
+        logger.debug("[Offer bookable] No users to notify", extra={"offerId": offer.id})
         return
+
+    logger.debug("[Offer bookable] Users to notify", extra={"offerId": offer.id, "user_ids": user_ids})
 
     send_users_reminders_for_offer(user_ids, offer)
 
