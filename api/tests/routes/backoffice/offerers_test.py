@@ -3585,6 +3585,20 @@ class ValidateOffererAttachmentTest(PostEndpointHelper):
             == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_VALIDATION.value.__dict__
         )
 
+    def test_validate_offerer_attachment_htmx(self, legit_user, authenticated_client):
+        user_offerer = offerers_factories.NewUserOffererFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_offerer_id=user_offerer.id,
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"user-offerer-row-{user_offerer.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(user_offerer.user.id)
+
     def test_validate_offerer_attachment_returns_404_if_offerer_is_not_found(self, authenticated_client, offerer):
         response = self.post_to_endpoint(authenticated_client, user_offerer_id=42)
         assert response.status_code == 404
@@ -3651,6 +3665,20 @@ class RejectOffererAttachmentTest(PostEndpointHelper):
             == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_REJECTION.value.__dict__
         )
 
+    def test_reject_offerer_attachment_htmx(self, legit_user, authenticated_client):
+        user_offerer = offerers_factories.NewUserOffererFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_offerer_id=user_offerer.id,
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"user-offerer-row-{user_offerer.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(user_offerer.user.id)
+
     def test_reject_offerer_returns_404_if_offerer_attachment_is_not_found(self, authenticated_client, offerer):
         response = self.post_to_endpoint(authenticated_client, user_offerer_id=42)
         assert response.status_code == 404
@@ -3681,6 +3709,21 @@ class SetOffererAttachmentPendingTest(PostEndpointHelper):
         assert action.offererId == user_offerer.offerer.id
         assert action.venueId is None
         assert action.comment == "En attente de documents"
+
+    def test_set_offerer_attachment_pending_htmx(self, legit_user, authenticated_client):
+        user_offerer = offerers_factories.NewUserOffererFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_offerer_id=user_offerer.id,
+            form={"comment": "En attente de documents"},
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"user-offerer-row-{user_offerer.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(user_offerer.user.id)
 
     def test_set_offerer_attachment_pending_keep_pro_role(self, authenticated_client):
         user = offerers_factories.UserOffererFactory().user  # already validated
@@ -3990,10 +4033,12 @@ class BatchOffererAttachmentValidateTest(PostEndpointHelper):
         user_offerers = offerers_factories.NewUserOffererFactory.create_batch(10)
         parameter_ids = ",".join(str(user_offerer.id) for user_offerer in user_offerers)
         response = self.post_to_endpoint(
-            authenticated_client, form={"object_ids": parameter_ids, "comment": "test comment"}
+            authenticated_client,
+            form={"object_ids": parameter_ids, "comment": "test comment"},
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
         for user_offerer in user_offerers:
             db.session.refresh(user_offerer)
             assert user_offerer.isValidated
@@ -4013,6 +4058,9 @@ class BatchOffererAttachmentValidateTest(PostEndpointHelper):
             assert action.userId == user_offerer.user.id
             assert action.offererId == user_offerer.offerer.id
             assert action.venueId is None
+            row = html_parser.get_tag(response.data, tag="tr", id=f"user-offerer-row-{user_offerer.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(user_offerer.user.id)
 
         assert len(mails_testing.outbox) == len(user_offerers)
 
@@ -4056,9 +4104,10 @@ class SetBatchOffererAttachmentPendingTest(PostEndpointHelper):
             authenticated_client,
             offerer_id=user_offerers[0].offerer.id,
             form={"object_ids": parameter_ids, "comment": "test comment"},
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
         for user_offerer in user_offerers:
             db.session.refresh(user_offerer)
             assert not user_offerer.isValidated
@@ -4078,6 +4127,9 @@ class SetBatchOffererAttachmentPendingTest(PostEndpointHelper):
             assert action.offererId == user_offerer.offerer.id
             assert action.venueId is None
             assert action.comment == "test comment"
+            row = html_parser.get_tag(response.data, tag="tr", id=f"user-offerer-row-{user_offerer.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(user_offerer.user.id)
 
 
 class GetOffererAttachmentRejectFormTest(GetEndpointHelper):
@@ -4103,10 +4155,12 @@ class BatchOffererAttachmentRejectTest(PostEndpointHelper):
         user_offerers = offerers_factories.NewUserOffererFactory.create_batch(10)
         parameter_ids = ",".join(str(user_offerer.id) for user_offerer in user_offerers)
         response = self.post_to_endpoint(
-            authenticated_client, form={"object_ids": parameter_ids, "comment": "test comment"}
+            authenticated_client,
+            form={"object_ids": parameter_ids, "comment": "test comment"},
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
         users_offerers = db.session.query(offerers_models.UserOfferer).all()
         assert len(users_offerers) == 10
         assert all(user_offerer.validationStatus == ValidationStatus.REJECTED for user_offerer in users_offerers)
@@ -4127,6 +4181,9 @@ class BatchOffererAttachmentRejectTest(PostEndpointHelper):
             assert action.offererId == user_offerer.offerer.id
             assert action.comment == "test comment"
             assert action.venueId is None
+            row = html_parser.get_tag(response.data, tag="tr", id=f"user-offerer-row-{user_offerer.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(user_offerer.user.id)
 
         assert len(mails_testing.outbox) == len(user_offerers)
 

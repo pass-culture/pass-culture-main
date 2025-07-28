@@ -507,6 +507,19 @@ def _get_serialized_user_offerer_last_comment(
     return None
 
 
+def _display_users_offerers(user_offerers_ids: list[int]) -> utils.BackofficeResponse:
+    items = []
+    if user_offerers_ids:
+        items = validation_repository.list_users_offerers_to_be_validated(
+            user_offerers_ids=user_offerers_ids,
+        ).all()
+
+    return render_template(
+        "offerer/user_offerer_validation_rows.html",
+        items=items,
+    )
+
+
 @validation_blueprint.route("/user-offerer", methods=["GET"])
 def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
     form = offerer_forms.UserOffererValidationListForm(formdata=utils.get_query_params())
@@ -555,7 +568,6 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
         rows=paginated_users_offerers,
         form=form,
         next_pages_urls=next_pages_urls,
-        get_last_comment_func=_get_serialized_user_offerer_last_comment,
         date_created_sort_url=date_created_sort_url,
     )
 
@@ -622,6 +634,8 @@ def validate_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
             ).format(email=user_offerer.user.email, offerer_name=user_offerer.offerer.name),
             "warning",
         )
+        if utils.is_request_from_htmx():
+            return _display_users_offerers([])
         return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
     flash(
@@ -630,15 +644,18 @@ def validate_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
         ),
         "success",
     )
+    if utils.is_request_from_htmx():
+        return _display_users_offerers([user_offerer_id])
     return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
 
 @validation_blueprint.route("/user-offerer/batch-reject", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_batch_reject_user_offerer_form() -> utils.BackofficeResponse:
-    form = offerer_forms.BatchOptionalCommentForm()
+    form = offerer_forms.BatchOptionalCommentForm(request.args)
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#validate-user-offerer-table",
         form=form,
         dst=url_for("backoffice_web.validation.batch_reject_user_offerer"),
         div_id="batch-reject-modal",
@@ -650,9 +667,10 @@ def get_batch_reject_user_offerer_form() -> utils.BackofficeResponse:
 @validation_blueprint.route("/user-offerer/batch-pending", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_batch_user_offerer_pending_form() -> utils.BackofficeResponse:
-    form = offerer_forms.BatchOptionalCommentForm()
+    form = offerer_forms.BatchOptionalCommentForm(request.args)
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#validate-user-offerer-table",
         form=form,
         dst=url_for("backoffice_web.validation.batch_set_user_offerer_pending"),
         div_id="batch-pending-modal",
@@ -668,14 +686,19 @@ def get_reject_user_offerer_form(user_offerer_id: int) -> utils.BackofficeRespon
 
     form = offerer_forms.OptionalCommentForm()
 
-    return render_template(
-        "components/turbo/modal_form.html",
-        form=form,
-        dst=url_for("backoffice_web.validation.reject_user_offerer", user_offerer_id=user_offerer.id),
-        div_id=f"reject-modal-{user_offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
-        title=f"Rejeter le rattachement à {user_offerer.offerer.name.upper()}",
-        button_text="Rejeter le rattachement",
-    )
+    kwargs = {
+        "form": form,
+        "dst": url_for("backoffice_web.validation.reject_user_offerer", user_offerer_id=user_offerer.id),
+        "div_id": f"reject-modal-{user_offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
+        "title": f"Rejeter le rattachement à {user_offerer.offerer.name.upper()}",
+        "button_text": "Rejeter le rattachement",
+    }
+    if utils.is_request_from_htmx():
+        return render_template(
+            "components/dynamic/modal_form.html", target_id=f"#user-offerer-row-{user_offerer_id}", **kwargs
+        )
+
+    return render_template("components/turbo/modal_form.html", **kwargs)
 
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/reject", methods=["POST"])
@@ -687,6 +710,8 @@ def reject_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
+        if utils.is_request_from_htmx():
+            return _display_users_offerers([user_offerer.id])
         return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
     offerers_api.reject_offerer_attachment(user_offerer, current_user, form.comment.data)
@@ -697,6 +722,8 @@ def reject_user_offerer(user_offerer_id: int) -> utils.BackofficeResponse:
         ),
         "success",
     )
+    if utils.is_request_from_htmx():
+        return _display_users_offerers([user_offerer.id])
     return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
 
@@ -707,14 +734,20 @@ def get_user_offerer_pending_form(user_offerer_id: int) -> utils.BackofficeRespo
 
     form = offerer_forms.OptionalCommentForm()
 
-    return render_template(
-        "components/turbo/modal_form.html",
-        form=form,
-        dst=url_for("backoffice_web.validation.set_user_offerer_pending", user_offerer_id=user_offerer.id),
-        div_id=f"pending-modal-{user_offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
-        title=f"Mettre en attente le rattachement à {user_offerer.offerer.name.upper()}",
-        button_text="Mettre en attente le rattachement",
-    )
+    kwargs = {
+        "form": form,
+        "dst": url_for("backoffice_web.validation.set_user_offerer_pending", user_offerer_id=user_offerer.id),
+        "div_id": f"pending-modal-{user_offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
+        "title": f"Mettre en attente le rattachement à {user_offerer.offerer.name.upper()}",
+        "button_text": "Mettre en attente le rattachement",
+    }
+
+    if utils.is_request_from_htmx():
+        return render_template(
+            "components/dynamic/modal_form.html", target_id=f"#user-offerer-row-{user_offerer_id}", **kwargs
+        )
+
+    return render_template("components/turbo/modal_form.html", **kwargs)
 
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/pending", methods=["POST"])
@@ -726,6 +759,8 @@ def set_user_offerer_pending(user_offerer_id: int) -> utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
+        if utils.is_request_from_htmx():
+            return _display_users_offerers([user_offerer.id])
         return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
     offerers_api.set_offerer_attachment_pending(user_offerer, current_user, form.comment.data)
@@ -735,7 +770,8 @@ def set_user_offerer_pending(user_offerer_id: int) -> utils.BackofficeResponse:
         ).format(email=user_offerer.user.email, offerer_name=user_offerer.offerer.name),
         "success",
     )
-
+    if utils.is_request_from_htmx():
+        return _display_users_offerers([user_offerer.id])
     return _redirect_after_user_offerer_validation_action(user_offerer.offerer.id)
 
 
@@ -746,7 +782,7 @@ def _user_offerer_batch_action(
     form = offerer_forms.BatchOptionalCommentForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return _redirect_after_user_offerer_validation_action_list()
+        return _display_users_offerers([])
 
     user_offerers = (
         db.session.query(offerers_models.UserOfferer)
@@ -758,7 +794,7 @@ def _user_offerer_batch_action(
         api_function(user_offerer, current_user, form.comment.data)
     flash(success_message, "success")
 
-    return _redirect_after_user_offerer_validation_action_list()
+    return _display_users_offerers(form.object_ids_list)
 
 
 @validation_blueprint.route("/user-offerer/batch-pending", methods=["POST"])
@@ -792,4 +828,4 @@ def batch_validate_user_offerer() -> utils.BackofficeResponse:
     except offerers_exceptions.UserOffererAlreadyValidatedException:
         mark_transaction_as_invalid()
         flash("Au moins un des rattachements est déjà validé", "warning")
-        return _redirect_after_user_offerer_validation_action_list()
+        return _display_users_offerers([])
