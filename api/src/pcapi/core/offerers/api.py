@@ -2653,6 +2653,9 @@ def get_providers_offerer_and_venues(
 ) -> typing.Generator[OffererVenues, None, None]:
     offerers_query = (
         db.session.query(offerers_models.Offerer, offerers_models.Venue)
+        .options(
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
+        )
         .join(offerers_models.Venue, offerers_models.Offerer.managedVenues)
         .join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
         .join(providers_models.Provider, providers_models.VenueProvider.provider)

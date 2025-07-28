@@ -13,7 +13,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class CollectiveOffersGetVenuesTest:
     num_queries = 1  # select api_key, offerer and provider
-    num_queries += 1  # select venue
+    num_queries += 1  # select venue, venue OA and address
 
     def test_list_venues(self, client):
         provider = providers_factories.ProviderFactory()
@@ -33,9 +33,9 @@ class CollectiveOffersGetVenuesTest:
                 "id": venue.id,
                 "legalName": venue.name,
                 "location": {
-                    "address": venue.street,
-                    "city": venue.city,
-                    "postalCode": venue.postalCode,
+                    "address": venue.offererAddress.address.street,
+                    "city": venue.offererAddress.address.city,
+                    "postalCode": venue.offererAddress.address.postalCode,
                     "type": "physical" if not venue.isVirtual else "digital",
                 },
                 "siretComment": venue.comment,
@@ -78,7 +78,7 @@ class CollectiveOffersGetVenuesTest:
 
 class GetOfferersVenuesTest:
     num_queries = 1  # select api_key, offerer and provider
-    num_queries += 1  # select offerer
+    num_queries += 1  # select offerer, venue, venue OA and address
     num_queries += 1  # select provider
     num_queries += 1  # select venue_provider_external_urls
 
@@ -110,9 +110,9 @@ class GetOfferersVenuesTest:
                         "id": venue.id,
                         "legalName": venue.name,
                         "location": {
-                            "address": venue.street,
-                            "city": venue.city,
-                            "postalCode": venue.postalCode,
+                            "address": venue.offererAddress.address.street,
+                            "city": venue.offererAddress.address.city,
+                            "postalCode": venue.offererAddress.address.postalCode,
                             "type": "physical" if not venue.isVirtual else "digital",
                         },
                         "siretComment": venue.comment,
