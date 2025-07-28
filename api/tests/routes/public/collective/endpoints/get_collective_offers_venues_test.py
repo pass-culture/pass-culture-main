@@ -7,24 +7,28 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.utils.date import format_into_utc_date
 
+from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
+
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class CollectiveOffersGetVenuesTest:
+class CollectiveOffersGetVenuesTest(PublicAPIEndpointBaseHelper):
+    endpoint_url = "/v2/collective/venues"
+    endpoint_method = "get"
+
     num_queries = 1  # select api_key, offerer and provider
     num_queries += 1  # select venue
 
-    def test_list_venues(self, client):
-        provider = providers_factories.ProviderFactory()
+    def test_list_venues(self):
+        plain_api_key, provider = self.setup_provider()
+
         venue1 = providers_factories.VenueProviderFactory(provider=provider).venue
         venue2 = providers_factories.VenueProviderFactory(provider=provider).venue
-        offerers_factories.ApiKeyFactory(provider=provider)
-
         offerers_factories.VenueFactory()  # excluded from results
 
         with assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective/venues")
+            response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
         response_list = sorted(response.json, key=itemgetter("id"))
@@ -56,43 +60,35 @@ class CollectiveOffersGetVenuesTest:
             for venue in [venue1, venue2]
         ]
 
-    def test_list_venues_empty(self, client):
-        provider = providers_factories.ProviderFactory()
-        offerers_factories.ApiKeyFactory(provider=provider)
+    def test_list_venues_empty(self):
+        plain_api_key, _ = self.setup_provider()
 
         offerers_factories.VenueFactory()  # excluded from results
 
         with assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective/venues")
+            response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
         assert response.json == []
 
-    def test_list_venues_anonymous_returns_401(self, client):
-        offerers_factories.VenueFactory()
 
-        with assert_num_queries(1):  # rollback
-            response = client.get("/v2/collective/venues")
-            assert response.status_code == 401
+class GetOfferersVenuesTest(PublicAPIEndpointBaseHelper):
+    endpoint_url = "/public/offers/v1/offerer_venues"
+    endpoint_method = "get"
 
-
-class GetOfferersVenuesTest:
     num_queries = 1  # select api_key, offerer and provider
     num_queries += 1  # select offerer
     num_queries += 1  # select provider
     num_queries += 1  # select venue_provider_external_urls
 
-    def test_get_offerers_venues(self, client):
-        provider = providers_factories.ProviderFactory()
-        venue = providers_factories.VenueProviderFactory(provider=provider).venue
-        offerers_factories.ApiKeyFactory(provider=provider)
+    def test_get_offerers_venues(self):
+        plain_api_key, provider = self.setup_provider()
 
+        venue = providers_factories.VenueProviderFactory(provider=provider).venue
         offerers_factories.VenueFactory()  # excluded from results
 
         with assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                "/public/offers/v1/offerer_venues"
-            )
+            response = self.make_request(plain_api_key)
             assert response.status_code == 200
 
         offerer = venue.managingOfferer
@@ -134,19 +130,16 @@ class GetOfferersVenuesTest:
             }
         ]
 
-    def test_filter_offerers_venues_by_siren(self, client):
+    def test_filter_offerers_venues_by_siren(self):
         siren = "123456789"
 
-        provider = providers_factories.ProviderFactory()
+        plain_api_key, provider = self.setup_provider()
         venue = providers_factories.VenueProviderFactory(venue__managingOfferer__siren=siren, provider=provider).venue
-        offerers_factories.ApiKeyFactory(provider=provider)
 
         providers_factories.VenueProviderFactory(provider=provider)  # excluded
 
         with assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                "/public/offers/v1/offerer_venues?siren=123456789"
-            )
+            response = self.make_request(plain_api_key, query_params={"siren": siren})
             assert response.status_code == 200
 
         assert len(response.json) == 1
@@ -154,8 +147,3 @@ class GetOfferersVenuesTest:
 
         assert len(response.json[0]["venues"]) == 1
         assert response.json[0]["venues"][0]["id"] == venue.id
-
-    def test_unauthenticated_client(self, client):
-        with assert_num_queries(0):
-            response = client.get("/public/offers/v1/offerer_venues?siren=123456789")
-            assert response.status_code == 401
