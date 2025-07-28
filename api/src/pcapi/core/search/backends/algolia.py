@@ -85,7 +85,7 @@ class AlgoliaBackend(
         assert index  # helps mypy
         return self.index_mapping[index].search(query, params)
 
-    def index_artists(self, artists: artists_models.Artist) -> None:
+    def index_artists(self, artists: abc.Collection[artists_models.Artist]) -> None:
         self.save_objects(settings.ALGOLIA_ARTISTS_INDEX_NAME, [self.serialize_artist(artist) for artist in artists])
 
     def index_offers(self, offers: abc.Collection[offers_models.Offer], last_30_days_bookings: dict[int, int]) -> None:

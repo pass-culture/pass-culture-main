@@ -4,6 +4,7 @@ from collections import abc
 
 
 if typing.TYPE_CHECKING:
+    import pcapi.core.artist.models as artists_models
     import pcapi.core.educational.models as educational_models
     import pcapi.core.offerers.models as offerers_models
     import pcapi.core.offers.models as offers_models
@@ -46,6 +47,9 @@ class SearchBackend:
         raise NotImplementedError()
 
     def check_offer_id_is_indexed(self, offer_id: int) -> bool:
+        raise NotImplementedError()
+
+    def index_artists(self, artists: "abc.Collection[artists_models.Artist]") -> None:
         raise NotImplementedError()
 
     def index_offers(
