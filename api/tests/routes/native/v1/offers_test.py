@@ -1973,7 +1973,10 @@ class OffersV2Test:
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
-        assert response.json["video"] == {"id": "fAkeV1ide0o"}
+        assert response.json["video"] == {
+            "id": "fAkeV1ide0o",
+            "thumbUrl": "https://www.youtube.com/watch?v=fAkeV1ide0o",
+        }
 
 
 class OffersStocksV2Test:
