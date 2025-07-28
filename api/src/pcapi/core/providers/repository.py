@@ -6,6 +6,7 @@ import sqlalchemy.orm as sa_orm
 from sqlalchemy import func
 from sqlalchemy import or_
 
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
@@ -199,6 +200,9 @@ def is_cinema_external_ticket_applicable(offer: offers_models.Offer) -> bool:
 def get_providers_venues(provider_id: int) -> sa_orm.Query:
     return (
         db.session.query(Venue)
+        .options(
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
+        )
         .join(models.VenueProvider)
         .outerjoin(models.VenueProvider.externalUrls)
         .options(sa_orm.contains_eager(Venue.venueProviders).contains_eager(models.VenueProvider.externalUrls))

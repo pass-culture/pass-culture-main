@@ -1,5 +1,7 @@
 import logging
 
+import sqlalchemy.orm as sa_orm
+
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import api_errors
@@ -76,7 +78,14 @@ def get_venue_by_siret(
     if not is_siret_or_ridet(siret):
         raise api_errors.ApiErrors({"siret": [f'string does not match regex "{SIRET_OR_RIDET_RE}"']})
 
-    venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.siret == siret).one_or_none()
+    venue = (
+        db.session.query(offerers_models.Venue)
+        .options(
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
+        )
+        .filter(offerers_models.Venue.siret == siret)
+        .one_or_none()
+    )
 
     if not venue:
         raise api_errors.ResourceNotFoundError(errors={"global": "Venue cannot be found"})

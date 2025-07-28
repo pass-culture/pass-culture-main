@@ -78,13 +78,14 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
         ) = self.create_multiple_venue_providers()
 
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select offerer
+        num_queries += 1  # select offerer, venue, venue oa and venue address
         num_queries += 1  # check provider exists
         num_queries += 1  # select venue_provider_external_urls
         num_queries += 1  # check provider exists
         num_queries += 1  # select venue_provider_external_urls
         num_queries += 1  # check provider exists
         num_queries += 1  # select venue_provider_external_urls
+
         with testing.assert_num_queries(num_queries):
             response = self.make_request(plain_api_key)
             assert response.status_code == 200
@@ -205,11 +206,12 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
         offerer_with_two_venues_siren = offerer_with_two_venues.siren
 
         num_queries = 1  # select api_key, offerer and provider
-        num_queries += 1  # select offerer
+        num_queries += 1  # select offerer, venue, venue OA and venue address
         num_queries += 1  # check provider exists
         num_queries += 1  # select venue_provider_external_urls
         num_queries += 1  # check provider exists
         num_queries += 1  # select venue_provider_external_urls
+
         with testing.assert_num_queries(num_queries):
             response = self.make_request(plain_api_key, query_params={"siren": offerer_with_two_venues_siren})
             assert response.status_code == 200
