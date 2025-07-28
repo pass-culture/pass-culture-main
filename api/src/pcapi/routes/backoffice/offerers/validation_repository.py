@@ -40,6 +40,7 @@ def _apply_query_filters(
     dms_adage_status: list[GraphQLApplicationStates] | None,
     from_datetime: datetime | None,
     to_datetime: datetime | None,
+    user_offerers_id: list[int] | None,
     cls: type[offerers_models.Offerer | offerers_models.UserOfferer],
     offerer_id_column: sa_orm.InstrumentedAttribute,
 ) -> sa_orm.Query:
@@ -141,6 +142,9 @@ def _apply_query_filters(
                     )
                 )
             )
+
+    if user_offerers_id:
+        query = query.filter(offerers_models.UserOfferer.id.in_(user_offerers_id))
 
     return query
 
@@ -280,6 +284,7 @@ def list_offerers_to_be_validated(
         dms_adage_status=dms_adage_status,
         from_datetime=from_datetime,
         to_datetime=to_datetime,
+        user_offerers_id=None,
         cls=offerers_models.Offerer,
         offerer_id_column=offerers_models.Offerer.id,
     )
@@ -330,7 +335,7 @@ def list_offerers_to_be_validated(
 
 def list_users_offerers_to_be_validated(
     *,
-    q: str | None,  # search query
+    q: str | None = None,  # search query
     regions: list[str] | None = None,
     tags: list[offerers_models.OffererTag] | None = None,
     status: list[ValidationStatus] | None = None,
@@ -338,6 +343,7 @@ def list_users_offerers_to_be_validated(
     offerer_status: list[ValidationStatus] | None = None,
     from_datetime: datetime | None = None,
     to_datetime: datetime | None = None,
+    user_offerers_ids: list[int] | None = None,
 ) -> sa_orm.Query:
     # Fetch only the single last comment to avoid loading the full history (joinedload would fetch 1 row per action)
     last_comment_subquery = (
@@ -405,6 +411,7 @@ def list_users_offerers_to_be_validated(
         to_datetime=to_datetime,
         cls=offerers_models.UserOfferer,
         offerer_id_column=offerers_models.UserOfferer.offererId,
+        user_offerers_id=user_offerers_ids,
     )
 
     if last_instructor_ids:
@@ -426,5 +433,4 @@ def list_users_offerers_to_be_validated(
             .scalar_subquery()
             .in_(last_instructor_ids)
         )
-
     return query

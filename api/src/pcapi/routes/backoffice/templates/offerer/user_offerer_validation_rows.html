@@ -1,0 +1,63 @@
+{% import "components/links.html" as links with context %}
+{% set has_validate_permission = has_permission("VALIDATE_OFFERER") %}
+{% for item in items %}
+  {% set user_offerer = item.UserOfferer %}
+  {% set offerer = user_offerer.offerer %}
+  <tr id="user-offerer-row-{{ user_offerer.id }}">
+    {% if has_validate_permission %}
+      <td>
+        <input type="checkbox"
+               class="form-check-input"
+               name="pc-table-multi-select-check-{{ offerer.id }}-{{ user_offerer.user.id }}"
+               data-id="{{ user_offerer.id }}" />
+      </td>
+      <td class="text-center">
+        <div class="dropdown">
+          <button type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  class="btn p-0 btn-outline-primary-subtle-bg border-0 px-2 py-1">
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+          <ul class="dropdown-menu">
+            <li class="dropdown-item p-0">
+              {% set target_url = url_for('backoffice_web.validation.validate_user_offerer', offerer_id=offerer.id, user_offerer_id=user_offerer.id) %}
+              <form action="{{ target_url }}"
+                    name="{{ target_url | action_to_name }}"
+                    hx-target="#user-offerer-row-{{ user_offerer.id }}"
+                    hx-post="{{ target_url }}"
+                    hx-swap="outerHTML"
+                    hx-trigger="submit"
+                    method="post">
+                <button type="submit"
+                        class="btn btn-sm d-block w-100 text-start px-3">Valider</button>
+                {{ csrf_token }}
+              </form>
+            </li>
+            <li class="dropdown-item p-0">
+              <a class="btn btn-sm d-block w-100 text-start px-3"
+                 data-use-dynamic-modal="true"
+                 data-bs-toggle="modal"
+                 data-bs-target="#reject-modal-{{ user_offerer.id }}">Rejeter</a>
+            </li>
+            <li class="dropdown-item p-0">
+              <a class="btn btn-sm d-block w-100 text-start px-3"
+                 data-use-dynamic-modal="true"
+                 data-bs-toggle="modal"
+                 data-bs-target="#pending-modal-{{ user_offerer.id }}">Mettre en attente</a>
+            </li>
+          </ul>
+        </div>
+      </td>
+    {% endif %}
+    <td>{{ user_offerer.user.id }}</td>
+    <td>{{ user_offerer.user.email | empty_string_if_null }}</td>
+    <td>{{ links.build_pro_user_name_to_details_link(user_offerer.user.id, user_offerer.user.full_name) }}</td>
+    <td>{{ user_offerer | format_user_offerer_status_badge }}</td>
+    <td>{{ item.tags | map(attribute="label") | format_as_badges }}</td>
+    <td>{{ user_offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
+    <td>{{ links.build_offerer_name_to_details_link(offerer) }}</td>
+    <td>{{ item.creator_email | empty_string_if_null }}</td>
+    <td>{{ item.last_comment | empty_string_if_null | nl2br }}</td>
+  </tr>
+{% endfor %}
