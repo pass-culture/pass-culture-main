@@ -10,7 +10,25 @@
   }
 
   &-label {
-    @include fonts.title2;
+    &-h1 {
+      @include fonts.title1;
+    }
+
+    &-h2 {
+      @include fonts.title2;
+    }
+
+    &-h3 {
+      @include fonts.title3;
+    }
+
+    &-h4 {
+      @include fonts.title4;
+    }
+
+    &-span {
+      @include fonts.body-accent;
+    }
 
     color: var(--color-text-default);
 
@@ -20,7 +38,18 @@
   }
 
   &-description {
-    @include fonts.body;
+    &.has-label {
+      &-span {
+        @include fonts.body-s;
+      }
+
+      &-h1,
+      &-h2,
+      &-h3,
+      &-h4 {
+        @include fonts.body;
+      }
+    }
 
     color: var(--color-text-subtle);
 
@@ -33,7 +62,12 @@
     @include fonts.body-accent-s;
 
     color: var(--color-text-error);
-    margin-bottom: 0;
+
+    &-icon {
+      color: var(--color-text-error);
+      margin-right: rem.torem(4px);
+      vertical-align: middle;
+    }
   }
 
   &-options {
