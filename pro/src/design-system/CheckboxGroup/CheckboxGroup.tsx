@@ -1,5 +1,8 @@
 import classNames from 'classnames'
-import { useId, useState } from 'react'
+import { ElementType, useId, useState } from 'react'
+
+import fullError from 'icons/full-error.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { Checkbox, CheckboxProps } from '../Checkbox/Checkbox'
 
@@ -30,20 +33,33 @@ export type CheckboxGroupOption =
   | CheckboxGroupOptionDetailed
 
 type CheckboxGroupProps = {
+  /** Label for the checkbox group */
   label: string
+  /** Tag for the label, defaults to 'span', can be 'h1', 'h2', etc. */
+  labelTag?: ElementType
+  /** Description for the checkbox group */
   description?: string
+  /** Error message for the checkbox group */
   error?: string
+  /** List of options as checkboxes */
   options: CheckboxGroupOption[]
+  /** Controlled selected values */
   value?: (string | number)[]
+  /** Uncontrolled initial selected values */
   defaultValue?: (string | number)[]
+  /** Event handler called with the new array of selected values */
   onChange?: (value: (string | number)[]) => void
+  /** Display style of the checkbox group, defaults to 'vertical' */
   display?: 'vertical' | 'horizontal'
+  /** Variant of the checkboxes (applied to all), defaults to 'default' */
   variant?: 'default' | 'detailed'
+  /** If the checkbox group is disabled, making all options unselectable */
   disabled?: boolean
 }
 
 export const CheckboxGroup = ({
   label,
+  labelTag: LabelTag = 'span',
   description,
   error,
   options,
@@ -95,7 +111,7 @@ export const CheckboxGroup = ({
     <div
       role="group"
       aria-labelledby={labelId}
-      aria-describedby={describedBy || undefined}
+      aria-describedby={describedBy}
       className={classNames(
         styles['checkbox-group'],
         styles[`display-${display}`],
@@ -104,19 +120,20 @@ export const CheckboxGroup = ({
       )}
     >
       <div className={styles['checkbox-group-header']}>
-        <span
+        <LabelTag
           id={labelId}
-          className={classNames(styles['checkbox-group-label'], {
+          className={classNames(styles[`checkbox-group-label-${LabelTag}`], {
             [styles['disabled']]: disabled,
           })}
         >
           {label}
-        </span>
+        </LabelTag>
         {description && (
           <span
             id={descriptionId}
             className={classNames(styles['checkbox-group-description'], {
               [styles['disabled']]: disabled,
+              [styles[`has-label-${LabelTag}`]]: LabelTag,
             })}
           >
             {description}
@@ -124,7 +141,15 @@ export const CheckboxGroup = ({
         )}
         <div role="alert" id={errorId}>
           {error && (
-            <span className={styles['checkbox-group-error']}>{error}</span>
+            <>
+              <SvgIcon
+                src={fullError}
+                alt=""
+                width="16"
+                className={styles['checkbox-group-error-icon']}
+              />
+              <span className={styles['checkbox-group-error']}>{error}</span>
+            </>
           )}
         </div>
       </div>
