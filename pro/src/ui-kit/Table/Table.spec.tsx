@@ -21,60 +21,56 @@ const data: RowType[] = [
   { id: 2, name: 'Beta', value: 1 },
 ]
 
+function renderTable(
+  overrides: Partial<React.ComponentProps<typeof Table<RowType>>> = {}
+) {
+  return render(
+    <Table<RowType>
+      columns={columns}
+      data={data}
+      isLoading={false}
+      variant={TableVariant.COLLAPSE}
+      noResult={{
+        message: 'Aucun résultat trouvé',
+        onFilterReset: vi.fn(),
+      }}
+      noData={{
+        hasNoData: false,
+        message: {
+          icon: '',
+          title: '',
+          subtitle: '',
+        },
+      }}
+      {...overrides}
+    />
+  )
+}
+
 describe('<Table />', () => {
   beforeEach(() => {
     vi.resetAllMocks()
   })
 
   it('renders loading skeletons when isLoading is true', () => {
-    render(
-      <Table<RowType>
-        columns={columns}
-        data={[]}
-        isLoading
-        selectable={false}
-        variant={TableVariant.COLLAPSE}
-        noResult={{
-          message: '',
-          onFilterReset: function (): void {
-            throw new Error('Function not implemented.')
-          },
-        }}
-      />
-    )
+    renderTable({ data: [], isLoading: true })
     expect(
       screen.getAllByRole('row', { name: 'Chargement en cours' }).length
     ).toBeGreaterThan(6)
   })
 
   it('sorts rows ASC then DESC when clicking on sortable column header twice', async () => {
-    render(
-      <Table<RowType>
-        columns={columns}
-        data={data}
-        isLoading={false}
-        variant={TableVariant.COLLAPSE}
-        noResult={{
-          message: '',
-          onFilterReset: function (): void {
-            throw new Error('Function not implemented.')
-          },
-        }}
-      />
-    )
+    renderTable()
 
-    // initial order: Alpha (2) then Beta (1)
     let rows = screen.getAllByRole('row')
     expect(within(rows[1]).getByText('2')).toBeInTheDocument()
 
-    // click -> ASC (Beta 1 first)
     await userEvent.click(
       screen.getByRole('img', { name: 'Trier par ordre croissant' })
     )
     rows = screen.getAllByRole('row')
     expect(within(rows[1]).getByText('1')).toBeInTheDocument()
 
-    // click again -> DESC (Alpha 2 first)
     await userEvent.click(
       screen.getByRole('img', { name: 'Trier par ordre décroissant' })
     )
@@ -84,71 +80,32 @@ describe('<Table />', () => {
 
   it('handles row selection and select‑all', async () => {
     const handleSelection = vi.fn()
-    render(
-      <Table<RowType>
-        columns={columns}
-        data={data}
-        selectable
-        isLoading={false}
-        onSelectionChange={handleSelection}
-        variant={TableVariant.COLLAPSE}
-        noResult={{
-          message: '',
-          onFilterReset: function (): void {
-            throw new Error('Function not implemented.')
-          },
-        }}
-      />
-    )
+    renderTable({ selectable: true, onSelectionChange: handleSelection })
 
-    // select first row via its checkbox label
     const rowCheckbox = screen.getByLabelText('Alpha')
     await userEvent.click(rowCheckbox)
     expect(handleSelection).toHaveBeenCalledWith([data[0]])
 
-    // select all via master checkbox
     const selectAll = screen.getByLabelText(/Tout sélectionner/i)
     await userEvent.click(selectAll)
     expect(handleSelection).toHaveBeenCalledWith(data)
   })
 
   it('has no accessibility violations', async () => {
-    const { container } = render(
-      <Table<RowType>
-        columns={columns}
-        data={data}
-        isLoading={false}
-        selectable
-        title="Accessible table"
-        variant={TableVariant.COLLAPSE}
-        noResult={{
-          message: '',
-          onFilterReset: function (): void {
-            throw new Error('Function not implemented.')
-          },
-        }}
-      />
-    )
-
+    const { container } = renderTable({
+      selectable: true,
+      title: 'Accessible table',
+    })
     const results = await axe(container)
     expect(results).toHaveNoViolations()
   })
 
   it('renders no-result message when no data and not loading', () => {
     const onFilterReset = vi.fn()
-
-    render(
-      <Table<RowType>
-        columns={columns}
-        data={[]}
-        isLoading={false}
-        variant={TableVariant.COLLAPSE}
-        noResult={{
-          message: 'Aucun résultat trouvé',
-          onFilterReset,
-        }}
-      />
-    )
+    renderTable({
+      data: [],
+      noResult: { message: 'Aucun résultat trouvé', onFilterReset },
+    })
 
     expect(screen.getByText('Aucun résultat trouvé')).toBeInTheDocument()
     expect(
@@ -158,19 +115,10 @@ describe('<Table />', () => {
 
   it('calls resetFilter when clicking reset button in no-result state', async () => {
     const onFilterReset = vi.fn()
-
-    render(
-      <Table<RowType>
-        columns={columns}
-        data={[]}
-        isLoading={false}
-        variant={TableVariant.COLLAPSE}
-        noResult={{
-          message: 'Aucun résultat trouvé',
-          onFilterReset,
-        }}
-      />
-    )
+    renderTable({
+      data: [],
+      noResult: { message: 'Aucun résultat trouvé', onFilterReset },
+    })
 
     const button = screen.getByRole('button', {
       name: /Réinitialiser les filtres/i,
@@ -181,44 +129,19 @@ describe('<Table />', () => {
 
   it('respects externally controlled selectedIds prop', () => {
     const selectedIds = new Set([1])
+    renderTable({ selectable: true, selectedIds })
 
-    render(
-      <Table<RowType>
-        columns={columns}
-        data={data}
-        isLoading={false}
-        selectable
-        selectedIds={selectedIds}
-        variant={TableVariant.COLLAPSE}
-        noResult={{
-          message: '',
-          onFilterReset: vi.fn(),
-        }}
-      />
-    )
-
-    const checkbox = screen.getByLabelText('Alpha') // id = 1
+    const checkbox = screen.getByLabelText('Alpha')
     expect((checkbox as HTMLInputElement).checked).toBe(true)
   })
 
   it('does not allow selection of non-selectable rows', async () => {
     const handleSelection = vi.fn()
-
-    render(
-      <Table<RowType>
-        columns={columns}
-        data={data}
-        isLoading={false}
-        selectable
-        onSelectionChange={handleSelection}
-        isRowSelectable={(row) => row.name !== 'Beta'}
-        variant={TableVariant.COLLAPSE}
-        noResult={{
-          message: '',
-          onFilterReset: vi.fn(),
-        }}
-      />
-    )
+    renderTable({
+      selectable: true,
+      onSelectionChange: handleSelection,
+      isRowSelectable: (row) => row.name !== 'Beta',
+    })
 
     const betaCheckbox = screen.getByLabelText('Beta')
     expect((betaCheckbox as HTMLInputElement).disabled).toBe(true)
@@ -226,5 +149,26 @@ describe('<Table />', () => {
     const alphaCheckbox = screen.getByLabelText('Alpha')
     await userEvent.click(alphaCheckbox)
     expect(handleSelection).toHaveBeenCalledWith([data[0]])
+  })
+
+  it('renders empty state message when noData.hasNoData is true', () => {
+    renderTable({
+      data: [],
+      noData: {
+        hasNoData: true,
+        message: {
+          icon: 'mock-icon.svg',
+          title: 'Aucun justificatif disponible',
+          subtitle: 'Les justificatifs apparaîtront ici une fois édités.',
+        },
+      },
+    })
+
+    expect(
+      screen.getByText('Aucun justificatif disponible')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Les justificatifs apparaîtront ici une fois édités.')
+    ).toBeInTheDocument()
   })
 })

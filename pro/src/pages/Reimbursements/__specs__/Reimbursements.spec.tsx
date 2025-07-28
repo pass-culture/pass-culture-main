@@ -12,8 +12,8 @@ import {
   getOffererNameFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 

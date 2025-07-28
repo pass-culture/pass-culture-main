@@ -27,6 +27,7 @@
 
 .table-header {
   @include fonts.body-accent-xs;
+
   background-color: var(--color-background-subtle);
 
   &-sticky {

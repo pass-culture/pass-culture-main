@@ -7,6 +7,7 @@ import { Skeleton } from 'ui-kit/Skeleton/Skeleton'
 
 import { SortColumn } from './SortColumn/SortColumn'
 import styles from './Table.module.scss'
+import { TableNoData } from './TableNoData/TableNoData'
 import { TableNoFilterResult } from './TableNoFilterResult/TableNoFilterResult'
 
 export enum TableVariant {
@@ -17,6 +18,15 @@ export enum TableVariant {
 type NoResultProps = {
   message: string
   onFilterReset: () => void
+}
+
+type EmptyStateProps = {
+  hasNoData: boolean
+  message: {
+    icon: string
+    title: string
+    subtitle: string
+  }
 }
 
 export interface Column<T> {
@@ -45,6 +55,7 @@ interface TableProps<T extends { id: string | number }> {
   getFullRowContent?: (row: T) => React.ReactNode | null
   isRowSelectable?: (row: T) => boolean
   noResult: NoResultProps
+  noData: EmptyStateProps
 }
 
 function getValue<T>(
@@ -80,6 +91,7 @@ export function Table<
   isSticky,
   variant,
   noResult,
+  noData,
   onSelectionChange,
   getFullRowContent,
   isRowSelectable,
@@ -150,6 +162,10 @@ export function Table<
           : -1
     })
   }, [data, currentSortingColumn, currentSortingMode, columns])
+
+  if (noData.hasNoData) {
+    return <TableNoData noData={noData.message} />
+  }
 
   return (
     <div className={classNames(styles.wrapper, className)} tabIndex={0}>
