@@ -208,25 +208,26 @@ def post_product_offer(body: products_serializers.ProductOfferCreation) -> seria
             label=body.location.address_label,
         )
 
+    create_offer_schema = offers_schemas.CreateOffer(
+        name=body.name,
+        subcategoryId=body.category_related_fields.subcategory_id,
+        audioDisabilityCompliant=body.accessibility.audio_disability_compliant,
+        mentalDisabilityCompliant=body.accessibility.mental_disability_compliant,
+        motorDisabilityCompliant=body.accessibility.motor_disability_compliant,
+        visualDisabilityCompliant=body.accessibility.visual_disability_compliant,
+        bookingContact=body.booking_contact,
+        bookingEmail=body.booking_email,
+        description=body.description,
+        externalTicketOfficeUrl=body.external_ticket_office_url,
+        ean=body.category_related_fields.ean if hasattr(body.category_related_fields, "ean") else None,
+        extraData=serialization.deserialize_extra_data(body.category_related_fields, venue_id=venue.id),
+        idAtProvider=body.id_at_provider,
+        isDuo=body.enable_double_bookings,
+        url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
+        withdrawalDetails=body.withdrawal_details,
+    )  # type: ignore[call-arg]
     offer = offers_api.create_offer(
-        offers_schemas.CreateOffer(
-            name=body.name,
-            subcategoryId=body.category_related_fields.subcategory_id,
-            audioDisabilityCompliant=body.accessibility.audio_disability_compliant,
-            mentalDisabilityCompliant=body.accessibility.mental_disability_compliant,
-            motorDisabilityCompliant=body.accessibility.motor_disability_compliant,
-            visualDisabilityCompliant=body.accessibility.visual_disability_compliant,
-            bookingContact=body.booking_contact,
-            bookingEmail=body.booking_email,
-            description=body.description,
-            externalTicketOfficeUrl=body.external_ticket_office_url,
-            ean=body.category_related_fields.ean if hasattr(body.category_related_fields, "ean") else None,
-            extraData=serialization.deserialize_extra_data(body.category_related_fields, venue_id=venue.id),
-            idAtProvider=body.id_at_provider,
-            isDuo=body.enable_double_bookings,
-            url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
-            withdrawalDetails=body.withdrawal_details,
-        ),  # type: ignore[call-arg]
+        create_offer_schema,
         venue=venue,
         provider=current_api_key.provider,
         offerer_address=offerer_address,
@@ -256,6 +257,20 @@ def post_product_offer(body: products_serializers.ProductOfferCreation) -> seria
         offers_api.finalize_offer(
             offer,
             publication_datetime=body.publication_datetime,  # type: ignore[arg-type]
+            booking_allowed_datetime=body.booking_allowed_datetime,
+        )
+
+    public_utils.public_api_add_log_extra(venue=venue.id, ean=create_offer_schema.ean)
+    if body.stock:
+        public_utils.public_api_add_log_extra(
+            stock_price=body.stock.price,
+            stock_quantity=body.stock.quantity,
+            stock_booking_limit=body.stock.booking_limit_datetime,
+        )
+
+    if publication_datetime:
+        public_utils.public_api_add_log_extra(
+            publication_datetime=body.publication_datetime,
             booking_allowed_datetime=body.booking_allowed_datetime,
         )
 
@@ -619,6 +634,10 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
     if "stock" in updates:
         offers_tasks.upsert_product_stock(updated_offer, body.stock, current_api_key.provider)
         db.session.refresh(offer)  # to ensure that `offer.activeStocks` is correctly populated
+
+    public_utils.public_api_add_log_extra(venue=offer.venueId, publication_datetime=publication_datetime)
+    if "stock" in updates and body.stock:
+        public_utils.public_api_add_log_extra(stock_price=body.stock.price, stock_quantity=body.stock.quantity)
 
     return serialization.ProductOfferResponse.build_product_offer(offer)
 

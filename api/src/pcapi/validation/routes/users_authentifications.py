@@ -16,6 +16,7 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import User
 from pcapi.models import api_errors
+from pcapi.routes.public import utils as public_utils
 from pcapi.serialization.spec_tree import add_security_scheme
 
 
@@ -56,6 +57,7 @@ def provider_api_key_required(route_function: typing.Callable) -> typing.Callabl
     @wraps(route_function)
     def wrapper(*args: typing.Any, **kwds: typing.Any) -> flask.Response:
         _fill_current_api_key()
+        public_utils.setup_public_api_log_extra(route_function)
 
         if not g.current_api_key:
             raise api_errors.UnauthorizedError(errors={"auth": "API key required"})
@@ -92,14 +94,6 @@ def _fill_current_api_key() -> None:
     if authorization_header and mandatory_authorization_type in authorization_header:
         app_authorization_credentials = authorization_header.replace(mandatory_authorization_type, "")
         g.current_api_key = find_api_key(app_authorization_credentials)
-
-        if g.current_api_key is not None:
-            g.log_request_details_extra = {
-                "public_api": {
-                    "api_key": g.current_api_key.id,
-                    "provider_id": g.current_api_key.providerId,
-                }
-            }
 
 
 def _get_current_api_key() -> ApiKey | None:
