@@ -129,6 +129,26 @@ export const DetailedWithDescription: Story = {
   },
 }
 
+export const DetailedWithHeadingTag: Story = {
+  args: {
+    label: 'Radio Button Group with Heading Tag',
+    labelTag: 'h2',
+    options: detailedOptions,
+    variant: 'detailed',
+    description: 'Description with heading',
+  },
+}
+
+export const DetailedWithSpanTag: Story = {
+  args: {
+    label: 'Radio Button Group with Span Tag',
+    labelTag: 'span',
+    options: detailedOptions,
+    variant: 'detailed',
+    description: 'Description with span',
+  },
+}
+
 export const DetailedWithError: Story = {
   args: {
     label: 'Choose your detailed options',
