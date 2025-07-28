@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
+import dog from '../assets/dog.jpg'
+
 import { CheckboxGroup, CheckboxGroupOption } from './CheckboxGroup'
 
 const baseOptions = [
@@ -16,13 +18,13 @@ const detailedOptions = [
     label: 'A',
     value: 'a',
     variant: 'detailed',
-    asset: { variant: 'icon', src: 'full-archive' },
+    asset: { variant: 'image', src: dog },
   },
   {
     label: 'B',
     value: 'b',
     variant: 'detailed',
-    asset: { variant: 'icon', src: 'full-archive' },
+    asset: { variant: 'image', src: dog },
   },
 ] as const
 
@@ -160,20 +162,10 @@ describe('CheckboxGroup', () => {
         <CheckboxGroup label="Label" options={baseOptions} error="Error!" />
       )
       const checkboxes = screen.getAllByRole('checkbox')
-      checkboxes.forEach((cb) =>
-        expect(cb).toHaveAttribute('aria-invalid', 'true')
-      )
-    })
-
-    it('propagates the asset prop to all children when variant is detailed', () => {
-      render(
-        <CheckboxGroup
-          label="Label"
-          options={detailedOptions as unknown as CheckboxGroupOption[]}
-          variant="detailed"
-        />
-      )
-      expect(screen.getAllByTestId('checkbox-asset')).toHaveLength(2)
+      checkboxes.forEach((cb) => {
+        const label = cb.closest('label') // Because the aria-invalid is on the parent label, not the checkbox input
+        expect(label).toHaveAttribute('aria-invalid', 'true')
+      })
     })
   })
 

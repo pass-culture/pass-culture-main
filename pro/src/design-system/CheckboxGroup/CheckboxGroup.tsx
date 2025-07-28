@@ -1,8 +1,9 @@
+import classNames from 'classnames'
 import { useId, useState } from 'react'
 
 import { Checkbox, CheckboxProps } from '../Checkbox/Checkbox'
 
-// Types exclusifs pour la gestion des assets selon la variante
+import styles from './CheckboxGroup.module.scss'
 
 type CheckboxGroupOptionSimple = Omit<
   CheckboxProps,
@@ -49,15 +50,14 @@ export const CheckboxGroup = ({
   value,
   defaultValue,
   onChange,
+  display = 'vertical',
   variant = 'default',
   disabled = false,
 }: CheckboxGroupProps) => {
-  // Sécurité : au moins 2 options
   if (options.length < 2) {
     throw new Error('CheckboxGroup requires at least two options.')
   }
 
-  // Génération des ids pour l'accessibilité
   const labelId = useId()
   const errorId = useId()
   const descriptionId = useId()
@@ -68,14 +68,13 @@ export const CheckboxGroup = ({
     .filter(Boolean)
     .join(' ')
 
-  // Contrôlé / non-contrôlé
+  // Controlled / Uncontrolled
   const isControlled = value !== undefined
   const [internalValue, setInternalValue] = useState<(string | number)[]>(
     defaultValue ?? []
   )
   const selectedValues = isControlled ? value! : internalValue
 
-  // Gestion du changement de sélection
   const handleChange = (optionValue: string | number) => {
     let newValues: (string | number)[]
     if (selectedValues.includes(optionValue)) {
@@ -89,7 +88,6 @@ export const CheckboxGroup = ({
     onChange?.(newValues)
   }
 
-  // Gestion de la propagation des props asset/variant
   const propagateAsset =
     variant === 'detailed' && options.some((opt) => 'asset' in opt && opt.asset)
 
@@ -98,15 +96,39 @@ export const CheckboxGroup = ({
       role="group"
       aria-labelledby={labelId}
       aria-describedby={describedBy || undefined}
+      className={classNames(
+        styles['checkbox-group'],
+        styles[`display-${display}`],
+        styles[`variant-${variant}`],
+        { [styles['disabled']]: disabled }
+      )}
     >
-      <div>
-        <span id={labelId}>{label}</span>
-        {description && <span id={descriptionId}>{description}</span>}
+      <div className={styles['checkbox-group-header']}>
+        <span
+          id={labelId}
+          className={classNames(styles['checkbox-group-label'], {
+            [styles['disabled']]: disabled,
+          })}
+        >
+          {label}
+        </span>
+        {description && (
+          <span
+            id={descriptionId}
+            className={classNames(styles['checkbox-group-description'], {
+              [styles['disabled']]: disabled,
+            })}
+          >
+            {description}
+          </span>
+        )}
         <div role="alert" id={errorId}>
-          {error && <span>{error}</span>}
+          {error && (
+            <span className={styles['checkbox-group-error']}>{error}</span>
+          )}
         </div>
       </div>
-      <div>
+      <div className={styles['checkbox-group-options']}>
         {options.map((option) => {
           const checked = selectedValues.includes(option.value)
 
