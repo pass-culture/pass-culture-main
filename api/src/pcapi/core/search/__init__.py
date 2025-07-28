@@ -599,6 +599,12 @@ def get_last_x_days_booking_count_by_offer(offers: abc.Iterable[offers_models.Of
     return default_dict
 
 
+def index_artist_ids(artist_ids: abc.Collection[str]) -> None:
+    backend = _get_backend()
+    artists = db.session.query(artist_models.Artist).filter(artist_models.Artist.id.in_(artist_ids)).all()
+    backend.index_artists(artists)
+
+
 def reindex_offer_ids(offer_ids: abc.Collection[int], from_error_queue: bool = False) -> None:
     """Given a list of `Offer.id`, reindex or unindex each offer
     (i.e. request the external indexation service an update or a
