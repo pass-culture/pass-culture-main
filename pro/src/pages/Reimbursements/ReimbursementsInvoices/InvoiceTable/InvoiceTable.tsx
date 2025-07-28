@@ -7,6 +7,7 @@ import { FORMAT_DD_MM_YYYY } from 'commons/utils/date'
 import { formatPrice } from 'commons/utils/formatPrice'
 import strokeLessIcon from 'icons/stroke-less.svg'
 import strokeMoreIcon from 'icons/stroke-more.svg'
+import strokeRepaymentIcon from 'icons/stroke-repayment.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Column, Table, TableVariant } from 'ui-kit/Table/Table'
 
@@ -97,21 +98,25 @@ const columns: Column<InvoiceResponseV2Model>[] = [
 
 type InvoiceTableProps = {
   data: InvoiceResponseV2Model[]
+  hasInvoice: boolean
   isLoading: boolean
   onFilterReset: () => void
 }
 
 export const InvoiceTable = ({
   data,
+  hasInvoice,
   isLoading,
   onFilterReset,
 }: InvoiceTableProps) => {
   const [checkedInvoices, setCheckedInvoices] = useState<string[]>([])
 
-  const invoices = data.map((invoice) => ({
-    ...invoice,
-    id: invoice.reference,
-  }))
+  const invoices = hasInvoice
+    ? data.map((invoice) => ({
+        ...invoice,
+        id: invoice.reference,
+      }))
+    : []
 
   return (
     <div className={styles['invoices-table']}>
@@ -130,6 +135,16 @@ export const InvoiceTable = ({
           message:
             'Aucun justificatif de remboursement trouvé pour votre recherche',
           onFilterReset,
+        }}
+        noData={{
+          hasNoData: !hasInvoice,
+          message: {
+            icon: strokeRepaymentIcon,
+            title:
+              'Vous n’avez pas encore de justificatifs de remboursement disponibles',
+            subtitle:
+              'Lorsqu’ils auront été édités, vous pourrez les télécharger ici',
+          },
         }}
       />
     </div>

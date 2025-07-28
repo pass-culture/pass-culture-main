@@ -22,7 +22,6 @@ import { BannerReimbursementsInfo } from './BannerReimbursementsInfo'
 import { InvoicesFilters } from './InvoicesFilters'
 import { InvoicesServerError } from './InvoicesServerError'
 import { InvoiceTable } from './InvoiceTable/InvoiceTable'
-import { NoInvoicesYet } from './NoInvoicesYet'
 
 export const ReimbursementsInvoices = (): JSX.Element => {
   const [, setSearchParams] = useSearchParams()
@@ -40,7 +39,6 @@ export const ReimbursementsInvoices = (): JSX.Element => {
 
   const [filters, setFilters] = useState(INITIAL_FILTERS)
   const [searchFilters, setSearchFilters] = useState(INITIAL_FILTERS)
-  const [hasSearchedOnce, setHasSearchedOnce] = useState(false)
 
   useEffect(() => {
     const newParams = new URLSearchParams()
@@ -90,14 +88,12 @@ export const ReimbursementsInvoices = (): JSX.Element => {
   )
 
   const handleSearch = useCallback(() => {
-    setHasSearchedOnce(true)
     setSearchFilters(filters)
   }, [filters])
 
   const handleResetFilters = useCallback(() => {
     setFilters(INITIAL_FILTERS)
     setSearchFilters(INITIAL_FILTERS)
-    setHasSearchedOnce(false)
   }, [INITIAL_FILTERS])
 
   if (
@@ -120,7 +116,6 @@ export const ReimbursementsInvoices = (): JSX.Element => {
 
   const invoices = getInvoicesQuery.data
   const hasInvoice = Boolean(hasInvoiceQuery.data.hasInvoice)
-  const hasNoInvoicesYet = !hasSearchedOnce && !hasInvoice
 
   return (
     <>
@@ -134,14 +129,12 @@ export const ReimbursementsInvoices = (): JSX.Element => {
         onSearch={handleSearch}
       />
       {getInvoicesQuery.error && <InvoicesServerError />}
-      {hasNoInvoicesYet && <NoInvoicesYet />}
-      {hasInvoice && (
-        <InvoiceTable
-          data={invoices}
-          isLoading={hasInvoiceQuery.isLoading}
-          onFilterReset={handleResetFilters}
-        />
-      )}
+      <InvoiceTable
+        data={invoices}
+        hasInvoice={hasInvoice}
+        isLoading={hasInvoiceQuery.isLoading}
+        onFilterReset={handleResetFilters}
+      />
     </>
   )
 }
