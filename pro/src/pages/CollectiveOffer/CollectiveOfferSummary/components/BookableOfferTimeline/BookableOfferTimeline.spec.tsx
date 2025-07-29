@@ -66,12 +66,24 @@ describe('BookableOfferTimeline', () => {
         <BookableOfferTimeline
           offer={getCollectiveOfferFactory({
             history: {
-              past: [
-                {
-                  status,
-                  datetime: '2025-07-05T13:38:12.020421Z',
-                },
-              ],
+              past:
+                status === CollectiveOfferDisplayedStatus.EXPIRED
+                  ? [
+                      {
+                        status: CollectiveOfferDisplayedStatus.PREBOOKED,
+                        datetime: '2025-07-04T13:38:12.020421Z',
+                      },
+                      {
+                        status: CollectiveOfferDisplayedStatus.EXPIRED,
+                        datetime: '2025-07-05T13:38:12.020421Z',
+                      },
+                    ]
+                  : [
+                      {
+                        status,
+                        datetime: '2025-07-05T13:38:12.020421Z',
+                      },
+                    ],
               future: [],
             },
           })}
@@ -209,12 +221,24 @@ describe('BookableOfferTimeline - step type rendering', () => {
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
           history: {
-            past: [
-              {
-                status,
-                datetime: '2025-07-05T13:38:12.020421Z',
-              },
-            ],
+            past:
+              status === CollectiveOfferDisplayedStatus.EXPIRED
+                ? [
+                    {
+                      status: CollectiveOfferDisplayedStatus.EXPIRED,
+                      datetime: '2025-07-04T13:38:12.020421Z',
+                    },
+                    {
+                      status: CollectiveOfferDisplayedStatus.PREBOOKED,
+                      datetime: '2025-07-05T13:38:12.020421Z',
+                    },
+                  ]
+                : [
+                    {
+                      status,
+                      datetime: '2025-07-05T13:38:12.020421Z',
+                    },
+                  ],
             future: [],
           },
         })}
