@@ -1,8 +1,9 @@
 /* No need to test this file */
 /* istanbul ignore file */
 
-import { Navigate } from 'react-router'
+import { Navigate, NavigateProps, useLocation } from 'react-router'
 
+import { parse } from 'commons/utils/query-string'
 import { UNAVAILABLE_ERROR_PAGE } from 'commons/utils/routes'
 
 import {
@@ -25,6 +26,12 @@ export interface RouteConfig {
   meta?: RouteMeta
   featureName?: string
   children?: RouteConfig[]
+}
+
+const NavigateToNewPasswordReset = ({ to, ...props }: NavigateProps) => {
+  const { search } = useLocation()
+  const { token } = parse(search)
+  return <Navigate {...props} to={`${to}/${token}`} />
 }
 
 export const routes: RouteConfig[] = [
@@ -349,6 +356,12 @@ export const routes: RouteConfig[] = [
   {
     lazy: () => import('pages/ResetPassword/ResetPassword'),
     path: '/demande-mot-de-passe/:token',
+    title: 'Réinitialisez votre mot de passe',
+    meta: { public: true },
+  },
+  {
+    element: <NavigateToNewPasswordReset to="/demande-mot-de-passe" />,
+    path: '/mot-de-passe-perdu',
     title: 'Réinitialisez votre mot de passe',
     meta: { public: true },
   },
