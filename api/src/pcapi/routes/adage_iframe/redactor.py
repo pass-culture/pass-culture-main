@@ -1,11 +1,11 @@
-import pcapi.core.educational.api.redactor as educational_redactor_api
 from pcapi.core.educational import repository as educational_repository
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository.session_management import atomic
 from pcapi.routes.adage_iframe import blueprint
-from pcapi.routes.adage_iframe import serialization
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
+from pcapi.routes.adage_iframe.serialization.redactor import RedactorPreferences
 from pcapi.serialization.decorator import spectree_serialize
 
 
@@ -14,11 +14,13 @@ from pcapi.serialization.decorator import spectree_serialize
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @adage_jwt_required
 def save_redactor_preferences(
-    body: serialization.redactor.RedactorPreferences,
+    body: RedactorPreferences,
     authenticated_information: AuthenticatedInformation,
 ) -> None:
     redactor = educational_repository.find_redactor_by_email(authenticated_information.email)
     if not redactor:
         raise ApiErrors({"message": "Redactor not found"}, status_code=403)
 
-    educational_redactor_api.save_redactor_preferences(redactor, **body.dict())
+    redactor.preferences = {**redactor.preferences, **body.dict()}
+    db.session.add(redactor)
+    db.session.flush()

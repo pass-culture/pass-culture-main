@@ -2,7 +2,7 @@ import datetime
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational.api import favorites as educational_api_favorite
+from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api.institution import get_educational_institution_department_code
 from pcapi.core.educational.api.institution import get_offers_count_for_my_institution
 from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
@@ -74,7 +74,7 @@ def _get_preferences(redactor: educational_models.EducationalRedactor | None) ->
 
 def _get_favorites_count(redactor: educational_models.EducationalRedactor | None) -> int:
     if redactor:
-        return educational_api_favorite.get_redactor_favorites_count(redactor.id)
+        return educational_api_adage.get_redactor_favorites_count(redactor.id)
     return 0
 
 

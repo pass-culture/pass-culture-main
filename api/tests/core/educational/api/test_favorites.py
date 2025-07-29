@@ -1,7 +1,7 @@
 import pytest
 
 from pcapi.core.educational import factories
-from pcapi.core.educational.api.favorites import get_redactor_favorites_count
+from pcapi.core.educational.api.adage import get_redactor_favorites_count
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
