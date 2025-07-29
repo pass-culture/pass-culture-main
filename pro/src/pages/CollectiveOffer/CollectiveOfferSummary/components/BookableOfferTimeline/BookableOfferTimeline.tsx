@@ -6,6 +6,7 @@ import { getDateToFrenchText } from 'commons/utils/date'
 import { Timeline, TimelineStepType } from 'ui-kit/Timeline/Timeline'
 
 import { BookingWaitingBanner } from './banners/BookingWaitingBanner'
+import { CancelledBanner } from './banners/CancelledBanner'
 import { DraftBanner } from './banners/DraftBanner'
 import { RejectedBanner } from './banners/RejectedBanner'
 import styles from './BookableOfferTimeline.module.scss'
@@ -131,10 +132,15 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
       return {
         type: TimelineStepType.ERROR,
         content: (
-          <StatusWithDate
-            status={statusLabel}
-            date={datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined}
-          />
+          <>
+            <StatusWithDate
+              status={statusLabel}
+              date={
+                datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined
+              }
+            />
+            {isCurrentStep && <CancelledBanner offerId={offer.id} reason={offer.booking?.cancellationReason}  />}
+          </>
         ),
       }
     }
