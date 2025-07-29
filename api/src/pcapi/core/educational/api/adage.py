@@ -11,7 +11,6 @@ from pydantic.v1 import parse_obj_as
 
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
-from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import address as address_api
 from pcapi.core.educational.api.venue import get_relative_venues_by_siret
 from pcapi.core.educational.schemas import AdageCulturalPartner
@@ -30,16 +29,6 @@ from pcapi.utils.clean_accents import clean_accents
 
 
 logger = logging.getLogger(__name__)
-
-
-def find_collective_bookings_for_adage(
-    uai_code: str,
-    year_id: str,
-    redactor_email: str | None = None,
-) -> list[educational_models.CollectiveBooking]:
-    return educational_repository.find_collective_bookings_for_adage(
-        uai_code=uai_code, year_id=year_id, redactor_email=redactor_email
-    )
 
 
 def get_cultural_partners(*, since_date: datetime | None = None, force_update: bool = False) -> AdageCulturalPartners:
@@ -331,3 +320,36 @@ def autocomplete_educational_redactor_for_uai(
             result.append(redactor)
             continue
     return result
+
+
+def get_redactor_favorites_count(redactor_id: int) -> int:
+    """
+    Note: Non-eligible for search templates are ignored.
+    """
+    redactor: educational_models.EducationalRedactor = (
+        db.session.query(educational_models.EducationalRedactor)
+        .filter_by(id=redactor_id)
+        .options(
+            sa_orm.joinedload(educational_models.EducationalRedactor.favoriteCollectiveOfferTemplates)
+            .load_only(
+                educational_models.CollectiveOfferTemplate.id,
+                educational_models.CollectiveOfferTemplate.venueId,
+                educational_models.CollectiveOfferTemplate.validation,
+                educational_models.CollectiveOfferTemplate.isActive,
+            )
+            .joinedload(educational_models.CollectiveOfferTemplate.venue)
+            .load_only(
+                offerers_models.Venue.managingOffererId,
+                offerers_models.Venue.isVirtual,
+            )
+            .joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus)
+        )
+        .one()
+    )
+
+    favorite_offer_templates = [
+        template for template in redactor.favoriteCollectiveOfferTemplates if template.is_eligible_for_search
+    ]
+
+    return len(favorite_offer_templates)
