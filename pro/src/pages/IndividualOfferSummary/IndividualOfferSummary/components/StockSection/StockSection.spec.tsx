@@ -333,7 +333,7 @@ describe('Summary stock section', () => {
       })
 
       expect(
-        screen.getByRole('heading', { name: /Dates et capacité/ })
+        screen.getByRole('heading', { name: /Dates et capacités/ })
       ).toBeInTheDocument()
 
       expect(
@@ -365,7 +365,7 @@ describe('Summary stock section', () => {
       })
 
       expect(
-        screen.getByRole('heading', { name: /Dates et capacité/ })
+        screen.getByRole('heading', { name: /Dates et capacités/ })
       ).toBeInTheDocument()
 
       await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))

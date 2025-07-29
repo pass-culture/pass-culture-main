@@ -76,7 +76,7 @@ export function StocksCalendarLayout({
       {mode !== OFFER_WIZARD_MODE.READ_ONLY && (
         //  When the mode is read only, the title is already inside the SummarySection layout
         <div className={styles['header']}>
-          <h2 className={styles['title']}>Calendrier</h2>
+          <h2 className={styles['title']}>Dates et capacités</h2>
           {hasStocks &&
             getDialogBuilderButton('Ajouter une ou plusieurs dates')}
         </div>

@@ -97,7 +97,7 @@ export const StockSection = ({
 
   return (
     <SummarySection
-      title={offer.isEvent ? 'Dates et capacité' : 'Stocks et prix'}
+      title={offer.isEvent ? 'Dates et capacités' : 'Stocks et prix'}
       editLink={editLink}
       aria-label="Modifier les stocks et prix"
     >
