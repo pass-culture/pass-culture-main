@@ -24,9 +24,9 @@ class Reaction(PcObject, Base, Model):
     reactionType = sa.Column(MagicEnum(ReactionTypeEnum), nullable=False)
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
     user: sa_orm.Mapped["User"] = sa_orm.relationship("User", back_populates="reactions")
-    offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=True)
+    offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=True, index=True)
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", back_populates="reactions")
-    productId = sa.Column(sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=True)
+    productId = sa.Column(sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=True, index=True)
     product: sa_orm.Mapped["Product"] = sa_orm.relationship("Product", back_populates="reactions")
 
     __table_args__ = (
