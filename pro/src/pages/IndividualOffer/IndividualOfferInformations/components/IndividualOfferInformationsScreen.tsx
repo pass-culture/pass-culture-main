@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
@@ -25,22 +25,21 @@ import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { usePrevious } from 'commons/hooks/usePrevious'
 import { getOfferConditionalFields } from 'commons/utils/getOfferConditionalFields'
-import { isEqual } from 'commons/utils/isEqual'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
+import { isOfferSubcategoryOnline } from 'pages/IndividualOffer/commons/utils'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { serializePatchOffer } from 'pages/IndividualOffer/IndividualOfferInformations/commons/serializers'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 
 import { UsefulInformationFormValues } from '../commons/types'
-import { setDefaultInitialValuesFromOffer } from '../commons/utils'
+import { getInitialValuesFromOffer } from '../commons/utils'
 import { getValidationSchema } from '../commons/validationSchema'
 
 import styles from './IndividualOfferInformationsScreen.module.scss'
@@ -95,6 +94,43 @@ export const IndividualOfferInformationsScreen = ({
       localStorage.setItem(keyName, true.toString())
     }
   }
+
+  // Getting selected venue at step 1 (details) to infer address fields
+  const venuesQuery = useSWR(
+    [GET_VENUES_QUERY_KEY, offer.venue.managingOfferer.id],
+    ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
+    { fallbackData: { venues: [] } }
+  )
+
+  const selectedVenue = venuesQuery.data.venues.find(
+    (v) => v.id.toString() === offer.venue.id.toString()
+  )
+
+  const offerSubCategory = subCategories.find(
+    (s) => s.id === offer.subcategoryId
+  )
+
+  const conditionalFields = getOfferConditionalFields({
+    offerSubCategory,
+    receiveNotificationEmails: true,
+  })
+
+  const validationSchema = getValidationSchema({
+    conditionalFields,
+    isNewOfferCreationFlowFeatureActive,
+    isOfferOnline: isOfferSubcategoryOnline(offer, subCategories),
+  })
+
+  const initialValues = getInitialValuesFromOffer(offer, {
+    isNewOfferCreationFlowFeatureActive,
+    selectedVenue,
+    offerSubcategory: offerSubCategory,
+  })
+  const form = useForm<UsefulInformationFormValues>({
+    defaultValues: initialValues,
+    mode: 'all',
+    resolver: yupResolver(validationSchema),
+  })
 
   const onSubmit = async (): Promise<void> => {
     const formValues = form.getValues()
@@ -180,52 +216,6 @@ export const IndividualOfferInformationsScreen = ({
     }
   }
 
-  // Getting selected venue at step 1 (details) to infer address fields
-  const venuesQuery = useSWR(
-    [GET_VENUES_QUERY_KEY, offer.venue.managingOfferer.id],
-    ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
-    { fallbackData: { venues: [] } }
-  )
-
-  const selectedVenue = venuesQuery.data.venues.find(
-    (v) => v.id.toString() === offer.venue.id.toString()
-  )
-
-  const offerSubCategory = subCategories.find(
-    (s) => s.id === offer.subcategoryId
-  )
-
-  const conditionalFields = getOfferConditionalFields({
-    offerSubCategory,
-    receiveNotificationEmails: true,
-  })
-
-  const validationSchema = getValidationSchema({
-    subcategories: conditionalFields,
-    isDigitalOffer: offer.isDigital,
-  })
-
-  const initialValues = setDefaultInitialValuesFromOffer({
-    offer,
-    selectedVenue,
-    offerSubCategory,
-  })
-  const previousInitialValues = usePrevious(initialValues)
-  const initialValuesHasChanged = !isEqual(previousInitialValues, initialValues)
-
-  // Workaround since react-hook-form does not reset the form when defaultValues change.
-  useEffect(() => {
-    if (initialValuesHasChanged) {
-      form.reset(initialValues)
-    }
-  }, [initialValuesHasChanged])
-
-  const form = useForm<UsefulInformationFormValues>({
-    defaultValues: initialValues,
-    mode: 'all',
-    resolver: yupResolver(validationSchema),
-  })
-
   const someFormFieldsChanged = (
     fields: (keyof UsefulInformationFormValues)[]
   ): boolean => {
@@ -300,7 +290,7 @@ export const IndividualOfferInformationsScreen = ({
         </div>
       </ConfirmDialog>
 
-      <FormProvider {...form}>
+      <FormProvider key={JSON.stringify(initialValues)} {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <ScrollToFirstHookFormErrorAfterSubmit />
           <FormLayout fullWidthActions>

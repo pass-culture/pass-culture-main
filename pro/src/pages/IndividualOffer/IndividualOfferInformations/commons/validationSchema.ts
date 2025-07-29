@@ -3,6 +3,7 @@ import * as yup from 'yup'
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 import { AccessibilityFormValues } from 'commons/core/shared/types'
 import { emailSchema } from 'commons/utils/isValidEmail'
+import { offerFormUrlRegex } from 'pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
 
 import { validationSchema as locationSchema } from '../components/OfferLocation/validationSchema'
 
@@ -12,32 +13,69 @@ const isAnyTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
 
 export const getValidationSchema = ({
-  subcategories,
-  isDigitalOffer = false,
+  conditionalFields,
+  isNewOfferCreationFlowFeatureActive,
+  isOfferOnline,
 }: {
-  subcategories: string[]
-  isDigitalOffer?: boolean
+  conditionalFields: string[]
+  isNewOfferCreationFlowFeatureActive: boolean
+  isOfferOnline: boolean
 }) => {
-  const validationSchema = {
-    accessibility: yup
-      .object<AccessibilityFormValues>()
-      .test({
-        name: 'is-any-true',
-        message: 'Veuillez sélectionner au moins un critère d’accessibilité',
-        test: isAnyTrue,
-      })
-      .shape({
-        mental: yup.boolean().required(),
-        audio: yup.boolean().required(),
-        visual: yup.boolean().required(),
-        motor: yup.boolean().required(),
-        none: yup.boolean().required(),
-      })
-      .required(),
+  const accessibility = yup.lazy(() =>
+    isNewOfferCreationFlowFeatureActive
+      ? yup
+          .mixed<any>() // `any` represents `undefined` here which is impossible to type via yup
+          .optional()
+      : yup
+          .object<AccessibilityFormValues>()
+          .test({
+            name: 'is-any-true',
+            message:
+              'Veuillez sélectionner au moins un critère d’accessibilité',
+            test: isAnyTrue,
+          })
+          .shape({
+            mental: yup.boolean().required(),
+            audio: yup.boolean().required(),
+            visual: yup.boolean().required(),
+            motor: yup.boolean().required(),
+            none: yup.boolean().required(),
+          })
+          .required()
+  )
+
+
+  const url = yup.lazy(() =>
+    isNewOfferCreationFlowFeatureActive
+      ? yup.string().when('subcategoryId', {
+          is: () => isOfferOnline,
+          then: (schema) =>
+            schema
+              .matches(offerFormUrlRegex, {
+                message:
+                  'Veuillez renseigner une URL valide. Ex : https://exemple.com',
+                excludeEmptyString: true,
+              })
+              .required(
+                'Veuillez renseigner une URL valide. Ex : https://exemple.com'
+              ),
+          otherwise: (schema) => schema.nullable(),
+        })
+      : yup
+          .mixed<any>() // `any` represents `undefined` here which is impossible to type via yup
+          .optional()
+  )
+
+  const maybeLocationSchema = isOfferOnline
+    ? {}
+    : {...locationSchema}
+
+  return yup.object<UsefulInformationFormValues>().shape({
+    accessibility,
     addressAutocomplete: yup.string(),
     banId: yup.string(),
     bookingContact: yup.string().when([], {
-      is: () => subcategories.includes('bookingContact'),
+      is: () => conditionalFields.includes('bookingContact'),
       then: (schema) =>
         schema
           .required('Veuillez renseigner une adresse email')
@@ -72,9 +110,10 @@ export const getValidationSchema = ({
     receiveNotificationEmails: yup.boolean(),
     'search-addressAutocomplete': yup.string(),
     street: yup.string(),
+    url,
     withdrawalDelay: yup.string().when('withdrawalType', {
       is: (withdrawalType: WithdrawalTypeEnum) =>
-        subcategories.includes('withdrawalDelay') &&
+        conditionalFields.includes('withdrawalDelay') &&
         [WithdrawalTypeEnum.BY_EMAIL, WithdrawalTypeEnum.ON_SITE].includes(
           withdrawalType
         ),
@@ -82,19 +121,13 @@ export const getValidationSchema = ({
         schema.required('Vous devez choisir l’une des options ci-dessus'),
     }),
     withdrawalType: yup.string<WithdrawalTypeEnum>().when([], {
-      is: () => subcategories.includes('withdrawalType'),
+      is: () => conditionalFields.includes('withdrawalType'),
       then: (schema) =>
         schema
           .oneOf(Object.values(WithdrawalTypeEnum))
           .required('Veuillez sélectionner l’une de ces options'),
     }),
     withDrawalDetails: yup.string(),
-  }
-
-  const res = yup.object<UsefulInformationFormValues>().shape({
-    ...validationSchema,
-    ...(!isDigitalOffer ? locationSchema : {}),
+    ...maybeLocationSchema
   })
-
-  return res
 }

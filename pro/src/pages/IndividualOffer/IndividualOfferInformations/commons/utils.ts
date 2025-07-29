@@ -10,41 +10,31 @@ import {
   OFFER_STATUS_REJECTED,
 } from 'commons/core/Offers/constants'
 import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
-import { AccessibilityEnum } from 'commons/core/shared/types'
 import {
   FORM_DEFAULT_VALUES,
   OFFER_LOCATION,
 } from 'pages/IndividualOffer/commons/constants'
+import { getAccessibilityFormValuesFromOffer } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
 import { DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES } from './constants'
 import { UsefulInformationFormValues } from './types'
 
-interface SetDefaultInitialValuesFromOfferProps {
-  offer?: GetIndividualOfferWithAddressResponseModel | null
-  selectedVenue?: VenueListItemResponseModel | undefined
-  offerSubCategory?: SubcategoryResponseModel
-}
-
-export function setDefaultInitialValuesFromOffer({
-  offer,
-  selectedVenue = undefined,
-  offerSubCategory,
-}: SetDefaultInitialValuesFromOfferProps): UsefulInformationFormValues {
-  if (!offer) {
-    return DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES
+export function getInitialValuesFromOffer(
+  offer: GetIndividualOfferWithAddressResponseModel,
+  {
+    isNewOfferCreationFlowFeatureActive,
+    offerSubcategory,
+    selectedVenue = undefined,
+  }: {
+    selectedVenue?: VenueListItemResponseModel | undefined
+    offerSubcategory?: SubcategoryResponseModel
+    isNewOfferCreationFlowFeatureActive: boolean
   }
-
-  const baseAccessibility = {
-    [AccessibilityEnum.VISUAL]: offer.visualDisabilityCompliant,
-    [AccessibilityEnum.MENTAL]: offer.mentalDisabilityCompliant,
-    [AccessibilityEnum.AUDIO]: offer.audioDisabilityCompliant,
-    [AccessibilityEnum.MOTOR]: offer.motorDisabilityCompliant,
-  }
-
-  const notAccessible = Object.values(baseAccessibility).every(
-    (value) => value === false
-  )
+): UsefulInformationFormValues {
+  const maybeAccessibility = isNewOfferCreationFlowFeatureActive
+    ? {}
+    : { accessibility: getAccessibilityFormValuesFromOffer(offer) }
 
   let addressFields = {}
 
@@ -104,25 +94,19 @@ export function setDefaultInitialValuesFromOffer({
         : offer.withdrawalDelay?.toString(),
     withdrawalType:
       offer.withdrawalType ||
-      (offerSubCategory?.canBeWithdrawable
+      (offerSubcategory?.canBeWithdrawable
         ? WithdrawalTypeEnum.NO_TICKET
         : undefined),
-    accessibility: {
-      [AccessibilityEnum.VISUAL]: offer.visualDisabilityCompliant || false,
-      [AccessibilityEnum.MENTAL]: offer.mentalDisabilityCompliant || false,
-      [AccessibilityEnum.AUDIO]: offer.audioDisabilityCompliant || false,
-      [AccessibilityEnum.MOTOR]: offer.motorDisabilityCompliant || false,
-      [AccessibilityEnum.NONE]: notAccessible,
-    },
     bookingEmail: offer.bookingEmail || '',
     bookingContact: offer.bookingContact || undefined,
     receiveNotificationEmails: !!offer.bookingEmail,
     externalTicketOfficeUrl: offer.externalTicketOfficeUrl || undefined,
     ...addressFields,
+    ...maybeAccessibility,
   }
 }
 
-export function setFormReadOnlyFields(
+export function getFormReadOnlyFields(
   offer: GetIndividualOfferResponseModel
 ): string[] {
   const readOnlyField: string[] = []

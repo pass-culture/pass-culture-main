@@ -14,7 +14,6 @@ import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
-  CATEGORY_STATUS,
   OFFER_WIZARD_MODE,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
 } from 'commons/core/Offers/constants'
@@ -85,7 +84,7 @@ export const IndividualOfferDetailsScreenNext = ({
   const isNewOfferDraft = !initialOffer
   const isNewOfferCreationFlowFeatureActive = true
   const availableVenues = filterAvailableVenues(venues)
-  const venuesAsOptions = getVenuesAsOptions(availableVenues)
+  const availableVenuesAsOptions = getVenuesAsOptions(availableVenues)
 
   const initialValues = isNewOfferDraft
     ? getInitialValuesFromVenues(
@@ -100,24 +99,23 @@ export const IndividualOfferDetailsScreenNext = ({
   const form = useForm<DetailsFormValues>({
     defaultValues: initialValues,
     resolver: yupResolver<DetailsFormValues>(
-      getValidationSchemaForNewOfferCreationFlow(subCategories)
+      getValidationSchemaForNewOfferCreationFlow()
     ),
     mode: 'onBlur',
   })
 
   const hasSelectedProduct = !!form.watch('productId')
   const selectedSubcategoryId = form.watch('subcategoryId')
-  const selectedSubcategory = subCategories.find(
-    (subcategory) => subcategory.id === selectedSubcategoryId
-  )
   const isEanSearchAvailable = isRecordStore(availableVenues)
   const isEanSearchInputDisplayed =
     isEanSearchAvailable && mode === OFFER_WIZARD_MODE.CREATION
   const isEanSearchCalloutDisplayed =
     isEanSearchAvailable && mode === OFFER_WIZARD_MODE.EDITION
-  const isUrlInputDisplayed =
-    !!selectedSubcategory &&
-    selectedSubcategory.onlineOfflinePlatform !== CATEGORY_STATUS.OFFLINE
+  const readOnlyFields = getFormReadOnlyFields(
+    initialOffer,
+    hasSelectedProduct,
+    isNewOfferCreationFlowFeatureActive
+  )
 
   const onSubmit = async (formValues: DetailsFormValues): Promise<void> => {
     try {
@@ -223,11 +221,6 @@ export const IndividualOfferDetailsScreenNext = ({
     }
   }
 
-  const readOnlyFields = getFormReadOnlyFields(
-    initialOffer,
-    hasSelectedProduct,
-    isNewOfferCreationFlowFeatureActive
-  )
 
   const updateProduct = (ean: string, product: Product) => {
     const {
@@ -313,8 +306,7 @@ export const IndividualOfferDetailsScreenNext = ({
               onImageUpload={onImageUpload}
               readOnlyFields={readOnlyFields}
               venues={venues}
-              venuesOptions={venuesAsOptions}
-              withUrlInput={isUrlInputDisplayed}
+              venuesOptions={availableVenuesAsOptions}
             />
           </FormLayout>
 

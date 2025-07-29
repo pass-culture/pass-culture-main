@@ -43,7 +43,8 @@ type DetailsFormProps = {
   displayedImage?: IndividualOfferImage | OnImageUploadArgs
   onImageUpload: (values: OnImageUploadArgs) => void
   onImageDelete: () => void
-  withUrlInput: boolean
+  // TODO (igabriele, 2025-07-24): Remove this prop once the FF is enabled in production.
+  withUrlInput?: boolean
 }
 
 export const DetailsForm = ({
@@ -57,7 +58,7 @@ export const DetailsForm = ({
   displayedImage,
   onImageUpload,
   onImageDelete,
-  withUrlInput,
+  withUrlInput = false,
 }: DetailsFormProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const {
@@ -182,7 +183,7 @@ export const DetailsForm = ({
                 error={errors.description?.message}
               />
             </FormLayout.Row>
-            {withUrlInput && (
+            {!isNewOfferCreationFlowFeatureActive && withUrlInput && (
               <FormLayout.Row className={styles.row}>
                 <TextInput
                   label="URL d’accès à l’offre"
