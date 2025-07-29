@@ -3,6 +3,8 @@ export enum Audience {
   COLLECTIVE = 'collective',
 }
 
+// TODO (igabriele, 2025-07-24): Remove this enum once the FF is enabled in production.
+// A DRY functional design should be enough to avoid this (= always manipulate accessibility props via a few dedicated utils).
 export enum AccessibilityEnum {
   VISUAL = 'visual',
   MENTAL = 'mental',
@@ -19,7 +21,7 @@ export interface AccessibilityFormValues {
   none: boolean
 }
 
-//TO DO to be removed or used in the all app 
+//TO DO to be removed or used in the all app
 export interface Address {
   city: string
   latitude: number | null

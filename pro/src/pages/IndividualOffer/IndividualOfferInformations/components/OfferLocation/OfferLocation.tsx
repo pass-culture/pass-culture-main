@@ -104,11 +104,9 @@ export const OfferLocation = ({
     ? computeAddressDisplayName(venue.address, false)
     : ''
   const venueFullText = `${venue?.publicName || venue?.name} – ${venueAddress}`
+
   return (
-    <FormLayout.Section
-      title="Localisation de l’offre"
-      className={styles['offer-location-wrapper']}
-    >
+    <>
       <RadioButtonGroup
         label="Il s’agit de l’adresse à laquelle les jeunes devront se présenter."
         name="offerLocation"
@@ -140,6 +138,7 @@ export const OfferLocation = ({
             <AddressSelect
               {...register('addressAutocomplete')}
               label="Adresse postale"
+              // TODO (igabriele, 2025-07-25): Simplify this logic.
               disabled={
                 manuallySetAddress ||
                 readOnlyFields.includes('addressAutocomplete')
@@ -177,6 +176,6 @@ export const OfferLocation = ({
           )}
         </div>
       )}
-    </FormLayout.Section>
+    </>
   )
 }

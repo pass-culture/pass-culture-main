@@ -551,7 +551,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
       name: 'My super offer',
       subcategoryId: 'physical',
       venueId: 189,
-      url: null,
+      url: undefined,
       visualDisabilityCompliant: true,
     })
     expect(mockNavigate).toHaveBeenCalledWith(
