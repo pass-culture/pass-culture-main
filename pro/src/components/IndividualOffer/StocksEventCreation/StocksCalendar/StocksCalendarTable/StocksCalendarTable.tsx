@@ -9,7 +9,7 @@ import {
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { useNotification } from 'commons/hooks/useNotification'
-import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm, removeTime } from 'commons/utils/date'
+import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from 'commons/utils/date'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { getPriceCategoryName } from 'components/IndividualOffer/PriceCategoriesScreen/form/getPriceCategoryOptions'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
@@ -179,7 +179,7 @@ export function StocksCalendarTable({
               mode === OFFER_WIZARD_MODE.EDITION &&
               !isOfferDisabled(offer.status) &&
               stock.beginningDatetime &&
-              !isBefore(stock.beginningDatetime, removeTime(new Date()))
+              !isBefore(stock.beginningDatetime, new Date())
 
             return (
               <tr key={stock.id} className={styles['tr']}>
