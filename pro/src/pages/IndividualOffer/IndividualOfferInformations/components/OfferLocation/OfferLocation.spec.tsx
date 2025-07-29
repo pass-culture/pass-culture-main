@@ -24,8 +24,7 @@ import { UsefulInformationFormValues } from 'pages/IndividualOffer/IndividualOff
 import { OfferLocation, OfferLocationProps } from './OfferLocation'
 
 const LABELS = {
-  title: /Localisation de l’offre/,
-  locationLabel: /Intitulé de la localisation/,
+  locationLabel: /Intitulés de la localisation/,
   addressAutocomplete: /Adresse postale/,
   manuallySetAddressButton: /Vous ne trouvez pas votre adresse ?/,
   automaticallySetAddressButton: /Revenir à la sélection automatique/,
@@ -171,9 +170,6 @@ describe('OfferLocation', () => {
     const { container } = renderOfferLocation()
 
     expect(container).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', { name: LABELS.title })
-    ).toBeInTheDocument()
     expect(await axe(container)).toHaveNoViolations()
   })
 
@@ -200,9 +196,6 @@ describe('OfferLocation', () => {
         },
       })
 
-      expect(
-        screen.getByRole('textbox', { name: LABELS.locationLabel })
-      ).toBeInTheDocument()
       expect(
         screen.getByRole('combobox', { name: LABELS.addressAutocomplete })
       ).toBeInTheDocument()

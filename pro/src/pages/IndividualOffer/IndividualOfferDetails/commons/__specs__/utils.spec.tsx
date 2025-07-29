@@ -330,7 +330,6 @@ describe('getInitialValuesFromOffer', () => {
         venueId: '6',
         visa: 'USA',
         productId: '',
-        url: undefined,
         accessibility: {
           audio: true,
           mental: false,

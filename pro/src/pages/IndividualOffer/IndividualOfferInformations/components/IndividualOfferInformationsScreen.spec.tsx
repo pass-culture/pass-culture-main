@@ -58,11 +58,7 @@ vi.mock('apiClient/api', () => ({
 }))
 
 describe('screens:IndividualOffer::UsefulInformation', () => {
-  let props: IndividualOfferInformationsScreenProps
-  let contextValue: IndividualOfferContextValues
-
-  beforeEach(() => {
-    const categories = [
+      const categories = [
       categoryFactory({
         id: 'A',
         proLabel: 'Catégorie A',
@@ -71,7 +67,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     ]
     const subCategories = [
       subcategoryFactory({
-        id: 'virtual',
+        id: 'ONLINE_SUBCATEGORY',
         categoryId: 'A',
         proLabel: 'Sous catégorie online de A',
         isEvent: false,
@@ -79,7 +75,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
       }),
       subcategoryFactory({
-        id: 'physical',
+        id: 'OFFLINE_SUBCATEGORY',
         categoryId: 'A',
         proLabel: 'Sous catégorie offline de A',
         isEvent: false,
@@ -89,19 +85,26 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
       }),
     ]
-
-    props = {
-      offer: getIndividualOfferFactory({
-        id: 3,
-        venue: getOfferVenueFactory({ id: 1 }),
-      }),
-    }
-
-    contextValue = individualOfferContextValuesFactory({
+ const  contextValue = individualOfferContextValuesFactory({
       categories,
       subCategories,
     })
 
+  const offlineOfferProps: IndividualOfferInformationsScreenProps = {
+    offer: getIndividualOfferFactory({
+      id: 3,
+      subcategoryId: 'OFFLINE_SUBCATEGORY' as SubcategoryIdEnum,
+      venue: getOfferVenueFactory({ id: 1 }),
+    }),
+  }
+  const onlineOfferProps: IndividualOfferInformationsScreenProps = {
+    offer: {
+      ...offlineOfferProps.offer,
+      subcategoryId: 'ONLINE_SUBCATEGORY' as SubcategoryIdEnum,
+    }
+  }
+
+  beforeEach(() => {
     vi.spyOn(api, 'getVenues').mockResolvedValue({
       venues: [
         {
@@ -129,7 +132,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
   })
 
   it('should render the component', async () => {
-    renderUsefulInformationScreen(props, contextValue)
+    renderUsefulInformationScreen(offlineOfferProps, contextValue)
 
     expect(
       await screen.findByRole('heading', { name: 'Retrait de l’offre' })
@@ -156,11 +159,11 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
   })
 
   it('should display offer location if venue is physical', async () => {
-    renderUsefulInformationScreen(props, contextValue)
+    renderUsefulInformationScreen(offlineOfferProps, contextValue)
 
     // Block should be visible at this point
     expect(
-      await screen.findByRole('heading', { name: 'Localisation de l’offre' })
+      await screen.findByRole('heading', { name: 'Où profiter de l’offre ?' })
     ).toBeInTheDocument()
 
     // If user chooses the venue address (OA)...
@@ -202,7 +205,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
         id: 12,
       })
     )
-    renderUsefulInformationScreen(props, contextValue)
+    renderUsefulInformationScreen(offlineOfferProps, contextValue)
 
     const withdrawalField = await screen.findByLabelText(
       /Informations de retrait/
@@ -222,7 +225,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     expect(api.patchOffer).toHaveBeenCalledWith(3, {
       address: {
         city: 'Paris',
-        isManualEdition: undefined,
+        isManualEdition: false,
         isVenueAddress: true,
         label: 'MINISTERE DE LA CULTURE',
         latitude: '48.87171',
@@ -255,7 +258,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
 
   it('should display not reimbursed banner when subcategory is not reimbursed', async () => {
     renderUsefulInformationScreen(
-      props,
+      offlineOfferProps,
       individualOfferContextValuesFactory({
         categories: [
           categoryFactory({
@@ -288,7 +291,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
 
   it('should disabled all fields if another offer with the same EAN is already published', async () => {
     renderUsefulInformationScreen(
-      props,
+      offlineOfferProps,
       individualOfferContextValuesFactory({
         publishedOfferWithSameEAN: getIndividualOfferFactory(),
       })
@@ -307,16 +310,20 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
       vi.mock('commons/hooks/useOfferWizardMode', () => ({
         useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.EDITION),
       }))
-      props.offer.hasPendingBookings = true
+      offlineOfferProps.offer.hasPendingBookings = true
+      onlineOfferProps.offer.hasPendingBookings = true
     })
 
     afterEach(() => {
       vi.resetAllMocks()
-      props.offer.hasPendingBookings = false
+      offlineOfferProps.offer.hasPendingBookings = false
+      onlineOfferProps.offer.hasPendingBookings = false
     })
 
     it('should display the dialog if user updated withdrawal informations', async () => {
-      renderUsefulInformationScreen(props, contextValue)
+
+
+  renderUsefulInformationScreen(onlineOfferProps, contextValue)
 
       const withdrawalInformationsField = await screen.findByRole('textbox', {
         name: /Informations de retrait/,
@@ -339,10 +346,11 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
       expect(
         screen.getByText('Vous avez modifié les modalités de retrait.')
       ).toBeInTheDocument()
+
     })
 
     it('should display the dialog if user updated address field(s)', async () => {
-      const propsWithOfferAddress = structuredClone(props)
+      const propsWithOfferAddress = structuredClone(offlineOfferProps)
       propsWithOfferAddress.offer.address =
         getAddressResponseIsLinkedToVenueModelFactory({
           id: 666,
@@ -377,7 +385,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     })
 
     it('should display the dialog if user updated both withdrawalInformations and address field(s)', async () => {
-      const propsWithOfferAddress = structuredClone(props)
+      const propsWithOfferAddress = structuredClone(offlineOfferProps)
       propsWithOfferAddress.offer.address =
         getAddressResponseIsLinkedToVenueModelFactory({
           id: 666,
@@ -418,7 +426,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     })
 
     it('should NOT display the dialog if offer has no pending bookings', async () => {
-      props.offer.hasPendingBookings = false
+      onlineOfferProps.offer.hasPendingBookings = false
 
       vi.spyOn(api, 'patchOffer').mockResolvedValue(
         getIndividualOfferFactory({
@@ -426,7 +434,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
         })
       )
 
-      renderUsefulInformationScreen(props, contextValue)
+      renderUsefulInformationScreen(onlineOfferProps, contextValue)
 
       const withdrawalInformationsField = await screen.findByRole('textbox', {
         name: /Informations de retrait/,

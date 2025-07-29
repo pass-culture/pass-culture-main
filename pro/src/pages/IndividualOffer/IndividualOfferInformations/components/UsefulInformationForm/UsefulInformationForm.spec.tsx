@@ -8,6 +8,7 @@ import {
   IndividualOfferContextValues,
 } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'commons/core/Finances/constants'
+import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
@@ -35,13 +36,20 @@ const MOCK = {
     id: SubcategoryIdEnum.CINE_PLEIN_AIR,
     reimbursementRule: REIMBURSEMENT_RULES.NOT_REIMBURSED,
   }),
-  nonEventSubcategory: subcategoryFactory({
+  nonEventOnlineSubcategory: subcategoryFactory({
     id: SubcategoryIdEnum.ABO_LIVRE_NUMERIQUE,
     isEvent: false,
+    onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
   }),
-  eventSubcategory: subcategoryFactory({
+  eventOfflineSubcategory: subcategoryFactory({
     id: SubcategoryIdEnum.EVENEMENT_CINE,
     isEvent: true,
+    onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
+  }),
+  nonEventOfflineSubcategory: subcategoryFactory({
+    id: SubcategoryIdEnum.LIVRE_PAPIER,
+    isEvent: false,
+    onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
   }),
   withdrawableSubcategory: subcategoryFactory({
     id: SubcategoryIdEnum.CONCERT,
@@ -51,11 +59,14 @@ const MOCK = {
 
 const LABELS = {
   sectionTitles: {
-    location: /Localisation de l’offre/,
+    location: /Où profiter de l’offre ?/,
     withdrawal: /Retrait de l’offre/,
     externalReservation: /Lien de réservation externe en l’absence de crédit/,
     accessibility: /Modalités d’accessibilité/,
     notifications: /Notifications/,
+  },
+  fields: {
+    offerLocation: /Choisissez l’adresse à laquelle le public devra se présenter : */
   },
   withdrawalDetails: /Informations de retrait/,
   noRefundWarning: /Cette offre numérique ne sera pas remboursée./,
@@ -223,20 +234,18 @@ describe('UsefulInformationForm', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  describe('when offer is digital', () => {
+  describe('when offer has an online subcategory', () => {
     it('should not render any offer location section', () => {
       renderUsefulInformationForm({
         contextValue: {
-          offer: {
-            ...getIndividualOfferFactory(),
-            isDigital: true,
-          },
+          offer: getIndividualOfferFactory({ subcategoryId: MOCK.nonEventOnlineSubcategory.id as SubcategoryIdEnum }),
+          subCategories: [MOCK.nonEventOnlineSubcategory],
         },
       })
 
       expect(
-        screen.queryByRole('heading', {
-          name: LABELS.sectionTitles.location,
+        screen.queryByRole('group', {
+          name: LABELS.fields.offerLocation,
         })
       ).not.toBeInTheDocument()
     })
@@ -277,9 +286,9 @@ describe('UsefulInformationForm', () => {
             offer: {
               ...getIndividualOfferFactory(),
               isDigital: true,
-              subcategoryId: MOCK.nonEventSubcategory.id as SubcategoryIdEnum,
+              subcategoryId: MOCK.nonEventOnlineSubcategory.id as SubcategoryIdEnum,
             },
-            subCategories: [MOCK.nonEventSubcategory],
+            subCategories: [MOCK.nonEventOnlineSubcategory],
           },
         })
 
@@ -293,10 +302,9 @@ describe('UsefulInformationForm', () => {
           contextValue: {
             offer: {
               ...getIndividualOfferFactory(),
-              isDigital: false,
-              subcategoryId: MOCK.eventSubcategory.id as SubcategoryIdEnum,
+              subcategoryId: MOCK.eventOfflineSubcategory.id as SubcategoryIdEnum,
             },
-            subCategories: [MOCK.eventSubcategory],
+            subCategories: [MOCK.eventOfflineSubcategory],
           },
         })
 
@@ -311,9 +319,9 @@ describe('UsefulInformationForm', () => {
             offer: {
               ...getIndividualOfferFactory(),
               isDigital: false,
-              subcategoryId: MOCK.nonEventSubcategory.id as SubcategoryIdEnum,
+              subcategoryId: MOCK.nonEventOfflineSubcategory.id as SubcategoryIdEnum,
             },
-            subCategories: [MOCK.nonEventSubcategory],
+            subCategories: [MOCK.nonEventOfflineSubcategory],
           },
         })
 

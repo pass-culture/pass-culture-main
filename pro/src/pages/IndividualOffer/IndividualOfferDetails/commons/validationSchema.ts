@@ -1,8 +1,5 @@
 import * as yup from 'yup'
 
-import { SubcategoryResponseModel } from 'apiClient/v1'
-import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
-import { AccessibilityFormValues } from 'commons/core/shared/types'
 
 import { DetailsFormValues } from './types'
 
@@ -19,7 +16,7 @@ const isAnyTrue = (values: Record<string, boolean>): boolean =>
 
 // TODO: this regex is subject to backtracking which can lead to "catastrophic backtracking", high memory usage and slow performance
 // we cannot use the yup url validation because we need to allow {} in the url to interpolate some data
-const offerFormUrlRegex = new RegExp(
+export const offerFormUrlRegex = new RegExp(
   /*eslint-disable-next-line no-useless-escape*/
   /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)(([a-z0-9]+([-..-.@_a-z0-9]+)*\.[a-z]{2,5})|((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.){3}(25[0-5]|(2[0-4]|1\d|[1-9]|)\d))(:[0-9]{1,5})?\S*?$/,
   'i'
@@ -96,50 +93,25 @@ export const getValidationSchema = (isDigitalOffer: boolean) => {
   })
 }
 
-export const getValidationSchemaForNewOfferCreationFlow = (
-  subcategories: SubcategoryResponseModel[]
-) => {
+export const getValidationSchemaForNewOfferCreationFlow = () => {
   return yup.object<DetailsFormValues>().shape({
     ...commonValidationShape,
     accessibility: yup
-      .object<AccessibilityFormValues>()
-      .test({
-        name: 'is-any-true',
-        message: 'Veuillez sélectionner au moins un critère d’accessibilité',
-        test: isAnyTrue,
-      })
-      .shape({
+      .object({
         mental: yup.boolean().required(),
         audio: yup.boolean().required(),
         visual: yup.boolean().required(),
         motor: yup.boolean().required(),
         none: yup.boolean().required(),
       })
+      .test({
+        name: 'is-any-true',
+        message: 'Veuillez sélectionner au moins un critère d’accessibilité',
+        test: isAnyTrue,
+      })
       .required(),
-    url: yup.string().when('subcategoryId', {
-      is: (subcategoryId: string) => {
-        if (!subcategoryId) {return false}
-        const selectedSubcategory = subcategories.find(
-          (sc) => sc.id === subcategoryId
-        )
-
-        return (
-          !!selectedSubcategory &&
-          selectedSubcategory.onlineOfflinePlatform === CATEGORY_STATUS.ONLINE
-        )
-      },
-      then: (schema) =>
-        schema
-          .matches(offerFormUrlRegex, {
-            message:
-              'Veuillez renseigner une URL valide. Ex : https://exemple.com',
-            excludeEmptyString: true,
-          })
-          .required(
-            'Veuillez renseigner une URL valide. Ex : https://exemple.com'
-          ),
-      otherwise: (schema) => schema.nullable(),
-    }),
+    // TODO (igabriele, 2025-07-24): Remove this useless field once the FF is enabled in production.
+    url: yup.mixed<any>().optional(), // `any` represents `undefined` here which is impossible to type via yup
   })
 }
 
