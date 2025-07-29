@@ -164,7 +164,7 @@ describe('screens:Stocks', () => {
     })
 
     expect(
-      screen.getByRole('heading', { name: 'Calendrier' })
+      screen.getByRole('heading', { name: 'Dates et capacités' })
     ).toBeInTheDocument()
 
     expect(
