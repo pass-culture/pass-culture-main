@@ -8,19 +8,23 @@
   margin-bottom: rem.torem(32px);
 }
 
-.legend {
+.legend,
+.legend-without-margin {
   @include fonts.title4;
 
   display: flex;
   align-items: center;
   gap: rem.torem(10px);
-  margin-bottom: rem.torem(16px);
 
   &-icon {
     width: rem.torem(20px);
     height: rem.torem(20px);
     color: var(--color-icon-brand-primary);
   }
+}
+
+.legend {
+  margin-bottom: rem.torem(16px);
 }
 
 .radio-group {

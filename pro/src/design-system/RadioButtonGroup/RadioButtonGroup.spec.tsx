@@ -164,6 +164,19 @@ describe('<RadioButtonGroup />', () => {
     vi.restoreAllMocks()
   })
 
+  it('should not render an error when less than 2 options are provided but allowSingleOrNoneOption prop is passed', () => {
+    const { container } = render(
+      <RadioButtonGroup
+        name="radio-button-group"
+        label="Radio Button Group with Insufficient Options & allowSingleOrNoneOption"
+        options={[options[0]]}
+        allowSingleOrNoneOption
+      />
+    )
+
+    expect(container).toBeInTheDocument()
+  })
+
   it('should render an error message when options have duplicate values', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => vi.fn())
     await waitFor(() =>
