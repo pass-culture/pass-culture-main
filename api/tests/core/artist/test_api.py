@@ -27,9 +27,13 @@ class GetArtistImageUrlTest:
 
     def test_get_image_from_most_popular_product(self):
         artist = artist_factories.ArtistFactory(image=None)
-        least_popular_product_mediation = offers_factories.ProductMediationFactory(product__last_30_days_booking=1)
+        least_popular_product_mediation = offers_factories.ProductMediationFactory(product__last_30_days_booking=None)
         artist_factories.ArtistProductLinkFactory(
             artist_id=artist.id, product_id=least_popular_product_mediation.product.id
+        )
+        medium_popular_product_mediation = offers_factories.ProductMediationFactory(product__last_30_days_booking=1)
+        artist_factories.ArtistProductLinkFactory(
+            artist_id=artist.id, product_id=medium_popular_product_mediation.product.id
         )
         most_popular_product_mediation = offers_factories.ProductMediationFactory(product__last_30_days_booking=2)
         artist_factories.ArtistProductLinkFactory(
