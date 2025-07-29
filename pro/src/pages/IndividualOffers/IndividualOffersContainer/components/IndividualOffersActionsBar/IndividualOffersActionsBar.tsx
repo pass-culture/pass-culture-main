@@ -34,7 +34,6 @@ export type IndividualOffersActionsBarProps = {
   areAllOffersSelected: boolean
   clearSelectedOffers: () => void
   selectedOffers: { id: number; status: OfferStatus }[]
-  toggleSelectAllCheckboxes: () => void
   canDelete: boolean
   canPublish: boolean
   canDeactivate: boolean
@@ -127,7 +126,6 @@ const updateIndividualOffersStatus = async (
 export const IndividualOffersActionsBar = ({
   selectedOffers,
   clearSelectedOffers,
-  toggleSelectAllCheckboxes,
   areAllOffersSelected,
   canDelete,
   canPublish,
@@ -164,9 +162,6 @@ export const IndividualOffersActionsBar = ({
 
   const handleClose = () => {
     clearSelectedOffers()
-    if (areAllOffersSelected) {
-      toggleSelectAllCheckboxes()
-    }
   }
 
   const handleUpdateOffersStatus = async (isActivating: boolean) => {

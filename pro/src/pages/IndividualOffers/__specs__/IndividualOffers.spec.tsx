@@ -1,9 +1,4 @@
-import {
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-  within,
-} from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import { beforeEach, expect } from 'vitest'
@@ -105,7 +100,6 @@ const renderOffers = async (
     }
   )
 
-  await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
   await waitFor(() => {
     expect(
       within(screen.getByLabelText('Localisation')).getAllByRole('option')
@@ -817,9 +811,9 @@ describe('route Offers', () => {
         )
       })
 
-      screen.getByText('Aucune offre trouvée pour votre recherche')
+      screen.getByText(/Aucune offre trouvée pour votre recherche/)
 
-      await userEvent.click(screen.getByText('Afficher toutes les offres'))
+      await userEvent.click(screen.getByText(/Afficher toutes les offres/))
 
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledTimes(3)

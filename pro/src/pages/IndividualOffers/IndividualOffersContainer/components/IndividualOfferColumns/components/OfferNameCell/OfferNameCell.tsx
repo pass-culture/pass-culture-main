@@ -7,7 +7,6 @@ import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
 import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
 import { pluralize } from 'commons/utils/pluralize'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
-import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import { Tag } from 'design-system/Tag/Tag'
 import fullErrorIcon from 'icons/full-error.svg'
 import styles from 'styles/components/Cells.module.scss'
@@ -18,19 +17,13 @@ import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 export interface OfferNameCellProps {
   offer: ListOffersOfferResponseModel
   offerLink: string
-  rowId: string
-  displayLabel?: boolean
   displayThumb?: boolean
-  className?: string
 }
 
 export const OfferNameCell = ({
   offer,
   offerLink,
-  rowId,
-  displayLabel = false,
   displayThumb = false,
-  className,
 }: OfferNameCellProps) => {
   const getDateInformations = () => {
     const startDatetime = offer.stocks[0]
@@ -62,15 +55,7 @@ export const OfferNameCell = ({
     computeNumberOfSoldOutStocks() > 0 && offer.status !== OFFER_STATUS_SOLD_OUT
 
   return (
-    <td
-      role="cell"
-      className={classNames(
-        styles['offers-table-cell'],
-        styles['title-column'],
-        className
-      )}
-      headers={`${rowId} ${getCellsDefinition().NAME.id}`}
-    >
+    <div className={styles['title-column']}>
       <Link
         className={classNames({
           [styles['title-column-with-thumb']]: displayThumb,
@@ -84,17 +69,7 @@ export const OfferNameCell = ({
         )}
         <div>
           {offer.isShowcase && <Tag label="Offre vitrine" />}
-          <div className={styles['title-column-name']}>
-            {displayLabel && (
-              <span
-                className={styles['offers-table-cell-mobile-label']}
-                aria-hidden={true}
-              >
-                {`${getCellsDefinition().NAME.title} :`}
-              </span>
-            )}
-            {offer.name}
-          </div>
+          <div className={styles['title-column-name']}>{offer.name}</div>
           {offer.isEvent && (
             <span className={styles['stocks']}>
               {getDateInformations()}
@@ -124,6 +99,6 @@ export const OfferNameCell = ({
           )}
         </div>
       </Link>
-    </td>
+    </div>
   )
 }

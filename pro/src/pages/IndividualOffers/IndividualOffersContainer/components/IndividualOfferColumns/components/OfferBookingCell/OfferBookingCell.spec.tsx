@@ -9,20 +9,11 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { OfferBookingCell, OfferBookingCellProps } from './OfferBookingCell'
 
 function renderOfferBookingCell(props: OfferBookingCellProps) {
-  renderWithProviders(
-    <table>
-      <tbody>
-        <tr>
-          <OfferBookingCell {...props} />
-        </tr>
-      </tbody>
-    </table>
-  )
+  renderWithProviders(<OfferBookingCell {...props} />)
 }
 
 const defaultProps: OfferBookingCellProps = {
   offer: listOffersOfferFactory({ status: OfferStatus.SCHEDULED }),
-  rowId: '',
 }
 
 const dayInTheFuture = addDays(new Date(), 2).toISOString()
