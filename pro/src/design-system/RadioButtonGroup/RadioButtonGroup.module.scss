@@ -35,6 +35,19 @@
 }
 
 .radio-button-group-description {
+  &.has-label {
+    &-span {
+      @include fonts.body-s;
+    }
+
+    &-h1,
+    &-h2,
+    &-h3,
+    &-h4 {
+      @include fonts.body;
+    }
+  }
+
   color: var(--color-text-subtle);
 }
 
@@ -42,6 +55,12 @@
   @include fonts.body-accent-s;
 
   color: var(--color-text-error);
+
+  &-icon {
+    color: var(--color-text-error);
+    margin-right: rem.torem(4px);
+    vertical-align: middle;
+  }
 }
 
 .radio-button-group-options {

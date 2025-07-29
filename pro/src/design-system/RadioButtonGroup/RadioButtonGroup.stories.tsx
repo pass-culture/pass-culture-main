@@ -92,6 +92,7 @@ export const WithHeadingTag: StoryObj<typeof RadioButtonGroup> = {
   args: {
     name: 'radio-button-group',
     label: 'Radio Button Group with Heading Tag',
+    description: 'This is a description with heading tag.',
     labelTag: 'h2',
     options,
   },
@@ -101,6 +102,7 @@ export const WithSpanTag: StoryObj<typeof RadioButtonGroup> = {
   args: {
     name: 'radio-button-group',
     label: 'Radio Button Group with Span Tag',
+    description: 'This is a description with span tag.',
     labelTag: 'span',
     options,
   },

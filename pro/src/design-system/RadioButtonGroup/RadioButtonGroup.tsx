@@ -4,9 +4,11 @@ import { ElementType, useId } from 'react'
 import {
   RadioButton,
   RadioButtonProps,
-  RadioButtonVariantProps,
   RadioButtonSizing,
+  RadioButtonVariantProps,
 } from 'design-system/RadioButton/RadioButton'
+import fullError from 'icons/full-error.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './RadioButtonGroup.module.scss'
 
@@ -109,14 +111,26 @@ export const RadioButtonGroup = ({
         {description && (
           <span
             id={descriptionId}
-            className={styles['radio-button-group-description']}
+            className={cn(styles['radio-button-group-description'], {
+              [styles[`has-label-${LabelTag}`]]: LabelTag,
+            })}
           >
             {description}
           </span>
         )}
         <div role="alert" id={errorId}>
           {error && (
-            <span className={styles['radio-button-group-error']}>{error}</span>
+            <>
+              <SvgIcon
+                src={fullError}
+                alt=""
+                width="16"
+                className={styles['radio-button-group-error-icon']}
+              />
+              <span className={styles['radio-button-group-error']}>
+                {error}
+              </span>
+            </>
           )}
         </div>
       </div>
