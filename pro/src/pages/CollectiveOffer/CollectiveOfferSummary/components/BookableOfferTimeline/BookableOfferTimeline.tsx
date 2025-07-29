@@ -10,6 +10,7 @@ import { BookingWaitingBanner } from './banners/BookingWaitingBanner'
 import { CancelledBanner } from './banners/CancelledBanner'
 import { DraftBanner } from './banners/DraftBanner'
 import { ReimbursedBanner } from './banners/ReimbursedBanner'
+import { ExpiredBanner } from './banners/ExpiredBanner'
 import { RejectedBanner } from './banners/RejectedBanner'
 import { UnderReviewBanner } from './banners/UnderReviewBanner'
 import styles from './BookableOfferTimeline.module.scss'
@@ -124,14 +125,33 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
       }
     }
 
-    if (status === CollectiveOfferDisplayedStatus.EXPIRED) {
+    if (
+      status === CollectiveOfferDisplayedStatus.EXPIRED &&
+      offer.collectiveStock?.bookingLimitDatetime
+    ) {
+      const stepBeforeExpiredStatus = past[past.length - 2].status
+
       return {
         type: TimelineStepType.ERROR,
         content: (
-          <StatusWithDate
-            status={statusLabel}
-            date={datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined}
-          />
+          <>
+            <StatusWithDate
+              status={statusLabel}
+              date={
+                datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined
+              }
+            />
+            <ExpiredBanner
+              stepBeforeExpiredStatus={stepBeforeExpiredStatus}
+              offerId={offer.id}
+              bookingLimitDatetime={offer.collectiveStock.bookingLimitDatetime}
+              departmentCode={offer.venue.departementCode}
+              contactEmail={
+                offer.booking?.educationalRedactor?.email ??
+                offer.teacher?.email
+              }
+            />
+          </>
         ),
       }
     }
