@@ -320,8 +320,8 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     @validator("latitude", pre=True)
     @classmethod
     def check_and_format_latitude(cls, raw_latitude: typing.Any) -> Decimal | None:
-        if raw_latitude is None:
-            return raw_latitude
+        if raw_latitude is None or raw_latitude == "":
+            return None
         try:
             latitude = geography_utils.format_coordinate(raw_latitude)
         except ValueError:
@@ -333,8 +333,8 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     @validator("longitude", pre=True)
     @classmethod
     def check_and_format_longitude(cls, raw_longitude: typing.Any) -> Decimal | None:
-        if raw_longitude is None:
-            return raw_longitude
+        if raw_longitude is None or raw_longitude == "":
+            return None
         try:
             longitude = geography_utils.format_coordinate(raw_longitude)
         except ValueError:

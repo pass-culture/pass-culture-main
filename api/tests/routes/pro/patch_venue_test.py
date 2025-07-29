@@ -513,6 +513,43 @@ class Returns200Test:
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
         assert response.status_code == 200
 
+    def test_update_venue_without_lat_nor_long(self, client) -> None:
+        VENUE_NAME = "La réaction spontanée"
+        user_offerer = offerers_factories.UserOffererFactory()
+        address = geography_factories.AddressFactory(
+            street="", postalCode="54000", inseeCode="54000", city="Nancy", latitude=1.1, longitude=2.2
+        )
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer, address=address)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            name=VENUE_NAME,
+            street=address.street,
+            postalCode=address.postalCode,
+            city=address.city,
+            offererAddress=offerer_address,
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        venue_data = {
+            "banId": "",
+            "bookingEmail": "somewhere@example.com",
+            "city": "Nancy",
+            "comment": "",
+            "inseeCode": "",
+            "latitude": "",
+            "longitude": "",
+            "name": VENUE_NAME,
+            "postalCode": "54000",
+            "publicName": "",
+        }
+
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        assert response.status_code == 200, response.json
+        db.session.refresh(venue)
+        db.session.refresh(venue.offererAddress.address)
+        assert venue.offererAddress.address.latitude == Decimal("1.1")
+        assert venue.offererAddress.address.longitude == Decimal("2.2")
+
     def test_should_not_create_oa_when_not_updating_location(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(
