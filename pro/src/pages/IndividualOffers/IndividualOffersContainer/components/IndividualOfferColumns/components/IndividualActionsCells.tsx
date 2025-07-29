@@ -1,4 +1,3 @@
-import classNames from 'classnames'
 import { useCallback, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useSWRConfig } from 'swr'
@@ -21,7 +20,6 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
-import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import fullThreeDotsIcon from 'icons/full-three-dots.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
@@ -38,19 +36,15 @@ import { HeadlineOfferCell } from './HeadlineOfferCell/HeadlineOfferCell'
 import { HeadlineOfferImageDialogs } from './HeadlineOfferImageDialogs'
 
 interface IndividualActionsCellsProps {
-  rowId: string
   offer: ListOffersOfferResponseModel
   editionOfferLink: string
   editionStockLink: string
-  className: string
 }
 
 export const IndividualActionsCells = ({
-  rowId,
   offer,
   editionOfferLink,
   editionStockLink,
-  className,
 }: IndividualActionsCellsProps) => {
   const isToggleAndMemorizeFiltersEnabled = useActiveFeature(
     'WIP_COLLAPSED_MEMORIZED_FILTERS'
@@ -143,15 +137,7 @@ export const IndividualActionsCells = ({
 
   return (
     <>
-      <td
-        role="cell"
-        className={classNames(
-          styles['offers-table-cell'],
-          styles['actions-column'],
-          className
-        )}
-        headers={`${rowId} ${getCellsDefinition().ACTIONS.id}`}
-      >
+      <div className={styles['actions-column']}>
         <div className={styles['actions-column-container']}>
           <DropdownMenuWrapper
             title="Voir les actions"
@@ -185,7 +171,7 @@ export const IndividualActionsCells = ({
             </>
           </DropdownMenuWrapper>
         </div>
-      </td>
+      </div>
       <ConfirmDialog
         icon={strokeTrashIcon}
         cancelText="Annuler"

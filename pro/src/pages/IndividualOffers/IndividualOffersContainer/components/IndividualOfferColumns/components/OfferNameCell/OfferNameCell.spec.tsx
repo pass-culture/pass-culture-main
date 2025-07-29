@@ -24,7 +24,9 @@ const renderOfferNameCell = (
     <table>
       <tbody>
         <tr>
-          <OfferNameCell {...props} />
+          <td>
+            <OfferNameCell {...props} />
+          </td>
         </tr>
       </tbody>
     </table>,
@@ -44,7 +46,6 @@ describe('OfferNameCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       offerLink: '#',
-      rowId: 'rowId',
     })
 
     expect(screen.getByText('Offre vitrine')).toBeInTheDocument()
@@ -60,7 +61,6 @@ describe('OfferNameCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       offerLink: '#',
-      rowId: 'rowId',
     })
 
     expect(screen.getByRole('img', { name: 'Attention' })).toBeInTheDocument()
@@ -78,7 +78,6 @@ describe('OfferNameCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       offerLink: '#',
-      rowId: 'rowId',
     })
 
     await userEvent.click(screen.getByRole('img', { name: 'Attention' }))
@@ -96,7 +95,6 @@ describe('OfferNameCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       offerLink: '#',
-      rowId: 'rowId',
     })
 
     expect(screen.getByTestId('offer-isbn')).toBeInTheDocument()
@@ -120,7 +118,6 @@ describe('OfferNameCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       offerLink: '#',
-      rowId: 'rowId',
     })
 
     const expectedDate = formatLocalTimeDateString(
@@ -153,7 +150,6 @@ describe('OfferNameCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       offerLink: '#',
-      rowId: 'rowId',
     })
 
     expect(screen.queryByText('12/12/2024 14:00')).not.toBeInTheDocument()
@@ -178,14 +174,9 @@ describe('OfferNameCell', () => {
     renderOfferNameCell({
       offer: individualOffer,
       offerLink: '#',
-      rowId: 'rowId',
     })
 
     // We expect here to see 06h00 because for the 01/10/2024, Fort-de-France is UTC-4
-    expect(
-      screen.getByRole('cell', {
-        name: /Individual offer 01\/10\/2024 06:00/,
-      })
-    ).toBeInTheDocument()
+    expect(screen.getByText(/01\/10\/2024 06:00/)).toBeInTheDocument()
   })
 })

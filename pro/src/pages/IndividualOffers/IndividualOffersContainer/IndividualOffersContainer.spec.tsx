@@ -545,8 +545,8 @@ describe('IndividualOffersScreen', () => {
 
       expect(firstOfferCheckbox).toBeChecked()
       expect(secondOfferCheckbox).toBeChecked()
-      expect(thirdOfferCheckbox).toBeChecked()
-      expect(fourthOfferCheckbox).toBeChecked()
+      expect(thirdOfferCheckbox).toBeDisabled()
+      expect(fourthOfferCheckbox).toBeDisabled()
 
       await userEvent.click(screen.getByLabelText('Tout désélectionner'))
 

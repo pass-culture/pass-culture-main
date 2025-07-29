@@ -9,27 +9,17 @@ import {
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 
-import { OfferStatusCell, OfferStatusCellProps } from '../OfferStatusCell'
+import { OfferStatusCell, OfferStatusCellProps } from './OfferStatusCell'
 
 function renderOfferStatusCell(
   props: OfferStatusCellProps,
   options?: RenderWithProvidersOptions
 ) {
-  renderWithProviders(
-    <table>
-      <tbody>
-        <tr>
-          <OfferStatusCell {...props} />
-        </tr>
-      </tbody>
-    </table>,
-    options
-  )
+  renderWithProviders(<OfferStatusCell {...props} />, options)
 }
 
 const defaultProps: OfferStatusCellProps = {
   offer: listOffersOfferFactory(),
-  rowId: '',
 }
 
 const dayInTheFuture = addDays(new Date(), 2).toISOString()

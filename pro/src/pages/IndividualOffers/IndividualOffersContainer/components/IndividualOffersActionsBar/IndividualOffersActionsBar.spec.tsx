@@ -17,7 +17,7 @@ import { Notification } from 'components/Notification/Notification'
 import {
   IndividualOffersActionsBar,
   IndividualOffersActionsBarProps,
-} from '../IndividualOffersActionsBar'
+} from './IndividualOffersActionsBar'
 
 const renderActionsBar = (
   props: IndividualOffersActionsBarProps,
