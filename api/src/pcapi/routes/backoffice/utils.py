@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import enum
 import logging
 import operator as op
@@ -114,6 +115,20 @@ class AdvancedSearchOperators(enum.Enum):
     NOT_EXIST = "n'a aucun"
     INTERSECTS = "contient\0"  # the \0 is here to force wtforms to display CONTAINS and INTERSECTS
     NOT_INTERSECTS = "ne contient pas\0"  # the \0 is here to force wtforms to display NO_CONTAINS and NOT_INTERSECTS
+
+
+class StatsDataItems(typing.TypedDict):
+    collective: decimal.Decimal
+    individual: decimal.Decimal
+    total: decimal.Decimal
+
+
+class StatsData(typing.TypedDict):
+    active: StatsDataItems
+    inactive: StatsDataItems
+    total_revenue: decimal.Decimal
+    # TODO (igabriele, 2025-07-25): Is it used?
+    placeholder: decimal.Decimal
 
 
 class UnauthenticatedUserError(Exception):
