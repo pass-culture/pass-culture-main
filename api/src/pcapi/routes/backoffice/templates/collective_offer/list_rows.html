@@ -2,9 +2,8 @@
 {% import "components/links.html" as links with context %}
 {% from "components/connect_as.html" import build_connect_as_link %}
 {% for row in rows %}
-  {% set offer = row.Offer %}
   {% set collective_offer = row.CollectiveOffer %}
-  <tr>
+  <tr id="collective-offer-row-{{ collective_offer.id }}">
     <td>
       <input type="checkbox"
              class="form-check-input"

@@ -33,6 +33,7 @@ from pcapi.utils import db as db_utils
 from pcapi.utils.requests import exceptions as requests_exceptions
 
 from .helpers import button as button_helpers
+from .helpers import flash
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
@@ -1062,6 +1063,24 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         assert collective_offer_to_validate.validation == OfferValidationStatus.APPROVED
         assert collective_offer_to_validate.lastValidationType == OfferValidationType.MANUAL
 
+    def test_validate_collective_offer_with_htmx(self, legit_user, authenticated_client):
+        collective_offer_to_validate = educational_factories.CollectiveOfferFactory(
+            validation=OfferValidationStatus.PENDING
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_offer_id=collective_offer_to_validate.id,
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
+        row = html_parser.get_tag(
+            response.data, tag="tr", id=f"collective-offer-row-{collective_offer_to_validate.id}", is_xml=True
+        )
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(collective_offer_to_validate.id)
+        assert cells[6] == "• Validée"
+
     @pytest.mark.usefixtures("clean_database")
     def test_validate_collective_offer_with_institution_validated(self, legit_user, authenticated_client):
         collective_offer_to_validate = educational_factories.UnderReviewCollectiveOfferFactory()
@@ -1263,6 +1282,26 @@ class RejectCollectiveOfferTest(PostEndpointHelper):
             collective_offer_to_reject.rejectionReason == educational_models.CollectiveOfferRejectionReason.WRONG_PRICE
         )
 
+    def test_reject_collective_offer_with_htmx(self, legit_user, authenticated_client):
+        collective_offer_to_reject = educational_factories.CollectiveOfferFactory(
+            validation=OfferValidationStatus.PENDING
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_offer_id=collective_offer_to_reject.id,
+            form={"reason": educational_models.CollectiveOfferRejectionReason.WRONG_PRICE.value},
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
+
+        row = html_parser.get_tag(
+            response.data, tag="tr", id=f"collective-offer-row-{collective_offer_to_reject.id}", is_xml=True
+        )
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(collective_offer_to_reject.id)
+        assert cells[6] == "• Rejetée Tarif erroné"
+
     def test_cant_reject_non_pending_offer(self, legit_user, authenticated_client):
         collective_offer_to_reject = educational_factories.CollectiveOfferFactory(
             validation=OfferValidationStatus.APPROVED
@@ -1315,12 +1354,13 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
             3, validation=OfferValidationStatus.PENDING
         )
         parameter_ids = ",".join(str(collective_offer.id) for collective_offer in collective_offers)
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": parameter_ids},
+            headers={"hx-request": "true"},
+        )
 
-        assert response.status_code == 303
-
-        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
-        assert response.location == expected_url
+        assert response.status_code == 200
 
         for collective_offer in collective_offers:
             db.session.refresh(collective_offer)
@@ -1330,6 +1370,12 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
             assert collective_offer.isActive is True
             assert collective_offer.lastValidationType is OfferValidationType.MANUAL
             assert collective_offer.validation is OfferValidationStatus.APPROVED
+            row = html_parser.get_tag(
+                response.data, tag="tr", id=f"collective-offer-row-{collective_offer.id}", is_xml=True
+            )
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(collective_offer.id)
+            assert cells[6] == "• Validée"
 
         assert len(mails_testing.outbox) == 3
 
@@ -1345,9 +1391,15 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
         fake_offer_ids = [123, 456]
         collective_offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
         parameter_ids = f"{str(fake_offer_ids[0])}, {str(fake_offer_ids[1])}, {collective_offer}"
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": parameter_ids},
+            headers={"hx-request": "true"},
+        )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        assert len(response.data) == 0
+
         assert collective_offer.validation == OfferValidationStatus.PENDING
         collective_offer_template = (
             db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer.id).one()
@@ -1378,13 +1430,14 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
             response = self.post_to_endpoint(
                 authenticated_client,
                 form={"object_ids": collective_offer.id},
-                follow_redirects=True,
+                headers={"hx-request": "true"},
             )
 
         assert response.status_code == 200
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert (
-            html_parser.extract_alert(response.data)
-            == f"Erreur lors de la notification à ADAGE pour l'offre {collective_offer.id} : An error occured on adage side"
+            f"Erreur lors de la notification à ADAGE pour l'offre {collective_offer.id} : An error occured on adage side"
+            in alerts["warning"]
         )
 
 
@@ -1411,12 +1464,10 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
                 "object_ids": parameter_ids,
                 "reason": reason.value,
             },
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
-
-        expected_url = url_for("backoffice_web.collective_offer.list_collective_offers", _external=True)
-        assert response.location == expected_url
+        assert response.status_code == 200
 
         for collective_offer in collective_offers:
             db.session.refresh(collective_offer)
@@ -1428,6 +1479,12 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
             assert collective_offer.validation is OfferValidationStatus.REJECTED
             assert collective_offer.lastValidationAuthor == legit_user
             assert collective_offer.rejectionReason == reason
+            row = html_parser.get_tag(
+                response.data, tag="tr", id=f"collective-offer-row-{collective_offer.id}", is_xml=True
+            )
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(collective_offer.id)
+            assert "• Rejetée" in cells[6]
 
         assert len(mails_testing.outbox) == 3
 
@@ -1444,9 +1501,14 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
         fake_offer_ids = [123, 456]
         collective_offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
         parameter_ids = f"{str(fake_offer_ids[0])}, {str(fake_offer_ids[1])}, {collective_offer}"
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": parameter_ids},
+            headers={"hx-request": "true"},
+        )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        assert len(response.data) == 0
         assert collective_offer.validation == OfferValidationStatus.PENDING
         collective_offer_template = (
             db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer.id).one()
