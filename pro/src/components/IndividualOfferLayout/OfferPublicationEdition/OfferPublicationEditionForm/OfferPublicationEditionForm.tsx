@@ -98,7 +98,11 @@ export function OfferPublicationEditionForm({
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className={styles['form']}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className={styles['form']}
+        noValidate
+      >
         <ScrollToFirstHookFormErrorAfterSubmit />
         <MandatoryInfo />
         <div className={styles['form-content']}>
@@ -138,6 +142,12 @@ export function OfferPublicationEditionForm({
                       disabled={isPaused}
                       required
                       {...form.register('publicationDate')}
+                      onChange={(e) => {
+                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                        form.register('publicationDate').onChange(e)
+                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                        form.trigger('publicationTime')
+                      }}
                       error={form.formState.errors.publicationDate?.message}
                     />
                     <Select
@@ -192,6 +202,12 @@ export function OfferPublicationEditionForm({
                       disabled={isPaused}
                       required
                       {...form.register('bookingAllowedDate')}
+                      onChange={(e) => {
+                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                        form.register('bookingAllowedDate').onChange(e)
+                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                        form.trigger('bookingAllowedTime')
+                      }}
                       error={form.formState.errors.bookingAllowedDate?.message}
                     />
                     <Select
