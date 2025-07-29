@@ -1,7 +1,6 @@
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 import { AccessibilityEnum } from 'commons/core/shared/types'
 import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from 'pages/IndividualOffer/commons/constants'
-import { RadioGroupProps } from 'ui-kit/form/RadioGroup/RadioGroup'
 
 import { UsefulInformationFormValues } from './types'
 
@@ -31,7 +30,7 @@ export const DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES: UsefulInformationFormVal
     coords: '',
   }
 
-export const ticketWithdrawalTypeRadios: RadioGroupProps['group'] = [
+export const ticketWithdrawalTypeRadios = [
   {
     label: 'Aucun billet n’est nécessaire',
     value: WithdrawalTypeEnum.NO_TICKET,
@@ -46,7 +45,7 @@ export const ticketWithdrawalTypeRadios: RadioGroupProps['group'] = [
   },
 ]
 
-export const providedTicketWithdrawalTypeRadios: RadioGroupProps['group'] = [
+export const providedTicketWithdrawalTypeRadios = [
   ...ticketWithdrawalTypeRadios,
   {
     label: 'Les billets seront affichés dans l’application',
