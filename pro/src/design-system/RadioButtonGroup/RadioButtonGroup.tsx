@@ -64,6 +64,8 @@ export type RadioButtonGroupProps<
   required?: boolean
   /** Whether the required asterisk is displayed or not */
   asterisk?: boolean
+  /** Allow options to be an array with none, or a single element - exception case: CollectiveOfferSelectionDuplication */
+  allowSingleOrNoneOption?: boolean
 }
 
 export const RadioButtonGroup = ({
@@ -85,6 +87,7 @@ export const RadioButtonGroup = ({
   onBlur,
   required,
   asterisk = true,
+  allowSingleOrNoneOption,
 }: RadioButtonGroupProps<
   string,
   RadioButtonVariantProps,
@@ -98,7 +101,7 @@ export const RadioButtonGroup = ({
   const descriptionId = useId()
   const describedBy = `${error ? errorId : ''}${description ? ` ${descriptionId}` : ''}`
 
-  if (options.length < 2) {
+  if (!allowSingleOrNoneOption && options.length < 2) {
     throw new Error('RadioButtonGroup requires at least two options.')
   }
 

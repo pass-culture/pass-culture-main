@@ -21,11 +21,11 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { pluralize } from 'commons/utils/pluralize'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
+import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -179,73 +179,74 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
           {isLoading ? (
             <SkeletonLoader />
           ) : (
-            <form onSubmit={handleSubmitSelection(handleOnSubmit)}>
-              <RadioGroup
-                name="templateOfferId"
-                variant="detailed"
-                legend={
-                  <>
-                    <p className={styles['offers-description']}>
-                      {searchFilterForm.watch('searchFilter').length < 1
-                        ? 'Les dernières offres vitrines créées'
-                        : `${offers && pluralize(offers.length, 'offre')}` +
-                          ' vitrine'}
-                    </p>
-                    <p className={styles['visually-hidden']} role="status">
-                      {offers &&
-                        pluralize(offers.length, 'offre vitrine trouvée')}
-                    </p>
-                  </>
-                }
-                group={
-                  offers
-                    ? offers.slice(0, 5).map((offer) => ({
-                        value: offer.id.toString(),
-                        label: offer.name,
-                        description: offer.venue.name,
-                        variant: 'detailed',
-                        image: offer.imageUrl as string,
-                        imageSize: 'm',
+            <>
+              <p className={styles['visually-hidden']} role="status">
+                {offers && pluralize(offers.length, 'offre vitrine trouvée')}
+              </p>
+              <form onSubmit={handleSubmitSelection(handleOnSubmit)}>
+                <RadioButtonGroup
+                  name="templateOfferId"
+                  variant="detailed"
+                  label={
+                    searchFilterForm.watch('searchFilter').length < 1
+                      ? 'Les dernières offres vitrines créées'
+                      : `${offers && pluralize(offers.length, 'offre')}` +
+                        ' vitrine'
+                  }
+                  options={
+                    offers
+                      ? offers.slice(0, 5).map((offer) => ({
+                          value: offer.id.toString(),
+                          label: offer.name,
+                          description: offer.venue.name,
+                          variant: 'detailed',
+                          image: offer.imageUrl as string,
+                          imageSize: 'm',
 
-                        sizing: 'fill',
-                      }))
-                    : []
-                }
-                checkedOption={templateOfferForm.watch('templateOfferId')}
-                onChange={(e) => {
-                  templateOfferForm.setValue('templateOfferId', e.target.value)
-                }}
-              />
-              {offers && offers.length < 1 && (
-                <div className={styles['search-no-results']}>
-                  <SvgIcon
-                    src={strokeSearchIcon}
-                    alt="Illustration de recherche"
-                    className={styles['search-no-results-icon']}
-                    width="124"
-                  />
-                  <p className={styles['search-no-results-text']}>
-                    Aucune offre trouvée pour votre recherche
-                  </p>
-                </div>
-              )}
+                          sizing: 'fill',
+                        }))
+                      : []
+                  }
+                  checkedOption={templateOfferForm.watch('templateOfferId')}
+                  onChange={(e) => {
+                    templateOfferForm.setValue(
+                      'templateOfferId',
+                      e.target.value
+                    )
+                  }}
+                  allowSingleOrNoneOption
+                />
+                {offers && offers.length < 1 && (
+                  <div className={styles['search-no-results']}>
+                    <SvgIcon
+                      src={strokeSearchIcon}
+                      alt="Illustration de recherche"
+                      className={styles['search-no-results-icon']}
+                      width="124"
+                    />
+                    <p className={styles['search-no-results-text']}>
+                      Aucune offre trouvée pour votre recherche
+                    </p>
+                  </div>
+                )}
 
-              <ActionsBarSticky>
-                <ActionsBarSticky.Left>
-                  <ButtonLink
-                    variant={ButtonVariant.SECONDARY}
-                    to={computeCollectiveOffersUrl({})}
-                  >
-                    Annuler et quitter
-                  </ButtonLink>
-                </ActionsBarSticky.Left>
-                <ActionsBarSticky.Right>
-                  <Button type="submit" disabled={false}>
-                    Étape suivante
-                  </Button>
-                </ActionsBarSticky.Right>
-              </ActionsBarSticky>
-            </form>
+                <ActionsBarSticky>
+                  <ActionsBarSticky.Left>
+                    <ButtonLink
+                      variant={ButtonVariant.SECONDARY}
+                      to={computeCollectiveOffersUrl({})}
+                    >
+                      Annuler et quitter
+                    </ButtonLink>
+                  </ActionsBarSticky.Left>
+                  <ActionsBarSticky.Right>
+                    <Button type="submit" disabled={false}>
+                      Étape suivante
+                    </Button>
+                  </ActionsBarSticky.Right>
+                </ActionsBarSticky>
+              </form>
+            </>
           )}
         </div>
       </div>
