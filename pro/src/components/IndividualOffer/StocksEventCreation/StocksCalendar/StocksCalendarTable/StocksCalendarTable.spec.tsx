@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { addDays, subDays } from 'date-fns'
+import { addDays, addSeconds, subDays, subSeconds } from 'date-fns'
 
 import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
@@ -108,7 +108,7 @@ describe('StocksCalendarTable', () => {
       stocks: [
         getOfferStockFactory({
           id: 1,
-          beginningDatetime: subDays(new Date(), 2).toISOString().split('T')[0],
+          beginningDatetime: subDays(new Date(), 2).toISOString(),
         }),
       ],
       mode: OFFER_WIZARD_MODE.EDITION,
@@ -123,7 +123,7 @@ describe('StocksCalendarTable', () => {
     renderStocksCalendarTable({
       stocks: [
         getOfferStockFactory({
-          beginningDatetime: addDays(new Date(), 2).toISOString().split('T')[0],
+          beginningDatetime: addDays(new Date(), 2).toISOString(),
         }),
       ],
       mode: OFFER_WIZARD_MODE.EDITION,
@@ -142,7 +142,7 @@ describe('StocksCalendarTable', () => {
     renderStocksCalendarTable({
       stocks: [
         getOfferStockFactory({
-          beginningDatetime: addDays(new Date(), 2).toISOString().split('T')[0],
+          beginningDatetime: addDays(new Date(), 2).toISOString(),
         }),
       ],
       mode: OFFER_WIZARD_MODE.EDITION,
@@ -161,5 +161,35 @@ describe('StocksCalendarTable', () => {
     expect(
       screen.getByRole('button', { name: 'Modifier la date' })
     ).toHaveFocus()
+  })
+
+  it('should disable the edition of a stock if its date is earlier today', () => {
+    renderStocksCalendarTable({
+      stocks: [
+        getOfferStockFactory({
+          beginningDatetime: subSeconds(new Date(), 1).toISOString(),
+        }),
+      ],
+      mode: OFFER_WIZARD_MODE.EDITION,
+    })
+
+    expect(
+      screen.queryByRole('button', { name: 'Modifier la date' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should enable the edition of a stock if its date is later today', () => {
+    renderStocksCalendarTable({
+      stocks: [
+        getOfferStockFactory({
+          beginningDatetime: addSeconds(new Date(), 1).toISOString(),
+        }),
+      ],
+      mode: OFFER_WIZARD_MODE.EDITION,
+    })
+
+    expect(
+      screen.getByRole('button', { name: 'Modifier la date' })
+    ).toBeInTheDocument()
   })
 })
