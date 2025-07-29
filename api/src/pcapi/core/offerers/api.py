@@ -552,6 +552,38 @@ def delete_venue(venue_id: int) -> None:
 
     offer_ids_to_delete = _delete_objects_linked_to_venue(venue_id)
 
+    pivot = (
+        db.session.query(providers_models.CinemaProviderPivot)
+        .filter(providers_models.CinemaProviderPivot.venueId == venue_id)
+        .one_or_none()
+    )
+    if pivot:
+        if pivot.CDSCinemaDetails:
+            db.session.query(providers_models.CDSCinemaDetails).filter(
+                providers_models.CDSCinemaDetails.cinemaProviderPivotId == pivot.id
+            ).delete(synchronize_session=False)
+        if pivot.BoostCinemaDetails:
+            db.session.query(providers_models.BoostCinemaDetails).filter(
+                providers_models.BoostCinemaDetails.cinemaProviderPivotId == pivot.id
+            ).delete(synchronize_session=False)
+        if pivot.CGRCinemaDetails:
+            db.session.query(providers_models.CGRCinemaDetails).filter(
+                providers_models.CGRCinemaDetails.cinemaProviderPivotId == pivot.id
+            ).delete(synchronize_session=False)
+        if pivot.EMSCinemaDetails:
+            db.session.query(providers_models.EMSCinemaDetails).filter(
+                providers_models.EMSCinemaDetails.cinemaProviderPivotId == pivot.id
+            ).delete(synchronize_session=False)
+        pivot = (
+            db.session.query(providers_models.CinemaProviderPivot)
+            .filter(providers_models.CinemaProviderPivot.venueId == venue_id)
+            .delete(synchronize_session=False)
+        )
+
+    db.session.query(providers_models.AllocinePivot).filter(
+        providers_models.CinemaProviderPivot.venueId == venue_id
+    ).delete(synchronize_session=False)
+
     # Warning: we should only delete rows where the "venueId" is the
     # venue to delete. We should NOT delete rows where the
     # "pricingPointId" or the "reimbursementId" is the venue to

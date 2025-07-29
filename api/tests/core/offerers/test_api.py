@@ -561,6 +561,33 @@ class DeleteVenueTest:
         assert db.session.query(offerers_models.Venue).count() == 1
         assert db.session.query(finance_models.CustomReimbursementRule).count() == 1
 
+    @pytest.mark.parametrize(
+        "factory",
+        [
+            providers_factories.CDSCinemaDetailsFactory,
+            providers_factories.BoostCinemaDetailsFactory,
+            providers_factories.CGRCinemaDetailsFactory,
+            providers_factories.EMSCinemaDetailsFactory,
+        ],
+    )
+    def test_delete_venue_with_pivot(self, factory):
+        detail = factory()
+        venue = detail.cinemaProviderPivot.venue
+
+        offerers_api.delete_venue(venue.id)
+
+        assert db.session.query(offerers_models.Venue).count() == 0
+        assert db.session.query(factory._meta.model).count() == 0
+
+    def test_delete_venue_with_allocine_pivot(self):
+        detail = providers_factories.AllocinePivotFactory()
+        venue = detail.venue
+
+        offerers_api.delete_venue(venue.id)
+
+        assert db.session.query(offerers_models.Venue).count() == 0
+        assert db.session.query(providers_models.AllocinePivot).count() == 0
+
 
 class EditVenueContactTest:
     def test_create_venue_contact(self, app):
