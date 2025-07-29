@@ -41,7 +41,6 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import get_or_404
 from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.repository.session_management import on_commit
-from pcapi.routes.backoffice import types_
 from pcapi.routes.backoffice.bookings import forms as bookings_forms
 from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.pro import forms as pro_forms
@@ -290,14 +289,14 @@ def get(offerer_id: int) -> utils.BackofficeResponse:
     return _render_offerer_details(offerer_id)
 
 
-def get_stats_data(offerer: offerers_models.Offerer) -> types_.StatsData:
+def get_stats_data(offerer: offerers_models.Offerer) -> utils.StatsData:
     PLACEHOLDER = decimal.Decimal(-1)
     offers_stats = offerers_api.get_offerer_offers_stats(offerer.id, max_offer_count=1000)
     is_collective_too_big = offers_stats["collective_offer"]["active"] == -1
     is_collective_too_big = is_collective_too_big or offers_stats["collective_offer_template"]["active"] == -1
     is_individual_too_big = offers_stats["offer"]["active"] == -1
 
-    stats: types_.StatsData = {
+    stats: utils.StatsData = {
         "active": {
             "collective": PLACEHOLDER,
             "individual": PLACEHOLDER,

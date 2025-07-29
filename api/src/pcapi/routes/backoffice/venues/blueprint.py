@@ -47,7 +47,6 @@ from pcapi.repository.session_management import on_commit
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import search_utils
-from pcapi.routes.backoffice import types_
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
@@ -334,7 +333,7 @@ def get(venue_id: int) -> utils.BackofficeResponse:
     return render_venue_details(venue_row)
 
 
-def get_stats_data(venue_id: int) -> types_.StatsData:
+def get_stats_data(venue_id: int) -> utils.StatsData:
     PLACEHOLDER = decimal.Decimal(-1)
     offers_stats = offerers_api.get_venue_offers_stats(venue_id, max_offer_count=1000)
 
@@ -342,7 +341,7 @@ def get_stats_data(venue_id: int) -> types_.StatsData:
     is_collective_too_big = is_collective_too_big or offers_stats["collective_offer_template"]["active"] == -1
     is_individual_too_big = offers_stats["offer"]["active"] == -1
 
-    stats: types_.StatsData = {
+    stats: utils.StatsData = {
         "active": {
             "collective": PLACEHOLDER,
             "individual": PLACEHOLDER,
