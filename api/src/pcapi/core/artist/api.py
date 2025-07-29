@@ -20,7 +20,7 @@ def get_artist_image_url(artist: Artist) -> str | None:
                 )
             )
             .filter(ProductMediation.imageType.in_([ImageType.POSTER, ImageType.RECTO]))
-            .order_by(Product.last_30_days_booking.desc(), Product.id.desc())
+            .order_by(Product.last_30_days_booking.desc().nulls_last(), Product.id.desc())
             .first()
         )
 
