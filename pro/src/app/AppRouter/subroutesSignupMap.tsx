@@ -1,11 +1,18 @@
 /* No need to test this file */
 /* istanbul ignore file */
 
+import { generatePath, Navigate, NavigateProps, useParams } from 'react-router'
+
 import { SignupConfirmation } from 'pages/Signup/SignupConfirmation/SignupConfirmation'
 import { SignupContainer } from 'pages/Signup/SignupContainer/SignupContainer'
 import { SignupValidation } from 'pages/Signup/SignUpValidation/SignUpValidation'
 
 import type { RouteConfig } from './routesMap'
+
+const NavigateWithParams = ({ to, ...props }: NavigateProps) => {
+  const params = useParams()
+  return <Navigate {...props} to={generatePath(to as string, params)} />
+}
 
 export const routesSignup: RouteConfig[] = [
   {
@@ -24,6 +31,28 @@ export const routesSignup: RouteConfig[] = [
     element: <SignupValidation />,
     path: '/inscription/compte/confirmation/:token',
     title: 'Confirmation de création de compte',
+    meta: { public: true },
+  },
+
+  // Redirects until pages are changed in organization website
+  {
+    element: (
+      <NavigateWithParams to="/inscription/compte/confirmation/:token" />
+    ),
+    path: '/inscription/validation/:token',
+    title: 'Confirmation de création de compte',
+    meta: { public: true },
+  },
+  {
+    element: <Navigate to="/inscription/compte/confirmation" />,
+    path: '/inscription/confirmation',
+    title: 'Confirmation de création de compte',
+    meta: { public: true },
+  },
+  {
+    element: <Navigate to="/inscription/compte/creation" />,
+    path: '/inscription',
+    title: 'Créer un compte',
     meta: { public: true },
   },
 ]
