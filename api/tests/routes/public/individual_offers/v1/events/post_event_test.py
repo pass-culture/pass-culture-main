@@ -791,3 +791,16 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
 
         response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 200
+
+    def test_should_raise_error_if_venue_is_soft_deleted(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue_id = venue_provider.venue.id
+        venue = venue_provider.venue
+        venue.isSoftDeleted = True
+        db.session.add(venue)
+        db.session.commit()
+
+        response = self.make_request(plain_api_key, json_body=self._get_base_payload(venue_id=venue_id))
+
+        assert response.status_code == 400
+        assert response.json == {"location.venueId": ["Resource cannot be found"]}

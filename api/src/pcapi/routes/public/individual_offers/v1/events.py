@@ -10,6 +10,7 @@ from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
@@ -72,6 +73,9 @@ def post_event_offer(body: events_serializers.EventOfferCreation) -> events_seri
     Create Event Offer
     """
     venue_provider = authorization.get_venue_provider_or_raise_404(body.location.venue_id)
+    venue = offerers_repository.find_venue_by_id(body.location.venue_id)
+    if not venue:
+        raise api_errors.ApiErrors({"location.venueId": ["Resource cannot be found"]})
     venue = utils.get_venue_with_offerer_address(body.location.venue_id)
 
     if body.has_ticket and not (venue_provider.provider.hasTicketingService or venue_provider.hasTicketingService):
