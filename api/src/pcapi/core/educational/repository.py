@@ -256,6 +256,7 @@ def _get_bookings_for_adage_base_query() -> "sa_orm.Query[educational_models.Col
             educational_models.CollectiveOffer.formats,
             educational_models.CollectiveOffer.locationType,
             educational_models.CollectiveOffer.locationComment,
+            educational_models.CollectiveOffer.offererAddressId,
         )
         .options(
             sa_orm.joinedload(educational_models.CollectiveOffer.domains).load_only(
@@ -276,6 +277,7 @@ def _get_bookings_for_adage_base_query() -> "sa_orm.Query[educational_models.Col
                     offerers_models.Venue.publicName,
                     offerers_models.Venue.name,
                     offerers_models.Venue.street,
+                    offerers_models.Venue.offererAddressId,
                 ),
                 sa_orm.joinedload(offerers_models.Venue.managingOfferer, innerjoin=True).load_only(
                     offerers_models.Offerer.name, offerers_models.Offerer.siren, offerers_models.Offerer.postalCode

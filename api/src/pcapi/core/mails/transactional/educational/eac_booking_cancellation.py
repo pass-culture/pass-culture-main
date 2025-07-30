@@ -1,5 +1,6 @@
 from pcapi.core import mails
 from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.utils import get_collective_offer_full_address
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.utils.date import get_date_formatted_for_email
@@ -12,6 +13,7 @@ def get_education_booking_cancellation_email_data(booking: CollectiveBooking) ->
     offer = stock.collectiveOffer
     institution = booking.educationalInstitution
     redactor = booking.educationalRedactor
+
     return models.TransactionalEmailData(
         template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION.value,
         params={
@@ -27,6 +29,7 @@ def get_education_booking_cancellation_email_data(booking: CollectiveBooking) ->
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": institution.postalCode,
             "COLLECTIVE_CANCELLATION_REASON": booking.cancellationReason.value if booking.cancellationReason else "",
             "BOOKING_ID": booking.id,
+            "COLLECTIVE_OFFER_ADDRESS": get_collective_offer_full_address(offer),
         },
     )
 
