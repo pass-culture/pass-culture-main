@@ -25,12 +25,17 @@ describe('getIndividualOfferColumns', () => {
     status: OfferStatus.ACTIVE,
     thumbUrl: '/image.png',
     address: {
-      label: 'Paris',
+      id: 1,
+      id_oa: 997,
+      banId: '35288_7283_00001',
+      inseeCode: '89001',
+      label: 'Bureau',
       city: 'Paris',
+      street: '3 rue de Valois',
       postalCode: '75001',
-      street: '1 rue Exemple',
-      departmentCode: '75',
-      isLinkedToVenue: true,
+      isManualEdition: true,
+      latitude: 48.85332,
+      longitude: 2.348979,
     },
     stocks: [
       {
@@ -48,18 +53,26 @@ describe('getIndividualOfferColumns', () => {
     ],
   })
 
+  type RenderOptions = {
+    isRefactoFutureOfferEnabled?: boolean
+    headlineOffer?: HeadLineOfferResponseModel | null
+    isHeadlineOfferAllowedForOfferer?: boolean
+  }
+
   const renderTableWithOffer = (
     offer = baseOffer,
-    options = {
-      isRefactoFutureOfferEnabled: false,
-      headlineOffer: null,
-      isHeadlineOfferAllowedForOfferer: true,
-    }
+    options: RenderOptions = {}
   ) => {
+    const {
+      isRefactoFutureOfferEnabled = false,
+      headlineOffer = null,
+      isHeadlineOfferAllowedForOfferer = false,
+    } = options
+
     const columns = getIndividualOfferColumns(
-      options.isRefactoFutureOfferEnabled,
-      options.headlineOffer,
-      options.isHeadlineOfferAllowedForOfferer
+      isRefactoFutureOfferEnabled,
+      headlineOffer,
+      isHeadlineOfferAllowedForOfferer
     )
 
     return renderWithProviders(
@@ -104,7 +117,9 @@ describe('getIndividualOfferColumns', () => {
 
   it('renders location based on address', () => {
     renderTableWithOffer()
-    expect(screen.getByText(/Paris - 1 rue Exemple 75001/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/Bureau - 3 rue de Valois 75001 Paris/i)
+    ).toBeInTheDocument()
   })
 
   it('renders total stock quantity', () => {
@@ -117,10 +132,17 @@ describe('getIndividualOfferColumns', () => {
       ...baseOffer,
       stocks: [
         {
+          id: 1,
           remainingQuantity: 'unlimited',
           beginningDatetime: new Date().toISOString(),
+          hasBookingLimitDatetimePassed: false,
         },
-        { remainingQuantity: 2, beginningDatetime: new Date().toISOString() },
+        {
+          id: 2,
+          remainingQuantity: 2,
+          beginningDatetime: new Date().toISOString(),
+          hasBookingLimitDatetimePassed: false,
+        },
       ],
     }
     renderTableWithOffer(offer)
