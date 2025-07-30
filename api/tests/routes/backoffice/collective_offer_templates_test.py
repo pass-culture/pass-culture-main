@@ -438,6 +438,30 @@ class ValidateCollectiveOfferTemplateTest(PostEndpointHelper):
         assert collective_offer_template_to_validate.isActive is True
         assert collective_offer_template_to_validate.lastValidationType == OfferValidationType.MANUAL
 
+    def test_validate_collective_offer_template_with_htmx(self, legit_user, authenticated_client):
+        collective_offer_template_to_validate = educational_factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.PENDING
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_offer_template_id=collective_offer_template_to_validate.id,
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
+
+        row = html_parser.get_tag(
+            response.data,
+            tag="tr",
+            id=f"collective-offer-template-row-{collective_offer_template_to_validate.id}",
+            is_xml=True,
+        )
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(collective_offer_template_to_validate.id)
+
+        assert collective_offer_template_to_validate.isActive is True
+        assert collective_offer_template_to_validate.lastValidationType == OfferValidationType.MANUAL
+
     def test_cant_validate_non_pending_offer(self, legit_user, authenticated_client):
         collective_offer_to_validate = educational_factories.CollectiveOfferTemplateFactory(
             validation=OfferValidationStatus.REJECTED,
@@ -520,6 +544,31 @@ class RejectCollectiveOfferTemplateTest(PostEndpointHelper):
         assert collective_offer_template_to_reject.isActive is False
         assert collective_offer_template_to_reject.lastValidationType == OfferValidationType.MANUAL
 
+    def test_reject_collective_offer_template_with_htmx(self, legit_user, authenticated_client):
+        collective_offer_template_to_reject = educational_factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.PENDING
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_offer_template_id=collective_offer_template_to_reject.id,
+            form={"reason": educational_models.CollectiveOfferRejectionReason.WRONG_DATE.value},
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        row = html_parser.get_tag(
+            response.data,
+            tag="tr",
+            id=f"collective-offer-template-row-{collective_offer_template_to_reject.id}",
+            is_xml=True,
+        )
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(collective_offer_template_to_reject.id)
+
+        assert collective_offer_template_to_reject.isActive is False
+        assert collective_offer_template_to_reject.lastValidationType == OfferValidationType.MANUAL
+
     def test_cant_reject_non_pending_offer_template(self, legit_user, authenticated_client):
         collective_offer_template_to_reject = educational_factories.CollectiveOfferTemplateFactory(
             validation=OfferValidationStatus.APPROVED
@@ -577,14 +626,13 @@ class BatchCollectiveOfferTemplatesValidateTest(PostEndpointHelper):
         parameter_ids = ", ".join(
             str(collective_offer_template.id) for collective_offer_template in collective_offer_templates
         )
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
-
-        assert response.status_code == 303
-
-        expected_url = url_for(
-            "backoffice_web.collective_offer_template.list_collective_offer_templates", _external=True
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": parameter_ids},
+            headers={"hx-request": "true"},
         )
-        assert response.location == expected_url
+
+        assert response.status_code == 200
 
         for collective_offer_template in collective_offer_templates:
             db.session.refresh(collective_offer_template)
@@ -595,6 +643,11 @@ class BatchCollectiveOfferTemplatesValidateTest(PostEndpointHelper):
             assert collective_offer_template.lastValidationType is OfferValidationType.MANUAL
             assert collective_offer_template.validation is OfferValidationStatus.APPROVED
             assert collective_offer_template.lastValidationAuthor == legit_user
+            row = html_parser.get_tag(
+                response.data, tag="tr", id=f"collective-offer-template-row-{collective_offer_template.id}", is_xml=True
+            )
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(collective_offer_template.id)
 
         received_dict = {email["To"]: email["template"] for email in mails_testing.outbox}
         expected_dict = {
@@ -611,7 +664,8 @@ class BatchCollectiveOfferTemplatesValidateTest(PostEndpointHelper):
         )
         parameter_ids = f"{str(fake_offer_ids[0])}, {str(fake_offer_ids[1])}, {collective_offer_template}"
         response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
-        assert response.status_code == 303
+        assert response.status_code == 200
+        assert len(response.data) == 0
         assert collective_offer_template.validation == OfferValidationStatus.PENDING
         collective_offer_template = (
             db.session.query(educational_models.CollectiveOfferTemplate)
@@ -645,14 +699,10 @@ class BatchCollectiveOfferTemplatesRejectTest(PostEndpointHelper):
                 "object_ids": parameter_ids,
                 "reason": educational_models.CollectiveOfferRejectionReason.WRONG_DATE.value,
             },
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
-
-        expected_url = url_for(
-            "backoffice_web.collective_offer_template.list_collective_offer_templates", _external=True
-        )
-        assert response.location == expected_url
+        assert response.status_code == 200
 
         for collective_offer_template in collective_offer_templates:
             db.session.refresh(collective_offer_template)
@@ -666,6 +716,11 @@ class BatchCollectiveOfferTemplatesRejectTest(PostEndpointHelper):
                 collective_offer_template.rejectionReason
                 is educational_models.CollectiveOfferRejectionReason.WRONG_DATE
             )
+            row = html_parser.get_tag(
+                response.data, tag="tr", id=f"collective-offer-template-row-{collective_offer_template.id}", is_xml=True
+            )
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(collective_offer_template.id)
 
         assert len(mails_testing.outbox) == 3
 
@@ -697,7 +752,8 @@ class BatchCollectiveOfferTemplatesRejectTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        assert len(response.data) == 0
         assert collective_offer_template.validation == OfferValidationStatus.PENDING
         collective_offer_template = (
             db.session.query(educational_models.CollectiveOfferTemplate)
