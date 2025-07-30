@@ -34,7 +34,10 @@ import {
   formatBrowserTimezonedDateAsUTC,
   isDateValid,
 } from 'commons/utils/date'
-import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
+import {
+  isActionAllowedOnCollectiveOffer,
+  isCollectiveOfferEditable,
+} from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
@@ -68,18 +71,6 @@ export interface CollectiveActionsCellsProps {
 }
 
 const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = 'DUPLICATE_OFFER_MODAL_SEEN'
-
-function hasOfferAnyEditionActionAllowed(offer: CollectiveOfferResponseModel) {
-  return offer.allowedActions.some((action) =>
-    [
-      CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
-      CollectiveOfferAllowedAction.CAN_EDIT_DATES,
-      CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
-      CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
-      CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION,
-    ].includes(action)
-  )
-}
 
 export const CollectiveActionsCells = ({
   rowId,
@@ -290,7 +281,7 @@ export const CollectiveActionsCells = ({
 
   const noActionsAllowed = offer.allowedActions.length === 0
 
-  const canEditOffer = hasOfferAnyEditionActionAllowed(offer)
+  const canEditOffer = isCollectiveOfferEditable(offer)
 
   const isBookingCancellable = isActionAllowedOnCollectiveOffer(
     offer,

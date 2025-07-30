@@ -9,7 +9,7 @@ import {
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import {
   isCollectiveInstitutionEditable,
-  isCollectiveOfferEditable,
+  isCollectiveOfferDetailsEditable,
   isCollectiveStockEditable,
 } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
@@ -53,7 +53,7 @@ export const CollectiveOfferSummary = ({
 
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
 
-  const canEditDetails = isCollectiveOfferEditable(offer)
+  const canEditDetails = isCollectiveOfferDetailsEditable(offer)
 
   const canEditDatesAndPrice = isCollectiveStockEditable(offer)
 
