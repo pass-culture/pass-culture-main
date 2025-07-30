@@ -1,6 +1,5 @@
 {% extends "layouts/list.html" %}
 {% from "components/forms.html" import build_filters_form_ng with context %}
-{% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% from "components/turbo/spinner.html" import build_loading_spinner with context %}
 {% block title %}
@@ -35,50 +34,7 @@
   <th>Date d'application</th>
 {% endblock table_header %}
 {% block table_body %}
-  {% for reimbursement_rule in rows %}
-    <tr>
-      <td>
-        {% if not reimbursement_rule.timespan.upper %}
-          <div class="dropdown">
-            <button type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                    class="btn p-0">
-              <i class="bi bi-three-dots-vertical"></i>
-            </button>
-            <ul class="dropdown-menu">
-              <li class="dropdown-item p-0">
-                <a class="btn btn-sm d-block w-100 text-start px-3"
-                   data-bs-toggle="modal"
-                   data-bs-target="#edit-custom-reimbursement-rule-{{ reimbursement_rule.id }}">Modifier</a>
-              </li>
-            </ul>
-          </div>
-        {% endif %}
-      </td>
-      <td>{{ reimbursement_rule.id }}</td>
-      {% if reimbursement_rule.offerer %}
-        <td>{{ links.build_offerer_name_to_details_link(reimbursement_rule.offerer) }}</td>
-        <td>{{ reimbursement_rule.offerer.siren }}</td>
-        <td></td>
-        <td></td>
-      {% elif reimbursement_rule.venue %}
-        <td>{{ links.build_offerer_name_to_details_link(reimbursement_rule.venue.managingOfferer) }}</td>
-        <td>{{ reimbursement_rule.venue.managingOfferer.siren }}</td>
-        <td>{{ links.build_venue_name_to_details_link(reimbursement_rule.venue) }}</td>
-        <td></td>
-      {% else %}
-        <td>{{ links.build_offerer_name_to_details_link(reimbursement_rule.offer.venue.managingOfferer) }}</td>
-        <td>{{ reimbursement_rule.offer.venue.managingOfferer.siren }}</td>
-        <td>{{ links.build_venue_name_to_details_link(reimbursement_rule.offer.venue) }}</td>
-        <td>{{ links.build_offer_name_to_details_link(reimbursement_rule.offer) }}</td>
-      {% endif %}
-      <td>{{ reimbursement_rule.rate | format_rate_multiply_by_100 }}</td>
-      <td>{{ reimbursement_rule.amount | format_cents if reimbursement_rule.amount else "" }}</td>
-      <td>{{ reimbursement_rule.subcategories | format_subcategories }}</td>
-      <td>{{ reimbursement_rule.timespan | format_timespan }}</td>
-    </tr>
-  {% endfor %}
+  {% include "custom_reimbursement_rules/list/rows.html" %}
 {% endblock table_body %}
 {% block after_table %}
   {% for reimbursement_rule in rows %}
