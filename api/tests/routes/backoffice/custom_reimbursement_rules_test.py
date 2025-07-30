@@ -544,11 +544,10 @@ class EditCustomReimbursementRuleTest(PostEndpointHelper):
             authenticated_client, reimbursement_rule_id=rule.id, form={"end_date": new_end_date}
         )
 
-        assert response.status_code == 303
-        assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Le tarif dérogatoire a été mis à jour"
-        )
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"custom-reimbursement-rule-row-{rule.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[1] == str(rule.id)
 
         db.session.refresh(rule)
         assert rule.timespan.lower == original_timespan[0]
@@ -568,11 +567,10 @@ class EditCustomReimbursementRuleTest(PostEndpointHelper):
             authenticated_client, reimbursement_rule_id=rule.id, form={"end_date": new_end_date}
         )
 
-        assert response.status_code == 303
-        assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "La date de fin doit être postérieure à la date du jour."
-        )
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"custom-reimbursement-rule-row-{rule.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[1] == str(rule.id)
 
         db.session.refresh(rule)
         assert rule.timespan.lower, rule.timespan.upper == original_timespan
@@ -589,11 +587,10 @@ class EditCustomReimbursementRuleTest(PostEndpointHelper):
             authenticated_client, reimbursement_rule_id=rule.id, form={"end_date": new_end_date}
         )
 
-        assert response.status_code == 303
-        assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Il n'est pas possible de modifier la date de fin lorsque celle-ci est déjà définie."
-        )
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"custom-reimbursement-rule-row-{rule.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[1] == str(rule.id)
 
         db.session.refresh(rule)
         assert rule.timespan.lower, rule.timespan.upper == original_timespan
@@ -607,11 +604,10 @@ class EditCustomReimbursementRuleTest(PostEndpointHelper):
             authenticated_client, reimbursement_rule_id=rule.id, form={"end_date": new_end_date}
         )
 
-        assert response.status_code == 303
-        assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "La date de fin d'application doit être postérieure à la date de début."
-        )
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"custom-reimbursement-rule-row-{rule.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[1] == str(rule.id)
 
         db.session.refresh(rule)
         assert rule.timespan.lower, rule.timespan.upper == original_timespan

@@ -1,6 +1,6 @@
 {% import "components/links.html" as links with context %}
 {% for reimbursement_rule in rows %}
-  <tr>
+  <tr id="custom-reimbursement-rule-row-{{ reimbursement_rule.id }}">
     <td>
       {% if not reimbursement_rule.timespan.upper %}
         <div class="dropdown">

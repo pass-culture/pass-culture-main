@@ -49,10 +49,8 @@ def get_error_message(exception: Exception) -> str:
     return str(exception)
 
 
-def _get_custom_reimbursement_rules(
-    form: custom_reimbursement_rule_forms.GetCustomReimbursementRulesListForm,
-) -> list[finance_models.CustomReimbursementRule]:
-    base_query = (
+def _get_custom_reimbursement_rules_query() -> sa_orm.Query:
+    return (
         db.session.query(finance_models.CustomReimbursementRule)
         .outerjoin(offers_models.Offer)
         .outerjoin(offerers_models.Venue, offers_models.Offer.venue)
@@ -96,6 +94,12 @@ def _get_custom_reimbursement_rules(
             ),
         )
     )
+
+
+def _get_custom_reimbursement_rules(
+    form: custom_reimbursement_rule_forms.GetCustomReimbursementRulesListForm,
+) -> list[finance_models.CustomReimbursementRule]:
+    base_query = _get_custom_reimbursement_rules_query()
 
     if form.venue.data:
         # search on venueId for custom rules on venues, and on offer's venue id
@@ -154,6 +158,20 @@ def _get_custom_reimbursement_rules(
 
     # +1 to check if there are more results than requested
     return query.limit(form.limit.data + 1).all()
+
+
+def _render_custom_reimbursement_rule(
+    custom_reimbursement_rules_ids: list[int] | None = None,
+) -> utils.BackofficeResponse:
+    rows = []
+    if custom_reimbursement_rules_ids:
+        query = _get_custom_reimbursement_rules_query()
+        rows = query.filter(finance_models.CustomReimbursementRule.id.in_(custom_reimbursement_rules_ids)).all()
+
+    return render_template(
+        "custom_reimbursement_rules/list/rows.html",
+        rows=rows,
+    )
 
 
 @custom_reimbursement_rules_blueprint.route("", methods=["GET"])
@@ -258,7 +276,8 @@ def get_create_custom_reimbursement_rule_form() -> utils.BackofficeResponse:
     form = custom_reimbursement_rule_forms.CreateCustomReimbursementRuleForm()
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        ajax_submit=False,
         form=form,
         dst=url_for("backoffice_web.reimbursement_rules.create_custom_reimbursement_rule"),
         div_id="create-custom-reimbursement-rule",  # must be consistent with parameter passed to build_lazy_modal
@@ -288,7 +307,8 @@ def get_edit_custom_reimbursement_rule_form(reimbursement_rule_id: int) -> utils
     )
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id=f"#custom-reimbursement-rule-row-{reimbursement_rule_id}",
         form=form,
         dst=url_for(
             "backoffice_web.reimbursement_rules.edit_custom_reimbursement_rule",
@@ -312,7 +332,7 @@ def edit_custom_reimbursement_rule(reimbursement_rule_id: int) -> utils.Backoffi
     form = custom_reimbursement_rule_forms.EditCustomReimbursementRuleForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return _redirect_after_reimbursement_rule_action()
+        return _render_custom_reimbursement_rule()
 
     # upper bound is exclusive, so it should be set at 0:00 on the day after
     end_datetime = date_utils.get_day_start(form.end_date.data + timedelta(days=1), finance_utils.ACCOUNTING_TIMEZONE)
@@ -327,7 +347,7 @@ def edit_custom_reimbursement_rule(reimbursement_rule_id: int) -> utils.Backoffi
     else:
         flash("Le tarif dérogatoire a été mis à jour", "success")
 
-    return _redirect_after_reimbursement_rule_action()
+    return _render_custom_reimbursement_rule([reimbursement_rule_id])
 
 
 def _redirect_after_reimbursement_rule_action() -> utils.BackofficeResponse:

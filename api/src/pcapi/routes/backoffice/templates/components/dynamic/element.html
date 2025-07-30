@@ -1,0 +1,8 @@
+{% from "components/turbo/spinner.html" import build_loading_spinner %}
+{% macro dynamic_element(url, div_id="") %}
+  <div {% if div_id %}id="{{ div_id }}"{% endif %}
+       hx-trigger="load"
+       data-hide-parent-modal-on-error="true"
+       hx-get="{{ url }}"
+       hx-target="this">{{ build_loading_spinner() }}</div>
+{% endmacro %}
