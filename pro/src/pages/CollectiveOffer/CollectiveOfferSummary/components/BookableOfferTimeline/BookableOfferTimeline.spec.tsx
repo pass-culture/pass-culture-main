@@ -426,4 +426,32 @@ describe('BookableOfferTimeline - step type rendering', () => {
       )
     ).toBeInTheDocument()
   })
+
+  it('should render a banner when current step is archived', () => {
+    renderWithProviders(
+      <BookableOfferTimeline
+        offer={getCollectiveOfferFactory({
+          history: {
+            past: [
+              {
+                status: CollectiveOfferDisplayedStatus.PUBLISHED,
+              },
+              {
+                status: CollectiveOfferDisplayedStatus.ARCHIVED,
+                datetime: '2025-07-07T13:00:00.000000',
+              },
+            ],
+            future: [],
+          },
+        })}
+      />
+    )
+
+    expect(
+      screen.getByText(
+        /Vous avez archivé cette offre. Elle n'est plus visible sur ADAGE./
+      )
+    ).toBeInTheDocument()
+    expect(screen.getByText(/Le 07 juillet 2025/)).toBeInTheDocument()
+  })
 })
