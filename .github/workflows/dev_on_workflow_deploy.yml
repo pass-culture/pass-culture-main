@@ -94,6 +94,7 @@ jobs:
             pass-culture-main
             rendered-manifests
             pc-connect
+            pc-render-manifests
           permission-contents: write
 
       - name: "Connect to cluster"
