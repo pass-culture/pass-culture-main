@@ -75,3 +75,15 @@ def siren_is_individual_or_public(siren_info: models.SirenInfo) -> bool:
     # This implementation is very basic and may be updated later depending on errors when calling get_dgfip()
     legal_category_code = int(siren_info.legal_category_code)
     return (legal_category_code == EI_CATEGORY_CODE) or (legal_category_code > PUBLIC_CATEGORIES_MIN_CODE)
+
+
+def is_valid_siret(search_input: str | int) -> bool:
+    return (
+        search_input is not None
+        and (isinstance(search_input, int) or search_input.isnumeric())
+        and len(str(search_input)) == 14
+    )
+
+
+def is_pass_culture_siret(search_input: str | int) -> bool:
+    return str(search_input) == settings.PASS_CULTURE_SIRET

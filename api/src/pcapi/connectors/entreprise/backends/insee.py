@@ -188,6 +188,7 @@ class InseeBackend(BaseBackend):
             active = False
         info = models.SiretInfo(
             siret=siret,
+            siren=siret[:9],
             active=active,
             diffusible=legal_unit_block["statutDiffusionUniteLegale"] == "O",
             name=self._get_name_from_siret_data(data),

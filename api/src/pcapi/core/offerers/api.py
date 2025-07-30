@@ -42,7 +42,6 @@ from pcapi.connectors import virustotal
 from pcapi.connectors.entreprise import api as api_entreprise
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.connectors.entreprise import models as sirene_models
-from pcapi.connectors.entreprise.api import PROTECTED_DATA_PLACEHOLDER
 from pcapi.core import search
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import constants as bookings_constants
@@ -57,6 +56,7 @@ from pcapi.core.educational.api import booking as educational_booking_api
 from pcapi.core.educational.api import dms as dms_api
 from pcapi.core.external import zendesk_sell
 from pcapi.core.external.attributes import api as external_attributes_api
+from pcapi.core.geography import constants as geography_constants
 from pcapi.core.geography import models as geography_models
 from pcapi.core.geography import utils as geography_utils
 from pcapi.core.offerers import constants as offerers_constants
@@ -2272,9 +2272,7 @@ def create_from_onboarding_data(
     onboarding_data: offerers_serialize.SaveNewOnboardingDataQueryModel,
 ) -> models.UserOfferer:
     # Get name (raison sociale) from Sirene API
-    siret_info = find_siret_info(onboarding_data.siret)
-    if not siret_info.active:
-        raise exceptions.InactiveSirenException()
+    siret_info = find_structure_data(onboarding_data.siret)
     name = siret_info.name
 
     # Create Offerer or attach user to existing Offerer
@@ -3362,23 +3360,72 @@ def is_allowed_on_adage(offerer_id: int) -> bool:
     return db.session.query(query.exists()).scalar()
 
 
-def find_siret_info(search_input: str) -> sirene_models.SiretInfo:
+def find_structure_data(search_input: str) -> sirene_models.SiretInfo:
     data = api_entreprise.get_siret_open_data(search_input)
 
+    if not data.active:
+        raise offerers_exceptions.InactiveSirenException("Ce SIRET n'est pas actif.")
     if not FeatureToggle.WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE.is_active() and not data.diffusible:
         raise sirene_exceptions.NonPublicDataException()
 
-    # TODO: this part is to not introduce any breaking change, BAN address will be called here instead
-    insee_address = data.address
-    formatted_address = sirene_models.SireneAddress(
-        street=insee_address.street
-        if PROTECTED_DATA_PLACEHOLDER not in insee_address.street
-        else "Adresse non diffusée",
-        postal_code=insee_address.postal_code
-        if PROTECTED_DATA_PLACEHOLDER not in insee_address.postal_code
-        else insee_address.insee_code,
-        city=insee_address.city,
-        insee_code=insee_address.insee_code,
-    )
-    data.address = formatted_address
     return data
+
+
+def find_ban_address_from_insee_address(
+    diffusible: bool, insee_address: sirene_models.SireneAddress
+) -> offerers_schemas.AddressBodyModel | None:
+    try:
+        if diffusible:
+            # search for precise address in BAN database
+            address_to_query = f"{insee_address.street} {insee_address.postal_code} {insee_address.city}"
+            ban_address = api_adresse.find_ban_address(address=address_to_query, enforce_reliability=True)
+        else:
+            # search for imprecise address (municipality or locality centroid) in BAN database using publicly available info
+            postal_code_to_query = (  # postal_code is public info but still often masked in results
+                insee_address.postal_code
+                if api_entreprise.PROTECTED_DATA_PLACEHOLDER not in insee_address.postal_code
+                else None
+            )
+            insee_code_to_query = (  # limit search with insee_code if no postal_code is available
+                insee_address.insee_code
+                if (
+                    api_entreprise.PROTECTED_DATA_PLACEHOLDER not in insee_address.insee_code
+                    and postal_code_to_query is None
+                )
+                else None
+            )
+            ban_address = api_adresse.find_ban_city(
+                city=insee_address.city,
+                postal_code=postal_code_to_query,
+                insee_code=insee_code_to_query,
+                enforce_reliability=True,
+            )
+            if ban_address:
+                ban_address.street = geography_constants.NON_DISCLOSED_ADDRESS
+
+        return (
+            None
+            if ban_address is None
+            else offerers_schemas.AddressBodyModel(
+                isManualEdition=False,
+                banId=offerers_schemas.VenueBanId(ban_address.id),
+                city=offerers_schemas.VenueCity(ban_address.city),
+                inseeCode=offerers_schemas.VenueInseeCode(ban_address.citycode),
+                label=ban_address.label,
+                latitude=ban_address.latitude,
+                longitude=ban_address.longitude,
+                postalCode=offerers_schemas.VenuePostalCode(ban_address.postcode),
+                street=offerers_schemas.VenueAddress(ban_address.street),
+            )
+        )
+    except api_adresse.AdresseException:
+        logger.warning(
+            "No BAN address found corresponding to Insee address",
+            extra={
+                "insee_street": insee_address.street,
+                "insee_city": insee_address.city,
+                "insee_postal_code": insee_address.postal_code,
+                "insee_city_code": insee_address.insee_code,
+            },
+        )
+        return None

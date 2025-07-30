@@ -302,6 +302,34 @@ SEARCH_ADDRESS_RESPONSE_WITHOUT_POSTCODE = {
     "limit": 5,
 }
 
+ONE_MUNICIPALITY_FEATURE_RESPONSE = {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {"type": "Point", "coordinates": [-1.555335, 47.239367]},
+            "properties": {
+                "label": "Nantes",
+                "score": 0.9617872727272726,
+                "id": "44109",
+                "type": "municipality",
+                "name": "Nantes",
+                "postcode": "44000",
+                "citycode": "44109",
+                "x": 355581,
+                "y": 6692055.78,
+                "population": 325070,
+                "city": "Nantes",
+                "context": "44, Loire-Atlantique, Pays de la Loire",
+                "importance": 0.57966,
+                "municipality": "Nantes",
+            },
+        }
+    ],
+    "query": "NANTES",
+    "limit": 1,
+}
+
 SEARCH_CSV_HEADERS = [
     "venue_id",
     "venue_ban_id",
