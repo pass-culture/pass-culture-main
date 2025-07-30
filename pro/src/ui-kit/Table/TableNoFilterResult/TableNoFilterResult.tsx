@@ -9,12 +9,14 @@ import styles from './TableNoFilterResult.module.scss'
 interface NoResultsProps {
   colSpan: number
   message: string
+  resetMessage?: string
   resetFilters: () => void
 }
 
 export const TableNoFilterResult = ({
   colSpan = 1,
   message = 'Pas de résultat pour votre recherche',
+  resetMessage = 'Réinitialiser les filtres',
   resetFilters,
 }: NoResultsProps): JSX.Element => (
   <tr>
@@ -35,7 +37,7 @@ export const TableNoFilterResult = ({
           icon={fullRefresh}
           onClick={resetFilters}
         >
-          Réinitialiser les filtres
+          {resetMessage}
         </Button>
       </div>
     </td>
