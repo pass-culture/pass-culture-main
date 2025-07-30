@@ -18,11 +18,42 @@
 .table-separate {
   border-collapse: separate;
   border-spacing: 0 rem.torem(24px);
+
+  &-cell {
+    padding: rem.torem(8px);
+    text-align: left;
+  
+    border-top: 1px solid var(--color-border-subtle);
+    border-bottom: 1px solid var(--color-border-subtle);
+  
+    &:first-child {
+      border-left: 1px solid var(--color-border-subtle);
+      border-top-left-radius: var(--size-border-radius-m, 8px);
+      border-bottom-left-radius: var(--size-border-radius-m, 8px);
+    }
+  
+    &:last-child {
+      border-right: 1px solid var(--color-border-subtle);
+      border-top-right-radius: var(--size-border-radius-m, 8px);
+      border-bottom-right-radius: var(--size-border-radius-m, 8px);
+    }
+  }
 }
 
 .table-collapse {
   border-collapse: collapse;
   border-spacing: 0 rem.torem(24px);
+
+  &:last-child {
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  &-cell {
+    padding: rem.torem(8px);
+    text-align: left;
+  
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
 }
 
 .table-header {
@@ -73,27 +104,6 @@
   display: flex;
   margin: rem.torem(16px) 0;
   gap: rem.torem(8px);
-}
-
-.table-cell {
-  padding: rem.torem(8px);
-  text-align: left;
-
-  // Add visible border
-  border-top: 1px solid var(--color-border-subtle);
-  border-bottom: 1px solid var(--color-border-subtle);
-
-  &:first-child {
-    border-left: 1px solid var(--color-border-subtle);
-    border-top-left-radius: var(--size-border-radius-m, 8px);
-    border-bottom-left-radius: var(--size-border-radius-m, 8px);
-  }
-
-  &:last-child {
-    border-right: 1px solid var(--color-border-subtle);
-    border-top-right-radius: var(--size-border-radius-m, 8px);
-    border-bottom-right-radius: var(--size-border-radius-m, 8px);
-  }
 }
 
 .table-checkbox-label {
