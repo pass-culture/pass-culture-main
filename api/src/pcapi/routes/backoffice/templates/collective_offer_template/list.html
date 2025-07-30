@@ -1,9 +1,6 @@
 {% extends "layouts/list.html" %}
-{% import "components/badges.html" as badges with context %}
 {% from "components/forms.html" import build_filters_form_ng with context %}
-{% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
-{% from "components/connect_as.html" import build_connect_as_link %}
 {% set rows_count = rows|length %}
 {% block title %}Offres collectives vitrine{% endblock %}
 {% block search_block %}{{ build_filters_form_ng(form, dst) }}{% endblock %}
@@ -37,72 +34,7 @@
   <th>Offres du partenaire culturel</th>
 {% endblock %}
 {% block table_body %}
-  {% for collective_offer_template in rows %}
-    <tr>
-      <td>
-        <input type="checkbox"
-               class="form-check-input fs-6 mt-0"
-               name="pc-table-multi-select-check-{{ collective_offer_template.id }}"
-               data-id="{{ collective_offer_template.id }}" />
-      </td>
-      <td class="text-center">
-        {% if has_permission("PRO_FRAUD_ACTIONS")  and collective_offer_template.validation.value == "PENDING" %}
-          <div class="dropdown">
-            <button type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                    class="btn p-0 btn-outline-primary-subtle-bg border-0 px-2 py-1">
-              <i class="bi bi-three-dots-vertical"></i>
-            </button>
-            <ul class="dropdown-menu">
-              <li class="dropdown-item">
-                <a class="btn btn-sm d-block w-100 text-start px-3"
-                   data-bs-toggle="modal"
-                   data-bs-target="#validate-collective-offer-template-modal-{{ collective_offer_template.id }}">Valider l'offre vitrine</a>
-              </li>
-              <li class="dropdown-item">
-                <a class="btn btn-sm d-block w-100 text-start px-3"
-                   data-bs-toggle="modal"
-                   data-bs-target="#reject-collective-offer-template-modal-{{ collective_offer_template.id }}">Rejeter l'offre vitrine</a>
-              </li>
-            </ul>
-          </div>
-        {% endif %}
-      </td>
-      <td>{{ links.build_collective_offer_template_details_link(collective_offer_template, text_attr="id") }}</td>
-      <td>{{ build_connect_as_link(connect_as[collective_offer_template.id], collective_offer_template.name, "link-primary") }}</td>
-      <td>{{ collective_offer_template.formats | format_collective_offer_formats }}</td>
-      {% if has_permission("PRO_FRAUD_ACTIONS") %}
-        <td>{{ collective_offer_template.flaggingValidationRules | format_offer_validation_rule_list }}</td>
-      {% endif %}
-      <td>
-        {{ collective_offer_template.validation | format_offer_validation_status(with_badge=True) }}
-        {% if collective_offer_template.rejectionReason %}
-          <br />
-          {{ collective_offer_template.rejectionReason | format_collective_offer_rejection_reason }}
-        {% endif %}
-      </td>
-      <td>{{ links.build_pro_user_name_to_details_link(collective_offer_template.authorId ,collective_offer_template.author.full_name) }}</td>
-      <td>{{ collective_offer_template.dateCreated | format_date("%d/%m/%Y") }}</td>
-      <td>
-        {{ links.build_offerer_name_to_details_link(collective_offer_template.venue.managingOfferer) }}
-        {% call badges.badges_container() %}
-          {{ badges.build_offer_offerer_fraud_badges(collective_offer_template.venue.managingOfferer) }}
-        {% endcall %}
-      </td>
-      <td>
-        {{ links.build_venue_name_to_details_link(collective_offer_template.venue) }}
-        {% call badges.badges_container() %}
-          {{ badges.build_offer_venue_fraud_badges(collective_offer_template.venue) }}
-        {% endcall %}
-      </td>
-      <td>
-        <a href="{{ url_for('.list_collective_offer_templates', venue=collective_offer_template.venue.id) }}"
-           class="link-primary"
-           target="_blank">Voir toutes les offres</a>
-      </td>
-    </tr>
-  {% endfor %}
+  {% include 'collective_offer_template/list_rows.html' %}
 {% endblock %}
 {% block multi_select_menu %}
   <div class="counter-container text-nowrap">
