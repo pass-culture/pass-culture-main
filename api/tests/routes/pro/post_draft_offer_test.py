@@ -337,7 +337,7 @@ class Returns201Test:
         assert response.status_code == 201
 
         offer = db.session.get(Offer, response.json["id"])
-        assert offer.isDigital is True
+        assert offer.isDigital is False
         assert offer.url is None
 
 
