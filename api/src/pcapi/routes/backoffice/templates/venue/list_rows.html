@@ -1,0 +1,26 @@
+{% import "components/links.html" as links with context %}
+{% set can_edit = has_permission("MANAGE_PRO_ENTITY") %}
+{% for venue in rows %}
+  <tr>
+    {% if can_edit %}
+      <td>
+        <input type="checkbox"
+               class="form-check-input"
+               name="pc-table-multi-select-check-{{ venue.id }}"
+               data-id="{{ venue.id }}" />
+      </td>
+    {% endif %}
+    <td>{{ venue.id }}</td>
+    <td>{{ links.build_venue_name_to_details_link(venue) }}</td>
+    <td>{{ venue.publicName | empty_string_if_null }}</td>
+    <td>{{ links.build_offerer_name_to_details_link(venue.managingOfferer) }}</td>
+    <td>
+      {% if venue.isPermanent %}
+        <span class="visually-hidden">Partenaire culturel permanent</span><i class="bi bi-check-circle-fill"></i>
+      {% endif %}
+    </td>
+    <td>{{ venue.venueLabel.label }}</td>
+    <td>{{ venue.criteria | format_criteria }}</td>
+    <td>{{ venue.dateCreated | format_date }}</td>
+  </tr>
+{% endfor %}
