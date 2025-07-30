@@ -1,4 +1,4 @@
-import { GetIndividualOfferResponseModel, SubcategoryResponseModel } from "apiClient/v1"
+import type { GetIndividualOfferResponseModel, SubcategoryResponseModel } from "apiClient/v1"
 import { CATEGORY_STATUS } from "commons/core/Offers/constants"
 
 export const isOfferSubcategoryOnline = (offer: GetIndividualOfferResponseModel, subcategories: SubcategoryResponseModel[]): boolean => {
