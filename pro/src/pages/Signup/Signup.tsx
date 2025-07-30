@@ -9,7 +9,6 @@ export const Signup = () => {
   const isProAccountCreationEnabled = useActiveFeature(
     'ENABLE_PRO_ACCOUNT_CREATION'
   )
-  const is2025SignUpEnabled = useActiveFeature('WIP_2025_SIGN_UP')
 
   const location = useLocation()
 
@@ -21,10 +20,7 @@ export const Signup = () => {
   const mainHeading = mainHeadingsMap.get(location.pathname)
 
   return (
-    <Layout
-      layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}
-      mainHeading={mainHeading}
-    >
+    <Layout layout="sign-up" mainHeading={mainHeading}>
       {isProAccountCreationEnabled ? <Outlet /> : <SignupUnavailable />}
     </Layout>
   )

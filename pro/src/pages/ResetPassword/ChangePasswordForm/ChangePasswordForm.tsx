@@ -1,6 +1,5 @@
 import { useFormContext } from 'react-hook-form'
 
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useMediaQuery } from 'commons/hooks/useMediaQuery'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
@@ -22,7 +21,6 @@ type ChangePasswordFormProps = {
 export const ChangePasswordForm = ({
   onSubmit,
 }: ChangePasswordFormProps): JSX.Element => {
-  const is2025SignUpEnabled = useActiveFeature('WIP_2025_SIGN_UP')
   const isLaptopScreenAtLeast = useMediaQuery('(min-width: 64rem)')
 
   const {
@@ -52,52 +50,40 @@ export const ChangePasswordForm = ({
             hasError={!!errors.newPassword}
           />
         </div>
-        {is2025SignUpEnabled ? (
-          <>
-            <div className={styles['text-input']}>
-              <PasswordInput
-                label="Confirmez votre nouveau mot de passe"
-                error={errors.newConfirmationPassword?.message}
-                {...register('newConfirmationPassword')}
-              />
-            </div>
+        <div className={styles['text-input']}>
+          <PasswordInput
+            label="Confirmez votre nouveau mot de passe"
+            error={errors.newConfirmationPassword?.message}
+            {...register('newConfirmationPassword')}
+          />
+        </div>
 
-            <div className={styles['buttons-field']}>
-              <Button
-                type="submit"
-                className={styles['buttons']}
-                isLoading={isSubmitting}
-                disabled={isSubmitting}
-              >
-                Confirmer
-              </Button>
-            </div>
-            <aside className={styles['no-account']}>
-              <p className={styles['no-account-text']}>
-                Vous n’êtes pas à l’origine de cette demande ?
-              </p>
-              <ButtonLink
-                to="/connexion"
-                icon={iconFullNext}
-                variant={
-                  isLaptopScreenAtLeast
-                    ? ButtonVariant.TERNARY
-                    : ButtonVariant.QUATERNARY
-                }
-              >
-                Se connecter
-              </ButtonLink>
-            </aside>
-          </>
-        ) : (
+        <div className={styles['buttons-field']}>
           <Button
             type="submit"
-            className={styles['validation-button']}
+            className={styles['buttons']}
             isLoading={isSubmitting}
+            disabled={isSubmitting}
           >
-            Valider
+            Confirmer
           </Button>
-        )}
+        </div>
+        <aside className={styles['no-account']}>
+          <p className={styles['no-account-text']}>
+            Vous n’êtes pas à l’origine de cette demande ?
+          </p>
+          <ButtonLink
+            to="/connexion"
+            icon={iconFullNext}
+            variant={
+              isLaptopScreenAtLeast
+                ? ButtonVariant.TERNARY
+                : ButtonVariant.QUATERNARY
+            }
+          >
+            Se connecter
+          </ButtonLink>
+        </aside>
       </FormLayout>
     </form>
   )

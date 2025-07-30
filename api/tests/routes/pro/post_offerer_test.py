@@ -98,8 +98,7 @@ def test_user_can_create_rejected_offerer_again(client):
     assert user_offerer.isValidated
 
 
-@pytest.mark.features(WIP_2025_SIGN_UP=True)
-def test_user_can_create_offerer_with_phone_number(client):
+def test_user_can_create_offerer(client):
     pro = users_factories.ProFactory(phoneNumber=None)
 
     body = {

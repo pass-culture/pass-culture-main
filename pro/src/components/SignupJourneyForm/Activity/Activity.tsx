@@ -12,7 +12,6 @@ import {
   useSignupJourneyContext,
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { FORM_ERROR_MESSAGE } from 'commons/core/shared/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
@@ -28,7 +27,6 @@ import { validationSchema } from './validationSchema'
 export const Activity = (): JSX.Element => {
   const notify = useNotification()
   const navigate = useNavigate()
-  const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
   const { activity, setActivity } = useSignupJourneyContext()
 
   const { data: venueTypes, isLoading } = useSWR(
@@ -61,8 +59,8 @@ export const Activity = (): JSX.Element => {
   const methods = useForm({
     defaultValues: activity
       ? serializeActivityContext(activity)
-      : defaultActivityFormValues(isNewSignupEnabled),
-    resolver: yupResolver(validationSchema(isNewSignupEnabled)),
+      : defaultActivityFormValues,
+    resolver: yupResolver(validationSchema),
   })
 
   const serializeActivityFormToSubmit = (

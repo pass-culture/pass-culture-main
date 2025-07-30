@@ -2,7 +2,6 @@ import { useRef } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import { VenueTypeResponseModel } from 'apiClient/v1'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -27,7 +26,7 @@ export interface ActivityFormValues {
     individual: boolean
     educational: boolean
   }
-  phoneNumber: string | undefined
+  phoneNumber: string
 }
 
 export interface ActivityFormProps {
@@ -46,7 +45,6 @@ export const ActivityForm = ({
   })
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
-  const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
   const venueTypesOptions = buildVenueTypesOptions(venueTypes)
   const watchSocialUrls = watch('socialUrls')
 
@@ -69,16 +67,14 @@ export const ActivityForm = ({
         />
       </FormLayout.Row>
 
-      {isNewSignupEnabled && (
-        <FormLayout.Row>
-          <PhoneNumberInput
-            {...register('phoneNumber')}
-            error={formState.errors.phoneNumber?.message}
-            label={'Téléphone (utilisé uniquement par le pass Culture)'}
-            required
-          />
-        </FormLayout.Row>
-      )}
+      <FormLayout.Row>
+        <PhoneNumberInput
+          {...register('phoneNumber')}
+          error={formState.errors.phoneNumber?.message}
+          label={'Téléphone (utilisé uniquement par le pass Culture)'}
+          required
+        />
+      </FormLayout.Row>
 
       <FormLayout.Row mdSpaceAfter>
         {fields.map((field, index) => (

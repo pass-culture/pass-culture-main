@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import cn from 'classnames'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
@@ -9,7 +8,6 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from 'commons/core/shared/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
 import { useMediaQuery } from 'commons/hooks/useMediaQuery'
 import { useNotification } from 'commons/hooks/useNotification'
@@ -22,7 +20,6 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-import { Hero } from 'ui-kit/Hero/Hero'
 
 import styles from './LostPassword.module.scss'
 import { validationSchema } from './validationSchema'
@@ -37,7 +34,6 @@ export const LostPassword = (): JSX.Element => {
   const [email, setEmail] = useState<string>('')
   useRedirectLoggedUser()
   useInitReCaptcha()
-  const is2025SignUpEnabled = useActiveFeature('WIP_2025_SIGN_UP')
   const isLaptopScreenAtLeast = useMediaQuery('(min-width: 64rem)')
 
   const notification = useNotification()
@@ -71,45 +67,23 @@ export const LostPassword = (): JSX.Element => {
     return api.resetPassword({ token, email: email })
   }
 
-  const successComponent = is2025SignUpEnabled ? (
-    <section className={styles['change-password-request-success']}>
-      <p className={styles['change-password-request-success-body']}>
-        Cliquez sur le lien envoyé par email à <b>{email}</b>
-      </p>
-      <ReSendEmailCallout action={() => sendChangePasswordRequest(email)} />
-    </section>
-  ) : (
-    <Hero
-      linkLabel="Retourner sur la page de connexion"
-      linkTo="/"
-      text="Vous allez recevoir par email les instructions pour définir un nouveau mot de passe."
-      title="Validez votre adresse email"
-    />
-  )
-
   const mainHeading = email
-    ? is2025SignUpEnabled
-      ? 'Vous allez recevoir un email'
-      : ''
+    ? 'Vous allez recevoir un email'
     : 'Réinitialisez votre mot de passe'
 
   return (
-    <Layout
-      layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}
-      mainHeading={mainHeading}
-    >
+    <Layout layout="sign-up" mainHeading={mainHeading}>
       {email ? (
-        successComponent
+        <section className={styles['change-password-request-success']}>
+          <p className={styles['change-password-request-success-body']}>
+            Cliquez sur le lien envoyé par email à <b>{email}</b>
+          </p>
+          <ReSendEmailCallout action={() => sendChangePasswordRequest(email)} />
+        </section>
       ) : (
-        <section
-          className={cn(styles['change-password-request-form'], {
-            [styles['change-password-request-form-old']]: !is2025SignUpEnabled,
-          })}
-        >
+        <section className={styles['change-password-request-form']}>
           <p className={styles['subtitle']}>
-            {is2025SignUpEnabled
-              ? 'Entrez votre email pour recevoir un lien de réinitialisation.'
-              : 'Indiquez ci-dessous l’adresse email avec laquelle vous avez créé votre compte.'}
+            Entrez votre email pour recevoir un lien de réinitialisation.
           </p>
           <form onSubmit={handleSubmit(submitChangePasswordRequest)}>
             <FormLayout>
@@ -130,25 +104,23 @@ export const LostPassword = (): JSX.Element => {
                   className={styles['validation-button']}
                   variant={ButtonVariant.PRIMARY}
                 >
-                  {is2025SignUpEnabled ? 'Réinitialiser' : 'Valider'}
+                  Réinitialiser
                 </Button>
               </FormLayout.Row>
-              {is2025SignUpEnabled && (
-                <FormLayout.Row>
-                  <ButtonLink
-                    to="/connexion"
-                    className={styles['back-button']}
-                    variant={
-                      isLaptopScreenAtLeast
-                        ? ButtonVariant.TERNARY
-                        : ButtonVariant.QUATERNARY
-                    }
-                    icon={fullNextIcon}
-                  >
-                    Retour à la connexion
-                  </ButtonLink>
-                </FormLayout.Row>
-              )}
+              <FormLayout.Row>
+                <ButtonLink
+                  to="/connexion"
+                  className={styles['back-button']}
+                  variant={
+                    isLaptopScreenAtLeast
+                      ? ButtonVariant.TERNARY
+                      : ButtonVariant.QUATERNARY
+                  }
+                  icon={fullNextIcon}
+                >
+                  Retour à la connexion
+                </ButtonLink>
+              </FormLayout.Row>
             </FormLayout>
           </form>
         </section>

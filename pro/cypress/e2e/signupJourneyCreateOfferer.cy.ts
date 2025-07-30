@@ -52,8 +52,7 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     )
     cy.setFeatureFlags([
       { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
-      { name: 'WIP_2025_SIGN_UP', isActive: false },
-      { name: 'WIP_2025_AUTOLOGIN', isActive: false },
+      { name: 'WIP_2025_AUTOLOGIN', isActive: true },
     ])
   })
 
@@ -90,6 +89,7 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.stepLog({ message: 'I fill activity form without target audience' })
     cy.url().should('contain', '/parcours-inscription/activite')
     cy.findByLabelText('Activité principale *').select('Spectacle vivant')
+    cy.findByLabelText('Numéro de téléphone').type('612345678')
     cy.findByText('Étape suivante').click()
     cy.findByText('Veuillez sélectionner une des réponses ci-dessus')
 
@@ -129,6 +129,7 @@ describe('Signup journey with known offerer...', () => {
   let mySiret: string
 
   beforeEach(() => {
+    cy.visit('/')
     cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
       'createOfferer'
     )
@@ -153,8 +154,7 @@ describe('Signup journey with known offerer...', () => {
     }).as('venuesSiret')
     cy.setFeatureFlags([
       { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
-      { name: 'WIP_2025_SIGN_UP', isActive: false },
-      { name: 'WIP_2025_AUTOLOGIN', isActive: false },
+      { name: 'WIP_2025_AUTOLOGIN', isActive: true },
     ])
   })
 
@@ -180,8 +180,7 @@ describe('Signup journey with known offerer...', () => {
       )
       cy.setFeatureFlags([
         { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
-        { name: 'WIP_2025_SIGN_UP', isActive: false },
-        { name: 'WIP_2025_AUTOLOGIN', isActive: false },
+        { name: 'WIP_2025_AUTOLOGIN', isActive: true },
       ])
     })
 
@@ -218,6 +217,7 @@ describe('Signup journey with known offerer...', () => {
       cy.stepLog({ message: 'I fill completely activity form' })
       cy.url().should('contain', '/parcours-inscription/activite')
       cy.findByLabelText('Activité principale *').select('Spectacle vivant')
+      cy.findByLabelText('Numéro de téléphone').type('612345678')
       cy.findByText('Au grand public').click()
       cy.findByText('Étape suivante').click()
 
@@ -260,8 +260,7 @@ describe('Signup journey with known offerer...', () => {
       cy.intercept({ method: 'POST', url: '/offerers' }).as('postOfferers')
       cy.setFeatureFlags([
         { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
-        { name: 'WIP_2025_SIGN_UP', isActive: false },
-        { name: 'WIP_2025_AUTOLOGIN', isActive: false },
+        { name: 'WIP_2025_AUTOLOGIN', isActive: true },
       ])
     })
 
@@ -313,6 +312,7 @@ describe('Signup journey with known offerer...', () => {
       cy.findByLabelText('Activité principale *').select(
         'Sélectionnez votre activité principale'
       ) // No activity selected
+      cy.findByLabelText('Numéro de téléphone').type('612345678')
       cy.findByText('Au grand public').click()
       cy.findByText('Étape suivante').click()
       cy.findByTestId('error-venueTypeCode').contains(
@@ -395,7 +395,6 @@ function goToOffererCreation(login: string) {
   logInAndGoToPage(login, '/')
 
   cy.stepLog({ message: 'I start offerer creation' })
-  cy.findByText('Commencer').click()
 }
 
 function siretInterceptionPayload(
