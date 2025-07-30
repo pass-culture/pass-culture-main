@@ -70,7 +70,6 @@ describe('ActionsBar', () => {
       canDeactivate: true,
       selectedOffers: offerIds,
       clearSelectedOffers: vi.fn(),
-      toggleSelectAllCheckboxes: vi.fn(),
       areAllOffersSelected: false,
     }
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({

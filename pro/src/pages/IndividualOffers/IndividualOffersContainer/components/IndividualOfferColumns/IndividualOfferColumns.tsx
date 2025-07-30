@@ -35,9 +35,7 @@ export function getIndividualOfferColumns(
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
         })
 
-        return (
-          <OfferNameCell offer={offer} offerLink={offerLink} displayThumb />
-        )
+        return <OfferNameCell offer={offer} offerLink={offerLink} />
       },
     },
     {
