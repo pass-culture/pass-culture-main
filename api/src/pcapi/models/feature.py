@@ -118,7 +118,6 @@ class FeatureToggle(enum.Enum):
     VENUE_REGULARIZATION = "Déplacement de n'importe quelle offre vers une autre venue"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
     WIP_2025_AUTOLOGIN = "Activer l’autologin par lien lors de l’inscription au portail pro"
-    WIP_2025_SIGN_UP = "Activer la nouvelle interface d’inscription au portail pro"
     WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE = "Activer l'inscription de structures en diffusion partielle"
     WIP_ADD_VIDEO = "Permettre aux pros d'avoir des vidéos sur leurs offres"
     WIP_ASYNCHRONOUS_CELERY_MAILS = (

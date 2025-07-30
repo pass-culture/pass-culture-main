@@ -1089,7 +1089,7 @@ def create_offerer(
     # keep commit with repository.save() as long as siren is validated in pcapi.validation.models.offerer
     repository.save(offerer)
 
-    if FeatureToggle.WIP_2025_SIGN_UP.is_active() and offerer_informations.phoneNumber:
+    if offerer_informations.phoneNumber:
         users_repository.fill_phone_number_on_all_users_offerer_without_any(
             offerer.id, offerer_informations.phoneNumber
         )
