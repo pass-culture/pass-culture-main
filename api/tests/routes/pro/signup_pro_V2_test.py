@@ -211,7 +211,7 @@ class Returns400Test:
         assert user.firstName == "Toto"
         assert not user.has_admin_role
         assert user.lastName == "Pro"
-        assert user.phoneNumber == "+33102030405"
+        assert user.phoneNumber == None
         assert user.dateOfBirth is None
         assert user.dateCreated is not None
         assert user.notificationSubscriptions == {
@@ -249,7 +249,7 @@ class Returns400Test:
         assert user.firstName == "Toto"
         assert not user.has_admin_role
         assert user.lastName == "Pro"
-        assert user.phoneNumber == "+33102030405"
+        assert user.phoneNumber == None
         assert user.dateOfBirth is None
         assert user.dateCreated is not None
         assert user.notificationSubscriptions == {
