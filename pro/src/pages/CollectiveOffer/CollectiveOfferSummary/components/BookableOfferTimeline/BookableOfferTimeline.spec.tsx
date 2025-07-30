@@ -1,17 +1,20 @@
 import { screen } from '@testing-library/react'
 
 import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
-import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
+import {
+  getCollectiveOfferBookingFactory,
+  getCollectiveOfferFactory,
+} from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { BookableOfferTimeline } from './BookableOfferTimeline'
 
 describe('BookableOfferTimeline', () => {
-  it("should render the 'Suivi de l'offre' title", () => {
+  it("should render the 'Suivi de l’offre' title", () => {
     renderWithProviders(
       <BookableOfferTimeline offer={getCollectiveOfferFactory()} />
     )
-    expect(screen.getByText("Suivi de l'offre")).toBeInTheDocument()
+    expect(screen.getByText('Suivi de l’offre')).toBeInTheDocument()
   })
 
   it.each([
@@ -65,6 +68,7 @@ describe('BookableOfferTimeline', () => {
       renderWithProviders(
         <BookableOfferTimeline
           offer={getCollectiveOfferFactory({
+            booking: getCollectiveOfferBookingFactory(),
             history: {
               past:
                 status === CollectiveOfferDisplayedStatus.EXPIRED
@@ -260,6 +264,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
     renderWithProviders(
       <BookableOfferTimeline
         offer={getCollectiveOfferFactory({
+          booking: getCollectiveOfferBookingFactory(),
           history: {
             past: [
               {
