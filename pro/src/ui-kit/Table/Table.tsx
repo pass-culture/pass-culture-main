@@ -17,6 +17,7 @@ export enum TableVariant {
 
 type NoResultProps = {
   message: string
+  resetMessage?: string
   onFilterReset: () => void
 }
 
@@ -266,6 +267,7 @@ export function Table<
             <TableNoFilterResult
               colSpan={columns.length + (selectable ? 1 : 0)}
               message={noResult.message}
+              resetMessage={noResult.resetMessage}
               resetFilters={noResult.onFilterReset}
             />
           )}
