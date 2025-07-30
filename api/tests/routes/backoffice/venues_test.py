@@ -2748,9 +2748,13 @@ class GetBatchEditVenuesFormTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_get_empty_batch_edit_venues_form(self, legit_user, authenticated_client):
-        with assert_num_queries(2):  # session + current user
-            response = authenticated_client.get(url_for(self.endpoint))
-            assert response.status_code == 200
+        response = authenticated_client.get(url_for(self.endpoint))
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": ""},
+            expected_num_queries=2,  # session + current user
+        )
+        assert response.status_code == 200
 
     def test_get_edit_batch_venues_form_with_ids(self, legit_user, authenticated_client, criteria):
         venues = [
@@ -2758,12 +2762,11 @@ class GetBatchEditVenuesFormTest(PostEndpointHelper):
             offerers_factories.VenueFactory(criteria=criteria[1:]),
         ]
 
-        form_data = {
-            "object_ids": ",".join(str(venue.id) for venue in venues),
-        }
-
-        # session + current user + criteria
-        response = self.post_to_endpoint(authenticated_client, form=form_data, expected_num_queries=3)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": ",".join(str(venue.id) for venue in venues)},
+            expected_num_queries=3,  # session + current user + criteria
+        )
         assert response.status_code == 200
 
         autocomplete_select = html_parser.get_soup(response.data).find(
@@ -2788,10 +2791,8 @@ class BatchEditVenuesTest(PostEndpointHelper):
         }
 
         response = self.post_to_endpoint(authenticated_client, form=form_data)
-        assert response.status_code == 303
-
-        redirected_response = authenticated_client.get(response.location)
-        assert "L'un des identifiants sélectionnés est invalide" in html_parser.extract_alert(redirected_response.data)
+        assert response.status_code == 200
+        assert len(response.data) == 0
 
     @pytest.mark.parametrize("is_permanent", [True, False])
     def test_batch_edit_venues_two_checkboxes(self, legit_user, authenticated_client, is_permanent):
@@ -2805,14 +2806,7 @@ class BatchEditVenuesTest(PostEndpointHelper):
         }
 
         response = self.post_to_endpoint(authenticated_client, form=form_data)
-        assert response.status_code == 303
-
-        redirected_response = authenticated_client.get(response.location)
-        assert (
-            "Impossible de passer tous les partenaires culturels en permanents et non permanents"
-            in html_parser.extract_alert(redirected_response.data)
-        )
-
+        assert response.status_code == 200
         assert venue.isPermanent is is_permanent  # unchanged
 
     @pytest.mark.parametrize("set_permanent", [True, False])
@@ -2845,7 +2839,12 @@ class BatchEditVenuesTest(PostEndpointHelper):
         }
 
         response = self.post_to_endpoint(authenticated_client, form=form_data)
-        assert response.status_code == 303
+        assert response.status_code == 200
+
+        for venue in venues:
+            row = html_parser.get_tag(response.data, tag="tr", id=f"venue-row-{venue.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[1] == str(venue.id)
 
         assert set(venues[0].criteria) == {criteria[0], new_criterion}  # 1 kept, 1 removed, 1 added
         assert venues[0].isPermanent is set_permanent
@@ -2877,7 +2876,11 @@ class BatchEditVenuesTest(PostEndpointHelper):
         }
 
         response = self.post_to_endpoint(authenticated_client, form=form_data)
-        assert response.status_code == 303
+        assert response.status_code == 200
+
+        row = html_parser.get_tag(response.data, tag="tr", id=f"venue-row-{venues[0].id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[1] == str(venues[0].id)
 
         assert set(venues[0].criteria) == {criteria[0], new_criterion}
 
@@ -2910,7 +2913,11 @@ class BatchEditVenuesTest(PostEndpointHelper):
         }
 
         response = self.post_to_endpoint(authenticated_client, form=form_data)
-        assert response.status_code == 303
+        assert response.status_code == 200
+
+        row = html_parser.get_tag(response.data, tag="tr", id=f"venue-row-{venue.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[1] == str(venue.id)
 
         assert venue.isPermanent is set_permanent
 

@@ -1,8 +1,9 @@
 {% extends "layouts/list.html" %}
 {% from "components/forms.html" import build_filters_form_ng with context %}
-{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
 {% set can_edit = has_permission("MANAGE_PRO_ENTITY") %}
 {% set rows_count = rows|length %}
+{% set table_id = "venues-table" %}
 {% block title %}Actions sur les partenaires culturels{% endblock %}
 {% block search_block %}{{ build_filters_form_ng(form, dst) }}{% endblock %}
 {% block table_header %}
@@ -48,14 +49,13 @@
     <button disabled
             type="button"
             class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap"
-            data-modal-selector="#batch-edit-venues-modal"
-            data-mode="fetch"
-            data-fetch-url="{{ url_for('backoffice_web.venue.get_batch_edit_venues_form') }}"
-            data-use-confirmation-modal="true">Éditer les partenaires culturels</button>
+            data-bs-toggle="modal"
+            data-bs-target="#batch-edit-venues-modal"
+            data-use-dynamic-modal="true">Éditer les partenaires culturels</button>
   </div>
 {% endblock %}
 {% block after_table %}
   {% if can_edit %}
-    {{ build_lazy_modal(url_for('backoffice_web.venue.get_batch_edit_venues_form') , "batch-edit-venues-modal", "true") }}
+    {{ build_dynamic_modal(url_for('backoffice_web.venue.get_batch_edit_venues_form') , "batch-edit-venues-modal", form="form-ids-" + table_name, method="post") }}
   {% endif %}
 {% endblock %}

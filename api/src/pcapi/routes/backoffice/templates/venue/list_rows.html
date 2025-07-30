@@ -1,7 +1,7 @@
 {% import "components/links.html" as links with context %}
 {% set can_edit = has_permission("MANAGE_PRO_ENTITY") %}
 {% for venue in rows %}
-  <tr>
+  <tr id="venue-row-{{ venue.id }}">
     {% if can_edit %}
       <td>
         <input type="checkbox"

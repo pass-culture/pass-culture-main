@@ -75,8 +75,8 @@ def _can_edit_siret() -> bool:
     return utils.has_current_user_permission(perm_models.Permissions.MOVE_SIRET)
 
 
-def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
-    base_query = db.session.query(offerers_models.Venue).options(
+def _get_venues_base_query() -> sa_orm.Query:
+    return db.session.query(offerers_models.Venue).options(
         sa_orm.load_only(
             offerers_models.Venue.id,
             offerers_models.Venue.name,
@@ -88,6 +88,10 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
         sa_orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
         sa_orm.joinedload(offerers_models.Venue.venueLabel).load_only(offerers_models.VenueLabel.label),
     )
+
+
+def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
+    base_query = _get_venues_base_query()
 
     if form.q.data:
         search_query = form.q.data
@@ -139,6 +143,19 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
         base_query = base_query.order_by(getattr(getattr(offerers_models.Venue, "id"), form.order.data)())
     # +1 to check if there are more results than requested
     return base_query.limit(form.limit.data + 1).all()
+
+
+def _render_venues(venues_ids: list[int] | None = None) -> utils.BackofficeResponse:
+    rows = []
+
+    if venues_ids:
+        query = _get_venues_base_query()
+        rows = query.filter(offerers_models.Venue.id.in_(venues_ids)).all()
+
+    return render_template(
+        "venue/list_rows.html",
+        rows=rows,
+    )
 
 
 def get_venue(venue_id: int) -> sa.engine.Row:
@@ -898,7 +915,7 @@ def comment_venue(venue_id: int) -> utils.BackofficeResponse:
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
 
-@venue_blueprint.route("/batch-edit-form", methods=["GET", "POST"])
+@venue_blueprint.route("/batch-edit-form", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def get_batch_edit_venues_form() -> utils.BackofficeResponse:
     form = forms.BatchEditVenuesForm()
@@ -925,7 +942,8 @@ def get_batch_edit_venues_form() -> utils.BackofficeResponse:
             form.criteria.choices = [(criterion.id, criterion.name) for criterion in criteria]
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#venues-table",
         form=form,
         dst=url_for(".batch_edit_venues"),
         div_id="batch-edit-venues-modal",
@@ -941,7 +959,7 @@ def batch_edit_venues() -> utils.BackofficeResponse:
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
-        return redirect(request.referrer or url_for(".list_venues"), code=303)
+        return _render_venues()
 
     venues = (
         db.session.query(offerers_models.Venue)
@@ -972,7 +990,7 @@ def batch_edit_venues() -> utils.BackofficeResponse:
     )
 
     flash("Les partenaires culturels ont été modifiés", "success")
-    return redirect(request.referrer or url_for(".list_venues"), code=303)
+    return _render_venues(form.object_ids_list)
 
 
 def _update_venues_criteria(
