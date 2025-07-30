@@ -6,8 +6,8 @@ from datetime import timedelta
 import jwt
 from psycopg2.extras import DateTimeRange
 
-from pcapi.core.educational import exceptions as educational_exceptions
-from pcapi.core.educational.models import AdageFrontRoles
+from pcapi.core.educational import exceptions
+from pcapi.core.educational import models
 from pcapi.core.users.utils import ALGORITHM_RS_256
 from pcapi.utils import requests
 
@@ -27,7 +27,7 @@ def get_hashed_user_id(email: str) -> str:
 
 def log_information_for_data_purpose(
     event_name: str,
-    user_role: AdageFrontRoles | None,
+    user_role: models.AdageFrontRoles | None,
     user_email: str | None = None,
     extra_data: dict | None = None,
     uai: str | None = None,
@@ -80,7 +80,7 @@ def create_adage_jwt_fake_valid_token(readonly: bool, can_prebook: bool = True) 
 def get_image_from_url(url: str) -> bytes:
     response = requests.get(url)
     if response.status_code != 200:
-        raise educational_exceptions.CantGetImageFromUrl
+        raise exceptions.CantGetImageFromUrl
     return response.content
 
 
@@ -96,3 +96,30 @@ def get_non_empty_date_time_range(start: datetime, end: datetime) -> DateTimeRan
         new_end = end
 
     return DateTimeRange(start, new_end)
+
+
+def get_collective_offer_full_address(offer: models.CollectiveOffer | models.CollectiveOfferTemplate) -> str | None:
+    match offer.locationType:
+        case models.CollectiveLocationType.SCHOOL:
+            return "En établissement scolaire"
+
+        case models.CollectiveLocationType.ADDRESS:
+            assert offer.offererAddress is not None
+
+            address = offer.offererAddress.address.fullAddress
+
+            if offer.offererAddressId == offer.venue.offererAddressId:
+                label = offer.venue.common_name
+            else:
+                label = offer.offererAddress.label
+
+            if label:
+                address = f"{label} - {address}"
+
+            return address
+
+        case models.CollectiveLocationType.TO_BE_DEFINED:
+            return "À déterminer avec l'enseignant"
+
+        case _:
+            return None
