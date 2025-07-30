@@ -77,9 +77,20 @@ jobs:
 
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
+        id: "google-auth"
         with:
+          create_credentials_file: true
+          token_format: "access_token"
           service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
           workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: "Docker login"
+        id: "docker-login"
+        uses: "docker/login-action@v3"
+        with:
+          registry: "europe-west1-docker.pkg.dev"
+          username: "oauth2accesstoken"
+          password: "${{ steps.google-auth.outputs.access_token }}"
 
       - name: Authenticate through github app ghactionci
         uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2.0.6
@@ -94,6 +105,7 @@ jobs:
             pass-culture-main
             rendered-manifests
             pc-connect
+            pc-render-manifests
           permission-contents: write
 
       - name: "Connect to cluster"
@@ -121,7 +133,7 @@ jobs:
           PCAPI_SECRETS=$(echo $PCAPI_SECRETS | xargs -n1 | sort | xargs)
           #Transform list into helm readable parameter list (pattern: --set secrets={item1,item2,item3})
           PCAPI_SECRETS=secrets={$(echo $PCAPI_SECRETS | sed -r 's/ /,/g')}
-          echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
+          echo "PCAPI_SECRETS=$PCAPI_SECRETS" | tee -a "$GITHUB_OUTPUT"
 
       # Checkout pass-culture-deployment repository containing pcapi helm value files
       - uses: actions/checkout@v4
@@ -142,31 +154,34 @@ jobs:
           git pull -r
           git push origin master
 
-      - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
+      - name: "Setup helmfile"
+        uses: mamezou-tech/setup-helmfile@v2.1.0
         with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+          helmfile-version: "v1.1.3"
 
       # Executes helmfile templating and push results to render-manifests repository
-      - name: "Generate and push rendered manifests"
-        uses: pass-culture/common-workflows/actions/render-push-manifests@render-push-manifests/v3.3.0
+      - name: "Setup pc-render-manifests"
+        uses: pass-culture/common-workflows/actions/setup-pc-render-manifests@setup-pc-render-manifests/v0.1.0
         with:
-          environment: ${{ inputs.environment }}
-          app_name: pcapi
-          app_version: ${{ inputs.app_version }}
-          additional_args: ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
-          registry_workload_identity_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-          registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-          api_token_github: ${{ steps.github-token.outputs.token }}
-          chart_values_repository: ""
-          helmfile_path: "./pass-culture-deployment/helm/pcapi"
+          token: ${{ steps.github-token.outputs.token }}
+          version: "v0.7.1"
 
-      - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
-        with:
-          service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
-          workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
+      - name: "Generate and push rendered manifests"
+        env:
+          GITHUB_USERNAME: x-access-token
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+        run: |
+          pc-render-manifests render \
+            -a pcapi \
+            -e ${{ inputs.environment }} \
+            --sourceRepoURL https://github.com/pass-culture/pass-culture-deployment.git \
+            --sourcePath helm/pcapi \
+            --sourceRepoRef master \
+            --additionalArg "--set ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}" \
+            --commitMsg "${{ inputs.app_name }}(${{ inputs.environment }}) : manifests for app_version=${{ inputs.app_version }}" \
+            --clean=false \
+            --push \
+            --silent
 
       - name: "Connect to cluster"
         uses: pass-culture/common-workflows/actions/pc-k8s-connect@pc-k8s-connect/v0.2.0
