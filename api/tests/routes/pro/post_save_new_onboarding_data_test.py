@@ -194,8 +194,7 @@ class Returns200Test:
         assert created_venue.adageId is not None
         assert created_venue.adageInscriptionDate is not None
 
-    @pytest.mark.features(WIP_2025_SIGN_UP=True)
-    def test_user_can_create_offerer_with_phone_number(self, client):
+    def test_user_can_create_offerer(self, client):
         pro = users_factories.ProFactory(phoneNumber=None)
 
         body = {**REQUEST_BODY, **{"phoneNumber": "0123456789"}}
@@ -210,7 +209,6 @@ class Returns200Test:
         pro = db.session.query(users_models.User).filter_by(id=pro.id).one()
         assert pro.phoneNumber == "+33123456789"
 
-    @pytest.mark.features(WIP_2025_SIGN_UP=True)
     def test_user_can_create_offerer_without_phone_number(self, client):
         pro = users_factories.ProFactory(phoneNumber=None)
 
