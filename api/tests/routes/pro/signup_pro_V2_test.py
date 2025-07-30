@@ -13,7 +13,7 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 
 
-BASE_DATA_PRO_WITHOUT_PHONE = {
+BASE_DATA_PRO = {
     "email": "toto_pro@example.com",
     "firstName": "Toto",
     "lastName": "Pro",
@@ -21,9 +21,6 @@ BASE_DATA_PRO_WITHOUT_PHONE = {
     "contactOk": False,
     "token": "token",
 }
-
-BASE_DATA_PRO = BASE_DATA_PRO_WITHOUT_PHONE.copy()
-BASE_DATA_PRO["phoneNumber"] = "0102030405"
 
 private_key = rsa.generate_private_key(public_exponent=3, key_size=1024)
 public_key = private_key.public_key()
@@ -41,53 +38,12 @@ public_pem_file = public_key.public_bytes(
 
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:
-    def test_when_user_data_is_valid(self, client):
-        # Given
-        data = BASE_DATA_PRO.copy()
-
-        # When
-        response = client.post("/users/signup", json=data)
-
-        # Then
-        assert response.status_code == 204
-        assert "Set-Cookie" not in response.headers
-
-        user = db.session.query(User).filter_by(email="toto_pro@example.com").first()
-        assert user is not None
-        assert user.has_beneficiary_role is False
-        assert user.has_non_attached_pro_role is True
-        assert user.email == "toto_pro@example.com"
-        assert user.firstName == "Toto"
-        assert not user.has_admin_role
-        assert user.lastName == "Pro"
-        assert user.phoneNumber == "+33102030405"
-        assert user.dateOfBirth is None
-        assert user.dateCreated is not None
-        assert user.notificationSubscriptions == {
-            "marketing_push": True,
-            "marketing_email": False,
-            "subscribed_themes": [],
-        }
-
-        actions_list = (
-            db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.actionType).all()
-        )
-        assert len(actions_list) == 1
-        assert actions_list[0].actionType == history_models.ActionType.USER_CREATED
-        assert actions_list[0].authorUser == user
-        assert actions_list[0].user == user
-
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0]["To"] == user.email
-        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.SIGNUP_EMAIL_CONFIRMATION_TO_PRO.value)
-
     @pytest.mark.settings(
         PASSWORDLESS_LOGIN_PRIVATE_KEY=private_pem_file, PASSWORDLESS_LOGIN_PUBLIC_KEY=public_pem_file
     )
-    @pytest.mark.features(WIP_2025_SIGN_UP=True)
-    def test_when_user_data_is_valid_without_phone(self, client):
+    def test_when_user_data_is_valid(self, client):
         # Given
-        data = BASE_DATA_PRO_WITHOUT_PHONE.copy()
+        data = BASE_DATA_PRO.copy()
 
         # When
         response = client.post("/users/signup", json=data)
@@ -230,48 +186,6 @@ class Returns400Test:
         created_user = db.session.query(User).filter_by(email="toto_pro@example.com").first()
         assert created_user is None
 
-    def test_when_bad_format_phone_number(self, client):
-        # Given
-        data = BASE_DATA_PRO.copy()
-        data["phoneNumber"] = "abc 123"
-
-        # When
-        response = client.post("/users/signup", json=data)
-
-        # Then
-        assert response.status_code == 400
-        error = response.json
-        assert "phoneNumber" in error
-        assert "Le numéro de téléphone est invalide" in error["phoneNumber"]
-
-    def test_when_invalid_phone_number(self, client):
-        # Given
-        data = BASE_DATA_PRO.copy()
-        data["phoneNumber"] = "0873492896"
-
-        # When
-        response = client.post("/users/signup", json=data)
-
-        # Then
-        assert response.status_code == 400
-        error = response.json
-        assert "phoneNumber" in error
-        assert "Le numéro de téléphone est invalide" in error["phoneNumber"]
-
-    @pytest.mark.features(WIP_2025_SIGN_UP=False)
-    def test_when_no_phone_number(self, client):
-        # Given
-        data = BASE_DATA_PRO_WITHOUT_PHONE.copy()
-
-        # When
-        response = client.post("/users/signup", json=data)
-
-        # Then
-        assert response.status_code == 400
-        error = response.json
-        assert "phoneNumber" in error
-        assert "Le numéro de téléphone est requis" in error["phoneNumber"]
-
     @pytest.mark.features(WIP_2025_AUTOLOGIN=True)
     @pytest.mark.settings(
         PASSWORDLESS_LOGIN_PRIVATE_KEY=private_pem_file, PASSWORDLESS_LOGIN_PUBLIC_KEY=public_pem_file
@@ -297,7 +211,7 @@ class Returns400Test:
         assert user.firstName == "Toto"
         assert not user.has_admin_role
         assert user.lastName == "Pro"
-        assert user.phoneNumber == "+33102030405"
+        assert user.phoneNumber == None
         assert user.dateOfBirth is None
         assert user.dateCreated is not None
         assert user.notificationSubscriptions == {
@@ -335,7 +249,7 @@ class Returns400Test:
         assert user.firstName == "Toto"
         assert not user.has_admin_role
         assert user.lastName == "Pro"
-        assert user.phoneNumber == "+33102030405"
+        assert user.phoneNumber == None
         assert user.dateOfBirth is None
         assert user.dateCreated is not None
         assert user.notificationSubscriptions == {
