@@ -1999,11 +1999,13 @@ def move_offer(
 
     # After offer is moved, price categories must remain linked to labels defined for the related venue.
     # Extra SQL queries to avoid multiplying the number of rows in case of many labels
+    db.session.flush()
     original_price_category_labels = {price_category.priceCategoryLabel for price_category in offer.priceCategories}
     labels_mapping = {
         price_category_label: _get_or_create_same_price_category_label(destination_venue, price_category_label)
         for price_category_label in original_price_category_labels
     }
+    db.session.flush()
     with transaction():
         # Use a different OA if the offer uses the venue's OA
         if offer.offererAddress and offer.offererAddress == original_venue.offererAddress:
