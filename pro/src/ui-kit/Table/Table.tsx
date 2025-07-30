@@ -285,10 +285,12 @@ export function Table<
                 >
                   {selectable && (
                     <td
-                      className={classNames(
-                        styles['table-checkbox-cell'],
-                        styles['table-cell']
-                      )}
+                      className={classNames(styles['table-checkbox-cell'], {
+                        [styles['table-separate-cell']]:
+                          variant === TableVariant.SEPARATE,
+                        [styles['table-collapse-cell']]:
+                          variant === TableVariant.COLLAPSE,
+                      })}
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Checkbox
@@ -319,7 +321,12 @@ export function Table<
                       : getValue(row, col.ordererField)
                     return (
                       <td
-                        className={styles['table-cell']}
+                        className={classNames({
+                          [styles['table-separate-cell']]:
+                            variant === TableVariant.SEPARATE,
+                          [styles['table-collapse-cell']]:
+                            variant === TableVariant.COLLAPSE,
+                        })}
                         key={`col-${index}`}
                         data-label={col.label}
                       >
