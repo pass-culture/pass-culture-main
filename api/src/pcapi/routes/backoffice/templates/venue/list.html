@@ -1,6 +1,5 @@
 {% extends "layouts/list.html" %}
 {% from "components/forms.html" import build_filters_form_ng with context %}
-{% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% set can_edit = has_permission("MANAGE_PRO_ENTITY") %}
 {% set rows_count = rows|length %}
@@ -35,30 +34,7 @@
   </th>
 {% endblock %}
 {% block table_body %}
-  {% for venue in rows %}
-    <tr>
-      {% if can_edit %}
-        <td>
-          <input type="checkbox"
-                 class="form-check-input"
-                 name="pc-table-multi-select-check-{{ venue.id }}"
-                 data-id="{{ venue.id }}" />
-        </td>
-      {% endif %}
-      <td>{{ venue.id }}</td>
-      <td>{{ links.build_venue_name_to_details_link(venue) }}</td>
-      <td>{{ venue.publicName | empty_string_if_null }}</td>
-      <td>{{ links.build_offerer_name_to_details_link(venue.managingOfferer) }}</td>
-      <td>
-        {% if venue.isPermanent %}
-          <span class="visually-hidden">Partenaire culturel permanent</span><i class="bi bi-check-circle-fill"></i>
-        {% endif %}
-      </td>
-      <td>{{ venue.venueLabel.label }}</td>
-      <td>{{ venue.criteria | format_criteria }}</td>
-      <td>{{ venue.dateCreated | format_date }}</td>
-    </tr>
-  {% endfor %}
+  {% include "venue/list_rows.html" %}
 {% endblock %}
 {% block multi_select_menu %}
   <div class="counter-container text-nowrap">
