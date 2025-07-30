@@ -118,6 +118,7 @@ def _move_individual_offers(origin_venue: offerers_models.Venue, destination_ven
     for offer in offer_list:
         offer_api.move_offer(offer, destination_venue)
         offer_ids.append(offer.id)
+        db.session.flush()
     logger.info(
         "Individual offers' venue has changed",
         extra={
@@ -301,6 +302,7 @@ def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int |
             try:
                 with atomic():
                     offers_repository.lock_stocks_for_venue(origin_venue_id)
+                    db.session.flush()
                     _move_individual_offers(origin_venue, destination_venue)
                     _move_collective_offers(origin_venue, destination_venue)
                     _move_collective_offer_template(origin_venue, destination_venue)
