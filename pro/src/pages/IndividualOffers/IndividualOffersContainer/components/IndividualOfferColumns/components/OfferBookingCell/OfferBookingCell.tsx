@@ -6,7 +6,7 @@ import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import waitFullIcon from 'icons/full-wait.svg'
-import styles from 'styles/components/Cells.module.scss'
+import styles from 'pages/IndividualOffers/IndividualOffersContainer/components/IndividualOfferColumns/components/Cells.module.scss'
 
 export type OfferBookingCellProps = {
   offer: ListOffersOfferResponseModel

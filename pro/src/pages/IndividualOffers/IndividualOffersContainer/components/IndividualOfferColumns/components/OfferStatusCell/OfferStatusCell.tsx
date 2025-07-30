@@ -9,7 +9,7 @@ import { StatusLabel } from 'components/StatusLabel/StatusLabel'
 import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import fullBoostedIcon from 'icons/full-boosted.svg'
 import waitFullIcon from 'icons/full-wait.svg'
-import styles from 'styles/components/Cells.module.scss'
+import styles from 'pages/IndividualOffers/IndividualOffersContainer/components/IndividualOfferColumns/components/Cells.module.scss'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 

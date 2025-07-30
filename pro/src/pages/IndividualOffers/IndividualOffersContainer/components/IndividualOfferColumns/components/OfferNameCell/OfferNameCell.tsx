@@ -1,4 +1,3 @@
-import classNames from 'classnames'
 import { Link } from 'react-router'
 
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
@@ -9,7 +8,7 @@ import { pluralize } from 'commons/utils/pluralize'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { Tag } from 'design-system/Tag/Tag'
 import fullErrorIcon from 'icons/full-error.svg'
-import styles from 'styles/components/Cells.module.scss'
+import styles from 'pages/IndividualOffers/IndividualOffersContainer/components/IndividualOfferColumns/components/Cells.module.scss'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
@@ -17,14 +16,9 @@ import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 export interface OfferNameCellProps {
   offer: ListOffersOfferResponseModel
   offerLink: string
-  displayThumb?: boolean
 }
 
-export const OfferNameCell = ({
-  offer,
-  offerLink,
-  displayThumb = false,
-}: OfferNameCellProps) => {
+export const OfferNameCell = ({ offer, offerLink }: OfferNameCellProps) => {
   const getDateInformations = () => {
     const startDatetime = offer.stocks[0]
       ? offer.stocks[0].beginningDatetime
@@ -56,17 +50,10 @@ export const OfferNameCell = ({
 
   return (
     <div className={styles['title-column']}>
-      <Link
-        className={classNames({
-          [styles['title-column-with-thumb']]: displayThumb,
-        })}
-        to={offerLink}
-      >
-        {displayThumb && (
-          <div className={styles['title-column-thumb']}>
-            <Thumb url={offer.thumbUrl} />
-          </div>
-        )}
+      <Link className={styles['title-column-with-thumb']} to={offerLink}>
+        <div className={styles['title-column-thumb']}>
+          <Thumb url={offer.thumbUrl} />
+        </div>
         <div>
           {offer.isShowcase && <Tag label="Offre vitrine" />}
           <div className={styles['title-column-name']}>{offer.name}</div>
