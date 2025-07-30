@@ -153,6 +153,7 @@ class TestingBackend(BaseBackend):
                 raise exceptions.NonPublicDataException()
             return models.SiretInfo(
                 siret=siret,
+                siren=siret[:9],
                 active=self._is_active(siret),
                 diffusible=False,
                 name="[ND]",
@@ -164,6 +165,7 @@ class TestingBackend(BaseBackend):
 
         return models.SiretInfo(
             siret=siret,
+            siren=siret[:9],
             active=self._is_active(siret),
             diffusible=True,
             name="MINISTERE DE LA CULTURE",
@@ -275,6 +277,7 @@ class TestingBackend(BaseBackend):
         if not self._is_diffusible(siret):
             return models.SiretInfo(
                 siret=siret,
+                siren=siret[:9],
                 active=self._is_active(siret),
                 diffusible=False,
                 name="[ND]",
@@ -286,6 +289,7 @@ class TestingBackend(BaseBackend):
 
         return models.SiretInfo(
             siret=siret,
+            siren=siret[:9],
             active=self._is_active(siret),
             diffusible=True,
             name="MINISTERE DE LA CULTURE",

@@ -20,7 +20,7 @@ from pcapi.core.geography.constants import MAX_LATITUDE
 from pcapi.core.geography.constants import MAX_LONGITUDE
 from pcapi.utils import cache as cache_utils
 from pcapi.utils import module_loading
-from pcapi.utils import postal_code
+from pcapi.utils import postal_code as postal_code_utils
 from pcapi.utils import regions
 from pcapi.utils import requests
 
@@ -65,6 +65,7 @@ class AddressInfo(pydantic_v1.BaseModel):
     score: float
     city: str
     street: str
+    type: str | None
 
     @pydantic_v1.validator("latitude")
     def validate_latitude(cls, latitude: float) -> float:
@@ -186,6 +187,30 @@ def search_csv(
     return _get_backend().search_csv(payload, columns=columns, result_columns=result_columns)
 
 
+def find_ban_address(
+    address: str,
+    postal_code: str | None = None,
+    insee_code: str | None = None,
+    enforce_reliability: bool = False,
+) -> AddressInfo:
+    """Find a single address result from BAN database"""
+    return _get_backend().find_ban_address(
+        address=address, postal_code=postal_code, insee_code=insee_code, enforce_reliability=enforce_reliability
+    )
+
+
+def find_ban_city(
+    city: str,
+    postal_code: str | None = None,
+    insee_code: str | None = None,
+    enforce_reliability: bool = False,
+) -> AddressInfo:
+    """Find a single municipality or locality result from BAN database"""
+    return _get_backend().find_ban_city(
+        city=city, postal_code=postal_code, insee_code=insee_code, enforce_reliability=enforce_reliability
+    )
+
+
 class BaseBackend:
     def get_municipality_centroid(
         self, city: str, postcode: str | None = None, citycode: str | None = None
@@ -214,6 +239,24 @@ class BaseBackend:
     ) -> csv.DictReader:
         raise NotImplementedError()
 
+    def find_ban_address(
+        self,
+        address: str,
+        postal_code: str | None = None,
+        insee_code: str | None = None,
+        enforce_reliability: bool = False,
+    ) -> AddressInfo:
+        raise NotImplementedError()
+
+    def find_ban_city(
+        self,
+        city: str,
+        postal_code: str | None = None,
+        insee_code: str | None = None,
+        enforce_reliability: bool = False,
+    ) -> AddressInfo:
+        raise NotImplementedError()
+
 
 class TestingBackend(BaseBackend):
     def get_municipality_centroid(
@@ -230,6 +273,7 @@ class TestingBackend(BaseBackend):
             longitude=7.004585,
             city="Cannes",
             street="n/d",
+            type="municipality",
         )
 
     def get_single_address_result(
@@ -251,6 +295,7 @@ class TestingBackend(BaseBackend):
             longitude=2.308289,
             city="Paris",
             street="3 Rue de Valois",
+            type="housenumber",
         )
 
     def search_address(self, address: str, limit: int) -> list[AddressInfo]:
@@ -263,6 +308,48 @@ class TestingBackend(BaseBackend):
         result_columns: list[ResultColumn] | None = None,
     ) -> csv.DictReader:
         return csv.DictReader("q,result_id\n33 Boulevard Clemenceau Grenoble,38185_1660_00033")
+
+    def find_ban_address(
+        self,
+        address: str,
+        postal_code: str | None = None,
+        insee_code: str | None = None,
+        enforce_reliability: bool = False,
+    ) -> AddressInfo:
+        """Find a single address result from BAN database"""
+        return AddressInfo(
+            id="75119_2494_00005",
+            label="5 Rue Curial 75019 Paris",
+            postcode="75019",
+            citycode="75119",
+            score=0.9809327272727272,
+            latitude=48.890611,
+            longitude=2.371334,
+            city="Paris",
+            street="5 Rue Curial",
+            type="housenumber",
+        )
+
+    def find_ban_city(
+        self,
+        city: str,
+        postal_code: str | None = None,
+        insee_code: str | None = None,
+        enforce_reliability: bool = False,
+    ) -> AddressInfo:
+        """Find a single municipality or locality result from BAN database"""
+        return AddressInfo(
+            id="75056",
+            label="Paris",
+            postcode="75001",
+            citycode="75056",
+            score=0.956,
+            latitude=48.85900,
+            longitude=2.34700,
+            city="Paris",
+            street="",
+            type="municipality",
+        )
 
 
 class ApiAdresseBackend(BaseBackend):
@@ -420,10 +507,10 @@ class ApiAdresseBackend(BaseBackend):
     def _get_missing_postal_code(self, citycode: str) -> str:
         # postcode is missing in API Adresse responses in Saint-Martin and Saint-Barthélémy
         match regions.get_department_code_from_city_code(citycode):
-            case postal_code.SAINT_BARTHELEMY_DEPARTEMENT_CODE:
-                return postal_code.SAINT_BARTHELEMY_POSTAL_CODE
-            case postal_code.SAINT_MARTIN_DEPARTEMENT_CODE:
-                return postal_code.SAINT_MARTIN_POSTAL_CODE
+            case postal_code_utils.SAINT_BARTHELEMY_DEPARTEMENT_CODE:
+                return postal_code_utils.SAINT_BARTHELEMY_POSTAL_CODE
+            case postal_code_utils.SAINT_MARTIN_DEPARTEMENT_CODE:
+                return postal_code_utils.SAINT_MARTIN_POSTAL_CODE
 
         # Empty postal code is not supported at many places in our code, so fail and raise an alert when unexpected
         raise ValueError("Missing postal code")
@@ -444,6 +531,7 @@ class ApiAdresseBackend(BaseBackend):
             citycode=properties["citycode"],
             city=properties["city"],
             street=properties["name"],
+            type=properties["type"],
         )
 
     def search_address(self, address: str, limit: int) -> list[AddressInfo]:
@@ -495,3 +583,64 @@ class ApiAdresseBackend(BaseBackend):
             files.append(("result_columns", (None, result_column.value)))  # type: ignore
         text = self._search_csv(files)
         return csv.DictReader(StringIO(text))
+
+    def find_ban_address(
+        self,
+        address: str,
+        postal_code: str | None = None,
+        insee_code: str | None = None,
+        enforce_reliability: bool = False,
+    ) -> AddressInfo:
+        params = {
+            "q": self._remove_quotes(address),
+            "postcode": postal_code,
+            "citycode": insee_code,
+            "autocomplete": 0,
+            "limit": 1,
+        }
+
+        data = self._cached_search(params=params)
+        if self._is_result_empty(data):
+            logger.info(
+                "No BAN address found for query",
+                extra={"queried_address": address, "insee_code": insee_code},
+            )
+            raise NoResultException
+
+        result = self._format_result(data["features"][0])
+
+        extra = {
+            "queried_address": address,
+            "id": result.id,
+            "label": result.label,
+            "postal_code": result.postcode,
+            "insee_code": result.citycode,
+            "city": result.city,
+            "score": result.score,
+            "type": result.type,
+        }
+
+        if result.score < RELIABLE_SCORE_THRESHOLD:
+            logger.info("BAN address found with a low reliability score", extra=extra)
+            if enforce_reliability:
+                raise NoResultException
+        else:
+            logger.info("BAN address found for query", extra=extra)
+        return result
+
+    def find_ban_city(
+        self,
+        city: str,
+        postal_code: str | None = None,
+        insee_code: str | None = None,
+        enforce_reliability: bool = False,
+    ) -> AddressInfo:
+        address = f"{postal_code} {city}" if postal_code is not None else city
+        result = self.find_ban_address(address=address, insee_code=insee_code, enforce_reliability=enforce_reliability)
+        if result.type not in ("municipality", "locality"):
+            logger.info(
+                "No BAN city centroid found for query", extra={"queried_address": city, "insee_code": insee_code}
+            )
+            if enforce_reliability:
+                raise NoResultException
+        return result
