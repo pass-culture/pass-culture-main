@@ -113,7 +113,7 @@ describe('screens:SignupJourney::Activity', () => {
       venueTypeCode: 'MUSEUM',
       socialUrls: [],
       targetCustomer: Target.INDIVIDUAL_AND_EDUCATIONAL,
-      phoneNumber: undefined,
+      phoneNumber: '0605120510',
     }
 
     renderActivityScreen(contextValue)
@@ -137,7 +137,7 @@ describe('screens:SignupJourney::Activity', () => {
       venueTypeCode: 'MUSEUM',
       socialUrls: [],
       targetCustomer: Target.INDIVIDUAL,
-      phoneNumber: undefined,
+      phoneNumber: '0605120510',
     }
 
     renderActivityScreen(contextValue)
@@ -163,7 +163,7 @@ describe('screens:SignupJourney::Activity', () => {
       venueTypeCode: 'MUSEUM',
       socialUrls: [],
       targetCustomer: Target.EDUCATIONAL,
-      phoneNumber: undefined,
+      phoneNumber: '0605120510',
     }
 
     renderActivityScreen(contextValue)

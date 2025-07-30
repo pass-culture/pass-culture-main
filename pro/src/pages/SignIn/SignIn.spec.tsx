@@ -106,16 +106,10 @@ describe('SignIn', () => {
     expect(screen.getByLabelText('Adresse email')).toBeInTheDocument()
     expect(screen.getByLabelText('Mot de passe')).toBeInTheDocument()
     expect(screen.getByText('Se connecter')).toBeInTheDocument()
-    expect(screen.getByText('Créer un compte')).toBeInTheDocument()
+    expect(screen.getByText('S’inscrire')).toBeInTheDocument()
     expect(
       screen.getByText('Réinitialisez votre mot de passe')
     ).toBeInTheDocument()
-    expect(
-      screen.getByText('Consulter nos recommandations de sécurité')
-    ).toHaveAttribute(
-      'href',
-      'https://aide.passculture.app/hc/fr/articles/4458607720732--Acteurs-Culturels-Comment-assurer-la-s%C3%A9curit%C3%A9-de-votre-compte-'
-    )
   })
 
   describe('when user clicks on the eye on password input', () => {
@@ -158,18 +152,20 @@ describe('SignIn', () => {
     it('should redirect to the creation page when the API sirene is available', () => {
       renderSignIn()
 
-      expect(
-        screen.getByRole('link', { name: 'Créer un compte' })
-      ).toHaveAttribute('href', '/inscription/compte/creation')
+      expect(screen.getByRole('link', { name: 'S’inscrire' })).toHaveAttribute(
+        'href',
+        '/inscription/compte/creation'
+      )
     })
 
     it('should redirect to the unavailable error page when the API sirene feature is disabled', () => {
       renderSignIn({ features: [] })
 
       // then
-      expect(
-        screen.getByRole('link', { name: 'Créer un compte' })
-      ).toHaveAttribute('href', '/erreur/indisponible')
+      expect(screen.getByRole('link', { name: 'S’inscrire' })).toHaveAttribute(
+        'href',
+        '/erreur/indisponible'
+      )
     })
 
     it('should trigger a tracking event', async () => {
@@ -179,15 +175,17 @@ describe('SignIn', () => {
       renderSignIn()
       await userEvent.click(
         screen.getByRole('link', {
-          name: 'Créer un compte',
+          name: 'S’inscrire',
         })
       )
-      expect(mockLogEvent).toHaveBeenCalledTimes(1)
-      expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
-        Events.CLICKED_CREATE_ACCOUNT,
-        { from: '/connexion' }
-      )
+      await waitFor(() => {
+        expect(mockLogEvent).toHaveBeenCalledTimes(1)
+        expect(mockLogEvent).toHaveBeenNthCalledWith(
+          1,
+          Events.CLICKED_CREATE_ACCOUNT,
+          { from: '/connexion' }
+        )
+      })
     })
   })
 
@@ -303,15 +301,17 @@ describe('SignIn', () => {
       renderSignIn()
       await userEvent.click(
         screen.getByRole('link', {
-          name: 'Créer un compte',
+          name: 'S’inscrire',
         })
       )
-      expect(mockLogEvent).toHaveBeenCalledTimes(1)
-      expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
-        Events.CLICKED_CREATE_ACCOUNT,
-        { from: '/connexion' }
-      )
+      await waitFor(() => {
+        expect(mockLogEvent).toHaveBeenCalledTimes(1)
+        expect(mockLogEvent).toHaveBeenNthCalledWith(
+          1,
+          Events.CLICKED_CREATE_ACCOUNT,
+          { from: '/connexion' }
+        )
+      })
     })
 
     it('should trigger a tracking event when user clicks forgotten password"', async () => {
@@ -355,36 +355,5 @@ describe('SignIn', () => {
     )
 
     expect(getItemSpy).not.toHaveBeenLastCalledWith('homepageSelectedOffererId')
-  })
-
-  describe('with feature flag WIP_2025_SIGN_UP enabled', () => {
-    beforeEach(() => {
-      renderSignIn({
-        features: ['API_SIRENE_AVAILABLE', 'WIP_2025_SIGN_UP'],
-      })
-    })
-
-    it('should have the new sign up layout', () => {
-      expect(screen.getByTestId('sign-up-header')).toBeInTheDocument()
-      expect(screen.getByTestId('sign-up-logo')).toBeInTheDocument()
-    })
-
-    it('should not have the security callout', () => {
-      expect(
-        screen.queryByRole('link', {
-          name: /Consulter nos recommandations de sécurité/,
-        })
-      ).not.toBeInTheDocument()
-    })
-
-    it('should be "S’inscrire" instead of "Créer un compte" for account creation', () => {
-      expect(
-        screen.queryByRole('link', { name: 'Créer un compte' })
-      ).not.toBeInTheDocument()
-
-      expect(
-        screen.queryByRole('link', { name: 'S’inscrire' })
-      ).toBeInTheDocument()
-    })
   })
 })

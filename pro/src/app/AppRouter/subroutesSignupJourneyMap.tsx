@@ -6,16 +6,10 @@ import { ConfirmedAttachment } from 'components/SignupJourneyForm/ConfirmedAttac
 import { Offerer } from 'components/SignupJourneyForm/Offerer/Offerer'
 import { Offerers as SignupJourneyOfferers } from 'components/SignupJourneyForm/Offerers/Offerers'
 import { Validation } from 'components/SignupJourneyForm/Validation/Validation'
-import { Welcome } from 'components/SignupJourneyForm/Welcome/Welcome'
 
 import type { RouteConfig } from './routesMap'
 
 export const routesSignupJourney: RouteConfig[] = [
-  {
-    element: <Welcome />,
-    path: '/parcours-inscription',
-    title: 'Parcours d’inscription',
-  },
   {
     element: <Offerer />,
     path: '/parcours-inscription/structure',
