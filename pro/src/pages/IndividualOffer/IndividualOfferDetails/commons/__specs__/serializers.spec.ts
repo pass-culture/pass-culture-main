@@ -137,6 +137,7 @@ describe('serializeDetailsPostData', () => {
         },
         url: undefined,
         productId: undefined,
+        videoUrl: undefined,
       })
     })
   })
@@ -184,6 +185,7 @@ describe('serializeDetailsPostData', () => {
         mentalDisabilityCompliant: false,
         motorDisabilityCompliant: true,
         visualDisabilityCompliant: false,
+        videoUrl: undefined,
       })
     })
   })
@@ -238,6 +240,7 @@ describe('serializeDetailsPatchData', () => {
           ean: 'any ean',
         },
         url: undefined,
+        videoUrl: undefined,
       })
     })
   })
@@ -282,6 +285,7 @@ describe('serializeDetailsPatchData', () => {
         audioDisabilityCompliant: true,
         mentalDisabilityCompliant: false,
         motorDisabilityCompliant: true,
+        videoUrl: undefined,
         visualDisabilityCompliant: false,
       })
     })

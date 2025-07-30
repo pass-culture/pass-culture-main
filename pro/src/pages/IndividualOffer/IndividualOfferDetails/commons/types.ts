@@ -25,6 +25,7 @@ export type DetailsFormValues = {
   productId?: string
   callId?: string
   url?: string | null
+  videoUrl?: string | null
   accessibility?: AccessibilityFormValues
 }
 

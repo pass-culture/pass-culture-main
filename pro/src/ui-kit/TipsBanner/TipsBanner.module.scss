@@ -9,6 +9,7 @@
   background: var(--color-background-info);
   width: fit-content;
   gap: rem.torem(8px);
+  align-items: center;
 
   @media (min-width: size.$tablet) {
     max-width: rem.torem(500px);
