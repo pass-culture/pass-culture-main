@@ -138,39 +138,37 @@ export const IndividualActionsCells = ({
   return (
     <>
       <div className={styles['actions-column']}>
-        <div className={styles['actions-column-container']}>
-          <DropdownMenuWrapper
-            title="Voir les actions"
-            triggerIcon={fullThreeDotsIcon}
-            triggerTooltip
-            dropdownTriggerRef={dropdownTriggerRef}
-          >
-            <>
-              <EditOfferCell editionOfferLink={editionOfferLink} />
-              {offer.status === OFFER_STATUS_DRAFT ? (
-                <DeleteDraftCell
-                  setIsConfirmDialogOpen={setIsConfirmDialogDeleteDraftOpen}
-                />
-              ) : (
-                <EditStocksCell
-                  offer={offer}
-                  editionStockLink={editionStockLink}
-                />
-              )}{' '}
-              {isHeadlineActionDisplayed && (
-                <HeadlineOfferCell
-                  offer={offer}
-                  setIsConfirmReplacementDialogOpen={
-                    setIsConfirmDialogReplaceHeadlineOfferOpen
-                  }
-                  setIsOfferWithoutImageDialogOpen={
-                    setIsDialogForHeadlineOfferWithoutImageOpen
-                  }
-                />
-              )}
-            </>
-          </DropdownMenuWrapper>
-        </div>
+        <DropdownMenuWrapper
+          title="Voir les actions"
+          triggerIcon={fullThreeDotsIcon}
+          triggerTooltip
+          dropdownTriggerRef={dropdownTriggerRef}
+        >
+          <>
+            <EditOfferCell editionOfferLink={editionOfferLink} />
+            {offer.status === OFFER_STATUS_DRAFT ? (
+              <DeleteDraftCell
+                setIsConfirmDialogOpen={setIsConfirmDialogDeleteDraftOpen}
+              />
+            ) : (
+              <EditStocksCell
+                offer={offer}
+                editionStockLink={editionStockLink}
+              />
+            )}{' '}
+            {isHeadlineActionDisplayed && (
+              <HeadlineOfferCell
+                offer={offer}
+                setIsConfirmReplacementDialogOpen={
+                  setIsConfirmDialogReplaceHeadlineOfferOpen
+                }
+                setIsOfferWithoutImageDialogOpen={
+                  setIsDialogForHeadlineOfferWithoutImageOpen
+                }
+              />
+            )}
+          </>
+        </DropdownMenuWrapper>
       </div>
       <ConfirmDialog
         icon={strokeTrashIcon}

@@ -84,7 +84,7 @@ describe('getIndividualOfferColumns', () => {
           variant={TableVariant.COLLAPSE}
           noResult={{
             message: '',
-            onFilterReset: function (): void {
+            onFilterReset: () => {
               throw new Error('Function not implemented.')
             },
           }}

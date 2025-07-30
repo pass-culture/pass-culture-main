@@ -22,7 +22,6 @@
   &-cell {
     padding: rem.torem(8px);
     text-align: left;
-  
     border-top: 1px solid var(--color-border-subtle);
     border-bottom: 1px solid var(--color-border-subtle);
   
@@ -45,15 +44,18 @@
   border-spacing: 0 rem.torem(24px);
 
   &:last-child {
-    border-bottom: 1px solid var(--color-border-subtle);
+    border-bottom: none;
   }
 
   &-cell {
     padding: rem.torem(8px);
     text-align: left;
-  
     border-bottom: 1px solid var(--color-border-subtle);
   }
+}
+
+.table-row {
+  border-bottom: 1px solid var(--color-background-subtle);
 }
 
 .table-header {
@@ -136,7 +138,7 @@
     margin-top: rem.torem(8px);
   }
 
-  .table-cell {
+  .table-collapse-cell {
     display: flex;
     justify-content: space-between;
     gap: rem.torem(8px);
@@ -155,7 +157,7 @@
     }
   }
 
-  .table-cell::before {
+  .table-collapse-cell::before {
     @include fonts.body-accent-xs;
 
     display: flex;
