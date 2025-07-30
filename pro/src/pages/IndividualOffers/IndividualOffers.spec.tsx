@@ -29,7 +29,7 @@ import {
 } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
-import { IndividualOffers } from '../IndividualOffers'
+import { IndividualOffers } from './IndividualOffers'
 
 const categoriesAndSubcategories = {
   categories: [
