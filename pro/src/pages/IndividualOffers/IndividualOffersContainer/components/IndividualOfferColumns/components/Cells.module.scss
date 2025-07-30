@@ -54,14 +54,7 @@
 }
 
 .actions-column {
-  grid-area: actions;
   place-self: end end;
-
-  &-container {
-    display: flex;
-    align-items: center;
-    gap: rem.torem(4px);
-  }
 }
 
 .isbn {
