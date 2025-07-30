@@ -19,13 +19,15 @@ import {
 } from 'commons/core/FirebaseEvents/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
 import { isCollectiveOffer } from 'commons/core/OfferEducational/types'
-import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { duplicateBookableOffer } from 'commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FORMAT_DD_MM_YYYY } from 'commons/utils/date'
-import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
+import {
+  isActionAllowedOnCollectiveOffer,
+  isCollectiveOfferEditable,
+} from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { pluralizeString } from 'commons/utils/pluralize'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { BackToNavLink } from 'components/BackToNavLink/BackToNavLink'
@@ -130,10 +132,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
     }
   }
 
-  const canEditDetails = isActionAllowedOnCollectiveOffer(
-    offer,
-    CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
-  )
+  const canEditOffer = isCollectiveOfferEditable(offer)
 
   const canArchiveOffer =
     isCollectiveOffer(offer) &&
@@ -154,10 +153,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
     CollectiveOfferAllowedAction.CAN_CANCEL
   )
 
-  const offerEditLink = `/offre/${computeURLCollectiveOfferId(
-    offer.id,
-    offer.isTemplate
-  )}/collectif/edition`
+  const offerEditLink = `/offre/${offer.id}/collectif/edition`
 
   const isOfferDraft =
     offer.displayedStatus === CollectiveOfferDisplayedStatus.DRAFT &&
@@ -247,7 +243,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
           <div className={styles['header-actions']}>
             <span className={styles['header-actions-title']}>Actions</span>
             <ul>
-              {canEditDetails && (
+              {canEditOffer && (
                 <li>
                   <ButtonLink
                     to={isOfferDraft ? isOfferDraft : offerEditLink}
