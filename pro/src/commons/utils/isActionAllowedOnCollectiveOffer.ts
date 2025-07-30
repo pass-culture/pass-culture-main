@@ -42,30 +42,34 @@ export function isCollectiveInstitutionEditable(
   )
 }
 
-export function isCollectiveOfferEditable(
+export function isCollectiveOfferDetailsEditable(
   offer:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
-    | CollectiveOfferResponseModel,
+    | CollectiveOfferResponseModel
 ) {
-  return offer.allowedActions.some((action) => [
-    CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
-    CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
-  ].includes(action))
+  return offer.allowedActions.some((action) =>
+    [
+      CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+      CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
+    ].includes(action)
+  )
 }
 
 export function isCollectiveOfferSelectable(
   offer:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
-    | CollectiveOfferResponseModel,
+    | CollectiveOfferResponseModel
 ) {
-  return offer.allowedActions.some((action) => [
-    CollectiveOfferAllowedAction.CAN_ARCHIVE,
-    CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,
-    CollectiveOfferTemplateAllowedAction.CAN_PUBLISH,
-    CollectiveOfferTemplateAllowedAction.CAN_HIDE,
-  ].includes(action))
+  return offer.allowedActions.some((action) =>
+    [
+      CollectiveOfferAllowedAction.CAN_ARCHIVE,
+      CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,
+      CollectiveOfferTemplateAllowedAction.CAN_PUBLISH,
+      CollectiveOfferTemplateAllowedAction.CAN_HIDE,
+    ].includes(action)
+  )
 }
 
 export function isCollectiveStockEditable(
@@ -73,8 +77,27 @@ export function isCollectiveStockEditable(
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
 ) {
-  return offer.allowedActions.some((action) => [
-    CollectiveOfferAllowedAction.CAN_EDIT_DATES,
-    CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
-  ].includes(action as CollectiveOfferAllowedAction))
+  return offer.allowedActions.some((action) =>
+    [
+      CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+    ].includes(action as CollectiveOfferAllowedAction)
+  )
+}
+
+export function isCollectiveOfferEditable(
+  offer:
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel
+    | CollectiveOfferResponseModel
+) {
+  return offer.allowedActions.some((action) =>
+    [
+      CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
+      CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+      CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+      CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+      CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION,
+    ].includes(action)
+  )
 }
