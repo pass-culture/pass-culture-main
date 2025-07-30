@@ -3122,6 +3122,8 @@ def edit_reimbursement_rule(
         raise
     db.session.add(rule)
     db.session.flush()
+    # refresh the object to have datetimes instead of strings  in rule.timespan
+    db.session.refresh(rule)
     return rule
 
 
