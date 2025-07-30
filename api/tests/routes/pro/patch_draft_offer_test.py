@@ -490,12 +490,15 @@ class Returns400Test:
 
     def test_fail_when_body_has_null_url_field(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+
+        # The offer has no URL with an online subcategory
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.LIVESTREAM_MUSIQUE.id,
             venue=venue,
         )
 
+        # and we don't provide an URL
         data = {
             "url": None,
         }
@@ -504,12 +507,14 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["url"][0] == 'Une offre de catégorie "Livestream musical" doit contenir un champ `url`'
 
+        # The offer has an URL with an online subcategory
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.LIVESTREAM_MUSIQUE.id,
             url="http://example.com/offer",
             venue=venue,
         )
 
+        # and we try to remove the URL
         data = {
             "url": None,
         }

@@ -272,7 +272,7 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
 
     # - An URL must be provided if the offer has an online subcategory and had no URL before.
     # - The offer URL must not be removed if the offer has an online subcategory.
-    if not offer.url and not body.url:
+    if (offer.url is None and not body.url) or (offer.url and "url" in body.__fields_set__ and body.url is None):
         offer_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
         validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
 

@@ -55,7 +55,7 @@ class PostDraftOfferBodyModel(BaseModel):
 class PatchDraftOfferBodyModel(BaseModel):
     name: str | None = None
     subcategory_id: str | None = None
-    url: HttpUrl | None = None
+    url: typing.Optional[HttpUrl] = None
     description: str | None = Field(max_length=OFFER_DESCRIPTION_MAX_LENGTH)
     extra_data: dict[str, typing.Any] | None = None
     duration_minutes: int | None = None
