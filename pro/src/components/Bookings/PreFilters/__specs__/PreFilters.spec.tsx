@@ -40,7 +40,7 @@ describe('filter bookings by bookings period', () => {
           displayName: 'Mon nom de lieu',
         },
       ],
-      offererAddresses: [{ value: 21, label: 'label - street city cp' }],
+      offererAddresses: [{ value: '21', label: 'label - street city cp' }],
       hasResult: true,
       resetPreFilters: vi.fn(),
       isFiltersDisabled: false,

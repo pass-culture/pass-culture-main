@@ -12,10 +12,11 @@ enum SelectInputVariant {
   FORM = 'form',
 }
 
-interface SelectInputProps extends ComponentProps<'select'> {
+interface SelectInputProps<T extends number | string = string>
+  extends ComponentProps<'select'> {
   name: string
-  defaultOption?: SelectOption | null
-  options: SelectOption[]
+  defaultOption?: SelectOption<T> | null
+  options: SelectOption<T>[]
   hasError?: boolean
   hasDescription?: boolean
   value?: string
@@ -34,7 +35,7 @@ export const SelectInput = forwardRef(
       className,
       variant,
       ...field
-    }: SelectInputProps,
+    }: SelectInputProps<number | string>,
     ref: ForwardedRef<HTMLSelectElement>
   ): JSX.Element => (
     <div
