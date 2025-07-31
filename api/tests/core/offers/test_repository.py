@@ -1125,13 +1125,42 @@ class GetOffersByPublicationDateTest:
         publication_date_after = publication_date_target + datetime.timedelta(minutes=17)
         factories.OfferFactory(publicationDatetime=publication_date_after)
 
-        offers_query = repository.get_offers_by_publication_date(publication_date=publication_date_target)
+        offers_query = repository.get_offers_by_publication_datetime(publication_datetime=publication_date_target)
         assert offers_query.count() == 3
         assert {o.id for o in offers_query.all()} == {
             offer_to_publish_1.id,
             offer_to_publish_2.id,
             offer_to_publish_3.id,
         }
+
+    def test_get_offers_by_date_field_range(self):
+        offer1 = factories.OfferFactory(
+            publicationDatetime=datetime.datetime(2020, 12, 1), bookingAllowedDatetime=datetime.datetime(2022, 1, 1)
+        )
+        offer2 = factories.OfferFactory(
+            publicationDatetime=datetime.datetime(2020, 12, 2), bookingAllowedDatetime=datetime.datetime(2022, 1, 2)
+        )
+        offer3 = factories.OfferFactory(
+            publicationDatetime=datetime.datetime(2020, 12, 3), bookingAllowedDatetime=datetime.datetime(2022, 1, 3)
+        )
+        offer4 = factories.OfferFactory(
+            publicationDatetime=datetime.datetime(2020, 12, 4), bookingAllowedDatetime=datetime.datetime(2022, 1, 4)
+        )
+
+        # Filter the first 3 by bookingAllowedDatetime (test upper bound)
+        query = repository.get_offers_by_date_field_range(
+            "bookingAllowedDatetime", datetime.datetime(2022, 1, 1), datetime.datetime(2022, 1, 3)
+        )
+
+        assert query.count() == 3
+        assert {offer.id for offer in query} == {offer1.id, offer2.id, offer3.id}
+
+        # filter the last 3 by publicationDatetime (test lower bound)
+        query = repository.get_offers_by_date_field_range(
+            "publicationDatetime", datetime.datetime(2020, 12, 2), datetime.datetime(2020, 12, 4)
+        )
+        assert query.count() == 3
+        assert {offer.id for offer in query} == {offer2.id, offer3.id, offer4.id}
 
 
 @pytest.mark.usefixtures("db_session")

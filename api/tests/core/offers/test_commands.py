@@ -1,11 +1,15 @@
 import datetime
 import logging
+from unittest import mock
 
 import pytest
 
 import pcapi.core.chronicles.factories as chronicles_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+import pcapi.core.reminders.factories as reminders_factories
+import pcapi.core.reminders.models as reminders_models
+import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.utils.date import timedelta
 
@@ -50,3 +54,39 @@ class OfferCommandsTest:
             run_command(app, "check_product_counts_consistency")
 
         assert caplog.records[0].extra["product_ids"] == {product_1_id, product_2_id}
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    @pytest.mark.usefixtures("clean_database")
+    def test_deprecated_future_offer_command(self, mock_reindex_offers, app):
+        offer = offers_factories.OfferFactory(publicationDatetime=datetime.date.today())
+        user = users_factories.BeneficiaryFactory()
+        reminders_factories.OfferReminderFactory(user=user, offer=offer)
+
+        run_command(app, "activate_future_offers")
+
+        mock_reindex_offers.assert_called_once()
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    @pytest.mark.usefixtures("clean_database")
+    def test_reindex_recently_published_offers_command(self, mock_reindex_offers, app):
+        offer = offers_factories.OfferFactory(publicationDatetime=datetime.date.today())
+        user = users_factories.BeneficiaryFactory()
+        reminders_factories.OfferReminderFactory(user=user, offer=offer)
+
+        run_command(app, "reindex_recently_published_offers")
+
+        mock_reindex_offers.assert_called_once()
+
+    @mock.patch("pcapi.core.reminders.external.reminders_notifications.send_users_reminders_for_offer")
+    @pytest.mark.usefixtures("clean_database")
+    def test_future_offer_command(self, mock_notify_users, app):
+        offer = offers_factories.OfferFactory(bookingAllowedDatetime=datetime.date.today())
+        user = users_factories.BeneficiaryFactory()
+        reminders_factories.OfferReminderFactory(user=user, offer=offer)
+
+        run_command(app, "send_future_offer_reminders")
+
+        mock_notify_users.assert_called_once()
+
+        remiders = db.session.query(reminders_models.OfferReminder).all()
+        assert len(remiders) == 0

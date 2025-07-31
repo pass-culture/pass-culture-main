@@ -182,23 +182,43 @@ def get_capped_offers_for_filters(
     return offers
 
 
-def get_offers_by_publication_date(
-    publication_date: datetime.datetime | None = None,
+def get_offers_by_date_field_range(
+    date_field: str, lower_bound: datetime.datetime, upper_bound: datetime.datetime
 ) -> sa_orm.Query:
-    if publication_date is None:
-        publication_date = datetime.datetime.utcnow()
+    column = getattr(models.Offer, date_field)
+    return db.session.query(models.Offer).filter(
+        column != None,
+        column >= lower_bound,
+        column <= upper_bound,
+    )
 
-    upper_bound = publication_date
+
+def get_offers_by_publication_datetime(
+    publication_datetime: datetime.datetime | None = None,
+) -> sa_orm.Query:
+    if publication_datetime is None:
+        publication_datetime = datetime.datetime.now(datetime.timezone.utc)
+
     # The lower bound is intentionally very far in the past.
     # This function should be called every quarter hour, but filtering the last days allows auto-correction
     # when the function fails (timeout, or lock denied, most of the time)
+    upper_bound = publication_datetime
     lower_bound = upper_bound - datetime.timedelta(hours=24)
 
-    return db.session.query(models.Offer).filter(
-        models.Offer.publicationDatetime != None,
-        models.Offer.publicationDatetime <= upper_bound,
-        models.Offer.publicationDatetime > lower_bound,
-    )
+    return get_offers_by_date_field_range("publicationDatetime", lower_bound, upper_bound)
+
+
+def get_offers_by_booking_allowed_datetime(booking_allowed_datetime: datetime.datetime | None = None) -> sa_orm.Query:
+    if booking_allowed_datetime is None:
+        booking_allowed_datetime = datetime.datetime.now(datetime.timezone.utc)
+
+    # The lower bound is intentionally very far in the past.
+    # This function should be called every quarter hour, but filtering the last days allows auto-correction
+    # when the function fails (timeout, or lock denied, most of the time)
+    upper_bound = booking_allowed_datetime
+    lower_bound = upper_bound - datetime.timedelta(hours=24)
+
+    return get_offers_by_date_field_range("bookingAllowedDatetime", lower_bound, upper_bound)
 
 
 def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> sa_orm.Query:
