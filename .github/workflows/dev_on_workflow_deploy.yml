@@ -176,7 +176,8 @@ jobs:
             --sourceRepoURL https://github.com/pass-culture/pass-culture-deployment.git \
             --sourcePath helm/pcapi \
             --sourceRepoRef master \
-            --additionalArg "${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}"
+            --additionalArg "${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}" \
+            --push
 
       - name: "Connect to cluster"
         uses: pass-culture/common-workflows/actions/pc-k8s-connect@pc-k8s-connect/v0.2.0
