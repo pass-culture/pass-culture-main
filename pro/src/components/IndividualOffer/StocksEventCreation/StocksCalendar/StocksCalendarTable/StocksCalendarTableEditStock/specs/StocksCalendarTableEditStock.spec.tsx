@@ -23,7 +23,7 @@ function renderStocksCalendarTableEditStock(
         time: '12:00',
         priceCategory: '1',
         bookingLimitDate: '2021-09-15T21:59:59Z',
-        quantity: 1,
+        remainingQuantity: 1,
         ...props,
       },
     })
@@ -49,14 +49,14 @@ describe('StocksCalendarTableEditStock', () => {
     const beginningDate = addDays(new Date(), 2).toISOString().split('T')[0]
     const limitDate = addDays(new Date(), 3).toISOString().split('T')[0]
     const priceCategoryId = 1
-    const quantity = 322
+    const remainingQuantity = 322
 
     renderStocksCalendarTableEditStock({
       stock: getOfferStockFactory({
         beginningDatetime: beginningDate,
         bookingLimitDatetime: limitDate,
         priceCategoryId: priceCategoryId,
-        quantity: quantity,
+        remainingQuantity: remainingQuantity,
       }),
     })
 
@@ -64,14 +64,16 @@ describe('StocksCalendarTableEditStock', () => {
     expect(screen.getByLabelText('Tarif *')).toHaveValue(
       priceCategoryId.toString()
     )
-    expect(screen.getByLabelText('Nombre de places')).toHaveValue(quantity)
+    expect(screen.getByLabelText('Places restantes')).toHaveValue(
+      remainingQuantity
+    )
     expect(screen.getAllByLabelText('Date *')[1]).toHaveValue(limitDate)
   })
 
   it('should check the unlimited checkbox initially if the quantity does not exist', () => {
     renderStocksCalendarTableEditStock({
       stock: getOfferStockFactory({
-        quantity: null,
+        remainingQuantity: null,
       }),
     })
 
@@ -81,23 +83,23 @@ describe('StocksCalendarTableEditStock', () => {
   it('should clear the quantity input when the unlimited checkbox is checked', async () => {
     renderStocksCalendarTableEditStock({
       stock: getOfferStockFactory({
-        quantity: 12,
+        remainingQuantity: 12,
       }),
     })
 
     await userEvent.click(screen.getByLabelText('Illimité'))
 
-    expect(screen.getByLabelText('Nombre de places')).toHaveValue(null)
+    expect(screen.getByLabelText('Places restantes')).toHaveValue(null)
   })
 
   it('should uncheck the unlimited checkbox when the quantity input is filled', async () => {
     renderStocksCalendarTableEditStock({
       stock: getOfferStockFactory({
-        quantity: null,
+        remainingQuantity: null,
       }),
     })
 
-    await userEvent.type(screen.getByLabelText('Nombre de places'), '12')
+    await userEvent.type(screen.getByLabelText('Places restantes'), '12')
 
     expect(screen.getByLabelText('Illimité')).not.toBeChecked()
   })
@@ -105,12 +107,12 @@ describe('StocksCalendarTableEditStock', () => {
   it('should let edit quantity with 0', async () => {
     renderStocksCalendarTableEditStock({
       stock: getOfferStockFactory({
-        quantity: 12,
+        remainingQuantity: 12,
       }),
     })
 
-    await userEvent.clear(screen.getByLabelText('Nombre de places'))
-    await userEvent.type(screen.getByLabelText('Nombre de places'), '0')
+    await userEvent.clear(screen.getByLabelText('Places restantes'))
+    await userEvent.type(screen.getByLabelText('Places restantes'), '0')
     await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
 
     expect(

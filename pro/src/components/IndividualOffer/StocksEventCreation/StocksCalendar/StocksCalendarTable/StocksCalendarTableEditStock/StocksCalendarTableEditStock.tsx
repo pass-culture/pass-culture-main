@@ -30,7 +30,7 @@ export type EditStockFormValues = {
   time: string
   priceCategory: string
   bookingLimitDate: string
-  quantity?: number
+  remainingQuantity?: number
 }
 
 export type StocksCalendarTableEditStockProps = {
@@ -55,13 +55,13 @@ export function StocksCalendarTableEditStock({
 
   function onSubmit() {
     onUpdateStock(
-      serializeStockFormValuesForUpdate(stock.id, formValues, departmentCode)
+      serializeStockFormValuesForUpdate(stock, formValues, departmentCode)
     )
   }
 
   const descriptionId = useId()
 
-  const quantity = form.watch(`quantity`)
+  const remainingQuantity = form.watch(`remainingQuantity`)
 
   return (
     <FormProvider {...form}>
@@ -94,13 +94,13 @@ export function StocksCalendarTableEditStock({
             <div className={styles['price-category-row']}>
               <QuantityInput
                 minimum={0}
-                error={form.formState.errors.quantity?.message}
-                label="Nombre de places"
-                value={quantity}
+                error={form.formState.errors.remainingQuantity?.message}
+                label="Places restantes"
+                value={remainingQuantity}
                 onChange={(e) => {
                   const value = e.target.value
                   form.setValue(
-                    `quantity`,
+                    `remainingQuantity`,
                     value === '' ? undefined : Number(value)
                   )
                 }}

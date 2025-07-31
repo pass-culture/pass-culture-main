@@ -40,24 +40,30 @@ export function getStockFormDefaultValues(
           FORMAT_ISO_DATE_ONLY
         )
       : '',
-    quantity:
-      stock.quantity === null || stock.quantity === undefined
+    remainingQuantity:
+      stock.remainingQuantity === null ||
+      stock.remainingQuantity === undefined ||
+      stock.remainingQuantity === 'unlimited'
         ? undefined
-        : stock.quantity,
+        : Number(stock.remainingQuantity),
   }
 }
 
 export function serializeStockFormValuesForUpdate(
-  stockId: number,
+  stock: GetOfferStockResponseModel,
   formValues: EditStockFormValues,
   departmentCode: string
 ) {
-  const { priceCategory, quantity, date, time, bookingLimitDate } = formValues
+  const { priceCategory, remainingQuantity, date, time, bookingLimitDate } =
+    formValues
 
   return {
-    id: stockId,
+    id: stock.id,
     priceCategoryId: Number(priceCategory),
-    quantity: quantity,
+    quantity:
+      remainingQuantity === undefined
+        ? null
+        : remainingQuantity + stock.bookingsQuantity,
     beginningDatetime: serializeDateTimeToUTCFromLocalDepartment(
       format(date, FORMAT_ISO_DATE_ONLY),
       time,

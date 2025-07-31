@@ -145,8 +145,8 @@ export function StocksCalendarTable({
             <th className={styles['thead-th']}>Date limite de réservation</th>
             <th className={styles['thead-th']}>
               {mode === OFFER_WIZARD_MODE.CREATION
-                ? 'Place'
-                : 'Quantité restante'}
+                ? 'Places'
+                : 'Places restantes'}
             </th>
             {mode !== OFFER_WIZARD_MODE.CREATION && (
               <th className={styles['thead-th']}>Réservations</th>

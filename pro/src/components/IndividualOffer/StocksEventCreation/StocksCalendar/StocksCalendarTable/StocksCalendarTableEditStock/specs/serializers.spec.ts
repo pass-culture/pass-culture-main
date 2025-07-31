@@ -1,4 +1,5 @@
 import { EventStockUpdateBodyModel } from 'apiClient/v1'
+import { getOfferStockFactory } from 'commons/utils/factories/individualApiFactories'
 
 import { serializeStockFormValuesForUpdate } from '../serializers'
 import { EditStockFormValues } from '../StocksCalendarTableEditStock'
@@ -14,7 +15,7 @@ describe('serializeStockFormValuesForUpdate', () => {
       time: '13:00:00',
       priceCategory: '1',
       bookingLimitDate: '2022-10-10',
-      quantity: 17,
+      remainingQuantity: 17,
     }
     departementCode = '75'
     stockId = 42
@@ -22,7 +23,7 @@ describe('serializeStockFormValuesForUpdate', () => {
 
   it('should serialize data for stock event edition', () => {
     const serializedData = serializeStockFormValuesForUpdate(
-      stockId,
+      getOfferStockFactory({ id: stockId }),
       formValues,
       departementCode
     )
@@ -39,8 +40,8 @@ describe('serializeStockFormValuesForUpdate', () => {
 
   it('should serialize data for stock event edition with unlimited stock', () => {
     const serializedData = serializeStockFormValuesForUpdate(
-      stockId,
-      { ...formValues, quantity: undefined },
+      getOfferStockFactory({ id: stockId }),
+      { ...formValues, remainingQuantity: undefined },
       departementCode
     )
 
@@ -49,15 +50,15 @@ describe('serializeStockFormValuesForUpdate', () => {
       beginningDatetime: '2022-10-11T11:00:00Z',
       bookingLimitDatetime: '2022-10-10T11:00:00Z',
       priceCategoryId: 1,
-      quantity: undefined,
+      quantity: null,
     }
     expect(serializedData).toStrictEqual(expectedApiStockEvent)
   })
 
   it('should serialize data for stock event edition with 0 stock', () => {
     const serializedData = serializeStockFormValuesForUpdate(
-      stockId,
-      { ...formValues, quantity: 0 },
+      getOfferStockFactory({ id: stockId }),
+      { ...formValues, remainingQuantity: 0 },
       departementCode
     )
 
@@ -69,5 +70,15 @@ describe('serializeStockFormValuesForUpdate', () => {
       quantity: 0,
     }
     expect(serializedData).toStrictEqual(expectedApiStockEvent)
+  })
+
+  it('should serialize data for stock event edition with bookings', () => {
+    const serializedData = serializeStockFormValuesForUpdate(
+      getOfferStockFactory({ id: stockId, bookingsQuantity: 22 }),
+      { ...formValues, remainingQuantity: 100 },
+      departementCode
+    )
+
+    expect(serializedData).toEqual(expect.objectContaining({ quantity: 122 }))
   })
 })
