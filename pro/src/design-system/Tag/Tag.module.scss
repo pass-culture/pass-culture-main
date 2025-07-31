@@ -53,6 +53,14 @@
     background-color: var(--color-background-bookclub);
   }
 
+  &.cineclub {
+    .icon {
+      color: var(--color-icon-cineclub);
+    }
+
+    background-color: var(--color-background-cineclub);
+  }
+
   &.headline {
     .icon {
       color: var(--color-icon-headline);

@@ -62,6 +62,13 @@ export const Bookclub: Story = {
   },
 }
 
+export const Cineclub: Story = {
+  args: {
+    label: 'Ciné Club',
+    variant: TagVariant.CINECLUB,
+  },
+}
+
 export const Headline: Story = {
   args: {
     label: 'Reco par les lieux',
