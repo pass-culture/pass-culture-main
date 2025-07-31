@@ -1,0 +1,132 @@
+{% from "components/badges.html" import build_fraudulent_booking_badge with context %}
+{% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
+{% from "components/bookings/extra_row.html" import build_individual_booking_extra_row with context %}
+{% from "components/connect_as.html" import build_connect_as_link %}
+{% import "components/forms.html" as forms with context %}
+{% import "components/links.html" as links with context %}
+{% for booking in rows %}
+  {% set offer = booking.stock.offer %}
+  <tr>
+    <td>
+      <input type="checkbox"
+             class="form-check-input"
+             name="pc-table-multi-select-check-{{ booking.id }}"
+             data-id="{{ booking.id }}"
+             data-value="{{ booking.amount }}" />
+    </td>
+    <td>
+      <div class="d-flex">
+        {{ build_booking_toggle_extra_row_button(booking) }}
+        <div class="mx-2 dropdown">
+          {% if has_permission("MANAGE_BOOKINGS") %}
+            <button type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    class="btn p-0"
+                    {% if booking.isReimbursed %}disabled{% endif %}>
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu">
+              {% if booking.isCancelled %}
+                <li class="dropdown-item p-0">
+                  <a class="btn btn-sm d-block w-100 text-start px-3"
+                     data-bs-toggle="modal"
+                     data-bs-target=".pc-validate-booking-modal-{{ booking.id }}">Valider la réservation</a>
+                </li>
+              {% elif not booking.isReimbursed %}
+                <li class="dropdown-item p-0">
+                  <a class="btn btn-sm d-block w-100 text-start px-3"
+                     data-bs-toggle="modal"
+                     data-bs-target=".pc-cancel-booking-modal-{{ booking.id }}">Annuler la réservation</a>
+                </li>
+              {% endif %}
+            </ul>
+            {% if booking.isCancelled %}
+              <div class="modal modal-lg fade pc-validate-booking-modal-{{ booking.id }}"
+                   tabindex="-1"
+                   aria-labelledby="{{ validate_booking_aria_described_by_id }}"
+                   aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <form action="{{ url_for('backoffice_web.individual_bookings.mark_booking_as_used', booking_id=booking.id) }}"
+                          name="{{ url_for('backoffice_web.individual_bookings.mark_booking_as_used', booking_id=booking.id) | action_to_name }}"
+                          method="post"
+                          data-turbo="false">
+                      <div class="modal-header"
+                           id="{{ validate_booking_aria_described_by_id }}">
+                        <h5 class="modal-title">Valider la réservation {{ booking.token }}</h5>
+                      </div>
+                      <div class="modal-body row">{{ forms.build_form_fields_group(mark_as_used_booking_form) }}</div>
+                      <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-outline-primary-subtle-bg"
+                                data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit"
+                                class="btn btn-primary">Confirmer</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            {% elif not booking.isReimbursed %}
+              <div class="modal modal-lg fade pc-cancel-booking-modal-{{ booking.id }}"
+                   tabindex="-1"
+                   aria-labelledby="{{ cancel_booking_aria_described_by_id }}"
+                   aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <form action="{{ url_for('backoffice_web.individual_bookings.mark_booking_as_cancelled', booking_id=booking.id) }}"
+                          name="{{ url_for('backoffice_web.individual_bookings.mark_booking_as_cancelled', booking_id=booking.id) | action_to_name }}"
+                          method="post"
+                          data-turbo="false">
+                      <div class="modal-header"
+                           id="{{ cancel_booking_aria_described_by_id }}">
+                        <h5 class="modal-title">Annuler la réservation {{ booking.token }}</h5>
+                      </div>
+                      <div class="modal-body row">{{ forms.build_form_fields_group(cancel_booking_form) }}</div>
+                      <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-outline-primary-subtle-bg"
+                                data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit"
+                                class="btn btn-primary">Confirmer</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </td>
+    <td>{{ booking.id }}</td>
+    <td>{{ booking.token }}</td>
+    <td>{{ links.build_public_user_name_to_details_link(booking.user) }}</td>
+    <td>{{ build_connect_as_link(connect_as[booking.id], offer.name, "link-primary") }}</td>
+    <td>{{ links.build_offer_name_to_details_link(offer, text_attr="id") }}</td>
+    <td>{{ (booking.quantity == 2) | format_bool }}</td>
+    <td>{{ booking.stock.quantity }}</td>
+    <td>{{ booking.total_amount | format_amount(target=booking.user) }}</td>
+    <td>{{ booking | format_booking_status(with_badge=True) }}</td>
+    {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
+      <td>{{ build_fraudulent_booking_badge(booking.fraudulentBookingTag, "Frauduleuse") }}</td>
+    {% endif %}
+    <td>{{ booking.deposit | format_active_deposit }}</td>
+    <td>{{ booking.validationAuthorType | format_booking_validation_author_type }}</td>
+    <td class="text-center">
+      {% if booking.validated_incident_id %}
+        <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=booking.validated_incident_id) }}"
+           class=""><i class="bi bi-exclamation-triangle-fill text-danger fs-3"
+   data-bs-toggle="tooltip"
+   data-bs-placement="top"
+   data-bs-title="Visualiser l'incident"></i></a>
+      {% endif %}
+    </td>
+    <td>{{ booking.dateCreated | format_date_time }}</td>
+    <td>{{ booking.stock.beginningDatetime | format_date_time }}</td>
+    <td>{{ links.build_offerer_name_to_details_link(booking.offerer) }}</td>
+    <td>{{ links.build_venue_name_to_details_link(booking.venue) }}</td>
+  </tr>
+  {{ build_individual_booking_extra_row(booking, booking.stock, offer) }}
+{% endfor %}
