@@ -293,6 +293,61 @@ describe('IndividualOfferDetailsScreenNext', () => {
     expect(screen.getByText(DEFAULTS.submitButtonLabel)).toBeInTheDocument()
   })
 
+  describe('when media page is enabled (WIP_ADD_VIDEO)', () => {
+    it('should not display any image input', async () => {
+      renderDetailsScreen({
+        contextValue,
+        options: {
+          features: ['WIP_ADD_VIDEO'],
+        },
+      })
+
+      await screen.findByRole('heading', { name: 'À propos de votre offre' })
+      expect(
+        screen.queryByRole('heading', { name: 'Illustrez votre offre' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not call any image api on submit', async () => {
+      const mockHandleImageOnSubmit = vi.fn().mockResolvedValue(undefined)
+      vi.spyOn(
+        imageUploadModule,
+        'useIndividualOfferImageUpload'
+      ).mockReturnValue({
+        displayedImage: { url: 'my url', credit: null },
+        hasUpsertedImage: false,
+        onImageDelete: vi.fn(),
+        onImageUpload: vi.fn(),
+        handleEanImage: vi.fn(),
+        handleImageOnSubmit: mockHandleImageOnSubmit,
+      })
+
+      vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
+      vi.spyOn(api, 'postDraftOffer').mockResolvedValue(
+        getIndividualOfferFactory({
+          id: 12,
+        })
+      )
+      vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+        { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
+      ])
+
+      renderDetailsScreen({
+        contextValue,
+        options: {
+          features: ['WIP_ADD_VIDEO'],
+        },
+      })
+      await userFillsEverything()
+
+      await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
+      expect(mockHandleImageOnSubmit).not.toHaveBeenCalled()
+    })
+  })
+
   it('should display the accessibility field', () => {
     renderDetailsScreen({ contextValue })
 

@@ -72,6 +72,7 @@ export const DetailsForm = ({
   const subcategoryId = watch('subcategoryId')
   const accessibility = watch('accessibility')
 
+  const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
@@ -199,14 +200,16 @@ export const DetailsForm = ({
           </>
         )}
       </FormLayout.Section>
-      <ImageUploaderOffer
-        displayedImage={displayedImage}
-        onImageUpload={onImageUpload}
-        onImageDelete={onImageDelete}
-        onImageDropOrSelected={logOnImageDropOrSelected}
-        hideActionButtons={hasSelectedProduct}
-        isDisabled={hasSelectedProduct}
-      />
+      {!isMediaPageEnabled && (
+        <ImageUploaderOffer
+          displayedImage={displayedImage}
+          onImageUpload={onImageUpload}
+          onImageDelete={onImageDelete}
+          onImageDropOrSelected={logOnImageDropOrSelected}
+          hideActionButtons={hasSelectedProduct}
+          isDisabled={hasSelectedProduct}
+        />
+      )}
       {!showAddVenueBanner && (
         <Subcategories
           readOnlyFields={readOnlyFields}

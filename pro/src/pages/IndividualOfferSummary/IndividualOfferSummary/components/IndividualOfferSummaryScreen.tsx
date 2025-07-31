@@ -14,6 +14,7 @@ import {
   OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
@@ -28,6 +29,7 @@ import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
 import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
+import { MediaSection } from 'pages/IndividualOfferSummary/components/MediaSection/MediaSection'
 import { PriceCategoriesSection } from 'pages/IndividualOfferSummary/components/PriceCategoriesSection/PriceCategoriesSection'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
@@ -54,6 +56,7 @@ export const IndividualOfferSummaryScreen = () => {
     useIndividualOfferContext()
   const [searchParams, setSearchParams] = useSearchParams()
   const currentOfferer = useSelector(selectCurrentOfferer)
+  const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
 
   const onPublish = async (values: EventPublicationFormValues) => {
     // Edition mode offers are already published
@@ -192,12 +195,20 @@ export const IndividualOfferSummaryScreen = () => {
           <SummaryContent>
             <OfferSection conditionalFields={conditionalFields} offer={offer} />
 
-            {mode === OFFER_WIZARD_MODE.CREATION && offer.isEvent && (
-              <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
-            )}
-
             {mode === OFFER_WIZARD_MODE.CREATION && (
-              <StockSection offer={offer} canBeDuo={canBeDuo} />
+              <>
+                {offer.isEvent && (
+                  <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
+                )}
+                <StockSection offer={offer} canBeDuo={canBeDuo} />
+                {isMediaPageEnabled && (
+                  <MediaSection
+                    offerId={offer.id}
+                    videoUrl={offer.videoUrl}
+                    shouldImageBeHidden
+                  />
+                )}
+              </>
             )}
           </SummaryContent>
 

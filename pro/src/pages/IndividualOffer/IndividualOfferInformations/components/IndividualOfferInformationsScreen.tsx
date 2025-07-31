@@ -81,6 +81,7 @@ export const IndividualOfferInformationsScreen = ({
   const isEvent = subCategories.find(
     (subcategory) => subcategory.id === offer.subcategoryId
   )?.isEvent
+  const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
@@ -179,12 +180,18 @@ export const IndividualOfferInformationsScreen = ({
       const receivedOfferId = response.id
       await mutate([GET_OFFER_QUERY_KEY, receivedOfferId])
 
+      const nextStepForEdition =
+        INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
+      const nextStepForCreation = isMediaPageEnabled
+        ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA
+        : isEvent
+          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
+          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
+
       const nextStep =
         mode === OFFER_WIZARD_MODE.EDITION
-          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
-          : isEvent
-            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
-            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
+          ? nextStepForEdition
+          : nextStepForCreation
 
       addToLocalStorage()
 

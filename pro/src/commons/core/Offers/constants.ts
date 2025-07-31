@@ -46,6 +46,7 @@ export enum OFFER_WIZARD_MODE {
 export enum INDIVIDUAL_OFFER_WIZARD_STEP_IDS {
   DETAILS = 'details',
   USEFUL_INFORMATIONS = 'pratiques',
+  MEDIA = 'media',
   TARIFS = 'tarifs',
   STOCKS = 'stocks',
   SUMMARY = 'recapitulatif',

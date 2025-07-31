@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 
 import { api } from 'apiClient/api'
+import { CreateThumbnailResponseModel } from 'apiClient/v1'
 import { IndividualOfferImage } from 'commons/core/Offers/types'
 import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 
@@ -10,7 +11,9 @@ type IndividualImageOfferContextValues = {
   onImageUpload: (args: OnImageUploadArgs) => void
   onImageDelete: () => void
   handleEanImage: (imageUrl?: string) => void
-  handleImageOnSubmit: (offerId: number) => Promise<void>
+  handleImageOnSubmit: (
+    offerId: number
+  ) => Promise<CreateThumbnailResponseModel | void>
 }
 
 export const useIndividualOfferImageUpload = (
@@ -66,9 +69,9 @@ export const useIndividualOfferImageUpload = (
           offerId,
         }
 
-        await api.createThumbnail(thumbnail)
+        return await api.createThumbnail(thumbnail)
       } else if (shouldDeleteThumbnail) {
-        await api.deleteThumbnail(offerId)
+        return await api.deleteThumbnail(offerId)
       }
     },
     [hasUpsertedImage, imageToUpsert]
