@@ -1,0 +1,193 @@
+{% extends "layouts/details.html" %}
+{% import "components/clipboard.html" as clipboard %}
+{% from "components/description.html" import description_detail_horizontal %}
+{% import "components/links.html" as links with context %}
+{% from "components/description.html" import description_detail_vertical %}
+{% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
+{% block title %}{{ artist.name }}{% endblock %}
+{% block header_extra %}
+  <div>
+    {% call badges.badges_container() %}
+      {{ artist.is_blacklisted | format_artist_visibility_status }}
+    {% endcall %}
+  </div>
+{% endblock %}
+{% block action_buttons %}
+  {% if allowed_actions[action.EDIT] %}
+    {{ action_bar_button("pencil-square", "Éditer", modal_id="#edit-artist-modal-" + artist.id) }}
+  {% endif %}
+  {% if allowed_actions[action.BLACKLIST] %}
+    {% if artist.is_blacklisted %}
+      {{ action_bar_button("check-circle", "Réactiver", modal_id="#unblacklist-artist-modal-" + artist.id) }}
+    {% else %}
+      {{ action_bar_button("x-circle", "Blacklister", modal_id="#blacklist-artist-modal-" + artist.id) }}
+    {% endif %}
+  {% endif %}
+  {% if allowed_actions[action.LINK_PRODUCT] %}
+    {{ action_bar_button("plus-circle", "Associer un produit", modal_id="#associate-product-modal-" + artist.id) }}
+  {% endif %}
+  {% if allowed_actions[action.MERGE] %}
+    {{ action_bar_button("intersect", "Fusionner", modal_id="#merge-artist-modal-" + artist.id) }}
+  {% endif %}
+  {% if allowed_actions[action.SPLIT] %}
+    {{ action_bar_button("scissors", "Séparer", modal_id="#split-artist-modal-" + artist.id) }}
+  {% endif %}
+{% endblock action_buttons %}
+{% block extra_title_bar %}
+  {% call content_navbar("artist-details") %}
+    {{ content_navbar_element('info', 'Détails') }}
+    {{ content_navbar_element('products', 'Produits associés') }}
+  {% endcall %}
+{% endblock extra_title_bar %}
+{% block details_container %}
+  {% call details_content_wrapper("artist-details") %}
+    {% call nav_section("info", "Détails de l'artiste") %}
+      <div class="d-flex gap-4">
+        <div class="flex-grow-1">
+          <h5>
+            Informations générales
+            <button type="button"
+                    class="btn btn-sm p-0"
+                    data-bs-toggle="modal"
+                    data-bs-target="#edit-artist-modal-{{ artist.id }}"
+                    data-bs-tooltip="tooltip"
+                    title="Modifier les informations de l'artiste">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+          </h5>
+          {% call description_detail_horizontal("Nom") %}
+            {{ artist.name }}
+          {% endcall %}
+          {% call description_detail_horizontal("Description") %}
+            {{ artist.description | empty_string_if_null | nl2br }}
+          {% endcall %}
+          <h5>Informations sur l'image</h5>
+          {% call description_detail_horizontal("Auteur") %}
+            {{ artist.image_author | empty_string_if_null }}
+          {% endcall %}
+        </div>
+        <div class="flex-shrink-0">
+          {% if artist.image %}
+            <figure class="figure">
+              <div class="d-flex justify-content-center align-items-center">
+                <object class="d-block offer-image"
+                        data="{{ artist.image }}"
+                        type="image/jpeg">
+                  <div class="d-flex bg-secondary-subtle justify-content-center align-items-center offer-no-image">
+                    <i class="bi bi-file-image fs-2"
+                       data-bs-toggle="tooltip"
+                       data-bs-title="Image invalide"></i>
+                  </div>
+                </object>
+              </div>
+            </figure>
+          {% else %}
+            <div class="d-flex bg-secondary-subtle justify-content-center align-items-center offer-no-image">
+              <i class="bi bi-file-image fs-2"
+                 data-bs-toggle="tooltip"
+                 data-bs-title="Pas d'image"></i>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endcall %}
+    {% call nav_section("products", "Produits associés") %}
+      <table class="table table-borderless table-hover">
+        <thead class="table-light">
+          <tr class="table-secondary fs-7">
+            {% if allowed_actions[action.UNLINK_PRODUCT] %}<th></th>{% endif %}
+            <th>ID Produit</th>
+            <th>Nom du produit</th>
+            <th>Catégorie</th>
+            <th>Sous-Catégorie</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in artist.products %}
+            <tr id="product-row-{{ product.id }}">
+              {% if allowed_actions[action.UNLINK_PRODUCT] %}
+                <td>
+                  <div class="dropdown">
+                    <button type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            class="btn p-0">
+                      <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li class="dropdown-item">
+                        <a class="btn btn-sm d-block w-100 text-start px-3"
+                           data-bs-toggle="modal"
+                           data-bs-target="#unlink-product-modal-{{ product.id }}">Dissocier le produit</a>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              {% endif %}
+              <td>{{ links.build_product_details_link(product) }}</td>
+              <td>{{ product.name }}</td>
+              <td>{{ product.subcategoryId | format_offer_category }}</td>
+              <td>{{ product.subcategoryId | format_offer_subcategory }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endcall %}
+  {% endcall %}
+{% endblock details_container %}
+{% block side_column %}
+  <div>
+    {% call description_detail_vertical("Artist ID") %}
+      {{ artist.id }}
+      {{ clipboard.copy_to_clipboard(artist.id, "Copier") }}
+    {% endcall %}
+    {% call description_detail_vertical("Nombre de produits") %}
+      {{ artist.products | length }}
+    {% endcall %}
+    {% call description_detail_vertical("Alias") %}
+      {% if artist.aliases %}
+        <div class="d-flex flex-wrap">
+          {% call badges.badges_container() %}
+            {% for alias in artist.aliases | sort(attribute='artist_alias_name') %}
+              {{ alias.artist_alias_name | format_badge("secondary") }}
+            {% endfor %}
+          {% endcall %}
+          {% set alias_count = artist.aliases | length %}
+          {% if alias_count > 10 %}
+            <span class="ms-1 mb-1 text-muted"
+                  title="{{ alias_count - 10 }} alias supplémentaires">...</span>
+          {% endif %}
+        </div>
+      {% else %}
+        <span class="text-muted">Aucun alias enregistré.</span>
+      {% endif %}
+    {% endcall %}
+  </div>
+{% endblock side_column %}
+{% block extra_main_content %}
+  {% if allowed_actions[action.EDIT] %}
+    {{ build_dynamic_modal(url_for('backoffice_web.artist.get_artist_edit_form', artist_id=artist.id) , "edit-artist-modal-" + artist.id) }}
+  {% endif %}
+  {% if allowed_actions[action.BLACKLIST] %}
+    {% if artist.is_blacklisted %}
+      {{ build_dynamic_modal(url_for('backoffice_web.artist.get_artist_unblacklist_form', artist_id=artist.id) , "unblacklist-artist-modal-" + artist.id) }}
+    {% else %}
+      {{ build_dynamic_modal(url_for('backoffice_web.artist.get_artist_blacklist_form', artist_id=artist.id) , "blacklist-artist-modal-" + artist.id) }}
+    {% endif %}
+  {% endif %}
+  {% if allowed_actions[action.UNLINK_PRODUCT] %}
+    {% for product in artist.products %}
+      {{ build_dynamic_modal(url_for('backoffice_web.artist.get_unlink_product_form', artist_id=artist.id, product_id=product.id) , "unlink-product-modal-" + product.id|string) }}
+    {% endfor %}
+  {% endif %}
+  {% if allowed_actions[action.LINK_PRODUCT] %}
+    {{ build_dynamic_modal(url_for('backoffice_web.artist.associate_product_form', artist_id=artist.id) , "associate-product-modal-" + artist.id) }}
+  {% endif %}
+  {% if allowed_actions[action.MERGE] %}
+    {{ build_dynamic_modal(url_for('backoffice_web.artist.get_merge_artist_form', artist_id=artist.id) ,"merge-artist-modal-" + artist.id) }}
+  {% endif %}
+  {% if allowed_actions[action.SPLIT] %}
+    {{ build_dynamic_modal(url_for('backoffice_web.artist.get_split_artist_form', artist_id=artist.id) , "split-artist-modal-" + artist.id) }}
+  {% endif %}
+  <div id="modal-close-target"></div>
+{% endblock %}

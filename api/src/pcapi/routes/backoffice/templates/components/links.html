@@ -55,6 +55,11 @@
      target="_blank"
      title="{{ hint }} associées au partenaire culturel">Voir toutes les offres</a>
 {% endmacro %}
+{% macro build_product_details_link(product) %}
+  <a href="{{ url_for('backoffice_web.product.get_product_details', product_id=product.id) }}"
+     class="link-primary"
+     title="Page du produit">{{ product.id }}</a>
+{% endmacro %}
 {% macro build_offer_details_link(offer) %}
   <a href="{{ url_for('backoffice_web.offer.get_offer_details', offer_id=offer.id) }}"
      class="link-primary"
