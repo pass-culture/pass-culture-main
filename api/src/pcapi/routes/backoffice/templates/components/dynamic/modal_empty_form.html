@@ -1,0 +1,18 @@
+{# This template is only meant to display error messages instead of form. #}
+<div class="modal-content p-2">
+  <div class="modal-header">
+    <h5 class="modal-title">Erreur</h5>
+    <button type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Fermer"></button>
+  </div>
+  <div class="m-4">
+    {% for message in messages %}<div class="m-0 mb-2">{{ message }}</div>{% endfor %}
+  </div>
+  <div class="modal-footer">
+    <button type="button"
+            class="btn btn-outline-primary-subtle-bg"
+            data-bs-dismiss="modal">Annuler</button>
+  </div>
+</div>
