@@ -14,12 +14,14 @@ export enum TagVariant {
   ERROR = 'error',
   NEW = 'new',
   BOOKCLUB = 'bookclub',
+  CINECLUB = 'cineclub',
   HEADLINE = 'headline',
   LIKE = 'like',
 }
 
 const tagIconByVariant: { [key in TagVariant]?: string } = {
   [TagVariant.BOOKCLUB]: bookIcon,
+  [TagVariant.CINECLUB]: bookIcon,
   [TagVariant.HEADLINE]: headlineIcon,
   [TagVariant.LIKE]: likeIcon,
 }
