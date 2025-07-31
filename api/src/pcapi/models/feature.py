@@ -120,6 +120,7 @@ class FeatureToggle(enum.Enum):
     WIP_2025_AUTOLOGIN = "Activer l’autologin par lien lors de l’inscription au portail pro"
     WIP_2025_SIGN_UP = "Activer la nouvelle interface d’inscription au portail pro"
     WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE = "Activer l'inscription de structures en diffusion partielle"
+    WIP_ADD_VIDEO = "Permettre aux pros d'avoir des vidéos sur leurs offres"
     WIP_ASYNCHRONOUS_CELERY_MAILS = (
         "Activer le backend de tâches asynchrones Celery pour les tâches liées à l'envoi de mails"
     )
@@ -221,6 +222,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.SEND_ALL_EMAILS_TO_EHP,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
     FeatureToggle.WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE,
+    FeatureToggle.WIP_ADD_VIDEO,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS,
     FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION,
     FeatureToggle.WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED,
@@ -317,5 +319,6 @@ def check_feature_flags_completeness() -> None:
     extra_flags = installed_flag_names - defined_flag_name
     if extra_flags:
         logger.error(
-            "The following feature flags are present in the database but not present in the code: %s", extra_flags
+            "The following feature flags are present in the database but not present in the code: %s",
+            extra_flags,
         )
