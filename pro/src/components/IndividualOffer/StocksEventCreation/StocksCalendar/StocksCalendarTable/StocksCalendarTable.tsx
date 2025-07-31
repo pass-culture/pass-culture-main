@@ -11,11 +11,13 @@ import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { useNotification } from 'commons/hooks/useNotification'
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from 'commons/utils/date'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
+import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { getPriceCategoryName } from 'components/IndividualOffer/PriceCategoriesScreen/form/getPriceCategoryOptions'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
+import strokeTrashIcon from 'icons/stroke-trash.svg'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -46,6 +48,8 @@ export function StocksCalendarTable({
 }: StocksCalendarTableProps) {
   const [isEditStockDialogOpen, setIsEditStockDialogOpen] = useState(false)
   const [stockOpenedInDialog, setStockOpenedInDialog] =
+    useState<GetOfferStockResponseModel | null>(null)
+  const [stockBeingDeleted, setStockBeingDeleted] =
     useState<GetOfferStockResponseModel | null>(null)
 
   const openedStockTriggerRef = useRef<HTMLButtonElement | null>(null)
@@ -253,7 +257,7 @@ export function StocksCalendarTable({
                         <ListIconButton
                           icon={fullTrashIcon}
                           tooltipContent="Supprimer la date"
-                          onClick={() => onDeleteStocks([stock.id])}
+                          onClick={() => setStockBeingDeleted(stock)}
                         />
                       )}
                     </div>
@@ -264,6 +268,38 @@ export function StocksCalendarTable({
           })}
         </tbody>
       </table>
+      <ConfirmDialog
+        onCancel={() => {
+          setStockBeingDeleted(null)
+        }}
+        onConfirm={() => {
+          if (stockBeingDeleted) {
+            onDeleteStocks([stockBeingDeleted.id])
+          }
+          setStockBeingDeleted(null)
+        }}
+        title="Êtes-vous sûr de vouloir supprimer cette date ?"
+        confirmText="Confirmer la suppression"
+        cancelText="Annuler"
+        icon={strokeTrashIcon}
+        open={Boolean(stockBeingDeleted)}
+      >
+        {stockBeingDeleted?.bookingsQuantity &&
+        stockBeingDeleted.bookingsQuantity > 0 ? (
+          <>
+            <p className={styles['delete-warning-block']}>
+              Elle ne sera plus disponible à la réservation et
+              <strong>
+                entraînera l’annulation des réservations en cours et validées !
+              </strong>
+            </p>
+            <p>
+              L’ensemble des utilisateurs concernés sera automatiquement averti
+              par email.
+            </p>
+          </>
+        ) : null}
+      </ConfirmDialog>
     </div>
   )
 }

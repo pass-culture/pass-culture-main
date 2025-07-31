@@ -192,4 +192,45 @@ describe('StocksCalendarTable', () => {
       screen.getByRole('button', { name: 'Modifier la date' })
     ).toBeInTheDocument()
   })
+
+  it('should open a delete warning dialog when the user clicks on the delete button', async () => {
+    renderStocksCalendarTable({
+      stocks: [
+        getOfferStockFactory({
+          beginningDatetime: addSeconds(new Date(), 1).toISOString(),
+        }),
+      ],
+      mode: OFFER_WIZARD_MODE.EDITION,
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Supprimer la date' })
+    )
+
+    expect(
+      screen.getByRole('heading', {
+        name: 'Êtes-vous sûr de vouloir supprimer cette date ?',
+      })
+    ).toBeInTheDocument()
+  })
+
+  it('should show an explicit warning message in the deletion dialog when the stock has bookings', async () => {
+    renderStocksCalendarTable({
+      stocks: [
+        getOfferStockFactory({
+          beginningDatetime: addSeconds(new Date(), 1).toISOString(),
+          bookingsQuantity: 10,
+        }),
+      ],
+      mode: OFFER_WIZARD_MODE.EDITION,
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Supprimer la date' })
+    )
+
+    expect(
+      screen.getByText(/Elle ne sera plus disponible à la réservation/)
+    ).toBeInTheDocument()
+  })
 })
