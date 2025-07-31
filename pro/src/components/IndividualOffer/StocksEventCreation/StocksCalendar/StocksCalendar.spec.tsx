@@ -112,6 +112,10 @@ describe('StocksCalendar', () => {
       screen.getAllByRole('button', { name: 'Supprimer la date' })[0]
     )
 
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Confirmer la suppression' })
+    )
+
     expect(deleteSpy).toHaveBeenCalledOnce()
 
     expect(screen.getByText(/Une date a été supprimée/)).toBeInTheDocument()
