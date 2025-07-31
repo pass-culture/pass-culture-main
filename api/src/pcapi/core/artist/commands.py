@@ -3,6 +3,7 @@ import logging
 import typing
 from typing import Iterable
 
+import sqlalchemy as sa
 from sqlalchemy import exc as sa_exc
 
 import pcapi.core.artist.models as artist_models
@@ -10,11 +11,13 @@ from pcapi.connectors.big_query import queries as big_query_queries
 from pcapi.connectors.big_query.queries.artist import ArtistAliasModel
 from pcapi.connectors.big_query.queries.artist import ArtistModel
 from pcapi.connectors.big_query.queries.artist import ArtistProductLinkModel
+from pcapi.core.artist.api import update_artists_image_from_products
 from pcapi.core.artist.utils import get_artist_type
 from pcapi.core.artist.utils import sanitize_author_html
 from pcapi.models import db
 from pcapi.repository import transaction
 from pcapi.utils.blueprint import Blueprint
+from pcapi.utils.chunks import get_chunks
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -25,6 +28,14 @@ BATCH_SIZE = 1000
 
 BigQueryModel = typing.TypeVar("BigQueryModel", ArtistModel, ArtistProductLinkModel, ArtistAliasModel)
 Model = typing.TypeVar("Model", artist_models.Artist, artist_models.ArtistProductLink, artist_models.ArtistAlias)
+
+
+@blueprint.cli.command("fill_artist_images_from_products")
+def fill_artist_images_from_products() -> None:
+    artists_query = sa.select(artist_models.Artist.id).where(artist_models.Artist.image.is_(None))
+    artist_batches = get_chunks(db.session.execute(artists_query).scalars().yield_per(100))
+    for artists in artist_batches:
+        update_artists_image_from_products(artists)
 
 
 @blueprint.cli.command("import_all_artists_data")

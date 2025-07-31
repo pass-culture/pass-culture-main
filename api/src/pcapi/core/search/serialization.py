@@ -148,7 +148,7 @@ class AlgoliaSerializationMixin:
             [
                 {
                     "id": artist.id,
-                    "image": artist_api.get_artist_image_url(artist),
+                    "image": artist.image,
                     "name": artist.name,
                 }
                 for artist in offer.product.artists
