@@ -34,6 +34,9 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
     Object.values(INDIVIDUAL_OFFER_WIZARD_STEP_IDS)
   )
   const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
+  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
   const mode = useOfferWizardMode()
   const hasOffer = offer !== null
   const hasPriceCategories = Boolean(
@@ -50,7 +53,9 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
   const steps: StepPattern[] = [
     {
       id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
-      label: 'Détails de l’offre',
+      label: isNewOfferCreationFlowFeatureActive
+        ? 'Description'
+        : 'Détails de l’offre',
       path: getIndividualOfferPath({
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
         mode,
@@ -60,7 +65,9 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
     },
     {
       id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
-      label: 'Informations pratiques',
+      label: isNewOfferCreationFlowFeatureActive
+        ? 'Localisation'
+        : 'Informations pratiques',
       path: getIndividualOfferPath({
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
         mode,
@@ -99,7 +106,10 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
       },
       {
         id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
-        label: 'Dates & Capacités',
+        // This double ternary is temporary while the FF is being rolled out
+        label: isNewOfferCreationFlowFeatureActive
+          ? 'Horaires'
+          : 'Dates & Capacités',
         path: getIndividualOfferPath({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           mode,
@@ -111,7 +121,7 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
   } else {
     steps.push({
       id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
-      label: 'Stock & Prix',
+      label: isNewOfferCreationFlowFeatureActive ? 'Horaires' : 'Stock & Prix',
       path: getIndividualOfferPath({
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
         mode,
