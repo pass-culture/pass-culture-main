@@ -485,6 +485,10 @@ function fromOnBoardingPublishMyFirstOffer() {
   // Step 1: Offer details
   // ---------------------
 
+  cy.intercept('POST', 'http://localhost:5001/offers/draft').as(
+    'postOfferDraft'
+  )
+
   cy.findByRole('textbox', { name: /Titre de l’offre/ }).type(
     'Mon offre en brouillon'
   )
@@ -494,14 +498,18 @@ function fromOnBoardingPublishMyFirstOffer() {
   // Saving a draft
   cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
 
+  cy.wait('@postOfferDraft')
+
   // ---------------------------
   // Step 2: Useful informations
   // ---------------------------
 
-  cy.findByText('Non accessible').click()
+  cy.intercept('PATCH', 'http://localhost:5001/offers/1').as('patchOffer')
 
   // Minimal required fields are already filled by default in this step, so we can directly go to the next step
   cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
+
+  cy.wait('@patchOffer')
 
   // ----------------------
   // Step 3: Stock & Prices
