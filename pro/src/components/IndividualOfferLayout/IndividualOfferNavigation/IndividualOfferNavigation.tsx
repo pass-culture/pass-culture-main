@@ -7,6 +7,7 @@ import {
   OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useActiveStep } from 'commons/hooks/useActiveStep'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { Step, StepPattern, Stepper } from 'components/Stepper/Stepper'
@@ -32,6 +33,7 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
   const activeStep = useActiveStep(
     Object.values(INDIVIDUAL_OFFER_WIZARD_STEP_IDS)
   )
+  const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
   const mode = useOfferWizardMode()
   const hasOffer = offer !== null
   const hasPriceCategories = Boolean(
@@ -67,6 +69,19 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
       isActive: true,
     },
   ]
+
+  if (isMediaPageEnabled) {
+    steps.push({
+      id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
+      label: 'Image et vidéo',
+      path: getIndividualOfferPath({
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
+        mode,
+        isOnboarding,
+      }),
+      isActive: true,
+    })
+  }
 
   // Intermediate steps depending on isEvent
   if (isEvent) {

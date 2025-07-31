@@ -280,6 +280,27 @@ describe('IndividualOfferSummaryScreen', () => {
       ).not.toBeInTheDocument()
     })
 
+    it('should render a media section when media page is enabled (WIP_ADD_VIDEO)', () => {
+      renderIndividualOfferSummaryScreen({
+        contextValue: customContext,
+        mode: OFFER_WIZARD_MODE.CREATION,
+        path: generatePath(
+          getIndividualOfferPath({
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        ),
+        options: {
+          features: ['WIP_ADD_VIDEO'],
+        },
+      })
+
+      expect(
+        screen.getByRole('heading', { name: 'Image et vidéo' })
+      ).toBeInTheDocument()
+    })
+
     it('should render component with new sections', async () => {
       vi.spyOn(api, 'getOfferer').mockResolvedValue(
         defaultGetOffererResponseModel

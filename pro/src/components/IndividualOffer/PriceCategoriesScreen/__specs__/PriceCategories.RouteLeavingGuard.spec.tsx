@@ -21,16 +21,21 @@ import {
   PriceCategoriesScreenProps,
 } from '../PriceCategoriesScreen'
 
-const renderPriceCategories = (
-  props: PriceCategoriesScreenProps,
+const renderPriceCategories = ({
+  props,
   url = generatePath(
     getIndividualOfferPath({
       step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
       mode: OFFER_WIZARD_MODE.CREATION,
     }),
     { offerId: 'AA' }
-  )
-) =>
+  ),
+  features = [],
+}: {
+  props: PriceCategoriesScreenProps
+  url?: string
+  features?: string[]
+}) =>
   renderWithProviders(
     <Routes>
       {[OFFER_WIZARD_MODE.CREATION, OFFER_WIZARD_MODE.EDITION].map((mode) => (
@@ -71,6 +76,14 @@ const renderPriceCategories = (
 
       <Route
         path={getIndividualOfferPath({
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+        element={<div>There is the media route content</div>}
+      />
+
+      <Route
+        path={getIndividualOfferPath({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}
@@ -85,7 +98,7 @@ const renderPriceCategories = (
         element={<div>This is the summary route content</div>}
       />
     </Routes>,
-    { initialRouterEntries: [url] }
+    { initialRouterEntries: [url], features }
   )
 
 describe('PriceCategories', () => {
@@ -101,8 +114,25 @@ describe('PriceCategories', () => {
     )
   })
 
+  describe('when video is enabled', () => {
+    it('should let going to media when clicking on previous step in creation', async () => {
+      renderPriceCategories({
+        props: { offer: getIndividualOfferFactory() },
+        features: ['WIP_ADD_VIDEO'],
+      })
+
+      await userEvent.click(screen.getByText('Retour'))
+
+      expect(
+        screen.getByText('There is the media route content')
+      ).toBeInTheDocument()
+    })
+  })
+
   it('should let going to information when clicking on previous step in creation', async () => {
-    renderPriceCategories({ offer: getIndividualOfferFactory() })
+    renderPriceCategories({
+      props: { offer: getIndividualOfferFactory() },
+    })
 
     await userEvent.click(screen.getByText('Retour'))
 
@@ -112,7 +142,7 @@ describe('PriceCategories', () => {
   })
 
   it('should let going to stock when form has been filled in creation', async () => {
-    renderPriceCategories({ offer: getIndividualOfferFactory() })
+    renderPriceCategories({ props: { offer: getIndividualOfferFactory() } })
     await userEvent.type(
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
@@ -128,16 +158,16 @@ describe('PriceCategories', () => {
   })
 
   it('should let going to recap when form has been filled in edition', async () => {
-    renderPriceCategories(
-      { offer: getIndividualOfferFactory() },
-      generatePath(
+    renderPriceCategories({
+      props: { offer: getIndividualOfferFactory() },
+      url: generatePath(
         getIndividualOfferPath({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
         { offerId: 'AA' }
-      )
-    )
+      ),
+    })
     await userEvent.type(
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
@@ -151,16 +181,16 @@ describe('PriceCategories', () => {
   })
 
   it('should go back to summary when clicking on "Annuler et quitter" in Edition', async () => {
-    renderPriceCategories(
-      { offer: getIndividualOfferFactory() },
-      generatePath(
+    renderPriceCategories({
+      props: { offer: getIndividualOfferFactory() },
+      url: generatePath(
         getIndividualOfferPath({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
         { offerId: 'AA' }
-      )
-    )
+      ),
+    })
 
     await userEvent.click(screen.getByText('Annuler et quitter'))
 
