@@ -182,7 +182,7 @@ const BeginningTimesForm = (): JSX.Element => {
 const PriceCategoriesForm = ({
   priceCategoryOptions,
 }: {
-  priceCategoryOptions: SelectOption[]
+  priceCategoryOptions: SelectOption<number>[]
 }): JSX.Element => {
   const { register, watch, setValue, formState } =
     useFormContext<RecurrenceFormValues>()

@@ -1,6 +1,8 @@
+import { ChangeEvent } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
+import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 import { DetailsFormValues } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'
@@ -9,6 +11,7 @@ import {
   buildSubcategoryOptions,
   completeSubcategoryConditionalFields,
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
+import { Callout } from 'ui-kit/Callout/Callout'
 import { Select } from 'ui-kit/form/Select/Select'
 
 import styles from './Subcategories.module.scss'
@@ -29,8 +32,10 @@ export function Subcategories({
     clearErrors,
     watch,
     register,
+    resetField,
     formState: { errors },
   } = useFormContext<DetailsFormValues>()
+  const { setIsEvent } = useIndividualOfferContext()
 
   const categoryId = watch('categoryId')
   const subcategoryId = watch('subcategoryId')
@@ -41,38 +46,50 @@ export function Subcategories({
     categoryId
   )
 
-  const handleSubcategoryChange = (subcategoryId: string) => {
-    const subcategory = filteredSubcategories.find(
-      (s) => s.id === subcategoryId
+  const handleSubcategoryUpdate = (nextSubcategoryId: string) => {
+    const nextSubcategory = filteredSubcategories.find(
+      (s) => s.id === nextSubcategoryId
     )
+    if (!nextSubcategory) {
+      throw new Error(
+        `nextSubcategory with id '${subcategoryId}' not found in filteredSubcategories.`
+      )
+    }
     const newConditionalFields =
-      completeSubcategoryConditionalFields(subcategory)
+      completeSubcategoryConditionalFields(nextSubcategory)
 
-    setValue('subcategoryId', subcategoryId, {
-      shouldValidate: true,
-    })
     setValue('subcategoryConditionalFields', newConditionalFields, {
       shouldValidate: true,
     })
+    setIsEvent(nextSubcategory.isEvent)
   }
 
-  const handleCategoryChange = (categoryId: string) => {
+  const handleCategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {
     clearErrors(['categoryId', 'subcategoryId'])
-    setValue('categoryId', categoryId, {
-      shouldValidate: true,
-    })
 
-    if (readOnlyFields.includes('subcategoryId')) {
+    const nextCategoryId = event.target.value
+    const options = buildSubcategoryOptions(
+      filteredSubcategories,
+      nextCategoryId
+    )
+    if (options.length > 1) {
+      resetField('subcategoryId')
+
       return
     }
 
-    const options = buildSubcategoryOptions(filteredSubcategories, categoryId)
-    const nextSubcategoryId =
-      options.length === 1
-        ? String(options[0].value)
-        : DEFAULT_DETAILS_FORM_VALUES.subcategoryId
+    const nextSubcategoryId = options[0].value
 
-    handleSubcategoryChange(nextSubcategoryId)
+    setValue('subcategoryId', nextSubcategoryId, {
+      shouldValidate: true,
+    })
+    handleSubcategoryUpdate(nextSubcategoryId)
+  }
+
+  const handleSubcategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const nextSubcategoryId = event.target.value
+
+    handleSubcategoryUpdate(nextSubcategoryId)
   }
 
   return (
@@ -82,7 +99,9 @@ export function Subcategories({
     >
       <FormLayout.Row>
         <Select
-          {...register('categoryId')}
+          {...register('categoryId', {
+            onChange: handleCategoryChange,
+          })}
           label="Catégorie"
           required
           options={categoryOptions}
@@ -92,17 +111,20 @@ export function Subcategories({
           }}
           value={categoryId}
           disabled={readOnlyFields.includes('categoryId')}
-          onChange={(event) => {
-            handleCategoryChange(event.target.value)
-            clearErrors(['categoryId', 'subcategoryId'])
-          }}
           error={errors.categoryId?.message}
         />
       </FormLayout.Row>
+      {!readOnlyFields.includes('categoryId') && (
+        <Callout className={styles['subcategory-callout']}>
+          En fonction de la sous-catégorie choisie, certaines étapes seront
+          adaptées automatiquement.
+        </Callout>
+      )}
 
       {categoryId !== DEFAULT_DETAILS_FORM_VALUES.categoryId && (
         <Select
           {...register('subcategoryId', {
+            onChange: handleSubcategoryChange,
             required: 'Veuillez sélectionner une sous-catégorie',
           })}
           label="Sous-catégorie"
@@ -118,10 +140,6 @@ export function Subcategories({
             readOnlyFields.includes('subcategoryId') ||
             subcategoryOptions.length === 1
           }
-          onChange={(event) => {
-            handleSubcategoryChange(event.target.value)
-            clearErrors(['subcategoryId'])
-          }}
           error={errors.subcategoryId?.message}
         />
       )}
