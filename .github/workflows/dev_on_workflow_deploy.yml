@@ -149,6 +149,11 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
+      - name: "Setup helmfile"
+        uses: mamezou-tech/setup-helmfile@v2.1.0
+        with:
+          helmfile-version: "v1.1.3"
+
       # Executes helmfile templating and push results to render-manifests repository
       - name: "Setup pc-render-manifests"
         uses: pass-culture/common-workflows/actions/setup-pc-render-manifests@IC-284-use-pc-render-manifest-binary
