@@ -4,21 +4,36 @@ import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
-import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { AccessibilityLayout } from '@/pages/Accessibility/AccessibilityLayout'
+import {
+  type RenderComponentFunction,
+  renderWithProviders,
+} from '@/commons/utils/renderWithProviders'
+
+import {
+  AccessibilityLayout,
+  type AccessibilityLayoutProps,
+} from '../AccessibilityLayout'
+
+const renderAccessibilityLayout: RenderComponentFunction<
+  AccessibilityLayoutProps
+> = ({ options = {}, props = {} }) => {
+  renderWithProviders(
+    <AccessibilityLayout {...props}>Children</AccessibilityLayout>,
+    options
+  )
+}
 
 describe('Accessibility layout', () => {
   it('should handle connected users', () => {
-    const user = sharedCurrentUserFactory()
-    renderWithProviders(<AccessibilityLayout>Children</AccessibilityLayout>, {
-      user,
-      storeOverrides: {
-        user: {
-          currentUser: user,
+    renderAccessibilityLayout({
+      options: {
+        storeOverrides: {
+          offerer: currentOffererFactory(),
+          user: { currentUser: sharedCurrentUserFactory() },
         },
-        offerer: currentOffererFactory(),
       },
     })
+
     expect(screen.queryByTestId('logged-out-section')).not.toBeInTheDocument()
 
     expect(
@@ -27,11 +42,8 @@ describe('Accessibility layout', () => {
   })
 
   it('should handle not connected with back button', () => {
-    renderWithProviders(
-      <AccessibilityLayout showBackToSignInButton={true}>
-        Children
-      </AccessibilityLayout>
-    )
+    renderAccessibilityLayout({ props: { showBackToSignInButton: true } })
+
     expect(screen.getByTestId('logged-out-section')).toBeInTheDocument()
     expect(
       screen.getByText('Retour à la page de connexion')
@@ -39,7 +51,8 @@ describe('Accessibility layout', () => {
   })
 
   it('should handle not connected', () => {
-    renderWithProviders(<AccessibilityLayout>Children</AccessibilityLayout>)
+    renderAccessibilityLayout({})
+
     expect(screen.getByTestId('logged-out-section')).toBeInTheDocument()
     expect(
       screen.queryByText('Retour à la page de connexion')

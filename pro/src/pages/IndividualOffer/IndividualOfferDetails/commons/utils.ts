@@ -12,6 +12,7 @@ import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { AccessibilityFormValues } from '@/commons/core/shared/types'
 import { SelectOption } from '@/commons/custom_types/form'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { getAccessibilityInfoFromVenue } from '@/commons/utils/getAccessibilityInfoFromVenue'
 import { Option } from '@/pages/AdageIframe/app/types'
 
@@ -143,10 +144,7 @@ export function getInitialValuesFromOffer({
     (subcategory: SubcategoryResponseModel) =>
       subcategory.id === offer.subcategoryId
   )
-
-  if (subcategory === undefined) {
-    throw Error('La categorie de l’offre est introuvable')
-  }
+  assertOrFrontendError(subcategory, 'La categorie de l’offre est introuvable.')
 
   const ean = offer.extraData?.ean ?? DEFAULT_DETAILS_FORM_VALUES.ean
   const maybeAccessibility = isNewOfferCreationFlowFeatureActive

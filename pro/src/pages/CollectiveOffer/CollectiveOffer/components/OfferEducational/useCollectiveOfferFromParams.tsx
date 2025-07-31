@@ -13,6 +13,7 @@ import {
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { extractOfferIdAndOfferTypeFromRouteParams } from '@/commons/core/OfferEducational/utils/extractOfferIdAndOfferTypeFromRouteParams'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
@@ -65,14 +66,16 @@ export const useCollectiveOfferFromParams = (
   const { data: offerer } = useOfferer(offererId)
 
   if (offerIdFromParams === undefined) {
-    if (isOfferMandatory) {
-      throw new Error('useOffer hook called on a page without offerId')
-    } else {
-      return {
-        offer: undefined,
-        isTemplate: pathNameIncludesTemplate,
-        offerer: undefined,
-      }
+    assertOrFrontendError(
+      !isOfferMandatory,
+      // TODO (igabriele, 2025-07-31): This error message is obscure, we should clarify it.
+      'useOffer hook called on a page without offerId.'
+    )
+
+    return {
+      offer: undefined,
+      isTemplate: pathNameIncludesTemplate,
+      offerer: undefined,
     }
   }
 

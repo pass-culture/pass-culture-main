@@ -17,6 +17,7 @@ import {
   FORM_ERROR_MESSAGE,
   PATCH_SUCCESS_MESSAGE,
 } from '@/commons/core/shared/constants'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { isCollectiveStockEditable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
@@ -35,9 +36,10 @@ export const CollectiveOfferStockEdition = ({
   const navigate = useNavigate()
   const { mutate } = useSWRConfig()
 
-  if (isCollectiveOfferTemplate(offer)) {
-    throw new Error('Impossible de mettre à jour le stock d’une offre vitrine.')
-  }
+  assertOrFrontendError(
+    !isCollectiveOfferTemplate(offer),
+    '`offer` shoud not be a (collective offer) template.'
+  )
 
   const initialValues = extractInitialStockValues(offer)
 

@@ -1,11 +1,14 @@
+import { useSelector } from 'react-redux'
+
 import { Layout, LayoutProps } from '@/app/App/layout/Layout'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
+import { selectCurrentUser } from '@/commons/store/user/selectors'
 import fullBackIcon from '@/icons/full-back.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 
 import styles from './AccessibilityLayout.module.scss'
 
-interface AccessibilityLayoutProps extends LayoutProps {
+export interface AccessibilityLayoutProps extends LayoutProps {
   showBackToSignInButton?: boolean
 }
 
@@ -14,14 +17,8 @@ export const AccessibilityLayout = ({
   showBackToSignInButton,
   mainHeading,
 }: AccessibilityLayoutProps) => {
-  let isUserConnected = false
-  try {
-    // biome-ignore lint/correctness/useHookAtTopLevel: Will be fixed by https://github.com/pass-culture/pass-culture-main/pull/18427.
-    const user = useCurrentUser()
-    isUserConnected = Boolean(user)
-  } catch {
-    isUserConnected = false
-  }
+  const user = useSelector(selectCurrentUser)
+  const isUserConnected = !!user
 
   return isUserConnected ? (
     <Layout mainHeading={mainHeading} layout="basic">

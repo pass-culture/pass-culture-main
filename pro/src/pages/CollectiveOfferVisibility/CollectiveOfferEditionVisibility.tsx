@@ -12,6 +12,7 @@ import {
 } from '@/commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { extractInitialVisibilityValues } from '@/commons/core/OfferEducational/utils/extractInitialVisibilityValues'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { isCollectiveInstitutionEditable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import {
@@ -38,11 +39,10 @@ export const CollectiveOfferEditionVisibility = ({
     { fallbackData: [] }
   )
 
-  if (isCollectiveOfferTemplate(offer)) {
-    throw new Error(
-      'Impossible de mettre à jour la visibilité d’une offre vitrine.'
-    )
-  }
+  assertOrFrontendError(
+    !isCollectiveOfferTemplate(offer),
+    '`offer` shoud not be a (collective offer) template.'
+  )
 
   const onSuccess = async ({
     message,

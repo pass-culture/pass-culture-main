@@ -1,5 +1,7 @@
 import * as yup from 'yup'
 
+import { assertOrFrontendError } from 'commons/errors/assertOrFrontendError'
+
 import { hasProperty } from './types'
 
 export const getYupValidationSchemaErrors = async <T extends yup.AnyObject>(
@@ -18,7 +20,7 @@ export const getYupValidationSchemaErrors = async <T extends yup.AnyObject>(
   return []
 }
 
-const hasFromAttribute = (
+const hasValidFromAttribute = (
   element: unknown
 ): element is { from: { value: unknown }[] } =>
   hasProperty(element, 'from') &&
@@ -31,14 +33,15 @@ export const getNthParentFormValues = (
   testContext: yup.TestContext<unknown>,
   parentDepth: number
 ): unknown => {
-  if (!hasFromAttribute(testContext)) {
-    throw new Error('TestContext is not valid')
-  }
+  assertOrFrontendError(
+    hasValidFromAttribute(testContext),
+    'Missing or invalid "from" attribute in `testContext`.'
+  )
   const allParentValues = testContext.from
-
-  if (allParentValues.length < parentDepth) {
-    throw new Error('Parent depth is not valid')
-  }
+  assertOrFrontendError(
+    parentDepth <= allParentValues.length,
+    `Parent depth (${parentDepth}) can't be greater than the number of available parents (${allParentValues.length}).`
+  )
 
   return allParentValues[parentDepth].value
 }

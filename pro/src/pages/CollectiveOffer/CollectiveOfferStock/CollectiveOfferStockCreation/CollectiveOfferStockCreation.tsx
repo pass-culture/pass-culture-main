@@ -24,6 +24,7 @@ import { createStockDataPayload } from '@/commons/core/OfferEducational/utils/cr
 import { extractInitialStockValues } from '@/commons/core/OfferEducational/utils/extractInitialStockValues'
 import { hasStatusCodeAndErrorsCode } from '@/commons/core/OfferEducational/utils/hasStatusCode'
 import { FORM_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
@@ -63,11 +64,10 @@ export const CollectiveOfferStockCreation = ({
     ([, id]) => api.getCollectiveOfferRequest(Number(id))
   )
 
-  if (isCollectiveOfferTemplate(offer)) {
-    throw new Error(
-      'Impossible de mettre à jour les stocks d’une offre vitrine.'
-    )
-  }
+  assertOrFrontendError(
+    !isCollectiveOfferTemplate(offer),
+    '`offer` shoud not be a (collective offer) template.'
+  )
 
   const initialValues = extractInitialStockValues(
     offer,

@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux'
 
 import { api } from '@/apiClient/api'
 import { getError, isErrorAPIError } from '@/apiClient/helpers'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import fullCloseIcon from '@/icons/full-close.svg'
@@ -93,9 +94,10 @@ export const DetailsEanSearch = ({
   const onSearch = async (data: EanSearchForm) => {
     if (data.eanSearch) {
       try {
-        if (!selectedOffererId) {
-          throw new Error('Offerer should have already been selected')
-        }
+        assertOrFrontendError(
+          selectedOffererId,
+          'Offerer should have already been selected.'
+        )
 
         const product = await api.getProductByEan(
           data.eanSearch,
