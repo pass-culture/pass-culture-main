@@ -77,9 +77,20 @@ jobs:
 
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
+        id: "google-auth"
         with:
+          create_credentials_file: true
+          token_format: "access_token"
           service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
           workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: "Docker login"
+        id: "docker-login"
+        uses: "docker/login-action@v3"
+        with:
+          registry: "europe-west1-docker.pkg.dev"
+          username: "oauth2accesstoken"
+          password: "${{ steps.google-auth.outputs.access_token }}"
 
       - name: Authenticate through github app ghactionci
         uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2.0.6
