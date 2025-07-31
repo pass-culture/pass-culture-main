@@ -152,10 +152,21 @@ jobs:
       # Executes helmfile templating and push results to render-manifests repository
       - name: "Setup pc-render-manifests"
         uses: pass-culture/common-workflows/actions/setup-pc-render-manifests@IC-284-use-pc-render-manifest-binary
+        with:
+          token: ${{ steps.github-token.outputs.token }}
 
-      # Executes helmfile templating and push results to render-manifests repository
       - name: "Generate and push rendered manifests"
-        uses: pass-culture/common-workflows/actions/render-push-manifests@IC-284-use-pc-render-manifest-binary
+        env:
+          GITHUB_USERNAME: x-access-token
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+        run: |
+          pc-render-manifests render \
+            -a pcapi \
+            -e ${{ inputs.environment }} \
+            --sourceRepoURL https://github.com/pass-culture/pass-culture-deployment.git \
+            --sourcePath helm/pcapi \
+            --sourceRepoRef demo-infra-pc-render-manifests \
+            --additionalArg ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
 
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
