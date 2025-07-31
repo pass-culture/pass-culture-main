@@ -2,8 +2,10 @@ import {
   CollectiveOfferDisplayedStatus,
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
-import { getDateToFrenchText } from 'commons/utils/date'
+import { FORMAT_DD_MMMM_YYYY } from 'commons/utils/date'
 import { Timeline, TimelineStepType } from 'ui-kit/Timeline/Timeline'
+
+import { formatDateTime } from '../CollectiveOfferSummary/components/utils/formatDatetime'
 
 import { ArchivedBanner } from './banners/ArchivedBanner'
 import { BookingWaitingBanner } from './banners/BookingWaitingBanner'
@@ -43,6 +45,9 @@ const isMoreThan48hAgo = (dateString: string) => {
 export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
   const { past, future } = offer.history
 
+  const venueDepartmentCode =
+    offer.location?.address?.departmentCode ?? offer.venue.departementCode
+
   const pastSteps = past.map(({ datetime, status }, index) => {
     const statusLabel = statusLabelMapping[status]
     const isCurrentStep = past.length - 1 === index
@@ -79,7 +84,9 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
             <StatusWithDate
               status={statusLabel}
               date={
-                datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined
+                datetime
+                  ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                  : undefined
               }
             />
             {isCurrentStep && <RejectedBanner offerId={offer.id} />}
@@ -94,7 +101,11 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
         content: (
           <StatusWithDate
             status={statusLabel}
-            date={datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined}
+            date={
+              datetime
+                ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                : undefined
+            }
           />
         ),
       }
@@ -106,7 +117,11 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
         content: (
           <StatusWithDate
             status={statusLabel}
-            date={datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined}
+            date={
+              datetime
+                ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                : undefined
+            }
           />
         ),
       }
@@ -118,7 +133,11 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
         content: (
           <StatusWithDate
             status={statusLabel}
-            date={datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined}
+            date={
+              datetime
+                ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                : undefined
+            }
           />
         ),
       }
@@ -137,7 +156,9 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
             <StatusWithDate
               status={statusLabel}
               date={
-                datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined
+                datetime
+                  ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                  : undefined
               }
             />
             <ExpiredBanner
@@ -163,10 +184,17 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
             <StatusWithDate
               status={statusLabel}
               date={
-                datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined
+                datetime
+                  ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                  : undefined
               }
             />
-            {isCurrentStep && <CancelledBanner offerId={offer.id} reason={offer.booking?.cancellationReason}  />}
+            {isCurrentStep && (
+              <CancelledBanner
+                offerId={offer.id}
+                reason={offer.booking?.cancellationReason}
+              />
+            )}
           </>
         ),
       }
@@ -178,7 +206,11 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
         content: (
           <StatusWithDate
             status={statusLabel}
-            date={datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined}
+            date={
+              datetime
+                ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                : undefined
+            }
           />
         ),
       }
@@ -190,7 +222,11 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
         content: (
           <StatusWithDate
             status={statusLabel}
-            date={datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined}
+            date={
+              datetime
+                ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                : undefined
+            }
           />
         ),
       }
@@ -203,7 +239,11 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
           <>
             <StatusWithDate
               status={statusLabel}
-              date={datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined}
+              date={
+                datetime
+                  ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                  : undefined
+              }
             />
             {isCurrentStep && <ArchivedBanner />}
           </>
