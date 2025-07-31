@@ -1,3 +1,4 @@
+import collections
 import json
 import re
 import typing
@@ -275,3 +276,22 @@ def extract_accessibility_badges(html_content: str) -> dict[str, str]:
         assert has_ok_icon != has_nok_icon  # cannot be ok and nok at the same time
         badges[badge_text] = has_ok_icon
     return badges
+
+
+def extract_htmx_flash(html_content) -> dict[str, set[str]]:
+    soup = get_soup(html_content)
+    alerts = soup.find_all("div", class_="alert")
+    data = collections.defaultdict(set)
+    for alert in alerts:
+        alert_type = None
+        for class_ in alert["class"]:
+            if class_ == "alert-dismissible":
+                continue
+            if class_.startswith("alert-"):
+                alert_type = class_[6:]
+                break
+        assert alert_type is not None
+
+        data[alert_type].add(alert.text.strip())
+
+    return data

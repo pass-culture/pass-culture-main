@@ -33,6 +33,7 @@ from pcapi.routes.backoffice.filters import format_booking_status
 from pcapi.routes.backoffice.filters import format_date_time
 from pcapi.routes.backoffice.finance import forms as finance_forms
 
+from .helpers import flash
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
@@ -1624,6 +1625,7 @@ class GetCommercialGestureTest(GetEndpointHelper):
 class GetOverpaymentCreationFormTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form"
     needed_permission = perm_models.Permissions.CREATE_INCIDENTS
+    error_message_template = "Erreur %s Annuler"
 
     expected_num_queries = 7
 
@@ -1645,7 +1647,11 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         object_ids = str(booking.id)
 
         with assert_num_queries(self.expected_num_queries):
-            response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
+            response = self.post_to_endpoint(
+                authenticated_client,
+                form={"object_ids": object_ids},
+                headers={"hx-request": "true"},
+            )
             assert response.status_code == 200
 
         additional_data_text = html_parser.extract_cards_text(response.data)[0]
@@ -1681,7 +1687,11 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         object_ids = ",".join([str(booking.id) for booking in selected_bookings])
 
         with assert_num_queries(self.expected_num_queries):
-            response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
+            response = self.post_to_endpoint(
+                authenticated_client,
+                form={"object_ids": object_ids},
+                headers={"hx-request": "true"},
+            )
             assert response.status_code == 200
 
         additional_data_text = html_parser.extract_cards_text(response.data)[0]
@@ -1698,11 +1708,16 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         # (CREATED, VALIDATED)
         # but adds 1 query for the rollback
         with assert_num_queries(self.expected_num_queries):
-            response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
+            response = self.post_to_endpoint(
+                authenticated_client,
+                form={"object_ids": object_ids},
+                headers={"hx-request": "true"},
+            )
 
         assert (
             html_parser.content_as_text(response.data)
-            == """Seules les réservations ayant le statut "remboursée" peuvent faire l'objet d'un trop perçu."""
+            == self.error_message_template
+            % """Seules les réservations ayant le statut "remboursée" peuvent faire l'objet d'un trop perçu."""
         )
 
     def test_display_error_if_bookings_from_different_venues_selected(self, authenticated_client):
@@ -1713,11 +1728,16 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         # (CREATED, VALIDATED)
         # but adds 1 query for rollback
         with assert_num_queries(self.expected_num_queries):
-            response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
+            response = self.post_to_endpoint(
+                authenticated_client,
+                form={"object_ids": object_ids},
+                headers={"hx-request": "true"},
+            )
 
         assert (
             html_parser.content_as_text(response.data)
-            == "Un incident ne peut être créé qu'à partir de réservations venant du même partenaire culturel."
+            == self.error_message_template
+            % "Un incident ne peut être créé qu'à partir de réservations venant du même partenaire culturel."
         )
 
 
@@ -1775,13 +1795,16 @@ class CreateOverpaymentTest(PostEndpointHelper):
                 "kind": finance_models.IncidentType.OVERPAYMENT.name,
                 "object_ids": object_ids,
             },
-            follow_redirects=True,
+            headers={"hx-request": "true"},
         )
 
         assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(booking.id)
+
         incidents = db.session.query(finance_models.FinanceIncident).all()
         assert len(incidents) == 1
-        incident = incidents[0]
         assert db.session.query(finance_models.BookingFinanceIncident).count() == 1
         booking_finance_incident = db.session.query(finance_models.BookingFinanceIncident).first()
         assert booking_finance_incident.newTotalAmount == 0
@@ -1794,15 +1817,8 @@ class CreateOverpaymentTest(PostEndpointHelper):
         assert action_history.authorUser == legit_user
         assert action_history.comment == comment
 
-        soup = html_parser.get_soup(response.data)
-        alerts = soup.find_all("div", class_="alert")
-        assert len(alerts) == 1
-        alert = alerts[0]
-        assert html_parser.filter_whitespaces(alert.text) == "Un nouvel incident a été créé pour 1 réservation."
-        url_tags = alert.find_all("a")
-        assert len(url_tags) == 1
-        url_tag = url_tags[0]
-        assert f"/finance/incidents/{incident.id}" == url_tag.attrs["href"]
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert "Un nouvel incident a été créé pour 1 réservation." in alerts["success"]
 
     def test_not_creating_incident_if_already_exists(self, authenticated_client):
         booking = bookings_factories.ReimbursedBookingFactory()
@@ -1818,11 +1834,21 @@ class CreateOverpaymentTest(PostEndpointHelper):
                 "kind": finance_models.IncidentType.OVERPAYMENT.name,
                 "object_ids": object_ids,
             },
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
-        assert db.session.query(finance_models.FinanceIncident).count() == 1  # didn't create new incident
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(booking.id)
 
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert (
+            "Au moins une des réservations fait déjà l'objet d'un incident ou geste commercial non annulé."
+            in alerts["warning"]
+        )
+
+        assert db.session.query(finance_models.FinanceIncident).count() == 1  # didn't create new incident
         assert db.session.query(history_models.ActionHistory).count() == 0
 
     @pytest.mark.parametrize("zendesk_id", [None, 1])
@@ -1852,9 +1878,15 @@ class CreateOverpaymentTest(PostEndpointHelper):
                 "kind": finance_models.IncidentType.OVERPAYMENT.name,
                 "object_ids": object_ids,
             },
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        for booking in selected_bookings:
+            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(booking.id)
+
         assert db.session.query(finance_models.FinanceIncident).count() == 1
         finance_incident = db.session.query(finance_models.FinanceIncident).first()
         assert finance_incident.comment == comment
@@ -1883,7 +1915,17 @@ class CreateOverpaymentTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(booking.id)
+
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert (
+            'Au moins une des réservations sélectionnées est dans un état différent de "remboursé".'
+            in alerts["warning"]
+        )
+
         assert db.session.query(finance_models.FinanceIncident).count() == 0  # didn't create new incident
         assert db.session.query(history_models.ActionHistory).count() == 0
 
@@ -1891,6 +1933,7 @@ class CreateOverpaymentTest(PostEndpointHelper):
 class GetCommercialGestureCreationFormTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form"
     needed_permission = perm_models.Permissions.CREATE_INCIDENTS
+    error_message_template = "Erreur %s Annuler"
 
     expected_num_queries = 7
 
@@ -1981,7 +2024,8 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
 
         assert (
             html_parser.content_as_text(response.data)
-            == """Seules les réservations ayant le statut "annulée" peuvent faire l'objet d'un geste comercial."""
+            == self.error_message_template
+            % """Seules les réservations ayant le statut "annulée" peuvent faire l'objet d'un geste comercial."""
         )
 
     def test_display_error_if_bookings_from_different_venues_selected(self, authenticated_client):
@@ -1994,7 +2038,8 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
 
         assert (
             html_parser.content_as_text(response.data)
-            == "Un geste commercial ne peut concerner que des réservations faites sur un même stock."
+            == self.error_message_template
+            % "Un geste commercial ne peut concerner que des réservations faites sur un même stock."
         )
 
 
@@ -2025,10 +2070,14 @@ class CreateCommercialGestureTest(PostEndpointHelper):
                 "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
                 "object_ids": object_ids,
             },
-            follow_redirects=True,
+            headers={"hx-request": "true"},
         )
 
         assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(booking.id)
+
         assert db.session.query(finance_models.FinanceIncident).count() == 1
         assert db.session.query(finance_models.BookingFinanceIncident).count() == 1
         booking_finance_incident = db.session.query(finance_models.BookingFinanceIncident).first()
@@ -2058,16 +2107,21 @@ class CreateCommercialGestureTest(PostEndpointHelper):
                 "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
                 "object_ids": object_ids,
             },
-            follow_redirects=True,
+            headers={"hx-request": "true"},
         )
 
         assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(booking.id)
+
         assert db.session.query(finance_models.FinanceIncident).count() == 0
         assert db.session.query(finance_models.BookingFinanceIncident).count() == 0
 
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert (
-            "Au moins un des jeunes ayant fait une réservation a encore du crédit pour payer la réservation"
-            in html_parser.extract_alert(response.data)
+            "Au moins un des jeunes ayant fait une réservation a encore du crédit pour payer la réservation."
+            in alerts["warning"]
         )
 
     def test_create_commercial_gesture_incident_from_used_booking(self, legit_user, authenticated_client):
@@ -2084,16 +2138,20 @@ class CreateCommercialGestureTest(PostEndpointHelper):
                 "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
                 "object_ids": object_ids,
             },
-            follow_redirects=True,
+            headers={"hx-request": "true"},
         )
 
         assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(booking.id)
+
         assert db.session.query(finance_models.FinanceIncident).count() == 0
         assert db.session.query(finance_models.BookingFinanceIncident).count() == 0
 
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert (
-            'Au moins une des réservations sélectionnées est dans un état différent de "annulée".'
-            in html_parser.extract_alert(response.data)
+            'Au moins une des réservations sélectionnées est dans un état différent de "annulée".' in alerts["warning"]
         )
 
     def test_not_create_commercial_gesture_incident_too_expensive(self, authenticated_client):
@@ -2110,15 +2168,20 @@ class CreateCommercialGestureTest(PostEndpointHelper):
                 "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
                 "object_ids": object_ids,
             },
-            follow_redirects=True,
+            headers={"hx-request": "true"},
         )
 
         assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(booking.id)
+
         assert db.session.query(finance_models.FinanceIncident).count() == 0  # didn't create new incident
         assert db.session.query(history_models.ActionHistory).count() == 0
+
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert (
-            html_parser.extract_alert(response.data)
-            == 'Au moins une des réservations sélectionnées est dans un état différent de "annulée".'
+            'Au moins une des réservations sélectionnées est dans un état différent de "annulée".' in alerts["warning"]
         )
 
     def test_not_create_commercial_gesture_greater_than_300_per_booking(self, authenticated_client):
@@ -2149,9 +2212,20 @@ class CreateCommercialGestureTest(PostEndpointHelper):
                 "kind": finance_models.IncidentType.COMMERCIAL_GESTURE.name,
                 "object_ids": object_ids,
             },
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        for booking in selected_bookings:
+            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(booking.id)
+
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert (
+            'Au moins une des réservations sélectionnées est dans un état différent de "annulée".' in alerts["warning"]
+        )
+
         assert db.session.query(finance_models.FinanceIncident).count() == 0  # didn't create new incident
         assert db.session.query(history_models.ActionHistory).count() == 0
 

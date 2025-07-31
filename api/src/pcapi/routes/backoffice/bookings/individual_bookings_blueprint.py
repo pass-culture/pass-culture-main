@@ -62,10 +62,8 @@ BOOKING_TOKEN_RE = re.compile(r"^[A-Za-z0-9]{6}$")
 NO_DIGIT_RE = re.compile(r"[^\d]+$")
 
 
-def _get_individual_bookings(
-    form: booking_forms.GetIndividualBookingListForm,
-) -> list[bookings_models.Booking]:
-    base_query = (
+def _get_individual_bookings_query() -> sa_orm.Query:
+    return (
         db.session.query(bookings_models.Booking)
         .join(offers_models.Stock)
         .join(offers_models.Offer)
@@ -124,6 +122,12 @@ def _get_individual_bookings(
             ),
         )
     )
+
+
+def _get_individual_bookings(
+    form: booking_forms.GetIndividualBookingListForm,
+) -> list[bookings_models.Booking]:
+    base_query = _get_individual_bookings_query()
 
     if form.is_free.data and len(form.is_free.data) == 1:
         if form.is_free.data[0] == "true":
@@ -187,6 +191,26 @@ def _get_individual_bookings(
             offers_models.Offer.name,
         ],
         or_filters=or_filters,
+    )
+
+
+def _render_individual_bookings(bookings_ids: list[int] | None = None) -> utils.BackofficeResponse:
+    rows = []
+    connect_as = {}
+    if bookings_ids:
+        query = _get_individual_bookings_query()
+        rows = query.filter(bookings_models.Booking.id.in_(bookings_ids)).all()
+        for booking in rows:
+            offer = booking.stock.offer
+            connect_as[booking.id] = get_connect_as(
+                object_id=offer.id,
+                object_type="offer",
+                pc_pro_path=urls.build_pc_pro_offer_path(offer),
+            )
+    return render_template(
+        "individual_bookings/list_rows.html",
+        connect_as=connect_as,
+        rows=rows,
     )
 
 
@@ -299,7 +323,7 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
         raise NotFound()
     _batch_validate_bookings([booking])
 
-    return _redirect_after_individual_booking_action()
+    return _render_individual_bookings([booking_id])
 
 
 @individual_bookings_blueprint.route("/<int:booking_id>/cancel", methods=["POST"])
@@ -328,19 +352,20 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
     form = booking_forms.CancelIndividualBookingForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return _redirect_after_individual_booking_action()
+        return _render_individual_bookings()
 
     _batch_cancel_bookings([booking], bookings_models.BookingCancellationReasons(form.reason.data))
 
-    return _redirect_after_individual_booking_action()
+    return _render_individual_bookings([booking_id])
 
 
 @individual_bookings_blueprint.route("/batch-validate", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def get_batch_validate_individual_bookings_form() -> utils.BackofficeResponse:
-    form = empty_forms.BatchForm()
+    form = empty_forms.BatchForm(request.args)
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#booking-table",
         form=form,
         dst=url_for("backoffice_web.individual_bookings.batch_validate_individual_bookings"),
         div_id="batch-validate-booking-modal",
@@ -355,20 +380,21 @@ def batch_validate_individual_bookings() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return _redirect_after_individual_booking_action()
+        return _render_individual_bookings()
 
     bookings = _get_booking_query_for_validation().filter(bookings_models.Booking.id.in_(form.object_ids_list)).all()
     _batch_validate_bookings(bookings)
 
-    return _redirect_after_individual_booking_action()
+    return _render_individual_bookings(form.object_ids_list)
 
 
 @individual_bookings_blueprint.route("/batch-cancel", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def get_batch_cancel_individual_bookings_form() -> utils.BackofficeResponse:
-    form = booking_forms.BatchCancelIndividualBookingsForm()
+    form = booking_forms.BatchCancelIndividualBookingsForm(request.args)
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#booking-table",
         form=form,
         dst=url_for("backoffice_web.individual_bookings.batch_cancel_individual_bookings"),
         div_id="batch-cancel-booking-modal",
@@ -383,14 +409,14 @@ def batch_cancel_individual_bookings() -> utils.BackofficeResponse:
     form = booking_forms.BatchCancelIndividualBookingsForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return _redirect_after_individual_booking_action()
+        return _render_individual_bookings()
 
     bookings = (
         db.session.query(bookings_models.Booking).filter(bookings_models.Booking.id.in_(form.object_ids_list)).all()
     )
     _batch_cancel_bookings(bookings, bookings_models.BookingCancellationReasons(form.reason.data))
 
-    return _redirect_after_individual_booking_action()
+    return _render_individual_bookings(form.object_ids_list)
 
 
 def _batch_validate_bookings(bookings: list[bookings_models.Booking]) -> None:
@@ -594,7 +620,7 @@ def _build_booking_error_str(tokens: list[str], message: str) -> str:
     )
 
 
-@individual_bookings_blueprint.route("/batch-tag-fraudulent-form", methods=["GET", "POST"])
+@individual_bookings_blueprint.route("/batch-tag-fraudulent-form", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_tag_fraudulent_bookings_form() -> utils.BackofficeResponse:
     form = booking_forms.BatchTagFraudulentBookingsForms()
@@ -610,12 +636,13 @@ def get_batch_tag_fraudulent_bookings_form() -> utils.BackofficeResponse:
         if tags_count == len(form.object_ids_list):
             mark_transaction_as_invalid()
             return render_template(
-                "components/turbo/modal_empty_form.html",
+                "components/dynamic/modal_empty_form.html",
                 form=empty_forms.BatchForm(),
                 messages=["Toutes les réservations sélectionnées sont déjà frauduleuses."],
             )
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#booking-table",
         form=form,
         dst=url_for("backoffice_web.individual_bookings.batch_tag_fraudulent_bookings"),
         div_id="batch-tag-fraudulent-booking-modal",
@@ -630,7 +657,7 @@ def batch_tag_fraudulent_bookings() -> utils.BackofficeResponse:
     form = booking_forms.BatchTagFraudulentBookingsForms()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return _redirect_after_individual_booking_action()
+        return _render_individual_bookings()
 
     bookings = (
         db.session.query(bookings_models.Booking)
@@ -642,7 +669,8 @@ def batch_tag_fraudulent_bookings() -> utils.BackofficeResponse:
             sa_orm.joinedload(bookings_models.Booking.venue).load_only(offerers_models.Venue.bookingEmail),
         )
         .filter(
-            bookings_models.Booking.id.in_(form.object_ids_list), bookings_models.Booking.fraudulentBookingTag == None
+            bookings_models.Booking.id.in_(form.object_ids_list),
+            bookings_models.Booking.fraudulentBookingTag == None,
         )
     )
     tokens_by_email = defaultdict(list)
@@ -657,10 +685,10 @@ def batch_tag_fraudulent_bookings() -> utils.BackofficeResponse:
             send_fraudulent_booking_suspicion_email(pro_email, tokens_by_email[pro_email])
     db.session.flush()
 
-    return _redirect_after_individual_booking_action()
+    return _render_individual_bookings(form.object_ids_list)
 
 
-@individual_bookings_blueprint.route("/batch-remove-fraudulent-form", methods=["GET", "POST"])
+@individual_bookings_blueprint.route("/batch-remove-fraudulent-form", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_remove_fraudulent_booking_tag_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -676,12 +704,13 @@ def get_batch_remove_fraudulent_booking_tag_form() -> utils.BackofficeResponse:
         if tags_count == 0:
             mark_transaction_as_invalid()
             return render_template(
-                "components/turbo/modal_empty_form.html",
+                "components/dynamic/modal_empty_form.html",
                 form=empty_forms.BatchForm(),
                 messages=["Aucune réservation sélectionnée n'a de marquage frauduleux."],
             )
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#booking-table",
         form=form,
         dst=url_for("backoffice_web.individual_bookings.batch_remove_fraudulent_booking_tag"),
         div_id="batch-remove-fraudulent-booking-tag-modal",
@@ -696,11 +725,11 @@ def batch_remove_fraudulent_booking_tag() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return _redirect_after_individual_booking_action()
+        return _render_individual_bookings()
 
     db.session.query(bookings_models.FraudulentBookingTag).filter(
         bookings_models.FraudulentBookingTag.bookingId.in_(form.object_ids_list)
     ).delete(synchronize_session=False)
     db.session.flush()
 
-    return _redirect_after_individual_booking_action()
+    return _render_individual_bookings(form.object_ids_list)

@@ -1,15 +1,41 @@
 {% extends "layouts/list.html" %}
-{% from "components/badges.html" import build_fraudulent_booking_badge with context %}
-{% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
-{% from "components/bookings/extra_row.html" import build_individual_booking_extra_row with context %}
 {% import "components/forms.html" as forms with context %}
-{% import "components/links.html" as links with context %}
 {% import "components/clipboard.html" as clipboard %}
-{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
-{% from "components/connect_as.html" import build_connect_as_link %}
-{% set validate_booking_aria_described_by_id = random_hash() %}
-{% set cancel_booking_aria_described_by_id = random_hash() %}
+{% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
+{% macro booking_modal(booking, title, div_id, form, dst) %}
+  {% set aria_described_by_id = random_hash() %}
+  <div class="modal modal-lg fade"
+       id="{{ div_id }}"
+       tabindex="-1"
+       aria-labelledby="{{ aria_described_by_id }}"
+       aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form name="{{ dst | action_to_name }}"
+              hx-target="#{{ table_id }}"
+              hx-post="{{ dst }}"
+              hx-swap="outerHTML"
+              hx-trigger="submit">
+          <div class="modal-header"
+               id="{{ aria_described_by_id }}">
+            <h5 class="modal-title">{{ title }}</h5>
+          </div>
+          <div class="modal-body row">{{ forms.build_form_fields_group(form) }}</div>
+          <div class="modal-footer">
+            <button type="button"
+                    class="btn btn-outline-primary-subtle-bg"
+                    data-bs-dismiss="modal">Annuler</button>
+            <button type="submit"
+                    class="btn btn-primary"
+                    data-modal-selector="#{{ div_id }}">Confirmer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endmacro %}
 {% set rows_count = rows|length %}
+{% set table_id = "booking-table" %}
 {% block title %}Réservations individuelles{% endblock %}
 {% block search_block %}{{ forms.build_filters_form_ng(form, dst) }}{% endblock %}
 {% block before_table %}
@@ -71,13 +97,15 @@
       <button disabled
               type="button"
               class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
-              data-use-confirmation-modal="true"
-              data-modal-selector="#batch-validate-booking-modal">Valider</button>
+              data-use-dynamic-modal="true"
+              data-bs-toggle="modal"
+              data-bs-target="#batch-validate-booking-modal">Valider</button>
       <button disabled
               type="button"
               class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap {% if has_permission("CREATE_INCIDENTS") or has_permission("PRO_FRAUD_ACTIONS") %}border-end{% endif %}"
-              data-use-confirmation-modal="true"
-              data-modal-selector="#batch-cancel-booking-modal">Annuler</button>
+              data-use-dynamic-modal="true"
+              data-bs-toggle="modal"
+              data-bs-target="#batch-cancel-booking-modal">Annuler</button>
     </div>
   {% endif %}
   {% if has_permission("PRO_FRAUD_ACTIONS") %}
@@ -89,21 +117,15 @@
       <button disabled
               type="button"
               class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
-              data-use-confirmation-modal="true"
-              data-modal-selector="#batch-tag-fraudulent-booking-modal"
-              data-mode="fetch"
-              data-fetch-url="{{ url_for('backoffice_web.individual_bookings.get_batch_tag_fraudulent_bookings_form') }}">
-        Frauduleuse
-      </button>
+              data-use-dynamic-modal="true"
+              data-bs-toggle="modal"
+              data-bs-target="#batch-tag-fraudulent-booking-modal">Frauduleuse</button>
       <button disabled
               type="button"
               class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap {% if has_permission("CREATE_INCIDENTS") %}border-end{% endif %}"
-              data-use-confirmation-modal="true"
-              data-modal-selector="#batch-remove-fraudulent-booking-tag-modal"
-              data-mode="fetch"
-              data-fetch-url="{{ url_for('backoffice_web.individual_bookings.get_batch_remove_fraudulent_booking_tag_form') }}">
-        Non frauduleuse
-      </button>
+              data-use-dynamic-modal="true"
+              data-bs-toggle="modal"
+              data-bs-target="#batch-remove-fraudulent-booking-tag-modal">Non frauduleuse</button>
     </div>
   {% endif %}
   {% if has_permission("CREATE_INCIDENTS") %}
@@ -115,29 +137,33 @@
       <button disabled
               type="button"
               class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
-              data-modal-selector="#overpayment-creation-modal"
-              data-mode="fetch"
-              data-fetch-url="{{ url_for('backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form') }}"
-              data-use-confirmation-modal="true">Incident</button>
+              data-use-dynamic-modal="true"
+              data-bs-toggle="modal"
+              data-bs-target="#overpayment-creation-modal">Incident</button>
       <button disabled
               type="button"
               class="btn rounded-0 border-top-0 border-bottom-0 text-nowrap"
-              data-modal-selector="#commercial-gesture-creation-modal"
-              data-mode="fetch"
-              data-fetch-url="{{ url_for('backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form') }}"
-              data-use-confirmation-modal="true">Geste commercial</button>
+              data-use-dynamic-modal="true"
+              data-bs-toggle="modal"
+              data-bs-target="#commercial-gesture-creation-modal">Geste commercial</button>
     </div>
   {% endif %}
 {% endblock multi_select_menu %}
 {% block after_table %}
-  {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_validate_individual_bookings_form") , "batch-validate-booking-modal", "eager") }}
-  {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_cancel_individual_bookings_form") , "batch-cancel-booking-modal", "eager") }}
+  {{ build_dynamic_modal(url_for("backoffice_web.individual_bookings.get_batch_validate_individual_bookings_form") , "batch-validate-booking-modal", form="form-ids-" + table_name) }}
+  {{ build_dynamic_modal(url_for("backoffice_web.individual_bookings.get_batch_cancel_individual_bookings_form") , "batch-cancel-booking-modal", form="form-ids-" + table_name) }}
   {% if has_permission("PRO_FRAUD_ACTIONS") %}
-    {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_tag_fraudulent_bookings_form") , "batch-tag-fraudulent-booking-modal", "eager") }}
-    {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_remove_fraudulent_booking_tag_form") , "batch-remove-fraudulent-booking-tag-modal", "eager") }}
+    {{ build_dynamic_modal(url_for("backoffice_web.individual_bookings.get_batch_tag_fraudulent_bookings_form") , "batch-tag-fraudulent-booking-modal", form="form-ids-" + table_name, method="post") }}
+    {{ build_dynamic_modal(url_for("backoffice_web.individual_bookings.get_batch_remove_fraudulent_booking_tag_form") , "batch-remove-fraudulent-booking-tag-modal", form="form-ids-" + table_name, method="post") }}
   {% endif %}
   {% if has_permission("CREATE_INCIDENTS") %}
-    {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form") , "overpayment-creation-modal", "eager") }}
-    {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form") , "commercial-gesture-creation-modal", "eager") }}
+    {{ build_dynamic_modal(url_for("backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form") , "overpayment-creation-modal", form="form-ids-" + table_name, method="post") }}
+    {{ build_dynamic_modal(url_for("backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form") , "commercial-gesture-creation-modal", form="form-ids-" + table_name, method="post") }}
+  {% endif %}
+  {% if has_permission("MANAGE_BOOKINGS") %}
+    {% for booking in rows %}
+      {{ booking_modal(booking, "Valider la réservation " + booking.token, "pc-validate-booking-modal-" + booking.id |string, validate_booking_form, url_for('backoffice_web.individual_bookings.mark_booking_as_used', booking_id=booking.id) ) }}
+      {{ booking_modal(booking, "Annuler la réservation " + booking.token, "pc-cancel-booking-modal-" + booking.id |string, cancel_booking_form, url_for('backoffice_web.individual_bookings.mark_booking_as_cancelled', booking_id=booking.id) ) }}
+    {% endfor %}
   {% endif %}
 {% endblock after_table %}

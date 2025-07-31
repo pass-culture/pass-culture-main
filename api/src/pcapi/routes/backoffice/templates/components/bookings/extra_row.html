@@ -17,7 +17,8 @@
   {% endcall %}
 {% endmacro %}
 {% macro build_booking_extra_row(booking, stock, offer, target = none) %}
-  <tr class="collapse accordion-collapse pc-booking-{{ booking.id }}">
+  <tr class="collapse accordion-collapse pc-booking-{{ booking.id }}"
+      id="booking-colapse-row-{{ booking.id }}">
     <td colspan="100%">
       <div class="row">
         <div class="col-6">

@@ -31,6 +31,7 @@ from pcapi.routes.backoffice.bookings import forms
 from tests.connectors.cgr import soap_definitions
 from tests.local_providers.cinema_providers.cgr import fixtures as cgr_fixtures
 
+from .helpers import flash
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
@@ -736,45 +737,67 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
     def test_uncancel_and_mark_as_used(self, authenticated_client, bookings):
         cancelled = bookings[1]
 
-        response = self.post_to_endpoint(authenticated_client, booking_id=cancelled.id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            booking_id=cancelled.id,
+            headers={"hx-request": "true"},
+        )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{cancelled.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(cancelled.id)
 
         db.session.refresh(cancelled)
         assert cancelled.status is bookings_models.BookingStatus.USED
         assert cancelled.validationAuthorType == bookings_models.BookingValidationAuthorType.BACKOFFICE
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-        assert html_parser.extract_alert(redirected_response.data) == "1 réservation a été validée"
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert "1 réservation a été validée" in alerts["success"]
 
     def test_uncancel_booking_is_already_used(self, authenticated_client, bookings):
         booking = bookings_factories.UsedBookingFactory()
 
-        response = self.post_to_endpoint(authenticated_client, booking_id=booking.id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            booking_id=booking.id,
+            headers={"hx-request": "true"},
+        )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(booking.id)
 
         booking = db.session.query(bookings_models.Booking).filter_by(id=booking.id).one()
         assert booking.status == bookings_models.BookingStatus.USED
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-        alert = html_parser.extract_alert(redirected_response.data)
-        assert "Impossible de valider ces réservations" in alert
-        assert f"- 1 réservation déjà validée ({booking.token})" in alert
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert (f"Impossible de valider ces réservations : - 1 réservation déjà validée ({booking.token})") in alerts[
+            "warning"
+        ]
 
     def test_uncancel_booking_is_already_refunded(self, authenticated_client, bookings):
         booking = bookings_factories.ReimbursedBookingFactory()
-        response = self.post_to_endpoint(authenticated_client, booking_id=booking.id)
 
-        assert response.status_code == 303
+        response = self.post_to_endpoint(
+            authenticated_client,
+            booking_id=booking.id,
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(booking.id)
 
         booking = db.session.query(bookings_models.Booking).filter_by(id=booking.id).one()
         assert booking.status == bookings_models.BookingStatus.REIMBURSED
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-        alert = html_parser.extract_alert(redirected_response.data)
-        assert "Impossible de valider ces réservations" in alert
-        assert f"- 1 réservation déjà remboursée ({booking.token})" in alert
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert (
+            f"Impossible de valider ces réservations : - 1 réservation déjà remboursée ({booking.token})"
+        ) in alerts["warning"]
 
     def test_uncancel_booking_expired_deposit(self, authenticated_client, bookings):
         booking = bookings_factories.BookingFactory(
@@ -784,56 +807,88 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
             ),
         )
 
-        response = self.post_to_endpoint(authenticated_client, booking_id=booking.id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            booking_id=booking.id,
+            headers={"hx-request": "true"},
+        )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(booking.id)
 
         booking = db.session.query(bookings_models.Booking).filter_by(id=booking.id).one()
         assert booking.status == bookings_models.BookingStatus.CANCELLED
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-        alert = html_parser.extract_alert(redirected_response.data)
-        assert "Impossible de valider ces réservations" in alert
-        assert f"- 1 réservation dont le crédit associé est expiré ({booking.token})" in alert
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert (
+            "Impossible de valider ces réservations : "
+            f"- 1 réservation dont le crédit associé est expiré ({booking.token})"
+        ) in alerts["warning"]
 
     def test_uncancel_booking_insufficient_funds(self, authenticated_client, bookings):
         beneficiary = users_factories.BeneficiaryFactory()
         booking_id = bookings_factories.CancelledBookingFactory(user=beneficiary, stock__price="250").id
         bookings_factories.ReimbursedBookingFactory(user=beneficiary, stock__price="100")
 
-        response = self.post_to_endpoint(authenticated_client, booking_id=booking_id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            booking_id=booking_id,
+            headers={"hx-request": "true"},
+        )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking_id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(booking_id)
 
         booking = db.session.query(bookings_models.Booking).filter_by(id=booking_id).one()
         assert booking.status == bookings_models.BookingStatus.CANCELLED
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-        alert = html_parser.extract_alert(redirected_response.data)
-        assert "Impossible de valider ces réservations" in alert
-        assert f"- 1 réservation dont le crédit associé est insuffisant ({booking.token})" in alert
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert (
+            "Impossible de valider ces réservations : "
+            f"- 1 réservation dont le crédit associé est insuffisant ({booking.token})"
+        ) in alerts["warning"]
 
     def test_uncancel_booking_no_stock(self, authenticated_client, bookings):
         beneficiary = users_factories.BeneficiaryFactory()
         booking_id = bookings_factories.CancelledBookingFactory(user=beneficiary, quantity=2, stock__quantity=1).id
 
-        response = self.post_to_endpoint(authenticated_client, booking_id=booking_id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            booking_id=booking_id,
+            headers={"hx-request": "true"},
+        )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking_id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(booking_id)
 
         booking = db.session.query(bookings_models.Booking).filter_by(id=booking_id).one()
         assert booking.status == bookings_models.BookingStatus.CANCELLED
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-        alert = html_parser.extract_alert(redirected_response.data)
-        assert "Impossible de valider ces réservations" in alert
-        assert f"- 1 réservation dont l'offre n'a plus assez de stock disponible ({booking.token})" in alert
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert (
+            "Impossible de valider ces réservations : "
+            f"- 1 réservation dont l'offre n'a plus assez de stock disponible ({booking.token})"
+        ) in alerts["warning"]
 
     def test_uncancel_and_mark_as_used_unlocks_achievement(self, authenticated_client, bookings):
         festival_booking = bookings[1]
 
-        self.post_to_endpoint(authenticated_client, booking_id=festival_booking.id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            booking_id=festival_booking.id,
+            headers={"hx-request": "true"},
+        )
 
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{festival_booking.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(festival_booking.id)
         assert festival_booking.user.achievements
 
 
@@ -849,16 +904,20 @@ class CancelBookingTest(PostEndpointHelper):
             authenticated_client,
             booking_id=confirmed.id,
             form={"reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{confirmed.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(confirmed.id)
 
         db.session.refresh(confirmed)
         assert confirmed.status is bookings_models.BookingStatus.CANCELLED
         assert confirmed.cancellationReason == bookings_models.BookingCancellationReasons.BACKOFFICE
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-        assert html_parser.extract_alert(redirected_response.data) == "1 réservation a été annulée"
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert "1 réservation a été annulée" in alerts["success"]
 
     def test_cancel_booking_decreases_stock_quantity(self, authenticated_client, bookings):
         stock = offers_factories.StockFactory(quantity=3)
@@ -872,9 +931,14 @@ class CancelBookingTest(PostEndpointHelper):
             authenticated_client,
             booking_id=booking_to_cancel.id,
             form={"reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking_to_cancel.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(booking_to_cancel.id)
+
         db.session.refresh(booking_to_cancel)
         assert booking_to_cancel.status == bookings_models.BookingStatus.CANCELLED
         assert booking_to_cancel.cancellationReason == bookings_models.BookingCancellationReasons.BACKOFFICE
@@ -888,17 +952,22 @@ class CancelBookingTest(PostEndpointHelper):
             authenticated_client,
             booking_id=pricing.bookingId,
             form={"reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{pricing.bookingId}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(pricing.bookingId)
 
         db.session.refresh(pricing)
         assert pricing.booking.status == bookings_models.BookingStatus.USED
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-        alert = html_parser.extract_alert(redirected_response.data)
-        assert "Impossible d'annuler ces réservations" in alert
-        assert f"- 1 réservation déjà remboursée ({pricing.booking.token})" in alert
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert (
+            f"Impossible d'annuler ces réservations : - 1 réservation déjà remboursée ({pricing.booking.token})"
+            in alerts["warning"]
+        )
 
     def test_cant_cancel_reimbursed_booking(self, authenticated_client, bookings):
         reimbursed = bookings[3]
@@ -908,17 +977,22 @@ class CancelBookingTest(PostEndpointHelper):
             authenticated_client,
             booking_id=reimbursed.id,
             form={"reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{reimbursed.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(reimbursed.id)
 
         db.session.refresh(reimbursed)
         assert reimbursed.status == old_status
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-        alert = html_parser.extract_alert(redirected_response.data)
-        assert "Impossible d'annuler ces réservations" in alert
-        assert f"- 1 réservation déjà remboursée ({reimbursed.token})" in alert
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert (
+            f"Impossible d'annuler ces réservations : - 1 réservation déjà remboursée ({reimbursed.token})"
+            in alerts["warning"]
+        )
 
     def test_cant_cancel_cancelled_booking(self, authenticated_client, bookings):
         cancelled = bookings[1]
@@ -928,35 +1002,41 @@ class CancelBookingTest(PostEndpointHelper):
             authenticated_client,
             booking_id=cancelled.id,
             form={"reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{cancelled.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(cancelled.id)
 
         db.session.refresh(cancelled)
         assert cancelled.status == old_status
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-        alert = html_parser.extract_alert(redirected_response.data)
-        assert "Impossible d'annuler ces réservations" in alert
-        assert f"- 1 réservation déjà annulée ({cancelled.token})" in alert
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert (
+            f"Impossible d'annuler ces réservations : - 1 réservation déjà annulée ({cancelled.token})"
+            in alerts["warning"]
+        )
 
     def test_cant_cancel_booking_without_reason(self, authenticated_client, bookings):
         confirmed = bookings[2]
 
-        response = self.post_to_endpoint(authenticated_client, booking_id=confirmed.id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            booking_id=confirmed.id,
+            headers={"hx-request": "true"},
+        )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        assert len(response.data) == 0
 
         db.session.refresh(confirmed)
         assert confirmed.status == bookings_models.BookingStatus.CONFIRMED
         assert confirmed.cancellationReason is None
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-
-        assert (
-            "Les données envoyées comportent des erreurs. Raison : Information obligatoire"
-            in html_parser.extract_alert(redirected_response.data)
-        )
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert "Les données envoyées comportent des erreurs. Raison : Information obligatoire ;" in alerts["warning"]
 
     @pytest.mark.settings(EMS_SUPPORT_EMAIL_ADDRESS="ems.support@example.com")
     @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
@@ -1009,11 +1089,13 @@ class CancelBookingTest(PostEndpointHelper):
             authenticated_client,
             booking_id=booking.id,
             form={"reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
-        redirected_response = authenticated_client.get(response.headers["location"])
-        assert html_parser.extract_alert(redirected_response.data) == "1 réservation a été annulée"
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(booking.id)
 
         db.session.refresh(booking)
         assert booking.status == bookings_models.BookingStatus.CANCELLED
@@ -1068,17 +1150,21 @@ class CancelBookingTest(PostEndpointHelper):
             authenticated_client,
             booking_id=booking_to_cancel.id,
             form={"reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking_to_cancel.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(booking_to_cancel.id)
 
         db.session.refresh(booking_to_cancel)
         assert booking_to_cancel.status == bookings_models.BookingStatus.CANCELLED
         assert booking_to_cancel.cancellationReason == bookings_models.BookingCancellationReasons.BACKOFFICE
 
-        redirected_response = authenticated_client.get(response.headers["location"])
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
 
-        assert html_parser.extract_alert(redirected_response.data) == "1 réservation a été annulée"
+        assert "1 réservation a été annulée" in alerts["success"]
 
 
 class GetBatchMarkAsUsedIndividualBookingsFormTest(GetEndpointHelper):
@@ -1100,38 +1186,59 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
     def test_batch_mark_as_used_bookings(self, legit_user, authenticated_client):
         bookings = bookings_factories.BookingFactory.create_batch(3)
         parameter_ids = ",".join(str(booking.id) for booking in bookings)
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
 
-        assert response.status_code == 303
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": parameter_ids},
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
         for booking in bookings:
             db.session.refresh(booking)
             assert booking.status is bookings_models.BookingStatus.USED
             assert booking.validationAuthorType == bookings_models.BookingValidationAuthorType.BACKOFFICE
+
+            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(booking.id)
 
     def test_batch_mark_as_used_cancelled_bookings(self, legit_user, authenticated_client):
         bookings = bookings_factories.BookingFactory.create_batch(3, status=bookings_models.BookingStatus.CANCELLED)
         parameter_ids = ",".join(str(booking.id) for booking in bookings)
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
 
-        assert response.status_code == 303
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": parameter_ids},
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
         for booking in bookings:
             db.session.refresh(booking)
             assert booking.status is bookings_models.BookingStatus.USED
             assert booking.validationAuthorType == bookings_models.BookingValidationAuthorType.BACKOFFICE
+
+            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(booking.id)
 
     def test_batch_mark_as_used_with_already_used_bookings(self, legit_user, authenticated_client):
         bookings = bookings_factories.BookingFactory.create_batch(3, status=bookings_models.BookingStatus.CANCELLED)
         bookings[0].status = bookings_models.BookingStatus.USED
         parameter_ids = ",".join(str(booking.id) for booking in bookings)
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
-        assert response.status_code == 303
 
-        redirected_response = authenticated_client.get(response.headers["location"])
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": parameter_ids},
+            headers={"hx-request": "true"},
+        )
 
-        alerts = html_parser.extract_alerts(redirected_response.data)
-        assert "2 réservations ont été validées" in alerts[0]
-        assert "Certaines réservations n'ont pas pu être validées et ont été ignorées :" in alerts[1]
-        assert f"- 1 réservation déjà validée ({bookings[0].token})" in alerts[1]
+        assert response.status_code == 200
+        for booking in bookings:
+            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(booking.id)
 
         assert bookings[0].status is bookings_models.BookingStatus.USED
         for booking in bookings[1:]:
@@ -1147,16 +1254,23 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
             ),
         )
         other_booking = bookings_factories.BookingFactory(status=bookings_models.BookingStatus.CANCELLED)
-        parameter_ids = str(expired_booking.id) + "," + str(other_booking.id)
 
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+        bookings = (
+            expired_booking,
+            other_booking,
+        )
+        parameter_ids = ",".join(str(booking.id) for booking in bookings)
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-
-        alerts = html_parser.extract_alerts(redirected_response.data)
-        assert "1 réservation a été validée" in alerts[0]
-        assert "Certaines réservations n'ont pas pu être validées et ont été ignorées :" in alerts[1]
-        assert f"- 1 réservation dont le crédit associé est expiré ({expired_booking.token})" in alerts[1]
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": parameter_ids},
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
+        for booking in bookings:
+            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(booking.id)
 
         db.session.refresh(expired_booking)
         assert expired_booking.status is bookings_models.BookingStatus.CANCELLED
@@ -1169,19 +1283,24 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
             status=bookings_models.BookingStatus.CANCELLED, user=poor_user
         )
         other_booking = bookings_factories.BookingFactory()
-        parameter_ids = str(insufficient_funds_booking.id) + "," + str(other_booking.id)
 
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
-        assert response.status_code == 303
-
-        redirected_response = authenticated_client.get(response.headers["location"])
-
-        alerts = html_parser.extract_alerts(redirected_response.data)
-        assert "1 réservation a été validée" in alerts[0]
-        assert "Certaines réservations n'ont pas pu être validées et ont été ignorées :" in alerts[1]
-        assert (
-            f"- 1 réservation dont le crédit associé est insuffisant ({insufficient_funds_booking.token})" in alerts[1]
+        bookings = (
+            insufficient_funds_booking,
+            other_booking,
         )
+        parameter_ids = ",".join(str(booking.id) for booking in bookings)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": parameter_ids},
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
+
+        for booking in bookings:
+            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(booking.id)
 
     def test_batch_mark_as_used_bookings_insufficient_stock(self, legit_user, authenticated_client):
         insufficient_stock_booking = bookings_factories.BookingFactory(
@@ -1192,35 +1311,47 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
             stock__quantity=0,
         )
         other_booking = bookings_factories.BookingFactory()
-        parameter_ids = str(insufficient_stock_booking.id) + "," + str(other_booking.id)
 
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
-        assert response.status_code == 303
-
-        redirected_response = authenticated_client.get(response.headers["location"])
-
-        alerts = html_parser.extract_alerts(redirected_response.data)
-        assert "1 réservation a été validée" in alerts[0]
-        assert "Certaines réservations n'ont pas pu être validées et ont été ignorées :" in alerts[1]
-        assert (
-            f"- 1 réservation dont l'offre n'a plus assez de stock disponible ({insufficient_stock_booking.token})"
-            in alerts[1]
+        bookings = (
+            insufficient_stock_booking,
+            other_booking,
         )
+        parameter_ids = ",".join(str(booking.id) for booking in bookings)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": parameter_ids},
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+
+        for booking in bookings:
+            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(booking.id)
 
     def test_batch_mark_as_used_when_offerer_is_closed(self, legit_user, authenticated_client):
         booking = bookings_factories.BookingFactory(
             stock__offer__venue__managingOfferer=offerers_factories.ClosedOffererFactory()
         )
 
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": booking.id})
-        assert response.status_code == 303
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": booking.id},
+            headers={"hx-request": "true"},
+        )
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-        alerts = html_parser.extract_alerts(redirected_response.data)
-        assert alerts == [
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(booking.id)
+
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert (
             f"Une erreur s'est produite pour la réservation ({booking.token}) : "
             "Une contremarque ne peut plus être validée sur une structure fermée"
-        ]
+        ) in alerts["warning"]
         assert booking.status == bookings_models.BookingStatus.CONFIRMED
 
     def test_batch_mark_as_used_bookings_with_multiple_errors(self, legit_user, authenticated_client):
@@ -1234,31 +1365,47 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
         )
         already_reimbursed_booking = bookings_factories.ReimbursedBookingFactory()
         another_reimbursed_booking = bookings_factories.ReimbursedBookingFactory()
-        parameter_ids = f"{cancelled_booking.id},{insufficient_stock_booking.id},{already_reimbursed_booking.id},{another_reimbursed_booking.id}"
+        bookings = (
+            cancelled_booking,
+            insufficient_stock_booking,
+            already_reimbursed_booking,
+            another_reimbursed_booking,
+        )
+        parameter_ids = ",".join(str(booking.id) for booking in bookings)
 
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
-        assert response.status_code == 303
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": parameter_ids},
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-
-        alerts = html_parser.extract_alerts(redirected_response.data)
-        assert "1 réservation a été validée" in alerts[0]
-        assert "Certaines réservations n'ont pas pu être validées et ont été ignorées :" in alerts[1]
-        assert (
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert "1 réservation a été validée" in alerts["success"]
+        base_message = (
+            "Certaines réservations n'ont pas pu être validées et ont été ignorées : "
             f"- 1 réservation dont l'offre n'a plus assez de stock disponible ({insufficient_stock_booking.token})"
-            in alerts[1]
+            "- 2 réservations déjà remboursées ("
         )
         assert (
-            f"- 2 réservations déjà remboursées ({already_reimbursed_booking.token}, {another_reimbursed_booking.token})"
-            in alerts[1]
-            or f"- 2 réservations déjà remboursées ({another_reimbursed_booking.token}, {already_reimbursed_booking.token})"
-            in alerts[1]
+            f"{base_message}{already_reimbursed_booking.token}, {another_reimbursed_booking.token})"
+            in alerts["warning"]
+            or f"{base_message}{another_reimbursed_booking.token}, {already_reimbursed_booking.token})"
+            in alerts["warning"]
         )
 
     def test_batch_mark_as_used_unlocks_achievement(self, authenticated_client, bookings):
         festival_booking = bookings[1]
 
-        self.post_to_endpoint(authenticated_client, form={"object_ids": str(festival_booking.id)})
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": str(festival_booking.id)},
+            headers={"hx-request": "true"},
+        )
+
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{festival_booking.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[2] == str(festival_booking.id)
 
         assert festival_booking.user.achievements
 
@@ -1283,39 +1430,50 @@ class BatchCancelIndividualBookingsTest(PostEndpointHelper):
     def test_batch_cancel_bookings(self, legit_user, authenticated_client):
         bookings = bookings_factories.BookingFactory.create_batch(3)
         parameter_ids = ",".join(str(booking.id) for booking in bookings)
+
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"object_ids": parameter_ids, "reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
+            form={
+                "object_ids": parameter_ids,
+                "reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value,
+            },
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
         for booking in bookings:
             db.session.refresh(booking)
             assert booking.status is bookings_models.BookingStatus.CANCELLED
             assert booking.cancellationReason == bookings_models.BookingCancellationReasons.BACKOFFICE
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-
-        assert "3 réservations ont été annulées" in html_parser.extract_alert(redirected_response.data)
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert "3 réservations ont été annulées" in alerts["success"]
 
     def test_batch_cancel_booking_with_multiple_errors(self, legit_user, authenticated_client):
         booking_to_cancel = bookings_factories.UsedBookingFactory()
         already_cancelled_booking = bookings_factories.CancelledBookingFactory()
         already_reimbursed_booking = bookings_factories.ReimbursedBookingFactory()
-        parameter_ids = f"{booking_to_cancel.id},{already_cancelled_booking.id},{already_reimbursed_booking.id}"
+
+        bookings = (
+            booking_to_cancel,
+            already_cancelled_booking,
+            already_reimbursed_booking,
+        )
+        parameter_ids = ",".join(str(booking.id) for booking in bookings)
+
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"object_ids": parameter_ids, "reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
+            form={
+                "object_ids": parameter_ids,
+                "reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value,
+            },
+            headers={"hx-request": "true"},
         )
-        assert response.status_code == 303
-
-        redirected_response = authenticated_client.get(response.headers["location"])
-
-        alerts = html_parser.extract_alerts(redirected_response.data)
-        assert "1 réservation a été annulée" in alerts[0]
-        assert "Certaines réservations n'ont pas pu être annulées et ont été ignorées :" in alerts[1]
-        assert f"- 1 réservation déjà remboursée ({already_reimbursed_booking.token})" in alerts[1]
-        assert f"- 1 réservation déjà annulée ({already_cancelled_booking.token})" in alerts[1]
+        assert response.status_code == 200
+        for booking in bookings:
+            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(booking.id)
 
 
 class GetBatchTagFraudulentBookingsFormTest(PostEndpointHelper):
@@ -1328,6 +1486,7 @@ class GetBatchTagFraudulentBookingsFormTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form={"object_ids": f"{booking.id}"},
+            headers={"hx-request": "true"},
         )
 
         assert response.status_code == 200
@@ -1340,6 +1499,7 @@ class GetBatchTagFraudulentBookingsFormTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form={"object_ids": f"{booking.id}"},
+            headers={"hx-request": "true"},
         )
 
         assert response.status_code == 200
@@ -1364,9 +1524,22 @@ class BatchTagFraudulentBookingsTest(PostEndpointHelper):
             ).booking
         )
         parameter_ids = ",".join(str(booking.id) for booking in bookings)
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids, "send_mails": False})
 
-        assert response.status_code == 303
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": parameter_ids,
+                "send_mails": False,
+            },
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        for booking in bookings:
+            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(booking.id)
+
         all_tags = db.session.query(bookings_models.FraudulentBookingTag).all()
         assert len(all_tags) == 5
         just_created_tags = (
@@ -1394,10 +1567,30 @@ class BatchTagFraudulentBookingsTest(PostEndpointHelper):
             booking__stock__offer__bookingEmail="email3@example.com",
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
         ).booking
-        parameter_ids = f"{booking_with_email.id},{booking_with_venue_email.id},{booking_with_other_email.id},{already_fraudulent_booking_with_other_email.id},{already_fraudulent_booking_with_different_email.id}"
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids, "send_mails": True})
 
-        assert response.status_code == 303
+        bookings = (
+            booking_with_email,
+            booking_with_venue_email,
+            booking_with_other_email,
+            already_fraudulent_booking_with_other_email,
+            already_fraudulent_booking_with_different_email,
+        )
+        parameter_ids = ",".join(str(booking.id) for booking in bookings)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "object_ids": parameter_ids,
+                "send_mails": True,
+            },
+        )
+
+        assert response.status_code == 200
+        for booking in bookings:
+            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(booking.id)
+
         all_tags = db.session.query(bookings_models.FraudulentBookingTag).all()
         assert len(all_tags) == 5
         just_created_tags = (
@@ -1467,9 +1660,15 @@ class BatchRemoveFraudulentBookingTagTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form={"object_ids": parameter_ids},
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        for booking in bookings:
+            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
+            cells = html_parser.extract(row, "td", is_xml=True)
+            assert cells[2] == str(booking.id)
+
         all_tags = db.session.query(bookings_models.FraudulentBookingTag).all()
         assert len(all_tags) == 1
         assert all_tags[0].bookingId == unrelated_tag.bookingId
