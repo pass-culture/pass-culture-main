@@ -1,0 +1,46 @@
+{% from "components/description.html" import description_detail_horizontal %}
+<div class="mt-2 d-flex gap-3 align-items-start">
+  {% if found_product.images.recto %}
+    <img src="{{ found_product.images.recto }}"
+         class="img-thumbnail"
+         style="max-height: 240px"
+         alt="Image du produit">
+  {% endif %}
+  <div class="flex-grow-1">
+    <h5 class="mb-1">{{ found_product.name }}</h5>
+    {% call description_detail_horizontal("ID") %}
+      {{ found_product.id }}
+    {% endcall %}
+    {% call description_detail_horizontal("Catégorie") %}
+      {{ found_product.subcategoryId | format_offer_category }}
+    {% endcall %}
+    {% call description_detail_horizontal("Sous-catégorie") %}
+      {{ found_product.subcategoryId | format_offer_subcategory }}
+    {% endcall %}
+    {% if found_product.extraData.author %}
+      {% call description_detail_horizontal("Auteur") %}
+        {{ found_product.extraData.author }}
+      {% endcall %}
+    {% endif %}
+    {% if found_product.extraData.editeur %}
+      {% call description_detail_horizontal("Éditeur") %}
+        {{ found_product.extraData.editeur }}
+      {% endcall %}
+    {% endif %}
+    {% if found_product.extraData.performer %}
+      {% call description_detail_horizontal("Interprète") %}
+        {{ found_product.extraData.performer }}
+      {% endcall %}
+    {% endif %}
+    {% if found_product.durationMinutes %}
+      {% call description_detail_horizontal("Durée") %}
+        {{ found_product.durationMinutes }} minutes
+      {% endcall %}
+    {% endif %}
+    {% if found_product.extraData.diffusionVersion %}
+      {% call description_detail_horizontal("Langue") %}
+        {{ found_product.extraData.diffusionVersion }}
+      {% endcall %}
+    {% endif %}
+  </div>
+</div>
