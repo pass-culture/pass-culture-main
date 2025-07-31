@@ -1,4 +1,5 @@
 import { format } from 'date-fns'
+import { fr } from 'date-fns/locale'
 
 import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
 
@@ -12,6 +13,7 @@ export const formatDateTime = (
       new Date(date),
       venueDepartmentCode || undefined
     ),
-    dateFormat
+    dateFormat,
+    { locale: fr }
   )
 }
