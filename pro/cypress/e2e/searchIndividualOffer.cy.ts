@@ -1,8 +1,8 @@
 import { addDays, format } from 'date-fns'
 
 import {
-  expectOffersOrBookingsAreFound,
-  logInAndGoToPage,
+  expectOffersOrBookingsAreFoundForNewTable,
+  logInAndGoToPage
 } from '../support/helpers.ts'
 
 describe('Search individual offers', () => {
@@ -55,13 +55,13 @@ describe('Search individual offers', () => {
       [
         '',
         offerName1,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :1 000',
-        'Statut :publiée',
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
       ],
     ]
 
-    expectOffersOrBookingsAreFound(expectedResults)
+    expectOffersOrBookingsAreFoundForNewTable(expectedResults)
   })
 
   it('I should be able to search with a EAN and see expected results', () => {
@@ -80,13 +80,13 @@ describe('Search individual offers', () => {
       [
         '',
         offerName2 + ean,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :1 000',
-        'Statut :publiée',
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
       ],
     ]
 
-    expectOffersOrBookingsAreFound(expectedResults)
+    expectOffersOrBookingsAreFoundForNewTable(expectedResults)
   })
 
   it('I should be able to search with "Catégorie" filter and see expected results', () => {
@@ -110,13 +110,13 @@ describe('Search individual offers', () => {
       [
         '',
         offerName3,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :1 000',
-        'Statut :publiée',
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
       ],
     ]
 
-    expectOffersOrBookingsAreFound(expectedResults)
+    expectOffersOrBookingsAreFoundForNewTable(expectedResults)
   })
 
   it('I should be able to search by offer status and see expected results', () => {
@@ -140,48 +140,48 @@ describe('Search individual offers', () => {
       [
         '',
         offerName6,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :1 000',
-        'Statut :publiée',
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
       ],
       [
         '',
         offerName5,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :1 000',
-        'Statut :publiée',
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
       ],
       [
         '',
         offerName4,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :1 000',
-        'Statut :publiée',
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
       ],
       [
         '',
         offerName3,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :1 000',
-        'Statut :publiée',
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
       ],
       [
         '',
         offerName2,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :1 000',
-        'Statut :publiée',
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
       ],
       [
         '',
         offerName1,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :1 000',
-        'Statut :publiée',
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
       ],
     ]
 
-    expectOffersOrBookingsAreFound(expectedResults)
+    expectOffersOrBookingsAreFoundForNewTable(expectedResults)
   })
 
   it('I should be able to search by date and see expected results', () => {
@@ -203,13 +203,13 @@ describe('Search individual offers', () => {
       [
         '',
         offerName4,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :1 000',
-        'Statut :publiée',
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
       ],
     ]
 
-    expectOffersOrBookingsAreFound(expectedResults)
+    expectOffersOrBookingsAreFoundForNewTable(expectedResults)
   })
 
   it('I should be able to search combining several filters and see expected results', () => {
@@ -246,20 +246,20 @@ describe('Search individual offers', () => {
       [
         '',
         offerName6,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :1 000',
-        'Statut :publiée',
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
       ],
       [
         '',
         offerName5,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :1 000',
-        'Statut :publiée',
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
       ],
     ]
 
-    expectOffersOrBookingsAreFound(expectedResults)
+    expectOffersOrBookingsAreFoundForNewTable(expectedResults)
 
     cy.stepLog({ message: 'I reset all filters' })
     cy.findByText('Réinitialiser les filtres').click()
@@ -294,54 +294,54 @@ describe('Search individual offers', () => {
       [
         '',
         offerName7,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :0',
-        'Statut :épuisée',
+        `${venueName} - ${venueFullAddress}`,
+        '0',
+        'épuisée',
       ],
       [
         '',
         offerName6,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :1 000',
-        'Statut :publiée',
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
       ],
       [
         '',
         offerName5,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :1 000',
-        'Statut :publiée',
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
       ],
       [
         '',
         offerName4,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :1 000',
-        'Statut :publiée',
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
       ],
       [
         '',
         offerName3,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :1 000',
-        'Statut :publiée',
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
       ],
       [
         '',
         offerName2,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :1 000',
-        'Statut :publiée',
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
       ],
       [
         '',
         offerName1,
-        `Localisation :${venueName} - ${venueFullAddress}`,
-        'Stocks :1 000',
-        'Statut :publiée',
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
       ],
     ]
 
-    expectOffersOrBookingsAreFound(expectedResults2)
+    expectOffersOrBookingsAreFoundForNewTable(expectedResults2)
   })
 })
