@@ -2,15 +2,17 @@ import {
   CollectiveOfferDisplayedStatus,
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
-import { getDateToFrenchText } from 'commons/utils/date'
+import { FORMAT_DD_MMMM_YYYY } from 'commons/utils/date'
 import { Timeline, TimelineStepType } from 'ui-kit/Timeline/Timeline'
+
+import { formatDateTime } from '../CollectiveOfferSummary/components/utils/formatDatetime'
 
 import { ArchivedBanner } from './banners/ArchivedBanner'
 import { BookingWaitingBanner } from './banners/BookingWaitingBanner'
 import { CancelledBanner } from './banners/CancelledBanner'
 import { DraftBanner } from './banners/DraftBanner'
-import { ReimbursedBanner } from './banners/ReimbursedBanner'
 import { ExpiredBanner } from './banners/ExpiredBanner'
+import { ReimbursedBanner } from './banners/ReimbursedBanner'
 import { RejectedBanner } from './banners/RejectedBanner'
 import { UnderReviewBanner } from './banners/UnderReviewBanner'
 import styles from './BookableOfferTimeline.module.scss'
@@ -43,6 +45,9 @@ const isMoreThan48hAgo = (dateString: string) => {
 
 export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
   const { past, future } = offer.history
+
+  const venueDepartmentCode =
+    offer.location?.address?.departmentCode ?? offer.venue.departementCode
 
   const pastSteps = past.map(({ datetime, status }, index) => {
     const statusLabel = statusLabelMapping[status]
@@ -80,7 +85,9 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
             <StatusWithDate
               status={statusLabel}
               date={
-                datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined
+                datetime
+                  ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                  : undefined
               }
             />
             {isCurrentStep && <RejectedBanner offerId={offer.id} />}
@@ -95,7 +102,11 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
         content: (
           <StatusWithDate
             status={statusLabel}
-            date={datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined}
+            date={
+              datetime
+                ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                : undefined
+            }
           />
         ),
       }
@@ -107,7 +118,11 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
         content: (
           <StatusWithDate
             status={statusLabel}
-            date={datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined}
+            date={
+              datetime
+                ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                : undefined
+            }
           />
         ),
       }
@@ -119,7 +134,11 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
         content: (
           <StatusWithDate
             status={statusLabel}
-            date={datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined}
+            date={
+              datetime
+                ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                : undefined
+            }
           />
         ),
       }
@@ -138,7 +157,9 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
             <StatusWithDate
               status={statusLabel}
               date={
-                datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined
+                datetime
+                  ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                  : undefined
               }
             />
             <ExpiredBanner
@@ -164,10 +185,17 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
             <StatusWithDate
               status={statusLabel}
               date={
-                datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined
+                datetime
+                  ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                  : undefined
               }
             />
-            {isCurrentStep && <CancelledBanner offerId={offer.id} reason={offer.booking?.cancellationReason}  />}
+            {isCurrentStep && (
+              <CancelledBanner
+                offerId={offer.id}
+                reason={offer.booking?.cancellationReason}
+              />
+            )}
           </>
         ),
       }
@@ -179,7 +207,11 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
         content: (
           <StatusWithDate
             status={statusLabel}
-            date={datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined}
+            date={
+              datetime
+                ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                : undefined
+            }
           />
         ),
       }
@@ -193,7 +225,9 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
             <StatusWithDate
               status={statusLabel}
               date={
-                datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined
+                datetime
+                  ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                  : undefined
               }
             />
             {isCurrentStep && <ReimbursedBanner />}
@@ -209,7 +243,11 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
           <>
             <StatusWithDate
               status={statusLabel}
-              date={datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined}
+              date={
+                datetime
+                  ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                  : undefined
+              }
             />
             {isCurrentStep && <ArchivedBanner />}
           </>
