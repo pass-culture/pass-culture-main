@@ -122,7 +122,7 @@ jobs:
           PCAPI_SECRETS=$(echo $PCAPI_SECRETS | xargs -n1 | sort | xargs)
           #Transform list into helm readable parameter list (pattern: --set secrets={item1,item2,item3})
           PCAPI_SECRETS=secrets={$(echo $PCAPI_SECRETS | sed -r 's/ /,/g')}
-          echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
+          echo "PCAPI_SECRETS=$PCAPI_SECRETS" | tee -a "$GITHUB_OUTPUT"
 
       # Checkout pass-culture-deployment repository containing pcapi helm value files
       - uses: actions/checkout@v4
@@ -170,8 +170,8 @@ jobs:
             -e ${{ inputs.environment }} \
             --sourceRepoURL https://github.com/pass-culture/pass-culture-deployment.git \
             --sourcePath helm/pcapi \
-            --sourceRepoRef demo-infra-pc-render-manifests \
-            --additionalArg ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
+            --sourceRepoRef master \
+            --additionalArg "${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}"
 
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
