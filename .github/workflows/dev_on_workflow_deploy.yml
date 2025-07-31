@@ -177,6 +177,7 @@ jobs:
             --sourcePath helm/pcapi \
             --sourceRepoRef master \
             --additionalArg "${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}" \
+            --commitMsg "${{ inputs.app_name }}(${{ inputs.environment }}) : manifests for app_version=${{ inputs.app_version }}"
             --push
 
       - name: "Connect to cluster"
