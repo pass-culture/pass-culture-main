@@ -317,7 +317,10 @@ def create_artists() -> None:
         offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_2.id, product_id=product.id, artist_type=ArtistType.PERFORMER
         )
-    artist_factories.ArtistAliasFactory.create(artist_id=artist_2.id, artist_alias_name="Lavigne Avril")
+    for alias_index in range(20):
+        artist_factories.ArtistAliasFactory.create(
+            artist_id=artist_2.id, artist_alias_name=f"Alias Lavigne {alias_index + 1}"
+        )
 
     # Artist 3 : other
     artist_3 = artist_factories.ArtistFactory.create(

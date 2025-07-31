@@ -679,6 +679,16 @@ def format_product_cgu_compatibility_status(
             return cgu_compatibility.value
 
 
+def format_artist_visibility_status(is_blacklisted: bool) -> str:
+    if is_blacklisted:
+        text = "Non visible"
+        category = "danger"
+    else:
+        text = "Visible"
+        category = "success"
+    return format_badge(text=text, category=category)
+
+
 def format_offer_status(status: offer_mixin.OfferStatus) -> str:
     match status:
         case offer_mixin.OfferStatus.DRAFT:
@@ -2012,3 +2022,4 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_user_subscription_tunnel_step_status"] = format_user_subscription_tunnel_step_status
     app.jinja_env.filters["offer_mediation_link"] = offer_mediation_link
     app.jinja_env.filters["product_mediation_link"] = product_mediation_link
+    app.jinja_env.filters["format_artist_visibility_status"] = format_artist_visibility_status
