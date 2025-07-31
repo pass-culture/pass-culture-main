@@ -150,7 +150,7 @@ jobs:
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
       # Executes helmfile templating and push results to render-manifests repository
-      - name: "Setup pc-rendre-manifests"
+      - name: "Setup pc-render-manifests"
         uses: pass-culture/common-workflows/actions/setup-pc-render-manifests@IC-284-use-pc-render-manifest-binary
 
       # Executes helmfile templating and push results to render-manifests repository
