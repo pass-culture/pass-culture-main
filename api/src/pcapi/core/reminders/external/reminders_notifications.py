@@ -18,5 +18,4 @@ def notify_users_offer_is_bookable(offer: Offer) -> None:
     logger.debug("[Offer bookable] Users to notify", extra={"offerId": offer.id, "user_ids": user_ids})
 
     send_users_reminders_for_offer(user_ids, offer)
-
     delete_offer_reminders_on_offer(offer.id)

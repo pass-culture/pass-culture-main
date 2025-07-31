@@ -51,6 +51,7 @@ from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.core.offers.exceptions import ProductNotFound
 from pcapi.core.providers.allocine import get_allocine_products_provider
+from pcapi.core.reminders import factories as reminders_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import api_errors
 from pcapi.models import db
@@ -2111,49 +2112,16 @@ class BatchUpdateOffersTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class ActivateFutureOffersTest:
+class FutureOfferReminderTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_activate_future_offers_empty(self, mocked_async_index_offer_ids):
-        # Offer not in the future, e.g. draft or paused (no publication_date)
-        offer = factories.OfferFactory(publicationDatetime=None)
-
-        offers_ids = api.activate_future_offers()
-
-        assert not db.session.get(models.Offer, offer.id).isActive
-        mocked_async_index_offer_ids.assert_not_called()
-        assert len(offers_ids) == 0
-
-    @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_activate_future_offers(self, mocked_async_index_offer_ids):
-        publication_date = datetime.utcnow().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
-        offer = factories.OfferFactory(publicationDatetime=publication_date)
-
-        offers_ids = api.activate_future_offers(publication_date=publication_date)
-
-        assert next(iter(offers_ids)) == offer.id
-        assert db.session.get(models.Offer, offer.id).isActive
-
-        mocked_async_index_offer_ids.assert_called_once()
-        assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer.id])
-
-
-@pytest.mark.usefixtures("db_session")
-class ActivateFutureOffersAndRemindUsersTest:
-    @mock.patch("pcapi.core.search.async_index_offer_ids")
-    @mock.patch("pcapi.core.reminders.external.reminders_notifications.notify_users_offer_is_bookable")
-    def test_activate_future_offers_and_remind_users(
-        self, notify_users_offer_is_bookable_mock, mocked_async_index_offer_ids
-    ):
+    def test_reindex_recently_published_offers(self, mocked_async_index_offer_ids):
         publication_date = (now_datetime_with_tz - timedelta(minutes=10)).replace(tzinfo=None)
 
         offer_1 = factories.OfferFactory(publicationDatetime=publication_date)
         offer_2 = factories.OfferFactory(publicationDatetime=publication_date)
         offer_3 = factories.OfferFactory(publicationDatetime=None)
 
-        api.activate_future_offers_and_remind_users()
-        notify_users_offer_is_bookable_mock.assert_has_calls(
-            [mock.call(offer=offer_1), mock.call(offer=offer_2)], any_order=True
-        )
+        api.reindex_recently_published_offers(publication_date)
 
         mocked_async_index_offer_ids.assert_called_once()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer_1.id, offer_2.id])
@@ -2161,6 +2129,32 @@ class ActivateFutureOffersAndRemindUsersTest:
         assert db.session.get(models.Offer, offer_1.id).isActive
         assert db.session.get(models.Offer, offer_2.id).isActive
         assert not db.session.get(models.Offer, offer_3.id).isActive
+
+    @mock.patch("pcapi.core.reminders.external.reminders_notifications.send_users_reminders_for_offer")
+    def test_remind_users(self, send_reminder_mock):
+        booking_allowed_datetime = (now_datetime_with_tz - timedelta(minutes=10)).replace(tzinfo=None)
+
+        user_1 = users_factories.BeneficiaryFactory()
+        user_2 = users_factories.BeneficiaryFactory()
+
+        offer_1 = factories.OfferFactory(bookingAllowedDatetime=booking_allowed_datetime)
+        offer_2 = factories.OfferFactory(bookingAllowedDatetime=booking_allowed_datetime)
+        factories.OfferFactory(bookingAllowedDatetime=None)
+
+        reminders_factories.OfferReminderFactory(offer=offer_1, user=user_1)
+        reminders_factories.OfferReminderFactory(offer=offer_2, user=user_1)
+        reminders_factories.OfferReminderFactory(offer=offer_2, user=user_2)
+
+        api.send_future_offer_reminders()
+
+        send_reminder_mock.assert_called()
+
+        assert len(send_reminder_mock.call_args_list) == 2
+
+        expected_first_call = mock.call([user_1.id], offer_1)
+        expected_second_call = mock.call([user_1.id, user_2.id], offer_2)
+
+        send_reminder_mock.assert_has_calls([expected_first_call, expected_second_call], any_order=True)
 
 
 @pytest.mark.usefixtures("db_session")

@@ -589,21 +589,18 @@ def batch_update_offers(
     return updated_offer_ids
 
 
-def activate_future_offers(publication_date: datetime.datetime | None = None) -> typing.Collection[int]:
-    offer_query = offers_repository.get_offers_by_publication_date(publication_date=publication_date)
+def reindex_recently_published_offers(publication_datetime: datetime.datetime | None = None) -> None:
+    offer_query = offers_repository.get_offers_by_publication_datetime(publication_datetime=publication_datetime)
     offer_query = offers_repository.exclude_offers_from_inactive_venue_provider(offer_query)
-    with transaction():
-        updates = {"publicationDatetime": datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)}
-        updated_offer_ids = batch_update_offers(offer_query, updates)
 
-    return updated_offer_ids
+    search.async_index_offer_ids([offer.id for offer in offer_query], reason=search.IndexationReason.OFFER_PUBLICATION)
 
 
-def activate_future_offers_and_remind_users() -> None:
-    offer_ids = activate_future_offers()
-
-    for offer_id in offer_ids:
-        offer = db.session.get(models.Offer, offer_id)
+def send_future_offer_reminders(booking_allowed_datetime: datetime.datetime | None = None) -> None:
+    offers_query = offers_repository.get_offers_by_booking_allowed_datetime(
+        booking_allowed_datetime=booking_allowed_datetime
+    )
+    for offer in offers_query:
         reminders_notifications.notify_users_offer_is_bookable(offer=offer)
 
 
