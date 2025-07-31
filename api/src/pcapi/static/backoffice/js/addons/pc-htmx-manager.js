@@ -12,7 +12,7 @@ class PcHtmxManager extends PcAddOn {
   static LOADING_MODAL_ID = "loading-htmx-modal"
   isLoadingFlashMessages = false
 
-  bindEvents = () => {
+  initialize = () => {
     EventHandler.on(document.body, "htmx:beforeRequest", this.#displayLoadingSpinner)
 
     EventHandler.on(document.body, "htmx:beforeRequest", this.#startLoadingFlashMessages)
@@ -22,22 +22,9 @@ class PcHtmxManager extends PcAddOn {
     EventHandler.on(document.body, "htmx:afterRequest", this.#hideLoadingSpinner)
     EventHandler.on(document.body, "htmx:afterRequest", this.#hideParentModalOnError)
     EventHandler.on(document.body, "htmx:afterRequest", this.#triggerFetchFlashMessages)
+    EventHandler.on(document.body, "htmx:beforeSwap", this.app.addons.pcTableManager.applyConfigurationOnLoadedLines)
     EventHandler.on(document.body, "htmx:afterRequest", this.app.bindEvents)
     EventHandler.on(document.body, "htmx:beforeRequest", this.app.unbindEvents)
-  }
-
-  unbindEvents = () => {
-    EventHandler.off(document.body, "htmx:beforeRequest", this.#displayLoadingSpinner)
-
-    EventHandler.off(document.body, "htmx:beforeRequest", this.#startLoadingFlashMessages)
-    EventHandler.off(document.body, "htmx:afterRequest", this.#finishLoadingFlashMessages)
-
-    EventHandler.off(document.body, "htmx:afterRequest", this.#reloadPageOnUnauthorizedError)
-    EventHandler.off(document.body, "htmx:afterRequest", this.#hideLoadingSpinner)
-    EventHandler.off(document.body, "htmx:afterRequest", this.#hideParentModalOnError)
-    EventHandler.off(document.body, "htmx:afterRequest", this.#triggerFetchFlashMessages)
-    EventHandler.off(document.body, "htmx:afterRequest", this.app.bindEvents)
-    EventHandler.off(document.body, "htmx:beforeRequest", this.app.unbindEvents)
   }
 
   #reloadPageOnUnauthorizedError = (event) => {

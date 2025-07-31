@@ -376,7 +376,7 @@ class PcTableManager extends PcAddOn {
     return false
   }
 
-  #applyConfigurationOnLoadedLines = (event) => {
+  applyConfigurationOnLoadedLines = (event) => {
     if (!event.detail.isError) {
       let $table = event.target.closest(`table${PcTableManager.SELECTOR}`)
 
@@ -427,7 +427,6 @@ class PcTableManager extends PcAddOn {
     EventHandler.on(document.body, 'click', PcTableManager.DISPLAY_DEFAULT, this.#onDisplayDefaultClick)
     EventHandler.on(document.body, 'click', PcTableManager.CLOSE_BUTTON, this.#onCloseMenuClick)
     EventHandler.on(document.body, 'click', PcTableManager.DROPDOWN_MENU, this.#stopPropagation)
-    EventHandler.on(document.body, "htmx:beforeSwap", this.#applyConfigurationOnLoadedLines)
   }
 
   unbindEvents = () => {
@@ -440,7 +439,6 @@ class PcTableManager extends PcAddOn {
     EventHandler.off(document.body, 'click', PcTableManager.DISPLAY_DEFAULT, this.#onDisplayDefaultClick)
     EventHandler.off(document.body, 'click', PcTableManager.CLOSE_BUTTON, this.#onCloseMenuClick)
     EventHandler.off(document.body, 'click', PcTableManager.DROPDOWN_MENU, this.#stopPropagation)
-    EventHandler.off(document.body, "htmx:beforeSwap", this.#applyConfigurationOnLoadedLines)
   }
 
   applyConfiguration = (configuration) => {
