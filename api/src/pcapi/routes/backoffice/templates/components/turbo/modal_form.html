@@ -1,11 +1,12 @@
-<turbo-frame id="turbo-{{ div_id }}">
+<turbo-frame id="turbo-{{ div_id }}"
+{% if src_url %}src="{{ src_url }}"{% endif %}
+>
 {% if form %}
   <form action="{{ dst }}"
         name="{{ dst | action_to_name }}"
-        method="{% if form.method %}form.method{% else %}post{% endif %}"
-        target="_top"
-        data-turbo="{{ data_turbo or 'false' }}"
-        class="modal-content">
+        method="{% if form.method %}{{ form.method }}{% else %}post{% endif %}"
+        class="modal-content"
+        {% if is_multistep_form %} data-turbo="true" {% else %} target="_top" {% endif %}>
     {% if form.meta.csrf %}{{ csrf_token }}{% endif %}
   {% endif %}
   <div class="modal-header">

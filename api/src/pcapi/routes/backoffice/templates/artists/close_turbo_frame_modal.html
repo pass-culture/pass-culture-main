@@ -1,0 +1,11 @@
+<turbo-stream action="append" target="modal-close-target">
+<template>
+  <script>
+    const modal = bootstrap.Modal.getInstance(document.querySelector('.modal.show'));
+    if (modal) {
+      modal.hide();
+    }
+    window.location.reload();
+  </script>
+</template>
+</turbo-stream>

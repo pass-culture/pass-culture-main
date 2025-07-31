@@ -1,7 +1,7 @@
 import factory
 
+import pcapi.core.offers.models as offers_models
 from pcapi.core.factories import BaseFactory
-from pcapi.core.offers import models as offers_models
 
 from . import models
 
