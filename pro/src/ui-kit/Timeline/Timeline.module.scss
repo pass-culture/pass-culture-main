@@ -108,6 +108,7 @@ $vertical-offset-icon-from-step: calc(
 .step-content {
   margin-left: rem.torem(16px);
   margin-bottom: rem.torem(32px);
+  width: 100%;
 }
 
 .step-content-last {
