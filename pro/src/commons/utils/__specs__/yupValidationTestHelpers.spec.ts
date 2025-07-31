@@ -18,6 +18,8 @@ describe('getNthParentFormValues', () => {
   })
 
   it('should throw errors if context is invalid', () => {
+    vi.spyOn(console, 'error').mockImplementation(vi.fn())
+
     const context = {
       from: [
         { child: 0 },
@@ -28,10 +30,12 @@ describe('getNthParentFormValues', () => {
 
     expect(() =>
       getNthParentFormValues(context as unknown as yup.TestContext<unknown>, 1)
-    ).toThrowError('TestContext is not valid')
+    ).toThrowError('Missing or invalid "from" attribute in `testContext`.')
   })
 
   it('should throw error if parent is invalid', () => {
+    vi.spyOn(console, 'error').mockImplementation(vi.fn())
+
     const context = {
       from: [
         { value: { child: 0 } },
@@ -42,6 +46,8 @@ describe('getNthParentFormValues', () => {
 
     expect(() =>
       getNthParentFormValues(context as unknown as yup.TestContext<unknown>, 10)
-    ).toThrowError('Parent depth is not valid')
+    ).toThrowError(
+      "Parent depth (10) can't be greater than the number of available parents (3)."
+    )
   })
 })

@@ -20,6 +20,8 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
+import { FrontendError } from '@/commons/errors/FrontendError'
+import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -234,15 +236,14 @@ export const IndividualOfferDetailsScreenNext = ({
       images,
     } = product
 
-    const subCategory = subCategories.find(
-      (subCategory) => subCategory.id === subcategoryId
-    )
-
-    if (!subCategory) {
-      throw new Error('Unknown or missing subcategoryId')
+    const subcategory = subCategories.find((s) => s.id === subcategoryId)
+    if (!subcategory) {
+      return handleUnexpectedError(
+        new FrontendError('Unknown or missing `subcategoryId`.')
+      )
     }
 
-    const { categoryId, conditionalFields } = subCategory
+    const { categoryId, conditionalFields } = subcategory
 
     const imageUrl = images.recto
     if (imageUrl) {

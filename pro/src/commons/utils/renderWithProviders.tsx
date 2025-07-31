@@ -36,6 +36,29 @@ export type RenderComponentFunction<
     ExtraParams
 ) => void
 
+interface RenderComponentFunctionParams<
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  ComponentProps extends Record<string, any> | void = void,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  ContextValues extends Record<string, any> | void = void,
+> {
+  contextValue?: ContextValues
+  options?: RenderWithProvidersOptions
+  path?: string
+  props?: Partial<ComponentProps>
+}
+/**
+ * Common Template-Type for integration tests render functions utilizing `renderWithProviders()`.
+ */
+export type RenderComponentFunction<
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  ComponentProps extends Record<string, any> = {},
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  ContextValues extends Record<string, any> = {},
+> = (
+  params: RenderComponentFunctionParams<ComponentProps, ContextValues>
+) => void
+
 export type RenderWithProvidersOptions = {
   storeOverrides?: DeepPartial<RootState>
   initialRouterEntries?: string[]

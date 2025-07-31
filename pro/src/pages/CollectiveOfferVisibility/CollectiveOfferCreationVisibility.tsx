@@ -11,6 +11,7 @@ import {
   Mode,
 } from '@/commons/core/OfferEducational/types'
 import { extractInitialVisibilityValues } from '@/commons/core/OfferEducational/utils/extractInitialVisibilityValues'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
 import {
   MandatoryCollectiveOfferFromParamsProps,
@@ -52,11 +53,10 @@ export const CollectiveOfferVisibility = ({
     navigate(`/offre/${offerId}/collectif/creation/recapitulatif`)
   }
 
-  if (isCollectiveOfferTemplate(offer)) {
-    throw new Error(
-      'Impossible de mettre à jour la visibilité d’une offre vitrine.'
-    )
-  }
+  assertOrFrontendError(
+    !isCollectiveOfferTemplate(offer),
+    '`offer` shoud not be a (collective offer) template.'
+  )
 
   const initialValues = extractInitialVisibilityValues(offer.institution)
 

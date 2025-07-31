@@ -108,10 +108,7 @@ export const DetailsForm = ({
     }
 
     const venue = venues.find((venue) => venue.id === Number(venueId))
-    if (!venue) {
-      // TODO (igabriele, 2025-07-16): Handle that more gracefully once we have agreed on how to handle it.
-      throw new Error(`Venue with id ${venueId} not found in venues.`)
-    }
+    assert(venue, `Venue with id ${venueId} not found in venues.`)
 
     const { accessibility } = getAccessibilityInfoFromVenue(venue)
     setValue('accessibility', accessibility)

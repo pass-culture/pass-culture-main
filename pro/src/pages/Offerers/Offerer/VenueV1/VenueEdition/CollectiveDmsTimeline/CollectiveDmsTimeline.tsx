@@ -1,6 +1,7 @@
 import { DMSApplicationForEAC, DMSApplicationstatus } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { getDateToFrenchText } from '@/commons/utils/date'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
@@ -350,6 +351,6 @@ export const CollectiveDmsTimeline = ({
       return droppedByDms
     /* istanbul ignore next: we dont want to test this case in unit test */
     default:
-      throw new Error('Invalid dms status')
+      assertOrFrontendError(false, 'Invalid dms status.')
   }
 }
