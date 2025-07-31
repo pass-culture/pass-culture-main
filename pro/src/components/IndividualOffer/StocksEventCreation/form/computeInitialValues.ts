@@ -3,7 +3,7 @@ import { SelectOption } from 'commons/custom_types/form'
 import { RecurrenceFormValues, RecurrenceType } from './types'
 
 export const computeInitialValues = (
-  priceCategoryOptions: SelectOption[]
+  priceCategoryOptions: SelectOption<number>[]
 ): RecurrenceFormValues => ({
   recurrenceType: RecurrenceType.UNIQUE,
   days: [],

@@ -15,11 +15,11 @@ function renderCollectiveDataForm(options?: RenderWithProvidersOptions) {
     <CollectiveDataForm
       statuses={[
         {
-          value: 1,
+          value: '1',
           label: 'statut 1',
         },
         {
-          value: 2,
+          value: '2',
           label: 'statut 2',
         },
       ]}

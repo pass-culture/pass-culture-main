@@ -18,7 +18,7 @@ interface BuildInitialValuesArgs {
   today: Date
   lastProviderName: string | null
   offerStatus: OfferStatus
-  priceCategoriesOptions: SelectOption[]
+  priceCategoriesOptions: SelectOption<number>[]
   stocks: GetOfferStockResponseModel[]
 }
 

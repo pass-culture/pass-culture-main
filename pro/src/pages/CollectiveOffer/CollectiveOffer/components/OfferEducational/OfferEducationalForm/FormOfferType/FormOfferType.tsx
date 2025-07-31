@@ -59,9 +59,11 @@ export const FormOfferType = ({
       )
   }
 
-  const [programsOptions, setProgramsOptions] = useState<SelectOption[]>(() =>
+  const [programsOptions, setProgramsOptions] = useState<
+    SelectOption<number>[]
+  >(() =>
     domainsValue && domainsValue.length
-      ? getAssociatedPrograms(domainsValue.map(String))
+      ? getAssociatedPrograms(domainsValue)
       : []
   )
 

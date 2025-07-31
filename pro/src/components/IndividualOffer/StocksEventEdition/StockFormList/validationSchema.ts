@@ -36,7 +36,7 @@ const isBeforeBeginningDate = (
 }
 
 const getSingleValidationSchema = (
-  priceCategoriesOptions?: SelectOption[]
+  priceCategoriesOptions?: SelectOption<number>[]
 ): ObjectSchema<StockEventFormValues> => {
   return yup.object().shape({
     beginningDate: yup
@@ -95,7 +95,7 @@ const getSingleValidationSchema = (
 }
 
 export const getValidationSchema = (
-  priceCategoriesOptions?: SelectOption[]
+  priceCategoriesOptions?: SelectOption<number>[]
 ): ObjectSchema<StocksEventFormValues> =>
   yup.object().shape({
     stocks: yup

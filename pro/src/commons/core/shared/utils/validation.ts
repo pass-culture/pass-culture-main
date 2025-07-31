@@ -2,9 +2,9 @@ import { StringSchema } from 'yup'
 
 import { SelectOption } from 'commons/custom_types/form'
 
-export const oneOfSelectOption = (
+export const oneOfSelectOption = <T extends number | string>(
   field: StringSchema,
-  options: SelectOption[]
+  options: SelectOption<T>[]
 ) =>
   field.oneOf(
     options.map(({ value }) => String(value)).concat(['']),

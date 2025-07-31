@@ -92,7 +92,7 @@ type ResetFormWithNewPage = {
   today: Date
   lastProviderName: string | null
   offerStatus: OfferStatus
-  priceCategoriesOptions: SelectOption[]
+  priceCategoriesOptions: SelectOption<number>[]
   departmentCode?: string | null
 }
 
