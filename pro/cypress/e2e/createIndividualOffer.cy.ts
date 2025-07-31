@@ -1,7 +1,7 @@
 import {
+  expectOffersOrBookingsAreFoundForNewTable,
   interceptSearch5Adresses,
-  expectOffersOrBookingsAreFound,
-  logInAndGoToPage,
+  logInAndGoToPage
 } from '../support/helpers.ts'
 
 describe('Create individual offers', { testIsolation: false }, () => {
@@ -286,7 +286,7 @@ describe('Create individual offers', { testIsolation: false }, () => {
       [],
     ]
 
-    expectOffersOrBookingsAreFound(expectedNewResults)
+    expectOffersOrBookingsAreFoundForNewTable(expectedNewResults)
     cy.get('@ean').then((ean) => {
       cy.contains(ean.toString())
     })

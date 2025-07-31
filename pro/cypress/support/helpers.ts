@@ -56,6 +56,59 @@ export function expectOffersOrBookingsAreFound(
 }
 
 /**
+ * This function takes a string[][] as a DataTable representing the data
+ * in a Table and checks that what is displayed is what is expected.
+ * Also checks that the label above is counting the right number of rows: `3 offres`.
+ * First row represents the title of columns and is not checked
+ *
+ * @export
+ * @param {Array<Array<string>>} expectedResults
+ * @example
+ * TODO remove expectOffersOrBookingsAreFoundForNewTable after migrating all table
+ * const expectedResults = [
+      ['Réservation', "Nom de l'offre", 'Établissement', 'Places et prix', 'Statut'],
+      ['1', 'Mon offre', 'COLLEGE DE LA TOUR', '25 places', 'confirmée'],
+    ]
+   expectOffersOrBookingsAreFoundForNewTable(expectedResults)
+ */
+   export function expectOffersOrBookingsAreFoundForNewTable(
+    expectedResults: Array<Array<string>>
+  ) {
+    const expectedLength = expectedResults.length - 1
+    const regexExpectedCount = new RegExp(
+      expectedLength +
+        ' ' +
+        '(offre|réservation)' +
+        (expectedLength > 1 ? 's' : ''),
+      'g'
+    )
+  
+    cy.contains(regexExpectedCount)
+  
+    cy.get('tbody').findAllByRole('row').should('have.length', expectedLength)
+  
+    for (let rowLine = 0; rowLine < expectedLength; rowLine++) {
+      const lineArray = expectedResults[rowLine + 1]
+  
+      cy.get('tbody').findAllByRole('row')
+        .eq(rowLine)
+        .within(() => {
+          cy.get('td').then(($elt) => {
+            for (let column = 0; column < lineArray.length; column++) {
+              cy.wrap($elt)
+                .eq(column)
+                .then((cellValue) => {
+                  if (lineArray[column].length) {
+                    expect(cellValue.text()).to.include(lineArray[column])
+                  }
+                })
+            }
+          })
+        })
+    }
+  }
+
+/**
  * Login
  *
  * @param {string} login email to use for login (password used is a default one)
