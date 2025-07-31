@@ -20,6 +20,7 @@ const renderCinemaProviderForm = async (
   renderWithProviders(
     <Dialog.Root defaultOpen>
       <Dialog.Content aria-describedby={undefined}>
+        <Dialog.Title>Title</Dialog.Title>
         <GenericCinemaProviderForm {...props} />
       </Dialog.Content>
     </Dialog.Root>

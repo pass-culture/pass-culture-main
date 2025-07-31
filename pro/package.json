@@ -123,6 +123,7 @@
     "vitest": "^3.1.4",
     "vitest-axe": "^0.1.0",
     "vitest-canvas-mock": "^0.3.3",
+    "vitest-fail-on-console": "0.8.0",
     "vitest-fetch-mock": "^0.4.5"
   },
   "resolutions": {
