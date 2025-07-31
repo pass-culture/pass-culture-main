@@ -9,7 +9,7 @@ describe('validationSchema with FF WIP_ENABLE_EVENT_WITH_OPENING_HOUR', () => {
   const defaultValues: EditStockFormValues = {
     date: addDays(new Date(), 2).toISOString().split('T')[0],
     bookingLimitDate: addDays(new Date(), 1).toISOString().split('T')[0],
-    quantity: 12,
+    remainingQuantity: 12,
     priceCategory: '1',
     time: '12:12',
   }
@@ -71,18 +71,19 @@ describe('validationSchema with FF WIP_ENABLE_EVENT_WITH_OPENING_HOUR', () => {
       expectedErrors: ['La date limite de réservation est obligatorie.'],
     },
     {
-      description: 'invalidate form for negative quantity',
+      description: 'invalidate form for negative remaining quantity',
       formValues: {
         ...defaultValues,
-        quantity: -1,
+        remainingQuantity: -1,
       },
       expectedErrors: ['Veuillez indiquer une quantité positive'],
     },
     {
-      description: 'invalidate form for quantity superior to one million',
+      description:
+        'invalidate form for remaining quantity superior to one million',
       formValues: {
         ...defaultValues,
-        quantity: 1_000_000_000_000,
+        remainingQuantity: 1_000_000_000_000,
       },
       expectedErrors: [
         'Veuillez modifier la quantité. Celle-ci ne peut pas être supérieure à 1 million',

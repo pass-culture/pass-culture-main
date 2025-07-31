@@ -27,7 +27,7 @@ export const validationSchema = yup.object<EditStockFormValues>().shape({
         return !isBefore(this.parent.date, limitDate)
       }
     ),
-  quantity: yup
+  remainingQuantity: yup
     .number()
     .transform((value) => (Number.isNaN(value) ? undefined : value))
     .min(0, 'Veuillez indiquer une quantité positive')
