@@ -1,1 +1,4 @@
-export type SelectOption<T = string | number> = { value: T; label: string }
+export type SelectOption<T extends string | number = string> = {
+  value: T
+  label: string
+}

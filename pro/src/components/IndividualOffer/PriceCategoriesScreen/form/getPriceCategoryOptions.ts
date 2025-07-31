@@ -4,7 +4,7 @@ import { formatPrice } from 'commons/utils/formatPrice'
 
 export const getPriceCategoryOptions = (
   priceCategories?: PriceCategoryResponseModel[] | null
-): SelectOption[] => {
+): SelectOption<number>[] => {
   // Clone list to avoid mutation
   const newPriceCategories = [...(priceCategories ?? [])]
   newPriceCategories.sort((a, b) => {
@@ -15,7 +15,7 @@ export const getPriceCategoryOptions = (
   })
 
   return newPriceCategories.map(
-    (priceCategory): SelectOption => ({
+    (priceCategory): SelectOption<number> => ({
       label: getPriceCategoryName(priceCategory),
       value: priceCategory.id,
     })
