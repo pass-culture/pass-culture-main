@@ -45,6 +45,7 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import exceptions as users_exceptions
+from pcapi.core.users import gdpr_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.email import update as email_update
@@ -169,13 +170,13 @@ def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
-    if users_api.has_unprocessed_extract(user):
+    if gdpr_api.has_unprocessed_extract(user):
         flash("Une extraction de données est en cours pour cet utilisateur.", "warning")
         return redirect(url_for(".get_public_account", user_id=user_id))
 
-    if users_api.is_beneficiary_anonymizable(user):
+    if gdpr_api.is_beneficiary_anonymizable(user):
         _anonymize_user(user, current_user)
-    elif users_api.is_only_beneficiary(user):
+    elif gdpr_api.is_only_beneficiary(user):
         _pre_anonymize_user(user, current_user)
     else:
         raise BadRequest()
@@ -184,7 +185,7 @@ def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
 
 
 def _anonymize_user(user: users_models.User, author: users_models.User) -> None:
-    user_anonymized = users_api.anonymize_user(user, author=current_user)
+    user_anonymized = gdpr_api.anonymize_user(user, author=current_user)
     if user_anonymized:
         db.session.flush()
         flash("Les informations de l'utilisateur ont été anonymisées", "success")
@@ -194,7 +195,7 @@ def _anonymize_user(user: users_models.User, author: users_models.User) -> None:
 
 
 def _pre_anonymize_user(user: users_models.User, author: users_models.User) -> None:
-    if users_api.is_suspended_for_less_than_five_years(user):
+    if gdpr_api.is_suspended_for_less_than_five_years(user):
         db.session.add(users_models.GdprUserAnonymization(user=user))
         db.session.flush()
         flash(
@@ -203,7 +204,7 @@ def _pre_anonymize_user(user: users_models.User, author: users_models.User) -> N
         )
     else:
         try:
-            users_api.pre_anonymize_user(user, author, is_backoffice_action=True)
+            gdpr_api.pre_anonymize_user(user, author, is_backoffice_action=True)
         except users_exceptions.UserAlreadyHasPendingAnonymization:
             mark_transaction_as_invalid()
             flash("L'utilisateur est déjà en attente pour être anonymisé le jour de ses 21 ans", "warning")
@@ -458,7 +459,7 @@ def render_public_account_details(
 
     if (
         utils.has_current_user_permission(perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT)
-        and not users_api.has_user_pending_anonymization(user_id)
+        and not gdpr_api.has_user_pending_anonymization(user_id)
         and users_models.UserRole.ANONYMIZED not in user.roles
     ):
         kwargs["anonymize_form"] = empty_forms.EmptyForm()

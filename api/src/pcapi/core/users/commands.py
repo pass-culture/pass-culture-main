@@ -10,6 +10,7 @@ from pcapi import settings
 from pcapi.connectors.dms.utils import import_ds_applications
 from pcapi.core.mails.transactional.users import online_event_reminder
 from pcapi.core.users import ds as users_ds
+from pcapi.core.users import gdpr_api
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils.blueprint import Blueprint
@@ -57,34 +58,34 @@ def delete_suspended_accounts_after_withdrawal_period() -> None:
 def anonymize_inactive_users(category: str) -> None:
     if category in ("beneficiary", "all"):
         print("Anonymize beneficiary users after 5 years")
-        users_api.anonymize_beneficiary_users()
-        users_api.anonymize_user_deposits()
+        gdpr_api.anonymize_beneficiary_users()
+        gdpr_api.anonymize_user_deposits()
         chronicles_api.anonymize_unlinked_chronicles()
     if category in ("neither", "all"):
         print("Anonymizing users that are neither beneficiaries nor pro 3 years after their last connection")
-        users_api.anonymize_non_pro_non_beneficiary_users()
+        gdpr_api.anonymize_non_pro_non_beneficiary_users()
     if category in ("notify_pro", "all"):
         print("Notify pro users 30 days before anonymization")
-        users_api.notify_pro_users_before_anonymization()
+        gdpr_api.notify_pro_users_before_anonymization()
     if category in ("pro", "all"):
         print("Anonymizing pro users 3 years after their last connection")
-        users_api.anonymize_pro_users()
+        gdpr_api.anonymize_pro_users()
     if category in ("internal", "all"):
         print("Anonymizing internal users 1 year after their user was suspended")
-        users_api.anonymize_internal_users()
+        gdpr_api.anonymize_internal_users()
 
 
 @blueprint.cli.command("execute_gdpr_extract")
 @cron_decorators.log_cron_with_transaction
 def execute_gdpr_extract() -> None:
-    users_api.extract_beneficiary_data_command()
+    gdpr_api.extract_beneficiary_data_command()
     db.session.commit()
 
 
 @blueprint.cli.command("clean_gdpr_extracts")
 @cron_decorators.log_cron_with_transaction
 def clean_gdpr_extracts() -> None:
-    users_api.clean_gdpr_extracts()
+    gdpr_api.clean_gdpr_extracts()
     db.session.commit()
 
 

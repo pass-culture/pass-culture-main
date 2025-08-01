@@ -13,7 +13,7 @@ from sqlalchemy.orm import joinedload
 from pcapi import settings
 from pcapi.core import object_storage
 from pcapi.core.permissions import models as perm_models
-from pcapi.core.users import api as users_api
+from pcapi.core.users import gdpr_api
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice import utils
@@ -125,6 +125,6 @@ def delete_gdpr_user_data_extract(gdpr_id: int) -> utils.BackofficeResponse:
         flash("L'extraction de données est toujours en cours pour cet utilisateur.", "warning")
         return redirect(url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract"))
 
-    users_api.delete_gdpr_extract(extract.id)
+    gdpr_api.delete_gdpr_extract(extract.id)
     flash("L'extraction de données a bien été effacée.", "success")
     return redirect(url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract"))
