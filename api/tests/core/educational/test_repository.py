@@ -7,6 +7,7 @@ from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import schemas
 from pcapi.core.educational.factories import create_collective_offer_by_status
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as providers_factories
@@ -964,9 +965,11 @@ class GetFilteredCollectiveOffersTest:
         )
 
         offers = educational_repository.get_collective_offers_by_filters(
-            user_id=user_offerer.userId,
-            user_is_admin=False,
-            statuses=[models.CollectiveOfferDisplayedStatus.PREBOOKED],
+            filters=schemas.CollectiveOffersFilter(
+                user_id=user_offerer.userId,
+                user_is_admin=False,
+                statuses=[models.CollectiveOfferDisplayedStatus.PREBOOKED],
+            )
         )
         assert offers.all() == [collective_offer_prebooked]
 
@@ -985,9 +988,11 @@ class GetFilteredCollectiveOffersTest:
         )
 
         offers = educational_repository.get_collective_offers_by_filters(
-            user_id=user_offerer.userId,
-            user_is_admin=False,
-            statuses=[models.CollectiveOfferDisplayedStatus.ENDED],
+            filters=schemas.CollectiveOffersFilter(
+                user_id=user_offerer.userId,
+                user_is_admin=False,
+                statuses=[models.CollectiveOfferDisplayedStatus.ENDED],
+            )
         )
         assert offers.all() == [collective_offer_ended]
 
@@ -1002,9 +1007,11 @@ class GetFilteredCollectiveOffersTest:
         )
 
         offers = educational_repository.get_collective_offers_by_filters(
-            user_id=user_offerer.userId,
-            user_is_admin=False,
-            formats=[EacFormat.CONCERT],
+            filters=schemas.CollectiveOffersFilter(
+                user_id=user_offerer.userId,
+                user_is_admin=False,
+                formats=[EacFormat.CONCERT],
+            )
         )
         assert offers.one() == collective_offer
 
@@ -1021,9 +1028,11 @@ class GetFilteredCollectiveOffersTest:
         )
 
         offers = educational_repository.get_collective_offers_by_filters(
-            user_id=user_offerer.userId,
-            user_is_admin=False,
-            statuses=[models.CollectiveOfferDisplayedStatus.ARCHIVED],
+            filters=schemas.CollectiveOffersFilter(
+                user_id=user_offerer.userId,
+                user_is_admin=False,
+                statuses=[models.CollectiveOfferDisplayedStatus.ARCHIVED],
+            )
         )
         assert offers.one() == collective_offer_archived
 
@@ -1036,15 +1045,17 @@ class GetFilteredCollectiveOffersTest:
         )
 
         offers = educational_repository.get_collective_offers_by_filters(
-            user_id=user_offerer.userId, user_is_admin=False
+            filters=schemas.CollectiveOffersFilter(user_id=user_offerer.userId, user_is_admin=False)
         )
         with assert_num_queries(1):
             assert offers.one() == collective_offer_draft
 
         offers = educational_repository.get_collective_offers_by_filters(
-            user_id=user_offerer.userId,
-            user_is_admin=False,
-            statuses=[models.CollectiveOfferDisplayedStatus.DRAFT],
+            filters=schemas.CollectiveOffersFilter(
+                user_id=user_offerer.userId,
+                user_is_admin=False,
+                statuses=[models.CollectiveOfferDisplayedStatus.DRAFT],
+            )
         )
         with assert_num_queries(1):
             assert offers.one() == collective_offer_draft
@@ -1087,9 +1098,11 @@ class GetFilteredCollectiveOffersTest:
         )
 
         offers = educational_repository.get_collective_offers_by_filters(
-            user_id=user_offerer.userId,
-            user_is_admin=False,
-            statuses=[models.CollectiveOfferDisplayedStatus.EXPIRED],
+            filters=schemas.CollectiveOffersFilter(
+                user_id=user_offerer.userId,
+                user_is_admin=False,
+                statuses=[models.CollectiveOfferDisplayedStatus.EXPIRED],
+            )
         )
         offers_list = offers.all()
         assert len(offers_list) == 2
@@ -1106,15 +1119,19 @@ class GetFilteredCollectiveOffersTest:
         offer = educational_factories.create_collective_offer_by_status(offer_status)
 
         result = educational_repository.get_collective_offers_by_filters(
-            user_id=admin_user.id,
-            user_is_admin=True,
-            statuses=[offer_status],
+            filters=schemas.CollectiveOffersFilter(
+                user_id=admin_user.id,
+                user_is_admin=True,
+                statuses=[offer_status],
+            )
         )
         assert result.one() == offer
 
         statuses_no_result = set(models.CollectiveOfferDisplayedStatus) - {offer_status}
         result = educational_repository.get_collective_offers_by_filters(
-            user_id=admin_user.id, user_is_admin=True, statuses=statuses_no_result
+            filters=schemas.CollectiveOffersFilter(
+                user_id=admin_user.id, user_is_admin=True, statuses=statuses_no_result
+            )
         )
         assert result.count() == 0
 
@@ -1124,9 +1141,11 @@ class GetFilteredCollectiveOffersTest:
 
         # The HIDDEN filter does not correspond to any collective offer (only templates)
         result = educational_repository.get_collective_offers_by_filters(
-            user_id=admin_user.id,
-            user_is_admin=True,
-            statuses=[models.CollectiveOfferDisplayedStatus.HIDDEN],
+            filters=schemas.CollectiveOffersFilter(
+                user_id=admin_user.id,
+                user_is_admin=True,
+                statuses=[models.CollectiveOfferDisplayedStatus.HIDDEN],
+            )
         )
         assert result.count() == 0
 
@@ -1136,17 +1155,23 @@ class GetFilteredCollectiveOffersTest:
         offer_to_be_defined = educational_factories.CollectiveOfferOnToBeDefinedLocationFactory()
 
         result = educational_repository.get_collective_offers_by_filters(
-            user_id=admin_user.id, user_is_admin=True, location_type=models.CollectiveLocationType.SCHOOL
+            filters=schemas.CollectiveOffersFilter(
+                user_id=admin_user.id, user_is_admin=True, location_type=models.CollectiveLocationType.SCHOOL
+            )
         )
         assert result.one() == offer_school
 
         result = educational_repository.get_collective_offers_by_filters(
-            user_id=admin_user.id, user_is_admin=True, location_type=models.CollectiveLocationType.ADDRESS
+            filters=schemas.CollectiveOffersFilter(
+                user_id=admin_user.id, user_is_admin=True, location_type=models.CollectiveLocationType.ADDRESS
+            )
         )
         assert result.one() == offer_address
 
         result = educational_repository.get_collective_offers_by_filters(
-            user_id=admin_user.id, user_is_admin=True, location_type=models.CollectiveLocationType.TO_BE_DEFINED
+            filters=schemas.CollectiveOffersFilter(
+                user_id=admin_user.id, user_is_admin=True, location_type=models.CollectiveLocationType.TO_BE_DEFINED
+            )
         )
         assert result.one() == offer_to_be_defined
 
@@ -1158,7 +1183,7 @@ class GetFilteredCollectiveOffersTest:
         educational_factories.CollectiveOfferOnToBeDefinedLocationFactory()
 
         result = educational_repository.get_collective_offers_by_filters(
-            user_id=admin_user.id, user_is_admin=True, offerer_address_id=oa.id
+            filters=schemas.CollectiveOffersFilter(user_id=admin_user.id, user_is_admin=True, offerer_address_id=oa.id)
         )
         assert result.one() == offer
 
@@ -1169,13 +1194,15 @@ class GetCollectiveOffersTemplateByFiltersTest:
         template = educational_factories.create_collective_offer_template_by_status(offer_status)
 
         result = educational_repository.get_collective_offers_template_by_filters(
-            user_id=admin_user.id, user_is_admin=True, statuses=[offer_status]
+            filters=schemas.CollectiveOffersFilter(user_id=admin_user.id, user_is_admin=True, statuses=[offer_status])
         )
         assert result.one() == template
 
         statuses_no_result = set(models.CollectiveOfferDisplayedStatus) - {offer_status}
         result = educational_repository.get_collective_offers_template_by_filters(
-            user_id=admin_user.id, user_is_admin=True, statuses=statuses_no_result
+            filters=schemas.CollectiveOffersFilter(
+                user_id=admin_user.id, user_is_admin=True, statuses=statuses_no_result
+            )
         )
         assert result.count() == 0
 
@@ -1186,6 +1213,8 @@ class GetCollectiveOffersTemplateByFiltersTest:
         educational_factories.CollectiveOfferTemplateFactory(formats=[EacFormat.CONFERENCE_RENCONTRE])
 
         result = educational_repository.get_collective_offers_template_by_filters(
-            user_id=admin_user.id, user_is_admin=True, formats=[EacFormat.CONCERT]
+            filters=schemas.CollectiveOffersFilter(
+                user_id=admin_user.id, user_is_admin=True, formats=[EacFormat.CONCERT]
+            )
         ).one()
         assert result.id == template.id

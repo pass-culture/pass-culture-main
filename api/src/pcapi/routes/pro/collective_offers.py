@@ -9,6 +9,7 @@ from flask_login import login_required
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import schemas
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import export as educational_api_export
@@ -33,6 +34,24 @@ from . import blueprint
 logger = logging.getLogger(__name__)
 
 
+def _get_filters_from_query(
+    query: collective_offers_serialize.ListCollectiveOffersQueryModel,
+) -> schemas.CollectiveOffersFilter:
+    return schemas.CollectiveOffersFilter(
+        user_id=current_user.id,
+        user_is_admin=current_user.has_admin_role,
+        offerer_id=query.offerer_id,
+        venue_id=query.venue_id,
+        name_keywords=query.nameOrIsbn,
+        statuses=query.status,
+        period_beginning_date=query.period_beginning_date,
+        period_ending_date=query.period_ending_date,
+        formats=[query.format] if query.format else None,
+        location_type=query.location_type,
+        offerer_address_id=query.offerer_address_id,
+    )
+
+
 @private_api.route("/collective/offers", methods=["GET"])
 @atomic()
 @login_required
@@ -44,20 +63,9 @@ logger = logging.getLogger(__name__)
 def get_collective_offers(
     query: collective_offers_serialize.ListCollectiveOffersQueryModel,
 ) -> collective_offers_serialize.ListCollectiveOffersResponseModel:
+    filters = _get_filters_from_query(query)
     capped_offers = educational_api_offer.list_collective_offers_for_pro_user(
-        user_id=current_user.id,
-        user_is_admin=current_user.has_admin_role,
-        offerer_id=query.offerer_id,
-        venue_id=query.venue_id,
-        name_keywords=query.nameOrIsbn,
-        statuses=query.status,
-        period_beginning_date=query.period_beginning_date,
-        period_ending_date=query.period_ending_date,
-        offer_type=query.collective_offer_type,
-        #   The format should be a list but for now we cannot send a list in the get_collective_offers query params
-        formats=[query.format] if query.format else None,
-        location_type=query.location_type,
-        offerer_address_id=query.offerer_address_id,
+        filters=filters, offer_type=query.collective_offer_type
     )
 
     return collective_offers_serialize.ListCollectiveOffersResponseModel(
@@ -103,19 +111,8 @@ def _get_collective_offers_export(
     query: collective_offers_serialize.ListCollectiveOffersQueryModel,
     export_type: educational_models.CollectiveOfferExportType,
 ) -> bytes:
-    offers_query = educational_repository.get_collective_offers_by_filters(
-        user_id=current_user.id,
-        user_is_admin=current_user.has_admin_role,
-        offerer_id=query.offerer_id,
-        statuses=query.status,
-        venue_id=query.venue_id,
-        name_keywords=query.nameOrIsbn,
-        period_beginning_date=query.period_beginning_date,
-        period_ending_date=query.period_ending_date,
-        formats=[query.format] if query.format else None,
-        location_type=query.location_type,
-        offerer_address_id=query.offerer_address_id,
-    )
+    filters = _get_filters_from_query(query)
+    offers_query = educational_repository.get_collective_offers_by_filters(filters=filters)
 
     if export_type == educational_models.CollectiveOfferExportType.CSV:
         return educational_api_export.generate_csv_for_collective_offers(collective_offers_query=offers_query)

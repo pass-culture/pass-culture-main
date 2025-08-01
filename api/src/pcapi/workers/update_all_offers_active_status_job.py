@@ -1,4 +1,5 @@
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import repository as offers_repository
@@ -27,7 +28,7 @@ def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
 
 @job(worker.low_queue)
 def update_all_collective_offers_active_status_job(filters: dict, is_active: bool) -> None:
-    collective_offer_query = educational_repository.get_collective_offers_by_filters(
+    offer_filters = educational_schemas.CollectiveOffersFilter(
         user_id=filters["user_id"],
         user_is_admin=filters["is_user_admin"],
         offerer_id=filters["offerer_id"],
@@ -38,6 +39,7 @@ def update_all_collective_offers_active_status_job(filters: dict, is_active: boo
         period_beginning_date=filters["period_beginning_date"],
         period_ending_date=filters["period_ending_date"],
     )
+    collective_offer_query = educational_repository.get_collective_offers_by_filters(filters=offer_filters)
     educational_api_offer.batch_update_collective_offers(collective_offer_query, {"isActive": is_active})
 
 
