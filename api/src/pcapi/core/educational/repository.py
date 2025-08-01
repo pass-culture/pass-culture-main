@@ -10,10 +10,9 @@ from sqlalchemy import orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.sql.expression import extract
 
-from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
-from pcapi.core.educational.schemas import RedactorInformation
+from pcapi.core.educational import schemas
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -322,7 +321,7 @@ def find_redactor_by_email(redactor_email: str) -> educational_models.Educationa
     )
 
 
-def find_or_create_redactor(information: RedactorInformation) -> educational_models.EducationalRedactor:
+def find_or_create_redactor(information: schemas.RedactorInformation) -> educational_models.EducationalRedactor:
     redactor = find_redactor_by_email(information.email)
     if redactor:
         return redactor
@@ -548,55 +547,43 @@ def get_collective_stock(collective_stock_id: int) -> educational_models.Collect
 
 
 def get_collective_offers_by_filters(
-    *,
-    user_id: int,
-    user_is_admin: bool,
-    offerer_id: int | None = None,
-    statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None = None,
-    venue_id: int | None = None,
-    provider_id: int | None = None,
-    name_keywords: str | None = None,
-    period_beginning_date: date | None = None,
-    period_ending_date: date | None = None,
-    formats: list[EacFormat] | None = None,
-    location_type: educational_models.CollectiveLocationType | None = None,
-    offerer_address_id: int | None = None,
+    filters: schemas.CollectiveOffersFilter,
 ) -> "sa_orm.Query[educational_models.CollectiveOffer]":
     query = db.session.query(educational_models.CollectiveOffer)
 
-    if not user_is_admin:
+    if not filters.user_is_admin:
         query = (
             query.join(offerers_models.Venue)
             .join(offerers_models.Offerer)
             .join(offerers_models.UserOfferer)
             .filter(
-                offerers_models.UserOfferer.userId == user_id,
+                offerers_models.UserOfferer.userId == filters.user_id,
                 offerers_models.UserOfferer.isValidated,
             )
         )
 
-    if offerer_id is not None:
-        if user_is_admin:
+    if filters.offerer_id is not None:
+        if filters.user_is_admin:
             query = query.join(offerers_models.Venue)
-        query = query.filter(offerers_models.Venue.managingOffererId == offerer_id)
+        query = query.filter(offerers_models.Venue.managingOffererId == filters.offerer_id)
 
-    if venue_id is not None:
-        query = query.filter(educational_models.CollectiveOffer.venueId == venue_id)
+    if filters.venue_id is not None:
+        query = query.filter(educational_models.CollectiveOffer.venueId == filters.venue_id)
 
-    if provider_id is not None:
-        query = query.filter(educational_models.CollectiveOffer.providerId == provider_id)
+    if filters.provider_id is not None:
+        query = query.filter(educational_models.CollectiveOffer.providerId == filters.provider_id)
 
-    if name_keywords is not None:
-        search = name_keywords
-        if len(name_keywords) > 3:
-            search = "%{}%".format(name_keywords)
+    if filters.name_keywords is not None:
+        search = filters.name_keywords
+        if len(filters.name_keywords) > 3:
+            search = "%{}%".format(filters.name_keywords)
 
         query = query.filter(educational_models.CollectiveOffer.name.ilike(search))
 
-    if statuses:
-        query = filter_collective_offers_by_statuses(query, statuses)
+    if filters.statuses:
+        query = filter_collective_offers_by_statuses(query, filters.statuses)
 
-    if period_beginning_date is not None or period_ending_date is not None:
+    if filters.period_beginning_date is not None or filters.period_ending_date is not None:
         subquery = (
             db.session.query(educational_models.CollectiveStock)
             .with_entities(educational_models.CollectiveStock.collectiveOfferId)
@@ -604,116 +591,105 @@ def get_collective_offers_by_filters(
             .join(educational_models.CollectiveOffer)
             .join(offerers_models.Venue)
         )
-        if period_beginning_date is not None:
+        if filters.period_beginning_date is not None:
             subquery = subquery.filter(
                 sa.func.timezone(
                     # TODO(OA) - use Venue.offererAddress.address.timezone when the virtual venues are migrated
                     offerers_models.Venue.timezone,
                     sa.func.timezone("UTC", educational_models.CollectiveStock.startDatetime),
                 )
-                >= period_beginning_date
+                >= filters.period_beginning_date
             )
-        if period_ending_date is not None:
+        if filters.period_ending_date is not None:
             subquery = subquery.filter(
                 sa.func.timezone(
                     # TODO(OA) - use Venue.offererAddress.address.timezone when the virtual venues are migrated
                     offerers_models.Venue.timezone,
                     sa.func.timezone("UTC", educational_models.CollectiveStock.startDatetime),
                 )
-                <= datetime.combine(period_ending_date, time.max),
+                <= datetime.combine(filters.period_ending_date, time.max),
             )
-        if venue_id is not None:
-            subquery = subquery.filter(educational_models.CollectiveOffer.venueId == venue_id)
-        elif offerer_id is not None:
-            subquery = subquery.filter(offerers_models.Venue.managingOffererId == offerer_id)
-        elif not user_is_admin:
+        if filters.venue_id is not None:
+            subquery = subquery.filter(educational_models.CollectiveOffer.venueId == filters.venue_id)
+        elif filters.offerer_id is not None:
+            subquery = subquery.filter(offerers_models.Venue.managingOffererId == filters.offerer_id)
+        elif not filters.user_is_admin:
             subquery = (
                 subquery.join(offerers_models.Offerer)
                 .join(offerers_models.UserOfferer)
                 .filter(
-                    offerers_models.UserOfferer.userId == user_id,
+                    offerers_models.UserOfferer.userId == filters.user_id,
                     offerers_models.UserOfferer.isValidated,
                 )
             )
         q2 = subquery.subquery()
         query = query.join(q2, q2.c.collectiveOfferId == educational_models.CollectiveOffer.id)
 
-    if formats:
+    if filters.formats:
         query = query.filter(
-            educational_models.CollectiveOffer.formats.overlap(postgresql.array((format.name for format in formats)))
+            educational_models.CollectiveOffer.formats.overlap(
+                postgresql.array((format.name for format in filters.formats))
+            )
         )
 
-    if location_type is not None:
-        query = query.filter(educational_models.CollectiveOffer.locationType == location_type)
+    if filters.location_type is not None:
+        query = query.filter(educational_models.CollectiveOffer.locationType == filters.location_type)
 
-    if offerer_address_id is not None:
-        query = query.filter(educational_models.CollectiveOffer.offererAddressId == offerer_address_id)
+    if filters.offerer_address_id is not None:
+        query = query.filter(educational_models.CollectiveOffer.offererAddressId == filters.offerer_address_id)
 
     return query
 
 
-def get_collective_offers_template_by_filters(
-    *,
-    user_id: int,
-    user_is_admin: bool,
-    offerer_id: int | None = None,
-    statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None = None,
-    venue_id: int | None = None,
-    name_keywords: str | None = None,
-    period_beginning_date: date | None = None,
-    period_ending_date: date | None = None,
-    formats: list[EacFormat] | None = None,
-    location_type: educational_models.CollectiveLocationType | None = None,
-    offerer_address_id: int | None = None,
-) -> sa_orm.Query:
+def get_collective_offers_template_by_filters(filters: schemas.CollectiveOffersFilter) -> sa_orm.Query:
     query = db.session.query(educational_models.CollectiveOfferTemplate)
 
-    if period_beginning_date is not None or period_ending_date is not None:
+    if filters.period_beginning_date is not None or filters.period_ending_date is not None:
         query = query.filter(sa.false())
 
-    if not user_is_admin:
+    if not filters.user_is_admin:
         query = (
             query.join(offerers_models.Venue)
             .join(offerers_models.Offerer)
             .join(offerers_models.UserOfferer)
             .filter(
-                offerers_models.UserOfferer.userId == user_id,
+                offerers_models.UserOfferer.userId == filters.user_id,
                 offerers_models.UserOfferer.isValidated,
             )
         )
 
-    if offerer_id is not None:
-        if user_is_admin:
+    if filters.offerer_id is not None:
+        if filters.user_is_admin:
             query = query.join(offerers_models.Venue)
-        query = query.filter(offerers_models.Venue.managingOffererId == offerer_id)
+        query = query.filter(offerers_models.Venue.managingOffererId == filters.offerer_id)
 
-    if venue_id is not None:
-        query = query.filter(educational_models.CollectiveOfferTemplate.venueId == venue_id)
+    if filters.venue_id is not None:
+        query = query.filter(educational_models.CollectiveOfferTemplate.venueId == filters.venue_id)
 
-    if name_keywords is not None:
-        search = name_keywords
-        if len(name_keywords) > 3:
-            search = "%{}%".format(name_keywords)
+    if filters.name_keywords is not None:
+        search = filters.name_keywords
+        if len(filters.name_keywords) > 3:
+            search = "%{}%".format(filters.name_keywords)
 
         query = query.filter(educational_models.CollectiveOfferTemplate.name.ilike(search))
 
-    if statuses:
-        template_statuses = set(statuses) & set(educational_models.COLLECTIVE_OFFER_TEMPLATE_STATUSES)
+    if filters.statuses:
+        template_statuses = set(filters.statuses) & set(educational_models.COLLECTIVE_OFFER_TEMPLATE_STATUSES)
         status_values = [status.value for status in template_statuses]
         query = query.filter(educational_models.CollectiveOfferTemplate.displayedStatus.in_(status_values))  # type: ignore[attr-defined]
 
-    if formats:
+    if filters.formats:
         query = query.filter(
             educational_models.CollectiveOfferTemplate.formats.overlap(
-                postgresql.array((format.name for format in formats))
+                postgresql.array((format.name for format in filters.formats))
             )
         )
 
-    if location_type is not None:
-        query = query.filter(educational_models.CollectiveOfferTemplate.locationType == location_type)
+    if filters.location_type is not None:
+        query = query.filter(educational_models.CollectiveOfferTemplate.locationType == filters.location_type)
 
-    if offerer_address_id is not None:
-        query = query.filter(educational_models.CollectiveOfferTemplate.offererAddressId == offerer_address_id)
+    if filters.offerer_address_id is not None:
+        query = query.filter(educational_models.CollectiveOfferTemplate.offererAddressId == filters.offerer_address_id)
 
     return query
 
@@ -947,33 +923,9 @@ def add_last_booking_status_to_collective_offer_query(
 
 
 def get_collective_offers_for_filters(
-    *,
-    user_id: int,
-    user_is_admin: bool,
-    offers_limit: int,
-    offerer_id: int | None = None,
-    statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None = None,
-    venue_id: int | None = None,
-    name_keywords: str | None = None,
-    period_beginning_date: date | None = None,
-    period_ending_date: date | None = None,
-    formats: list[EacFormat] | None = None,
-    location_type: educational_models.CollectiveLocationType | None = None,
-    offerer_address_id: int | None = None,
+    filters: schemas.CollectiveOffersFilter, offers_limit: int
 ) -> list[educational_models.CollectiveOffer]:
-    query = get_collective_offers_by_filters(
-        user_id=user_id,
-        user_is_admin=user_is_admin,
-        offerer_id=offerer_id,
-        statuses=statuses,
-        venue_id=venue_id,
-        name_keywords=name_keywords,
-        period_beginning_date=period_beginning_date,
-        period_ending_date=period_ending_date,
-        formats=formats,
-        location_type=location_type,
-        offerer_address_id=offerer_address_id,
-    )
+    query = get_collective_offers_by_filters(filters=filters)
 
     query = query.order_by(educational_models.CollectiveOffer.dateCreated.desc())
     offers = (
@@ -1000,33 +952,9 @@ def get_collective_offers_for_filters(
 
 
 def get_collective_offers_template_for_filters(
-    *,
-    user_id: int,
-    user_is_admin: bool,
-    offers_limit: int,
-    offerer_id: int | None = None,
-    statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None = None,
-    venue_id: int | None = None,
-    name_keywords: str | None = None,
-    period_beginning_date: date | None = None,
-    period_ending_date: date | None = None,
-    formats: list[EacFormat] | None = None,
-    location_type: educational_models.CollectiveLocationType | None = None,
-    offerer_address_id: int | None = None,
+    filters: schemas.CollectiveOffersFilter, offers_limit: int
 ) -> list[educational_models.CollectiveOfferTemplate]:
-    query = get_collective_offers_template_by_filters(
-        user_id=user_id,
-        user_is_admin=user_is_admin,
-        offerer_id=offerer_id,
-        statuses=statuses,
-        venue_id=venue_id,
-        name_keywords=name_keywords,
-        period_beginning_date=period_beginning_date,
-        period_ending_date=period_ending_date,
-        formats=formats,
-        location_type=location_type,
-        offerer_address_id=offerer_address_id,
-    )
+    query = get_collective_offers_template_by_filters(filters=filters)
 
     query = query.order_by(educational_models.CollectiveOfferTemplate.dateCreated.desc())
 

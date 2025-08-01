@@ -9,19 +9,17 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.core import search
-from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import schemas
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer_request
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import shared as api_shared
-from pcapi.core.educational.exceptions import AdageException
-from pcapi.core.educational.schemas import EducationalBookingEdition
 from pcapi.core.educational.serialization import collective_booking as collective_booking_serialize
 from pcapi.core.educational.utils import get_image_from_url
 from pcapi.core.external.attributes.api import update_external_pro
@@ -71,13 +69,13 @@ def notify_educational_redactor_on_collective_offer_or_stock_edit(
     if active_collective_bookings is None:
         return
 
-    data = EducationalBookingEdition(
+    data = schemas.EducationalBookingEdition(
         **collective_booking_serialize.serialize_collective_booking(active_collective_bookings).dict(),
         updatedFields=updated_fields,
     )
     try:
         adage_client.notify_offer_or_stock_edition(data)
-    except AdageException as exception:
+    except exceptions.AdageException as exception:
         logger.error(
             "Error while sending notification to Adage",
             extra={
@@ -103,53 +101,19 @@ def unindex_expired_or_archived_collective_offers_template(process_all_expired: 
 
 
 def list_collective_offers_for_pro_user(
-    *,
-    user_id: int,
-    user_is_admin: bool,
-    offerer_id: int | None,
-    venue_id: int | None = None,
-    name_keywords: str | None = None,
-    statuses: list[educational_models.CollectiveOfferDisplayedStatus] | None = None,
-    period_beginning_date: datetime.date | None = None,
-    period_ending_date: datetime.date | None = None,
-    offer_type: collective_offers_serialize.CollectiveOfferType | None = None,
-    formats: list[EacFormat] | None = None,
-    location_type: educational_models.CollectiveLocationType | None = None,
-    offerer_address_id: int | None = None,
+    filters: schemas.CollectiveOffersFilter, offer_type: collective_offers_serialize.CollectiveOfferType | None = None
 ) -> list[educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate]:
     offers = []
     if offer_type != collective_offers_serialize.CollectiveOfferType.template:
         offers = educational_repository.get_collective_offers_for_filters(
-            user_id=user_id,
-            user_is_admin=user_is_admin,
-            offers_limit=OFFERS_RECAP_LIMIT,
-            offerer_id=offerer_id,
-            statuses=statuses,
-            venue_id=venue_id,
-            name_keywords=name_keywords,
-            period_beginning_date=period_beginning_date,
-            period_ending_date=period_ending_date,
-            formats=formats,
-            location_type=location_type,
-            offerer_address_id=offerer_address_id,
+            filters=filters, offers_limit=OFFERS_RECAP_LIMIT
         )
         if offer_type is not None:
             return offers
     templates = []
     if offer_type != collective_offers_serialize.CollectiveOfferType.offer:
         templates = educational_repository.get_collective_offers_template_for_filters(
-            user_id=user_id,
-            user_is_admin=user_is_admin,
-            offers_limit=OFFERS_RECAP_LIMIT,
-            offerer_id=offerer_id,
-            statuses=statuses,
-            venue_id=venue_id,
-            name_keywords=name_keywords,
-            period_beginning_date=period_beginning_date,
-            period_ending_date=period_ending_date,
-            formats=formats,
-            location_type=location_type,
-            offerer_address_id=offerer_address_id,
+            filters=filters, offers_limit=OFFERS_RECAP_LIMIT
         )
         if offer_type is not None:
             return templates
