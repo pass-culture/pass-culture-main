@@ -16,10 +16,10 @@ import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/seriali
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
+import { getFinalSearchFilters } from './commons/getFinalSearchFilters'
 import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'
 
 export const CollectiveOffers = (): JSX.Element => {
@@ -27,13 +27,11 @@ export const CollectiveOffers = (): JSX.Element => {
     'WIP_COLLAPSED_MEMORIZED_FILTERS'
   )
   const urlSearchFilters = useQueryCollectiveSearchFilters()
-  const { storedFilters } = getStoredFilterConfig('collective')
-  const finalSearchFilters = {
-    ...(isToggleAndMemorizeFiltersEnabled
-      ? (storedFilters as Partial<CollectiveSearchFiltersParams>)
-      : {}),
-    ...urlSearchFilters,
-  }
+
+  const finalSearchFilters = getFinalSearchFilters(
+    urlSearchFilters,
+    isToggleAndMemorizeFiltersEnabled
+  )
 
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
