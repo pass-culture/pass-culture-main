@@ -410,6 +410,42 @@ class Returns200Test:
 
         assert not updated_offer.product
 
+    def test_update_offer_accepts_video_url_for_product_offer(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        product = offers_factories.ProductFactory()
+        offer = offers_factories.OfferFactory(venue=venue, product=product)
+
+        data = {
+            "videoUrl": "https://www.youtube.com/watch?v=l73rmrLTHQc",
+        }
+        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+
+        assert response.status_code == 200
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.metaData.videoUrl == "https://www.youtube.com/watch?v=l73rmrLTHQc"
+
+    def test_update_offer_accepts_video_url_for_synchronized_offer(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        provider = providers_factories.PublicApiProviderFactory()
+        offer = offers_factories.OfferFactory(
+            venue=venue,
+            lastProviderId=provider.id,
+            idAtProvider="id_at_provider",
+        )
+
+        data = {
+            "videoUrl": "https://www.youtube.com/watch?v=l73rmrLTHQc",
+        }
+        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+
+        assert response.status_code == 200
+
+        updated_offer = db.session.get(Offer, offer.id)
+        assert updated_offer.metaData.videoUrl == "https://www.youtube.com/watch?v=l73rmrLTHQc"
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
