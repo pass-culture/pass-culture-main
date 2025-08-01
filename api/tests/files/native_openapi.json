@@ -3506,17 +3506,29 @@
             },
             "OfferVideo": {
                 "properties": {
-                    "id": {
+                    "durationSeconds": {
                         "nullable": true,
+                        "title": "Durationseconds",
+                        "type": "integer"
+                    },
+                    "id": {
                         "title": "Id",
                         "type": "string"
                     },
-                    "thumbUrl": {
+                    "thumbnailUrl": {
                         "nullable": true,
-                        "title": "Thumburl",
+                        "title": "Thumbnailurl",
+                        "type": "string"
+                    },
+                    "title": {
+                        "nullable": true,
+                        "title": "Title",
                         "type": "string"
                     }
                 },
+                "required": [
+                    "id"
+                ],
                 "title": "OfferVideo",
                 "type": "object"
             },
