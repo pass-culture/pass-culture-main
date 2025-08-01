@@ -1,9 +1,14 @@
 import pytest
 
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import schemas
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+
+
+pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Return200Test:
@@ -13,7 +18,6 @@ class Return200Test:
     # oa retrieving request
     num_queries = 4
 
-    @pytest.mark.usefixtures("db_session")
     def test_get_offerer_addresses_success(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         pro = user_offerer.user
@@ -83,8 +87,21 @@ class Return200Test:
             },
         ]
 
-    @pytest.mark.usefixtures("db_session")
-    def test_get_offerer_addresses_with_offers(self, client):
+    @pytest.mark.parametrize(
+        "offer_factory,with_offers_option",
+        (
+            (offers_factories.OfferFactory, schemas.GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY),
+            (
+                educational_factories.CollectiveOfferOnOtherAddressLocationFactory,
+                schemas.GetOffererAddressesWithOffersOption.COLLECTIVE_OFFERS_ONLY,
+            ),
+            (
+                educational_factories.CollectiveOfferTemplateOnOtherAddressLocationFactory,
+                schemas.GetOffererAddressesWithOffersOption.COLLECTIVE_OFFER_TEMPLATES_ONLY,
+            ),
+        ),
+    )
+    def test_get_offerer_addresses_with_offers(self, client, offer_factory, with_offers_option):
         user_offerer = offerers_factories.UserOffererFactory()
         pro = user_offerer.user
         offerer = user_offerer.offerer
@@ -104,7 +121,7 @@ class Return200Test:
             address__city="Paris",
             address__banId="75107_7560_00001",
         )
-        offers_factories.OfferFactory(
+        offer_factory(
             venue__managingOfferer=offerer,
             offererAddress=offerer_address_1,
             venue__offererAddress=offerer_address_1,
@@ -116,7 +133,9 @@ class Return200Test:
         offerer_address_id1 = offerer_address_1.id
 
         with assert_num_queries(self.num_queries):
-            response = client.get(f"/offerers/{offerer_id}/offerer_addresses?onlyWithOffers=true")
+            response = client.get(
+                f"/offerers/{offerer_id}/offerer_addresses?withOffersOption={with_offers_option.value}"
+            )
             assert response.status_code == 200
             assert response.json == [
                 {
@@ -136,7 +155,6 @@ class Return200Test:
             assert response.status_code == 200
             assert len(response.json) == 2
 
-    @pytest.mark.usefixtures("db_session")
     @pytest.mark.parametrize("linked_to_venue", [True, False])
     def test_get_offerer_addresses_is_editable(self, client, linked_to_venue):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -214,7 +232,6 @@ class Return200Test:
 
 
 class Return400Test:
-    @pytest.mark.usefixtures("db_session")
     def test_access_by_unauthorized_pro_user(self, client):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()

@@ -48,6 +48,7 @@ import type { GetIndividualOfferResponseModel } from '../models/GetIndividualOff
 import type { GetIndividualOfferWithAddressResponseModel } from '../models/GetIndividualOfferWithAddressResponseModel';
 import type { GetMusicTypesResponse } from '../models/GetMusicTypesResponse';
 import type { GetOffererAddressesResponseModel } from '../models/GetOffererAddressesResponseModel';
+import type { GetOffererAddressesWithOffersOption } from '../models/GetOffererAddressesWithOffersOption';
 import type { GetOffererBankAccountsResponseModel } from '../models/GetOffererBankAccountsResponseModel';
 import type { GetOffererMembersResponseModel } from '../models/GetOffererMembersResponseModel';
 import type { GetOffererResponseModel } from '../models/GetOffererResponseModel';
@@ -1676,13 +1677,13 @@ export class DefaultService {
   /**
    * get_offerer_addresses <GET>
    * @param offererId
-   * @param onlyWithOffers
+   * @param withOffersOption
    * @returns GetOffererAddressesResponseModel OK
    * @throws ApiError
    */
   public getOffererAddresses(
     offererId: number,
-    onlyWithOffers: boolean = false,
+    withOffersOption?: GetOffererAddressesWithOffersOption | null,
   ): CancelablePromise<GetOffererAddressesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -1691,7 +1692,7 @@ export class DefaultService {
         'offerer_id': offererId,
       },
       query: {
-        'onlyWithOffers': onlyWithOffers,
+        'withOffersOption': withOffersOption,
       },
       errors: {
         403: `Forbidden`,

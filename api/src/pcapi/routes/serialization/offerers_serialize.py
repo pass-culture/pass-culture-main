@@ -424,7 +424,7 @@ class GetOffererAddressesResponseModel(BaseModel):
 
 
 class GetOffererAddressesQueryModel(BaseModel):
-    onlyWithOffers: bool = False
+    withOffersOption: offerers_schemas.GetOffererAddressesWithOffersOption | None
 
 
 class PatchOffererAddressRequest(BaseModel):

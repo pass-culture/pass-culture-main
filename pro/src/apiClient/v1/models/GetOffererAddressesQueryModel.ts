@@ -2,7 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { GetOffererAddressesWithOffersOption } from './GetOffererAddressesWithOffersOption';
 export type GetOffererAddressesQueryModel = {
-  onlyWithOffers?: boolean;
+  withOffersOption?: GetOffererAddressesWithOffersOption | null;
 };
 

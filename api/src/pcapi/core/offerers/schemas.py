@@ -211,3 +211,9 @@ VenueTypeCodeKey = enum.Enum(  # type: ignore[misc]
     "VenueTypeCodeKey",
     {code.name: code.name for code in VenueTypeCode},
 )
+
+
+class GetOffererAddressesWithOffersOption(enum.Enum):
+    INDIVIDUAL_OFFERS_ONLY = "INDIVIDUAL_OFFERS_ONLY"
+    COLLECTIVE_OFFERS_ONLY = "COLLECTIVE_OFFERS_ONLY"
+    COLLECTIVE_OFFER_TEMPLATES_ONLY = "COLLECTIVE_OFFER_TEMPLATES_ONLY"
