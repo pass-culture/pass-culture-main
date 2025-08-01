@@ -6,11 +6,11 @@ import sqlalchemy.orm as sa_orm
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.educational.factories import CollectiveOfferFactory
-from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models
 from pcapi.core.offerers import repository
+from pcapi.core.offerers import schemas
 from pcapi.core.users import factories as users_factories
 from pcapi.models.offer_mixin import OfferStatus
 
@@ -203,13 +203,13 @@ class HasNoOfferAndAtLeastOnePhysicalVenueAndCreatedSinceXDaysTest:
         offerer_with_two_venues = offerers_factories.OffererFactory(dateValidated=five_days_ago)
         venue_with_offers = offerers_factories.VenueFactory(managingOfferer=offerer_with_two_venues)
         offerers_factories.VenueFactory(managingOfferer=offerer_with_two_venues)
-        CollectiveOfferFactory(venue=venue_with_offers)
+        educational_factories.CollectiveOfferFactory(venue=venue_with_offers)
 
         # Offerer with two physical venues and one collective template offer => venues should not be returned
         offerer_with_two_venues = offerers_factories.OffererFactory(dateValidated=five_days_ago)
         venue_with_offers = offerers_factories.VenueFactory(managingOfferer=offerer_with_two_venues)
         offerers_factories.VenueFactory(managingOfferer=offerer_with_two_venues)
-        CollectiveOfferTemplateFactory(venue=venue_with_offers)
+        educational_factories.CollectiveOfferTemplateFactory(venue=venue_with_offers)
 
         venues = (
             repository.find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_validated_x_days_ago(5)
@@ -225,42 +225,55 @@ class HasNoOfferAndAtLeastOnePhysicalVenueAndCreatedSinceXDaysTest:
 
 
 class GetOffererAddressesTest:
-    def test_get_offerer_addresses(self):
+    @pytest.mark.parametrize(
+        "offer_factory,with_offers_option",
+        (
+            (offers_factories.OfferFactory, schemas.GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY),
+            (
+                educational_factories.CollectiveOfferOnOtherAddressLocationFactory,
+                schemas.GetOffererAddressesWithOffersOption.COLLECTIVE_OFFERS_ONLY,
+            ),
+            (
+                educational_factories.CollectiveOfferTemplateOnOtherAddressLocationFactory,
+                schemas.GetOffererAddressesWithOffersOption.COLLECTIVE_OFFER_TEMPLATES_ONLY,
+            ),
+        ),
+    )
+    def test_get_offerer_addresses(self, offer_factory, with_offers_option):
         offerer = offerers_factories.OffererFactory()
         venue_with_two_offers = offerers_factories.VenueFactory(managingOfferer=offerer)
         # Shouldn't appear in the results
-        offerers_factories.OffererAddressFactory(
-            offerer=offerer,
-            label="1ere adresse",
-            address__street="1 boulevard des Poissons",
-            address__postalCode="75002",
-            address__city="Paris",
-        )
+        offerers_factories.OffererAddressFactory(offerer=offerer)
         # Should appear in the results
-        offerer_address_with_one_offer = offerers_factories.OffererAddressFactory(
-            offerer=offerer,
-            label="2eme adresse",
-            address__street="20 Avenue de Ségur",
-            address__postalCode="75007",
-            address__city="Paris",
-            address__banId="75107_7560_00001",
-        )
+        offerer_address_with_one_offer = offerers_factories.OffererAddressFactory(offerer=offerer)
         # Ensure that we don't return an OffererAddress for every associated offer
-        offerer_address_with_two_offers = offerers_factories.OffererAddressFactory(
-            offerer=offerer,
-            label="3eme adresse",
-            address__street="3 rue des moutons",
-            address__postalCode="75008",
-            address__city="Paris",
-            address__banId="75108_7560_00000",
-        )
-        offers_factories.OfferFactory(venue__managingOfferer=offerer, offererAddress=offerer_address_with_one_offer)
-        offers_factories.OfferFactory(venue=venue_with_two_offers, offererAddress=offerer_address_with_two_offers)
-        offers_factories.OfferFactory(venue=venue_with_two_offers, offererAddress=offerer_address_with_two_offers)
-        query = repository.get_offerer_addresses(offerer_id=offerer.id, only_with_offers=True)
+        offerer_address_with_two_offers = offerers_factories.OffererAddressFactory(offerer=offerer)
+
+        offer_factory(venue__managingOfferer=offerer, offererAddress=offerer_address_with_one_offer)
+        offer_factory(venue=venue_with_two_offers, offererAddress=offerer_address_with_two_offers)
+        offer_factory(venue=venue_with_two_offers, offererAddress=offerer_address_with_two_offers)
+
+        query = repository.get_offerer_addresses(offerer_id=offerer.id, with_offers_option=with_offers_option)
+
         results = query.all()
         assert len(results) == 2
         assert {r.id for r in results} == {offerer_address_with_one_offer.id, offerer_address_with_two_offers.id}
+
+    def test_get_offerer_addresses_offer_types(self):
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        oa = offerers_factories.OffererAddressFactory(offerer=offerer)
+        other_oa = offerers_factories.OffererAddressFactory(offerer=offerer)
+
+        offers_factories.OfferFactory(venue=venue, offererAddress=oa)
+        educational_factories.CollectiveOfferOnOtherAddressLocationFactory(venue=venue, offererAddress=other_oa)
+        educational_factories.CollectiveOfferTemplateOnOtherAddressLocationFactory(venue=venue, offererAddress=other_oa)
+
+        query = repository.get_offerer_addresses(
+            offerer_id=offerer.id, with_offers_option=schemas.GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
+        )
+        result = query.one()
+        assert result.id == oa.id
 
 
 class GetOffererHeadlineOfferTest:
