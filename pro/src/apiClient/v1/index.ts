@@ -125,6 +125,7 @@ export type { GetIndividualOfferWithAddressResponseModel } from './models/GetInd
 export type { GetMusicTypesResponse } from './models/GetMusicTypesResponse';
 export type { GetOffererAddressesQueryModel } from './models/GetOffererAddressesQueryModel';
 export type { GetOffererAddressesResponseModel } from './models/GetOffererAddressesResponseModel';
+export { GetOffererAddressesWithOffersOption } from './models/GetOffererAddressesWithOffersOption';
 export type { GetOffererAddressResponseModel } from './models/GetOffererAddressResponseModel';
 export type { GetOffererBankAccountsResponseModel } from './models/GetOffererBankAccountsResponseModel';
 export type { GetOffererMemberResponseModel } from './models/GetOffererMemberResponseModel';

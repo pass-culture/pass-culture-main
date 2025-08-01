@@ -309,7 +309,9 @@ def get_offerer_addresses(
     offerer_id: int, query: offerers_serialize.GetOffererAddressesQueryModel
 ) -> offerers_serialize.GetOffererAddressesResponseModel:
     check_user_has_access_to_offerer(current_user, offerer_id)
-    offerer_addresses = repository.get_offerer_addresses(offerer_id, only_with_offers=query.onlyWithOffers)
+
+    offerer_addresses = repository.get_offerer_addresses(offerer_id, with_offers_option=query.withOffersOption)
+
     return offerers_serialize.GetOffererAddressesResponseModel(
         __root__=[
             offerers_serialize.GetOffererAddressResponseModel.from_orm(offerer_address)
