@@ -43,10 +43,8 @@ list_collective_offer_templates_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _get_collective_offer_templates(
-    form: collective_offer_forms.GetCollectiveOfferTemplatesListForm,
-) -> list[educational_models.CollectiveOfferTemplate]:
-    base_query = (
+def _get_collective_offer_templates_query() -> sa_orm.Query:
+    return (
         db.session.query(educational_models.CollectiveOfferTemplate)
         .join(offerers_models.Venue)
         .join(offerers_models.Offerer)
@@ -95,6 +93,12 @@ def _get_collective_offer_templates(
             ),
         )
     )
+
+
+def _get_collective_offer_templates(
+    form: collective_offer_forms.GetCollectiveOfferTemplatesListForm,
+) -> list[educational_models.CollectiveOfferTemplate]:
+    base_query = _get_collective_offer_templates_query()
     if form.from_date.data:
         from_datetime = date_utils.date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time())
         base_query = base_query.filter(educational_models.CollectiveOfferTemplate.dateCreated >= from_datetime)
@@ -138,6 +142,29 @@ def _get_collective_offer_templates(
 
     # +1 to check if there are more results than requested
     return base_query.limit(form.limit.data + 1).all()
+
+
+def _render_collective_offers_templates(
+    collective_offers_templates_ids: list[int] | None = None,
+) -> utils.BackofficeResponse:
+    rows = []
+    if collective_offers_templates_ids:
+        query = _get_collective_offer_templates_query()
+        query = query.filter(educational_models.CollectiveOfferTemplate.id.in_(collective_offers_templates_ids))
+        rows = query.all()
+
+    connect_as = {}
+    for collective_offer_template in rows:
+        connect_as[collective_offer_template.id] = get_connect_as(
+            object_type="collective_offer_template",
+            object_id=collective_offer_template.id,
+            pc_pro_path=urls.build_pc_pro_offer_path(collective_offer_template),
+        )
+    return render_template(
+        "collective_offer_template/list_rows.html",
+        rows=rows,
+        connect_as=connect_as,
+    )
 
 
 @list_collective_offer_templates_blueprint.route("", methods=["GET"])
@@ -186,23 +213,32 @@ def get_validate_collective_offer_template_form(collective_offer_template_id: in
 
     form = empty_forms.EmptyForm()
 
-    return render_template(
-        "components/turbo/modal_form.html",
-        form=form,
-        dst=url_for(
+    kwargs = {
+        "form": form,
+        "dst": url_for(
             "backoffice_web.collective_offer_template.validate_collective_offer_template",
             collective_offer_template_id=collective_offer_template.id,
         ),
-        div_id=f"validate-collective-offer-template-modal-{collective_offer_template.id}",
-        title=f"Validation de l'offre vitrine {collective_offer_template.name}",
-        button_text="Valider l'offre vitrine",
-    )
+        "div_id": f"validate-collective-offer-template-modal-{collective_offer_template.id}",
+        "title": f"Validation de l'offre vitrine {collective_offer_template.name}",
+        "button_text": "Valider l'offre vitrine",
+    }
+    if utils.is_request_from_htmx():
+        return render_template(
+            "components/dynamic/modal_form.html",
+            target_id=f"#collective-offer-template-row-{collective_offer_template_id}",
+            **kwargs,
+        )
+    return render_template("components/turbo/modal_form.html", **kwargs)
 
 
 @list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def validate_collective_offer_template(collective_offer_template_id: int) -> utils.BackofficeResponse:
     _batch_validate_or_reject_collective_offer_templates(OfferValidationStatus.APPROVED, [collective_offer_template_id])
+
+    if utils.is_request_from_htmx():
+        return _render_collective_offers_templates([collective_offer_template_id])
     return redirect(
         request.referrer or url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"),
         303,
@@ -222,17 +258,23 @@ def get_reject_collective_offer_template_form(collective_offer_template_id: int)
 
     form = collective_offer_forms.RejectCollectiveOfferForm()
 
-    return render_template(
-        "components/turbo/modal_form.html",
-        form=form,
-        dst=url_for(
+    kwargs = {
+        "form": form,
+        "dst": url_for(
             "backoffice_web.collective_offer_template.reject_collective_offer_template",
             collective_offer_template_id=collective_offer_template.id,
         ),
-        div_id=f"reject-collective-offer-template-modal-{collective_offer_template.id}",
-        title=f"Rejet de l'offre vitrine {collective_offer_template.name}",
-        button_text="Rejeter l'offre vitrine",
-    )
+        "div_id": f"reject-collective-offer-template-modal-{collective_offer_template.id}",
+        "title": f"Rejet de l'offre vitrine {collective_offer_template.name}",
+        "button_text": "Rejeter l'offre vitrine",
+    }
+    if utils.is_request_from_htmx():
+        return render_template(
+            "components/dynamic/modal_form.html",
+            target_id=f"#collective-offer-template-row-{collective_offer_template_id}",
+            **kwargs,
+        )
+    return render_template("components/turbo/modal_form.html", **kwargs)
 
 
 @list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/reject", methods=["POST"])
@@ -241,6 +283,8 @@ def reject_collective_offer_template(collective_offer_template_id: int) -> utils
     form = collective_offer_forms.RejectCollectiveOfferForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
+        if utils.is_request_from_htmx():
+            return _render_collective_offers_templates()
         return redirect(
             request.referrer or url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"), 303
         )
@@ -250,6 +294,8 @@ def reject_collective_offer_template(collective_offer_template_id: int) -> utils
         [collective_offer_template_id],
         educational_models.CollectiveOfferRejectionReason(form.reason.data),
     )
+    if utils.is_request_from_htmx():
+        return _render_collective_offers_templates([collective_offer_template_id])
     return redirect(
         request.referrer or url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"),
         303,
@@ -362,9 +408,10 @@ def _batch_validate_or_reject_collective_offer_templates(
 @list_collective_offer_templates_blueprint.route("/batch/validate", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_validate_collective_offer_templates_form() -> utils.BackofficeResponse:
-    form = empty_forms.BatchForm()
+    form = empty_forms.BatchForm(request.args)
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#collective-offer-template-table",
         form=form,
         dst=url_for("backoffice_web.collective_offer_template.batch_validate_collective_offer_templates"),
         div_id="batch-validate-modal",
@@ -376,9 +423,10 @@ def get_batch_validate_collective_offer_templates_form() -> utils.BackofficeResp
 @list_collective_offer_templates_blueprint.route("/batch/reject", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_reject_collective_offer_templates_form() -> utils.BackofficeResponse:
-    form = collective_offer_forms.BatchRejectCollectiveOfferForm()
+    form = collective_offer_forms.BatchRejectCollectiveOfferForm(request.args)
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#collective-offer-template-table",
         form=form,
         dst=url_for("backoffice_web.collective_offer_template.batch_reject_collective_offer_templates"),
         div_id="batch-reject-modal",
@@ -394,15 +442,10 @@ def batch_validate_collective_offer_templates() -> utils.BackofficeResponse:
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return redirect(
-            request.referrer or url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"),
-            303,
-        )
+        return _render_collective_offers_templates()
 
     _batch_validate_or_reject_collective_offer_templates(OfferValidationStatus.APPROVED, form.object_ids_list)
-    return redirect(
-        request.referrer or url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"), 303
-    )
+    return _render_collective_offers_templates(form.object_ids_list)
 
 
 @list_collective_offer_templates_blueprint.route("/batch/reject", methods=["POST"])
@@ -412,19 +455,14 @@ def batch_reject_collective_offer_templates() -> utils.BackofficeResponse:
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return redirect(
-            request.referrer or url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"),
-            303,
-        )
+        return _render_collective_offers_templates()
 
     _batch_validate_or_reject_collective_offer_templates(
         OfferValidationStatus.REJECTED,
         form.object_ids_list,
         educational_models.CollectiveOfferRejectionReason(form.reason.data),
     )
-    return redirect(
-        request.referrer or url_for("backoffice_web.collective_offer_template.list_collective_offer_templates"), 303
-    )
+    return _render_collective_offers_templates(form.object_ids_list)
 
 
 @list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/details", methods=["GET"])
