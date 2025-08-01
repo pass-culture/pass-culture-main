@@ -4049,6 +4049,7 @@ class BatchOffererRejectTest(PostEndpointHelper):
             "ERROR",
             "ADAGE_DECLINED",
             "OUT_OF_TIME",
+            "NON_RECEIVED_DOCS",
             "CLOSED_BUSINESS",
             "OTHER",
         ),

@@ -363,6 +363,11 @@ def format_offerer_rejection_reason(rejection_reason: offerers_models.OffererRej
         ):
             return "Non réponse aux questionnaires"
         case (
+            offerers_models.OffererRejectionReason.NON_RECEIVED_DOCS
+            | offerers_models.OffererRejectionReason.NON_RECEIVED_DOCS.name
+        ):
+            return "Non réception des documents"
+        case (
             offerers_models.OffererRejectionReason.CLOSED_BUSINESS
             | offerers_models.OffererRejectionReason.CLOSED_BUSINESS.name
         ):
