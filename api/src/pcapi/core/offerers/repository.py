@@ -5,18 +5,19 @@ import typing
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
-import pcapi.core.offers.models as offers_models
-import pcapi.core.users.models as users_models
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
+from pcapi.core.offers import models as offers_models
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
 
 from . import exceptions
 from . import models
+from . import schemas
 
 
 logger = logging.getLogger(__name__)
@@ -1038,20 +1039,36 @@ def get_revenues_per_year(
     }
 
 
-def get_offerer_addresses(offerer_id: int, only_with_offers: bool = False) -> sa_orm.Query:
+OFFER_MODEL_BY_OPTION: typing.Final[
+    dict[
+        schemas.GetOffererAddressesWithOffersOption,
+        type[offers_models.Offer | educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate],
+    ]
+] = {
+    schemas.GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY: offers_models.Offer,
+    schemas.GetOffererAddressesWithOffersOption.COLLECTIVE_OFFERS_ONLY: educational_models.CollectiveOffer,
+    schemas.GetOffererAddressesWithOffersOption.COLLECTIVE_OFFER_TEMPLATES_ONLY: educational_models.CollectiveOfferTemplate,
+}
+
+
+def get_offerer_addresses(
+    offerer_id: int, with_offers_option: schemas.GetOffererAddressesWithOffersOption | None
+) -> sa_orm.Query:
+    """When with_offers_option is provided, fetch only OffererAddress objects that are related to offers of the given type"""
+
     query = (
         db.session.query(models.OffererAddress)
         .filter(models.OffererAddress.offererId == offerer_id)
         .join(geography_models.Address, models.OffererAddress.addressId == geography_models.Address.id)
         .outerjoin(models.Venue, models.Venue.offererAddressId == models.OffererAddress.id)
     )
-    if only_with_offers:
+
+    if with_offers_option is not None:
+        offer_model = OFFER_MODEL_BY_OPTION[with_offers_option]
         subquery = db.session.query(
-            sa.select(offers_models.Offer.id, offers_models.Offer.offererAddressId)
-            .select_from(offers_models.Offer)
-            .subquery()
+            sa.select(offer_model.id, offer_model.offererAddressId).select_from(offer_model).subquery()
         )
-        query = query.where(subquery.filter(offers_models.Offer.offererAddressId == models.OffererAddress.id).exists())
+        query = query.where(subquery.filter(offer_model.offererAddressId == models.OffererAddress.id).exists())
 
     query = query.with_entities(
         models.OffererAddress.id,

@@ -59,10 +59,18 @@ describe('useOffererAddresses', () => {
     expect(screen.getByTestId('addresses-length').innerHTML).toEqual('2')
   })
 
-  it('should return an empty list when no offerer is set', () => {
-    renderComponent()
+  it('should return an empty list when no offerer is set', async () => {
+    renderComponent({
+      user: { currentUser: user },
+      offerer: {
+        offererNames: [],
+        currentOfferer: null,
+      },
+    })
 
-    expect(api.getOffererAddresses).not.toHaveBeenCalled()
+    await waitFor(() => {
+      expect(api.getOffererAddresses).not.toHaveBeenCalled()
+    })
 
     expect(screen.getByTestId('addresses-length').innerHTML).toEqual('0')
   })
