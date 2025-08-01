@@ -17,6 +17,7 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveLocationType
 from pcapi.core.educational.models import Ministry
+from pcapi.core.offerers.factories import VenueFactory
 from pcapi.models import db
 from pcapi.routes.adage.v1.serialization import constants
 
@@ -84,15 +85,15 @@ class Returns200Test:
     def test_confirm_collective_prebooking_with_oa(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
         educational_year = EducationalYearFactory()
+        venue = VenueFactory()
         booking = PendingCollectiveBookingFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
+            collectiveStock__collectiveOffer__venue=venue,
             collectiveStock__collectiveOffer__locationType=CollectiveLocationType.ADDRESS,
-            collectiveStock__collectiveOffer__offererAddress=None,
-            collectiveStock__collectiveOffer__locationComment=None,
+            collectiveStock__collectiveOffer__offererAddress=venue.offererAddress,
         )
         offer = booking.collectiveStock.collectiveOffer
-        offer.offererAddress = offer.venue.offererAddress
         EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,

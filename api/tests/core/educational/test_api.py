@@ -412,16 +412,14 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
         "pcapi.core.mails.transactional.educational.eac_pending_booking_confirmation_limit_date_in_3_days.mails.send"
     )
     def test_with_pending_booking_limit_date_in_3_days(self, mock_mail_sender) -> None:
-        # given
         booking = educational_factories.PendingCollectiveBookingFactory(
             confirmationLimitDate="2022-11-29 18:29",
             collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
+            collectiveStock__collectiveOffer__locationType=educational_models.CollectiveLocationType.SCHOOL,
         )
 
-        # when
         educational_api_booking.notify_pro_pending_booking_confirmation_limit_in_3_days()
 
-        # then
         mock_mail_sender.assert_called_once()
         assert mock_mail_sender.call_args.kwargs["data"].params == {
             "OFFER_NAME": booking.collectiveStock.collectiveOffer.name,
@@ -432,6 +430,7 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
             "USER_EMAIL": booking.educationalRedactor.email,
             "EDUCATIONAL_INSTITUTION_NAME": booking.educationalInstitution.name,
             "BOOKING_ID": booking.id,
+            "COLLECTIVE_OFFER_ADDRESS": "En établissement scolaire",
         }
 
     @mock.patch(
@@ -544,6 +543,7 @@ class NotifyProUserOneDayTest:
                     "REDACTOR_LASTNAME": booking1.educationalRedactor.lastName,
                     "REDACTOR_EMAIL": booking1.educationalRedactor.email,
                     "EDUCATIONAL_INSTITUTION_NAME": booking1.educationalInstitution.name,
+                    "COLLECTIVE_OFFER_ADDRESS": "À déterminer avec l'enseignant",
                 }
                 assert args.kwargs["recipients"] == [booking1.collectiveStock.collectiveOffer.bookingEmails[0]]
                 assert args.kwargs["bcc_recipients"] == booking1.collectiveStock.collectiveOffer.bookingEmails[1:]
@@ -559,6 +559,7 @@ class NotifyProUserOneDayTest:
                     "REDACTOR_LASTNAME": booking3.educationalRedactor.lastName,
                     "REDACTOR_EMAIL": booking3.educationalRedactor.email,
                     "EDUCATIONAL_INSTITUTION_NAME": booking3.educationalInstitution.name,
+                    "COLLECTIVE_OFFER_ADDRESS": "À déterminer avec l'enseignant",
                 }
                 assert args.kwargs["recipients"] == [booking3.collectiveStock.collectiveOffer.bookingEmails[0]]
                 assert args.kwargs["bcc_recipients"] == booking3.collectiveStock.collectiveOffer.bookingEmails[1:]
@@ -640,6 +641,7 @@ class NotifyProUserOneDayAfterTest:
                     "EVENT_HOUR": "01h00",
                     "EVENT_DATE": "lundi 6 janvier 2020",
                     "EDUCATIONAL_INSTITUTION_NAME": booking1.educationalInstitution.name,
+                    "COLLECTIVE_OFFER_ADDRESS": "À déterminer avec l'enseignant",
                 }
                 assert args.kwargs["recipients"] == [booking1.collectiveStock.collectiveOffer.bookingEmails[0]]
                 assert args.kwargs["bcc_recipients"] == booking1.collectiveStock.collectiveOffer.bookingEmails[1:]
@@ -650,6 +652,7 @@ class NotifyProUserOneDayAfterTest:
                     "EVENT_HOUR": "01h00",
                     "EVENT_DATE": "lundi 6 janvier 2020",
                     "EDUCATIONAL_INSTITUTION_NAME": booking3.educationalInstitution.name,
+                    "COLLECTIVE_OFFER_ADDRESS": "À déterminer avec l'enseignant",
                 }
                 assert args.kwargs["recipients"] == [booking3.collectiveStock.collectiveOffer.bookingEmails[0]]
                 assert args.kwargs["bcc_recipients"] == booking3.collectiveStock.collectiveOffer.bookingEmails[1:]

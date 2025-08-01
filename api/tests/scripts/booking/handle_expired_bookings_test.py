@@ -320,7 +320,6 @@ class NotifyOfferersOfExpiredBookingsTest:
         )
 
     def test_should_notify_of_todays_expired_collective_bookings(self) -> None:
-        # Given
         today = datetime.today()
         date_event_1 = today + timedelta(days=6, hours=21, minutes=53)
         date_event_2 = today + timedelta(days=16, hours=5)
@@ -363,10 +362,8 @@ class NotifyOfferersOfExpiredBookingsTest:
             cancellationReason=CollectiveBookingCancellationReasons.EXPIRED,
         )
 
-        # Given
         handle_expired_bookings.notify_offerers_of_expired_collective_bookings()
 
-        # Then
         assert len(mails_testing.outbox) == 2
         assert mails_testing.outbox[0]["template"] == TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION.value.__dict__
         assert mails_testing.outbox[0]["To"] == "test@mail.com"
@@ -385,6 +382,7 @@ class NotifyOfferersOfExpiredBookingsTest:
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": institution.postalCode,
             "COLLECTIVE_CANCELLATION_REASON": CollectiveBookingCancellationReasons.EXPIRED.value,
             "BOOKING_ID": first_expired_booking.id,
+            "COLLECTIVE_OFFER_ADDRESS": "À déterminer avec l'enseignant",
         }
 
         second_educational_institution = second_expired_booking.educationalInstitution
@@ -403,4 +401,5 @@ class NotifyOfferersOfExpiredBookingsTest:
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": second_educational_institution.postalCode,
             "COLLECTIVE_CANCELLATION_REASON": CollectiveBookingCancellationReasons.EXPIRED.value,
             "BOOKING_ID": second_expired_booking.id,
+            "COLLECTIVE_OFFER_ADDRESS": "À déterminer avec l'enseignant",
         }

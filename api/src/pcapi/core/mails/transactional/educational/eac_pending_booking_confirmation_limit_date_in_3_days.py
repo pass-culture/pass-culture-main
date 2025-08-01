@@ -1,5 +1,6 @@
-import pcapi.core.educational.models as educational_models
 from pcapi.core import mails
+from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.utils import get_collective_offer_full_address
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.utils.date import get_date_formatted_for_email
@@ -34,5 +35,6 @@ def get_data_pending_booking_confirmation_limit_date_in_3_days(
             "USER_EMAIL": booking.educationalRedactor.email,
             "EDUCATIONAL_INSTITUTION_NAME": booking.educationalInstitution.name,
             "BOOKING_ID": booking.id,
+            "COLLECTIVE_OFFER_ADDRESS": get_collective_offer_full_address(offer),
         },
     )

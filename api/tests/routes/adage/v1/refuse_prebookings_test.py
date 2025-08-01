@@ -76,6 +76,7 @@ class Returns200Test:
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": educational_institution.postalCode,
             "COLLECTIVE_CANCELLATION_REASON": collective_booking.cancellationReason.value,
             "BOOKING_ID": collective_booking.id,
+            "COLLECTIVE_OFFER_ADDRESS": "À déterminer avec l'enseignant",
         }
 
     @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
