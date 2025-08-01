@@ -92,7 +92,6 @@ def complete_profile(user: users_models.User, body: serializers.ProfileUpdateReq
         raise api_errors.ApiErrors({"code": "INELIGIBLE_POSTAL_CODE"})
 
     is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
-
     if not is_activated:
         external_attributes_api.update_external_user(user)
 
