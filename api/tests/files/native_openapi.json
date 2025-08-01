@@ -5039,6 +5039,10 @@
                         "title": "Haspassword",
                         "type": "boolean"
                     },
+                    "hasProfileExpired": {
+                        "title": "Hasprofileexpired",
+                        "type": "boolean"
+                    },
                     "id": {
                         "title": "Id",
                         "type": "integer"
@@ -5116,6 +5120,7 @@
                     "currency",
                     "email",
                     "hasPassword",
+                    "hasProfileExpired",
                     "id",
                     "isBeneficiary",
                     "isEligibleForBeneficiaryUpgrade",

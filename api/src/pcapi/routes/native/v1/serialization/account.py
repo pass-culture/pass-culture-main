@@ -187,6 +187,8 @@ class UserProfileGetterDict(GetterDict):
             return user.firstName if user.firstName != users_models.VOID_FIRST_NAME else None
         if key == "hasPassword":
             return user.password is not None
+        if key == "hasProfileExpired":
+            return users_api.has_profile_expired(user)
         if key == "isBeneficiary":
             return user.is_beneficiary
         if key == "isEligibleForBeneficiaryUpgrade":
@@ -234,6 +236,7 @@ class UserProfileResponse(ConfiguredBaseModel):
     first_deposit_activation_date: datetime.datetime | None
     first_name: str | None
     has_password: bool
+    has_profile_expired: bool
     id: int
     is_beneficiary: bool
     is_eligible_for_beneficiary_upgrade: bool
