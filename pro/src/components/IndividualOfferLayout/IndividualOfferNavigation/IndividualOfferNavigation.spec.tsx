@@ -18,6 +18,7 @@ type IndividualOfferNavigationTestProps = {
   hasPriceCategories?: boolean
   hasStocks?: boolean
   storeOverrides?: any
+  features?: string[]
 }
 
 const renderIndividualOfferNavigation = ({
@@ -27,6 +28,7 @@ const renderIndividualOfferNavigation = ({
   hasPriceCategories = false,
   hasStocks = false,
   storeOverrides,
+  features = [],
 }: IndividualOfferNavigationTestProps = {}) => {
   const contextValues = individualOfferContextValuesFactory({ isEvent })
   if (contextValues.offer) {
@@ -66,6 +68,7 @@ const renderIndividualOfferNavigation = ({
           mode,
         }),
       ],
+      features,
     }
   )
 }
@@ -73,6 +76,7 @@ const renderIndividualOfferNavigation = ({
 const LABELS = {
   DETAILS: /Détails/,
   USEFUL_INFORMATIONS: /Informations pratiques/,
+  MEDIA: /Image et vidéo/,
   PRICES: /Tarifs/,
   DATES_CAPACITIES: /Dates/,
   STOCK_PRICES: /Stock/,
@@ -91,6 +95,15 @@ describe('IndividualOfferNavigation', () => {
       name: LABELS.USEFUL_INFORMATIONS,
     })
     expect(usefulInformationsStep).toBeInTheDocument()
+  })
+
+  it('should display "Image et vidéo" active step when WIP_ADD_VIDEO is enabled', () => {
+    renderIndividualOfferNavigation({
+      features: ['WIP_ADD_VIDEO'],
+    })
+
+    const mediaStep = screen.getByRole('link', { name: LABELS.MEDIA })
+    expect(mediaStep).toBeInTheDocument()
   })
 
   describe('when offer is an event', () => {

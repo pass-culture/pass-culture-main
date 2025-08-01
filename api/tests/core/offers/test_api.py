@@ -1305,6 +1305,20 @@ class UpdateDraftOfferTest:
         assert offer.name == "New name"
         assert offer.description == "New description"
 
+    def test_can_delete_video_url(self):
+        meta_data = factories.OfferMetaDataFactory(videoUrl="https://www.youtube.com/watch?v=WtM4OW2qVjY")
+
+        offer = factories.OfferFactory(
+            metaData=meta_data,
+        )
+        body = offers_schemas.PatchDraftOfferBodyModel(
+            videoUrl="",
+        )
+        offer = api.update_draft_offer(offer, body)
+        db.session.flush()
+
+        assert offer.metaData.videoUrl == None
+
     def test_cannot_update_if_ean_in_name(self):
         offer = factories.OfferFactory(
             name="Name",

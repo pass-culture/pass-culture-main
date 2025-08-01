@@ -90,7 +90,7 @@ export const ImageDragAndDropUploader = ({
     <div className={cn(styles['image-uploader-image-container'], className)}>
       {hasImage && (
         <SafeImage
-          alt={'Prévisualisation de l’image'}
+          alt="Prévisualisation de l’image"
           testId="image-preview"
           className={cn(styles['image-preview'], {
             [styles['preview-venue']]: mode === UploaderModeEnum.VENUE,

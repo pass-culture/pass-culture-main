@@ -22,6 +22,7 @@ import {
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { getIndividualOfferImage } from 'components/IndividualOffer/utils/getIndividualOfferImage'
@@ -77,6 +78,7 @@ export const IndividualOfferDetailsScreen = ({
   const queryOfferType = queryParams.get('offer-type')
   const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
   const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
+  const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
 
   const { categories, subCategories, offer, publishedOfferWithSameEAN } =
     useIndividualOfferContext()
@@ -161,7 +163,7 @@ export const IndividualOfferDetailsScreen = ({
       // Images can never be uploaded for product-based offers,
       // the drag & drop should not be displayed / enabled so
       // this is a safeguard.
-      if (!!offerId && !isProductBased) {
+      if (!isMediaPageEnabled && !!offerId && !isProductBased) {
         await handleImageOnSubmit(offerId)
         await mutate([GET_OFFER_QUERY_KEY, offerId])
       }
@@ -350,7 +352,8 @@ export const IndividualOfferDetailsScreen = ({
         </form>
         <RouteLeavingGuardIndividualOffer
           when={
-            (form.formState.isDirty || hasUpsertedImage) &&
+            (form.formState.isDirty ||
+              (!isMediaPageEnabled && hasUpsertedImage)) &&
             !form.formState.isSubmitting
           }
         />

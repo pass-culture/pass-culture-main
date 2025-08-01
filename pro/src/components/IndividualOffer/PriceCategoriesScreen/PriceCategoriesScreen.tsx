@@ -15,6 +15,7 @@ import {
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { isOfferAllocineSynchronized } from 'commons/core/Offers/utils/typology'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { isEqual } from 'commons/utils/isEqual'
@@ -120,6 +121,8 @@ export const PriceCategoriesScreen = ({
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] =
     useState<boolean>(false)
 
+  const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
+
   const isDisabledBySynchronization =
     Boolean(offer.lastProvider) && !isOfferAllocineSynchronized(offer)
   const isDisabled =
@@ -218,7 +221,9 @@ export const PriceCategoriesScreen = ({
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+          step: isMediaPageEnabled
+            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA
+            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
           mode,
           isOnboarding,
         })

@@ -61,6 +61,27 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     path: '/offre/individuelle/:offerId/pratiques',
     title: 'Informations pratiques - Consulter une offre individuelle',
   },
+  // Image & video (media) pages
+  {
+    lazy: () =>
+      import('pages/IndividualOffer/IndividualOfferMedia/IndividualOfferMedia'),
+    path: '/offre/individuelle/:offerId/creation/media',
+    title: 'Image et vidéo - Créer une offre individuelle',
+  },
+  {
+    lazy: () =>
+      import('pages/IndividualOffer/IndividualOfferMedia/IndividualOfferMedia'),
+    path: '/offre/individuelle/:offerId/edition/media',
+    title: 'Image et vidéo - Modifier une offre individuelle',
+  },
+  {
+    lazy: () =>
+      import(
+        'pages/IndividualOfferSummary/IndividualOfferSummaryMedia/IndividualOfferSummaryMedia'
+      ),
+    path: '/offre/individuelle/:offerId/media',
+    title: 'Image et vidéo - Consulter une offre individuelle',
+  },
   // Price categories pages
   {
     lazy: () =>

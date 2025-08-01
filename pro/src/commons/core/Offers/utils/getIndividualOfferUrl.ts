@@ -23,6 +23,11 @@ const routes = {
     [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/pratiques`,
     [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/pratiques`,
   },
+  [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA]: {
+    [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/media`,
+    [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/media`,
+    [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/media`,
+  },
   [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS]: {
     [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/stocks`,
     [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/stocks`,

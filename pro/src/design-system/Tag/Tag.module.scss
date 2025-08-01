@@ -10,6 +10,7 @@
   gap: rem.torem(4px);
   border-radius: rem.torem(4px);
   width: fit-content;
+  height: fit-content;
   color: var(--color-text-default);
 
   &.default {

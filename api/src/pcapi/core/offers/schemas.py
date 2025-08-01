@@ -42,6 +42,12 @@ class PostDraftOfferBodyModel(BaseModel):
         check_offer_name_length_is_valid(name)
         return name
 
+    @validator("video_url", pre=True)
+    def clean_video_url(cls, v: str) -> str | None:
+        if v == "":
+            return None
+        return v
+
     @validator("video_url")
     def validate_video_url(cls, video_url: HttpUrl, values: dict) -> str:
         check_video_url(video_url)
@@ -69,6 +75,12 @@ class PatchDraftOfferBodyModel(BaseModel):
     def validate_name(cls, name: str, values: dict) -> str:
         check_offer_name_length_is_valid(name)
         return name
+
+    @validator("video_url", pre=True)
+    def clean_video_url(cls, v: str) -> str | None:
+        if v == "":
+            return None
+        return v
 
     @validator("video_url")
     def validate_video_url(cls, video_url: HttpUrl, values: dict) -> str:
