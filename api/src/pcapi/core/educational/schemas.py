@@ -1,12 +1,13 @@
+import dataclasses
+import datetime
 import decimal
 import typing
-from datetime import datetime
 
 from pydantic.v1 import PositiveInt
 from pydantic.v1.fields import Field
 
 from pcapi.core.categories.models import EacFormat
-from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import models
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -14,7 +15,7 @@ from pcapi.utils.date import format_into_utc_date
 
 class AdageBaseResponseModel(BaseModel):
     class Config:
-        json_encoders = {datetime: format_into_utc_date}
+        json_encoders = {datetime.datetime: format_into_utc_date}
 
 
 class AdageCulturalPartner(BaseModel):
@@ -42,7 +43,7 @@ class AdageCulturalPartner(BaseModel):
     regionLibelle: str | None
     domaines: str | None
     actif: int | None
-    dateModification: datetime
+    dateModification: datetime.datetime
     synchroPass: int | None
     domaineIds: str | None
 
@@ -69,17 +70,17 @@ class Redactor(AdageBaseResponseModel):
 class EducationalBookingResponse(AdageBaseResponseModel):
     accessibility: str = Field(description="Accessibility of the offer")
     address: str = Field(description="Adresse of event")
-    startDatetime: datetime = Field(description="Start date of event")
-    endDatetime: datetime = Field(description="End date of event")
-    cancellationDate: datetime | None = Field(description="Date of cancellation if prebooking is cancelled")
-    cancellationLimitDate: datetime | None = Field(description="Limit date to cancel the prebooking")
-    confirmationDate: datetime | None = Field(description="Date of confirmation if prebooking is confirmed")
-    confirmationLimitDate: datetime = Field(description="Limit date to confirm the prebooking")
+    startDatetime: datetime.datetime = Field(description="Start date of event")
+    endDatetime: datetime.datetime = Field(description="End date of event")
+    cancellationDate: datetime.datetime | None = Field(description="Date of cancellation if prebooking is cancelled")
+    cancellationLimitDate: datetime.datetime | None = Field(description="Limit date to cancel the prebooking")
+    confirmationDate: datetime.datetime | None = Field(description="Date of confirmation if prebooking is confirmed")
+    confirmationLimitDate: datetime.datetime = Field(description="Limit date to confirm the prebooking")
     contact: Contact = Field(description="Contact of the prebooking")
-    creationDate: datetime
+    creationDate: datetime.datetime
     description: str | None = Field(description="Offer description")
     durationMinutes: int | None = Field(description="Offer's duration in minutes")
-    expirationDate: datetime | None = Field(description="Expiration date after which booking is cancelled")
+    expirationDate: datetime.datetime | None = Field(description="Expiration date after which booking is cancelled")
     id: int = Field(description="pass Culture's prebooking id")
     isDigital: bool = Field(description="If true the event is accessed digitally")
     venueName: str = Field(description="Name of cultural venue proposing the event")
@@ -90,8 +91,8 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     redactor: Redactor
     UAICode: str = Field(description="Educational institution UAI code")
     yearId: int = Field(description="Shared year id")
-    status: educational_models.EducationalBookingStatus | educational_models.CollectiveBookingStatus
-    cancellationReason: educational_models.CollectiveBookingCancellationReasons | None = Field(
+    status: models.EducationalBookingStatus | models.CollectiveBookingStatus
+    cancellationReason: models.CollectiveBookingCancellationReasons | None = Field(
         description="Reason when a prebooking order is cancelled"
     )
     participants: list[str] = Field(description="List of class levels which can participate")
@@ -156,12 +157,12 @@ class EducationalBookingsResponse(AdageBaseResponseModel):
 class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     id: int
     UAICode: str
-    status: educational_models.EducationalBookingStatus | educational_models.CollectiveBookingStatus
-    cancellationReason: educational_models.CollectiveBookingCancellationReasons | None
-    confirmationLimitDate: datetime
+    status: models.EducationalBookingStatus | models.CollectiveBookingStatus
+    cancellationReason: models.CollectiveBookingCancellationReasons | None
+    confirmationLimitDate: datetime.datetime
     totalAmount: decimal.Decimal
-    startDatetime: datetime
-    endDatetime: datetime
+    startDatetime: datetime.datetime
+    endDatetime: datetime.datetime
     venueTimezone: str
     name: str
     redactorEmail: str
@@ -183,3 +184,19 @@ class EducationalBookingsPerYearResponse(AdageBaseResponseModel):
 class GetAllBookingsPerYearQueryModel(BaseModel):
     page: PositiveInt | None
     per_page: PositiveInt | None
+
+
+@dataclasses.dataclass(kw_only=True, slots=True, frozen=True)
+class CollectiveOffersFilter:
+    user_id: int
+    user_is_admin: bool
+    offerer_id: int | None = None
+    statuses: list[models.CollectiveOfferDisplayedStatus] | None = None
+    venue_id: int | None = None
+    provider_id: int | None = None
+    name_keywords: str | None = None
+    period_beginning_date: datetime.date | None = None
+    period_ending_date: datetime.date | None = None
+    formats: list[EacFormat] | None = None
+    location_type: models.CollectiveLocationType | None = None
+    offerer_address_id: int | None = None

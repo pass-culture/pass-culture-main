@@ -31,6 +31,8 @@ export type CollectiveSearchFiltersParams = {
   collectiveOfferType: CollectiveOfferTypeEnum
   periodBeginningDate: string
   periodEndingDate: string
+  locationType?: string
+  offererAddressId?: string
   page?: number
 }
 

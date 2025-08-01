@@ -8,11 +8,8 @@ import { CollectiveSearchFiltersParams, SearchFiltersParams } from '../types'
 
 export const serializeApiFilters = (
   searchFilters: Partial<SearchFiltersParams>
-): ListOffersQueryModel & ListCollectiveOffersQueryModel => {
-  const listOffersQueryKeys: (
-    | keyof ListOffersQueryModel
-    | keyof ListCollectiveOffersQueryModel
-  )[] = [
+): ListOffersQueryModel => {
+  const listOffersQueryKeys: (keyof ListOffersQueryModel)[] = [
     'nameOrIsbn',
     'offererId',
     'status',
@@ -23,10 +20,9 @@ export const serializeApiFilters = (
     'periodBeginningDate',
     'periodEndingDate',
     'collectiveOfferType',
-    'format',
   ]
 
-  const body: ListOffersQueryModel & ListCollectiveOffersQueryModel = {}
+  const body: ListOffersQueryModel = {}
   const defaultFilters = DEFAULT_SEARCH_FILTERS
   return listOffersQueryKeys.reduce((accumulator, field) => {
     const filterValue = searchFilters[field]
@@ -55,7 +51,7 @@ export const serializeApiCollectiveFilters = (
     'format',
   ] satisfies (keyof CollectiveSearchFiltersParams)[]
 
-  const body: ListOffersQueryModel & ListCollectiveOffersQueryModel = {}
+  const body: ListCollectiveOffersQueryModel = {}
 
   return listOffersQueryKeys.reduce((accumulator, field) => {
     const filterValue = searchFilters[field]
