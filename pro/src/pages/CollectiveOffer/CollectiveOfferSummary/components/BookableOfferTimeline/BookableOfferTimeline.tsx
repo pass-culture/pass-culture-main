@@ -1,6 +1,7 @@
 import {
   CollectiveOfferDisplayedStatus,
   GetCollectiveOfferResponseModel,
+  GetOffererResponseModel,
 } from 'apiClient/v1'
 import { getDateToFrenchText } from 'commons/utils/date'
 import { Timeline, TimelineStepType } from 'ui-kit/Timeline/Timeline'
@@ -9,12 +10,14 @@ import { ArchivedBanner } from './banners/ArchivedBanner'
 import { BookingWaitingBanner } from './banners/BookingWaitingBanner'
 import { CancelledBanner } from './banners/CancelledBanner'
 import { DraftBanner } from './banners/DraftBanner'
+import { EndBanner } from './banners/EndBanner'
 import { RejectedBanner } from './banners/RejectedBanner'
 import { UnderReviewBanner } from './banners/UnderReviewBanner'
 import styles from './BookableOfferTimeline.module.scss'
 
 type BookableOfferTimeline = {
   offer: GetCollectiveOfferResponseModel
+  offerer?: GetOffererResponseModel | null
 }
 
 const statusLabelMapping = {
@@ -39,7 +42,7 @@ const isMoreThan48hAgo = (dateString: string) => {
   return diffMs > 48 * 60 * 60 * 1000
 }
 
-export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
+export const BookableOfferTimeline = ({ offer, offerer }: BookableOfferTimeline) => {
   const { past, future } = offer.history
 
   const pastSteps = past.map(({ datetime, status }, index) => {
@@ -153,13 +156,25 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
     }
 
     if (status === CollectiveOfferDisplayedStatus.ENDED) {
+      const endedMoreThan48hAgo = datetime && isMoreThan48hAgo(datetime)
+      let variant: 'lessThan48h' | 'moreThan48h' | 'moreThan48hWithoutBankInformation'
+
+      if (endedMoreThan48hAgo) {
+        variant = offerer?.hasValidBankAccount ? 'moreThan48h' : 'moreThan48hWithoutBankInformation'
+      } else {
+        variant = 'lessThan48h'
+      }
+
       return {
         type: TimelineStepType.SUCCESS,
         content: (
-          <StatusWithDate
-            status={statusLabel}
-            date={datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined}
-          />
+          <>
+            <StatusWithDate
+              status={statusLabel}
+              date={datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined}
+            />
+            {isCurrentStep && <EndBanner offerId={offer.id} variant={variant} />}
+          </>
         ),
       }
     }
