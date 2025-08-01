@@ -3506,8 +3506,12 @@
             },
             "OfferVideo": {
                 "properties": {
-                    "id": {
+                    "durationSeconds": {
                         "nullable": true,
+                        "title": "Durationseconds",
+                        "type": "integer"
+                    },
+                    "id": {
                         "title": "Id",
                         "type": "string"
                     },
@@ -3515,8 +3519,16 @@
                         "nullable": true,
                         "title": "Thumburl",
                         "type": "string"
+                    },
+                    "title": {
+                        "nullable": true,
+                        "title": "Title",
+                        "type": "string"
                     }
                 },
+                "required": [
+                    "id"
+                ],
                 "title": "OfferVideo",
                 "type": "object"
             },
