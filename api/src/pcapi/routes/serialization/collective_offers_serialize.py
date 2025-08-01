@@ -79,6 +79,8 @@ class ListCollectiveOffersQueryModel(BaseModel):
     period_ending_date: date | None
     collective_offer_type: CollectiveOfferType | None
     format: EacFormat | None
+    location_type: educational_models.CollectiveLocationType | None
+    offerer_address_id: int | None
 
     @validator("status", pre=True)
     def parse_status(cls, status: typing.Any | None) -> list[typing.Any] | None:
@@ -87,6 +89,18 @@ class ListCollectiveOffersQueryModel(BaseModel):
             return status
 
         return [status]
+
+    @root_validator(skip_on_failure=True)
+    def validate_location_filter(cls, values: dict) -> dict:
+        location_type = values.get("location_type")
+        offerer_address_id = values.get("offerer_address_id")
+
+        if offerer_address_id is not None and location_type != educational_models.CollectiveLocationType.ADDRESS:
+            raise ValueError(
+                f"Cannot provide offerer_address_id when location_type is not {educational_models.CollectiveLocationType.ADDRESS.value}"
+            )
+
+        return values
 
     class Config:
         alias_generator = to_camel

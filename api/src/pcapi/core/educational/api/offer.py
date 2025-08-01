@@ -114,6 +114,8 @@ def list_collective_offers_for_pro_user(
     period_ending_date: datetime.date | None = None,
     offer_type: collective_offers_serialize.CollectiveOfferType | None = None,
     formats: list[EacFormat] | None = None,
+    location_type: educational_models.CollectiveLocationType | None = None,
+    offerer_address_id: int | None = None,
 ) -> list[educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate]:
     offers = []
     if offer_type != collective_offers_serialize.CollectiveOfferType.template:
@@ -128,6 +130,8 @@ def list_collective_offers_for_pro_user(
             period_beginning_date=period_beginning_date,
             period_ending_date=period_ending_date,
             formats=formats,
+            location_type=location_type,
+            offerer_address_id=offerer_address_id,
         )
         if offer_type is not None:
             return offers
@@ -144,6 +148,8 @@ def list_collective_offers_for_pro_user(
             period_beginning_date=period_beginning_date,
             period_ending_date=period_ending_date,
             formats=formats,
+            location_type=location_type,
+            offerer_address_id=offerer_address_id,
         )
         if offer_type is not None:
             return templates

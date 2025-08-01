@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { CollectiveLocationType } from './CollectiveLocationType';
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferType } from './CollectiveOfferType';
 import type { EacFormat } from './EacFormat';
@@ -9,7 +10,9 @@ export type ListCollectiveOffersQueryModel = {
   collectiveOfferType?: CollectiveOfferType | null;
   creationMode?: string | null;
   format?: EacFormat | null;
+  locationType?: CollectiveLocationType | null;
   nameOrIsbn?: string | null;
+  offererAddressId?: number | null;
   offererId?: number | null;
   periodBeginningDate?: string | null;
   periodEndingDate?: string | null;

@@ -56,6 +56,8 @@ def get_collective_offers(
         offer_type=query.collective_offer_type,
         #   The format should be a list but for now we cannot send a list in the get_collective_offers query params
         formats=[query.format] if query.format else None,
+        location_type=query.location_type,
+        offerer_address_id=query.offerer_address_id,
     )
 
     return collective_offers_serialize.ListCollectiveOffersResponseModel(
@@ -111,6 +113,8 @@ def _get_collective_offers_export(
         period_beginning_date=query.period_beginning_date,
         period_ending_date=query.period_ending_date,
         formats=[query.format] if query.format else None,
+        location_type=query.location_type,
+        offerer_address_id=query.offerer_address_id,
     )
 
     if export_type == educational_models.CollectiveOfferExportType.CSV:
