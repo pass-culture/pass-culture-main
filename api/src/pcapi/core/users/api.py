@@ -18,6 +18,7 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.common.models as common_fraud_models
+import pcapi.core.fraud.repository as fraud_repository
 import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
@@ -1403,3 +1404,46 @@ def notify_users_before_deletion_of_suspended_account() -> None:
 
 def apply_filter_on_beneficiary_tag(query: sa_orm.Query, tag_ids: list[int]) -> sa_orm.Query:
     return query.join(models.User.tags).filter(models.UserTag.id.in_(tag_ids)) if tag_ids else query
+
+
+def has_profile_expired(user: models.User) -> bool:
+    if not settings.PROFILE_EXPIRY_DATETIME:
+        return False
+
+    latest_profile_completion = fraud_repository.get_latest_completed_profile_check(user)
+    if latest_profile_completion and latest_profile_completion.dateCreated >= settings.PROFILE_EXPIRY_DATETIME:
+        return False
+
+    latest_profile_modification = _get_latest_profile_modification(user)
+    has_completed_profile = bool(latest_profile_completion or latest_profile_modification)
+    if not has_completed_profile:
+        return False
+
+    if (
+        latest_profile_modification
+        and latest_profile_modification.actionDate
+        and latest_profile_modification.actionDate >= settings.PROFILE_EXPIRY_DATETIME
+    ):
+        return False
+
+    return True
+
+
+def _get_latest_profile_modification(user: models.User) -> history_models.ActionHistory | None:
+    profile_modification_actions = [
+        action for action in user.action_history if _has_modified_user_profile(action) and action.actionDate is not None
+    ]
+    last_profile_modification_action = max(
+        profile_modification_actions, key=lambda action: action.actionDate, default=None
+    )
+    return last_profile_modification_action
+
+
+def _has_modified_user_profile(action: history_models.ActionHistory) -> bool:
+    profile_fields = ["activity", "address", "city", "postalCode", "schoolType"]
+    return bool(
+        action.actionType == history_models.ActionType.INFO_MODIFIED
+        and action.extraData
+        and "modified_info" in action.extraData
+        and any(action.extraData["modified_info"].get(field) is not None for field in profile_fields)
+    )
