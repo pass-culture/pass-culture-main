@@ -630,6 +630,10 @@ TYPEFORM_BACKEND = os.environ.get("TYPEFORM_BACKEND", "pcapi.connectors.typeform
 TYPEFORM_API_KEY = secrets_utils.get("TYPEFORM_API_KEY")
 TYPEFORM_IMPORT_CHUNK_SIZE = int(os.environ.get("TYPEFORM_IMPORT_CHUNK_SIZE", "500"))
 
+# YOUTUBE
+YOUTUBE_API_KEY = secrets_utils.get("YOUTUBE_API_KEY")
+YOUTUBE_API_URL = os.environ.get("YOUTUBE_API_URL", "https://www.googleapis.com/youtube/v3/videos")
+
 # CLICKHOUSE
 CLICKHOUSE_BACKEND = os.environ.get(
     "CLICKHOUSE_BACKEND",

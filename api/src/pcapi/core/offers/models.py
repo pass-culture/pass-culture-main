@@ -673,6 +673,10 @@ class OfferMetaData(PcObject, Base, Model):
         sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
     )
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", back_populates="metaData")
+    videoDuration = sa.Column(sa.BIGINT(), nullable=True)
+    videoExternalId = sa.Column(sa.Text(), nullable=True)
+    videoThumbnailUrl = sa.Column(sa.Text(), nullable=True)
+    videoTitle = sa.Column(sa.Text(), nullable=True)
     videoUrl: sa_orm.Mapped[str | None] = sa.Column(sa.Text, nullable=True)
 
 

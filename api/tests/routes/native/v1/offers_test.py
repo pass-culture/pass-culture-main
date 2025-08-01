@@ -1965,8 +1965,14 @@ class OffersV2Test:
         assert response.status_code == 200
         assert response.json["chroniclesCount"] == 1
 
-    def test_get_offer_with_youtube_video_id(self, client):
-        metadata = offers_factories.OfferMetaDataFactory(videoUrl="https://www.youtube.com/watch?v=fAkeV1ide0o")
+    def test_get_offer_with_youtube_video_data(self, client):
+        metadata = offers_factories.OfferMetaDataFactory(
+            videoUrl="https://www.youtube.com/watch?v=fAkeV1ide0o",
+            videoExternalId="fAkeV1ide0o",
+            videoTitle="Test Video",
+            videoThumbnailUrl="https://example.com/fAkeV1ide0o/thumbnail.jpg",
+            videoDuration=123,
+        )
         offer_id = metadata.offer.id
 
         with assert_num_queries(self.base_num_queries):
@@ -1975,7 +1981,9 @@ class OffersV2Test:
         assert response.status_code == 200
         assert response.json["video"] == {
             "id": "fAkeV1ide0o",
-            "thumbUrl": "https://www.youtube.com/watch?v=fAkeV1ide0o",
+            "title": "Test Video",
+            "thumbUrl": "https://example.com/fAkeV1ide0o/thumbnail.jpg",
+            "durationSeconds": 123,
         }
 
 
