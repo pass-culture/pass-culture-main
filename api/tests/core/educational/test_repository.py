@@ -1130,6 +1130,38 @@ class GetFilteredCollectiveOffersTest:
         )
         assert result.count() == 0
 
+    def test_filter_location_type(self, admin_user):
+        offer_school = educational_factories.CollectiveOfferOnSchoolLocationFactory()
+        offer_address = educational_factories.CollectiveOfferOnOtherAddressLocationFactory()
+        offer_to_be_defined = educational_factories.CollectiveOfferOnToBeDefinedLocationFactory()
+
+        result = educational_repository.get_collective_offers_by_filters(
+            user_id=admin_user.id, user_is_admin=True, location_type=models.CollectiveLocationType.SCHOOL
+        )
+        assert result.one() == offer_school
+
+        result = educational_repository.get_collective_offers_by_filters(
+            user_id=admin_user.id, user_is_admin=True, location_type=models.CollectiveLocationType.ADDRESS
+        )
+        assert result.one() == offer_address
+
+        result = educational_repository.get_collective_offers_by_filters(
+            user_id=admin_user.id, user_is_admin=True, location_type=models.CollectiveLocationType.TO_BE_DEFINED
+        )
+        assert result.one() == offer_to_be_defined
+
+    def test_filter_offerer_address(self, admin_user):
+        oa = offerers_factories.OffererAddressFactory()
+        offer = educational_factories.CollectiveOfferOnOtherAddressLocationFactory(offererAddress=oa)
+        educational_factories.CollectiveOfferOnOtherAddressLocationFactory()
+        educational_factories.CollectiveOfferOnSchoolLocationFactory()
+        educational_factories.CollectiveOfferOnToBeDefinedLocationFactory()
+
+        result = educational_repository.get_collective_offers_by_filters(
+            user_id=admin_user.id, user_is_admin=True, offerer_address_id=oa.id
+        )
+        assert result.one() == offer
+
 
 class GetCollectiveOffersTemplateByFiltersTest:
     @pytest.mark.parametrize("offer_status", models.COLLECTIVE_OFFER_TEMPLATE_STATUSES)

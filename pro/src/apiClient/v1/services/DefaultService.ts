@@ -14,6 +14,7 @@ import type { ChangeProEmailBody } from '../models/ChangeProEmailBody';
 import type { CheckTokenBodyModel } from '../models/CheckTokenBodyModel';
 import type { CollectiveBookingByIdResponseModel } from '../models/CollectiveBookingByIdResponseModel';
 import type { CollectiveBookingStatusFilter } from '../models/CollectiveBookingStatusFilter';
+import type { CollectiveLocationType } from '../models/CollectiveLocationType';
 import type { CollectiveOfferDisplayedStatus } from '../models/CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferResponseIdModel } from '../models/CollectiveOfferResponseIdModel';
 import type { CollectiveOfferType } from '../models/CollectiveOfferType';
@@ -608,6 +609,8 @@ export class DefaultService {
    * @param periodEndingDate
    * @param collectiveOfferType
    * @param format
+   * @param locationType
+   * @param offererAddressId
    * @returns ListCollectiveOffersResponseModel OK
    * @throws ApiError
    */
@@ -621,6 +624,8 @@ export class DefaultService {
     periodEndingDate?: string | null,
     collectiveOfferType?: CollectiveOfferType | null,
     format?: EacFormat | null,
+    locationType?: CollectiveLocationType | null,
+    offererAddressId?: number | null,
   ): CancelablePromise<ListCollectiveOffersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -635,6 +640,8 @@ export class DefaultService {
         'periodEndingDate': periodEndingDate,
         'collectiveOfferType': collectiveOfferType,
         'format': format,
+        'locationType': locationType,
+        'offererAddressId': offererAddressId,
       },
       errors: {
         403: `Forbidden`,
@@ -888,6 +895,8 @@ export class DefaultService {
    * @param periodEndingDate
    * @param collectiveOfferType
    * @param format
+   * @param locationType
+   * @param offererAddressId
    * @returns any OK
    * @throws ApiError
    */
@@ -901,6 +910,8 @@ export class DefaultService {
     periodEndingDate?: string | null,
     collectiveOfferType?: CollectiveOfferType | null,
     format?: EacFormat | null,
+    locationType?: CollectiveLocationType | null,
+    offererAddressId?: number | null,
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
@@ -915,6 +926,8 @@ export class DefaultService {
         'periodEndingDate': periodEndingDate,
         'collectiveOfferType': collectiveOfferType,
         'format': format,
+        'locationType': locationType,
+        'offererAddressId': offererAddressId,
       },
       errors: {
         403: `Forbidden`,
@@ -933,6 +946,8 @@ export class DefaultService {
    * @param periodEndingDate
    * @param collectiveOfferType
    * @param format
+   * @param locationType
+   * @param offererAddressId
    * @returns any OK
    * @throws ApiError
    */
@@ -946,6 +961,8 @@ export class DefaultService {
     periodEndingDate?: string | null,
     collectiveOfferType?: CollectiveOfferType | null,
     format?: EacFormat | null,
+    locationType?: CollectiveLocationType | null,
+    offererAddressId?: number | null,
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
@@ -960,6 +977,8 @@ export class DefaultService {
         'periodEndingDate': periodEndingDate,
         'collectiveOfferType': collectiveOfferType,
         'format': format,
+        'locationType': locationType,
+        'offererAddressId': offererAddressId,
       },
       errors: {
         403: `Forbidden`,

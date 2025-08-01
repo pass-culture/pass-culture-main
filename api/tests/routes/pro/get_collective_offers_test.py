@@ -9,6 +9,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import factories as providers_factories
+from pcapi.core.testing import AUTHENTICATION_QUERIES
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 
@@ -785,16 +786,56 @@ class Returns200Test:
         [response_offer] = response.json
         assert response_offer["id"] == offer.id
 
+    def test_filter_location(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+
+        oa = offerers_factories.OffererAddressFactory()
+        offer_school = educational_factories.CollectiveOfferOnSchoolLocationFactory(venue=venue)
+        offer_address = educational_factories.CollectiveOfferOnOtherAddressLocationFactory(
+            venue=venue, offererAddress=oa
+        )
+        educational_factories.CollectiveOfferOnOtherAddressLocationFactory(venue=venue)
+        offer_to_be_defined = educational_factories.CollectiveOfferOnToBeDefinedLocationFactory(venue=venue)
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/collective/offers?locationType=SCHOOL")
+
+        assert response.status_code == 200
+        [response_offer] = response.json
+        assert response_offer["id"] == offer_school.id
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/collective/offers?locationType=TO_BE_DEFINED")
+
+        assert response.status_code == 200
+        [response_offer] = response.json
+        assert response_offer["id"] == offer_to_be_defined.id
+
+        oa_id = oa.id
+        client = client.with_session_auth(email=user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/collective/offers?locationType=ADDRESS&offererAddressId={oa_id}")
+
+        assert response.status_code == 200
+        [response_offer] = response.json
+        assert response_offer["id"] == offer_address.id
+
 
 @pytest.mark.usefixtures("db_session")
 class Return400Test:
+    expected_num_queries = AUTHENTICATION_QUERIES
+    expected_num_queries += 1  # rollback
+
     def test_return_error_when_status_is_wrong(self, client):
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
         client = client.with_session_auth(user.email)
-        with assert_num_queries(3):  # user + session + rollback
+        with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers?status=NOT_A_VALID_STATUS")
             assert response.status_code == 400
 
@@ -806,3 +847,27 @@ class Return400Test:
                 "'DRAFT'",
             ]
         }
+
+    def test_filter_location_type_error(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/collective/offers?locationType=BLOUP")
+
+        assert response.status_code == 400
+        assert response.json == {
+            "locationType": [
+                "value is not a valid enumeration member; permitted: 'SCHOOL', 'ADDRESS', 'TO_BE_DEFINED'",
+            ]
+        }
+
+    def test_filter_offerer_address_not_accepted(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/collective/offers?locationType=SCHOOL&offererAddressId=1")
+
+        assert response.status_code == 400
+        assert response.json == {"__root__": ["Cannot provide offerer_address_id when location_type is not ADDRESS"]}

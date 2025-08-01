@@ -559,6 +559,8 @@ def get_collective_offers_by_filters(
     period_beginning_date: date | None = None,
     period_ending_date: date | None = None,
     formats: list[EacFormat] | None = None,
+    location_type: educational_models.CollectiveLocationType | None = None,
+    offerer_address_id: int | None = None,
 ) -> "sa_orm.Query[educational_models.CollectiveOffer]":
     query = db.session.query(educational_models.CollectiveOffer)
 
@@ -641,6 +643,12 @@ def get_collective_offers_by_filters(
             educational_models.CollectiveOffer.formats.overlap(postgresql.array((format.name for format in formats)))
         )
 
+    if location_type is not None:
+        query = query.filter(educational_models.CollectiveOffer.locationType == location_type)
+
+    if offerer_address_id is not None:
+        query = query.filter(educational_models.CollectiveOffer.offererAddressId == offerer_address_id)
+
     return query
 
 
@@ -655,6 +663,8 @@ def get_collective_offers_template_by_filters(
     period_beginning_date: date | None = None,
     period_ending_date: date | None = None,
     formats: list[EacFormat] | None = None,
+    location_type: educational_models.CollectiveLocationType | None = None,
+    offerer_address_id: int | None = None,
 ) -> sa_orm.Query:
     query = db.session.query(educational_models.CollectiveOfferTemplate)
 
@@ -698,6 +708,12 @@ def get_collective_offers_template_by_filters(
                 postgresql.array((format.name for format in formats))
             )
         )
+
+    if location_type is not None:
+        query = query.filter(educational_models.CollectiveOfferTemplate.locationType == location_type)
+
+    if offerer_address_id is not None:
+        query = query.filter(educational_models.CollectiveOfferTemplate.offererAddressId == offerer_address_id)
 
     return query
 
@@ -942,6 +958,8 @@ def get_collective_offers_for_filters(
     period_beginning_date: date | None = None,
     period_ending_date: date | None = None,
     formats: list[EacFormat] | None = None,
+    location_type: educational_models.CollectiveLocationType | None = None,
+    offerer_address_id: int | None = None,
 ) -> list[educational_models.CollectiveOffer]:
     query = get_collective_offers_by_filters(
         user_id=user_id,
@@ -953,6 +971,8 @@ def get_collective_offers_for_filters(
         period_beginning_date=period_beginning_date,
         period_ending_date=period_ending_date,
         formats=formats,
+        location_type=location_type,
+        offerer_address_id=offerer_address_id,
     )
 
     query = query.order_by(educational_models.CollectiveOffer.dateCreated.desc())
@@ -991,6 +1011,8 @@ def get_collective_offers_template_for_filters(
     period_beginning_date: date | None = None,
     period_ending_date: date | None = None,
     formats: list[EacFormat] | None = None,
+    location_type: educational_models.CollectiveLocationType | None = None,
+    offerer_address_id: int | None = None,
 ) -> list[educational_models.CollectiveOfferTemplate]:
     query = get_collective_offers_template_by_filters(
         user_id=user_id,
@@ -1002,6 +1024,8 @@ def get_collective_offers_template_for_filters(
         period_beginning_date=period_beginning_date,
         period_ending_date=period_ending_date,
         formats=formats,
+        location_type=location_type,
+        offerer_address_id=offerer_address_id,
     )
 
     query = query.order_by(educational_models.CollectiveOfferTemplate.dateCreated.desc())
