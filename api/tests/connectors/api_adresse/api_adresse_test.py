@@ -39,6 +39,7 @@ def test_nominal_case(requests_mock):
         score=0.9806027272727271,
         street="18 Rue Duhesme",
         city="Paris",
+        type="housenumber",
     )
 
 
@@ -72,6 +73,7 @@ def test_municipality_centroid_with_city_less_than_3_characters(requests_mock):
         score=0.924650909090909,
         city="Y",
         street="Y",
+        type="municipality",
     )
 
 
@@ -99,6 +101,7 @@ def test_fallback_to_municipality(requests_mock):
         score=0.2084164031620553,
         city="Paris 18e Arrondissement",
         street="Paris 18e Arrondissement",
+        type="municipality",
     )
 
 
@@ -201,6 +204,7 @@ def test_search_address(requests_mock):
         score=0.9641372727272727,
         street="2 Place du Carrousel",
         city="Paris",
+        type="housenumber",
     )
     assert addresses_info[1] == api_adresse.AddressInfo(
         id="75101_ulje0j",
@@ -212,6 +216,7 @@ def test_search_address(requests_mock):
         score=0.821388961038961,
         street="7S1 Place du Carrousel",
         city="Paris",
+        type="street",
     )
 
 
@@ -234,6 +239,7 @@ def test_search_address_without_postcode(requests_mock):
             score=0.6843390909090907,
             street="Rue Stephen Atwater",
             city="Saint-Barthélemy",
+            type="street",
         )
     ]
 
@@ -304,6 +310,7 @@ def test_cache_api(requests_mock):
             score=0.524468831168831,
             street="2 Rue de Valois",
             city="Montigny-le-Bretonneux",
+            type="housenumber",
         )
 
 
@@ -433,6 +440,7 @@ def test_we_dont_cache_falsy_empty_response(mocked_redis_get, mocked_redis_set, 
         score=0.10937561497326202,
         street="Paris",
         city="Paris",
+        type="municipality",
     )
 
 
@@ -490,3 +498,81 @@ def test_we_dont_cache_falsy_empty_response_when_falling_back_on_centroid(
     mocked_search.assert_any_call(
         {"q": "Paris", "postcode": "75001", "citycode": None, "type": "municipality", "autocomplete": 0, "limit": 1}
     )  # Connector fallback on the centroid because the `get_single_address_result` returned (falsy) empty
+
+
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+def test_should_find_reliable_address(requests_mock):
+    address_to_query = "18 Rue Duhesme 75018 Paris"
+    requests_mock.get(
+        "https://api-adresse.data.gouv.fr/search?q=18+Rue+Duhesme+75018+Paris&autocomplete=0&limit=1",
+        json=fixtures.ONE_FEATURE_RESPONSE,
+    )
+    found_address = api_adresse.find_ban_address(address_to_query, enforce_reliability=True)
+    assert found_address == api_adresse.AddressInfo(
+        id="75118_2974_00018",
+        label="18 Rue Duhesme 75018 Paris",
+        postcode="75018",
+        citycode="75118",
+        latitude=48.890787,
+        longitude=2.338562,
+        score=0.9806027272727271,
+        street="18 Rue Duhesme",
+        city="Paris",
+        type="housenumber",
+    )
+
+
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+def test_should_find_reliable_city(requests_mock):
+    address = "44000 NANTES"
+    requests_mock.get(
+        "https://api-adresse.data.gouv.fr/search?q=44000+NANTES&autocomplete=0&limit=1",
+        json=fixtures.ONE_MUNICIPALITY_FEATURE_RESPONSE,
+    )
+    found_address = api_adresse.find_ban_city(city=address, enforce_reliability=True)
+    assert found_address == api_adresse.AddressInfo(
+        id="44109",
+        label="Nantes",
+        postcode="44000",
+        citycode="44109",
+        latitude=47.239367,
+        longitude=-1.555335,
+        score=0.9617872727272726,
+        street="Nantes",
+        city="Nantes",
+        type="municipality",
+    )
+
+
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+def test_should_find_reliable_city_without_postal_code(requests_mock):
+    address = "NANTES"
+    insee_code = "44109"
+    requests_mock.get(
+        "https://api-adresse.data.gouv.fr/search?q=NANTES&citycode=44109&autocomplete=0&limit=1",
+        json=fixtures.ONE_MUNICIPALITY_FEATURE_RESPONSE,
+    )
+    found_address = api_adresse.find_ban_city(city=address, insee_code=insee_code, enforce_reliability=True)
+    assert found_address == api_adresse.AddressInfo(
+        id="44109",
+        label="Nantes",
+        postcode="44000",
+        citycode="44109",
+        latitude=47.239367,
+        longitude=-1.555335,
+        score=0.9617872727272726,
+        street="Nantes",
+        city="Nantes",
+        type="municipality",
+    )
+
+
+@pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+def test_should_raise_if_no_reliable_address_is_found(requests_mock):
+    address = "123456789 44000 NANTES"
+    requests_mock.get(
+        "https://api-adresse.data.gouv.fr/search",
+        json=fixtures.ONE_UNRELIABLE_FEATURE_RESPONSE,
+    )
+    with pytest.raises(api_adresse.NoResultException):
+        api_adresse.find_ban_address(address=address, enforce_reliability=True)

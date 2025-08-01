@@ -300,6 +300,7 @@ class EntrepriseBackend(BaseBackend):
 
         return models.SiretInfo(
             siret=siret,
+            siren=data["unite_legale"]["siren"],
             active=data["etat_administratif"] == "A",
             diffusible=self._is_diffusible(data),
             name=self._get_name_from_sirene_data(data["unite_legale"]),
@@ -323,6 +324,7 @@ class EntrepriseBackend(BaseBackend):
 
         return models.SiretInfo(
             siret=siret,
+            siren=siret[:9],
             active=data["etat_administratif"] == "A",
             diffusible=is_diffusible,
             name=self._get_name_from_sirene_data(data["unite_legale"]),

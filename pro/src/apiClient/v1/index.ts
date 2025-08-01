@@ -233,6 +233,7 @@ export { StocksOrderedBy } from './models/StocksOrderedBy';
 export type { StocksQueryModel } from './models/StocksQueryModel';
 export type { StocksResponseModel } from './models/StocksResponseModel';
 export type { StockStatsResponseModel } from './models/StockStatsResponseModel';
+export type { StructureDataBodyModel } from './models/StructureDataBodyModel';
 export { StudentLevels } from './models/StudentLevels';
 export { SubcategoryIdEnum } from './models/SubcategoryIdEnum';
 export type { SubcategoryResponseModel } from './models/SubcategoryResponseModel';

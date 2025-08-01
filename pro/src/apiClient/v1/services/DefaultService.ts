@@ -107,6 +107,7 @@ import type { StockIdResponseModel } from '../models/StockIdResponseModel';
 import type { StocksOrderedBy } from '../models/StocksOrderedBy';
 import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StockStatsResponseModel } from '../models/StockStatsResponseModel';
+import type { StructureDataBodyModel } from '../models/StructureDataBodyModel';
 import type { SubmitReviewRequestModel } from '../models/SubmitReviewRequestModel';
 import type { ThingStockCreateBodyModel } from '../models/ThingStockCreateBodyModel';
 import type { ThingStockUpdateBodyModel } from '../models/ThingStockUpdateBodyModel';
@@ -2464,6 +2465,27 @@ export class DefaultService {
       },
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_structure_data <GET>
+   * @param searchInput
+   * @returns StructureDataBodyModel OK
+   * @throws ApiError
+   */
+  public getStructureData(
+    searchInput: string,
+  ): CancelablePromise<StructureDataBodyModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/structure/search/{search_input}',
+      path: {
+        'search_input': searchInput,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

@@ -1,3 +1,4 @@
+from pcapi.core.offerers.schemas import AddressBodyModel
 from pcapi.routes import serialization
 from pcapi.serialization.utils import to_camel
 
@@ -19,3 +20,12 @@ class SiretInfo(serialization.BaseModel):
     address: Address
     ape_code: str
     legal_category_code: str
+
+
+class StructureDataBodyModel(serialization.BaseModel):
+    siret: str
+    siren: str | None
+    name: str | None
+    apeCode: str | None
+    address: AddressBodyModel | None
+    isDiffusible: bool

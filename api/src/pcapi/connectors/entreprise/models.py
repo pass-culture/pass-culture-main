@@ -38,8 +38,10 @@ class SirenInfo(pydantic_v1.BaseModel):
 class SiretInfo(pydantic_v1.BaseModel):
     if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
         siret: str
+        siren: str | None
     else:
         siret: pydantic_v1.constr(strip_whitespace=True, min_length=14, max_length=14)
+        siren: pydantic_v1.constr(strip_whitespace=True, min_length=9, max_length=9) | None
     active: bool
     diffusible: bool
     name: str
