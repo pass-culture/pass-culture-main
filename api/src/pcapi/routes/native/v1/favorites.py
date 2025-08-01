@@ -116,6 +116,7 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
                 Offer.subcategoryId,
                 Offer.validation,
                 Offer.publicationDatetime,
+                Offer.bookingAllowedDatetime,
             )
         )
         .options(

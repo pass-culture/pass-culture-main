@@ -16,6 +16,7 @@ from pcapi.core.users.models import Favorite
 from pcapi.models import db
 from pcapi.notifications.push import testing as push_testing
 from pcapi.notifications.push import trigger_events
+from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
 
 
@@ -54,7 +55,7 @@ class GetTest:
             venue = offerers_factories.VenueFactory(managingOfferer=offerer, publicName="Le Petit Rintintin")
 
             # Event offer with 1 expired stock, 2 futures ones and a mediation
-            offer1 = offers_factories.EventOfferFactory(venue=venue)
+            offer1 = offers_factories.EventOfferFactory(venue=venue, bookingAllowedDatetime=day_before_start)
             offers_factories.MediationFactory(offer=offer1, thumbCount=1, credit="Pour hurlevent !")
             favorite1 = users_factories.FavoriteFactory(offer=offer1, user=user)
             # should be ignored because of the date in the past
@@ -116,7 +117,8 @@ class GetTest:
             assert favorites[5]["offer"]["price"] is None
             assert favorites[5]["offer"]["startPrice"] == 2000
             assert favorites[5]["offer"]["date"] is None
-            assert favorites[5]["offer"]["startDate"] == start.isoformat() + "Z"
+            assert favorites[5]["offer"]["bookingAllowedDatetime"] == date_utils.format_into_utc_date(day_before_start)
+            assert favorites[5]["offer"]["startDate"] == date_utils.format_into_utc_date(start)
             assert favorites[5]["offer"]["image"]["credit"] == "Pour hurlevent !"
             assert favorites[5]["offer"]["image"]["url"] == "http://localhost/storage/thumbs/mediations/%s" % (
                 humanize(offer1.activeMediation.id)
@@ -129,7 +131,7 @@ class GetTest:
             assert favorites[4]["id"] == favorite2.id
             assert favorites[4]["offer"]["price"] == 5000
             assert favorites[4]["offer"]["startPrice"] is None
-            assert favorites[4]["offer"]["date"] == day_after_start.isoformat() + "Z"
+            assert favorites[4]["offer"]["date"] == date_utils.format_into_utc_date(day_after_start)
             assert favorites[4]["offer"]["startDate"] is None
             assert favorites[4]["offer"]["image"]["credit"] is None
             assert (
@@ -183,7 +185,7 @@ class GetTest:
             assert favorites[0]["id"] == favorite6.id
             assert favorites[0]["offer"]["price"] == 3000
             assert favorites[0]["offer"]["startPrice"] is None
-            assert favorites[0]["offer"]["date"] == day_after_start.isoformat() + "Z"
+            assert favorites[0]["offer"]["date"] == date_utils.format_into_utc_date(day_after_start)
             assert favorites[0]["offer"]["startDate"] is None
             assert favorites[0]["offer"]["image"] is None
             assert favorites[0]["offer"]["expenseDomains"] == ["all"]
