@@ -2033,6 +2033,12 @@
             },
             "FavoriteOfferResponse": {
                 "properties": {
+                    "bookingAllowedDatetime": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Bookingalloweddatetime",
+                        "type": "string"
+                    },
                     "coordinates": {
                         "$ref": "#/components/schemas/Coordinates"
                     },

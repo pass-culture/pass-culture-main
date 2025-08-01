@@ -31,6 +31,7 @@ class FavoriteOfferResponse(BaseModel):
     subcategoryId: SubcategoryIdEnum
     externalTicketOfficeUrl: str | None
     image: FavoriteMediationResponse | None
+    bookingAllowedDatetime: datetime | None = None
     coordinates: Coordinates
     price: int | None = None
     startPrice: int | None = None
