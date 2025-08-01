@@ -43,15 +43,24 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
     return serializers.OfferResponse.from_orm(offer)
 
 
+@blueprint.native_route("/offer/<int:offer_id>/update_external_stocks", methods=["GET"])
+@spectree_serialize(response_model=serializers.OfferResponseV2, api=blueprint.api, on_error_statuses=[404])
+@atomic()
+def get_offer_updated_external_stocks(offer_id: int) -> serializers.OfferExternalStocksResponse:
+    query = repository.get_offer_with_provider_and_stocks(offer_id)
+    offer = first_or_404(query)
+
+    api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+
+    return serializers.OfferExternalStocksResponse.from_orm(offer)
+
+
 @blueprint.native_route("/offer/<int:offer_id>", version="v2", methods=["GET"])
 @spectree_serialize(response_model=serializers.OfferResponseV2, api=blueprint.api, on_error_statuses=[404])
 @atomic()
 def get_offer_v2(offer_id: int) -> serializers.OfferResponseV2:
     query = repository.get_offers_details([int(offer_id)])
     offer = first_or_404(query)
-
-    if offer.isActive:
-        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
 
     return serializers.OfferResponseV2.from_orm(offer)
 

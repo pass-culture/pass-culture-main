@@ -102,6 +102,18 @@ class OfferStockResponse(ConfiguredBaseModel):
         getter_dict = OfferStockResponseGetterDict
 
 
+class OfferExternalStockResponse(ConfiguredBaseModel):
+    id: int
+    isSoldOut: bool
+    remainingQuantity: int | None
+
+    _convert_remainingQuantity = validator(
+        "remainingQuantity",
+        pre=True,
+        allow_reuse=True,
+    )(lambda quantity: quantity if quantity != "unlimited" else None)
+
+
 class OfferVenueResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any = None) -> Any:
         venue = self._obj
@@ -475,6 +487,11 @@ class OfferResponse(BaseOfferResponse):
 
 class OfferResponseV2(BaseOfferResponse):
     images: dict[str, OfferImageResponse] | None
+
+
+class OfferExternalStocksResponse(ConfiguredBaseModel):
+    id: int
+    stocks: list[OfferExternalStockResponse]
 
 
 class OffersStocksResponseV2(BaseModel):
