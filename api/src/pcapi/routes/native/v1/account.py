@@ -21,6 +21,7 @@ from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions
+from pcapi.core.users import gdpr_api
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain import password
 from pcapi.models import api_errors
@@ -459,14 +460,14 @@ def account_suspension_token_validation(token: str) -> None:
 @authenticated_and_active_user_required
 @atomic()
 def anonymize_account(user: users_models.User) -> None:
-    if api.has_unprocessed_extract(user):
+    if gdpr_api.has_unprocessed_extract(user):
         raise api_errors.ApiErrors({"code": "EXISTING_UNPROCESSED_GDPR_EXTRACT"})
 
-    if not api.is_beneficiary_anonymizable(user):
+    if not gdpr_api.is_beneficiary_anonymizable(user):
         raise api_errors.ApiErrors({"code": "NOT_ANONYMIZABLE_BENEFICIARY"})
 
     try:
-        api.pre_anonymize_user(user, author=user)
+        gdpr_api.pre_anonymize_user(user, author=user)
     except exceptions.UserAlreadyHasPendingAnonymization:
         raise api_errors.ApiErrors({"code": "ALREADY_HAS_PENDING_ANONYMIZATION"})
 
