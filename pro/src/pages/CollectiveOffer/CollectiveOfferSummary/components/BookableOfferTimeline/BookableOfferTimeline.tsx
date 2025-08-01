@@ -1,11 +1,14 @@
 import {
+  CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
 import { getDateToFrenchText } from 'commons/utils/date'
+import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { Timeline, TimelineStepType } from 'ui-kit/Timeline/Timeline'
 
 import { ArchivedBanner } from './banners/ArchivedBanner'
+import { BookedBanner } from './banners/BookedBanner'
 import { BookingWaitingBanner } from './banners/BookingWaitingBanner'
 import { CancelledBanner } from './banners/CancelledBanner'
 import { DraftBanner } from './banners/DraftBanner'
@@ -115,10 +118,23 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
       return {
         type: TimelineStepType.SUCCESS,
         content: (
-          <StatusWithDate
-            status={statusLabel}
-            date={datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined}
-          />
+          <>
+            <StatusWithDate
+              status={statusLabel}
+              date={
+                datetime ? `Le ${getDateToFrenchText(datetime)}` : undefined
+              }
+            />
+            <BookedBanner
+              offerId={offer.id}
+              cancellationLimitDate={offer.booking?.cancellationLimitDate ?? ''}
+              departmentCode={offer.venue.departementCode}
+              canEditDiscount={isActionAllowedOnCollectiveOffer(
+                offer,
+                CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
+              )}
+            />
+          </>
         ),
       }
     }
@@ -271,7 +287,7 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
 
   return (
     <>
-      <h2 className={styles['title']}>{"Suivi de l'offre"}</h2>
+      <h2 className={styles['title']}>{'Suivi de l’offre'}</h2>
       <div className={styles['timeline-container']}>
         <Timeline steps={getAllSteps()} />
       </div>
