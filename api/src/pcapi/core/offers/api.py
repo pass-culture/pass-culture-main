@@ -211,7 +211,8 @@ def create_draft_offer(
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
     validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
-    validation.check_url_is_coherent_with_subcategory(subcategory, body.url)
+    if not feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
+        validation.check_url_is_coherent_with_subcategory(subcategory, body.url)
 
     body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
 
@@ -268,6 +269,12 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
     body_ean = body.extra_data.get("ean", None) if body.extra_data else None
     if body_ean:
         fields["ean"] = fields["extraData"].pop("ean")
+
+    # - An URL must be provided if the offer has an online subcategory and had no URL before.
+    # - The offer URL must not be removed if the offer has an online subcategory.
+    if (offer.url is None and not body.url) or (offer.url and "url" in body.__fields_set__ and body.url is None):
+        offer_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
+        validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
 
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
     if not updates:

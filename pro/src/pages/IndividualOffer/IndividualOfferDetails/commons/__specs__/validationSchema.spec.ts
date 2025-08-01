@@ -1,6 +1,4 @@
-import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 import { AccessibilityFormValues } from 'commons/core/shared/types'
-import { subcategoryFactory } from 'commons/utils/factories/individualApiFactories'
 
 import { DetailsFormValues } from '../types' // Assuming types are in a sibling file
 import {
@@ -143,21 +141,7 @@ describe('getValidationSchema', () => {
 })
 
 describe('getValidationSchemaForNewOfferCreationFlow', () => {
-  const subcategories = [
-    subcategoryFactory({
-      id: 'ONLINE_SUBCATEGORY',
-      onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
-    }),
-    subcategoryFactory({
-      id: 'OFFLINE_SUBCATEGORY',
-      onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-    }),
-    subcategoryFactory({
-      id: 'ONLINE_OR_OFFLINE_SUBCATEGORY',
-      onlineOfflinePlatform: CATEGORY_STATUS.ONLINE_OR_OFFLINE,
-    }),
-  ]
-  const schema = getValidationSchemaForNewOfferCreationFlow(subcategories)
+  const schema = getValidationSchemaForNewOfferCreationFlow()
 
   const validDetailsFormValuesBase: Partial<DetailsFormValues> = {
     name: 'Valid Offer Name',
@@ -174,45 +158,6 @@ describe('getValidationSchemaForNewOfferCreationFlow', () => {
       none: false,
     },
   }
-
-  it('should require a valid URL when the selected subcategory is or may be an event', async () => {
-    const data = {
-      ...validDetailsFormValuesBase,
-      subcategoryId: 'ONLINE_SUBCATEGORY',
-    }
-    await expect(schema.validate(data)).rejects.toThrow(
-      'Veuillez renseigner une URL valide'
-    )
-
-    const dataWithInvalidUrl = {
-      ...data,
-      url: 'not-a-url',
-    }
-    await expect(schema.validate(dataWithInvalidUrl)).rejects.toThrow(
-      'Veuillez renseigner une URL valide'
-    )
-
-    const dataWithValidUrl = { ...data, url: 'https://example.com' }
-    await expect(schema.validate(dataWithValidUrl)).resolves.toBeDefined()
-  })
-
-  it('should NOT require a URL when the selected subcategory may be offline', async () => {
-    const dataWithOfflineSubcategory = {
-      ...validDetailsFormValuesBase,
-      subcategoryId: 'OFFLINE_SUBCATEGORY',
-    }
-    await expect(
-      schema.validate(dataWithOfflineSubcategory)
-    ).resolves.toBeDefined()
-
-    const dataWithOnlineOrOfflineSubcategory = {
-      ...validDetailsFormValuesBase,
-      subcategoryId: 'ONLINE_OR_OFFLINE_SUBCATEGORY',
-    }
-    await expect(
-      schema.validate(dataWithOnlineOrOfflineSubcategory)
-    ).resolves.toBeDefined()
-  })
 
   describe('accessibility validation', () => {
     it('should fail if accessibility object is missing', async () => {

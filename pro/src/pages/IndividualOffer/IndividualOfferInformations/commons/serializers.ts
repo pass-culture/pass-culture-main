@@ -11,6 +11,7 @@ import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
 
 import { UsefulInformationFormValues } from './types'
 
+// TODO (igabriele, 2025-07-24): Make the form values naming & structure closer to the API model rather than serializing back and forth.
 export const serializePatchOffer = ({
   offer,
   formValues,
@@ -22,18 +23,24 @@ export const serializePatchOffer = ({
   shouldSendMail?: boolean
   isNewOfferCreationFlowFeatureActive: boolean
 }): PatchOfferBodyModel => {
-  if (isOfferSynchronized(offer)) {
-    return {
+  const maybeAccessibilityProps = isNewOfferCreationFlowFeatureActive ? {} : {
       audioDisabilityCompliant:
-        formValues.accessibility[AccessibilityEnum.AUDIO],
+        formValues.accessibility?.[AccessibilityEnum.AUDIO],
       mentalDisabilityCompliant:
-        formValues.accessibility[AccessibilityEnum.MENTAL],
+        formValues.accessibility?.[AccessibilityEnum.MENTAL],
       motorDisabilityCompliant:
-        formValues.accessibility[AccessibilityEnum.MOTOR],
+        formValues.accessibility?.[AccessibilityEnum.MOTOR],
       visualDisabilityCompliant:
-        formValues.accessibility[AccessibilityEnum.VISUAL],
-    }
+        formValues.accessibility?.[AccessibilityEnum.VISUAL],
   }
+
+  if (isOfferSynchronized(offer))  {
+    return maybeAccessibilityProps
+  }
+
+  const maybeUrl = isNewOfferCreationFlowFeatureActive ? {
+    url: formValues.url?.trim() || undefined,
+  } : {}
 
   let addressValues = {}
   const allAddressFieldsAreNotNull =
@@ -71,7 +78,10 @@ export const serializePatchOffer = ({
       : Number(formValues.withdrawalDelay)
 
   return trimStringsInObject({
+    ...maybeAccessibilityProps,
     ...addressValues,
+    ...maybeUrl,
+
     bookingContact: formValues.bookingContact,
     bookingEmail: !formValues.receiveNotificationEmails
       ? null
@@ -84,18 +94,5 @@ export const serializePatchOffer = ({
     withdrawalDelay,
     withdrawalDetails: formValues.withdrawalDetails ?? undefined,
     withdrawalType: formValues.withdrawalType,
-
-    ...(isNewOfferCreationFlowFeatureActive
-      ? {}
-      : {
-          audioDisabilityCompliant:
-            formValues.accessibility[AccessibilityEnum.AUDIO],
-          mentalDisabilityCompliant:
-            formValues.accessibility[AccessibilityEnum.MENTAL],
-          motorDisabilityCompliant:
-            formValues.accessibility[AccessibilityEnum.MOTOR],
-          visualDisabilityCompliant:
-            formValues.accessibility[AccessibilityEnum.VISUAL],
-        }),
   })
 }

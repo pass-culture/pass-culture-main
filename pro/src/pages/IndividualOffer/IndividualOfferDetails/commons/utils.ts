@@ -151,6 +151,7 @@ export function getInitialValuesFromOffer({
   const maybeAccessibility = isNewOfferCreationFlowFeatureActive
     ? { accessibility: getAccessibilityFormValuesFromOffer(offer) }
     : {}
+  const maybeUrl = isNewOfferCreationFlowFeatureActive ? {} : { url: offer.url }
 
   return {
     ...DEFAULT_DETAILS_FORM_VALUES,
@@ -179,8 +180,8 @@ export function getInitialValuesFromOffer({
       DEFAULT_DETAILS_FORM_VALUES.stageDirector,
     productId:
       offer.productId?.toString() ?? DEFAULT_DETAILS_FORM_VALUES.productId,
-    url: offer.url,
     ...maybeAccessibility,
+    ...maybeUrl,
   }
 }
 

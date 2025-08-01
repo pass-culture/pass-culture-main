@@ -4,6 +4,7 @@ import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from 'pages/IndividualOffer/commo
 
 import { UsefulInformationFormValues } from './types'
 
+// TODO (igabriele, 2025-07-24): Either remove useless initialized props or make them strict and non-optional once the FF is enabled in production.
 export const DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES: UsefulInformationFormValues =
   {
     isNational: false,

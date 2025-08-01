@@ -13,6 +13,7 @@ import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
+import { isOfferSubcategoryOnline } from 'pages/IndividualOffer/commons/utils'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
@@ -27,7 +28,7 @@ import {
   ticketWithdrawalTypeRadios,
 } from '../../commons/constants'
 import { UsefulInformationFormValues } from '../../commons/types'
-import { setFormReadOnlyFields } from '../../commons/utils'
+import { getFormReadOnlyFields } from '../../commons/utils'
 import { OfferLocation } from '../OfferLocation/OfferLocation'
 
 import { OfferRefundWarning } from './OfferRefundWarning'
@@ -81,17 +82,16 @@ export const UsefulInformationForm = ({
   const offerSubCategory = subCategories.find(
     (s) => s.id === offer.subcategoryId
   )
+  const isOfferOnline = isOfferSubcategoryOnline(offer, subCategories)
 
-  const venue = offer.venue
   const readOnlyFields = publishedOfferWithSameEAN
     ? Object.keys(DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES)
-    : setFormReadOnlyFields(offer)
+    : getFormReadOnlyFields(offer)
 
   const displayNoRefundWarning =
     offerSubCategory?.reimbursementRule === REIMBURSEMENT_RULES.NOT_REIMBURSED
-
   const displayWithdrawalReminder =
-    !offerSubCategory?.isEvent && !offer.isDigital
+    !offerSubCategory?.isEvent && !isOfferOnline
 
   const getFirstWithdrawalTypeEnumValue = (value: string) => {
     switch (value) {
@@ -106,15 +106,35 @@ export const UsefulInformationForm = ({
     }
   }
 
+
   if (!selectedVenue) {
     return <Spinner />
   }
 
   return (
     <>
-      {!offer.isDigital && (
-        <OfferLocation venue={selectedVenue} readOnlyFields={readOnlyFields} />
-      )}
+      <FormLayout.Section title="Où profiter de l’offre ?">
+        {!isOfferOnline && (
+          <OfferLocation
+            venue={selectedVenue}
+            readOnlyFields={readOnlyFields}
+          />
+        )}
+        {isNewOfferCreationFlowFeatureActive && isOfferOnline && (
+          <FormLayout.Row className={styles.row}>
+            <TextInput
+              label="URL d’accès à l’offre"
+              type="text"
+              description="Format : https://exemple.com"
+              disabled={readOnlyFields.includes('url')}
+              {...register('url')}
+              error={errors.url?.message}
+              required
+            />
+          </FormLayout.Row>
+        )}
+      </FormLayout.Section>
+
       <FormLayout.Section title="Retrait de l’offre">
         {displayNoRefundWarning && (
           <FormLayout.Row className={styles['info-banners']}>
@@ -195,7 +215,7 @@ export const UsefulInformationForm = ({
             maxLength={500}
             disabled={readOnlyFields.includes('withdrawalDetails')}
             description={
-              offer.isDigital
+              isOfferOnline
                 ? 'Exemples : une création de compte, un code d’accès spécifique, une communication par email...'
                 : 'Exemples : une autre adresse, un horaire d’accès, un délai de retrait, un guichet spécifique, un code d’accès, une communication par email...'
             }
@@ -232,7 +252,7 @@ export const UsefulInformationForm = ({
           />
         </FormLayout.Row>
       </FormLayout.Section>
-      {!isNewOfferCreationFlowFeatureActive && (
+      {!isNewOfferCreationFlowFeatureActive && accessibilityOptionsGroups && (
         <FormLayout.Section title="Modalités d’accessibilité">
           <FormLayout.Row>
             <CheckboxGroup
@@ -252,13 +272,14 @@ export const UsefulInformationForm = ({
           <Checkbox
             label="Être notifié par email des réservations"
             checked={!!receiveNotificationEmails}
+            // TODO (igabriele, 2025-07-24): Move that to a named function once the FF is enabled in production.
             onChange={(e) => {
               if (
                 e.target.checked &&
                 bookingEmail ===
                   DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES.bookingEmail
               ) {
-                setValue('bookingEmail', venue.bookingEmail ?? email)
+                setValue('bookingEmail', offer.venue.bookingEmail ?? email)
               }
 
               setValue('receiveNotificationEmails', e.target.checked)

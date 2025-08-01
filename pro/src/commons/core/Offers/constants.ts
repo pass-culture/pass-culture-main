@@ -32,6 +32,8 @@ export enum COLLECTIVE_OFFER_SUBTYPE_DUPLICATE {
 export enum CATEGORY_STATUS {
   ONLINE = 'ONLINE',
   OFFLINE = 'OFFLINE',
+  // TODO (igabriele, 2025-07-30): Remove this once it's removed from the API.
+  /** @deprecated `ONLINE_OR_OFFLINE` should never exist anymore in production. */
   ONLINE_OR_OFFLINE = 'ONLINE_OR_OFFLINE',
 }
 

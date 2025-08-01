@@ -30,7 +30,6 @@ function renderVenueFormActionBar(
 
   options = {
     user: sharedCurrentUserFactory(),
-    features: ['WIP_ENABLE_NEW_OFFER_CREATION_JOURNEY'],
   }
 
   renderWithProviders(<Wrapper />, options)

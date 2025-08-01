@@ -2,23 +2,25 @@ import { screen } from '@testing-library/react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { axe } from 'vitest-axe'
 
-import { SubcategoryIdEnum, WithdrawalTypeEnum } from 'apiClient/v1'
+import { WithdrawalTypeEnum } from 'apiClient/v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { REIMBURSEMENT_RULES } from 'commons/core/Finances/constants'
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
   venueListItemFactory,
-  subcategoryFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
+import {
+  MOCK_SUB_CATEGORIES,
+  MOCK_SUB_CATEGORY,
+} from 'pages/IndividualOffer/commons/__mocks__/constants'
 import {
   providedTicketWithdrawalTypeRadios,
   ticketWithdrawalTypeRadios,
@@ -30,32 +32,17 @@ import {
   UsefulInformationForm,
 } from './UsefulInformationForm'
 
-const MOCK = {
-  nonRefundableSubcategory: subcategoryFactory({
-    id: SubcategoryIdEnum.CINE_PLEIN_AIR,
-    reimbursementRule: REIMBURSEMENT_RULES.NOT_REIMBURSED,
-  }),
-  nonEventSubcategory: subcategoryFactory({
-    id: SubcategoryIdEnum.ABO_LIVRE_NUMERIQUE,
-    isEvent: false,
-  }),
-  eventSubcategory: subcategoryFactory({
-    id: SubcategoryIdEnum.EVENEMENT_CINE,
-    isEvent: true,
-  }),
-  withdrawableSubcategory: subcategoryFactory({
-    id: SubcategoryIdEnum.CONCERT,
-    canBeWithdrawable: true,
-  }),
-}
-
 const LABELS = {
   sectionTitles: {
-    location: /Localisation de l’offre/,
+    location: /Où profiter de l’offre ?/,
     withdrawal: /Retrait de l’offre/,
     externalReservation: /Lien de réservation externe en l’absence de crédit/,
     accessibility: /Modalités d’accessibilité/,
     notifications: /Notifications/,
+  },
+  fields: {
+    offerLocation:
+      /Choisissez l’adresse à laquelle le public devra se présenter : */,
   },
   withdrawalDetails: /Informations de retrait/,
   noRefundWarning: /Cette offre numérique ne sera pas remboursée./,
@@ -166,9 +153,14 @@ const renderUsefulInformationForm = (
 }
 
 describe('UsefulInformationForm', () => {
+  const contextValueBase: Partial<IndividualOfferContextValues> = {
+    subCategories: MOCK_SUB_CATEGORIES,
+  }
+
   it('should render nothing in absence of offer', () => {
     renderUsefulInformationForm({
       contextValue: {
+        ...contextValueBase,
         offer: undefined,
       },
     })
@@ -223,20 +215,20 @@ describe('UsefulInformationForm', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  describe('when offer is digital', () => {
+  describe('when offer has an online subcategory', () => {
     it('should not render any offer location section', () => {
       renderUsefulInformationForm({
         contextValue: {
-          offer: {
-            ...getIndividualOfferFactory(),
-            isDigital: true,
-          },
+          ...contextValueBase,
+          offer: getIndividualOfferFactory({
+            subcategoryId: MOCK_SUB_CATEGORY.NON_EVENT_ONLINE.id,
+          }),
         },
       })
 
       expect(
-        screen.queryByRole('heading', {
-          name: LABELS.sectionTitles.location,
+        screen.queryByRole('group', {
+          name: LABELS.fields.offerLocation,
         })
       ).not.toBeInTheDocument()
     })
@@ -257,12 +249,11 @@ describe('UsefulInformationForm', () => {
       it('should render when subcategory is not refundable', () => {
         renderUsefulInformationForm({
           contextValue: {
+            ...contextValueBase,
             offer: {
               ...getIndividualOfferFactory(),
-              subcategoryId: MOCK.nonRefundableSubcategory
-                .id as SubcategoryIdEnum,
+              subcategoryId: MOCK_SUB_CATEGORY.NON_REFUNDABLE.id,
             },
-            subCategories: [MOCK.nonRefundableSubcategory],
           },
         })
 
@@ -274,12 +265,12 @@ describe('UsefulInformationForm', () => {
       it('should not render when offer is digital', () => {
         renderUsefulInformationForm({
           contextValue: {
+            ...contextValueBase,
             offer: {
               ...getIndividualOfferFactory(),
               isDigital: true,
-              subcategoryId: MOCK.nonEventSubcategory.id as SubcategoryIdEnum,
+              subcategoryId: MOCK_SUB_CATEGORY.NON_EVENT_ONLINE.id,
             },
-            subCategories: [MOCK.nonEventSubcategory],
           },
         })
 
@@ -291,12 +282,11 @@ describe('UsefulInformationForm', () => {
       it('should not render when offer is an event', () => {
         renderUsefulInformationForm({
           contextValue: {
+            ...contextValueBase,
             offer: {
               ...getIndividualOfferFactory(),
-              isDigital: false,
-              subcategoryId: MOCK.eventSubcategory.id as SubcategoryIdEnum,
+              subcategoryId: MOCK_SUB_CATEGORY.EVENT_OFFLINE.id,
             },
-            subCategories: [MOCK.eventSubcategory],
           },
         })
 
@@ -308,12 +298,12 @@ describe('UsefulInformationForm', () => {
       it('should render when offer is neiher digital nor an event', () => {
         renderUsefulInformationForm({
           contextValue: {
+            ...contextValueBase,
             offer: {
               ...getIndividualOfferFactory(),
               isDigital: false,
-              subcategoryId: MOCK.nonEventSubcategory.id as SubcategoryIdEnum,
+              subcategoryId: MOCK_SUB_CATEGORY.NON_EVENT_OFFLINE.id,
             },
-            subCategories: [MOCK.nonEventSubcategory],
           },
         })
 
