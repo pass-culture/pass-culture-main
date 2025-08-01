@@ -15,8 +15,36 @@ describe('Desk (Guichet) feature', { testIsolation: false }, () => {
   })
 
   it('I should see help information on desk page', () => {
+    // Attempt to ignore problematic 401 errors on connection page first load
+    // TODO (igabriele, 2025-07-31): The real solution is be to clean the 401 from connection page (see PC-37280)
+    // https://github.com/cypress-io/cypress/issues/27501#issuecomment-2272519301
+    cy.intercept(
+      {
+        method: 'GET',
+        url: '/users/current',
+        times: 2,
+      },
+      {
+        global: ['Authentification nécessaire'],
+      }
+    ).as('getCurrentUser')
+    cy.intercept(
+      {
+        method: 'GET',
+        url: '/offerers/names',
+        times: 2,
+      },
+      {
+        global: ['Authentification nécessaire'],
+      }
+    ).as('getOffererNames')
+
     cy.wrap(Cypress.session.clearAllSavedSessions())
+
     cy.visit('/connexion')
+    cy.wait('@getCurrentUser')
+    cy.wait('@getOffererNames')
+
     cy.sandboxCall(
       'GET',
       'http://localhost:5001/sandboxes/pro/create_pro_user_with_bookings',
