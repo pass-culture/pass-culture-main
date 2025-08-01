@@ -25,7 +25,7 @@ const COLLECTIVE_OFFER_STATUS_PROPERTIES: Record<
     label: 'préréservée',
   },
   [CollectiveOfferDisplayedStatus.BOOKED]: {
-    variant: TagVariant.SUCCESS,
+    variant: TagVariant.WARNING,
     label: 'réservée',
   },
   [CollectiveOfferDisplayedStatus.HIDDEN]: {
