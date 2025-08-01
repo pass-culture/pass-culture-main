@@ -22,6 +22,8 @@ import {
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
+import { FrontendError } from 'commons/errors/FrontendError'
+import { handleUnexpectedError } from 'commons/errors/handleUnexpectedError'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { getIndividualOfferImage } from 'components/IndividualOffer/utils/getIndividualOfferImage'
@@ -263,9 +265,10 @@ export const IndividualOfferDetailsScreen = ({
     const subCategory = subCategories.find(
       (subCategory) => subCategory.id === subcategoryId
     )
-
     if (!subCategory) {
-      throw new Error('Unknown or missing subcategoryId')
+      return handleUnexpectedError(
+        new FrontendError('Unknown or missing subcategoryId')
+      )
     }
 
     const { categoryId, conditionalFields: subcategoryConditionalFields } =

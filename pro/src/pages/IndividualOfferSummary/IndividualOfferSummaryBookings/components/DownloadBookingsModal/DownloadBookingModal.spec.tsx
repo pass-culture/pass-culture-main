@@ -16,6 +16,7 @@ const render = (priceCategoryAndScheduleCountByDate: EventDatesInfos) => {
   renderWithProviders(
     <Dialog.Root defaultOpen>
       <Dialog.Content aria-describedby={undefined}>
+        <Dialog.Title>Title</Dialog.Title>
         <DownloadBookingsModal
           offerId={MOCK_OFFER_ID}
           priceCategoryAndScheduleCountByDate={
