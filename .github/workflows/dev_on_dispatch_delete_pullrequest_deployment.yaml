@@ -59,7 +59,7 @@ jobs:
           git config --global user.name "PassCulture-SA"
           cd ./rendered-manifests
           files_modified=false
-          [[ -d "pcapi-pr-${{ inputs.pullrequest_id }}" ]] && { git rm -r pcapi-pr-${{ inputs.pullrequest_id }}; files_modified=true; } || echo "path pcapi-pr-${{ inputs.pullrequest_id }} does not exist"
+          [[ -d "testing-pr-${{ inputs.pullrequest_id }}" ]] && { git rm -r testing-pr-${{ inputs.pullrequest_id }}; files_modified=true; } || echo "path testing-pr-${{ inputs.pullrequest_id }} does not exist"
           [[ -d "postgresql-pr-${{ inputs.pullrequest_id }}" ]] && { git rm -r postgresql-pr-${{ inputs.pullrequest_id }}; files_modified=true; } || echo "path postgresql-pr-${{ inputs.pullrequest_id }} does not exist"
           [[ -d "redis-pr-${{ inputs.pullrequest_id }}" ]] && { git rm -r redis-pr-${{ inputs.pullrequest_id }}; files_modified=true; } || echo "path redis-pr-${{ inputs.pullrequest_id }} does not exist"
           if [ "$files_modified" = true ]; then

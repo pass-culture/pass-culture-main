@@ -180,12 +180,16 @@ jobs:
             pass-culture-deployment
             pass-culture-main
             rendered-manifests
+            pc-render-manifests
             pc-connect
           permission-contents: write
 
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
+        id: google-auth
         with:
+          create_credentials_file: true
+          token_format: "access_token"
           service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
           workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
 
@@ -195,14 +199,6 @@ jobs:
           cluster_scope: metier
           cluster_environment: ehp
           api_token_github: ${{ steps.github-token.outputs.token }}
-
-      # Checkout pass-culture-deployment repository containing pcapi helm value files
-      - uses: actions/checkout@v4.2.1
-        with:
-          repository: pass-culture/pass-culture-deployment
-          ref: master
-          token: ${{ steps.github-token.outputs.token }}
-          path: ./pass-culture-deployment
 
       # Get pcapi secrets from source code, to be passed later as a helmfile parameter.
       - name: "Generate pcapi secrets list"
@@ -225,30 +221,49 @@ jobs:
           envsubst < .github/workflows/templates/pullrequest-namespace.yaml | kubectl apply -f -
           envsubst < .github/workflows/templates/pullrequest-pgsql-externalsecret.yaml | kubectl apply -f -
 
-      # Executes helmfile templating and push results to render-manifests repository
-      - name: "Generate and push rendered manifests"
-        uses: pass-culture/common-workflows/actions/render-push-manifests@render-push-manifests/v3.3.0
+      - name: "Docker login"
+        id: "docker-login"
+        uses: "docker/login-action@v3"
         with:
-          environment: pullrequest
-          app_name: pcapi
-          app_version: ${{ github.sha }}
-          additional_args: ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
-          registry_workload_identity_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-          registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-          api_token_github: ${{ steps.github-token.outputs.token }}
-          chart_values_repository: ""
-          helmfile_path: "./pass-culture-deployment/helm/pcapi"
-          rendered_manifests_target_branch: "pcapi/pullrequests"
-          is_pull_request: true
-          pro_url: ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }}
-          resource_label: ${{ needs.deploy-preview-env-init.outputs.resource_label }}
+          registry: "europe-west1-docker.pkg.dev"
+          username: "oauth2accesstoken"
+          password: "${{ steps.google-auth.outputs.access_token }}"
 
-      # We have to reauthenticate to GCP because render-manifests removes previous authenthication
-      - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
+      - name: "Setup helmfile"
+        uses: mamezou-tech/setup-helmfile@v2.1.0
         with:
-          service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
-          workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
+          helmfile-version: "v1.1.3"
+
+      # Executes helmfile templating and push results to render-manifests repository
+      - name: "Setup pc-render-manifests"
+        uses: pass-culture/common-workflows/actions/setup-pc-render-manifests@IC-284-use-pc-render-manifest-binary
+        with:
+          token: ${{ steps.github-token.outputs.token }}
+          version: "v0.7.1"
+
+      - name: "Generate and push rendered manifests"
+        env:
+          GITHUB_USERNAME: x-access-token
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+          PRID: ${{ needs.deploy-preview-env-init.outputs.resource_label }}
+          PRO_URL: ${{ needs.deploy-pro-on-firebase-preview-env.outputs.pro_url }}
+        run: |
+          pc-render-manifests render \
+            -a pcapi \
+            -e pullrequest \
+            --sourceRepoURL https://github.com/pass-culture/pass-culture-deployment.git \
+            --sourcePath helm/pcapi \
+            --sourceRepoRef master \
+            --destinationRepoRef pcapi/pullrequests \
+            --additionalStateValues "pcapi.image.tag=${{ github.sha }}" \
+            --additionalStateValues "prId=${PRID}" \
+            --additionalStateValues "proUrl=${PRO_URL}" \
+            --additionalArg "--set ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}" \
+            --destinationPathTemplate "{{ .OutputDir }}/{{.Release.Name}}-pr-${PRID}" \
+            --commitMsg "pcapi(pr-${PRID}) : manifests for app_version=${{ github.sha }}" \
+            --clean=false \
+            --push \
+            --silent
 
       - name: "Connect to cluster"
         uses: pass-culture/common-workflows/actions/pc-k8s-connect@pc-k8s-connect/v0.2.0
@@ -274,7 +289,7 @@ jobs:
             [[ $? -eq 0 ]] && break || sleep 5
           done
           while true; do
-            kubectl get application -n argocd | grep pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}
+            kubectl get application -n argocd | grep testing-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}
             [[ $? -eq 0 ]] && break || sleep 5
           done
           {
@@ -308,7 +323,7 @@ jobs:
       - name: "Sync ArgoCD pcapi configmaps and secrets"
         uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.7.0
         with:
-          app_name: pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}
+          app_name: testing-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}
           argocd_app_wait: false
           prune: true
           extra_flags: --resource ':ConfigMap:*' --resource '*:ExternalSecret:*'
@@ -343,7 +358,7 @@ jobs:
       - name: "Sync ArgoCD pcapi application"
         uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.7.0
         with:
-          app_name: pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}
+          app_name: testing-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}
           argocd_app_wait: true
           prune: true
 
