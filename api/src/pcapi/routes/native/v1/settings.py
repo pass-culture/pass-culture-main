@@ -1,6 +1,7 @@
 from pcapi.core.users import constants
+from pcapi.models import db
+from pcapi.models.feature import Feature
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.settings import OBJECT_STORAGE_URL
 from pcapi.utils import postal_code
@@ -13,7 +14,7 @@ def _get_features(*requested_features: FeatureToggle) -> dict[FeatureToggle, boo
     requested_features_by_name = {feature.name: feature for feature in requested_features}
     return {
         requested_features_by_name[db_feature.name]: db_feature.isActive
-        for db_feature in feature_queries.find_all()
+        for db_feature in db.session.query(Feature).all()
         if db_feature.name in requested_features_by_name
     }
 
