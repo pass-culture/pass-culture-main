@@ -1,0 +1,33 @@
+{% import "components/links.html" as links with context %}
+{% for incident in rows %}
+  {% set venue = incident.venue %}
+  <tr>
+    <td>
+      <input type="checkbox"
+             class="form-check-input"
+             name="pc-table-multi-select-check-{{ incident.id }}"
+             data-id="{{ incident.id }}" />
+    </td>
+    <td>{{ links.build_finance_incident_to_details_link(incident) }}</td>
+    <td>
+      {% if incident.isClosed %}
+        {{ "Terminé" | format_badge("secondary") }}
+      {% else %}
+        {{ incident.status | format_finance_incident_status_badge }}
+      {% endif %}
+    </td>
+    <td>{{ incident.kind | format_finance_incident_type }}</td>
+    <td>{{ incident.is_partial | format_finance_incident_nature_badge }}</td>
+    <td>{{ "Collective" if incident.relates_to_collective_bookings else "Individuelle" }}</td>
+    <td>{{ incident.booking_finance_incidents | length }}</td>
+    <td>{{ incident.due_amount_by_offerer | format_cents(target=incident.venue) }}</td>
+    <td>{{ links.build_offerer_name_to_details_link(incident.venue.managingOfferer) }}</td>
+    <td>{{ links.build_venue_name_to_details_link(venue) }}</td>
+    <td>
+      {% if incident.origin %}{{ incident.origin.value }}{% endif %}
+    </td>
+    <td>
+      {% if incident.zendeskId %}{{ links.build_zendesk_ticket_external_link(incident.zendeskId) }}{% endif %}
+    </td>
+  </tr>
+{% endfor %}
