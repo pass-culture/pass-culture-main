@@ -31,6 +31,7 @@ import {
 import { pluralizeString } from 'commons/utils/pluralize'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { BackToNavLink } from 'components/BackToNavLink/BackToNavLink'
+import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/CollectiveStatusLabel'
 import { EducationalInstitutionDetails } from 'components/EducationalInstitutionDetails/EducationalInstitutionDetails'
 import { SynchronizedProviderInformation } from 'components/SynchronisedProviderInformation/SynchronizedProviderInformation'
@@ -76,8 +77,36 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
   const archiveButtonRef = useRef<HTMLButtonElement>(null)
   const duplicateButtonRef = useRef<HTMLButtonElement>(null)
   const adagePreviewButtonRef = useRef<HTMLAnchorElement>(null)
+  const cancelBookingButtonRef = useRef<HTMLButtonElement>(null)
 
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false)
+  const [isCancelBookingModalOpen, setIsCancelBookingModalOpen] =
+    useState(false)
+
+  const cancelBooking = async () => {
+    if (!offer.id) {
+      notify.error('L’identifiant de l’offre n’est pas valide.')
+      return
+    }
+    try {
+      await api.cancelCollectiveOfferBooking(offer.id)
+      await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id])
+      setIsCancelBookingModalOpen(false)
+      notify.success(
+        'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.',
+        {
+          duration: NOTIFICATION_LONG_SHOW_DURATION,
+        }
+      )
+    } catch {
+      notify.error(
+        'Une erreur est survenue lors de l’annulation de la réservation.',
+        {
+          duration: NOTIFICATION_LONG_SHOW_DURATION,
+        }
+      )
+    }
+  }
 
   const formatDateRangeWithTime = (): string => {
     const { startDatetime, endDatetime } = offer.collectiveStock || {}
@@ -304,6 +333,8 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                     icon={fullClearIcon}
                     variant={ButtonVariant.TERNARYBRAND}
                     className={styles['button-cancel-booking']}
+                    onClick={() => setIsCancelBookingModalOpen(true)}
+                    ref={cancelBookingButtonRef}
                   >
                     Annuler la réservation
                   </Button>
@@ -337,6 +368,17 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
         onValidate={archiveOffer}
         offer={offer}
         isDialogOpen={isArchiveModalOpen}
+        refToFocusOnClose={
+          cancelBookingButtonRef.current
+            ? cancelBookingButtonRef
+            : duplicateButtonRef
+        }
+      />
+      <CancelCollectiveBookingModal
+        onDismiss={() => setIsCancelBookingModalOpen(false)}
+        onValidate={cancelBooking}
+        isFromOffer
+        isDialogOpen={isCancelBookingModalOpen}
         refToFocusOnClose={
           archiveButtonRef.current ? archiveButtonRef : duplicateButtonRef
         }
