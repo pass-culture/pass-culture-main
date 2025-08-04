@@ -55,10 +55,12 @@ export function getLocation(
       : 'Le partenaire culturel se déplace dans les établissements scolaires.'
   }
 
+  const addressLabel = location.address?.label
   return (
     <div>
-      {location.address?.label} - {location.address?.street},{' '}
-      {location.address?.postalCode}, {location.address?.city}
+      {addressLabel ? `${addressLabel} - ` : ''}
+      {location.address?.street}, {location.address?.postalCode},{' '}
+      {location.address?.city}
     </div>
   )
 }
