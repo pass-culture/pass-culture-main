@@ -323,7 +323,7 @@ def post_product_offer_by_ean(body: products_serializers.ProductsOfferByEanCreat
         address_label = body.location.address_label
 
     serialized_products_stocks = _serialize_products_from_body(body.products)
-    offers_tasks.create_or_update_ean_offers(
+    offers_tasks.create_or_update_ean_offers.delay(
         serialized_products_stocks=serialized_products_stocks,
         venue_id=venue.id,
         provider_id=current_api_key.provider.id,

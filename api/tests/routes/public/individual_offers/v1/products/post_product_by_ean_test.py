@@ -61,6 +61,34 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 404
 
+    @mock.patch("pcapi.core.offers.tasks.create_or_update_ean_offers.delay")
+    def test_create_or_update_offer_is_asynchronous(self, mock_delay):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
+
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            ean="1234567890123",
+            lastProviderId=venue_provider.provider.id,
+        )
+
+        payload = {
+            "location": {"type": "physical", "venueId": venue.id},
+            "products": [
+                {
+                    "ean": product.ean,
+                    "stock": {
+                        "price": 1234,
+                        "quantity": 3,
+                    },
+                },
+            ],
+        }
+
+        response = self.make_request(plain_api_key, json_body=payload)
+        assert response.status_code == 204
+        mock_delay.assert_called()
+
     def test_should_raise_404_because_venue_provider_is_inactive(self):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
         venue = venue_provider.venue
