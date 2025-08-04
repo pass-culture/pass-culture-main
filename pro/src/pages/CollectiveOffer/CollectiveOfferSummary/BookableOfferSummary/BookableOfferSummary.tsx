@@ -200,7 +200,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
           )}
         </div>
         <div className={styles['header-description-info']}>
-          <dl className={styles['definition-list']}>
+          <dl className={styles['detail-list']}>
             <DetailItem>n°{offer.id}</DetailItem>
             <DetailItem alt={offer.venue.publicName ?? ''} src={strokeHomeIcon}>
               Proposé par {offer.venue.publicName}
