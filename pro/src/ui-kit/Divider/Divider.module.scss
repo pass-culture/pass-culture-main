@@ -1,13 +1,19 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .divider {
-  border-bottom: rem.torem(1px) solid var(--color-border-subtle);
-
   &.divider-medium {
     margin: rem.torem(16px) 0 rem.torem(16px) 0;
   }
 
   &.divider-large {
     margin: rem.torem(24px) 0 rem.torem(24px) 0;
+  }
+
+  &.horizontal {
+    border-bottom: rem.torem(1px) solid var(--color-border-subtle);
+  }
+
+  &.vertical {
+    border-right: rem.torem(1px) solid var(--color-border-subtle);
   }
 }

@@ -84,10 +84,6 @@ $info-box-margin-left: rem.torem(24px);
   &-row {
     max-width: 100%;
 
-    & > * {
-      width: 100%;
-    }
-
     &.small-space-after {
       margin-bottom: rem.torem(4px);
     }
