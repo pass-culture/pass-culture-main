@@ -258,4 +258,33 @@ describe('OA feature flag', () => {
       )
     ).toBeInTheDocument()
   })
+
+  it('should not display dash when address has no label', () => {
+    renderAdageOfferInfoSection(
+      {
+        offer: {
+          ...defaultCollectiveTemplateOffer,
+          location: {
+            locationType: CollectiveLocationType.ADDRESS,
+            address: {
+              id: 1,
+              id_oa: 1,
+              isManualEdition: false,
+              latitude: 48.8566,
+              longitude: 2.3522,
+              label: undefined,
+              street: '123 Rue de Meaux',
+              city: 'Paris',
+              postalCode: '75000',
+            },
+          },
+        },
+      },
+      { features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'] }
+    )
+
+    expect(
+      screen.getByText('123 Rue de Meaux, 75000, Paris')
+    ).toBeInTheDocument()
+  })
 })
