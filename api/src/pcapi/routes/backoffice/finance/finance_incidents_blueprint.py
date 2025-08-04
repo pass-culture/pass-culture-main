@@ -57,6 +57,47 @@ finance_incidents_blueprint = utils.child_backoffice_blueprint(
 )
 
 
+def _get_incidents_by_id(incidents_ids: list[int] | sa.sql.Select) -> list[finance_models.FinanceIncident]:
+    return (
+        db.session.query(finance_models.FinanceIncident)
+        .filter(finance_models.FinanceIncident.id.in_(incidents_ids))
+        .options(
+            sa_orm.joinedload(finance_models.FinanceIncident.venue)
+            .load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+            )
+            .joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(
+                offerers_models.Offerer.id,
+                offerers_models.Offerer.name,
+                offerers_models.Offerer.siren,
+                offerers_models.Offerer.postalCode,
+            ),
+            sa_orm.joinedload(finance_models.FinanceIncident.booking_finance_incidents).options(
+                sa_orm.load_only(
+                    finance_models.BookingFinanceIncident.id,
+                    finance_models.BookingFinanceIncident.newTotalAmount,
+                ),
+                sa_orm.joinedload(finance_models.BookingFinanceIncident.booking).load_only(
+                    bookings_models.Booking.amount, bookings_models.Booking.quantity
+                ),
+                sa_orm.joinedload(finance_models.BookingFinanceIncident.collectiveBooking)
+                .load_only(educational_models.CollectiveBooking.id)
+                .joinedload(educational_models.CollectiveBooking.collectiveStock)
+                .load_only(educational_models.CollectiveStock.price),
+                sa_orm.joinedload(
+                    finance_models.BookingFinanceIncident.finance_events
+                ).load_only(  # because of: isClosed
+                    finance_models.FinanceEvent.id
+                ),
+            ),
+        )
+        .order_by(sa.desc(finance_models.FinanceIncident.id))
+    ).all()
+
+
 def _get_incidents(
     form: forms.GetIncidentsSearchForm,
 ) -> list[finance_models.FinanceIncident]:
@@ -152,47 +193,19 @@ def _get_incidents(
 
         ids_query = ids_query.distinct().order_by(sa.desc(finance_models.FinanceIncident.id)).limit(form.limit.data + 1)
 
-    incidents_query = (
-        db.session.query(finance_models.FinanceIncident)
-        .filter(finance_models.FinanceIncident.id.in_(ids_query))
-        .options(
-            sa_orm.joinedload(finance_models.FinanceIncident.venue)
-            .load_only(
-                offerers_models.Venue.id,
-                offerers_models.Venue.name,
-                offerers_models.Venue.publicName,
-            )
-            .joinedload(offerers_models.Venue.managingOfferer)
-            .load_only(
-                offerers_models.Offerer.id,
-                offerers_models.Offerer.name,
-                offerers_models.Offerer.siren,
-                offerers_models.Offerer.postalCode,
-            ),
-            sa_orm.joinedload(finance_models.FinanceIncident.booking_finance_incidents).options(
-                sa_orm.load_only(
-                    finance_models.BookingFinanceIncident.id,
-                    finance_models.BookingFinanceIncident.newTotalAmount,
-                ),
-                sa_orm.joinedload(finance_models.BookingFinanceIncident.booking).load_only(
-                    bookings_models.Booking.amount, bookings_models.Booking.quantity
-                ),
-                sa_orm.joinedload(finance_models.BookingFinanceIncident.collectiveBooking)
-                .load_only(educational_models.CollectiveBooking.id)
-                .joinedload(educational_models.CollectiveBooking.collectiveStock)
-                .load_only(educational_models.CollectiveStock.price),
-                sa_orm.joinedload(
-                    finance_models.BookingFinanceIncident.finance_events
-                ).load_only(  # because of: isClosed
-                    finance_models.FinanceEvent.id
-                ),
-            ),
-        )
-        .order_by(sa.desc(finance_models.FinanceIncident.id))
-    )
-
-    incidents = incidents_query.all()
+    incidents = _get_incidents_by_id(ids_query)
     return utils.limit_rows(incidents, form.limit.data)
+
+
+def _render_incidents(incidents_ids: list[int] | None = None) -> utils.BackofficeResponse:
+    rows: list[finance_models.FinanceIncident] = []
+    if incidents_ids:
+        rows = _get_incidents_by_id(incidents_ids)
+
+    return render_template(
+        "finance/incidents/list_rows.html",
+        rows=rows,
+    )
 
 
 @finance_incidents_blueprint.route("", methods=["GET"])
@@ -967,7 +980,7 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
     return _get_finance_overpayment_incident_validation_form(finance_incident)
 
 
-@finance_incidents_blueprint.route("/batch-validation-form", methods=["GET", "POST"])
+@finance_incidents_blueprint.route("/batch-validation-form", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_batch_finance_incidents_validation_form() -> utils.BackofficeResponse:
     form = forms.BatchIncidentValidationForm()
@@ -987,7 +1000,7 @@ def get_batch_finance_incidents_validation_form() -> utils.BackofficeResponse:
         ):
             mark_transaction_as_invalid()
             return render_template(
-                "components/turbo/modal_empty_form.html",
+                "components/dynamic/modal_empty_form.html",
                 form=empty_forms.BatchForm(),
                 messages=valid.messages,
             )
@@ -997,7 +1010,8 @@ def get_batch_finance_incidents_validation_form() -> utils.BackofficeResponse:
             form = empty_forms.BatchForm()
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id="#incident-table",
         form=form,
         dst=url_for("backoffice_web.finance_incidents.batch_validate_finance_incidents"),
         div_id="batch-validate-modal",
@@ -1028,7 +1042,7 @@ def batch_validate_finance_incidents() -> utils.BackofficeResponse:
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
-        return redirect(request.referrer or url_for("backoffice_web.finance_incidents.list_finance_incidents"), 303)
+        return _render_incidents()
 
     error_dict = defaultdict(list)
     success_count = 0
@@ -1062,10 +1076,10 @@ def batch_validate_finance_incidents() -> utils.BackofficeResponse:
                     mark_transaction_as_invalid()
 
     _flash_success_and_error_messages(success_count, error_dict, True)
-    return redirect(request.referrer or url_for("backoffice_web.finance_incidents.list_finance_incidents"), 303)
+    return _render_incidents(form.object_ids_list)
 
 
-@finance_incidents_blueprint.route("/batch-cancellation-form", methods=["GET", "POST"])
+@finance_incidents_blueprint.route("/batch-cancellation-form", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_batch_finance_incidents_cancellation_form() -> utils.BackofficeResponse:
     form = forms.BatchIncidentCancellationForm()
@@ -1088,14 +1102,15 @@ def get_batch_finance_incidents_cancellation_form() -> utils.BackofficeResponse:
         ):
             mark_transaction_as_invalid()
             return render_template(
-                "components/turbo/modal_empty_form.html",
+                "components/dynamic/modal_empty_form.html",
                 form=empty_forms.BatchForm(),
                 messages=valid.messages,
             )
 
     return render_template(
-        "components/turbo/modal_form.html",
-        form=forms.BatchIncidentCancellationForm(),
+        "components/dynamic/modal_form.html",
+        target_id="#incident-table",
+        form=form,
         dst=url_for("backoffice_web.finance_incidents.batch_cancel_finance_incidents"),
         div_id="batch-reject-modal",
         title=Markup("Voulez-vous annuler les {kind} sélectionnés ?").format(
@@ -1115,7 +1130,7 @@ def batch_cancel_finance_incidents() -> utils.BackofficeResponse:
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
-        return redirect(request.referrer or url_for("backoffice_web.finance_incidents.list_finance_incidents"), 303)
+        return _render_incidents()
 
     finance_incidents = (
         db.session.query(finance_models.FinanceIncident)
@@ -1144,7 +1159,7 @@ def batch_cancel_finance_incidents() -> utils.BackofficeResponse:
                 mark_transaction_as_invalid()
 
     _flash_success_and_error_messages(success_count, error_dict, is_validating=False)
-    return redirect(request.referrer or url_for("backoffice_web.finance_incidents.list_finance_incidents"), 303)
+    return _render_incidents(form.object_ids_list)
 
 
 def _build_incident_error_str(incident_ids: list[str], message: str) -> str:
