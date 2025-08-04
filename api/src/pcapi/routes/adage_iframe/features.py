@@ -1,4 +1,5 @@
-from pcapi.repository import feature_queries
+from pcapi.models import db
+from pcapi.models.feature import Feature
 from pcapi.repository.session_management import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
@@ -14,7 +15,7 @@ from pcapi.serialization.decorator import spectree_serialize
 )
 @adage_jwt_required
 def list_features(authenticated_information: AuthenticatedInformation) -> features_serialize.ListFeatureResponseModel:
-    features = feature_queries.find_all()
+    features = db.session.query(Feature).all()
     # Pydantic manages to convert a list of Feature to a list of FeatureResponseModel, with orm_mode=True
     # This apparently confuses mypy
-    return features_serialize.ListFeatureResponseModel(__root__=features)  # type: ignore[arg-type]
+    return features_serialize.ListFeatureResponseModel(__root__=features)
