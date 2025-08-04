@@ -1,3 +1,6 @@
+from typing import List
+
+from pcapi.core.offers.models import ComplianceValidationStatusPrediction
 from pcapi.routes.serialization import BaseModel
 
 
@@ -30,3 +33,19 @@ class GetComplianceScoreRequest(BaseModel):
             "author": self.author,
             "performer": self.performer,
         }
+
+
+class ComplianceScorePredictionOutput(BaseModel):
+    probability_validated: int | None
+    validation_main_features: List[str] | None
+    probability_rejected: int | None
+    rejection_main_features: List[str] | None
+
+
+class ComplianceValidationStatusPredictionOutput(BaseModel):
+    validation_status_prediction: ComplianceValidationStatusPrediction | None
+    validation_status_prediction_reason: str | None
+
+
+class CompliancePredictionOutput(ComplianceScorePredictionOutput, ComplianceValidationStatusPredictionOutput):
+    pass
