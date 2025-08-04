@@ -3,8 +3,8 @@ import time
 from flask import jsonify
 
 import pcapi.core.mails.testing as mails_testing
+from pcapi.db_utils import clean_all_database
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository.clean_database import clean_all_database
 from pcapi.routes.apis import private_api
 from pcapi.sandboxes.scripts import getters
 

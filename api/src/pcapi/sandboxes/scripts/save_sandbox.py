@@ -4,8 +4,8 @@ import typing
 from pcapi.core import search
 from pcapi.core.offerers import models as offerer_models
 from pcapi.core.offers import models as offers_models
+from pcapi.db_utils import clean_all_database
 from pcapi.models import db
-from pcapi.repository.clean_database import clean_all_database
 from pcapi.sandboxes import scripts
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations import clean_industrial_mediations_bucket
 from pcapi.sandboxes.scripts.utils import helpers

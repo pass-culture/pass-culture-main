@@ -36,13 +36,13 @@ import pcapi.core.testing
 import pcapi.core.users.models as users_models
 from pcapi.celery_tasks.celery import celery_init_app
 from pcapi.core.users import testing as users_testing
-from pcapi.install_database_extensions import install_database_extensions
+from pcapi.db_utils import clean_all_database
+from pcapi.db_utils import install_database_extensions
 from pcapi.models import db
 from pcapi.models.feature import install_feature_flags
 from pcapi.notifications.internal import testing as internal_notifications_testing
 from pcapi.notifications.push import testing as push_notifications_testing
 from pcapi.notifications.sms import testing as sms_notifications_testing
-from pcapi.repository.clean_database import clean_all_database
 from pcapi.routes.backoffice import install_routes
 from pcapi.utils import requests
 from pcapi.utils.module_loading import import_string
