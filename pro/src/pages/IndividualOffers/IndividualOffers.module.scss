@@ -1,0 +1,22 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+
+.banner-cta {
+  color: var(--color-white);
+
+  &:focus-visible {
+    outline-color: var(--color-white);
+  }
+}
+
+.banner-img {
+  display: none;
+
+  @media screen and (min-width: size.$desktop) {
+    display: block;
+    position: absolute;
+    right: 10%;
+    top: 0;
+    max-width: rem.torem(124px);
+  }
+}

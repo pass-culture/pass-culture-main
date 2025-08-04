@@ -19,13 +19,19 @@ import { useOffererAddresses } from 'commons/hooks/swr/useOffererAddresses'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { sortByLabel } from 'commons/utils/strings'
+import { HighlightBanner } from 'components/HighlightBanner/HighlightBanner'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
+import fullNextIcon from 'icons/full-next.svg'
 import { formatAndOrderAddresses } from 'repository/venuesService'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 
+import videoBannerPng from './assets/video-banner-illustration.png'
+import styles from './IndividualOffers.module.scss'
 import { IndividualOffersContainer } from './IndividualOffersContainer/IndividualOffersContainer'
 import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters'
 
 export const IndividualOffers = (): JSX.Element => {
+  const isVideoFeatureEnabled = useActiveFeature('WIP_ADD_VIDEO')
   const isToggleAndMemorizeFiltersEnabled = useActiveFeature(
     'WIP_COLLAPSED_MEMORIZED_FILTERS'
   )
@@ -109,7 +115,37 @@ export const IndividualOffers = (): JSX.Element => {
 
   return (
     <HeadlineOfferContextProvider>
-      <Layout mainHeading="Offres individuelles">
+      <Layout
+        mainHeading="Offres individuelles"
+        {...(isVideoFeatureEnabled
+          ? {
+              mainTopElement: (
+                <HighlightBanner
+                  title="✨ Nouveau : Ajoutez une vidéo pour donner vie à votre offre !"
+                  description="2 jeunes sur 3 aimeraient voir des vidéos sur les offres culturelles du pass Culture."
+                  localStorageKey="GTM_VIDEO_BANNER_2025"
+                  img={
+                    <img
+                      className={styles['banner-img']}
+                      alt=""
+                      src={videoBannerPng}
+                      role="presentation"
+                    />
+                  }
+                  cta={
+                    <ButtonLink
+                      className={styles['banner-cta']}
+                      icon={fullNextIcon}
+                      to="/offre/creation"
+                    >
+                      Créer une offre
+                    </ButtonLink>
+                  }
+                />
+              ),
+            }
+          : {})}
+      >
         <IndividualOffersContainer
           categories={categoriesOptions}
           currentPageNumber={currentPageNumber}
