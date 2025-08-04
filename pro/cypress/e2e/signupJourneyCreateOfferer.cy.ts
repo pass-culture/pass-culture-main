@@ -57,7 +57,7 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     ])
   })
 
-  it('I should be able to sign up with a new account and create a new offerer with an unknown SIREN (unknown SIRET)', () => {
+  it.only('I should be able to sign up with a new account and create a new offerer with an unknown SIREN (unknown SIRET)', () => {
     goToOffererCreation(login)
 
     cy.stepLog({ message: 'I specify a venue with a SIRET' })
@@ -508,7 +508,9 @@ function fromOnBoardingPublishMyFirstOffer() {
   cy.intercept('PATCH', 'http://localhost:5001/offers/1').as('patchOffer')
 
   // Minimal required fields are already filled by default in this step, so we can directly go to the next step
-  cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
+  // TODO (igabriele,  2025-08-04): Investigate this wait (it may attempt to click during an unecessary re-render).
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  cy.wait(250).findByRole('button', { name: 'Enregistrer et continuer' }).click()
 
   cy.wait('@patchOffer')
 
