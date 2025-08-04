@@ -10,6 +10,7 @@ import pcapi.core.providers.models as providers_models
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.core import search
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.local_providers.chunk_manager import get_last_update_for_provider
 from pcapi.local_providers.chunk_manager import get_object_from_current_chunks
 from pcapi.local_providers.chunk_manager import save_chunks
 from pcapi.local_providers.providable_info import ProvidableInfo
@@ -18,7 +19,6 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.repository import repository
-from pcapi.repository.providable_queries import get_last_update_for_provider
 from pcapi.validation.models import entity_validator
 
 

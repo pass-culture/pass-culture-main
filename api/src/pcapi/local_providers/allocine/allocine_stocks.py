@@ -17,6 +17,7 @@ from pcapi.core.providers.allocine import build_movie_id_at_providers
 from pcapi.core.providers.allocine import create_generic_movie
 from pcapi.core.providers.allocine import get_movie_poster
 from pcapi.core.providers.allocine import get_movies_showtimes
+from pcapi.local_providers.chunk_manager import get_last_update_for_provider
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.movie_festivals import api as movie_festivals_api
@@ -24,7 +25,6 @@ from pcapi.local_providers.movie_festivals import constants as movie_festivals_c
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models import db
-from pcapi.repository.providable_queries import get_last_update_for_provider
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import get_naive_utc_now
 from pcapi.utils.date import local_datetime_to_default_timezone
