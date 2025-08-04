@@ -1,3 +1,6 @@
+from typing import List
+
+from pcapi.core.offers.models import LLMComplianceValidationStatus
 from pcapi.routes.serialization import BaseModel
 
 
@@ -30,3 +33,19 @@ class GetComplianceScoreRequest(BaseModel):
             "author": self.author,
             "performer": self.performer,
         }
+
+
+class ComplianceOutput(BaseModel):
+    probability_validated: int | None
+    validation_main_features: List[str] | None
+    probability_rejected: int | None
+    rejection_main_features: List[str] | None
+
+
+class LLMComplianceOutput(BaseModel):
+    llm_validation_status: LLMComplianceValidationStatus | None
+    llm_explanation: str | None
+
+
+class CombinedComplianceOutput(ComplianceOutput, LLMComplianceOutput):
+    pass

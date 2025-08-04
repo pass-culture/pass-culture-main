@@ -32,6 +32,8 @@ class GetDataComplianceScoringTest:
         offer_compliance = db.session.query(offers_models.OfferCompliance).filter_by(offerId=offer.id).one()
         assert offer_compliance.compliance_score == 50
         assert offer_compliance.compliance_reasons == ["stock_price", "offer_description"]
+        assert offer_compliance.llm_validation_status is None
+        assert offer_compliance.llm_explanation is None
 
     @mock.patch("pcapi.core.external.compliance.compliance_backend", ComplianceBackend())
     @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
@@ -51,6 +53,8 @@ class GetDataComplianceScoringTest:
         offer_compliance = db.session.query(offers_models.OfferCompliance).filter_by(offerId=offer.id).one()
         assert offer_compliance.compliance_score == 50
         assert offer_compliance.compliance_reasons == ["offer_name"]
+        assert offer_compliance.llm_validation_status is None
+        assert offer_compliance.llm_explanation is None
 
     @mock.patch("pcapi.core.external.compliance.compliance_backend", ComplianceBackend())
     @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
@@ -65,6 +69,8 @@ class GetDataComplianceScoringTest:
         offer_compliance = db.session.query(offers_models.OfferCompliance).filter_by(offerId=offer.id).one()
         assert offer_compliance.compliance_score == 50
         assert offer_compliance.compliance_reasons == []
+        assert offer_compliance.llm_validation_status is None
+        assert offer_compliance.llm_explanation is None
 
     @mock.patch("pcapi.core.external.compliance.compliance_backend", ComplianceBackend())
     @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
@@ -113,6 +119,25 @@ class GetDataComplianceScoringTest:
         assert caplog.records[0].message == "Response from Compliance API is not ok"
         assert caplog.records[0].extra == {"status_code": 500}
         assert not db.session.query(offers_models.OfferCompliance).filter_by(offerId=offer.id).count()
+
+    @mock.patch("pcapi.core.external.compliance.compliance_backend", ComplianceBackend())
+    @mock.patch("pcapi.core.auth.api.get_id_token_from_google", return_value="Good token")
+    def test_get_data_compliance_llm_validation_status(self, mock_get_id_token_from_google, requests_mock):
+        requests_mock.post(
+            "https://compliance.passculture.team/latest/model/compliance/scoring",
+            json={
+                "probability_validated": 50,
+                "rejection_main_features": ["stock_price", "offer_description"],
+                "llm_validation_status": "approved",
+                "llm_explanation": "L'offre est conforme.",
+            },
+        )
+        offer = offers_factories.OfferFactory(name="Hello la data")
+        payload = compliance._get_payload_for_compliance_api(offer)
+        compliance.make_update_offer_compliance_score(payload)
+        offer_compliance = db.session.query(offers_models.OfferCompliance).filter_by(offerId=offer.id).one()
+        assert offer_compliance.llm_validation_status == offers_models.LLMComplianceValidationStatus.APPROVED
+        assert offer_compliance.llm_explanation == "L'offre est conforme."
 
 
 @pytest.mark.usefixtures("db_session")

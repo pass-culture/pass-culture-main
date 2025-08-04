@@ -25,18 +25,23 @@ def update_offer_compliance_score(offer: offers_models.Offer, is_primary: bool) 
 
 
 def make_update_offer_compliance_score(payload: GetComplianceScoreRequest) -> None:
-    data_score, data_reasons = compliance_backend.get_score_from_compliance_api(payload)
+    compliance_data = compliance_backend.get_score_from_compliance_api(payload)
 
-    if data_score:
+    if compliance_data and compliance_data.probability_validated is not None:
         offer = db.session.query(offers_models.Offer).with_for_update().filter_by(id=payload.offer_id).one_or_none()
         if offer is None:  # if offer is deleted before the task is run
             return
-        statement = insert(offers_models.OfferCompliance).values(
-            offerId=offer.id, compliance_score=data_score, compliance_reasons=data_reasons
-        )
+
+        values_to_update = {
+            "compliance_score": compliance_data.probability_validated,
+            "compliance_reasons": compliance_data.rejection_main_features,
+            "llm_validation_status": compliance_data.llm_validation_status,
+            "llm_explanation": compliance_data.llm_explanation,
+        }
+        statement = insert(offers_models.OfferCompliance).values(offerId=offer.id, **values_to_update)
         statement = statement.on_conflict_do_update(
             index_elements=["offerId"],  # Colonne causant le conflit
-            set_={"compliance_score": data_score, "compliance_reasons": data_reasons},
+            set_=values_to_update,
         )
 
         db.session.execute(statement)
