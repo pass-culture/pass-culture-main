@@ -28,6 +28,7 @@ import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIn
 import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { useIndividualOfferImageUpload } from 'pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
+import { Divider } from 'ui-kit/Divider/Divider'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { buildInitialValues } from '../commons/buildInitialValues'
@@ -186,7 +187,10 @@ export const IndividualOfferMediaScreen = ({
           <FormLayout.MandatoryInfo />
           <FormLayout.Section title="Illustrez votre offre">
             <FormLayout.Row inline className={styles['media-row']}>
-              <FormLayout.SubSection title="Ajoutez une image">
+              <FormLayout.SubSection
+                title="Ajoutez une image"
+                className={styles['media-sub-section']}
+              >
                 <ImageDragAndDropUploader
                   onImageUpload={onImageUpload}
                   onImageDelete={onImageDelete}
@@ -197,7 +201,15 @@ export const IndividualOfferMediaScreen = ({
                   disabled={isProductBased}
                 />
               </FormLayout.SubSection>
-              <FormLayout.SubSection title="Ajoutez une vidéo" isNew>
+              <Divider
+                orientation="vertical"
+                className={styles['media-divider']}
+              />
+              <FormLayout.SubSection
+                title="Ajoutez une vidéo"
+                isNew
+                className={styles['media-sub-section']}
+              >
                 <TextInput
                   label="Lien URL Youtube"
                   className={styles['video-section-input']}

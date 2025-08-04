@@ -18,6 +18,11 @@ interface DividerProps {
    */
   size?: Size
   /**
+   * Orientation of the divider,
+   * @default 'horizontal'
+   */
+  orientation?: 'horizontal' | 'vertical'
+  /**
    * Custom CSS class for additional styling of the divider.
    */
   className?: string
@@ -40,13 +45,24 @@ interface DividerProps {
  * @accessibility
  * - **Visual Separation**: The divider provides a visual cue that helps users understand the grouping and separation of content. Ensure the divider's color contrast is sufficient for all users, including those with visual impairments.
  */
-export const Divider: FC<DividerProps> = ({ size, className }) => {
+export const Divider: FC<DividerProps> = ({
+  size,
+  orientation = 'horizontal',
+  className,
+}) => {
   const sizeClassName = {
     medium: styles['divider-medium'],
     large: styles['divider-large'],
   }[size || 'medium']
 
   return (
-    <div className={classnames(styles.divider, sizeClassName, className)} />
+    <div
+      className={classnames(
+        styles.divider,
+        sizeClassName,
+        styles[orientation],
+        className
+      )}
+    />
   )
 }
