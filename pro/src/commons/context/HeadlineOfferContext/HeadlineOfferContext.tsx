@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
@@ -13,10 +13,6 @@ import {
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { storageAvailable } from 'commons/utils/storageAvailable'
-
-export const LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY =
-  'headlineOfferBannerClosed'
 
 type UpsertHeadlineOfferParams = {
   offerId: number
@@ -30,8 +26,6 @@ type HeadlineOfferContextValues = {
   headlineOffer: HeadLineOfferResponseModel | null
   upsertHeadlineOffer: (params: UpsertHeadlineOfferParams) => Promise<void>
   removeHeadlineOffer: () => Promise<void>
-  isHeadlineOfferBannerOpen: boolean
-  closeHeadlineOfferBanner: () => void
   isHeadlineOfferAllowedForOfferer: boolean
 }
 
@@ -39,8 +33,6 @@ const HeadlineOfferContext = createContext<HeadlineOfferContextValues>({
   headlineOffer: null,
   upsertHeadlineOffer: async () => {},
   removeHeadlineOffer: async () => {},
-  isHeadlineOfferBannerOpen: true,
-  closeHeadlineOfferBanner: () => {},
   isHeadlineOfferAllowedForOfferer: false,
 })
 
@@ -66,20 +58,6 @@ export function HeadlineOfferContextProvider({
     data?.venues.filter((venue) => !venue.isVirtual) || []
   const isHeadlineOfferAllowedForOfferer =
     nonVirtualVenues.length === 1 && nonVirtualVenues[0].isPermanent
-  const wasHeadlineOfferPreviouslyClosed =
-    storageAvailable('localStorage') &&
-    localStorage.getItem(LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY) !==
-      null
-  const initialIsHeadlineOfferBannerOpen =
-    isHeadlineOfferAllowedForOfferer && !wasHeadlineOfferPreviouslyClosed
-
-  const [isHeadlineOfferBannerOpen, setIsHeadlineOfferBannerOpen] = useState(
-    initialIsHeadlineOfferBannerOpen
-  )
-
-  useEffect(() => {
-    setIsHeadlineOfferBannerOpen(initialIsHeadlineOfferBannerOpen)
-  }, [initialIsHeadlineOfferBannerOpen])
 
   const { data: rawHeadlineOffer, error } = useSWR(
     selectedOffererId && isHeadlineOfferAllowedForOfferer
@@ -107,16 +85,6 @@ export function HeadlineOfferContextProvider({
   // by different means that didn't trigger a mutation (e.g. the offer has 0 stock, is deactivated).
   const headlineOffer = error ? null : (rawHeadlineOffer ?? null)
 
-  const closeHeadlineOfferBanner = () => {
-    setIsHeadlineOfferBannerOpen(false)
-    if (storageAvailable('localStorage')) {
-      localStorage.setItem(
-        LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY,
-        'true'
-      )
-    }
-  }
-
   const upsertHeadlineOffer = async ({
     offerId,
     context,
@@ -134,10 +102,6 @@ export function HeadlineOfferContextProvider({
         actionType: context.actionType,
         requiredImageUpload: !!context.requiredImageUpload,
       })
-
-      if (isHeadlineOfferBannerOpen) {
-        closeHeadlineOfferBanner()
-      }
     } catch {
       notify.error(
         'Une erreur s’est produite lors de l’ajout de votre offre à la une'
@@ -177,8 +141,6 @@ export function HeadlineOfferContextProvider({
         headlineOffer,
         upsertHeadlineOffer,
         removeHeadlineOffer,
-        isHeadlineOfferBannerOpen,
-        closeHeadlineOfferBanner,
         isHeadlineOfferAllowedForOfferer,
       }}
     >
