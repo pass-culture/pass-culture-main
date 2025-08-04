@@ -43,7 +43,7 @@ def get_first_venue_approved_offer_email_data(offer: Offer) -> models.Transactio
         params={
             "OFFER_NAME": offer.name,
             "VENUE_NAME": offer.venue.common_name,
-            "IS_EVENT": offer.isEvent,
+            "IS_EVENT": offer.isTimestamped,
             "IS_THING": offer.isThing,
             "IS_DIGITAL": offer.isDigital,
             "WITHDRAWAL_PERIOD": (

@@ -550,6 +550,7 @@ def get_base_query_for_offer_indexation() -> sa_orm.Query:
                 )
             )
         )
+        .options(sa_orm.selectinload(offers_models.Offer.openingHours).load_only(offerers_models.OpeningHours.id))
     )
 
 

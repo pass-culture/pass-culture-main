@@ -61,12 +61,12 @@ class Returns200Test:
 
         opening_hours = timespan_str_to_numrange([("10:00", "12:00"), ("14:00", "18:00")])
 
-        offerers_factories.OpeningHoursFactory(
-            venue=None, offer=offer, weekday=offerers_models.Weekday.TUESDAY, timespan=opening_hours
+        offerers_factories.OfferOpeningHoursFactory(
+            offer=offer, weekday=offerers_models.Weekday.TUESDAY, timespan=opening_hours
         )
 
-        offerers_factories.OpeningHoursFactory(
-            venue=None, offer=offer, weekday=offerers_models.Weekday.WEDNESDAY, timespan=opening_hours
+        offerers_factories.OfferOpeningHoursFactory(
+            offer=offer, weekday=offerers_models.Weekday.WEDNESDAY, timespan=opening_hours
         )
 
         url = f"/offers/{offer.id}/opening-hours"
@@ -92,7 +92,7 @@ class Returns200Test:
         opening_hours = timespan_str_to_numrange([("10:00", "12:00"), ("14:00", "18:00")])
 
         for weekday in offerers_models.Weekday:
-            offerers_factories.OpeningHoursFactory(venue=None, offer=offer, weekday=weekday, timespan=opening_hours)
+            offerers_factories.OfferOpeningHoursFactory(offer=offer, weekday=weekday, timespan=opening_hours)
 
         url = f"/offers/{offer.id}/opening-hours"
 

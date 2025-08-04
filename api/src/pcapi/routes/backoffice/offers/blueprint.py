@@ -38,6 +38,7 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.search import search_offer_ids
@@ -474,7 +475,7 @@ def _get_offers_by_ids(
             sa.case(
                 (
                     sa.or_(
-                        sa.not_(offers_models.Offer.isEvent),
+                        sa.not_(offers_repository.has_event_subcategory_filter()),
                         sa.func.max(offers_models.Stock.beginningDatetime).cast(sa.Date).is_(None),
                     ),
                     sa.cast(postgresql.array([]), postgresql.ARRAY(sa.Date)),
@@ -1208,6 +1209,7 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
             .load_only(offerers_models.OffererAddress.label)
             .joinedload(offerers_models.OffererAddress.address),
             sa_orm.joinedload(offers_models.Offer.compliance),
+            sa_orm.joinedload(offers_models.Offer.openingHours).load_only(offerers_models.OpeningHours.id),
         )
     )
     offer = offer_query.one_or_none()

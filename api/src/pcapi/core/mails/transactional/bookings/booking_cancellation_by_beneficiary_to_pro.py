@@ -47,7 +47,7 @@ def get_booking_cancellation_by_beneficiary_to_pro_email_data(
                 else ""
             ),
             "EXTERNAL_BOOKING_INFORMATION": external_booking_information,
-            "IS_EVENT": booking.stock.offer.isEvent,
+            "IS_EVENT": booking.stock.offer.isTimestamped,
             "IS_EXTERNAL": booking.isExternal,
             "OFFER_NAME": booking.stock.offer.name,
             "PRICE": booking.stock.price if booking.stock.price > 0 else "Gratuit",

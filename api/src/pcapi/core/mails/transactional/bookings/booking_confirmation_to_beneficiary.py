@@ -49,7 +49,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
 
     stock_price = f"{booking.total_amount} €" if stock.price > 0 else "Gratuit"
 
-    if offer.isEvent:
+    if offer.isTimestamped:
         if stock.beginningDatetime is None:
             raise ValueError("Can't convert None to local timezone")
         event_beginning_date_in_tz = utc_datetime_to_department_timezone(stock.beginningDatetime, department_code)
@@ -91,11 +91,11 @@ def get_booking_confirmation_to_beneficiary_email_data(
             ),
             "CODE_EXPIRATION_DATE": code_expiration_date,
             "VENUE_NAME": venue.common_name,
-            "ALL_BUT_NOT_VIRTUAL_THING": offer.isEvent or (not offer.isEvent and not offer.isDigital),
-            "ALL_THINGS_NOT_VIRTUAL_THING": not offer.isEvent and not offer.isDigital,
-            "IS_EVENT": offer.isEvent,
+            "ALL_BUT_NOT_VIRTUAL_THING": offer.isTimestamped or (not offer.isTimestamped and not offer.isDigital),
+            "ALL_THINGS_NOT_VIRTUAL_THING": not offer.isTimestamped and not offer.isDigital,
+            "IS_EVENT": offer.isTimestamped,
             "IS_EXTERNAL": booking.isExternal,
-            "IS_SINGLE_EVENT": offer.isEvent and booking.quantity == 1,
+            "IS_SINGLE_EVENT": offer.isTimestamped and booking.quantity == 1,
             "IS_DUO_EVENT": booking.quantity == 2,
             "CAN_EXPIRE": can_expire,
             "EXPIRATION_DELAY": expiration_delay,

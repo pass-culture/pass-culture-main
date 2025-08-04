@@ -13,7 +13,7 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
 ) -> models.TransactionalEmailData:
     stock = booking.stock
     offer = stock.offer
-    if offer.isEvent:
+    if offer.isTimestamped:
         event_date = get_date_formatted_for_email(get_event_datetime(stock))
         event_hour = get_time_formatted_for_email(get_event_datetime(stock))
     else:
@@ -28,7 +28,7 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
             "BOOKING_CONTACT": offer.bookingContact,
             "EVENT_DATE": event_date,
             "EVENT_HOUR": event_hour,
-            "IS_EVENT": offer.isEvent,
+            "IS_EVENT": offer.isTimestamped,
             "IS_FREE_OFFER": is_free_offer,
             "IS_ONLINE": offer.isDigital,
             "IS_THING": not offer.isDigital and offer.isThing,

@@ -126,7 +126,7 @@ class AlgoliaSerializationMixin:
         prices = {stock.price for stock in offer.searchableStocks}
         dates = set()
         times = set()
-        if offer.isEvent:
+        if offer.isTimestamped:
             dates = {stock.beginningDatetime.timestamp() for stock in offer.searchableStocks}  # type: ignore[union-attr]
             times = {
                 date_utils.get_time_in_seconds_from_datetime(stock.beginningDatetime)  # type: ignore[arg-type]
@@ -268,7 +268,7 @@ class AlgoliaSerializationMixin:
                 "isDigital": offer.isDigital,
                 "isDuo": offer.isDuo,
                 "isEducational": False,
-                "isEvent": offer.isEvent,
+                "isEvent": offer.isTimestamped,
                 "isForbiddenToUnderage": offer.is_forbidden_to_underage,
                 "isPermanent": offer.isPermanent,
                 "isThing": offer.isThing,

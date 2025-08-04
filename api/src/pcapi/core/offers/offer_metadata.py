@@ -58,7 +58,7 @@ def _get_common_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
                 "https://schema.org/InStock"
                 if offer.hasStocks
                 else "https://schema.org/SoldOut"
-                if offer.isEvent
+                if offer.isTimestamped
                 else "https://schema.org/OutOfStock"
             ),
         }
@@ -128,7 +128,7 @@ def get_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
         "@context": "https://schema.org",
     }
 
-    if offer.isEvent:
+    if offer.isTimestamped:
         return context | _get_event_metadata_from_offer(offer)
 
     if offer.subcategory.id in book_subcategories:

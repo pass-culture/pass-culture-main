@@ -3,6 +3,7 @@ import logging
 
 import sqlalchemy as sa
 
+import pcapi.core.offers.repository as offers_repository
 from pcapi.core import search
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import utils as finance_utils
@@ -131,7 +132,9 @@ def _get_existing_offers(
         db.session.query(
             sa.func.max(offers_models.Offer.id).label("max_id"),
         )
-        .filter(offers_models.Offer.isEvent == False)
+        # TODO(jbaudet): add full isEvent filter (subcategory + has
+        # opening hours) when public API is ready
+        .filter(sa.not_(offers_repository.has_event_subcategory_filter()))
         .filter(offers_models.Offer.venue == venue)
         .filter(offers_models.Offer.ean.in_(ean_to_create_or_update))
         .group_by(

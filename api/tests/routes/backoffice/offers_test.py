@@ -2723,7 +2723,7 @@ class EditOfferStockTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
     def test_offer_stock_edit_used_booking(self, authenticated_client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.CONFERENCE.id)
         venue = offer.venue
         stock_to_edit = offers_factories.StockFactory(
             offer=offer,
@@ -2788,7 +2788,7 @@ class EditOfferStockTest(PostEndpointHelper):
         assert db.session.query(finance_models.Pricing).filter_by(id=later_pricing_id).count() == 0
 
     def test_offer_stock_edit_with_french_decimal(self, authenticated_client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.CONFERENCE.id)
         stock_to_edit = offers_factories.StockFactory(
             offer=offer,
             price=decimal.Decimal("123.45"),
@@ -2811,7 +2811,7 @@ class EditOfferStockTest(PostEndpointHelper):
         assert booking_to_edit.amount == decimal.Decimal("50.1")
 
     def test_offer_stock_edit_confirmed_booking(self, authenticated_client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.CONFERENCE.id)
         stock_to_edit = offers_factories.StockFactory(
             offer=offer,
             price=decimal.Decimal("123.45"),
@@ -2834,7 +2834,7 @@ class EditOfferStockTest(PostEndpointHelper):
         assert booking_to_edit.amount == decimal.Decimal("50.1")
 
     def test_offer_stock_edit_confirmed_booking_percent(self, authenticated_client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.CONFERENCE.id)
         stock_to_edit = offers_factories.StockFactory(
             offer=offer,
             price=decimal.Decimal("123.45"),
@@ -3076,7 +3076,7 @@ class EditOfferStockTest(PostEndpointHelper):
         assert event.booking.stock.price == decimal.Decimal("123.45")
 
     def test_edit_stock_withprice_higher_than_booking(self, authenticated_client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.CONFERENCE.id)
         venue = offer.venue
         event = finance_factories.FinanceEventFactory(
             booking__amount=decimal.Decimal("5.00"),
@@ -3489,8 +3489,8 @@ class GetOfferDetailsTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + user + offer with joined data
-    expected_num_queries = 3
+    # session + user + offer with joined data + opening hours
+    expected_num_queries = 4
     expected_num_queries_with_ff = 4
 
     def test_get_detail_offer(self, authenticated_client):
@@ -3785,7 +3785,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert descriptions["Date de la dernière validation"] == format_date(validation_date, "%d/%m/%Y à %Hh%M")
 
     def test_get_offer_details_with_one_expired_stock(self, legit_user, authenticated_client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
 
         expired_stock = offers_factories.EventStockFactory(
             offer=offer, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(hours=1), price=6.66
@@ -3809,7 +3809,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert stocks_rows[0]["Date / Heure"] == format_date(expired_stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
 
     def test_get_offer_details_with_two_expired_stocks(self, legit_user, authenticated_client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
 
         expired_stock_1 = offers_factories.EventStockFactory(
             offer=offer,
@@ -3867,7 +3867,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         venue_factory,
         expected_price,
     ):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id, venue=venue_factory())
+        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.SEANCE_CINE.id, venue=venue_factory())
         stock = offers_factories.EventStockFactory(offer=offer, quantity=quantity, dnBookedQuantity=booked_quantity)
 
         query_count = self.expected_num_queries_with_ff

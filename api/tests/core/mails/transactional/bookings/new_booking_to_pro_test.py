@@ -36,7 +36,9 @@ def make_booking(**kwargs):
         stock__offer__venue__departementCode="75",
     )
     attributes.update(kwargs)
-    return bookings_factories.BookingFactory(**attributes)
+    booking = bookings_factories.BookingFactory(**attributes)
+    offerers_factories.OfferOpeningHoursFactory(offer=booking.stock.offer)
+    return booking
 
 
 def get_expected_base_email_data(booking, **overrides):
@@ -355,6 +357,7 @@ class OffererBookingRecapTest:
         # Preload available data - calling functions should do that
         _ = booking.stock.offer.venue.offererAddress.address
         _ = booking.user
+        _ = booking.stock.offer.openingHours
         # 1 - SELECT venue with bank account
         # 0 - SELECT feature (already cached by BeneficiaryGrant18Factory.beneficiaryImports)
         # 1 - SELECT external booking (might be preloaded ?)
@@ -383,6 +386,7 @@ class OffererBookingRecapTest:
         # Preload available data - calling functions should do that
         _ = booking.stock.offer.venue.offererAddress.address
         _ = booking.user
+        _ = booking.stock.offer.openingHours
         # 1 - SELECT venue with bank account
         # 0 - SELECT feature (already cached by BeneficiaryGrant18Factory.beneficiaryImports)
         # 1 - SELECT external booking (might be preloaded ?)

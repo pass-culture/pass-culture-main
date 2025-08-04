@@ -9,6 +9,7 @@ import pytz
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
+from sqlalchemy.sql.elements import ColumnElement
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
@@ -171,6 +172,7 @@ def get_capped_offers_for_filters(
                 offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
             ),
         )
+        .options(sa_orm.selectinload(models.Offer.openingHours).load_only(offerers_models.OpeningHours.id))
         .limit(offers_limit)
         .all()
     )
@@ -375,6 +377,7 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query:
         .options(sa_orm.joinedload(models.Offer.metaData))
         .options(sa_orm.joinedload(models.Offer.product).selectinload(models.Product.artists))
         .options(sa_orm.joinedload(models.Offer.headlineOffers))
+        .options(sa_orm.selectinload(models.Offer.openingHours).load_only(offerers_models.OpeningHours.id))
         .outerjoin(models.Offer.lastProvider)
         .options(sa_orm.contains_eager(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
         .filter(
@@ -1395,3 +1398,13 @@ def get_unbookable_unbooked_old_offer_ids(
             logger.error(error_msg, min_id, min_id + batch_size, extra=extra)
 
         min_id += batch_size
+
+
+def has_event_subcategory_filter() -> ColumnElement:
+    return models.Offer.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
+
+
+def has_opening_hours_subquery() -> sa.sql.expression.Subquery:
+    return (
+        db.session.query(offerers_models.OpeningHours.offerId).group_by(offerers_models.OpeningHours.offerId).subquery()
+    )

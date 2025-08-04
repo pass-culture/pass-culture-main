@@ -27,7 +27,7 @@ def get_booking_cancellation_confirmation_by_pro_email_data(
             "VENUE_NAME": offer.venue.common_name,
             "PRICE": offer_price,
             "FORMATTED_PRICE": format_price(stock.price, offer.venue),
-            "IS_EVENT": offer.isEvent,
+            "IS_EVENT": offer.isTimestamped,
             "IS_EXTERNAL": booking.isExternal,
             "EVENT_DATE": event_date,
             "EVENT_HOUR": event_hour,

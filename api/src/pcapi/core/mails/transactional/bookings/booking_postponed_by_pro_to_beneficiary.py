@@ -24,7 +24,7 @@ def get_booking_postponed_by_pro_to_beneficiary_email_data(
     stock = booking.stock
     offer = stock.offer
 
-    if offer.isEvent:
+    if offer.isTimestamped:
         event_date = get_date_formatted_for_email(get_event_datetime(stock)) if stock.beginningDatetime else ""
         event_hour = get_time_formatted_for_email(get_event_datetime(stock)) if stock.beginningDatetime else ""
     else:

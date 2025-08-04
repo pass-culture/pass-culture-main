@@ -51,7 +51,7 @@ def get_new_booking_to_pro_email_data(
         .one()
     )
 
-    if offer.isEvent:
+    if offer.isTimestamped:
         event_date = get_date_formatted_for_email(get_event_datetime(stock)) if stock.beginningDatetime else ""
         event_hour = get_time_formatted_for_email(get_event_datetime(stock)) if stock.beginningDatetime else ""
     else:
@@ -89,7 +89,7 @@ def get_new_booking_to_pro_email_data(
             "EVENT_DATE": event_date,
             "EVENT_HOUR": event_hour,
             "IS_BOOKING_AUTOVALIDATED": is_booking_autovalidated,
-            "IS_EVENT": offer.isEvent,
+            "IS_EVENT": offer.isTimestamped,
             "IS_THING": offer.isThing,
             "IS_DIGITAL": offer.isDigital,
             "IS_EXTERNAL": booking.isExternal,

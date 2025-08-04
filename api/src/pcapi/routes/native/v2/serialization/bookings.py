@@ -233,7 +233,7 @@ class BookingResponseGetterDict(GetterDict):
                 withdrawal=withdrawal,
             )
 
-        if offer.isEvent and booking.isExternal:
+        if offer.isTimestamped and booking.isExternal:
             booking_visible = is_external_event_booking_visible(offer=offer, stock=stock)
             return TicketResponse(
                 activation_code=None,
