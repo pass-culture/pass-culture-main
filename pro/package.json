@@ -67,7 +67,7 @@
     "swr": "^2.3.4",
     "use-debounce": "^10.0.5",
     "uuidv4": "^6.2.13",
-    "yup": "^1.6.1"
+    "yup": "^1.7.0"
   },
   "devDependencies": {
     "@eslint/compat": "^1.3.1",
