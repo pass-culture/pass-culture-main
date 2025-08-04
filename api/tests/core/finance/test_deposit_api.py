@@ -741,12 +741,12 @@ class CanBeRecreditedTest:
             # user can not receive the 17 year old post-decree recredit
             assert not api._can_be_recredited(user)
 
-    def test_user_16_yo_cannot_be_recredited(self):
-        after_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME + relativedelta(days=1)
+    def test_user_16_yo_cannot_be_recredited(self, settings):
+        after_decree = settings.CREDIT_V3_DECREE_DATETIME + relativedelta(days=1)
         with time_machine.travel(after_decree):
             user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
 
-        assert not api._can_be_recredited(user)
+            assert not api._can_be_recredited(user)
 
 
 class LastAgeRelatedRecreditTest:
