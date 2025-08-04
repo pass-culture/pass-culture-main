@@ -42,7 +42,8 @@ const LABELS = {
   },
   fields: {
     offerLocation:
-      /Choisissez l’adresse à laquelle le public devra se présenter : */,
+      'Il s’agit de l’adresse à laquelle les jeunes devront se présenter.',
+    url: 'URL d’accès à l’offre *',
   },
   withdrawalDetails: /Informations de retrait/,
   noRefundWarning: /Cette offre numérique ne sera pas remboursée./,
@@ -485,6 +486,151 @@ describe('UsefulInformationForm', () => {
       expect(
         screen.getByRole('textbox', {
           name: LABELS.notificationEmail,
+        })
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('with WIP_ENABLE_NEW_OFFER_CREATION_FLOW feature flag', () => {
+    const options: RenderWithProvidersOptions = {
+      features: ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'],
+    }
+
+    it('should display the url field when the offer subcategory is online', () => {
+      const contextValue: Partial<IndividualOfferContextValues> = {
+        ...contextValueBase,
+        offer: getIndividualOfferFactory({
+          subcategoryId: MOCK_SUB_CATEGORY.EVENT_ONLINE.id,
+        }),
+      }
+
+      renderUsefulInformationForm({ contextValue, options })
+
+      expect(
+        screen.getByRole('heading', {
+          name: LABELS.sectionTitles.location,
+        })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('textbox', {
+          name: LABELS.fields.url,
+        })
+      ).toBeInTheDocument()
+
+      expect(
+        screen.queryByRole('radiogroup', {
+          name: LABELS.fields.offerLocation,
+        })
+      ).not.toBeInTheDocument()
+
+      expect(
+        screen.queryByRole('heading', {
+          name: LABELS.sectionTitles.withdrawal,
+        })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('heading', {
+          name: LABELS.sectionTitles.externalReservation,
+        })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('heading', {
+          name: LABELS.sectionTitles.accessibility,
+        })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('heading', {
+          name: LABELS.sectionTitles.notifications,
+        })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should display the location fields when the offer subcategory is offline', () => {
+      const contextValue: Partial<IndividualOfferContextValues> = {
+        ...contextValueBase,
+        offer: getIndividualOfferFactory({
+          subcategoryId: MOCK_SUB_CATEGORY.EVENT_OFFLINE.id,
+        }),
+      }
+
+      renderUsefulInformationForm({ contextValue, options })
+
+      expect(
+        screen.getByRole('heading', {
+          name: LABELS.sectionTitles.location,
+        })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('radiogroup', {
+          name: LABELS.fields.offerLocation,
+        })
+      ).toBeInTheDocument()
+
+      expect(
+        screen.queryByRole('textbox', {
+          name: LABELS.fields.url,
+        })
+      ).not.toBeInTheDocument()
+
+      expect(
+        screen.queryByRole('heading', {
+          name: LABELS.sectionTitles.withdrawal,
+        })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('heading', {
+          name: LABELS.sectionTitles.externalReservation,
+        })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('heading', {
+          name: LABELS.sectionTitles.accessibility,
+        })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('heading', {
+          name: LABELS.sectionTitles.notifications,
+        })
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('without WIP_ENABLE_NEW_OFFER_CREATION_FLOW feature flag', () => {
+    it('should NOT display the url field when the offer subcategory is online', () => {
+      const contextValueForOnlineOffer: Partial<IndividualOfferContextValues> =
+        {
+          ...contextValueBase,
+          offer: getIndividualOfferFactory({
+            subcategoryId: MOCK_SUB_CATEGORY.EVENT_ONLINE.id,
+          }),
+        }
+
+      renderUsefulInformationForm({ contextValue: contextValueForOnlineOffer })
+
+      expect(
+        screen.queryByRole('heading', {
+          name: LABELS.sectionTitles.location,
+        })
+      ).not.toBeInTheDocument()
+
+      const contextValueForOfflineOffer: Partial<IndividualOfferContextValues> =
+        {
+          ...contextValueBase,
+          offer: getIndividualOfferFactory({
+            subcategoryId: MOCK_SUB_CATEGORY.EVENT_OFFLINE.id,
+          }),
+        }
+
+      renderUsefulInformationForm({ contextValue: contextValueForOfflineOffer })
+
+      expect(
+        screen.getByRole('heading', {
+          name: LABELS.sectionTitles.location,
+        })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('radiogroup', {
+          name: LABELS.fields.offerLocation,
         })
       ).toBeInTheDocument()
     })
