@@ -1,43 +1,29 @@
+# macOS file system hidden file
 .DS_Store
-NOT_FORGET.md
+
+# please don't keep sensitive secrets in plain text files
 *.secret
+
+# env files
 development_env_file
-.idea/
-*.pgsql
-*.pgdump
-*.iml
-*.egg-info
-
-infra/artillery/reports/*
-infra/artillery/*.retry
-infra/artillery/user_list_with_password
-infra/scalingo/files/data_staging.csv
-infra/scalingo/files/data_testing.csv
-
-scripts/remove_doublons_of_tuto_recommendation.py
-scripts/recreate_where_not_first_tuto.py
-
-.pytest_cache/
 .env
+
+# IntelliJ
+.idea/
+*.iml
+.graphqlconfig
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+*.egg-info
+.pytest_cache/
 
-pc_env/
-
-pro-packed-staging/
-
-*.retry
-
-# The `shared` submodule has been removed in https://github.com/pass-culture/pass-culture-main/pull/334
-/shared
-.docker-sync
-
-# misc
+# VS-Code Synk plugin
 .dccache
-.graphqlconfig
+
+# Yarn
 .yarn-integrity
 
 # storybook build
@@ -47,7 +33,6 @@ docs-build/
 /api/src/pcapi/static/backoffice/css/compiled/
 /api/src/pcapi/static/backoffice/css/bundle.css
 /api/src/pcapi/static/backoffice/js/bundle.js
-
 
 # Certificate to start the api with a proxy
 *.pem
@@ -60,5 +45,6 @@ docs-build/
 # Script for VSCode local debugging
 /api/src/pcapi/scripts/local_debug_script.py
 
+# Allure Report
 allure-results/
 allure-report/
