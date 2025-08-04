@@ -1,7 +1,7 @@
 {% import "components/links.html" as links with context %}
 {% for incident in rows %}
   {% set venue = incident.venue %}
-  <tr>
+  <tr id="incident-row-{{ incident.id }}">
     <td>
       <input type="checkbox"
              class="form-check-input"
