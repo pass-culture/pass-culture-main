@@ -1,6 +1,10 @@
 import logging
 import unicodedata
 
+import sqlalchemy as sa
+from sqlalchemy.sql.elements import ColumnElement
+from sqlalchemy.sql.functions import Function
+
 
 logger = logging.getLogger(__name__)
 
@@ -50,3 +54,15 @@ def validate_city(city: str) -> None:
     if not is_latin(city, accepted_chars=ACCEPTED_CHARS_FOR_CITY):
         logger.info("Invalid value for field city: %s", city)
         raise ValueError("Le champ city doit contenir des caractères latins")
+
+
+def matching(column: str, search_value: str) -> ColumnElement[sa.Boolean]:
+    return _sanitized_string(column) == _sanitized_string(search_value)
+
+
+def _sanitized_string(value: str) -> Function:
+    sanitized = sa.func.replace(value, "-", "")
+    sanitized = sa.func.replace(sanitized, " ", "")
+    sanitized = sa.func.unaccent(sanitized)
+    sanitized = sa.func.lower(sanitized)
+    return sanitized

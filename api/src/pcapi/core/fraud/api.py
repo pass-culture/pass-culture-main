@@ -10,6 +10,7 @@ import pcapi.core.mails.transactional as transaction_mails
 from pcapi import settings
 from pcapi.core.fraud import exceptions as fraud_exceptions
 from pcapi.core.fraud import repository as fraud_repository
+from pcapi.core.fraud.utils import matching
 from pcapi.core.mails.transactional.users import fraud_emails
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
@@ -23,7 +24,6 @@ from pcapi.models import db
 from pcapi.models.feature import DisabledFeatureError
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
-from pcapi.repository.user_queries import matching
 from pcapi.utils.email import anonymize_email
 
 from . import models
