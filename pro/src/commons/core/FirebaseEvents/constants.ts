@@ -21,6 +21,7 @@ export enum Events {
   CLICKED_LOGOUT = 'hasClickedLogout',
   CLICKED_CONFIRMED_ADD_HEADLINE_OFFER = 'hasClickedConfirmedAddHeadlineOffer',
   CLICKED_DISCOVERED_HEADLINE_OFFER = 'hasClickedDiscoveredHeadlineOffer',
+  CLICKED_VIEW_APP_HEADLINE_OFFER = 'hasClickedViewAppHeadlineOffer',
   CLICKED_OFFER = 'hasClickedOffer',
   CLICKED_OFFER_FORM_NAVIGATION = 'hasClickedOfferFormNavigation',
   CLICKED_ONBOARDING_FORM_NAVIGATION = 'HasClickedOnboardingFormNavigation',

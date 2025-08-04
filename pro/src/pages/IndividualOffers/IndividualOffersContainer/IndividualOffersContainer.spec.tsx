@@ -460,7 +460,7 @@ describe('IndividualOffersScreen', () => {
   })
 
   it('should display actionsBar when at least one offer is selected', async () => {
-    renderWithProviders(<IndividualOffersContainer {...props} />)
+    renderOffers(props)
 
     const checkbox = screen.getByLabelText(offersRecap[0].name)
     await userEvent.click(checkbox)
