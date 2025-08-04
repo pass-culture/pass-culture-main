@@ -88,8 +88,8 @@ class GetBookingsTest:
         )
 
         client = client.with_token(self.identifier)
-        with assert_num_queries(2):
-            # select user, booking
+        with assert_num_queries(3):
+            # select user, booking, opening hours
             response = client.get("/native/v2/bookings")
 
         assert response.status_code == 200
@@ -200,8 +200,8 @@ class GetBookingsTest:
         )
 
         client = client.with_token(ongoing_booking.user.email)
-        with assert_num_queries(2):
-            # select user, booking
+        with assert_num_queries(3):
+            # select user, booking, opening hours
             response = client.get("/native/v2/bookings")
 
         assert response.status_code == 200
@@ -216,8 +216,8 @@ class GetBookingsTest:
         ReactionFactory(user=ongoing_booking.user, offer=stock.offer)
 
         client = client.with_token(ongoing_booking.user.email)
-        with assert_num_queries(2):
-            # select user, booking
+        with assert_num_queries(3):
+            # select user, booking, opening hours
             response = client.get("/native/v2/bookings")
 
         assert response.status_code == 200
@@ -232,15 +232,15 @@ class GetBookingsTest:
         )
         ReactionFactory(reactionType=ReactionTypeEnum.LIKE, user=ongoing_booking.user, product=stock.offer.product)
         client = client.with_token(ongoing_booking.user.email)
-        with assert_num_queries(3):
-            # select user, booking, offer
+        with assert_num_queries(4):
+            # select user, booking, offer, opening hours
             response = client.get("/native/v2/bookings")
 
         assert response.status_code == 200
         assert response.json["ongoingBookings"][0]["userReaction"] == "LIKE"
 
     def test_get_bookings_returns_enable_pop_up_reaction(self, client):
-        offer = offers_factories.OfferFactory(
+        offer = offers_factories.EventOfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
         )
         booking = booking_factories.UsedBookingFactory(
@@ -248,8 +248,8 @@ class GetBookingsTest:
             dateUsed=datetime.utcnow() - timedelta(seconds=60 * 24 * 3600),
         )
         client = client.with_token(booking.user.email)
-        with assert_num_queries(2):
-            # select user, booking, offer
+        with assert_num_queries(3):
+            # select user, booking, opening hours
             response = client.get("/native/v2/bookings")
 
         assert response.status_code == 200
@@ -263,8 +263,8 @@ class GetBookingsTest:
         )
         booking_factories.BookingFactory(stock=stock, user=ongoing_booking.user, status=BookingStatus.CANCELLED)
         client = client.with_token(ongoing_booking.user.email)
-        with assert_num_queries(2):
-            # select user, booking
+        with assert_num_queries(3):
+            # select user, booking, opening hours
             response = client.get("/native/v2/bookings")
 
         assert response.status_code == 200
@@ -289,8 +289,8 @@ class GetBookingsTest:
         )
 
         client = client.with_token(ongoing_booking.user.email)
-        with assert_num_queries(2):
-            # select user, booking
+        with assert_num_queries(3):
+            # select user, booking, opening hours
             response = client.get("/native/v2/bookings")
 
         assert response.status_code == 200
@@ -306,8 +306,8 @@ class GetBookingsTest:
         )
 
         test_client = client.with_token(user.email)
-        with assert_num_queries(2):
-            # select user, booking
+        with assert_num_queries(3):
+            # select user, booking, opening hours
             response = test_client.get("/native/v2/bookings")
 
         assert response.status_code == 200
@@ -324,7 +324,7 @@ class GetBookingsTest:
         offer = offers_factories.OfferFactory(venue=venue, offererAddress=None)
         booking_factories.BookingFactory(stock__offer=offer, user=user)
 
-        with assert_num_queries(2):  # user + booking
+        with assert_num_queries(3):  # user + booking + opening hours
             response = client.with_token(self.identifier).get("/native/v2/bookings")
 
         assert response.status_code == 200
@@ -346,7 +346,7 @@ class GetBookingsTest:
         )
         booking_factories.BookingFactory(stock__offer=offer, user=user)
 
-        with assert_num_queries(2):  # user + booking
+        with assert_num_queries(3):  # user + booking + opening hours
             response = client.with_token(self.identifier).get("/native/v2/bookings")
 
         assert response.status_code == 200
@@ -360,7 +360,7 @@ class GetBookingsTest:
         booking_factories.BookingFactory(user=user)
 
         client = client.with_token(user.email)
-        with assert_num_queries(2):  # user + booking
+        with assert_num_queries(3):  # user + booking + opening hours
             response = client.get("/native/v2/bookings")
 
         assert response.status_code == 200
@@ -410,7 +410,7 @@ class GetBookingTicketTest:
             stock__offer__withdrawalDelay=60 * 30,
         )
 
-        with assert_num_queries(2):  # user + booking
+        with assert_num_queries(3):  # user + booking + opening hours
             response = client.with_token(self.identifier).get("/native/v2/bookings")
             assert response.status_code == 200
 
@@ -427,7 +427,7 @@ class GetBookingTicketTest:
             stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.NO_TICKET,
         )
 
-        with assert_num_queries(2):  # user + booking
+        with assert_num_queries(3):  # user + booking + opening hours
             response = client.with_token(self.identifier).get("/native/v2/bookings")
             assert response.status_code == 200
 
@@ -454,7 +454,7 @@ class GetBookingTicketTest:
             stock__beginningDatetime=beginningDatetime,
         )
 
-        with assert_num_queries(2):  # user + booking
+        with assert_num_queries(3):  # user + booking + opening hours
             response = client.with_token(self.identifier).get("/native/v2/bookings")
             assert response.status_code == 200
 
@@ -473,7 +473,7 @@ class GetBookingTicketTest:
             activationCode=digital_stock.activationCodes[0],
         )
 
-        with assert_num_queries(2):  # user + booking
+        with assert_num_queries(3):  # user + booking + opening hours
             response = client.with_token(self.identifier).get("/native/v2/bookings")
             assert response.status_code == 200
 
@@ -497,7 +497,7 @@ class GetBookingTicketTest:
             stock=digital_stock,
         )
 
-        with assert_num_queries(2):  # user + booking
+        with assert_num_queries(3):  # user + booking + opening hours
             response = client.with_token(self.identifier).get("/native/v2/bookings")
             assert response.status_code == 200
 
@@ -516,7 +516,7 @@ class GetBookingTicketTest:
             stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
 
-        with assert_num_queries(2):  # user + booking
+        with assert_num_queries(3):  # user + booking + opening hours
             response = client.with_token(self.identifier).get("/native/v2/bookings")
             assert response.status_code == 200
 
@@ -553,13 +553,13 @@ class GetBookingTicketTest:
     )
     def test_get_internal_event_ticket(self, client, subcategory, withdrawal_type, voucher, display):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        booking = booking_factories.BookingFactory(
+        booking = booking_factories.EventBookingFactory(
             user=user,
             stock__offer__subcategoryId=subcategory,
             stock__offer__withdrawalType=withdrawal_type,
         )
 
-        with assert_num_queries(2):  # user + booking
+        with assert_num_queries(3):  # user + booking + opening hours
             response = client.with_token(self.identifier).get("/native/v2/bookings")
             assert response.status_code == 200
 
@@ -568,18 +568,16 @@ class GetBookingTicketTest:
             assert ticket["voucher"] == {"data": f"PASSCULTURE:v3;TOKEN:{booking.token}"}
         else:
             assert ticket["voucher"] == None
-        assert ticket["token"] == {
-            "data": booking.token,
-        }
+
+        assert ticket["token"] == {"data": booking.token}
         assert ticket["display"] == display
 
     @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_get_external_event_ticket_visible(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-
         provider = providers_api.get_provider_by_local_class("CDSStocks")
         beginningDatetime = datetime.utcnow() + timedelta(days=1)
-        booking = booking_factories.BookingFactory(
+        booking = booking_factories.EventBookingFactory(
             user=user,
             stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
             stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.IN_APP,
@@ -591,7 +589,7 @@ class GetBookingTicketTest:
         ExternalBookingFactory(booking=booking, barcode="111111111", seat="A_1")
         ExternalBookingFactory(booking=booking, barcode="111111112", seat="A_2")
 
-        with assert_num_queries(2):  # user + booking
+        with assert_num_queries(3):  # user + booking + opening hours
             response = client.with_token(self.identifier).get("/native/v2/bookings")
             assert response.status_code == 200
 
@@ -612,7 +610,7 @@ class GetBookingTicketTest:
 
         provider = providers_api.get_provider_by_local_class("CDSStocks")
         beginningDatetime = datetime.utcnow() + timedelta(days=2, seconds=200)
-        booking = booking_factories.BookingFactory(
+        booking = booking_factories.EventBookingFactory(
             user=user,
             stock__offer__subcategoryId=subcategories.CONFERENCE.id,
             stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.IN_APP,
@@ -624,7 +622,7 @@ class GetBookingTicketTest:
         ExternalBookingFactory(booking=booking, barcode="111111111", seat="A_1")
         ExternalBookingFactory(booking=booking, barcode="111111112", seat="A_2")
 
-        with assert_num_queries(2):  # user + booking
+        with assert_num_queries(3):  # user + booking + opening hours
             response = client.with_token(self.identifier).get("/native/v2/bookings")
             assert response.status_code == 200
 

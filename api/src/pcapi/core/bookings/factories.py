@@ -111,6 +111,10 @@ class ReimbursedBookingFactory(BookingFactory):
     reimbursementDate = factory.LazyFunction(datetime.datetime.utcnow)
 
 
+class EventBookingFactory(BookingFactory):
+    stock = factory.SubFactory(offers_factories.EventStockFactory)
+
+
 class ExternalBookingFactory(BaseFactory):
     class Meta:
         model = models.ExternalBooking

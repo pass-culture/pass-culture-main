@@ -216,7 +216,8 @@ def _get_future_provider_events_requiring_a_ticketing_system_query(
     # base query
     events_query = (
         db.session.query(offers_models.Offer)
-        .join(offers_models.Stock, offers_models.Offer.stocks)
+        .join(offers_models.Offer.stocks)
+        .join(offers_models.Offer.openingHours)
         .join(Venue, offers_models.Offer.venue)
         .join(models.VenueProvider, Venue.venueProviders)
         .outerjoin(models.VenueProviderExternalUrls, models.VenueProvider.externalUrls)
@@ -225,7 +226,8 @@ def _get_future_provider_events_requiring_a_ticketing_system_query(
     # Events linked to the provider & requiring a ticketing system
     events_query = events_query.filter(
         offers_models.Offer.lastProvider == provider,
-        offers_models.Offer.isEvent,
+        # offers_repository.has_event_subcategory_filter(),
+        offers_models.Offer.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES),
         offers_models.Offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP,
     )
 

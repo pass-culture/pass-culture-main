@@ -301,7 +301,7 @@ def test_index_last_30_days_bookings(app, bookings_count, expected_range):
 
 
 def test_serialize_offer_event():
-    offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+    offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
     dt1 = datetime.datetime(2032, 1, 4, 12, 15)
     offers_factories.EventStockFactory(offer=offer, beginningDatetime=dt1)
     dt2 = datetime.datetime(2032, 1, 1, 16, 30)
@@ -598,14 +598,14 @@ def test_serialize_future_offer():
     booking_allowed_dt = publication_date + datetime.timedelta(days=30)
     beginning_date = datetime.datetime(2032, 1, 4, 12, 15)
 
-    offer_1 = offers_factories.OfferFactory(
+    offer = offers_factories.EventOfferFactory(
         subcategoryId=subcategories.FESTIVAL_MUSIQUE.id,
         publicationDatetime=publication_date,
         bookingAllowedDatetime=booking_allowed_dt,
     )
-    offers_factories.EventStockFactory(offer=offer_1, price=10, beginningDatetime=beginning_date)
+    offers_factories.EventStockFactory(offer=offer, price=10, beginningDatetime=beginning_date)
 
-    serialized = algolia.AlgoliaBackend().serialize_offer(offer_1, 0)
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["offer"]["prices"] == [decimal.Decimal("10.00")]
     assert serialized["offer"]["dates"] == [beginning_date.timestamp()]
     assert serialized["offer"]["times"] == [12 * 60 * 60 + 15 * 60]

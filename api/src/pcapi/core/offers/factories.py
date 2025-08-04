@@ -281,6 +281,20 @@ class EventOfferFactory(OfferFactory):
         lambda o: (o.product.subcategoryId if hasattr(o, "product") else subcategories.SEANCE_CINE.id)
     )
 
+    @classmethod
+    def _create(
+        cls,
+        model_class: type[models.Offer],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.Offer:
+        offer = super()._create(model_class, *args, **kwargs)
+
+        if "openingHours" not in kwargs:
+            offerers_factories.OfferOpeningHoursFactory(offer=offer)
+
+        return offer
+
 
 class ThingOfferFactory(OfferFactory):
     subcategoryId = factory.LazyAttribute(
@@ -375,14 +389,14 @@ class StockFactory(BaseFactory):
     quantity = 1000
 
     beginningDatetime: factory.declarations.BaseDeclaration | None = factory.Maybe(
-        "offer.isEvent",
+        "offer.isTimestamped",
         factory.LazyFunction(
             lambda: datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
         ),
         None,
     )
     bookingLimitDatetime: factory.declarations.BaseDeclaration | None = factory.Maybe(
-        "stock.beginningDatetime and offer.isEvent",
+        "stock.beginningDatetime and offer.isTimestamped",
         factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60)),
         None,
     )
