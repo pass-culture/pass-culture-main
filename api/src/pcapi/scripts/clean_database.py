@@ -1,7 +1,7 @@
 import traceback
 from pprint import pprint
 
-from pcapi.repository.clean_database import clean_all_database
+from pcapi.db_utils import clean_all_database
 from pcapi.utils.blueprint import Blueprint
 
 

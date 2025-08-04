@@ -2,7 +2,7 @@ import logging
 
 import pcapi.scheduled_tasks.decorators as cron_decorators
 from pcapi.core.permissions import models as perm_models
-from pcapi.install_database_extensions import install_database_extensions
+from pcapi.db_utils import install_database_extensions
 from pcapi.models import db
 from pcapi.models.feature import check_feature_flags_completeness
 from pcapi.models.feature import clean_feature_flags
