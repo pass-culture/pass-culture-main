@@ -34,6 +34,7 @@
   {% if has_permission("PRO_FRAUD_ACTIONS") or has_permission("VALIDATE_OFFERER") %}<th scope="col">Règles de conformité</th>{% endif %}
   {% if has_permission("PRO_FRAUD_ACTIONS") %}
     <th scope="col">Score data</th>
+    <th scope="col">Prédiction de validité</th>
     <th scope="col">Tarif</th>
   {% endif %}
   {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<th scope="col">Tag</th>{% endif %}
