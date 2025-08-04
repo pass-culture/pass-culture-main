@@ -27,7 +27,6 @@ class FeatureToggle(enum.Enum):
     ALGOLIA_BOOKINGS_NUMBER_COMPUTATION = (
         "Active le calcul du nombre des réservations lors de l'indexation des offres sur Algolia"
     )
-    API_ADRESSE_AVAILABLE = "Active les fonctionnalitées liées à l'API Adresse"
     API_SIRENE_AVAILABLE = "Active les fonctionnalitées liées à l'API Sirene"
     APP_ENABLE_AUTOCOMPLETE = "Active l'autocomplete sur la barre de recherche relative au rework de la homepage"
     BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
@@ -137,7 +136,6 @@ class FeatureToggle(enum.Enum):
         "Désactiver la notification push Batch pour les réservations se déroulant le jour même"
     )
     WIP_ENABLE_CLICKHOUSE_IN_BO = "Utiliser Clickhouse pour les statistiques des acteurs culturels dans le BO"
-    WIP_ENABLE_EVENT_WITH_OPENING_HOUR = "Activer la nouvelle création d'un événement sur horaires d'ouverture"
     WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE = (
         "Activer la nouvelle structure des offres et réservations collectives"
     )
@@ -159,7 +157,6 @@ class FeatureToggle(enum.Enum):
         "Autoriser l'ajout de nouvelle structure seulement pour les collectivités"
     )
     WIP_ENABLE_NEW_OFFER_CREATION_FLOW = "Activer le nouveau parcours de création d'offre"
-    WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = "Utiliser les OffererAddress comme source de données"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -228,7 +225,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED,
     FeatureToggle.WIP_DISABLE_TODAY_STOCK_NOTIFICATION,
     FeatureToggle.WIP_ENABLE_CLICKHOUSE_IN_BO,
-    FeatureToggle.WIP_ENABLE_EVENT_WITH_OPENING_HOUR,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE,
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
