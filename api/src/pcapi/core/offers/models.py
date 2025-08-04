@@ -1600,6 +1600,11 @@ class Movie:
     extra_data: OfferExtraData | None
 
 
+class ComplianceValidationStatusPrediction(enum.Enum):
+    APPROVED = "approved"
+    REJECTED = "rejected"
+
+
 class OfferCompliance(PcObject, Base, Model):
     __tablename__ = "offer_compliance"
     offerId: int = sa.Column(
@@ -1611,3 +1616,7 @@ class OfferCompliance(PcObject, Base, Model):
     compliance_reasons: sa_orm.Mapped[list[str]] = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.String)), nullable=False
     )
+    validation_status_prediction: ComplianceValidationStatusPrediction = sa.Column(
+        db_utils.MagicEnum(ComplianceValidationStatusPrediction), nullable=True
+    )
+    validation_status_prediction_reason: str | None = sa.Column(sa.Text, nullable=True)

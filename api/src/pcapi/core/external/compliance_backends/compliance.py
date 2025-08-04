@@ -3,6 +3,7 @@ import logging
 from pcapi import settings
 from pcapi.core.auth import api as auth_api
 from pcapi.core.external.compliance_backends.base import BaseBackend
+from pcapi.tasks.serialization.compliance_tasks import CompliancePredictionOutput
 from pcapi.tasks.serialization.compliance_tasks import GetComplianceScoreRequest
 from pcapi.utils import requests
 
@@ -11,12 +12,12 @@ logger = logging.getLogger(__name__)
 
 
 class ComplianceBackend(BaseBackend):
-    def get_score_from_compliance_api(self, payload: GetComplianceScoreRequest) -> tuple[int | None, list[str]]:
+    def get_score_from_compliance_api(self, payload: GetComplianceScoreRequest) -> CompliancePredictionOutput | None:
         client_id = settings.COMPLIANCE_API_CLIENT_ID
 
         id_token = self.get_id_token_for_compliance(client_id)
         if not id_token:  # only possible in development
-            return None, []
+            return None
 
         data = payload.to_dict()
         try:
@@ -68,7 +69,7 @@ class ComplianceBackend(BaseBackend):
             raise requests.ExternalAPIException(is_retryable=True)
 
         data = api_response.json()
-        return data["probability_validated"], data.get("rejection_main_features", [])
+        return CompliancePredictionOutput.parse_obj(data)
 
     def get_id_token_for_compliance(self, client_id: str) -> str | None:
         return auth_api.get_id_token_from_google(client_id)
