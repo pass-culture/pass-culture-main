@@ -100,13 +100,6 @@ class CommonTest:
         assert profile_completion_fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert profile_completion_fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
-        # try to create duplicate
-        fraud_api.create_profile_completion_fraud_check(user, user.eligibility, content)
-        assert caplog.records[0].message == "Profile completion fraud check for user already exists."
-        assert caplog.records[0].extra == {
-            "user_id": user.id,
-        }
-
 
 def filter_invalid_fraud_items_to_reason_codes(
     fraud_items: list[fraud_models.FraudItem],

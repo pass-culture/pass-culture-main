@@ -9,7 +9,6 @@ import pcapi.core.fraud.utils as fraud_utils
 import pcapi.core.mails.transactional as transaction_mails
 from pcapi import settings
 from pcapi.core.fraud import exceptions as fraud_exceptions
-from pcapi.core.fraud import repository as fraud_repository
 from pcapi.core.fraud.utils import matching
 from pcapi.core.mails.transactional.users import fraud_emails
 from pcapi.core.subscription import api as subscription_api
@@ -688,12 +687,6 @@ def create_profile_completion_fraud_check(
     eligibility: users_models.EligibilityType | None,
     fraud_check_content: models.ProfileCompletionContent,
 ) -> None:
-    if fraud_repository.get_completed_profile_check(user, eligibility) is not None:
-        logger.warning(
-            "Profile completion fraud check for user already exists.",
-            extra={"user_id": user.id},
-        )
-        return
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
         type=models.FraudCheckType.PROFILE_COMPLETION,
