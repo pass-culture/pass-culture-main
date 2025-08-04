@@ -5,7 +5,6 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi import settings
 from pcapi.core.users import factories as users_factories
 from pcapi.routes.adage.v1.blueprint import adage_v1 as adage_v1_blueprint
 from pcapi.routes.adage_iframe.blueprint import adage_iframe as adage_iframe_blueprint
@@ -141,8 +140,24 @@ class ComputeProSessionValidityTest:
 
         assert result
 
+    def test_old_connection_not_recently_used(self, login_manager):
+        last_login = datetime.utcnow() - timedelta(days=46)
+        last_api_call = datetime.utcnow() - timedelta(days=46)
+
+        result = login_manager.compute_pro_session_validity(last_login, last_api_call)
+
+        assert not result
+
+    def test_old_connection_recently_used(self, login_manager):
+        last_login = datetime.utcnow() - timedelta(days=46)
+        last_api_call = datetime.utcnow() - timedelta(days=3)
+
+        result = login_manager.compute_pro_session_validity(last_login, last_api_call)
+
+        assert result
+
     def test_connexion_expired_but_still_active(self, login_manager):
-        last_login = datetime.utcnow() - settings.PRO_SESSION_LOGIN_TIMEOUT
+        last_login = datetime.utcnow() - timedelta(days=90)
         last_api_call = datetime.utcnow()
 
         result = login_manager.compute_pro_session_validity(last_login, last_api_call)
@@ -150,15 +165,15 @@ class ComputeProSessionValidityTest:
         assert result
 
     def test_connexion_expired_and_not_active(self, login_manager):
-        last_login = datetime.utcnow() - settings.PRO_SESSION_LOGIN_TIMEOUT
-        last_api_call = datetime.utcnow() - (settings.PRO_SESSION_GRACE_TIME + timedelta(hours=1))
+        last_login = datetime.utcnow() - timedelta(days=90)
+        last_api_call = datetime.utcnow() - timedelta(days=1)
 
         result = login_manager.compute_pro_session_validity(last_login, last_api_call)
 
         assert not result
 
     def test_connexion_expired_but_still_active_older_than_grace_time(self, login_manager):
-        last_login = datetime.utcnow() - settings.PRO_SESSION_FORCE_TIMEOUT
+        last_login = datetime.utcnow() - timedelta(days=91)
         last_api_call = datetime.utcnow()
 
         result = login_manager.compute_pro_session_validity(last_login, last_api_call)

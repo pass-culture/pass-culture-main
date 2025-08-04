@@ -3,6 +3,7 @@ import os
 import signal
 import uuid
 from datetime import datetime
+from datetime import timedelta
 
 import flask
 import werkzeug.datastructures
@@ -12,7 +13,6 @@ from sqlalchemy.exc import InternalError
 
 import pcapi.core.users.backoffice.api as backoffice_api
 import pcapi.core.users.models as users_models
-from pcapi import settings
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
@@ -23,6 +23,10 @@ from pcapi.routes.pro.blueprint import pro_private_api
 logger = logging.getLogger(__name__)
 
 PRO_APIS = {pro_private_api.name, private_api.name}
+PRO_SESSION_GRACE_TIME = timedelta(hours=1)
+PRO_SESSION_BASE_TIMEOUT = timedelta(days=45)
+PRO_SESSION_LOGIN_TIMEOUT = timedelta(days=90)
+PRO_SESSION_FORCE_TIMEOUT = timedelta(days=91)
 
 
 def get_request_authorization() -> werkzeug.datastructures.Authorization | None:
@@ -115,6 +119,7 @@ def manage_pro_session(user: users_models.User | None) -> users_models.User | No
     current_timestamp = datetime.utcnow().timestamp()
     last_login = datetime.fromtimestamp(flask.session.get("last_login", current_timestamp))
     last_api_call = datetime.fromtimestamp(flask.session.get("last_api_call", current_timestamp))
+
     valid_session = compute_pro_session_validity(last_login, last_api_call)
 
     if "last_login" not in flask.session:
@@ -132,17 +137,16 @@ def manage_pro_session(user: users_models.User | None) -> users_models.User | No
 def compute_pro_session_validity(last_login: datetime, last_api_call: datetime) -> bool:
     now = datetime.utcnow()
 
-    if last_login + settings.PRO_SESSION_LOGIN_TIMEOUT > now:  # connected less than 14 days ago
-        return True
-
-    if (
-        last_api_call + settings.PRO_SESSION_GRACE_TIME < now
-    ):  # connected more than 14 days ago and did not do anything in the last hour
+    if last_api_call + PRO_SESSION_BASE_TIMEOUT < now:
         return False
 
-    if (
-        last_login + settings.PRO_SESSION_FORCE_TIMEOUT > now
-    ):  # connected more than 14 days ago BUT less than 15 days ago, did something in the last hour
+    if last_login + PRO_SESSION_LOGIN_TIMEOUT > now:
+        return True
+
+    if last_api_call + PRO_SESSION_GRACE_TIME < now:
+        return False
+
+    if last_login + PRO_SESSION_FORCE_TIMEOUT > now:
         return True
 
     return False
