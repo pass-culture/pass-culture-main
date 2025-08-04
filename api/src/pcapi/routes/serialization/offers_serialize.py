@@ -267,6 +267,15 @@ class ListOffersOfferResponseModel(BaseModel):
         orm_mode = True
         getter_dict = ListOffersOfferResponseModelsGetterDict
 
+    @classmethod
+    def from_orm(cls, offer: offers_models.Offer) -> "ListOffersOfferResponseModel":
+        # TODO(jbaudet): remove this dirty trick when isEvent has been
+        # fully migrated and either isTimestamped has been renamed to
+        # isEvent or isEvent has been removed in favor of isTimestamped
+        res = super().from_orm(offer)
+        res.isEvent = offer.isTimestamped
+        return res
+
 
 class ListOffersResponseModel(BaseModel):
     __root__: list[ListOffersOfferResponseModel]

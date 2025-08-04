@@ -2269,22 +2269,24 @@ class PopBarcodesFromQueueAndCancelWastedExternalBookingTest:
 
 
 @pytest.mark.parametrize(
-    "is_digital,is_external,subcategory_id,expected",
+    "is_digital,is_external,subcategory,expected",
     (
-        (True, False, subcategories.LIVESTREAM_MUSIQUE.id, False),
-        (True, True, subcategories.LIVESTREAM_MUSIQUE.id, False),
-        (False, False, subcategories.SEANCE_CINE.id, True),
-        (False, True, subcategories.SEANCE_CINE.id, False),
-        (False, False, subcategories.CONCERT.id, False),
-        (False, True, subcategories.CONCERT.id, False),
-        (False, False, subcategories.ATELIER_PRATIQUE_ART.id, False),
-        (False, True, subcategories.ATELIER_PRATIQUE_ART.id, False),
-        (False, False, subcategories.LIVRE_PAPIER.id, True),
+        (True, False, subcategories.LIVESTREAM_MUSIQUE, False),
+        (True, True, subcategories.LIVESTREAM_MUSIQUE, False),
+        (False, False, subcategories.SEANCE_CINE, True),
+        (False, True, subcategories.SEANCE_CINE, False),
+        (False, False, subcategories.CONCERT, False),
+        (False, True, subcategories.CONCERT, False),
+        (False, False, subcategories.ATELIER_PRATIQUE_ART, False),
+        (False, True, subcategories.ATELIER_PRATIQUE_ART, False),
+        (False, False, subcategories.LIVRE_PAPIER, True),
     ),
 )
 @pytest.mark.usefixtures("clean_database")
-def test_voucher_is_displayed(is_digital, is_external, subcategory_id, expected):
-    offer = offers_factories.OfferFactory(subcategoryId=subcategory_id)
+def test_voucher_is_displayed(is_digital, is_external, subcategory, expected):
+    factory = offers_factories.EventOfferFactory if subcategory.is_event else offers_factories.OfferFactory
+    offer = factory(subcategoryId=subcategory.id)
+
     if is_digital:
         offer.url = "example.com"
 

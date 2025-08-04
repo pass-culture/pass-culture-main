@@ -152,6 +152,7 @@ def get_individual_bookings(user: users_models.User) -> list[models.Booking]:
                     sa_orm.joinedload(offers_models.Offer.offererAddress)
                     .load_only(offerers_models.OffererAddress.addressId, offerers_models.OffererAddress.label)
                     .joinedload(offerers_models.OffererAddress.address),
+                    sa_orm.selectinload(offers_models.Offer.openingHours).load_only(offerers_models.OpeningHours.id),
                 ),
                 sa_orm.joinedload(offers_models.Stock.priceCategory)
                 .joinedload(offers_models.PriceCategory.priceCategoryLabel)
@@ -614,7 +615,7 @@ def _cancel_bookings_from_stock(
         if booking.status in (models.BookingStatus.REIMBURSED, models.BookingStatus.CANCELLED):
             continue
 
-        cancel_even_if_used = stock.offer.isEvent
+        cancel_even_if_used = stock.offer.isTimestamped
         if booking.status == models.BookingStatus.USED and not cancel_even_if_used:
             continue
 
@@ -1215,7 +1216,7 @@ def is_voucher_displayed(offer: offers_models.Offer, isExternal: bool) -> bool:
     if offer.subcategoryId == SEANCE_CINE.id:
         return not isExternal
 
-    return not offer.isEvent
+    return not offer.isTimestamped
 
 
 def has_email_been_sent(stock: offers_models.Stock, withdrawal_delay: int | None) -> bool:

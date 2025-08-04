@@ -310,13 +310,21 @@ class OpeningHoursFactory(BaseFactory):
     class Meta:
         model = models.OpeningHours
 
-    # TODO(jbaudet::2025-07) make both optional and check that only one
-    # is set at a time
-    venue = factory.SubFactory(VenueFactory)
+    venue: factory.SubFactory | None = None
     offer: factory.SubFactory | None = None
 
     weekday = models.Weekday.MONDAY
     timespan = timespan_str_to_numrange(OPENING_HOURS)
+
+
+class VenueOpeningHoursFactory(OpeningHoursFactory):
+    venue: factory.SubFactory | None = factory.SubFactory(VenueFactory)
+    offer: factory.SubFactory | None = None
+
+
+class OfferOpeningHoursFactory(OpeningHoursFactory):
+    venue: factory.SubFactory | None = None
+    offer: factory.SubFactory | None = factory.SubFactory("pcapi.core.offers.factories.OfferFactory")
 
 
 class UserOffererFactory(BaseFactory):
