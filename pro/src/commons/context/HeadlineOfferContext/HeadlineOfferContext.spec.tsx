@@ -11,7 +11,6 @@ import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
   HeadlineOfferContextProvider,
-  LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY,
   useHeadlineOfferContext,
 } from './HeadlineOfferContext'
 
@@ -19,12 +18,10 @@ const LABELS = {
   display: {
     headlineOffer: 'Headline Offer Id',
     isHeadlineOfferAllowedForOfferer: 'Is Headline Offer Available',
-    isHeadlineOfferBannerOpen: 'Is Headline Offer Banner Open',
   },
   controls: {
     upsertHeadlineOffer: 'Upsert Headline Offer',
     removeHeadlineOffer: 'Delete Headline Offer',
-    closeHeadlineOfferBanner: 'Close Headline Offer Banner',
   },
   notify: {
     upsert: {
@@ -76,8 +73,6 @@ const TestComponent = () => {
     headlineOffer,
     upsertHeadlineOffer,
     removeHeadlineOffer,
-    isHeadlineOfferBannerOpen,
-    closeHeadlineOfferBanner,
     isHeadlineOfferAllowedForOfferer,
   } = useHeadlineOfferContext()
 
@@ -93,10 +88,6 @@ const TestComponent = () => {
           {LABELS.display.isHeadlineOfferAllowedForOfferer}:{' '}
           {isHeadlineOfferAllowedForOfferer ? 'true' : 'false'}
         </span>
-        <span>
-          {LABELS.display.isHeadlineOfferBannerOpen}:{' '}
-          {isHeadlineOfferBannerOpen ? 'true' : 'false'}
-        </span>
       </div>
       <div id="controls">
         <button
@@ -111,9 +102,6 @@ const TestComponent = () => {
         </button>
         <button onClick={removeHeadlineOffer}>
           {LABELS.controls.removeHeadlineOffer}
-        </button>
-        <button onClick={closeHeadlineOfferBanner}>
-          {LABELS.controls.closeHeadlineOfferBanner}
         </button>
       </div>
     </>
@@ -283,29 +271,6 @@ describe('HeadlineOfferContext', () => {
         }
       )
     })
-
-    it('should close headline offer banner on successful upsert', async () => {
-      renderIndividualOffersContext()
-
-      await waitFor(async () => {
-        const display = await screen.findByText(
-          new RegExp(LABELS.display.isHeadlineOfferBannerOpen)
-        )
-        expect(display.textContent).toContain('true')
-      })
-
-      const upsertButton = await screen.findByRole('button', {
-        name: new RegExp(LABELS.controls.upsertHeadlineOffer),
-      })
-      await userEvent.click(upsertButton)
-
-      await waitFor(async () => {
-        const updatedDisplay = await screen.findByText(
-          new RegExp(LABELS.display.isHeadlineOfferBannerOpen)
-        )
-        expect(updatedDisplay.textContent).toContain('false')
-      })
-    })
   })
 
   describe('removeHeadlineOffer', () => {
@@ -387,48 +352,6 @@ describe('HeadlineOfferContext', () => {
           actionType: 'delete',
         }
       )
-    })
-  })
-
-  describe('closeHeadlineOfferBanner', () => {
-    it('should close headline offer banner and update state', async () => {
-      renderIndividualOffersContext()
-
-      await waitFor(async () => {
-        const display = await screen.findByText(
-          new RegExp(LABELS.display.isHeadlineOfferBannerOpen)
-        )
-        expect(display.textContent).toContain('true')
-      })
-
-      const closeButton = await screen.findByRole('button', {
-        name: new RegExp(LABELS.controls.closeHeadlineOfferBanner),
-      })
-      await userEvent.click(closeButton)
-
-      await waitFor(async () => {
-        const updatedDisplay = await screen.findByText(
-          new RegExp(LABELS.display.isHeadlineOfferBannerOpen)
-        )
-        expect(updatedDisplay.textContent).toContain('false')
-      })
-    })
-
-    it('should remember the user choice', async () => {
-      renderIndividualOffersContext()
-
-      expect(
-        localStorage.getItem(LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY)
-      ).toBeNull()
-
-      const closeButton = await screen.findByRole('button', {
-        name: new RegExp(LABELS.controls.closeHeadlineOfferBanner),
-      })
-      await userEvent.click(closeButton)
-
-      expect(
-        localStorage.getItem(LOCAL_STORAGE_HEADLINE_OFFER_BANNER_CLOSED_KEY)
-      ).toBe('true')
     })
   })
 })
