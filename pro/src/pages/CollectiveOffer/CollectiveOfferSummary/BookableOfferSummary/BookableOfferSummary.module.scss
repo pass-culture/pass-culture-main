@@ -58,10 +58,15 @@
   }
 }
 
+.detail-list {
+  width: 70%;
+}
+
 .header-actions {
   display: flex;
   flex-direction: column;
-  margin-right: rem.torem(32px);
+  margin-right: rem.torem(16px);
+  margin-left: rem.torem(16px);
 
   li {
     margin-bottom: rem.torem(8px);
