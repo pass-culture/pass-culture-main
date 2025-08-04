@@ -12,6 +12,7 @@ import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
   Events,
 } from 'commons/core/FirebaseEvents/constants'
+import * as useNotification from 'commons/hooks/useNotification'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferVenueFactory,
@@ -33,6 +34,7 @@ import {
 vi.mock('apiClient/api', () => ({
   api: {
     patchCollectiveOffersArchive: vi.fn(),
+    cancelCollectiveOfferBooking: vi.fn(),
   },
 }))
 
@@ -49,13 +51,27 @@ const renderBookableOfferSummary = (
   })
 
 describe('BookableOfferSummary', () => {
+  const mockNotifyError = vi.fn()
+  const mockNotifySuccess = vi.fn()
   let props: BookableOfferSummaryProps
   const mockLogEvent = vi.fn()
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    const notifsImport = (await vi.importActual(
+      'commons/hooks/useNotification'
+    )) as ReturnType<typeof useNotification.useNotification>
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
+      ...notifsImport,
+      error: mockNotifyError,
+      success: mockNotifySuccess,
+    }))
+
     const offer = getCollectiveOfferFactory({
       name: 'Test Offer',
-      venue: getCollectiveOfferVenueFactory({ publicName: 'Test Venue', departementCode: '75' }),
+      venue: getCollectiveOfferVenueFactory({
+        publicName: 'Test Venue',
+        departementCode: '75',
+      }),
       collectiveStock: {
         id: 1,
         isBooked: false,
@@ -127,8 +143,8 @@ describe('BookableOfferSummary', () => {
       offer: getCollectiveOfferFactory({
         location: {
           locationType: CollectiveLocationType.SCHOOL,
-        }
-      })
+        },
+      }),
     }
     renderBookableOfferSummary(testProps, {
       features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'],
@@ -143,8 +159,8 @@ describe('BookableOfferSummary', () => {
       offer: getCollectiveOfferFactory({
         location: {
           locationType: CollectiveLocationType.TO_BE_DEFINED,
-        }
-      })
+        },
+      }),
     }
     renderBookableOfferSummary(testProps, {
       features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'],
@@ -157,7 +173,10 @@ describe('BookableOfferSummary', () => {
   it('should render the date of the offer when start and end date are not the same', () => {
     const testProps = {
       offer: getCollectiveOfferFactory({
-        venue: getCollectiveOfferVenueFactory({ publicName: 'Test Venue', departementCode: '75' }),
+        venue: getCollectiveOfferVenueFactory({
+          publicName: 'Test Venue',
+          departementCode: '75',
+        }),
         collectiveStock: {
           id: 1,
           isBooked: false,
@@ -172,7 +191,7 @@ describe('BookableOfferSummary', () => {
 
     renderBookableOfferSummary(testProps)
     expect(
-      screen.getByText("Du 21/12/2023 au 22/12/2023 - 11h00")
+      screen.getByText('Du 21/12/2023 au 22/12/2023 - 11h00')
     ).toBeInTheDocument()
   })
 
@@ -236,10 +255,81 @@ describe('BookableOfferSummary', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should render the "Annuler la réservation" action if cancellation is allowed', () => {
+  it('should open the confirmation modal and call the API when confirming cancellation', async () => {
+    const mockCancelCollectiveOfferBooking = vi
+      .spyOn(api, 'cancelCollectiveOfferBooking')
+      .mockResolvedValueOnce()
+
     renderBookableOfferSummary(props)
+
     const cancelButton = screen.getByText('Annuler la réservation')
-    expect(cancelButton).toBeInTheDocument()
+    await userEvent.click(cancelButton)
+
+    expect(
+      screen.getByText(/Êtes-vous sûr de vouloir annuler la réservation/i)
+    ).toBeInTheDocument()
+
+    const confirmButton = screen.getByRole('button', {
+      name: /Annuler la réservation/i,
+    })
+    await userEvent.click(confirmButton)
+
+    expect(mockNotifySuccess).toHaveBeenCalledWith(
+      'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.',
+      { duration: 8000 }
+    )
+
+    await waitFor(() => {
+      expect(mockCancelCollectiveOfferBooking).toHaveBeenCalledWith(
+        props.offer.id
+      )
+    })
+
+    expect(
+      screen.queryByText(/Êtes-vous sûr de vouloir annuler la réservation/i)
+    ).not.toBeInTheDocument()
+  })
+
+  it('should display an error notification if the cancellation API fails', async () => {
+    vi.spyOn(api, 'cancelCollectiveOfferBooking').mockRejectedValueOnce(
+      new Error('Erreur API')
+    )
+
+    renderBookableOfferSummary(props)
+
+    const cancelButton = screen.getByText('Annuler la réservation')
+    await userEvent.click(cancelButton)
+
+    const confirmButton = screen.getByRole('button', {
+      name: /Annuler la réservation/i,
+    })
+    await userEvent.click(confirmButton)
+
+    expect(mockNotifyError).toHaveBeenCalledWith(
+      'Une erreur est survenue lors de l’annulation de la réservation.',
+      { duration: 8000 }
+    )
+  })
+
+  it('should display an error notification if offer.id is missing when cancelling', async () => {
+    const invalidProps = {
+      ...props,
+      offer: { ...props.offer, id: 0 },
+    }
+
+    renderBookableOfferSummary(invalidProps)
+
+    const cancelButton = screen.getByText('Annuler la réservation')
+    await userEvent.click(cancelButton)
+
+    const confirmButton = screen.getByRole('button', {
+      name: /Annuler la réservation/i,
+    })
+    await userEvent.click(confirmButton)
+
+    expect(mockNotifyError).toHaveBeenCalledWith(
+      'L’identifiant de l’offre n’est pas valide.'
+    )
   })
 
   it('should log event when clicking "Dupliquer" button', async () => {
