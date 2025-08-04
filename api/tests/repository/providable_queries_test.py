@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from pcapi.core.offers.models import Stock
-from pcapi.repository.providable_queries import get_last_update_for_provider
+from pcapi.local_providers.chunk_manager import get_last_update_for_provider
 
 
 def test_get_last_update_for_provider_should_return_date_modified_at_last_provider_when_provided():

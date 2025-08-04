@@ -18,6 +18,7 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.providers.models import VenueProvider
+from pcapi.local_providers.chunk_manager import get_last_update_for_provider
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.movie_festivals import api as movie_festivals_api
@@ -25,7 +26,6 @@ from pcapi.local_providers.movie_festivals import constants as movie_festivals_c
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models import db
-from pcapi.repository.providable_queries import get_last_update_for_provider
 from pcapi.utils.date import get_naive_utc_now
 
 

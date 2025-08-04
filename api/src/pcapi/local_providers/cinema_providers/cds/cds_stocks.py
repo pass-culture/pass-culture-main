@@ -20,6 +20,7 @@ from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.offerers.models import Venue
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.repository import get_cds_cinema_details
+from pcapi.local_providers.chunk_manager import get_last_update_for_provider
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.movie_festivals import api as movie_festivals_api
@@ -27,7 +28,6 @@ from pcapi.local_providers.movie_festivals import constants as movie_festivals_c
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models import db
-from pcapi.repository.providable_queries import get_last_update_for_provider
 
 
 ACCEPTED_MEDIA_OPTIONS_TICKET_LABEL = {
