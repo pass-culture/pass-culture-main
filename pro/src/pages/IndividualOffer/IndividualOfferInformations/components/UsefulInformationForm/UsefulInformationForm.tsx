@@ -90,8 +90,7 @@ export const UsefulInformationForm = ({
 
   const displayNoRefundWarning =
     offerSubCategory?.reimbursementRule === REIMBURSEMENT_RULES.NOT_REIMBURSED
-  const displayWithdrawalReminder =
-    !offerSubCategory?.isEvent && !isOfferOnline
+  const displayWithdrawalReminder = !offerSubCategory?.isEvent && !isOfferOnline
 
   const getFirstWithdrawalTypeEnumValue = (value: string) => {
     switch (value) {
@@ -106,201 +105,215 @@ export const UsefulInformationForm = ({
     }
   }
 
-
   if (!selectedVenue) {
     return <Spinner />
   }
 
   return (
     <>
-      <FormLayout.Section title="Où profiter de l’offre ?">
-        {!isOfferOnline && (
+      {!isNewOfferCreationFlowFeatureActive && !isOfferOnline && (
+        <FormLayout.Section title="Où profiter de l’offre ?">
           <OfferLocation
             venue={selectedVenue}
             readOnlyFields={readOnlyFields}
           />
-        )}
-        {isNewOfferCreationFlowFeatureActive && isOfferOnline && (
-          <FormLayout.Row className={styles.row}>
-            <TextInput
-              label="URL d’accès à l’offre"
-              type="text"
-              description="Format : https://exemple.com"
-              disabled={readOnlyFields.includes('url')}
-              {...register('url')}
-              error={errors.url?.message}
-              required
+        </FormLayout.Section>
+      )}
+      {isNewOfferCreationFlowFeatureActive && (
+        <FormLayout.Section title="Où profiter de l’offre ?">
+          {!isOfferOnline && (
+            <OfferLocation
+              venue={selectedVenue}
+              readOnlyFields={readOnlyFields}
             />
-          </FormLayout.Row>
-        )}
-      </FormLayout.Section>
+          )}
+          {isOfferOnline && (
+            <FormLayout.Row className={styles.row}>
+              <TextInput
+                label="URL d’accès à l’offre"
+                type="text"
+                description="Format : https://exemple.com"
+                disabled={readOnlyFields.includes('url')}
+                {...register('url')}
+                error={errors.url?.message}
+                required
+              />
+            </FormLayout.Row>
+          )}
+        </FormLayout.Section>
+      )}
 
-      <FormLayout.Section title="Retrait de l’offre">
-        {displayNoRefundWarning && (
-          <FormLayout.Row className={styles['info-banners']}>
-            <OfferRefundWarning />
-          </FormLayout.Row>
-        )}
-        {displayWithdrawalReminder && (
-          <FormLayout.Row className={styles['info-banners']}>
-            <WithdrawalReminder />
-          </FormLayout.Row>
-        )}
+      {!isNewOfferCreationFlowFeatureActive && (
+        <>
+          {' '}
+          <FormLayout.Section title="Retrait de l’offre">
+            {displayNoRefundWarning && (
+              <FormLayout.Row className={styles['info-banners']}>
+                <OfferRefundWarning />
+              </FormLayout.Row>
+            )}
+            {displayWithdrawalReminder && (
+              <FormLayout.Row className={styles['info-banners']}>
+                <WithdrawalReminder />
+              </FormLayout.Row>
+            )}
 
-        {conditionalFields.includes('withdrawalType') && (
-          <>
-            <FormLayout.Row mdSpaceAfter>
-              {/*
+            {conditionalFields.includes('withdrawalType') && (
+              <>
+                <FormLayout.Row mdSpaceAfter>
+                  {/*
                 IN_APP withdrawal type is only selectable by offers created by the event API
                 Theses offers are not editable by the user
               */}
-              <RadioButtonGroup
-                variant="detailed"
-                name="withdrawalType"
-                checkedOption={withdrawalType}
-                options={
-                  withdrawalType === WithdrawalTypeEnum.IN_APP
-                    ? providedTicketWithdrawalTypeRadios
-                    : ticketWithdrawalTypeRadios
+                  <RadioButtonGroup
+                    variant="detailed"
+                    name="withdrawalType"
+                    checkedOption={withdrawalType}
+                    options={
+                      withdrawalType === WithdrawalTypeEnum.IN_APP
+                        ? providedTicketWithdrawalTypeRadios
+                        : ticketWithdrawalTypeRadios
+                    }
+                    label="Précisez la façon dont vous distribuerez les billets :"
+                    // when withdrawal Type is IN_APP the field should also be readOnly.
+                    // I find it better to be explicit about it
+                    disabled={
+                      readOnlyFields.includes('withdrawalType') ||
+                      withdrawalType === WithdrawalTypeEnum.IN_APP
+                    }
+                    onChange={(e) => {
+                      setValue(
+                        'withdrawalType',
+                        e.target.value as WithdrawalTypeEnum
+                      )
+                      setValue(
+                        'withdrawalDelay',
+                        getFirstWithdrawalTypeEnumValue(e.target.value)
+                      )
+                    }}
+                  />
+                </FormLayout.Row>
+
+                {withdrawalType === WithdrawalTypeEnum.BY_EMAIL && (
+                  <FormLayout.Row mdSpaceAfter>
+                    <Select
+                      {...register('withdrawalDelay')}
+                      label="Date d’envoi - avant le début de l’évènement"
+                      options={ticketSentDateOptions}
+                      disabled={readOnlyFields.includes('withdrawalDelay')}
+                      error={errors.withdrawalDelay?.message}
+                    />
+                  </FormLayout.Row>
+                )}
+
+                {withdrawalType === WithdrawalTypeEnum.ON_SITE && (
+                  <FormLayout.Row mdSpaceAfter>
+                    <Select
+                      {...register('withdrawalDelay')}
+                      label="Heure de retrait - avant le début de l’évènement"
+                      options={ticketWithdrawalHourOptions}
+                      disabled={readOnlyFields.includes('withdrawalDelay')}
+                    />
+                  </FormLayout.Row>
+                )}
+              </>
+            )}
+
+            <FormLayout.Row mdSpaceAfter>
+              <TextArea
+                {...register('withdrawalDetails')}
+                label={'Informations de retrait'}
+                maxLength={500}
+                disabled={readOnlyFields.includes('withdrawalDetails')}
+                description={
+                  isOfferOnline
+                    ? 'Exemples : une création de compte, un code d’accès spécifique, une communication par email...'
+                    : 'Exemples : une autre adresse, un horaire d’accès, un délai de retrait, un guichet spécifique, un code d’accès, une communication par email...'
                 }
-                label="Précisez la façon dont vous distribuerez les billets :"
-                // when withdrawal Type is IN_APP the field should also be readOnly.
-                // I find it better to be explicit about it
-                disabled={
-                  readOnlyFields.includes('withdrawalType') ||
-                  withdrawalType === WithdrawalTypeEnum.IN_APP
-                }
-                onChange={(e) => {
-                  setValue(
-                    'withdrawalType',
-                    e.target.value as WithdrawalTypeEnum
-                  )
-                  setValue(
-                    'withdrawalDelay',
-                    getFirstWithdrawalTypeEnumValue(e.target.value)
-                  )
-                }}
               />
             </FormLayout.Row>
-
-            {withdrawalType === WithdrawalTypeEnum.BY_EMAIL && (
+            {conditionalFields.includes('bookingContact') && (
               <FormLayout.Row mdSpaceAfter>
-                <Select
-                  {...register('withdrawalDelay')}
-                  label="Date d’envoi - avant le début de l’évènement"
-                  options={ticketSentDateOptions}
-                  disabled={readOnlyFields.includes('withdrawalDelay')}
-                  error={errors.withdrawalDelay?.message}
+                <TextInput
+                  {...register('bookingContact')}
+                  label="Email de contact communiqué aux bénéficiaires"
+                  maxLength={90}
+                  description="Format : email@exemple.com"
+                  disabled={readOnlyFields.includes('bookingContact')}
+                  error={errors.bookingContact?.message}
+                  required
                 />
               </FormLayout.Row>
             )}
+          </FormLayout.Section>
+          <FormLayout.Section title="Lien de réservation externe en l’absence de crédit">
+            <p className={styles['infotext']}>
+              S’ils ne disposent pas ou plus de crédit, les utilisateurs de
+              l’application seront redirigés sur ce lien pour pouvoir néanmoins
+              profiter de votre offre.
+            </p>
+            <FormLayout.Row>
+              <TextInput
+                {...register('externalTicketOfficeUrl')}
+                label="URL de votre site ou billetterie"
+                type="text"
+                description="Format : https://exemple.com"
+                disabled={readOnlyFields.includes('externalTicketOfficeUrl')}
+                error={errors.externalTicketOfficeUrl?.message}
+              />
+            </FormLayout.Row>
+          </FormLayout.Section>
+          {accessibilityOptionsGroups && (
+            <FormLayout.Section title="Modalités d’accessibilité">
+              <FormLayout.Row>
+                <CheckboxGroup
+                  name="accessibility"
+                  group={accessibilityOptionsGroups}
+                  disabled={readOnlyFields.includes('accessibility')}
+                  legend="Cette offre est accessible au public en situation de handicap :"
+                  onChange={() => trigger('accessibility')}
+                  required
+                  error={errors.accessibility?.message}
+                />
+              </FormLayout.Row>
+            </FormLayout.Section>
+          )}
+          <FormLayout.Section title="Notifications">
+            <FormLayout.Row>
+              <Checkbox
+                label="Être notifié par email des réservations"
+                checked={!!receiveNotificationEmails}
+                // TODO (igabriele, 2025-07-24): Move that to a named function once the FF is enabled in production.
+                onChange={(e) => {
+                  if (
+                    e.target.checked &&
+                    bookingEmail ===
+                      DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES.bookingEmail
+                  ) {
+                    setValue('bookingEmail', offer.venue.bookingEmail ?? email)
+                  }
 
-            {withdrawalType === WithdrawalTypeEnum.ON_SITE && (
-              <FormLayout.Row mdSpaceAfter>
-                <Select
-                  {...register('withdrawalDelay')}
-                  label="Heure de retrait - avant le début de l’évènement"
-                  options={ticketWithdrawalHourOptions}
-                  disabled={readOnlyFields.includes('withdrawalDelay')}
+                  setValue('receiveNotificationEmails', e.target.checked)
+                }}
+                disabled={readOnlyFields.includes('receiveNotificationEmails')}
+              />
+            </FormLayout.Row>
+            {receiveNotificationEmails && (
+              <FormLayout.Row className={styles['email-row']}>
+                <TextInput
+                  {...register('bookingEmail')}
+                  label="Email auquel envoyer les notifications"
+                  maxLength={90}
+                  description="Format : email@exemple.com"
+                  disabled={readOnlyFields.includes('bookingEmail')}
+                  required
+                  error={errors.bookingEmail?.message}
                 />
               </FormLayout.Row>
             )}
-          </>
-        )}
-
-        <FormLayout.Row mdSpaceAfter>
-          <TextArea
-            {...register('withdrawalDetails')}
-            label={'Informations de retrait'}
-            maxLength={500}
-            disabled={readOnlyFields.includes('withdrawalDetails')}
-            description={
-              isOfferOnline
-                ? 'Exemples : une création de compte, un code d’accès spécifique, une communication par email...'
-                : 'Exemples : une autre adresse, un horaire d’accès, un délai de retrait, un guichet spécifique, un code d’accès, une communication par email...'
-            }
-          />
-        </FormLayout.Row>
-        {conditionalFields.includes('bookingContact') && (
-          <FormLayout.Row mdSpaceAfter>
-            <TextInput
-              {...register('bookingContact')}
-              label="Email de contact communiqué aux bénéficiaires"
-              maxLength={90}
-              description="Format : email@exemple.com"
-              disabled={readOnlyFields.includes('bookingContact')}
-              error={errors.bookingContact?.message}
-              required
-            />
-          </FormLayout.Row>
-        )}
-      </FormLayout.Section>
-      <FormLayout.Section title="Lien de réservation externe en l’absence de crédit">
-        <p className={styles['infotext']}>
-          S’ils ne disposent pas ou plus de crédit, les utilisateurs de
-          l’application seront redirigés sur ce lien pour pouvoir néanmoins
-          profiter de votre offre.
-        </p>
-        <FormLayout.Row>
-          <TextInput
-            {...register('externalTicketOfficeUrl')}
-            label="URL de votre site ou billetterie"
-            type="text"
-            description="Format : https://exemple.com"
-            disabled={readOnlyFields.includes('externalTicketOfficeUrl')}
-            error={errors.externalTicketOfficeUrl?.message}
-          />
-        </FormLayout.Row>
-      </FormLayout.Section>
-      {!isNewOfferCreationFlowFeatureActive && accessibilityOptionsGroups && (
-        <FormLayout.Section title="Modalités d’accessibilité">
-          <FormLayout.Row>
-            <CheckboxGroup
-              name="accessibility"
-              group={accessibilityOptionsGroups}
-              disabled={readOnlyFields.includes('accessibility')}
-              legend="Cette offre est accessible au public en situation de handicap :"
-              onChange={() => trigger('accessibility')}
-              required
-              error={errors.accessibility?.message}
-            />
-          </FormLayout.Row>
-        </FormLayout.Section>
+          </FormLayout.Section>
+        </>
       )}
-      <FormLayout.Section title="Notifications">
-        <FormLayout.Row>
-          <Checkbox
-            label="Être notifié par email des réservations"
-            checked={!!receiveNotificationEmails}
-            // TODO (igabriele, 2025-07-24): Move that to a named function once the FF is enabled in production.
-            onChange={(e) => {
-              if (
-                e.target.checked &&
-                bookingEmail ===
-                  DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES.bookingEmail
-              ) {
-                setValue('bookingEmail', offer.venue.bookingEmail ?? email)
-              }
-
-              setValue('receiveNotificationEmails', e.target.checked)
-            }}
-            disabled={readOnlyFields.includes('receiveNotificationEmails')}
-          />
-        </FormLayout.Row>
-        {receiveNotificationEmails && (
-          <FormLayout.Row className={styles['email-row']}>
-            <TextInput
-              {...register('bookingEmail')}
-              label="Email auquel envoyer les notifications"
-              maxLength={90}
-              description="Format : email@exemple.com"
-              disabled={readOnlyFields.includes('bookingEmail')}
-              required
-              error={errors.bookingEmail?.message}
-            />
-          </FormLayout.Row>
-        )}
-      </FormLayout.Section>
     </>
   )
 }
