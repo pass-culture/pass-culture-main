@@ -20,11 +20,14 @@ import { useMediaQuery } from 'commons/hooks/useMediaQuery'
 import { setSearchView } from 'commons/store/adageFilter/reducer'
 import { adageSearchViewSelector } from 'commons/store/adageFilter/selectors'
 import { LOGS_DATA } from 'commons/utils/config'
+import {
+  HighlightBanner,
+  HighlightBannerVariant,
+} from 'components/HighlightBanner/HighlightBanner'
 import fullGoTopIcon from 'icons/full-go-top.svg'
 import fullGridIcon from 'icons/full-grid.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullListIcon from 'icons/full-list.svg'
-import TFD2025 from 'pages/AdageIframe/app/components/HighlightBanner/assets/TFD2025.svg'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -33,7 +36,6 @@ import { ShadowTipsHelpIcon } from 'ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { OfferCardComponent } from '../../../AdageDiscovery/OfferCard/OfferCard'
-import { HighlightBanner } from '../../../HighlightBanner/HighlightBanner'
 import { CustomPagination } from '../../../Pagination/Pagination'
 import { AdageSkeleton } from '../../../Skeleton/AdageSkeleton'
 import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
@@ -43,6 +45,7 @@ import {
 } from '../../../ToggleButtonGroup/ToggleButtonGroup'
 
 import { AdageOfferListCard } from './AdageOfferListCard/AdageOfferListCard'
+import TFD2025 from './assets/TFD2025.svg'
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import styles from './Offers.module.scss'
 import { offerIsBookable } from './utils/offerIsBookable'
@@ -251,6 +254,7 @@ export const Offers = ({
                     className={styles['highlight-banner-icon']}
                   />
                 }
+                variant={HighlightBannerVariant.ADAGE}
               />
             ) : (
               adageViewType === 'list' &&
@@ -269,7 +273,7 @@ export const Offers = ({
                       alt="Soulèvements"
                     />
                   }
-                  primaryButton={
+                  cta={
                     <ButtonLink
                       variant={ButtonVariant.PRIMARY}
                       to="https://passculture.docsend.com/view/nn7q3isav3dmhue2/d/pkhf9bba2ft4myz8"
@@ -282,6 +286,7 @@ export const Offers = ({
                       en savoir plus
                     </ButtonLink>
                   }
+                  variant={HighlightBannerVariant.ADAGE}
                 />
               )
             )}

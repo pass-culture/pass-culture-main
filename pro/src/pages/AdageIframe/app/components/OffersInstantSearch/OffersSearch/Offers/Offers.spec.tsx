@@ -25,7 +25,7 @@ import {
 } from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 
-import { Offers, OffersProps } from '../Offers'
+import { Offers, OffersProps } from './Offers'
 
 vi.mock('react-router', async () => ({
   ...(await vi.importActual('react-router')),

@@ -3,62 +3,62 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_outline.scss" as outline;
 
-.highlight-banner {
+.highlight-banner-adage {
   margin-top: rem.torem(16px);
   border-radius: rem.torem(8px);
   background-color: var(--color-background-info);
   padding: rem.torem(24px);
   position: relative;
 
-  &-icon {
+  .icon {
     width: rem.torem(32px);
   }
 
-  &-title {
+  .title {
     width: 85%;
     color: var(--color-text-brand-primary);
   }
 
-  &-informations {
+  .informations {
     display: flex;
     flex-direction: column;
     gap: 16px;
     width: 70%;
   }
 
-  &-description {
+  .description {
     @include fonts.body;
 
     margin: rem.torem(8px) 0 rem.torem(16px) 0;
     height: max-content;
   }
 
-  &-infos {
+  .infos {
     display: flex;
     flex-direction: column;
     gap: rem.torem(16px);
     padding: rem.torem(32px) rem.torem(24px);
   }
 
-  &-container {
+  .container {
     @include fonts.title1;
 
     max-width: calc(100% - 350px);
     gap: rem.torem(16px);
   }
 
-  &-data {
+  .data {
     display: flex;
   }
 
-  &-header {
+  .header {
     display: flex;
     align-items: flex-start;
     gap: rem.torem(8px);
     width: 100%;
   }
 
-  &-close {
+  .close {
     position: absolute;
     top: 16px;
     right: 16px;
@@ -76,13 +76,61 @@
   }
 }
 
+.highlight-banner-default {
+  width: 100%;
+  min-height: rem.torem(175px);
+  padding: rem.torem(24px);
+  border-radius: rem.torem(10px);
+  background: linear-gradient(180deg, #6123df 30%, #320096 70%);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: rem.torem(24px);
+  position: relative;
+
+  .container {
+    color: var(--color-white);
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .title {
+    @include fonts.title3;
+  }
+
+  .description {
+    @include fonts.body-s;
+
+    margin-bottom: rem.torem(16px);
+  }
+
+  .close {
+    color: var(--color-white);
+    background: none;
+    border: none;
+    cursor: pointer;
+    min-width: rem.torem(20px);
+    min-height: rem.torem(20px);
+    margin-left: rem.torem(8px);
+    height: fit-content;
+
+    &-svg {
+      margin: 0 !important;
+    }
+
+    &:focus-visible {
+      outline-color: var(--color-white);
+    }
+  }
+}
+
 @media (max-width: size.$laptop) {
-  .highlight-banner {
-    &-img {
+  .highlight-banner-adage {
+    .img {
       display: none;
     }
 
-    &-container {
+    .container {
       max-width: unset;
     }
   }
