@@ -114,12 +114,6 @@ export function Subcategories({
           error={errors.categoryId?.message}
         />
       </FormLayout.Row>
-      {!readOnlyFields.includes('categoryId') && (
-        <Callout className={styles['subcategory-callout']}>
-          En fonction de la sous-catégorie choisie, certaines étapes seront
-          adaptées automatiquement.
-        </Callout>
-      )}
 
       {categoryId !== DEFAULT_DETAILS_FORM_VALUES.categoryId && (
         <Select
@@ -142,6 +136,12 @@ export function Subcategories({
           }
           error={errors.subcategoryId?.message}
         />
+      )}
+      {!readOnlyFields.includes('categoryId') && (
+        <Callout className={styles['subcategory-callout']}>
+          En fonction de la sous-catégorie choisie, certaines étapes seront
+          adaptées automatiquement.
+        </Callout>
       )}
     </FormLayout.Section>
   )
