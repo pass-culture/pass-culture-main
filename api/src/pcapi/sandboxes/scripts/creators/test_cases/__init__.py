@@ -27,6 +27,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.models import ImageType
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.titelive_gtl import GTLS
@@ -57,10 +58,6 @@ from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 
 
-if typing.TYPE_CHECKING:
-    from pcapi.core.offers import models as offers_models
-
-
 Fake = faker.Faker(locale="fr_FR")
 
 
@@ -73,6 +70,7 @@ def save_test_cases_sandbox() -> None:
     create_offers_interactions()
     create_offers_with_video_url()
     create_venues_across_cities()
+    create_offers_with_compliance_score()
     create_offers_for_each_subcategory()
     create_offers_with_same_author()
     create_roles_with_permissions()
@@ -802,6 +800,26 @@ def create_venues_across_cities() -> None:
                             seconds=random.randint(1, 59),
                         ),
                     )
+
+
+@log_func_duration
+def create_offers_with_compliance_score() -> None:
+    offer = offers_factories.OfferFactory()
+    offers_factories.OfferComplianceFactory(offer=offer)
+
+    offer2 = offers_factories.OfferFactory()
+    offers_factories.OfferComplianceFactory(
+        offer=offer2,
+        validation_status_prediction=offers_models.ComplianceValidationStatusPrediction.APPROVED,
+        validation_status_prediction_reason="Cette offre est conforme car elle respecte toutes les règles de conformité.",
+    )
+
+    offer3 = offers_factories.OfferFactory()
+    offers_factories.OfferComplianceFactory(
+        offer=offer3,
+        validation_status_prediction=offers_models.ComplianceValidationStatusPrediction.REJECTED,
+        validation_status_prediction_reason="Cette offre n'est pas conforme car elle ne respecte pas les règles de conformité.",
+    )
 
 
 @log_func_duration

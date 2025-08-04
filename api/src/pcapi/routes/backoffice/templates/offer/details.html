@@ -442,6 +442,19 @@
             {% endcall %}
           {% endcall %}
         {% endif %}
+        {% if offer.compliance.validation_status_prediction %}
+          {% call description_detail_vertical("Prédiction de validité") %}
+            {{ offer.compliance.validation_status_prediction | format_offer_compliance_llm_validation }}
+            {% if offer.compliance.validation_status_prediction_reason %}
+              <i class="bi bi-info-circle"
+                 data-bs-toggle="tooltip"
+                 data-bs-placement="top"
+                 data-bs-custom-class="primary-tooltip"
+                 data-bs-html="true"
+                 data-bs-title="<strong>Explication de la prédiction</strong> : {{ offer.compliance.validation_status_prediction_reason }}"></i>
+            {% endif %}
+          {% endcall %}
+        {% endif %}
       {% endif %}
     {% endif %}
     {% if offer.lastValidationDate or offer.lastValidationAuthor %}<hr />{% endif %}

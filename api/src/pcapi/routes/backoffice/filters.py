@@ -1043,6 +1043,18 @@ def format_compliance_reasons(features: list[str], return_markup: bool = True) -
     return format_as_badges([format_compliance_reason(feature) for feature in features], return_markup=return_markup)
 
 
+def format_offer_compliance_llm_validation(
+    validation_status_prediction: offers_models.ComplianceValidationStatusPrediction,
+) -> str:
+    match validation_status_prediction:
+        case offers_models.ComplianceValidationStatusPrediction.APPROVED:
+            return format_badge("Validée", "success")
+        case offers_models.ComplianceValidationStatusPrediction.REJECTED:
+            return format_badge("Rejetée", "warning")
+        case _:
+            return validation_status_prediction.value
+
+
 def format_confidence_level(confidence_level: offerers_models.OffererConfidenceLevel | None) -> str:
     match confidence_level:
         case offerers_models.OffererConfidenceLevel.MANUAL_REVIEW:
@@ -1933,6 +1945,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_product_cgu_compatibility_status"] = format_product_cgu_compatibility_status
     app.jinja_env.filters["format_as_badges"] = format_as_badges
     app.jinja_env.filters["format_compliance_reasons"] = format_compliance_reasons
+    app.jinja_env.filters["format_offer_compliance_llm_validation"] = format_offer_compliance_llm_validation
     app.jinja_env.filters["format_confidence_level_badge"] = format_confidence_level_badge
     app.jinja_env.filters["format_confidence_level_badge_for_venue"] = format_confidence_level_badge_for_venue
     app.jinja_env.filters["format_criteria"] = format_criteria
