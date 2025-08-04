@@ -7,6 +7,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import request
 
+from pcapi import settings
 from pcapi.core.categories.genres import music
 from pcapi.core.categories.genres import show
 from pcapi.core.finance import utils as finance_utils
@@ -31,6 +32,7 @@ from pcapi.routes.public.individual_offers.v1.serializers import products as pro
 from pcapi.routes.public.services import authorization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
+from pcapi.utils import chunks as chunks_utils
 from pcapi.utils import image_conversion
 from pcapi.utils.custom_keys import get_field
 from pcapi.validation.routes.users_authentifications import current_api_key
@@ -307,14 +309,15 @@ def post_product_offer_by_ean(body: products_serializers.ProductsOfferByEanCreat
         address_id = address.id
         address_label = body.location.address_label
 
-    serialized_products_stocks = _serialize_products_from_body(body.products)
-    offers_tasks.create_or_update_ean_offers.delay(
-        serialized_products_stocks=serialized_products_stocks,
-        venue_id=venue.id,
-        provider_id=current_api_key.provider.id,
-        address_id=address_id,
-        address_label=address_label,
-    )
+    chunk_size = settings.PUBLIC_API_EAN_PRODUCTS_BATCH_SIZE
+    for products in chunks_utils.get_chunks(body.products, chunk_size=chunk_size):
+        offers_tasks.create_or_update_ean_offers.delay(
+            serialized_products_stocks=_serialize_products_from_body(products),
+            venue_id=venue.id,
+            provider_id=current_api_key.provider.id,
+            address_id=address_id,
+            address_label=address_label,
+        )
 
 
 def _serialize_products_from_body(
