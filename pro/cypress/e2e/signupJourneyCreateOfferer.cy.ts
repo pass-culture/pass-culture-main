@@ -57,7 +57,7 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     ])
   })
 
-  it.only('I should be able to sign up with a new account and create a new offerer with an unknown SIREN (unknown SIRET)', () => {
+  it('I should be able to sign up with a new account and create a new offerer with an unknown SIREN (unknown SIRET)', () => {
     goToOffererCreation(login)
 
     cy.stepLog({ message: 'I specify a venue with a SIRET' })
