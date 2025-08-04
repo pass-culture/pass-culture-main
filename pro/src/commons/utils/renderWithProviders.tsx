@@ -37,9 +37,7 @@ export type RenderComponentFunction<
 ) => void
 
 interface RenderComponentFunctionParams<
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ComponentProps extends Record<string, any> | void = void,
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ContextValues extends Record<string, any> | void = void,
 > {
   contextValue?: ContextValues
@@ -51,10 +49,8 @@ interface RenderComponentFunctionParams<
  * Common Template-Type for integration tests render functions utilizing `renderWithProviders()`.
  */
 export type RenderComponentFunction<
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  ComponentProps extends Record<string, any> = {},
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  ContextValues extends Record<string, any> = {},
+  ComponentProps extends Record<string, any> | void = void,
+  ContextValues extends Record<string, any> | void = void,
 > = (
   params: RenderComponentFunctionParams<ComponentProps, ContextValues>
 ) => void
