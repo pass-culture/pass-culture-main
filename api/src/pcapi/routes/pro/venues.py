@@ -10,7 +10,7 @@ from flask_login import login_required
 
 import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 from pcapi import settings
-from pcapi.connectors.entreprise import sirene
+from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions
@@ -109,9 +109,8 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
     venue = get_or_404(Venue, venue_id)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
-    has_siret_changed = bool(body.siret and body.siret != venue.siret)
     try:
-        if body.siret and not sirene.siret_is_active(body.siret, raise_if_non_public=has_siret_changed):
+        if body.siret and not entreprise_api.get_siret_open_data(body.siret).active:
             raise ApiErrors(errors={"siret": ["SIRET is no longer active"]})
     except entreprise_exceptions.UnknownEntityException:
         if settings.ENFORCE_SIRET_CHECK or not FeatureToggle.DISABLE_SIRET_CHECK.is_active():

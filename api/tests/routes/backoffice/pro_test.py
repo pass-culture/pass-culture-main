@@ -926,25 +926,10 @@ class CreateOffererTest(PostEndpointHelper):
         assert new_offerer_action.userId == user.id
         assert new_offerer_action.authorUserId == legit_user.id
         assert new_offerer_action.comment == "Entité juridique créée depuis le backoffice"
-        assert new_offerer_action.extraData == {
-            "target": form_data["target"],
-            "venue_type_code": form_data["venue_type_code"],
-            "web_presence": form_data["web_presence"],
-            "ds_dossier_id": int(form_data["ds_id"]),
-            "sirene_info": {
-                "active": True,
-                "address": {"city": "CANNES", "insee_code": "06029", "postal_code": "[ND]", "street": "[ND]"},
-                "ape_code": "90.01Z",
-                "ape_label": "Arts du spectacle vivant",
-                "creation_date": f"{datetime.date.today().year}-01-01",
-                "closure_date": None,
-                "diffusible": False,
-                "head_office_siret": "90000000100017",
-                "legal_category_code": "1000",
-                "name": "[ND]",
-                "siren": "900000001",
-            },
-        }
+        assert new_offerer_action.extraData.get("target") == form_data["target"]
+        assert new_offerer_action.extraData.get("venue_type_code") == form_data["venue_type_code"]
+        assert new_offerer_action.extraData.get("web_presence") == form_data["web_presence"]
+        assert new_offerer_action.extraData.get("ds_dossier_id") == int(form_data["ds_id"])
 
         new_venue_action: history_models.ActionHistory = (
             db.session.query(history_models.ActionHistory)

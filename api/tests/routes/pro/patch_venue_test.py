@@ -1069,12 +1069,14 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["venueTypeCode"] == ["(: invalide"]
 
-    @patch("pcapi.connectors.entreprise.sirene.siret_is_active", return_value=False)
-    def test_with_inactive_siret(self, mocked_siret_is_active, client):
+    def test_with_inactive_siret(self, client):
         venue = offerers_factories.VenueFactory()
         user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
 
-        venue_data = populate_missing_data_from_venue({"bookingEmail": "new.email@example.com"}, venue)
+        # SIRET looking like xxxx99xxxxxxxx is inactive in our testing data
+        venue_data = populate_missing_data_from_venue(
+            {"bookingEmail": "new.email@example.com", "siret": "12349912345678"}, venue
+        )
 
         response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
 
@@ -1166,11 +1168,11 @@ class Returns400Test:
     ],
 )
 @patch(
-    "pcapi.connectors.entreprise.sirene.siret_is_active",
+    "pcapi.connectors.entreprise.api.get_siret_open_data",
     side_effect=entreprise_exceptions.UnknownEntityException(),
 )
 def test_with_inconsistent_siret(
-    mock_siret_is_active, client, features, settings, enforce_siret_check, disable_siret_check, expected_result
+    mock_get_siret_open_data, client, features, settings, enforce_siret_check, disable_siret_check, expected_result
 ):
     venue = offerers_factories.VenueFactory(siret="00112233900040", managingOfferer__siren="001122339")
     user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
