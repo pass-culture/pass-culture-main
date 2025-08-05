@@ -82,6 +82,8 @@ export const listOffersStockFactory = (
   }
 }
 
+// TODO (igabriele, 2025-08-05): Factories shouldn't set boolean values to true by default or build children that are not guaranteed to be present.
+// This makes writing tests more difficult and increases the risk of false positives.
 export const getIndividualOfferFactory = (
   customGetIndividualOffer: Partial<GetIndividualOfferWithAddressResponseModel> = {},
   venue: GetOfferVenueResponseModel = getOfferVenueFactory()

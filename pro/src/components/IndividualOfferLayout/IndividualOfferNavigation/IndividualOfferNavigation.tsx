@@ -20,7 +20,7 @@ import { NavLinkItems } from 'ui-kit/NavLinkItems/NavLinkItems'
 import styles from './IndividualOfferNavigation.module.scss'
 import { LabelBooking } from './LabelBooking/LabelBooking'
 
-interface IndividualOfferNavigationProps {
+export interface IndividualOfferNavigationProps {
   isUsefulInformationSubmitted: boolean
 }
 
@@ -117,7 +117,7 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
     } else {
       steps.push({
         id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
-        label: 'Horaires',
+        label: 'Tarifs',
         path: getIndividualOfferPath({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           mode,
