@@ -82,7 +82,7 @@ dependencies = [
   "time-machine>=2.16.0",
   "transitions (>=0.9.3,<0.10.0)",
   "weasyprint==66.0",
-  "werkzeug==2.0.3",
+  "werkzeug==3.1.0",
   "wtforms-sqlalchemy==0.4.2",
   "wtforms==3.2.1",
   "xlsxwriter==3.2.5",
