@@ -8,7 +8,7 @@ from pcapi.core.offers.models import OfferExtraData
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers.models import Provider
 from pcapi.models import db
-from pcapi.repository import transaction
+from pcapi.utils.repository import transaction
 
 
 logger = logging.getLogger(__name__)

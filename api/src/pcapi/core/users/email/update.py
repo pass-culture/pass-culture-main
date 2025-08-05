@@ -16,8 +16,8 @@ from pcapi.core.users import repository as users_repository
 from pcapi.core.users.email.send import send_pro_user_emails_for_email_change
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository import transaction
 from pcapi.utils import repository
+from pcapi.utils.repository import transaction
 from pcapi.utils.urls import generate_app_link
 
 

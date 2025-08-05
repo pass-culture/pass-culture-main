@@ -13,7 +13,7 @@ import pcapi.core.external.batch as batch_notification
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.ubble.constants as ubble_fraud_constants
 import pcapi.core.mails.transactional as transactional_mails
-import pcapi.repository as pcapi_repository
+import pcapi.utils.repository as pcapi_repository
 from pcapi.connectors.beneficiaries import outscale
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.connectors.serialization import ubble_serializers
@@ -49,7 +49,7 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
         ubble_serializers.UbbleIdentificationStatus.CHECKS_IN_PROGRESS,
     ):
         fraud_check.status = fraud_models.FraudCheckStatus.PENDING
-        pcapi_repository.repository.save(user, fraud_check)
+        pcapi_repository.save(user, fraud_check)
 
     elif status in [
         ubble_serializers.UbbleIdentificationStatus.APPROVED,
@@ -91,7 +91,7 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
         ubble_serializers.UbbleIdentificationStatus.EXPIRED,
     ):
         fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
-        pcapi_repository.repository.save(fraud_check)
+        pcapi_repository.save(fraud_check)
 
 
 def _fill_missing_content_test_fields(
@@ -242,7 +242,7 @@ def _update_identity_fraud_check(
     else:
         fraud_check.resultContent = content.dict(exclude_none=True)
 
-    pcapi_repository.repository.save(fraud_check)
+    pcapi_repository.save(fraud_check)
 
 
 def get_most_relevant_ubble_error(
@@ -313,7 +313,7 @@ def archive_ubble_user_id_pictures(identification_id: str) -> None:
         ubble_content = _get_content(fraud_check.thirdPartyId)
     except requests_utils.ExternalAPIException:
         fraud_check.idPicturesStored = False
-        pcapi_repository.repository.save(fraud_check)
+        pcapi_repository.save(fraud_check)
         raise
 
     exception_during_process = None
@@ -330,11 +330,11 @@ def archive_ubble_user_id_pictures(identification_id: str) -> None:
 
     if exception_during_process:
         fraud_check.idPicturesStored = False
-        pcapi_repository.repository.save(fraud_check)
+        pcapi_repository.save(fraud_check)
         raise exception_during_process
 
     fraud_check.idPicturesStored = True
-    pcapi_repository.repository.save(fraud_check)
+    pcapi_repository.save(fraud_check)
 
 
 def _get_content(identification_id: str) -> fraud_models.UbbleContent:

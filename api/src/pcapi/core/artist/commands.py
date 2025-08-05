@@ -13,8 +13,8 @@ from pcapi.connectors.big_query.queries.artist import ArtistProductLinkModel
 from pcapi.core.artist.utils import get_artist_type
 from pcapi.core.artist.utils import sanitize_author_html
 from pcapi.models import db
-from pcapi.repository import transaction
 from pcapi.utils.blueprint import Blueprint
+from pcapi.utils.repository import transaction
 
 
 blueprint = Blueprint(__name__, __name__)

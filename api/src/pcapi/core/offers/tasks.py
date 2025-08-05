@@ -3,7 +3,6 @@ import logging
 
 import sqlalchemy as sa
 
-from pcapi import repository
 from pcapi.core import search
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import utils as finance_utils
@@ -19,6 +18,7 @@ from pcapi.routes.public.individual_offers.v1 import serialization as individual
 from pcapi.routes.public.individual_offers.v1 import utils as individual_offers_v1_utils
 from pcapi.routes.public.individual_offers.v1.serializers import products as products_serializers
 from pcapi.utils import date as utils_date
+from pcapi.utils import repository
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
 

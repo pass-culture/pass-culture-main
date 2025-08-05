@@ -21,10 +21,10 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import transaction
 from pcapi.routes.serialization import BaseModel
 from pcapi.tasks.decorator import task
 from pcapi.utils import siren as siren_utils
+from pcapi.utils.repository import transaction
 from pcapi.utils.urls import build_backoffice_offerer_link
 
 

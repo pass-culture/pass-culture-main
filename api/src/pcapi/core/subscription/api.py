@@ -12,8 +12,8 @@ import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.repository as fraud_repository
 import pcapi.core.fraud.ubble.constants as ubble_constants
 import pcapi.core.mails.transactional as transactional_mails
-import pcapi.repository as pcapi_repository
 import pcapi.utils.postal_code as postal_code_utils
+import pcapi.utils.repository as pcapi_repository
 from pcapi import settings
 from pcapi.core.external import batch
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -635,7 +635,7 @@ def _update_fraud_check_eligibility_with_history(
     fraud_check.reasonCodes.append(fraud_models.FraudReasonCode.ELIGIBILITY_CHANGED)
     fraud_check.thirdPartyId = f"{DEPRECATED_UBBLE_PREFIX}{fraud_check.thirdPartyId}"
 
-    pcapi_repository.repository.save(fraud_check, new_fraud_check)
+    pcapi_repository.save(fraud_check, new_fraud_check)
 
     return new_fraud_check
 
@@ -704,7 +704,7 @@ def update_user_birth_date_if_not_beneficiary(user: users_models.User, birth_dat
         and (eligibility_api.is_eligible_for_next_recredit_activation_steps(user) or not user.validatedBirthDate)
     ):
         user.validatedBirthDate = birth_date
-        pcapi_repository.repository.save(user)
+        pcapi_repository.save(user)
 
 
 def _get_subscription_message(
@@ -741,7 +741,7 @@ def initialize_identity_fraud_check(
         status=fraud_models.FraudCheckStatus.STARTED,
         eligibilityType=eligibility_type,
     )
-    pcapi_repository.repository.save(fraud_check)
+    pcapi_repository.save(fraud_check)
     batch.track_identity_check_started_event(user.id, fraud_check.type)
     return fraud_check
 
