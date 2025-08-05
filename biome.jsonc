@@ -1,0 +1,15 @@
+// We have to add a root config for Biome in order to use its IDE plugin when opening the monorepo from the root.
+// https://biomejs.dev/guides/big-projects/#monorepo
+{
+  "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
+  "root": true,
+  "formatter": {
+    "enabled": false
+  },
+  "linter": {
+    "enabled": false
+  },
+  "assist": {
+    "enabled": false
+  }
+}
