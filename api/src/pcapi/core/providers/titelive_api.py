@@ -13,13 +13,13 @@ import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
-from pcapi import repository
 from pcapi.connectors import thumb_storage
 from pcapi.connectors import titelive
 from pcapi.connectors.serialization.titelive_serializers import TiteliveWorkType
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.models import db
+from pcapi.utils import repository
 from pcapi.utils import requests
 
 

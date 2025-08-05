@@ -43,10 +43,10 @@ from pcapi.core.users.repository import get_and_lock_user
 from pcapi.core.users.utils import get_age_at_date
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import transaction
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils import queue
 from pcapi.utils import repository
+from pcapi.utils.repository import transaction
 from pcapi.utils.requests import exceptions as requests_exceptions
 from pcapi.utils.transaction_manager import is_managed_transaction
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid

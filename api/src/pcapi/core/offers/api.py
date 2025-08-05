@@ -71,7 +71,6 @@ from pcapi.models import offer_mixin
 from pcapi.models import pc_object
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.repository import transaction
 from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
 from pcapi.utils import repository
@@ -79,6 +78,7 @@ from pcapi.utils.chunks import get_chunks
 from pcapi.utils.custom_keys import get_field
 from pcapi.utils.custom_logic import OPERATIONS
 from pcapi.utils.date import get_naive_utc_now
+from pcapi.utils.repository import transaction
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import is_managed_transaction
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid

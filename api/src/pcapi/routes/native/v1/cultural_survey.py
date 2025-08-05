@@ -4,11 +4,11 @@ import logging
 from pcapi.core.cultural_survey import cultural_survey
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.users import models as users_models
-from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.tasks.cultural_survey_tasks import upload_answers_task
 from pcapi.tasks.serialization.cultural_survey_tasks import CulturalSurveyAnswersForData
+from pcapi.utils.repository import transaction
 
 from .. import blueprint
 from .serialization import cultural_survey as serializers

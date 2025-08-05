@@ -11,7 +11,7 @@ from pcapi.connectors.big_query.queries.base import BaseQuery
 from pcapi.core.educational import repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
-from pcapi.repository import transaction
+from pcapi.utils.repository import transaction
 
 
 logger = logging.getLogger(__name__)

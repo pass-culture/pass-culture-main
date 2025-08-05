@@ -14,7 +14,7 @@ from pcapi.core.categories.models import ReimbursementRuleChoices
 from pcapi.core.external import batch as push_notifications
 from pcapi.core.users import utils as users_utils
 from pcapi.models import db
-from pcapi.repository import transaction
+from pcapi.utils.repository import transaction
 
 from . import conf
 from . import exceptions

@@ -25,8 +25,8 @@ from pcapi.core.users import repository as users_repository
 from pcapi.core.users.exceptions import InvalidUserRoleException
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.repository import transaction
 from pcapi.utils import repository
+from pcapi.utils.repository import transaction
 
 
 @pytest.mark.usefixtures("db_session")

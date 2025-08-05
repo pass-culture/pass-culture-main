@@ -20,7 +20,6 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.serialization.authentication import ChangePasswordRequest
 from pcapi.routes.native.v1.serialization.authentication import RequestPasswordResetRequest
@@ -30,6 +29,7 @@ from pcapi.routes.native.v1.serialization.authentication import ValidateEmailReq
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailResponse
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import repository
+from pcapi.utils.repository import transaction
 from pcapi.utils.transaction_manager import atomic
 from pcapi.workers import apps_flyer_job
 

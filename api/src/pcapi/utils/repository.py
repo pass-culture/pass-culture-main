@@ -1,4 +1,6 @@
 import logging
+import typing
+from contextlib import contextmanager
 
 from sqlalchemy.exc import DataError
 from sqlalchemy.exc import IntegrityError
@@ -8,12 +10,28 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.pc_object import PcObject
+from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import is_managed_transaction
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.validation.models import entity_validator
 
 
 logger = logging.getLogger(__name__)
+
+
+# DEPRECATED in favor of @atomic() because @transaction() is not reentrant
+@contextmanager
+def transaction() -> typing.Iterator[None]:
+    if is_managed_transaction():
+        with atomic():
+            yield
+    else:
+        try:
+            yield
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            raise
 
 
 # DEPRECATED in favor of @atomic() and db.session.delete because committing or

@@ -14,9 +14,9 @@ from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api.dms import import_dms_applications_for_all_eac_procedures
 from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
 from pcapi.models import db
-from pcapi.repository import transaction
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils.blueprint import Blueprint
+from pcapi.utils.repository import transaction
 
 
 blueprint = Blueprint(__name__, __name__)

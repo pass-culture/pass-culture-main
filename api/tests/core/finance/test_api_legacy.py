@@ -27,10 +27,10 @@ from pcapi.core.reference import models as reference_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
-from pcapi.repository import transaction
 from pcapi.routes.backoffice.finance import validation
 from pcapi.utils import db as db_utils
 from pcapi.utils import human_ids
+from pcapi.utils.repository import transaction
 
 import tests
 from tests.routes.backoffice.helpers import html_parser
