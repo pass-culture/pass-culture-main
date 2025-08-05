@@ -86,7 +86,7 @@ vi.mock('repository/venuesService', async () => ({
   ...(await vi.importActual('repository/venuesService')),
 }))
 
-describe('route CollectiveOffers', () => {
+describe('CollectiveOffersQueryParams', () => {
   let offersRecap: CollectiveOfferResponseModel[]
   const stocks: Array<CollectiveOffersStockResponseModel> = [
     {
@@ -106,6 +106,10 @@ describe('route CollectiveOffers', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
     })
+  })
+
+  afterEach(() => {
+    window.sessionStorage.clear()
   })
 
   describe('url query params', () => {

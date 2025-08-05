@@ -14,7 +14,6 @@ import {
 import { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
 import { SelectOption } from '@/commons/custom_types/form'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
@@ -59,9 +58,6 @@ export const TemplateCollectiveOffersScreen = ({
     CollectiveOfferResponseModel[]
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
-  const isCollapsedMemorizedFiltersEnabled = useActiveFeature(
-    'WIP_COLLAPSED_MEMORIZED_FILTERS'
-  )
 
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -161,7 +157,7 @@ export const TemplateCollectiveOffersScreen = ({
         applyFilters={applyFilters}
         disableAllFilters={userHasNoOffers}
         offerer={offerer}
-        resetFilters={() => resetFilters(!isCollapsedMemorizedFiltersEnabled)}
+        resetFilters={() => resetFilters(false)}
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
         venues={venues}

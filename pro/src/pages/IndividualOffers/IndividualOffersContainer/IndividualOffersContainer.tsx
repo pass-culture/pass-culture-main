@@ -57,9 +57,6 @@ export const IndividualOffersContainer = ({
     Set<string | number>
   >(new Set())
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
-  const isCollapsedMemorizedFiltersEnabled = useActiveFeature(
-    'WIP_COLLAPSED_MEMORIZED_FILTERS'
-  )
 
   const searchButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -160,7 +157,7 @@ export const IndividualOffersContainer = ({
         applyFilters={applyFilters}
         categories={categories}
         disableAllFilters={userHasNoOffers}
-        resetFilters={() => resetFilters(!isCollapsedMemorizedFiltersEnabled)}
+        resetFilters={() => resetFilters(false)}
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
         offererAddresses={offererAddresses}
@@ -208,8 +205,7 @@ export const IndividualOffersContainer = ({
           noResult={{
             message: 'Aucune offre trouvée pour votre recherche',
             resetMessage: 'Afficher toutes les offres',
-            onFilterReset: () =>
-              resetFilters(!isCollapsedMemorizedFiltersEnabled),
+            onFilterReset: () => resetFilters(false),
           }}
           noData={{
             hasNoData: userHasNoOffers,

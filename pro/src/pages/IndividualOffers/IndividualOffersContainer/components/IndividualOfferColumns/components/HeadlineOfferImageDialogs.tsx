@@ -8,7 +8,6 @@ import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from '@/commons/core/Offers/types'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
@@ -40,16 +39,11 @@ export const HeadlineOfferImageDialogs = ({
 
   const [isImageUploaderOpen, setIsImageUploaderOpen] = useState(false)
   const notify = useNotification()
-  const isToggleAndMemorizeFiltersEnabled = useActiveFeature(
-    'WIP_COLLAPSED_MEMORIZED_FILTERS'
-  )
   const { storedFilters } = getStoredFilterConfig('individual')
   const urlSearchFilters = useQuerySearchFilters()
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...(isToggleAndMemorizeFiltersEnabled
-      ? (storedFilters as Partial<SearchFiltersParams>)
-      : {}),
+    ...(storedFilters as Partial<SearchFiltersParams>),
   }
 
   const apiFilters = computeIndividualApiFilters(

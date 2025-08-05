@@ -70,7 +70,7 @@ const renderOffers = async (
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }
 
-describe('route CollectiveOffers', () => {
+describe('CollectiveOffers', () => {
   let offersRecap: CollectiveOfferResponseModel[]
   const stocks: Array<CollectiveOffersStockResponseModel> = [
     {
@@ -88,6 +88,10 @@ describe('route CollectiveOffers', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
     })
+  })
+
+  afterEach(() => {
+    window.sessionStorage.clear()
   })
 
   describe('filters', () => {
@@ -475,16 +479,17 @@ describe('route CollectiveOffers', () => {
       )
     })
 
-    it('when clicking on "Réinitialiser les filtres"', async () => {
+    it('when clicking on "Réinitialiser les filtres"  - except nameOrIsbn', async () => {
       vi.spyOn(api, 'getCollectiveOffers')
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
       // 3rd call is not made if filters are strictly the same
-      const filters = {
-        venueId: '666',
-      }
+      const nameOrIsbn = 'Any word'
 
-      await renderOffers(filters)
+      await renderOffers({
+        nameOrIsbn,
+        venueId: '666',
+      })
       await waitFor(() => {
         expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
       })
@@ -499,7 +504,7 @@ describe('route CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         1,
-        undefined,
+        nameOrIsbn,
         '1',
         undefined,
         '666',
@@ -516,7 +521,7 @@ describe('route CollectiveOffers', () => {
       })
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         2,
-        undefined,
+        nameOrIsbn,
         '1',
         undefined,
         proVenues[0].id.toString(),
@@ -533,7 +538,7 @@ describe('route CollectiveOffers', () => {
       })
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         3,
-        undefined,
+        nameOrIsbn,
         '1',
         undefined,
         undefined,
@@ -543,35 +548,6 @@ describe('route CollectiveOffers', () => {
         undefined,
         undefined
       )
-    })
-
-    it('when clicking on "Réinitialiser les filtres" & WIP_COLLAPSED_MEMORIZED_FILTERS enabled - except nameOrIsbn', async () => {
-      vi.spyOn(api, 'getCollectiveOffers')
-      const nameOrIsbn = 'Any word'
-
-      await renderOffers(
-        {
-          nameOrIsbn,
-          venueId: '666',
-        },
-        ['WIP_COLLAPSED_MEMORIZED_FILTERS']
-      )
-
-      await userEvent.click(screen.getByText('Réinitialiser les filtres'))
-
-      await waitFor(() => {
-        expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-          nameOrIsbn,
-          '1',
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined
-        )
-      })
     })
   })
 
