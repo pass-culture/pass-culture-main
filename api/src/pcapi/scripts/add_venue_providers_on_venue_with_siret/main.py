@@ -48,45 +48,6 @@ def _write_modifications(modifications: list[tuple[int, str]], filename: str) ->
 
 
 @atomic()
-def _connect_venue_to_allocine(
-    venue: Venue,
-    provider_id: int,
-    payload: providers_models.VenueProviderCreationPayload,
-) -> providers_models.AllocineVenueProvider:
-    # Rewriting those methods as they are still using repository.save() in repo
-    if not payload.price:
-        raise providers_exceptions.NoPriceSpecified()
-    if payload.isDuo is None:  # see PostVenueProviderBody
-        raise ValueError("`isDuo` is required")
-
-    pivot = providers_repository.get_allocine_pivot(venue)
-    if not pivot:
-        theater = providers_repository.get_allocine_theater(venue)
-        if not theater:
-            raise providers_exceptions.NoMatchingAllocineTheater()
-        pivot = providers_models.AllocinePivot(
-            venue=venue,
-            theaterId=theater.theaterId,
-            internalId=theater.internalId,
-        )
-        db.session.add(pivot)
-        db.session.flush()
-
-    venue_provider = providers_models.AllocineVenueProvider(
-        venue=venue,
-        providerId=provider_id,
-        venueIdAtOfferProvider=pivot.theaterId,
-        isDuo=payload.isDuo,
-        quantity=payload.quantity,
-        internalId=pivot.internalId,
-        price=payload.price,
-    )
-    db.session.add(venue_provider)
-
-    return venue_provider
-
-
-@atomic()
 def _connect_venue_to_cinema_provider(
     venue: Venue,
     provider: providers_models.Provider,
@@ -126,26 +87,7 @@ def _connect_venue_to_provider(
 def _move_cinema_pivot_to_destination_venue(
     venue_source: Venue, venue_destination: Venue, venue_provider: providers_models.VenueProvider
 ) -> None:
-    if venue_provider.provider.localClass == "AllocineStocks":
-        allocine_pivot_source = providers_repository.get_allocine_pivot(venue_source)
-        allocine_pivot_destination = providers_repository.get_allocine_pivot(venue_destination)
-        if allocine_pivot_destination:
-            logger.info(
-                "Venue source: %s. Allociné pivot %s already exists on destination venue %s",
-                venue_source.id,
-                allocine_pivot_destination,
-                venue_destination.id,
-            )
-        elif allocine_pivot_source:
-            allocine_pivot_source.venue = venue_destination
-            db.session.flush()
-            logger.info(
-                "Moving Allociné pivot from venue %s to venue %s",
-                venue_source.id,
-                venue_destination.id,
-            )
-
-    elif venue_provider.provider.localClass in providers_constants.CINEMA_PROVIDER_NAMES:
+    if venue_provider.provider.localClass in providers_constants.CINEMA_PROVIDER_NAMES:
         cinema_pivot_source = providers_repository.get_cinema_provider_pivot_for_venue(venue=venue_source)
         cinema_pivot_destination = providers_repository.get_cinema_provider_pivot_for_venue(venue=venue_destination)
         if cinema_pivot_destination:
@@ -169,20 +111,12 @@ def _move_cinema_pivot_to_destination_venue(
 def _create_venue_provider(
     venue_source: Venue,
     venue_destination: Venue,
-    venue_provider_source: providers_models.VenueProvider | providers_models.AllocineVenueProvider,
+    venue_provider_source: providers_models.VenueProvider,
     user: User,
 ) -> providers_models.VenueProvider | None:
     _move_cinema_pivot_to_destination_venue(venue_source, venue_destination, venue_provider_source)
     provider = venue_provider_source.provider
-    if provider.localClass == "AllocineStocks":
-        payload = providers_models.VenueProviderCreationPayload(
-            isDuo=venue_provider_source.isDuoOffers or False,
-            quantity=venue_provider_source.quantity,
-            venueIdAtOfferProvider=venue_provider_source.venueIdAtOfferProvider,
-            price=venue_provider_source.price,
-        )
-        new_venue_provider = _connect_venue_to_allocine(venue_destination, provider.id, payload)
-    elif provider.localClass in providers_constants.CINEMA_PROVIDER_NAMES:
+    if provider.localClass in providers_constants.CINEMA_PROVIDER_NAMES:
         payload = providers_models.VenueProviderCreationPayload(
             isDuo=venue_provider_source.isDuoOffers or False,
         )
@@ -305,8 +239,8 @@ def main(not_dry: bool) -> None:
     _write_modifications(log_fails, "add_providers_fails.csv")
 
     if not not_dry:
-        logger.info("Finished dry run, rollback")
         mark_transaction_as_invalid()
+        logger.info("Finished dry run, rollback")
 
 
 if __name__ == "__main__":
