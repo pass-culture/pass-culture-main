@@ -1,4 +1,4 @@
-from pcapi.domain.client_exceptions import ClientError
+from pcapi.core.core_exception import ClientError
 
 
 class ApiKeyCountMaxReached(Exception):

@@ -1,8 +1,8 @@
 import json
 import typing
 
+from pcapi.core.core_exception import ClientError
 from pcapi.core.core_exception import CoreException
-from pcapi.domain.client_exceptions import ClientError
 
 
 class ApiErrors(Exception):

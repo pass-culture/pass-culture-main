@@ -2,7 +2,7 @@ from flask import Response
 from flask import current_app as app
 
 from pcapi.core.bookings import exceptions
-from pcapi.domain.client_exceptions import ClientError
+from pcapi.core.core_exception import ClientError
 from pcapi.models import api_errors
 from pcapi.repository.session_management import mark_transaction_as_invalid
 
