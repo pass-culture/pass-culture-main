@@ -54,14 +54,34 @@ DS_CHOICE_TO_UPDATE_TYPE = {
     "compte a les mêmes informations": users_models.UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO,
 }
 
-CORRECTION_MESSAGE = """Nous avons bien reçu ta demande, mais nous n’avons pas pu la finaliser car la photo que tu nous as envoyée a été refusée.
+CORRECTION_MESSAGE = {
+    "unreadable-photo": """Nous avons bien reçu ta demande, mais nous n’avons pas pu la finaliser car la photo que tu nous as envoyée a été refusée.
 Elle était peut-être floue, mal cadrée ou trop sombre. Pas d’inquiétude, cela peut arriver !
 
 Pour que nous puissions valider ton authentification, il faudrait renvoyer une nouvelle photo qui respecte ces critères :
 Une photo de toi tenant ta carte d’identité (un selfie).
 Assure-toi d’être dans un endroit bien éclairé, et que ton visage ainsi que ta pièce d’identité soient bien visibles.
+Une photo de ta pièce d'identité bien lisible.
 
-Attention : Tu disposes de 30 jours pour nous transmettre ce justificatif. Si tu as besoin de conseils pour prendre une photo conforme, tu peux consulter notre article https://aide.passculture.app/hc/fr/articles/4411991953681--Jeunes-Comment-faire-pour-me-prendre-en-photo-avec-ma-pi%C3%A8ce-d-identit%C3%A9"""
+Attention : Tu disposes de 30 jours pour nous transmettre ce justificatif. Si tu as besoin de conseils pour prendre une photo conforme, tu peux consulter notre article https://aide.passculture.app/hc/fr/articles/4411991953681--Jeunes-Comment-faire-pour-me-prendre-en-photo-avec-ma-pi%C3%A8ce-d-identit%C3%A9""",
+    "missing-file": """Nous avons bien reçu ta demande de modification, mais nous n’avons pas pu la finaliser, car il manque un ou plusieurs documents.
+
+Pour que nous puissions traiter ta demande, il faut que tu t’assures que ces deux éléments figurent dans ton dossier Démarches Simplifiées :
+Un document officiel qui justifie ton changement de nom ou prénom (par exemple : acte d’état civil, jugement, certificat de changement de prénom, etc.)
+Une photo de ta nouvelle pièce d’identité ou de ton passeport avec ton nom ou prénom à jour, bien lisible.
+
+Attention : Tu disposes de 30 jours pour nous transmettre ce justificatif. Si tu as besoin de conseils pour compléter ton dossier, tu peux consulter notre article https://aide.passculture.app/hc/fr/articles/4411998998673--Jeunes-18-ans-Quels-sont-les-documents-d-identit%C3%A9-accept%C3%A9s-pour-s-inscrire""",
+    "refused-file": """Nous avons bien reçu ta demande, mais nous n’avons pas pu la finaliser, car le document d’identité que tu as envoyé n’est pas recevable. Il est peut-être flou, difficile à lire ou ne fait pas partie des documents acceptés.
+
+Pour que nous puissions traiter ta demande, merci de renvoyer une photo lisible d’un des documents suivants :
+Passeport
+Carte nationale d’identité (CNI)
+Titre de séjour
+
+La pièce d’identité doit être bien visible, lisible et à ton nom.
+
+Attention : Tu disposes de 30 jours pour nous transmettre ce justificatif. Si tu as besoin de conseils pour compléter ton dossier, tu peux consulter notre article https://aide.passculture.app/hc/fr/articles/4411998998673--Jeunes-18-ans-Quels-sont-les-documents-d-identit%C3%A9-accept%C3%A9s-pour-s-inscrire""",
+}
 
 IDENTITY_THEFT_MESSAGE = """Si tu suspectes une usurpation d’identité, il est important de déposer une plainte officielle auprès des autorités compétentes, une simple main courante ne suffit pas.
  
@@ -536,14 +556,14 @@ def archive(user_request: users_models.UserAccountUpdateRequest, *, motivation: 
 
 
 def send_user_message_with_correction(
-    update_request: users_models.UserAccountUpdateRequest, instructor: users_models.User
+    update_request: users_models.UserAccountUpdateRequest, instructor: users_models.User, correction_reason: str
 ) -> None:
     client = ds_api.DMSGraphQLClient()
 
     node = client.send_user_message(
         application_scalar_id=update_request.dsTechnicalId,
         instructeur_techid=instructor.backoffice_profile.dsInstructorId,
-        body=CORRECTION_MESSAGE,
+        body=CORRECTION_MESSAGE[correction_reason],
         with_correction=True,
     )
     update_request.lastInstructor = instructor

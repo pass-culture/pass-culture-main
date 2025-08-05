@@ -4,7 +4,6 @@ from functools import partial
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import flash
-from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
@@ -37,6 +36,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
 from pcapi.models import db
 from pcapi.routes.backoffice import autocomplete
+from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
@@ -262,10 +262,6 @@ def list_account_update_requests() -> utils.BackofficeResponse:
         is_instructor=(current_user.backoffice_profile.dsInstructorId is not None),
         date_last_update_sort_url=date_last_update_sort_url,
     )
-
-
-def _refresh_list() -> utils.BackofficeResponse:
-    return redirect(request.referrer or url_for(".list_account_update_requests"), code=303)
 
 
 @account_update_blueprint.route("<int:ds_application_id>/instruct", methods=["POST"])
@@ -504,16 +500,21 @@ def get_ask_for_correction_form(ds_application_id: int) -> utils.BackofficeRespo
     if not update_request:
         raise NotFound()
 
-    form = empty_forms.EmptyForm()
+    correction_reason = account_forms.AccountUpdateRequestCorrectionForm(request.args).correction_reason.data
 
     return render_template(
         "components/dynamic/modal_form.html",
         target_id=f"#request-row-{ds_application_id}",
-        form=form,
-        dst=url_for("backoffice_web.account_update.ask_for_correction", ds_application_id=ds_application_id),
-        div_id=f"ask-for-correction-{ds_application_id}",
+        form=empty_forms.EmptyForm(),
+        dst=url_for(
+            "backoffice_web.account_update.ask_for_correction",
+            ds_application_id=ds_application_id,
+            correction_reason=correction_reason,
+        ),
+        div_id=f"ask-for-correction-{correction_reason}-{ds_application_id}",
         title="Demander une correction",
-        information="Ce message sera envoyé au jeune: <br>" + users_ds.CORRECTION_MESSAGE,
+        information=Markup("Ce message sera envoyé au jeune : <br><br>")
+        + filters.nl2br(users_ds.CORRECTION_MESSAGE[correction_reason]),
         button_text="Faire une demande de correction",
     )
 
@@ -533,10 +534,16 @@ def ask_for_correction(ds_application_id: int) -> utils.BackofficeResponse:
     if not update_request:
         raise NotFound()
 
-    send_beneficiary_update_request_ask_for_correction(update_request)
+    form = account_forms.AccountUpdateRequestCorrectionForm(request.args)
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return _render_account_update_requests([ds_application_id])
 
+    correction_reason = form.correction_reason.data
+
+    send_beneficiary_update_request_ask_for_correction(update_request, correction_reason)
     try:
-        users_ds.send_user_message_with_correction(update_request, current_user)
+        users_ds.send_user_message_with_correction(update_request, current_user, correction_reason)
     except dms_exceptions.DmsGraphQLApiError as err:
         mark_transaction_as_invalid()
         flash(

@@ -1244,7 +1244,7 @@ class AcceptTest(PostEndpointHelper):
 
 class GetAskForCorrectionFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.account_update.get_ask_for_correction_form"
-    endpoint_kwargs = {"ds_application_id": 1}
+    endpoint_kwargs = {"ds_application_id": 1, "correction_reason": "unreadable-photo"}
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
 
     # authenticated user + user session + update request joined with user
@@ -1255,7 +1255,9 @@ class GetAskForCorrectionFormTest(GetEndpointHelper):
         users_factories.UserAccountUpdateRequestFactory(dsApplicationId=ds_application_id)
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, ds_application_id=ds_application_id))
+            response = authenticated_client.get(
+                url_for(self.endpoint, ds_application_id=ds_application_id, correction_reason="unreadable-photo")
+            )
             assert response.status_code == 200
 
     def test_not_instructor(self, client):
@@ -1278,9 +1280,10 @@ class AskForCorrectionTest(PostEndpointHelper):
     endpoint_kwargs = {"ds_application_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
 
+    @pytest.mark.parametrize("correction_reason", ("unreadable-photo", "missing-file", "refused-file"))
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.send_user_message")
-    def test_ask_for_correction(self, mock_send_user_message, legit_user, authenticated_client):
-        update_request = users_factories.UserAccountUpdateRequestFactory(dsApplicationId=21268381)
+    def test_ask_for_correction(self, mock_send_user_message, legit_user, authenticated_client, correction_reason):
+        update_request = users_factories.UserAccountUpdateRequestFactory(dsApplicationId=2126838)
 
         mock_send_user_message.return_value = {
             "dossierEnvoyerMessage": {
@@ -1293,6 +1296,7 @@ class AskForCorrectionTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             ds_application_id=update_request.dsApplicationId,
+            correction_reason=correction_reason,
             headers={"hx-request": "true"},
         )
 
@@ -1314,8 +1318,49 @@ class AskForCorrectionTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.UPDATE_REQUEST_ASK_FOR_CORRECTION.value
         )
-        assert mails_testing.outbox[0]["params"] == {"DS_APPLICATION_NUMBER": update_request.dsApplicationId}
+        assert mails_testing.outbox[0]["params"] == {
+            "CORRECTION_REASON": correction_reason,
+            "DS_APPLICATION_NUMBER": update_request.dsApplicationId,
+        }
         assert mails_testing.outbox[0]["To"] == update_request.email
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.send_user_message")
+    def test_ask_for_correction_with_unknown_reason(self, mock_send_user_message, legit_user, authenticated_client):
+        update_request = users_factories.UserAccountUpdateRequestFactory(dsApplicationId=2126838)
+
+        mock_send_user_message.return_value = {
+            "dossierEnvoyerMessage": {
+                "message": {
+                    "id": "Q29tbWVudGFpcmUtNTIzNjcxODc=",
+                    "createdAt": "2025-01-29T15:21:17+01:00",
+                },
+            }
+        }
+        response = self.post_to_endpoint(
+            authenticated_client,
+            ds_application_id=update_request.dsApplicationId,
+            correction_reason="parce-que",
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        row = html_parser.get_tag(
+            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
+        )
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert str(update_request.dsApplicationId) in cells[1]
+        mock_send_user_message.assert_not_called()
+
+        db.session.refresh(update_request)
+        assert update_request.status == dms_models.GraphQLApplicationStates.on_going
+
+        assert len(mails_testing.outbox) == 0
+
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert (
+            "Les données envoyées comportent des erreurs. Raison de demande de correction : Not a valid choice. ;"
+            in alerts["warning"]
+        )
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.send_user_message")
     def test_application_not_found(self, mock_send_user_message, legit_user, authenticated_client):
@@ -1335,6 +1380,7 @@ class AskForCorrectionTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             ds_application_id=update_request.dsApplicationId,
+            correction_reason="unreadable-photo",
             headers={"hx-request": "true"},
         )
         assert response.status_code == 200
@@ -1368,6 +1414,7 @@ class AskForCorrectionTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             ds_application_id=update_request.dsApplicationId,
+            correction_reason="unreadable-photo",
             headers={"hx-request": "true"},
         )
         assert response.status_code == 200
@@ -1399,6 +1446,7 @@ class AskForCorrectionTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             client,
             ds_application_id=update_request.dsApplicationId,
+            correction_reason="unreadable-photo",
             headers={"hx-request": "true"},
         )
         assert response.status_code == 403
@@ -1409,13 +1457,41 @@ class AskForCorrectionTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             ds_application_id=1,
+            correction_reason="unreadable-photo",
             headers={"hx-request": "true"},
         )
         assert response.status_code == 404
 
 
-class GetIdentityTheftFormTest(GetAskForCorrectionFormTest):
+class GetIdentityTheftFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.account_update.get_identity_theft_form"
+    endpoint_kwargs = {"ds_application_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
+
+    # authenticated user + user session + update request joined with user
+    expected_num_queries = 3
+
+    def test_get_form(self, authenticated_client):
+        ds_application_id = 21268381
+        users_factories.UserAccountUpdateRequestFactory(dsApplicationId=ds_application_id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, ds_application_id=ds_application_id))
+            assert response.status_code == 200
+
+    def test_not_instructor(self, client):
+        not_instructor = users_factories.AdminFactory()
+        update_request = users_factories.UserAccountUpdateRequestFactory(
+            status=dms_models.GraphQLApplicationStates.on_going
+        )
+
+        client = client.with_bo_session_auth(not_instructor)
+        response = client.get(url_for(self.endpoint, ds_application_id=update_request.dsApplicationId))
+        assert response.status_code == 403
+
+    def test_not_found(self, authenticated_client):
+        response = authenticated_client.get(url_for(self.endpoint, ds_application_id=1))
+        assert response.status_code == 404
 
 
 class IdentityTheftTest(PostEndpointHelper):
