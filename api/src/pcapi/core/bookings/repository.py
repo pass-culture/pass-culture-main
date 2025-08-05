@@ -24,7 +24,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
-from pcapi.domain.booking_recap import utils as booking_recap_utils
 from pcapi.models import db
 from pcapi.utils import export as utils_export
 from pcapi.utils.token import random_token
@@ -832,7 +831,7 @@ def _write_csv_row(csv_writer: typing.Any, booking: models.Booking, booking_duo_
         booking.beneficiaryPhoneNumber,
         utils.convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
         utils.convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),
-        booking_recap_utils.get_booking_token(
+        get_booking_token(
             booking.token,
             booking.status,
             booking.isExternal,
@@ -895,7 +894,7 @@ def _write_excel_row(
     worksheet.write(
         row,
         10,
-        booking_recap_utils.get_booking_token(
+        get_booking_token(
             booking.token,
             booking.status,
             booking.isExternal,
@@ -932,7 +931,7 @@ def _serialize_csv_report(query: sa_orm.Query) -> str:
             booking.beneficiaryPhoneNumber,
             utils.convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
             utils.convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),
-            booking_recap_utils.get_booking_token(
+            get_booking_token(
                 booking.token,
                 booking.status,
                 booking.isExternal,
@@ -981,9 +980,7 @@ def _serialize_excel_report(query: sa_orm.Query) -> bytes:
             booking.beneficiaryPhoneNumber,
             str(utils.convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)),
             str(utils.convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)),
-            booking_recap_utils.get_booking_token(
-                booking.token, booking.status, booking.isExternal, booking.stockBeginningDatetime
-            ),
+            get_booking_token(booking.token, booking.status, booking.isExternal, booking.stockBeginningDatetime),
             booking.priceCategoryLabel,
             booking.amount,
             _get_booking_status(booking.status, booking.isConfirmed),
@@ -1103,3 +1100,23 @@ def get_external_bookings_by_cinema_id_and_barcodes(
         .filter(models.ExternalBooking.barcode.in_(barcodes))
         .all()
     )
+
+
+def get_booking_token(
+    booking_token: str,
+    booking_status: models.BookingStatus,
+    booking_is_external: bool,
+    event_beginning_datetime: datetime | None,
+) -> str | None:
+    if (
+        not event_beginning_datetime
+        and booking_status
+        not in [
+            models.BookingStatus.REIMBURSED,
+            models.BookingStatus.CANCELLED,
+            models.BookingStatus.USED,
+        ]
+        or booking_is_external
+    ):
+        return None
+    return booking_token
