@@ -7,7 +7,6 @@ from dateutil.relativedelta import relativedelta
 
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.utils.email as email_utils
-import pcapi.utils.repository as pcapi_repository
 from pcapi import settings
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
@@ -70,7 +69,7 @@ def try_dms_orphan_adoption(user: users_models.User) -> None:
     fraud_check = handle_dms_application(dms_application)
 
     if fraud_check is not None:
-        pcapi_repository.delete(dms_orphan)
+        repository.delete(dms_orphan)
 
 
 def _is_fraud_check_up_to_date(
@@ -152,7 +151,7 @@ def _process_dms_application(
 
     _update_application_annotations(application_scalar_id, application_content, birth_date_error, fraud_check)
 
-    pcapi_repository.save(fraud_check)
+    repository.save(fraud_check)
 
 
 def handle_dms_application(
@@ -369,7 +368,7 @@ def _update_fraud_check_with_field_errors(
     fraud_check.reasonCodes = reason_codes
     fraud_check.status = fraud_check_status
 
-    pcapi_repository.save(fraud_check)
+    repository.save(fraud_check)
 
 
 def _create_profile_completion_fraud_check_from_dms(
