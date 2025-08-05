@@ -690,15 +690,6 @@ class BatchCollectiveOfferTemplatesRejectTest(PostEndpointHelper):
             headers={"hx-request": "true"},
         )
 
-==== BASE ====
-        assert response.status_code == 303
-
-        expected_url = url_for(
-            "backoffice_web.collective_offer_template.list_collective_offer_templates", _external=True
-        )
-        assert response.location == expected_url
-==== BASE ====
-
         for collective_offer_template in collective_offer_templates:
             db.session.refresh(collective_offer_template)
             assert collective_offer_template.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime(

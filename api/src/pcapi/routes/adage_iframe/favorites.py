@@ -27,9 +27,10 @@ def post_collective_template_favorites(authenticated_information: AuthenticatedI
     if redactor is None:
         raise ApiErrors({"message": "Redactor not found"}, status_code=403)
 
-    if offer_id not in educational_repository.get_templates_ids_for_redactor_email(redactor.email):
+    if offer_template not in redactor.favoriteCollectiveOfferTemplates:
         redactor.favoriteCollectiveOfferTemplates.append(offer_template)
         db.session.add(redactor)
+        db.session.flush()
 
 
 @blueprint.adage_iframe.route("/collective/template/<int:offer_template_id>/favorites", methods=["DELETE"])

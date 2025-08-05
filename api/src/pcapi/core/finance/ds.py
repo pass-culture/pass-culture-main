@@ -402,7 +402,6 @@ class ImportBankAccountMixin:
                     offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
                     offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
                 ),
-                isouter=True,
             )
             .options(
                 sa_orm.contains_eager(offerers_models.Venue.bankAccountLinks)
@@ -411,6 +410,7 @@ class ImportBankAccountMixin:
             )
             .all()
         )
+
         for venue in venues:
             if not venue.current_bank_account_link and venue.bookingEmail:
                 transactional_mails.send_bank_account_validated_email(venue.bookingEmail)
