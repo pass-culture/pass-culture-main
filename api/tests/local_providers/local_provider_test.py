@@ -8,6 +8,7 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
 from pcapi.core.categories import subcategories
+from pcapi.local_providers.chunk_manager import get_last_update_for_provider
 from pcapi.local_providers.local_provider import _upload_thumb
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import db
@@ -308,3 +309,47 @@ class UploadThumbTest:
         assert mock_store_public_object.call_args.kwargs["folder"] == "thumbs"
         assert mock_store_public_object.call_args.kwargs["object_id"] == f"products/{humanize(product.id)}_4"
         assert mock_store_public_object.call_args.kwargs["content_type"] == "image/jpeg"
+
+
+def test_get_last_update_for_provider_should_return_date_modified_at_last_provider_when_provided():
+    # Given
+    provider_id = 1
+    modification_date = datetime(2019, 1, 1)
+    pc_object = offers_models.Stock()
+    pc_object.lastProviderId = provider_id
+    pc_object.dateModifiedAtLastProvider = modification_date
+
+    # When
+    date_modified_at_last_provider = get_last_update_for_provider(provider_id=provider_id, pc_obj=pc_object)
+
+    # Then
+    assert date_modified_at_last_provider == modification_date
+
+
+def test_get_last_update_for_provider_should_return_none_when_last_provider_id_does_not_match_given_id():
+    # Given
+    provider_id = 1
+    modification_date = datetime(2019, 1, 1)
+    pc_object = offers_models.Stock()
+    pc_object.lastProviderId = 2
+    pc_object.dateModifiedAtLastProvider = modification_date
+
+    # When
+    date_modified_at_last_provider = get_last_update_for_provider(provider_id=provider_id, pc_obj=pc_object)
+
+    # Then
+    assert date_modified_at_last_provider is None
+
+
+def test_get_last_update_for_provider_should_return_none_when_last_provider_id_matches_given_id_and_date_modified_at_last_provider_is_none():
+    # Given
+    provider_id = 1
+    pc_object = offers_models.Stock()
+    pc_object.lastProviderId = provider_id
+    pc_object.dateModifiedAtLastProvider = None
+
+    # When
+    date_modified_at_last_provider = get_last_update_for_provider(provider_id=provider_id, pc_obj=pc_object)
+
+    # Then
+    assert date_modified_at_last_provider is None

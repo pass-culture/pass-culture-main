@@ -9,7 +9,7 @@ from pcapi.core.offerers import update_offerer_stats
 from pcapi.core.offerers.factories import OffererFactory
 from pcapi.core.offerers.factories import OffererStatsFactory
 from pcapi.core.offerers.models import OffererStats
-from pcapi.repository import db
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
