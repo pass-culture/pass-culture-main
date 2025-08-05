@@ -61,15 +61,15 @@ const renderValidationScreen = (contextValue: SignupJourneyContextValues) => {
       <SignupJourneyContext.Provider value={contextValue}>
         <Routes>
           <Route
-            path="/parcours-inscription/identification"
+            path="/inscription/structure/identification"
             element={<div>Authentification</div>}
           />
           <Route
-            path="/parcours-inscription/activite"
+            path="/inscription/structure/activite"
             element={<div>Activite</div>}
           />
           <Route
-            path="/parcours-inscription/validation"
+            path="/inscription/structure/confirmation"
             element={<Validation />}
           />
           <Route path="/accueil" element={<div>accueil</div>} />
@@ -80,7 +80,7 @@ const renderValidationScreen = (contextValue: SignupJourneyContextValues) => {
     </>,
     {
       user: sharedCurrentUserFactory(),
-      initialRouterEntries: ['/parcours-inscription/validation'],
+      initialRouterEntries: ['/inscription/structure/confirmation'],
     }
   )
 }

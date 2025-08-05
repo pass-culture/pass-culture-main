@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Route, Routes , Link } from 'react-router'
+import { Route, Routes, Link } from 'react-router'
 
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { PageTitleAnnouncer } from 'components/PageTitleAnnouncer/PageTitleAnnouncer'
@@ -36,16 +36,7 @@ const renderusePageTitleRoutes = (url = '/accueil') => {
           }
         />
         <Route
-          path="/parcours-inscription"
-          element={
-            <>
-              <PageTitle />
-              <span>Welcome signupJourney page</span>
-            </>
-          }
-        />
-        <Route
-          path="/parcours-inscription/structure"
+          path="/inscription/structure/recherche"
           element={
             <>
               <PageTitle />

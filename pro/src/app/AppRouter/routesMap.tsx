@@ -113,7 +113,7 @@ export const routes: RouteConfig[] = [
     title: 'Détails de la structure',
   },
   {
-    element: <Navigate to="/parcours-inscription/structure" />,
+    element: <Navigate to="/inscription/structure/recherche" />,
     path: '/structures/:offererId/lieux/creation',
     title: 'Créer un lieu',
   },
@@ -396,7 +396,7 @@ export const routes: RouteConfig[] = [
   },
   {
     lazy: () => import('pages/SignupJourneyRoutes/SignupJourneyRoutes'),
-    path: '/parcours-inscription',
+    path: '/inscription/structure',
     title: 'Parcours de souscription',
     children: routesSignupJourney,
   },

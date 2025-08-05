@@ -23,7 +23,7 @@ const renderActionBar = (props: ActionBarProps) => {
 
   return renderWithProviders(<ActionBar {...propsWithLogs} />, {
     user: sharedCurrentUserFactory(),
-    initialRouterEntries: ['/parcours-inscription/activite'],
+    initialRouterEntries: ['/inscription/structure/activite'],
   })
 }
 
@@ -41,7 +41,7 @@ describe('screens:SignupJourney::ActionBar', () => {
       onClickNext: () => null,
       nextStepTitle: 'NEXT',
       isDisabled: false,
-      nextTo: SIGNUP_JOURNEY_STEP_IDS.VALIDATION,
+      nextTo: SIGNUP_JOURNEY_STEP_IDS.CONFIRMATION,
     }
     renderActionBar(props)
 
@@ -52,8 +52,8 @@ describe('screens:SignupJourney::ActionBar', () => {
       1,
       Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
       {
-        from: '/parcours-inscription/activite',
-        to: SIGNUP_JOURNEY_STEP_IDS.VALIDATION,
+        from: '/inscription/structure/activite',
+        to: SIGNUP_JOURNEY_STEP_IDS.CONFIRMATION,
         used: OnboardingFormNavigationAction.ActionBar,
       }
     )
@@ -64,7 +64,7 @@ describe('screens:SignupJourney::ActionBar', () => {
       onClickNext: () => null,
       nextStepTitle: 'NEXT',
       isDisabled: true,
-      nextTo: SIGNUP_JOURNEY_STEP_IDS.VALIDATION,
+      nextTo: SIGNUP_JOURNEY_STEP_IDS.CONFIRMATION,
     }
     renderActionBar(props)
 
@@ -80,7 +80,7 @@ describe('screens:SignupJourney::ActionBar', () => {
       nextStepTitle: 'NEXT',
       previousStepTitle: 'PREVIOUS',
       isDisabled: false,
-      nextTo: SIGNUP_JOURNEY_STEP_IDS.VALIDATION,
+      nextTo: SIGNUP_JOURNEY_STEP_IDS.CONFIRMATION,
       previousTo: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
     }
     renderActionBar(props)
@@ -92,7 +92,7 @@ describe('screens:SignupJourney::ActionBar', () => {
       1,
       Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
       {
-        from: '/parcours-inscription/activite',
+        from: '/inscription/structure/activite',
         to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
         used: OnboardingFormNavigationAction.ActionBar,
       }

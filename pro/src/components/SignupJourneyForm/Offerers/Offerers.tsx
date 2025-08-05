@@ -77,7 +77,7 @@ export const Offerers = (): JSX.Element => {
   useEffect(() => {
     if (venuesOfOffererError) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigate('/parcours-inscription/structure')
+      navigate('/inscription/structure/recherche')
     }
   }, [isLoadingVenues])
 
@@ -97,13 +97,13 @@ export const Offerers = (): JSX.Element => {
     })
     setOfferer(newOfferer)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    navigate('/parcours-inscription/identification')
+    navigate('/inscription/structure/identification')
   }
 
   const doLinkAccount = async () => {
     logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
       from: location.pathname,
-      to: '/parcours-inscription/structure/rattachement/confirmation',
+      to: '/inscription/structure/rattachement/confirmation',
       used: OnboardingFormNavigationAction.JoinModal,
     })
     /* istanbul ignore next: venuesOfOfferer will always be defined here or else,
@@ -118,7 +118,7 @@ export const Offerers = (): JSX.Element => {
       await api.createOfferer(request)
       dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigate('/parcours-inscription/structure/rattachement/confirmation')
+      navigate('/inscription/structure/rattachement/confirmation')
     } catch (e) {
       notify.error(
         getHumanReadableApiError(
@@ -220,7 +220,7 @@ export const Offerers = (): JSX.Element => {
         onClickPrevious={() => {
           setOfferer(null)
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          navigate('/parcours-inscription/structure')
+          navigate('/inscription/structure/recherche')
         }}
         previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
         isDisabled={false}

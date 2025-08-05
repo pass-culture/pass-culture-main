@@ -42,11 +42,11 @@ export const SignupJourneyStepper = () => {
     {
       id: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
       label: 'Vos informations',
-      url: '/parcours-inscription/identification',
+      url: '/inscription/structure/identification',
       onClick: () =>
         logBreadcrumbClick(
           SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
-          '/parcours-inscription/identification'
+          '/inscription/structure/identification'
         ),
     },
     {
@@ -54,25 +54,27 @@ export const SignupJourneyStepper = () => {
       label: 'Votre activité',
       url: isActivityStepDisabled
         ? undefined
-        : '/parcours-inscription/activite',
+        : '/inscription/structure/activite',
       onClick: () => {
         if (!isActivityStepDisabled) {
           logBreadcrumbClick(
             SIGNUP_JOURNEY_STEP_IDS.ACTIVITY,
-            '/parcours-inscription/activite'
+            '/inscription/structure/activite'
           )
         }
       },
     },
     {
-      id: SIGNUP_JOURNEY_STEP_IDS.VALIDATION,
+      id: SIGNUP_JOURNEY_STEP_IDS.CONFIRMATION,
       label: 'Validation',
-      url: !everyStepActivated ? undefined : '/parcours-inscription/validation',
+      url: !everyStepActivated
+        ? undefined
+        : '/inscription/structure/confirmation',
       onClick: () => {
         if (everyStepActivated) {
           logBreadcrumbClick(
-            SIGNUP_JOURNEY_STEP_IDS.VALIDATION,
-            '/parcours-inscription/validation'
+            SIGNUP_JOURNEY_STEP_IDS.CONFIRMATION,
+            '/inscription/structure/confirmation'
           )
         }
       },

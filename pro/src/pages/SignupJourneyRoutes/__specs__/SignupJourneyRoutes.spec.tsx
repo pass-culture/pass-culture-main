@@ -17,7 +17,7 @@ vi.mock('apiClient/api', () => ({
 const renderSignupJourneyRoutes = () => {
   renderWithProviders(
     <Routes>
-      <Route path="/parcours-inscription" element={<SignupJourneyRoutes />}>
+      <Route path="/inscription/structure" element={<SignupJourneyRoutes />}>
         {routesSignupJourney.map((route) => (
           <Route key={route.path} path={route.path} element={route.element} />
         ))}
@@ -25,7 +25,7 @@ const renderSignupJourneyRoutes = () => {
     </Routes>,
     {
       user: sharedCurrentUserFactory(),
-      initialRouterEntries: ['/parcours-inscription/structure'],
+      initialRouterEntries: ['/inscription/structure/recherche'],
     }
   )
 }

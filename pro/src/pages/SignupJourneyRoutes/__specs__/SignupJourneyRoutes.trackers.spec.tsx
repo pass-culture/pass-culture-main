@@ -20,7 +20,7 @@ vi.mock('apiClient/api', () => ({
 const renderSignupJourneyRoutes = () => {
   renderWithProviders(
     <Routes>
-      <Route path="/parcours-inscription" element={<SignupJourneyRoutes />}>
+      <Route path="/inscription/structure" element={<SignupJourneyRoutes />}>
         {routesSignupJourney.map((route) => (
           <Route key={route.path} path={route.path} element={route.element} />
         ))}
@@ -29,7 +29,7 @@ const renderSignupJourneyRoutes = () => {
     </Routes>,
     {
       user: sharedCurrentUserFactory(),
-      initialRouterEntries: ['/parcours-inscription/structure'],
+      initialRouterEntries: ['/inscription/structure/recherche'],
     }
   )
 }
@@ -49,7 +49,7 @@ describe('SignupJourneyRoutes::trackers', () => {
     await userEvent.click(screen.getByText('Se déconnecter'))
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_LOGOUT, {
-      from: '/parcours-inscription/structure',
+      from: '/inscription/structure/recherche',
     })
   })
 })

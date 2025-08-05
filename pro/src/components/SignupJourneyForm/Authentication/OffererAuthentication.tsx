@@ -39,7 +39,7 @@ export const OffererAuthentication = (): JSX.Element => {
   const handlePreviousStep = useCallback(() => {
     setOfferer(null)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    navigate('/parcours-inscription/structure')
+    navigate('/inscription/structure/recherche')
   }, [setOfferer, navigate])
 
   const onSubmit = (formValues: OffererAuthenticationFormValues) => {
@@ -50,7 +50,7 @@ export const OffererAuthentication = (): JSX.Element => {
       hasVenueWithSiret: false,
     })
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    navigate('/parcours-inscription/activite')
+    navigate('/inscription/structure/activite')
   }
 
   const methods = useForm<OffererAuthenticationFormValues>({

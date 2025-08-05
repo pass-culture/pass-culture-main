@@ -50,7 +50,7 @@ const renderSignIn = (options?: RenderWithProvidersOptions) => {
           element={<span>I’m the inscription page</span>}
         />
         <Route
-          path="/parcours-inscription"
+          path="/inscription/structure/recherche"
           element={<span>I’m the onboarding page</span>}
         />
         <Route path="/offres" element={<span>I’m the offer page</span>} />

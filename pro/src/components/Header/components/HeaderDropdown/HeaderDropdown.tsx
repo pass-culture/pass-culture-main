@@ -58,7 +58,7 @@ export const HeaderDropdown = () => {
   )
   const { pathname } = useLocation()
   const IN_STRUCTURE_CREATION_FUNNEL = pathname.startsWith(
-    '/parcours-inscription'
+    '/inscription/structure'
   )
   const hideProfile =
     IN_STRUCTURE_CREATION_FUNNEL && offererOptions.length === 0
@@ -174,7 +174,7 @@ export const HeaderDropdown = () => {
                       <ButtonLink
                         icon={fullMoreIcon}
                         className={styles['menu-item']}
-                        to="/parcours-inscription/structure"
+                        to="/inscription/structure/recherche"
                       >
                         Ajouter une structure
                       </ButtonLink>
@@ -239,7 +239,7 @@ export const HeaderDropdown = () => {
                           <ButtonLink
                             icon={fullMoreIcon}
                             className={styles['menu-item']}
-                            to="/parcours-inscription/structure"
+                            to="/inscription/structure/recherche"
                           >
                             Ajouter une structure
                           </ButtonLink>

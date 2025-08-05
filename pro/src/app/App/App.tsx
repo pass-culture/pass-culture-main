@@ -137,11 +137,11 @@ export const App = (): JSX.Element | null => {
 
   if (
     !currentRoute?.meta?.public &&
-    !currentRoute?.path.includes('/parcours-inscription') &&
+    !currentRoute?.path.includes('/inscription/structure') &&
     !!currentUser &&
     !currentUser.hasUserOfferer
   ) {
-    return <Navigate to="/parcours-inscription/structure" replace />
+    return <Navigate to="/inscription/structure/recherche" replace />
   }
   return (
     <>

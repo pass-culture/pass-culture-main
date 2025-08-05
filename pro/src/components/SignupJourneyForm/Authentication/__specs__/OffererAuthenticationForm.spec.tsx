@@ -111,7 +111,7 @@ const renderOffererAuthenticationForm = (
     </SignupJourneyContext.Provider>,
     {
       user: sharedCurrentUserFactory(),
-      initialRouterEntries: ['/parcours-inscription/identification'],
+      initialRouterEntries: ['/inscription/structure/identification'],
       ...options,
     }
   )

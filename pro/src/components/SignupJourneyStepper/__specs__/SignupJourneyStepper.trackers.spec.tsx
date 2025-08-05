@@ -25,22 +25,22 @@ const mockLogEvent = vi.fn()
 
 const renderSignupJourneyStepper = (
   contextValue: SignupJourneyContextValues,
-  url = '/parcours-inscription/authentification'
+  url = '/inscription/structure/authentification'
 ) => {
   const rtlReturns = renderWithProviders(
     <SignupJourneyContext.Provider value={contextValue}>
       <SignupJourneyStepper />
       <Routes>
         <Route
-          path="/parcours-inscription/authentification"
+          path="/inscription/structure/authentification"
           element={<div>Authentication screen</div>}
         />
         <Route
-          path="/parcours-inscription/activite"
+          path="/inscription/structure/activite"
           element={<div>Activity screen</div>}
         />
         <Route
-          path="/parcours-inscription/validation"
+          path="/inscription/structure/confirmation"
           element={<div>Validation screen</div>}
         />
       </Routes>
@@ -103,7 +103,7 @@ describe('test renderSignupJourneyStepper', () => {
     }
     const { tabAuthentication } = renderSignupJourneyStepper(
       contextValue,
-      '/parcours-inscription/activite'
+      '/inscription/structure/activite'
     )
 
     if (tabAuthentication) {
@@ -114,7 +114,7 @@ describe('test renderSignupJourneyStepper', () => {
       1,
       Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
       {
-        from: '/parcours-inscription/activite',
+        from: '/inscription/structure/activite',
         to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
         used: OnboardingFormNavigationAction.Breadcrumb,
       }
@@ -130,7 +130,7 @@ describe('test renderSignupJourneyStepper', () => {
     }
     const { tabActivity } = renderSignupJourneyStepper(
       contextValue,
-      '/parcours-inscription/activite'
+      '/inscription/structure/activite'
     )
 
     if (tabActivity) {
@@ -155,7 +155,7 @@ describe('test renderSignupJourneyStepper', () => {
     const { tabAuthentication, tabActivity, tabValidation } =
       renderSignupJourneyStepper(
         contextValue,
-        '/parcours-inscription/validation'
+        '/inscription/structure/confirmation'
       )
 
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
@@ -168,7 +168,7 @@ describe('test renderSignupJourneyStepper', () => {
       1,
       Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
       {
-        from: '/parcours-inscription/validation',
+        from: '/inscription/structure/confirmation',
         to: SIGNUP_JOURNEY_STEP_IDS.ACTIVITY,
         used: OnboardingFormNavigationAction.Breadcrumb,
       }
@@ -182,8 +182,8 @@ describe('test renderSignupJourneyStepper', () => {
       2,
       Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
       {
-        from: '/parcours-inscription/activite',
-        to: SIGNUP_JOURNEY_STEP_IDS.VALIDATION,
+        from: '/inscription/structure/activite',
+        to: SIGNUP_JOURNEY_STEP_IDS.CONFIRMATION,
         used: OnboardingFormNavigationAction.Breadcrumb,
       }
     )
@@ -196,7 +196,7 @@ describe('test renderSignupJourneyStepper', () => {
       3,
       Events.CLICKED_ONBOARDING_FORM_NAVIGATION,
       {
-        from: '/parcours-inscription/validation',
+        from: '/inscription/structure/confirmation',
         to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
         used: OnboardingFormNavigationAction.Breadcrumb,
       }

@@ -11,7 +11,7 @@ const renderConfirmedAttachmentScreen = () => {
   return renderWithProviders(
     <Routes>
       <Route
-        path="/parcours-inscription/structure/rattachement/confirmation"
+        path="/inscription/structure/rattachement/confirmation"
         element={<ConfirmedAttachment />}
       />
       <Route path="/accueil" element={<div>Home screen</div>} />
@@ -19,7 +19,7 @@ const renderConfirmedAttachmentScreen = () => {
     {
       user: sharedCurrentUserFactory(),
       initialRouterEntries: [
-        '/parcours-inscription/structure/rattachement/confirmation',
+        '/inscription/structure/rattachement/confirmation',
       ],
     }
   )

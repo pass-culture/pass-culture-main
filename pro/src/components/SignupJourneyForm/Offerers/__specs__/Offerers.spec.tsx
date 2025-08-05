@@ -34,23 +34,26 @@ const renderOfferersScreen = (
     <SignupJourneyContext.Provider value={contextValue}>
       <Routes>
         <Route
-          path="/parcours-inscription/structure"
+          path="/inscription/structure/recherche"
           element={<div>Offerer screen</div>}
         />
-        <Route path="/parcours-inscription/structures" element={<Offerers />} />
         <Route
-          path="/parcours-inscription/identification"
+          path="/inscription/structure/recherche/rattachement"
+          element={<Offerers />}
+        />
+        <Route
+          path="/inscription/structure/identification"
           element={<div>Authentication screen</div>}
         />
         <Route
-          path="/parcours-inscription/structure/rattachement/confirmation"
+          path="/inscription/structure/rattachement/confirmation"
           element={<div>Confirmation screen</div>}
         />
       </Routes>
     </SignupJourneyContext.Provider>,
     {
       user: sharedCurrentUserFactory(),
-      initialRouterEntries: ['/parcours-inscription/structures'],
+      initialRouterEntries: ['/inscription/structure/recherche/rattachement'],
       ...options,
     }
   )
