@@ -29,7 +29,7 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
 }) => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
-  const { offer, isEvent: isEventOfferContext } = useIndividualOfferContext()
+  const { offer, isEvent } = useIndividualOfferContext()
   const activeStep = useActiveStep(
     Object.values(INDIVIDUAL_OFFER_WIZARD_STEP_IDS)
   )
@@ -47,8 +47,6 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
   const queryOfferType = queryParams.get('offer-type')
 
   const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
-  const isEvent =
-    isEventOfferContext || offer?.isEvent || isOfferSubtypeEvent(offerSubtype)
 
   const steps: StepPattern[] = [
     {
@@ -90,46 +88,90 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
     })
   }
 
-  // Intermediate steps depending on isEvent
-  if (isEvent) {
-    steps.push(
-      {
-        id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
-        label: 'Tarifs',
-        path: getIndividualOfferPath({
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
-          mode,
-          isOnboarding,
-        }),
-        isActive:
-          (hasOffer && isUsefulInformationSubmitted) || hasPriceCategories,
-      },
-      {
+  // We also show all possible steps when we don't know yet (meaning `isEvent` is null or undefined).
+  if (isNewOfferCreationFlowFeatureActive) {
+    if (isEvent === null || isEvent) {
+      steps.push(
+        {
+          id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
+          label: 'Tarifs',
+          path: getIndividualOfferPath({
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
+            mode,
+            isOnboarding,
+          }),
+          isActive:
+            (hasOffer && isUsefulInformationSubmitted) || hasPriceCategories,
+        },
+        {
+          id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+          label: 'Horaires',
+          path: getIndividualOfferPath({
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode,
+            isOnboarding,
+          }),
+          isActive: hasPriceCategories,
+        }
+      )
+    } else {
+      steps.push({
         id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
-        // This double ternary is temporary while the FF is being rolled out
-        label: isNewOfferCreationFlowFeatureActive
-          ? 'Horaires'
-          : 'Dates & Capacités',
+        label: 'Horaires',
         path: getIndividualOfferPath({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           mode,
           isOnboarding,
         }),
-        isActive: hasPriceCategories,
-      }
-    )
+        isActive:
+          (hasOffer && isUsefulInformationSubmitted) ||
+          Boolean(offer?.hasStocks),
+      })
+    }
   } else {
-    steps.push({
-      id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
-      label: isNewOfferCreationFlowFeatureActive ? 'Horaires' : 'Stock & Prix',
-      path: getIndividualOfferPath({
-        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
-        mode,
-        isOnboarding,
-      }),
-      isActive:
-        (hasOffer && isUsefulInformationSubmitted) || Boolean(offer?.hasStocks),
-    })
+    //  This part will disappear once the FF is enabled in production.
+
+    // TODO (igabriele, 2025-08-04): Confusing and error-prone. We should have a single source of truth for `isEvent`.
+    const isLegacyEvent =
+      isEvent || offer?.isEvent || isOfferSubtypeEvent(offerSubtype)
+    if (isLegacyEvent) {
+      steps.push(
+        {
+          id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
+          label: 'Tarifs',
+          path: getIndividualOfferPath({
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
+            mode,
+            isOnboarding,
+          }),
+          isActive:
+            (hasOffer && isUsefulInformationSubmitted) || hasPriceCategories,
+        },
+        {
+          id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+          label: 'Dates & Capacités',
+          path: getIndividualOfferPath({
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode,
+            isOnboarding,
+          }),
+          isActive: hasPriceCategories,
+        }
+      )
+    } else {
+      steps.push({
+        id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+        label: 'Stock & Prix',
+        path: getIndividualOfferPath({
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode,
+          isOnboarding,
+        }),
+        isActive:
+          (hasOffer && isUsefulInformationSubmitted) ||
+          Boolean(offer?.hasStocks),
+      })
+    }
   }
 
   // Summary/confirmation steps on creation
