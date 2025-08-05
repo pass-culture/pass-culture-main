@@ -1,0 +1,6 @@
+# 1 Ignore everything
+*
+# 2 Allow Prettier to descend into every directory
+!*/
+# 3 But only (un-)ignore the SCSS files themselves!*.scss
+!**/*.scss
