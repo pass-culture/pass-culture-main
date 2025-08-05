@@ -285,7 +285,9 @@ describe('IndividualOfferLayout', () => {
   })
 
   describe('onboarding', () => {
-    const options = { initialRouterEntries: ['/onboarding/offre/creation'] }
+    const options: RenderWithProvidersOptions = {
+      initialRouterEntries: ['/onboarding/offre/creation'],
+    }
 
     it("Should redirect to homepage if the user can't access it and is on onboarding url", async () => {
       vi.spyOn(
@@ -299,6 +301,7 @@ describe('IndividualOfferLayout', () => {
         },
         options
       )
+
       await waitFor(() => {
         expect(screen.getByText('Accueil')).toBeInTheDocument()
       })
