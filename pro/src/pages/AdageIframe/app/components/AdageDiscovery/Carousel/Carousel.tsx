@@ -1,9 +1,8 @@
 import cn from 'classnames'
-import { createRef } from 'react'
-
 import { useIsElementVisible } from 'commons/hooks/useIsElementVisible'
 import fullArrowLeftIcon from 'icons/full-arrow-left.svg'
 import fullArrowRightIcon from 'icons/full-arrow-right.svg'
+import { createRef } from 'react'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

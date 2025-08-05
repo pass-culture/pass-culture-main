@@ -1,5 +1,3 @@
-import { screen, waitFor } from '@testing-library/react'
-
 import { ApiError } from 'apiClient/adage'
 import { ApiRequestOptions } from 'apiClient/adage/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/adage/core/ApiResult'
@@ -9,6 +7,7 @@ import {
   OfferStatus,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
+import { screen, waitFor } from '@testing-library/react'
 import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 

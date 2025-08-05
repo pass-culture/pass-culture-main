@@ -1,9 +1,3 @@
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
@@ -23,6 +17,11 @@ import { pluralize } from 'commons/utils/pluralize'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import strokeSearchIcon from 'icons/stroke-search.svg'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
+import useSWR from 'swr'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'

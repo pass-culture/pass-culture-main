@@ -4,6 +4,7 @@ import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 
 import styles from './OfferStatusBanner.module.scss'
+
 interface OfferStatusBannerProps {
   status: OfferStatus
 }

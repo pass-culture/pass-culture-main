@@ -1,14 +1,11 @@
-import { screen, waitFor, within } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router'
-import { beforeEach, expect } from 'vitest'
-
 import { api } from 'apiClient/api'
 import {
   GetOffererAddressResponseModel,
   ListOffersOfferResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
+import { screen, waitFor, within } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import {
   ALL_CREATION_MODES,
   CREATION_MODES_OPTIONS,
@@ -28,6 +25,8 @@ import {
   sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { Route, Routes } from 'react-router'
+import { beforeEach, expect } from 'vitest'
 
 import { IndividualOffers } from './IndividualOffers'
 

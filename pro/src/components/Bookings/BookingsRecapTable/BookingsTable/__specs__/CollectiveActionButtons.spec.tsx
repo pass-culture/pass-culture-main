@@ -1,11 +1,9 @@
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { addDays } from 'date-fns'
-
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
 import * as useNotification from 'commons/hooks/useNotification'
@@ -14,6 +12,7 @@ import {
   collectiveBookingFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { addDays } from 'date-fns'
 
 import {
   CollectiveActionButtons,

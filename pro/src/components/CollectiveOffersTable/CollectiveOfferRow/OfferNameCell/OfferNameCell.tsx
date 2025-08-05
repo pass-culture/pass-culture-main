@@ -1,9 +1,8 @@
-import classNames from 'classnames'
-import { Link } from 'react-router'
-
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
+import classNames from 'classnames'
 import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import { Tag } from 'design-system/Tag/Tag'
+import { Link } from 'react-router'
 import styles from 'styles/components/Cells.module.scss'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 

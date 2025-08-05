@@ -1,8 +1,7 @@
-import { isValid } from 'date-fns'
-import { UseFormReturn } from 'react-hook-form'
-
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { StocksCalendarFormValues } from 'components/IndividualOffer/StocksEventCreation/form/types'
+import { isValid } from 'date-fns'
+import { UseFormReturn } from 'react-hook-form'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 
 import { StocksCalendarFormTimeAndPrice } from '../StocksCalendarFormTimeAndPrice/StocksCalendarFormTimeAndPrice'

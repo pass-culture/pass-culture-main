@@ -1,6 +1,3 @@
-import { useSelector } from 'react-redux'
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import { GET_VENUES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -10,6 +7,8 @@ import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { IndividualOfferLayout } from 'components/IndividualOfferLayout/IndividualOfferLayout'
 import { getTitle } from 'components/IndividualOfferLayout/utils/getTitle'
 import { IndividualOfferDetailsScreen } from 'pages/IndividualOffer/IndividualOfferDetails/components/IndividualOfferDetailsScreen'
+import { useSelector } from 'react-redux'
+import useSWR from 'swr'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { IndividualOfferDetailsScreenNext } from './components/IndividualOfferDetailsScreenNext'

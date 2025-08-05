@@ -1,8 +1,7 @@
-
 import { GetOffererResponseModel } from 'apiClient/v1'
 import {
-  getVirtualVenueFromOfferer,
   getPhysicalVenuesFromOfferer,
+  getVirtualVenueFromOfferer,
 } from 'pages/Homepage/components/Offerers/components/VenueList/venueUtils'
 
 import { Venue } from './Venue'

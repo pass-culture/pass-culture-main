@@ -1,6 +1,3 @@
-import { useLocation, useNavigate } from 'react-router'
-import useSWR, { useSWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import {
@@ -27,6 +24,8 @@ import { FORM_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import { useNotification } from 'commons/hooks/useNotification'
 import { queryParamsFromOfferer } from 'commons/utils/queryParamsFromOfferer'
 import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
+import { useLocation, useNavigate } from 'react-router'
+import useSWR, { useSWRConfig } from 'swr'
 
 import {
   MandatoryCollectiveOfferFromParamsProps,

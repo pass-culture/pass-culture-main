@@ -8,7 +8,11 @@ interface FormLayoutSubSubSectionProps {
   className?: string
 }
 
-export const SubSubSection = ({ title, children, className }: FormLayoutSubSubSectionProps): JSX.Element => (
+export const SubSubSection = ({
+  title,
+  children,
+  className,
+}: FormLayoutSubSubSectionProps): JSX.Element => (
   <div className={cn(style['form-layout-sub-sub-section'], className)}>
     <h4 className={style['form-layout-sub-sub-section-title']}>{title}</h4>
     {children}

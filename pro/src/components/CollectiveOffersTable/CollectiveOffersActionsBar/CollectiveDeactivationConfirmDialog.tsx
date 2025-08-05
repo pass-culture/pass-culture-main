@@ -1,10 +1,9 @@
-import { useLocation } from 'react-router'
-
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { NBSP } from 'commons/core/shared/constants'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import fullEyeIcon from 'icons/full-hide.svg'
+import { useLocation } from 'react-router'
 
 export interface CollectiveDeactivationConfirmDialogProps {
   areAllOffersSelected: boolean

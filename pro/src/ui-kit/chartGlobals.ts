@@ -1,9 +1,9 @@
 import { theme } from '@pass-culture/design-system/lib/pro/light.web'
 import {
   Chart,
+  LinearScale,
   LineController,
   LineElement,
-  LinearScale,
   PointElement,
   TimeSeriesScale,
   Tooltip,

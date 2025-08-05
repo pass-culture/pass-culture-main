@@ -26,7 +26,7 @@ import {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
   VenueProviderResponse,
-  VenueTypeCode
+  VenueTypeCode,
 } from 'apiClient/v1'
 import { IndividualOfferContextValues } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'commons/core/Finances/constants'

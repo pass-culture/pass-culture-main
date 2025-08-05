@@ -1,17 +1,16 @@
-import { screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router'
-
 import {
   AdageFrontRoles,
   AuthenticatedResponse,
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { GET_COLLECTIVE_FAVORITES } from 'commons/config/swrQueryKeys'
 import { defaultCollectiveTemplateOffer } from 'commons/utils/factories/adageFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { Route, Routes } from 'react-router'
 
 import { OffersFavorites } from '../OffersFavorites'
 
@@ -141,7 +140,10 @@ describe('OffersFavorites', () => {
     vi.spyOn(apiAdage, 'getCollectiveFavorites').mockResolvedValue({
       favoritesTemplate: [mockOffer],
     })
-    vi.spyOn(apiAdage, 'deleteFavoriteForCollectiveOfferTemplate').mockResolvedValue()
+    vi.spyOn(
+      apiAdage,
+      'deleteFavoriteForCollectiveOfferTemplate'
+    ).mockResolvedValue()
 
     renderAdageFavoritesOffers(user)
 

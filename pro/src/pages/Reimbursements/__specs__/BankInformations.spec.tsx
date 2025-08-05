@@ -1,24 +1,23 @@
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import * as router from 'react-router'
-
 import { api } from 'apiClient/api'
 import {
   BankAccountApplicationStatus,
   BankAccountResponseModel,
 } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   defaultGetOffererResponseModel,
   defaultManagedVenues,
 } from 'commons/utils/factories/individualApiFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
+import * as router from 'react-router'
 
 const defaultBankAccountResponseModel: BankAccountResponseModel = {
   bic: 'bic',

@@ -1,9 +1,8 @@
-import { useRef } from 'react'
-import { useFieldArray, useFormContext } from 'react-hook-form'
-
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullMoreIcon from 'icons/full-more.svg'
+import { useRef } from 'react'
+import { useFieldArray, useFormContext } from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

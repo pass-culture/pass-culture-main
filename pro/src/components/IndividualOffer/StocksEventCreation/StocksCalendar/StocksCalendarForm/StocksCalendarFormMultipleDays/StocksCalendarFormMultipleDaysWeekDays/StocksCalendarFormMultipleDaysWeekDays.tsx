@@ -1,7 +1,6 @@
-import { useId } from 'react'
-import { useFieldArray, UseFormReturn } from 'react-hook-form'
-
 import { StocksCalendarFormValues } from 'components/IndividualOffer/StocksEventCreation/form/types'
+import { useId } from 'react'
+import { UseFormReturn, useFieldArray } from 'react-hook-form'
 import { DayCheckbox } from 'ui-kit/form/DayCheckbox/DayCheckbox'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 

@@ -1,9 +1,8 @@
-import { useCallback, useState } from 'react'
-
 import { api } from 'apiClient/api'
 import { CreateThumbnailResponseModel } from 'apiClient/v1'
 import { IndividualOfferImage } from 'commons/core/Offers/types'
 import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import { useCallback, useState } from 'react'
 
 type IndividualImageOfferContextValues = {
   displayedImage?: IndividualOfferImage | OnImageUploadArgs

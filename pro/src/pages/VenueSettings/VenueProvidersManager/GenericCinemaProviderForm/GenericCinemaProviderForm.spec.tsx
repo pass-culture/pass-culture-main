@@ -150,7 +150,7 @@ describe('GenericCinemaProviderForm', () => {
     it('should display allocine advanced fields', async () => {
       await renderCinemaProviderForm(props)
 
-      const priceInput = screen.getByText(/Prix de vente\/\place/)
+      const priceInput = screen.getByText(/Prix de vente\/place/)
       expect(priceInput).toBeInTheDocument()
 
       const callout = screen.getByText(
@@ -184,7 +184,7 @@ describe('GenericCinemaProviderForm', () => {
 
       await renderCinemaProviderForm(propsWithAdvancedFields)
 
-      const priceInput = screen.getByLabelText(/Prix de vente\/\place/)
+      const priceInput = screen.getByLabelText(/Prix de vente\/place/)
       const quantityInput = screen.getByLabelText('Nombre de places/séance')
 
       await userEvent.clear(priceInput)

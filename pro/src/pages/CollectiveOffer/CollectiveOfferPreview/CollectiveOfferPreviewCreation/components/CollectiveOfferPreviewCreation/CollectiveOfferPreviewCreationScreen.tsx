@@ -1,8 +1,3 @@
-import { isBefore } from 'date-fns'
-import { useState } from 'react'
-import { useNavigate } from 'react-router'
-import { useSWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import {
   GetCollectiveOfferResponseModel,
@@ -16,14 +11,18 @@ import {
 } from 'commons/config/swrQueryKeys'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
-  Mode,
   isCollectiveOfferTemplate,
+  Mode,
 } from 'commons/core/OfferEducational/types'
 import { useNotification } from 'commons/hooks/useNotification'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { RedirectToBankAccountDialog } from 'components/RedirectToBankAccountDialog/RedirectToBankAccountDialog'
+import { isBefore } from 'date-fns'
 import { AdagePreviewLayout } from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
 import { PreviewHeader } from 'pages/CollectiveOffer/CollectiveOfferPreview/components/PreviewHeader'
+import { useState } from 'react'
+import { useNavigate } from 'react-router'
+import { useSWRConfig } from 'swr'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'

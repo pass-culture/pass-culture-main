@@ -1,6 +1,6 @@
 import {
-  defaultCollectiveTemplateOffer,
   defaultCollectiveOffer,
+  defaultCollectiveTemplateOffer,
 } from 'commons/utils/factories/adageFactories'
 
 import {

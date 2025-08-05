@@ -1,7 +1,3 @@
-import { format } from 'date-fns'
-import { useEffect, useState } from 'react'
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import {
   BookingRecapResponseModel,
@@ -16,8 +12,11 @@ import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import { IndividualBookingsTable } from 'components/Bookings/BookingsRecapTable/BookingsTable/IndividualBookingsTable'
 import { DEFAULT_OMNISEARCH_CRITERIA } from 'components/Bookings/BookingsRecapTable/Filters/constants'
 import { filterBookingsRecap } from 'components/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
+import { format } from 'date-fns'
 import strokeBookingHold from 'icons/stroke-booking-hold.svg'
 import { getFilteredIndividualBookingsAdapter } from 'pages/Bookings/adapters/getFilteredIndividualBookingsAdapter'
+import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'

@@ -509,7 +509,9 @@ function fromOnBoardingPublishMyFirstOffer() {
   // Minimal required fields are already filled by default in this step, so we can directly go to the next step
   // TODO (igabriele,  2025-08-04): Investigate this wait (it may attempt to click during an unecessary re-render).
   // eslint-disable-next-line cypress/no-unnecessary-waiting
-  cy.wait(250).findByRole('button', { name: 'Enregistrer et continuer' }).click()
+  cy.wait(250)
+    .findByRole('button', { name: 'Enregistrer et continuer' })
+    .click()
 
   cy.wait('@patchOffer')
 

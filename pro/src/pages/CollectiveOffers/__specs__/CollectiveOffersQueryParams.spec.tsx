@@ -1,16 +1,14 @@
+import { api } from 'apiClient/api'
+import {
+  CollectiveOfferResponseModel,
+  CollectiveOffersStockResponseModel,
+} from 'apiClient/v1'
 import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as router from 'react-router'
-
-import { api } from 'apiClient/api'
-import {
-  CollectiveOfferResponseModel,
-  CollectiveOffersStockResponseModel,
-} from 'apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'commons/core/Offers/constants'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
@@ -21,6 +19,7 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import * as router from 'react-router'
 
 import { CollectiveOffers } from '../CollectiveOffers'
 

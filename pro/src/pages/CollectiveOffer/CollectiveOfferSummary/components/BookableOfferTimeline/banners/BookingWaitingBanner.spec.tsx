@@ -1,6 +1,5 @@
-import { screen } from '@testing-library/react'
-
 import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { BookingWaitingBanner } from './BookingWaitingBanner'

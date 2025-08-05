@@ -1,7 +1,3 @@
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useSWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import {
   BannerMetaModel,
@@ -17,15 +13,18 @@ import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { WEBAPP_URL } from 'commons/utils/config'
 import { getVenuePagePathToNavigateTo } from 'commons/utils/getVenuePagePathToNavigateTo'
 import {
-  UploadImageValues,
   UploaderModeEnum,
+  UploadImageValues,
 } from 'commons/utils/imageUploadTypes'
 import { ImageDragAndDropUploader } from 'components/ImageDragAndDropUploader/ImageDragAndDropUploader'
 import { ButtonImageEdit } from 'components/ImageUploader/components/ButtonImageEdit/ButtonImageEdit'
 import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullParametersIcon from 'icons/full-parameters.svg'
+import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
+import { useSWRConfig } from 'swr'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

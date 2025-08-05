@@ -1,8 +1,7 @@
-import { addYears, isAfter } from 'date-fns'
-import * as yup from 'yup'
-
 import { isDateValid } from 'commons/utils/date'
 import { buildDateTime } from 'components/IndividualOffer/StocksEventEdition/serializers'
+import { addYears, isAfter } from 'date-fns'
+import * as yup from 'yup'
 
 export const publicationDateValidationSchema = (schema: yup.StringSchema) =>
   schema.when('publicationMode', {

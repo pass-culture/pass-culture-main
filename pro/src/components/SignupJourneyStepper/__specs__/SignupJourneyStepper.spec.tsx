@@ -1,8 +1,6 @@
+import { Target } from 'apiClient/v1'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router'
-
-import { Target } from 'apiClient/v1'
 import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
 import {
   SignupJourneyContext,
@@ -14,6 +12,7 @@ import {
   DEFAULT_ADDRESS_FORM_VALUES,
   DEFAULT_OFFERER_FORM_VALUES,
 } from 'components/SignupJourneyForm/Offerer/constants'
+import { Route, Routes } from 'react-router'
 
 import { SignupJourneyStepper } from '../SignupJourneyStepper'
 

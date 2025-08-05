@@ -1,7 +1,3 @@
-import { useFormContext } from 'react-hook-form'
-import { useSelector } from 'react-redux'
-import { useLocation } from 'react-router'
-
 import { GetOffererResponseModel } from 'apiClient/v1'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
@@ -15,6 +11,9 @@ import strokeBookedIcon from 'icons/stroke-booked.svg'
 import strokeDuplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
 import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
+import { useFormContext } from 'react-hook-form'
+import { useSelector } from 'react-redux'
+import { useLocation } from 'react-router'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 

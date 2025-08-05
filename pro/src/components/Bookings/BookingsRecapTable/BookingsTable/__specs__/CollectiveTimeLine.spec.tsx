@@ -1,13 +1,11 @@
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { addDays } from 'date-fns'
-
 import {
   CollectiveBookingBankAccountStatus,
   CollectiveBookingByIdResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import { CollectiveBookingCancellationReasons } from 'apiClient/v1/models/CollectiveBookingCancellationReasons'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
 import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
@@ -20,6 +18,7 @@ import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { addDays } from 'date-fns'
 
 import { CollectiveTimeLine } from '../CollectiveTimeLine'
 

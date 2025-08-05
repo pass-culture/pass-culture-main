@@ -9,7 +9,7 @@ type HasSearchFiltersParams = {
 export const hasSearchFilters = ({
   searchFilters,
   lookup = Object.keys(searchFilters) as (keyof SearchFiltersParams)[],
-  ignore = []
+  ignore = [],
 }: HasSearchFiltersParams): boolean => {
   // Those "filters" are ignored because none are to be interpreted
   // as such by the user.
@@ -35,7 +35,7 @@ export const hasCollectiveSearchFilters = ({
   lookup = Object.keys(
     searchFilters
   ) as (keyof CollectiveSearchFiltersParams)[],
-  ignore = []
+  ignore = [],
 }: HasCollectiveSearchFiltersParams): boolean => {
   // Those "filters" are ignored because none are to be interpreted
   // as such by the user.
@@ -48,7 +48,10 @@ export const hasCollectiveSearchFilters = ({
         searchFilters[filterName] !== { ...defaultFilters }[filterName]) ||
         (Array.isArray(searchFilters[filterName]) &&
           Array.isArray(defaultFilters[filterName]) &&
-          !isSameArray(searchFilters[filterName], defaultFilters[filterName]))) &&
+          !isSameArray(
+            searchFilters[filterName],
+            defaultFilters[filterName]
+          ))) &&
       !finalIgnore.includes(filterName)
   )
 }

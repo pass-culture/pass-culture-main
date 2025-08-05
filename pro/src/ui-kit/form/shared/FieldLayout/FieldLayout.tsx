@@ -1,9 +1,8 @@
 import cn from 'classnames'
-import React, { useId } from 'react'
-
 import fullClearIcon from 'icons/full-clear.svg'
 import fullCloseIcon from 'icons/full-close.svg'
 import fullHelpIcon from 'icons/full-help.svg'
+import React, { useId } from 'react'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

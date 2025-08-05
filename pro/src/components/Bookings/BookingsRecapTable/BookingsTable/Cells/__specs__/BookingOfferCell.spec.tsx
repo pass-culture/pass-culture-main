@@ -1,9 +1,11 @@
 import { screen } from '@testing-library/react'
-import { add } from 'date-fns'
-
 import { collectiveBookingFactory } from 'commons/utils/factories/collectiveApiFactories'
-import { bookingRecapFactory, bookingRecapStockFactory } from 'commons/utils/factories/individualApiFactories'
+import {
+  bookingRecapFactory,
+  bookingRecapStockFactory,
+} from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { add } from 'date-fns'
 
 import { BookingOfferCell, BookingOfferCellProps } from '../BookingOfferCell'
 
@@ -61,7 +63,7 @@ describe('bookings offer cell', () => {
           offerId: offerId,
           offerName: 'La danse des poireaux',
           offerIsEducational: false,
-          offerEan: null
+          offerEan: null,
         }),
       }),
     }

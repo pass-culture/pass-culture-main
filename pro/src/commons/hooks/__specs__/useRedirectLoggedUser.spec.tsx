@@ -1,9 +1,8 @@
+import { api } from 'apiClient/api'
 import { renderHook } from '@testing-library/react'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import * as reactRedux from 'react-redux'
 import { MemoryRouter } from 'react-router'
-
-import { api } from 'apiClient/api'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 
 import { useRedirectLoggedUser } from '../useRedirectLoggedUser'
 

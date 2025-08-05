@@ -1,5 +1,3 @@
-import { useLocation } from 'react-router'
-
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
 import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
@@ -8,6 +6,7 @@ import { useActiveStep } from 'commons/hooks/useActiveStep'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { Step, Stepper } from 'components/Stepper/Stepper'
+import { useLocation } from 'react-router'
 
 import { SIGNUP_JOURNEY_STEP_IDS } from './constants'
 import styles from './SignupJourneyStepper.module.scss'

@@ -511,8 +511,7 @@ export const Declaration = () => {
       <p className={styles['paragraph']}>
         Vous avez signalé au responsable du site internet un défaut
         d’accessibilité qui vous empêche d’accéder à un contenu ou à un des
-        services du portail et vous n’avez pas obtenu de réponse
-        satisfaisante.{' '}
+        services du portail et vous n’avez pas obtenu de réponse satisfaisante.{' '}
       </p>
       <ul>
         <li className={styles['list-item']}>

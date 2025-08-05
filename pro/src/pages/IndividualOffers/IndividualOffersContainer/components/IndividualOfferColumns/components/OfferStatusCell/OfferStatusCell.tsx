@@ -1,11 +1,10 @@
-import { isAfter } from 'date-fns'
-
 import { ListOffersOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
 import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { StatusLabel } from 'components/StatusLabel/StatusLabel'
+import { isAfter } from 'date-fns'
 import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import fullBoostedIcon from 'icons/full-boosted.svg'
 import waitFullIcon from 'icons/full-wait.svg'

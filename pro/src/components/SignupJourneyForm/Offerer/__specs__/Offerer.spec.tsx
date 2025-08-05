@@ -1,12 +1,9 @@
-import { screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router'
-import createFetchMock from 'vitest-fetch-mock'
-
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
@@ -15,6 +12,8 @@ import * as siretApiValidate from 'commons/core/Venue/siretApiValidate'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
+import { Route, Routes } from 'react-router'
+import createFetchMock from 'vitest-fetch-mock'
 
 import {
   DEFAULT_ADDRESS_FORM_VALUES,

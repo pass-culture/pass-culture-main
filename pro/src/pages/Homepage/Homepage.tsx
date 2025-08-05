@@ -1,7 +1,3 @@
-import { useMemo, useRef } from 'react'
-import { useSelector } from 'react-redux'
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import { Layout } from 'app/App/layout/Layout'
 import { GET_VENUE_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
@@ -11,6 +7,9 @@ import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { sortByLabel } from 'commons/utils/strings'
 import { Newsletter } from 'components/Newsletter/Newsletter'
 import { AddBankAccountCallout } from 'pages/Homepage/components/AddBankAccountCallout/AddBankAccountCallout'
+import { useMemo, useRef } from 'react'
+import { useSelector } from 'react-redux'
+import useSWR from 'swr'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { BankAccountHasPendingCorrectionCallout } from './components/BankAccountHasPendingCorrectionCallout/BankAccountHasPendingCorrectionCallout'

@@ -1,10 +1,6 @@
-import { yupResolver } from '@hookform/resolvers/yup'
-import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router'
-import { useSWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel, StudentLevels } from 'apiClient/v1'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
   DEFAULT_MARSEILLE_STUDENTS,
@@ -17,6 +13,9 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { selectInterventionAreas } from 'commons/utils/selectInterventionAreas'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { RouteLeavingGuardVenueEdition } from 'pages/VenueEdition/RouteLeavingGuardVenueEdition'
+import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router'
+import { useSWRConfig } from 'swr'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'

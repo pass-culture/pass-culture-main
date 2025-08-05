@@ -1,6 +1,4 @@
 import cn from 'classnames'
-import { useState } from 'react'
-
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import {
   FilterConfigType,
@@ -8,6 +6,7 @@ import {
   useStoredFilterConfig,
 } from 'components/OffersTable/OffersTableSearch/utils'
 import fullRefreshIcon from 'icons/full-refresh.svg'
+import { useState } from 'react'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { ButtonFilter } from 'ui-kit/ButtonFilter/ButtonFilter'

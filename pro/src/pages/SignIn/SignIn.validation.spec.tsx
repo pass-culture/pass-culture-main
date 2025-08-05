@@ -1,9 +1,6 @@
-import { screen } from '@testing-library/react'
-import * as router from 'react-router'
-import { Route, Routes } from 'react-router'
-
 import { api } from 'apiClient/api'
 import { SharedLoginUserResponseModel } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
@@ -15,6 +12,8 @@ import {
   renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
+import * as router from 'react-router'
+import { Route, Routes } from 'react-router'
 
 import { SignIn } from './SignIn'
 

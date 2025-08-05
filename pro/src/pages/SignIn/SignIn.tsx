@@ -1,11 +1,6 @@
-import { yupResolver } from '@hookform/resolvers/yup'
-import { useEffect, useState } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
-import { Navigate, useSearchParams } from 'react-router'
-
 import { api } from 'apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from 'apiClient/helpers'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { Layout } from 'app/App/layout/Layout'
 import {
   RECAPTCHA_ERROR,
@@ -19,6 +14,10 @@ import { updateUser } from 'commons/store/user/reducer'
 import { initializeUserThunk } from 'commons/store/user/thunks'
 import { getReCaptchaToken } from 'commons/utils/recaptcha'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
+import { useEffect, useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
+import { useDispatch } from 'react-redux'
+import { Navigate, useSearchParams } from 'react-router'
 
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
 import { SigninForm } from './SigninForm'

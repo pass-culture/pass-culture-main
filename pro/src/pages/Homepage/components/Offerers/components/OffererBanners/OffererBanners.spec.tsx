@@ -1,13 +1,12 @@
 import { screen } from '@testing-library/react'
-import { describe } from 'vitest'
-
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { describe } from 'vitest'
 
-import { OffererBannersProps, OffererBanners } from './OffererBanners'
+import { OffererBanners, OffererBannersProps } from './OffererBanners'
 
 const mockNavigate = vi.fn()
 vi.mock('react-router', async () => ({

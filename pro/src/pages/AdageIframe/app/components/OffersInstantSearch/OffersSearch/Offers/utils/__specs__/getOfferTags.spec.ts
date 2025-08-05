@@ -1,9 +1,9 @@
 import {
+  CollectiveLocationType,
+  CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
   OfferAddressType,
   StudentLevels,
-  CollectiveOfferResponseModel,
-  CollectiveLocationType,
 } from 'apiClient/adage'
 import {
   defaultAdageUser,

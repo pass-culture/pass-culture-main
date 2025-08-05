@@ -4,8 +4,8 @@ import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFac
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
-  OfferEventDateCellProps,
   OfferEventDateCell,
+  OfferEventDateCellProps,
 } from './OfferEventDateCell'
 
 const renderOfferNameCell = (props: OfferEventDateCellProps) =>

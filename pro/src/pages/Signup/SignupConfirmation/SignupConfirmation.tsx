@@ -1,7 +1,6 @@
-import { useLocation } from 'react-router'
-
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
 import { ReSendEmailCallout } from 'components/ReSendEmailCallout/ReSendEmailCallout'
+import { useLocation } from 'react-router'
 
 import styles from './SignupConfirmation.module.scss'
 

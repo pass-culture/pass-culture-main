@@ -1,6 +1,5 @@
-import { screen, waitFor } from '@testing-library/react'
-
 import { api } from 'apiClient/api'
+import { screen, waitFor } from '@testing-library/react'
 import { Mode } from 'commons/core/OfferEducational/types'
 import * as hooks from 'commons/hooks/swr/useOfferer'
 import {

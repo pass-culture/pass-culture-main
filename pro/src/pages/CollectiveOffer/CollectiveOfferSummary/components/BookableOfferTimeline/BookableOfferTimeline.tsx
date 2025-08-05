@@ -8,7 +8,7 @@ import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedO
 import { Timeline, TimelineStepType } from 'ui-kit/Timeline/Timeline'
 
 import { formatDateTime } from '../CollectiveOfferSummary/components/utils/formatDatetime'
-
+import styles from './BookableOfferTimeline.module.scss'
 import { ArchivedBanner } from './banners/ArchivedBanner'
 import { BookedBanner } from './banners/BookedBanner'
 import { BookingWaitingBanner } from './banners/BookingWaitingBanner'
@@ -18,7 +18,6 @@ import { ExpiredBanner } from './banners/ExpiredBanner'
 import { ReimbursedBanner } from './banners/ReimbursedBanner'
 import { RejectedBanner } from './banners/RejectedBanner'
 import { UnderReviewBanner } from './banners/UnderReviewBanner'
-import styles from './BookableOfferTimeline.module.scss'
 
 type BookableOfferTimeline = {
   offer: GetCollectiveOfferResponseModel

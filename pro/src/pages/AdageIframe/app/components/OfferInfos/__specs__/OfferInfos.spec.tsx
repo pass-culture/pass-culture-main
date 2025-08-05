@@ -1,8 +1,6 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-import * as router from 'react-router'
-
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
@@ -13,6 +11,7 @@ import {
   renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import * as router from 'react-router'
 
 import { OfferInfos } from '../OfferInfos'
 

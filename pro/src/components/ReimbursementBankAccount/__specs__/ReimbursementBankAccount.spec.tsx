@@ -1,19 +1,18 @@
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router'
-
 import {
   BankAccountApplicationStatus,
   BankAccountResponseModel,
   ManagedVenues,
 } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
 import { defaultManagedVenues } from 'commons/utils/factories/individualApiFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { Route, Routes } from 'react-router'
 
 import { ReimbursementBankAccount } from '../ReimbursementBankAccount'
 

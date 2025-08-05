@@ -1,8 +1,5 @@
-import { yupResolver } from '@hookform/resolvers/yup'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-
 import { api } from 'apiClient/api'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { Layout } from 'app/App/layout/Layout'
 import {
   RECAPTCHA_ERROR,
@@ -16,6 +13,8 @@ import { getReCaptchaToken } from 'commons/utils/recaptcha'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ReSendEmailCallout } from 'components/ReSendEmailCallout/ReSendEmailCallout'
 import fullNextIcon from 'icons/full-next.svg'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'

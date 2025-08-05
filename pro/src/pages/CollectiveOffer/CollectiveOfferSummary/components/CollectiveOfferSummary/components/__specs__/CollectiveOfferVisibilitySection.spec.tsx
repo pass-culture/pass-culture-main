@@ -1,9 +1,8 @@
-import { screen } from '@testing-library/react'
-
 import {
   EducationalInstitutionResponseModel,
   EducationalRedactorResponseModel,
 } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
 import {
   defaultEducationalInstitution,
   defaultEducationalRedactor,

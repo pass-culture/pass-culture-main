@@ -1,13 +1,3 @@
-import { useEffect } from 'react'
-import {
-  useInfiniteHits,
-  useInstantSearch,
-  useStats,
-} from 'react-instantsearch'
-import { useDispatch, useSelector } from 'react-redux'
-import { useLocation } from 'react-router'
-import useSWR from 'swr'
-
 import {
   AdageFrontRoles,
   CollectiveOfferResponseModel,
@@ -30,6 +20,15 @@ import fullLinkIcon from 'icons/full-link.svg'
 import fullListIcon from 'icons/full-list.svg'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
+import { useEffect } from 'react'
+import {
+  useInfiniteHits,
+  useInstantSearch,
+  useStats,
+} from 'react-instantsearch'
+import { useDispatch, useSelector } from 'react-redux'
+import { useLocation } from 'react-router'
+import useSWR from 'swr'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { ShadowTipsHelpIcon } from 'ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
@@ -40,8 +39,8 @@ import { CustomPagination } from '../../../Pagination/Pagination'
 import { AdageSkeleton } from '../../../Skeleton/AdageSkeleton'
 import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
 import {
-  ToggleButtonGroup,
   ToggleButton,
+  ToggleButtonGroup,
 } from '../../../ToggleButtonGroup/ToggleButtonGroup'
 
 import { AdageOfferListCard } from './AdageOfferListCard/AdageOfferListCard'

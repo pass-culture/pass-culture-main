@@ -1,15 +1,14 @@
-import { yupResolver } from '@hookform/resolvers/yup'
-import * as Dialog from '@radix-ui/react-dialog'
-import { useId } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-
 import {
   EventStockUpdateBodyModel,
   GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
 } from 'apiClient/v1'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as Dialog from '@radix-ui/react-dialog'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { getPriceCategoryOptions } from 'components/IndividualOffer/PriceCategoriesScreen/form/getPriceCategoryOptions'
+import { useId } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
@@ -17,12 +16,11 @@ import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
-
+import styles from './StocksCalendarTableEditStock.module.scss'
 import {
   getStockFormDefaultValues,
   serializeStockFormValuesForUpdate,
 } from './serializers'
-import styles from './StocksCalendarTableEditStock.module.scss'
 import { validationSchema } from './validationSchema'
 
 export type EditStockFormValues = {

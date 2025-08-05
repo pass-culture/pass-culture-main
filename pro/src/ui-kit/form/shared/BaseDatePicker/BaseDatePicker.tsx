@@ -1,8 +1,7 @@
 import cn from 'classnames'
+import { FORMAT_ISO_DATE_ONLY, isDateValid } from 'commons/utils/date'
 import { format } from 'date-fns'
 import { ForwardedRef, forwardRef } from 'react'
-
-import { FORMAT_ISO_DATE_ONLY, isDateValid } from 'commons/utils/date'
 
 import { BaseInput, BaseInputProps } from '../BaseInput/BaseInput'
 

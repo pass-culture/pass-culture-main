@@ -1,6 +1,5 @@
-import { FunctionComponent } from 'react'
-
 import strokeWipIcon from 'icons/stroke-wip.svg'
+import { FunctionComponent } from 'react'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SignupUnavailable.module.scss'

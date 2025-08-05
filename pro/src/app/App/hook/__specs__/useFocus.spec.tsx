@@ -1,9 +1,8 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Route, Routes , Link } from 'react-router'
-
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { SkipLinks } from 'components/SkipLinks/SkipLinks'
+import { Link, Route, Routes } from 'react-router'
 
 import { useFocus } from '../useFocus'
 

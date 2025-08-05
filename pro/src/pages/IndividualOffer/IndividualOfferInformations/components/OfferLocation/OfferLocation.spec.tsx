@@ -1,10 +1,7 @@
-import { screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { useForm, FormProvider } from 'react-hook-form'
-import { axe } from 'vitest-axe'
-
 import { AdresseData } from 'apiClient/adresse/types'
 import { VenueListItemResponseModel } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
@@ -15,11 +12,13 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
 import { UsefulInformationFormValues } from 'pages/IndividualOffer/IndividualOfferInformations/commons/types'
+import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import { OfferLocation, OfferLocationProps } from './OfferLocation'
 

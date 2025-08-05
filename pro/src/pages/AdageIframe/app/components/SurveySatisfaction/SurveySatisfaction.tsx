@@ -1,10 +1,9 @@
-import cn from 'classnames'
-import { useState } from 'react'
-
 import { apiAdage } from 'apiClient/api'
+import cn from 'classnames'
 import { useNotification } from 'commons/hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
+import { useState } from 'react'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'

@@ -1,10 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import type { StoryObj } from '@storybook/react'
+import { SelectOption } from 'commons/custom_types/form'
 import { PropsWithChildren, useState } from 'react'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import * as yup from 'yup'
-
-import { SelectOption } from 'commons/custom_types/form'
 
 import { SelectAutocomplete } from './SelectAutocomplete'
 

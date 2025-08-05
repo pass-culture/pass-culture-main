@@ -1,9 +1,8 @@
-import { useFormContext } from 'react-hook-form'
-
 import { useMediaQuery } from 'commons/hooks/useMediaQuery'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import iconFullNext from 'icons/full-next.svg'
+import { useFormContext } from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'

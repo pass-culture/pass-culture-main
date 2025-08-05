@@ -1,19 +1,18 @@
-import { screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { beforeEach, expect } from 'vitest'
-
 import { api } from 'apiClient/api'
 import { VenueTypeCode } from 'apiClient/v1'
+import { screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { SAVED_HOME_PAGE_VENUE_ID_KEYS } from 'commons/utils/savedPartnerPageVenueId'
 import * as utils from 'commons/utils/savedPartnerPageVenueId'
+import { SAVED_HOME_PAGE_VENUE_ID_KEYS } from 'commons/utils/savedPartnerPageVenueId'
+import { beforeEach, expect } from 'vitest'
 
-import { PartnerPagesProps, PartnerPages } from './PartnerPages'
+import { PartnerPages, PartnerPagesProps } from './PartnerPages'
 
 const mockOfferer = defaultGetOffererResponseModel
 

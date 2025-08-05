@@ -1,7 +1,3 @@
-import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import { Layout } from 'app/App/layout/Layout'
 import {
@@ -22,7 +18,10 @@ import { sortByLabel } from 'commons/utils/strings'
 import { HighlightBanner } from 'components/HighlightBanner/HighlightBanner'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import fullNextIcon from 'icons/full-next.svg'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
 import { formatAndOrderAddresses } from 'repository/venuesService'
+import useSWR from 'swr'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 
 import videoBannerPng from './assets/video-banner-illustration.png'

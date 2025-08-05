@@ -1,9 +1,8 @@
-import classNames from 'classnames'
-
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
 } from 'apiClient/v1'
+import classNames from 'classnames'
 import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'

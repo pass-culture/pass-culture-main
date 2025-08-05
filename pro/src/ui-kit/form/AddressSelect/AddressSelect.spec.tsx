@@ -1,12 +1,11 @@
+import { AdresseData } from 'apiClient/adresse/types'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { axe } from 'vitest-axe'
-
-import { AdresseData } from 'apiClient/adresse/types'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { axe } from 'vitest-axe'
 
 import { AddressSelect, AddressSelectProps } from './AddressSelect'
 

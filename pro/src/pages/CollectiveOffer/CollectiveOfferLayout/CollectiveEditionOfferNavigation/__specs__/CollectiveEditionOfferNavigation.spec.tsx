@@ -1,7 +1,3 @@
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import * as router from 'react-router'
-
 import { ApiRequestOptions } from 'apiClient/adage/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/adage/core/ApiResult'
 import { api } from 'apiClient/api'
@@ -14,6 +10,8 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
@@ -28,13 +26,14 @@ import {
 } from 'commons/utils/factories/collectiveApiFactories'
 import { venueListItemFactory } from 'commons/utils/factories/individualApiFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import * as router from 'react-router'
 
 import { CollectiveOfferStep } from '../../CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 import {

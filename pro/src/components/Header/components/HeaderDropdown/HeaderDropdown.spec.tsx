@@ -1,12 +1,10 @@
-import { screen, within } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { expect } from 'vitest'
-
 import { api } from 'apiClient/api'
 import {
   GetOffererNameResponseModel,
   GetOffererResponseModel,
 } from 'apiClient/v1'
+import { screen, within } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
@@ -14,10 +12,11 @@ import {
 import { currentOffererFactory } from 'commons/utils/factories/storeFactories'
 import { hardRefresh } from 'commons/utils/hardRefresh'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 import { locallyStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
+import { expect } from 'vitest'
 
 import { HeaderDropdown } from './HeaderDropdown'
 

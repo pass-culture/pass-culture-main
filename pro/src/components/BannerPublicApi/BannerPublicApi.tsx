@@ -1,6 +1,5 @@
-import React from 'react'
-
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
+import React from 'react'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

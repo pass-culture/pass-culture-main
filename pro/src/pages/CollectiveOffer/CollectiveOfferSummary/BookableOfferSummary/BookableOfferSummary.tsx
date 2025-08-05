@@ -1,9 +1,3 @@
-import cn from 'classnames'
-import { useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
-import { mutate } from 'swr'
-
 import { api } from 'apiClient/api'
 import {
   CollectiveOfferAllowedAction,
@@ -12,6 +6,7 @@ import {
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Layout } from 'app/App/layout/Layout'
+import cn from 'classnames'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
@@ -55,6 +50,10 @@ import {
 import { BookableOfferTimeline } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/BookableOfferTimeline/BookableOfferTimeline'
 import { DEFAULT_RECAP_VALUE } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/constants'
 import { formatDateTime } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/utils/formatDatetime'
+import { useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
+import { mutate } from 'swr'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'

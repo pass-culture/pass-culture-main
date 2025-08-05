@@ -1,12 +1,11 @@
 import classnames from 'classnames'
-import { useEffect, useRef, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
-
 import { useVenuesFromOfferer } from 'commons/hooks/swr/useVenuesFromOfferer'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { useIncome } from 'pages/Reimbursements/Income/useIncome'
+import { useEffect, useRef, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useSelector } from 'react-redux'
 import { MultiSelect } from 'ui-kit/MultiSelect/MultiSelect'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 

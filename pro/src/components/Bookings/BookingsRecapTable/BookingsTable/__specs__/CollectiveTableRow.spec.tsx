@@ -1,14 +1,13 @@
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-
 import { api } from 'apiClient/api'
 import {
   CancelablePromise,
   CollectiveBookingByIdResponseModel,
 } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import {
-  collectiveBookingCollectiveStockFactory,
   collectiveBookingByIdFactory,
+  collectiveBookingCollectiveStockFactory,
   collectiveBookingFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'

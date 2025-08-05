@@ -1,5 +1,3 @@
-import { useRef, useState } from 'react'
-
 import { ListOffersOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import { useHeadlineOfferContext } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
@@ -18,6 +16,7 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { getOffersCountToDisplay } from 'commons/utils/getOffersCountToDisplay'
 import { useStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import strokeNoBooking from 'icons/stroke-no-booking.svg'
+import { useRef, useState } from 'react'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 import { Table, TableVariant } from 'ui-kit/Table/Table'

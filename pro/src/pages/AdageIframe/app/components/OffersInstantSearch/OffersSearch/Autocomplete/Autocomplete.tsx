@@ -1,3 +1,5 @@
+import { SuggestionType } from 'apiClient/adage'
+import { apiAdage } from 'apiClient/api'
 import {
   AutocompleteState,
   createAutocomplete,
@@ -6,21 +8,6 @@ import { createQuerySuggestionsPlugin } from '@algolia/autocomplete-plugin-query
 import { AutocompleteQuerySuggestionsHit } from '@algolia/autocomplete-plugin-query-suggestions/dist/esm/types'
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches'
 import { liteClient } from 'algoliasearch/lite'
-import {
-  BaseSyntheticEvent,
-  KeyboardEvent,
-  MouseEvent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import { useFormContext } from 'react-hook-form'
-import { useInstantSearch, useSearchBox } from 'react-instantsearch'
-import { useDispatch } from 'react-redux'
-
-import { SuggestionType } from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
 import {
   setAdagePageSaved,
   setAdageQuery,
@@ -37,6 +24,18 @@ import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
+import {
+  BaseSyntheticEvent,
+  KeyboardEvent,
+  MouseEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import { useFormContext } from 'react-hook-form'
+import { useInstantSearch, useSearchBox } from 'react-instantsearch'
+import { useDispatch } from 'react-redux'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

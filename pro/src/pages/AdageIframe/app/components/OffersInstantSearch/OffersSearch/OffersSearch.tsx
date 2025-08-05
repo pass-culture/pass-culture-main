@@ -1,10 +1,3 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { useInstantSearch } from 'react-instantsearch'
-import { useDispatch, useSelector } from 'react-redux'
-import { useSearchParams } from 'react-router'
-import useSWRMutation from 'swr/mutation'
-
 import { AdageFrontRoles, TrackingFilterBody } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { LOG_TRACKING_FILTER_QUERY_KEY } from 'commons/config/swrQueryKeys'
@@ -20,6 +13,12 @@ import {
 import { adageQuerySelector } from 'commons/store/adageFilter/selectors'
 import { MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
+import { useInstantSearch } from 'react-instantsearch'
+import { useDispatch, useSelector } from 'react-redux'
+import { useSearchParams } from 'react-router'
+import useSWRMutation from 'swr/mutation'
 
 import {
   DEFAULT_GEO_RADIUS,

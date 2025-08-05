@@ -1,8 +1,3 @@
-import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router'
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import {
   BookingRecapResponseModel,
@@ -29,10 +24,14 @@ import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/
 import { NoData } from 'components/NoData/NoData'
 import { ChoosePreFiltersMessage } from 'pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import { NoBookingsForPreFiltersMessage } from 'pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
+import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useLocation, useNavigate } from 'react-router'
 import {
   formatAndOrderAddresses,
   formatAndOrderVenues,
 } from 'repository/venuesService'
+import useSWR from 'swr'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { BookingsRecapTable } from './BookingsRecapTable/BookingsRecapTable'

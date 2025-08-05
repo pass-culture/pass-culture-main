@@ -1,8 +1,7 @@
-import { addMonths, isAfter, isBefore, isSameDay } from 'date-fns'
-import * as yup from 'yup'
-
 import { getToday, isDateValid, removeTime } from 'commons/utils/date'
 import { MAX_STOCKS_QUANTITY } from 'components/IndividualOffer/StocksThing/validationSchema'
+import { addMonths, isAfter, isBefore, isSameDay } from 'date-fns'
+import * as yup from 'yup'
 
 import {
   DurationTypeOption,

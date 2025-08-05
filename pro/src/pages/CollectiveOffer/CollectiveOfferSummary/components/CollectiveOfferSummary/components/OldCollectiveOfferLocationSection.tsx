@@ -1,6 +1,3 @@
-import { useSelector } from 'react-redux'
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import {
   GetCollectiveOfferResponseModel,
@@ -15,6 +12,8 @@ import {
 } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { getInterventionAreaLabels } from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
+import { useSelector } from 'react-redux'
+import useSWR from 'swr'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { formatOfferEventAddress } from './utils/formatOfferEventAddress'

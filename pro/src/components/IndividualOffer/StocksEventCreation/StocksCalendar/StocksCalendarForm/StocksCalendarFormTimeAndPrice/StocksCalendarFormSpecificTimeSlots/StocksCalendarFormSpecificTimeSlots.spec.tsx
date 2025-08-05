@@ -1,13 +1,12 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { FormProvider, useForm } from 'react-hook-form'
-
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import {
   DurationTypeOption,
   StocksCalendarFormValues,
   TimeSlotTypeOption,
 } from 'components/IndividualOffer/StocksEventCreation/form/types'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { StocksCalendarFormSpecificTimeSlots } from './StocksCalendarFormSpecificTimeSlots'
 

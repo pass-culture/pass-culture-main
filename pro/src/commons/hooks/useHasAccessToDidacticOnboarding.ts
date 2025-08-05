@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { selectCurrentUser } from 'commons/store/user/selectors'
+import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 export const useHasAccessToDidacticOnboarding = () => {
   const [hasAccess, setHasAccess] = useState<boolean | undefined>()
@@ -14,7 +13,9 @@ export const useHasAccessToDidacticOnboarding = () => {
   )
 
   const currentUser = useSelector(selectCurrentUser)
-  const isUserIncludedinDidacticOnboarding = Boolean(currentUser && (currentUser.id % 2 === 0))
+  const isUserIncludedinDidacticOnboarding = Boolean(
+    currentUser && currentUser.id % 2 === 0
+  )
 
   useEffect(() => {
     setHasAccess(

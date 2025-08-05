@@ -1,13 +1,12 @@
-import { yupResolver } from '@hookform/resolvers/yup'
-import { FormProvider, useForm } from 'react-hook-form'
-
 import { api } from 'apiClient/api'
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useNotification } from 'commons/hooks/useNotification'
 import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
+import { FormProvider, useForm } from 'react-hook-form'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 
 import {

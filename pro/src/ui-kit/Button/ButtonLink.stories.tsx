@@ -1,9 +1,8 @@
 /* istanbul ignore file */
 import type { StoryObj } from '@storybook/react'
-import { withRouter } from 'storybook-addon-remix-react-router'
-
 import fullBackIcon from 'icons/full-back.svg'
 import fullEditIcon from 'icons/full-edit.svg'
+import { withRouter } from 'storybook-addon-remix-react-router'
 
 import { ButtonLink } from './ButtonLink'
 import { ButtonVariant } from './types'

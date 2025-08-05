@@ -1,13 +1,9 @@
-import cn from 'classnames'
-import React from 'react'
-import { useSelector } from 'react-redux'
-import { useLocation, useParams } from 'react-router'
-
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { Layout } from 'app/App/layout/Layout'
+import cn from 'classnames'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/CollectiveBudgetCallout'
@@ -15,6 +11,9 @@ import { HelpLink } from 'components/HelpLink/HelpLink'
 import { Tag } from 'design-system/Tag/Tag'
 import { CollectiveCreationOfferNavigation } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 import { getActiveStep } from 'pages/CollectiveOfferRoutes/utils/getActiveStep'
+import React from 'react'
+import { useSelector } from 'react-redux'
+import { useLocation, useParams } from 'react-router'
 
 import { useOfferEducationalFormData } from '../CollectiveOffer/components/OfferEducational/useOfferEducationalFormData'
 

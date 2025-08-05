@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 import {
   CollectiveOfferResponseModel,
   GetOffererResponseModel,
@@ -24,6 +22,7 @@ import { CollectiveOffersActionsBar } from 'components/CollectiveOffersTable/Col
 import { CollectiveOffersTable } from 'components/CollectiveOffersTable/CollectiveOffersTable'
 import { NoData } from 'components/NoData/NoData'
 import { useStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
+import { useState } from 'react'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 
 import styles from './TemplateCollectiveOffersScreen.module.scss'
@@ -59,7 +58,9 @@ export const TemplateCollectiveOffersScreen = ({
     CollectiveOfferResponseModel[]
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
-  const isCollapsedMemorizedFiltersEnabled = useActiveFeature('WIP_COLLAPSED_MEMORIZED_FILTERS')
+  const isCollapsedMemorizedFiltersEnabled = useActiveFeature(
+    'WIP_COLLAPSED_MEMORIZED_FILTERS'
+  )
 
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -70,28 +71,26 @@ export const TemplateCollectiveOffersScreen = ({
   const hasFilters = hasCollectiveSearchFilters({
     searchFilters: initialSearchFilters,
     defaultFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-    ignore: ['nameOrIsbn']
+    ignore: ['nameOrIsbn'],
   })
   const hasFiltersOrNameSearch = hasFilters || !!initialSearchFilters.nameOrIsbn
 
-  const userHasNoOffers =
-    !isLoading &&
-    !hasOffers &&
-    !hasFiltersOrNameSearch
-
+  const userHasNoOffers = !isLoading && !hasOffers && !hasFiltersOrNameSearch
 
   const areAllOffersSelected =
     selectedOffers.length > 0 &&
-    selectedOffers.length === offers.filter((offer) => isCollectiveOfferSelectable(offer)).length
+    selectedOffers.length ===
+      offers.filter((offer) => isCollectiveOfferSelectable(offer)).length
 
   function clearSelectedOfferIds() {
     setSelectedOffers([])
   }
 
-
   function toggleSelectAllCheckboxes() {
     setSelectedOffers(
-      areAllOffersSelected ? [] : offers.filter((offer) => isCollectiveOfferSelectable(offer))
+      areAllOffersSelected
+        ? []
+        : offers.filter((offer) => isCollectiveOfferSelectable(offer))
     )
   }
 

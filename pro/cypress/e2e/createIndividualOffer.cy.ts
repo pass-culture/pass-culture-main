@@ -1,7 +1,7 @@
 import {
   expectOffersOrBookingsAreFoundForNewTable,
   interceptSearch5Adresses,
-  logInAndGoToPage
+  logInAndGoToPage,
 } from '../support/helpers.ts'
 
 describe('Create individual offers', { testIsolation: false }, () => {

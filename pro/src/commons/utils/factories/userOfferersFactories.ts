@@ -1,9 +1,8 @@
-import merge from 'lodash/merge'
-
 import {
   GetEducationalOffererResponseModel,
   GetEducationalOffererVenueResponseModel,
 } from 'apiClient/v1'
+import merge from 'lodash/merge'
 
 let venueId = 1
 

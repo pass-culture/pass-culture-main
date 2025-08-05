@@ -1,11 +1,15 @@
-import { SubcategoryIdEnum, type SubcategoryResponseModel } from "apiClient/v1";
-import { REIMBURSEMENT_RULES } from "commons/core/Finances/constants";
-import { CATEGORY_STATUS } from "commons/core/Offers/constants";
-import { subcategoryFactory } from "commons/utils/factories/individualApiFactories";
+import { SubcategoryIdEnum, type SubcategoryResponseModel } from 'apiClient/v1'
+import { REIMBURSEMENT_RULES } from 'commons/core/Finances/constants'
+import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
+import { subcategoryFactory } from 'commons/utils/factories/individualApiFactories'
 
-type SubcategoryResponseModelWithId = Omit<SubcategoryResponseModel, 'id'> & { id: SubcategoryIdEnum };
+type SubcategoryResponseModelWithId = Omit<SubcategoryResponseModel, 'id'> & {
+  id: SubcategoryIdEnum
+}
 
-const typedSubcategoryFactory = subcategoryFactory as (customSubcategory?: Partial<SubcategoryResponseModel>) => SubcategoryResponseModelWithId
+const typedSubcategoryFactory = subcategoryFactory as (
+  customSubcategory?: Partial<SubcategoryResponseModel>
+) => SubcategoryResponseModelWithId
 
 export const MOCK_SUB_CATEGORY = {
   EVENT_OFFLINE: typedSubcategoryFactory({
@@ -43,6 +47,6 @@ export const MOCK_SUB_CATEGORY = {
     id: SubcategoryIdEnum.CONCERT,
     canBeWithdrawable: true,
   }),
-} satisfies Record<string, SubcategoryResponseModelWithId>;
+} satisfies Record<string, SubcategoryResponseModelWithId>
 
-export const MOCK_SUB_CATEGORIES =   Object.values(MOCK_SUB_CATEGORY)
+export const MOCK_SUB_CATEGORIES = Object.values(MOCK_SUB_CATEGORY)

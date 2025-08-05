@@ -1,21 +1,20 @@
-import { screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router'
-
 import { ApiRequestOptions } from 'apiClient/adage/core/ApiRequestOptions'
 import { api } from 'apiClient/api'
 import { ApiError, VenueOfOffererFromSiretResponseModel } from 'apiClient/v1'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
+import { Route, Routes } from 'react-router'
 
 import { Offerers } from '../Offerers'
 

@@ -1,7 +1,6 @@
 import cn from 'classnames'
-import React from 'react'
-
 import { Tag, TagVariant } from 'design-system/Tag/Tag'
+import React from 'react'
 
 import style from './FormLayout.module.scss'
 import { FormLayoutDescription } from './FormLayoutDescription'

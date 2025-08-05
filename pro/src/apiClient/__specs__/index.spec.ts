@@ -1,7 +1,6 @@
-import createFetchMock from 'vitest-fetch-mock'
-
 import { api } from 'apiClient/api'
 import { URL_FOR_MAINTENANCE } from 'commons/utils/config'
+import createFetchMock from 'vitest-fetch-mock'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()

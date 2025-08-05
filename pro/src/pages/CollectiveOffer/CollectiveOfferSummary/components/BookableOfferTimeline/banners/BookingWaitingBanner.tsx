@@ -1,8 +1,7 @@
-import { differenceInCalendarDays } from 'date-fns'
-
 import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import { FORMAT_DD_MM_YYYY } from 'commons/utils/date'
 import { pluralize } from 'commons/utils/pluralize'
+import { differenceInCalendarDays } from 'date-fns'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullMailIcon from 'icons/full-mail.svg'
 import { Callout } from 'ui-kit/Callout/Callout'

@@ -1,11 +1,10 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { addDays } from 'date-fns'
-import { FormProvider, useForm } from 'react-hook-form'
-
 import { getOfferStockFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { addDays } from 'date-fns'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import {
   EditStockFormValues,

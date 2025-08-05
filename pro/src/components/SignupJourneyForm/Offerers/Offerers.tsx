@@ -1,17 +1,12 @@
-import cn from 'classnames'
-import { useEffect, useRef, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router'
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import { getHumanReadableApiError } from 'apiClient/helpers'
 import { CreateOffererQueryModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import cn from 'classnames'
 import { GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
-  useSignupJourneyContext,
   Offerer,
+  useSignupJourneyContext,
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
@@ -25,6 +20,10 @@ import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import strokeCollaboratorIcon from 'icons/stroke-collaborator.svg'
 import { MAYBE_LOCAL_AUTHORITY_APE_CODE } from 'pages/Signup/SignupContainer/constants'
+import { useEffect, useRef, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router'
+import useSWR from 'swr'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'

@@ -1,6 +1,5 @@
-import { ForwardedRef, forwardRef, useState } from 'react'
-
 import fullNextIcon from 'icons/full-next.svg'
+import { ForwardedRef, forwardRef, useState } from 'react'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { suggestEmail } from 'ui-kit/form/EmailSpellCheckInput/suggestEmail'

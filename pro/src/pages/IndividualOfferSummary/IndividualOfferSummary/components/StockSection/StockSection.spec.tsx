@@ -1,16 +1,14 @@
+import { api } from 'apiClient/api'
+import { OfferStatus } from 'apiClient/v1'
 import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { generatePath, Route, Routes } from 'react-router'
-
-import { api } from 'apiClient/api'
-import { OfferStatus } from 'apiClient/v1'
 import {
-  OFFER_WIZARD_MODE,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import {
@@ -18,6 +16,7 @@ import {
   getOfferStockFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { generatePath, Route, Routes } from 'react-router'
 
 import { StockSection, StockSectionProps } from './StockSection'
 

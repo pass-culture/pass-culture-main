@@ -1,8 +1,7 @@
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-
 import { api } from 'apiClient/api'
 import { SubcategoryIdEnum } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
@@ -23,8 +22,8 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 
 import {
@@ -58,37 +57,37 @@ vi.mock('apiClient/api', () => ({
 }))
 
 describe('screens:IndividualOffer::UsefulInformation', () => {
-      const categories = [
-      categoryFactory({
-        id: 'A',
-        proLabel: 'Catégorie A',
-        isSelectable: true,
-      }),
-    ]
-    const subCategories = [
-      subcategoryFactory({
-        id: 'ONLINE_SUBCATEGORY',
-        categoryId: 'A',
-        proLabel: 'Sous catégorie online de A',
-        isEvent: false,
-        canBeDuo: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
-      }),
-      subcategoryFactory({
-        id: 'OFFLINE_SUBCATEGORY',
-        categoryId: 'A',
-        proLabel: 'Sous catégorie offline de A',
-        isEvent: false,
-        conditionalFields: ['ean'],
-        canBeDuo: true,
-        canBeWithdrawable: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-      }),
-    ]
- const  contextValue = individualOfferContextValuesFactory({
-      categories,
-      subCategories,
-    })
+  const categories = [
+    categoryFactory({
+      id: 'A',
+      proLabel: 'Catégorie A',
+      isSelectable: true,
+    }),
+  ]
+  const subCategories = [
+    subcategoryFactory({
+      id: 'ONLINE_SUBCATEGORY',
+      categoryId: 'A',
+      proLabel: 'Sous catégorie online de A',
+      isEvent: false,
+      canBeDuo: false,
+      onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
+    }),
+    subcategoryFactory({
+      id: 'OFFLINE_SUBCATEGORY',
+      categoryId: 'A',
+      proLabel: 'Sous catégorie offline de A',
+      isEvent: false,
+      conditionalFields: ['ean'],
+      canBeDuo: true,
+      canBeWithdrawable: false,
+      onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
+    }),
+  ]
+  const contextValue = individualOfferContextValuesFactory({
+    categories,
+    subCategories,
+  })
 
   const offlineOfferProps: IndividualOfferInformationsScreenProps = {
     offer: getIndividualOfferFactory({
@@ -101,7 +100,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     offer: {
       ...offlineOfferProps.offer,
       subcategoryId: 'ONLINE_SUBCATEGORY' as SubcategoryIdEnum,
-    }
+    },
   }
 
   beforeEach(() => {
@@ -321,9 +320,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     })
 
     it('should display the dialog if user updated withdrawal informations', async () => {
-
-
-  renderUsefulInformationScreen(onlineOfferProps, contextValue)
+      renderUsefulInformationScreen(onlineOfferProps, contextValue)
 
       const withdrawalInformationsField = await screen.findByRole('textbox', {
         name: /Informations de retrait/,
@@ -346,7 +343,6 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
       expect(
         screen.getByText('Vous avez modifié les modalités de retrait.')
       ).toBeInTheDocument()
-
     })
 
     it('should display the dialog if user updated address field(s)', async () => {

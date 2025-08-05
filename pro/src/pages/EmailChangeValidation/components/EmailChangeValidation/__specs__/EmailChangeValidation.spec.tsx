@@ -9,9 +9,12 @@ describe('screens:EmailChangeValidation', () => {
     renderWithProviders(<EmailChangeValidationScreen isSuccess={true} />)
 
     expect(
-      screen.getByText(/Merci d’avoir confirmé votre changement d’adresse email./, {
-        selector: 'p',
-      })
+      screen.getByText(
+        /Merci d’avoir confirmé votre changement d’adresse email./,
+        {
+          selector: 'p',
+        }
+      )
     ).toBeInTheDocument()
   })
 

@@ -1,7 +1,6 @@
-import { screen, waitFor } from '@testing-library/react'
-
 import { api } from 'apiClient/api'
 import { CollectiveOfferAllowedAction } from 'apiClient/v1'
+import { screen, waitFor } from '@testing-library/react'
 import {
   collectiveBookingByIdFactory,
   collectiveBookingFactory,

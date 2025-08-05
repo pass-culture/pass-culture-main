@@ -1,8 +1,8 @@
 import type {
   AggregatedRevenueModel,
-  TotalRevenue,
   CollectiveRevenue,
   IndividualRevenue,
+  TotalRevenue,
 } from 'apiClient/v1'
 import fullHelpIcon from 'icons/full-help.svg'
 import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'

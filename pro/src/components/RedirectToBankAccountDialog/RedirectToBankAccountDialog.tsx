@@ -1,6 +1,3 @@
-import { useDispatch } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router'
-
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events, VenueEvents } from 'commons/core/FirebaseEvents/constants'
 import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from 'commons/core/Offers/constants'
@@ -8,6 +5,8 @@ import { updateCurrentOffererOnboardingStatus } from 'commons/store/offerer/redu
 import { RedirectDialog } from 'components/RedirectDialog/RedirectDialog'
 import fullWaitIcon from 'icons/full-wait.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
+import { useDispatch } from 'react-redux'
+import { useLocation, useNavigate } from 'react-router'
 
 export interface RedirectToBankAccountDialogProps {
   cancelRedirectUrl: string

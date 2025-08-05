@@ -1,7 +1,3 @@
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useSWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import { GET_OFFERS_QUERY_KEY } from 'commons/config/swrQueryKeys'
@@ -20,6 +16,9 @@ import {
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import strokeVisualArtIcon from 'icons/stroke-visual-art.svg'
 import { computeIndividualApiFilters } from 'pages/IndividualOffers/utils/computeIndividualApiFilters'
+import { useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useSWRConfig } from 'swr'
 
 type HeadlineOfferImageDialogsProps = {
   isFirstDialogOpen: boolean

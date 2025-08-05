@@ -1,7 +1,6 @@
+import { apiAdage } from 'apiClient/api'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-
-import { apiAdage } from 'apiClient/api'
 import {
   defaultAdageUser,
   defaultCollectiveTemplateOffer,

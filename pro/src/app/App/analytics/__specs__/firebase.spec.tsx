@@ -2,11 +2,10 @@ import * as firebaseAnalytics from '@firebase/analytics'
 import * as firebase from '@firebase/app'
 import * as firebaseRemoteConfig from '@firebase/remote-config'
 import { waitFor } from '@testing-library/react'
-import { expect, vi } from 'vitest'
-
 import { firebaseConfig } from 'commons/config/firebase'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { expect, vi } from 'vitest'
 
 import { destroyFirebase, useFirebase } from '../firebase'
 

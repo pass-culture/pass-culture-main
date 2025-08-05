@@ -1,7 +1,6 @@
-import { screen } from '@testing-library/react'
-
 import { api } from 'apiClient/api'
 import { UserRole } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
 import { getOffererNameFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 

@@ -1,10 +1,9 @@
-import { useNavigate } from 'react-router'
-
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { serializeEducationalOfferer } from 'commons/core/OfferEducational/utils/serializeEducationalOfferer'
 import { useNotification } from 'commons/hooks/useNotification'
+import { useNavigate } from 'react-router'
 
 import { computeInitialValuesFromOffer } from './computeInitialValuesFromOffer'
 import { postCollectiveOfferImage } from './postCollectiveOfferImage'

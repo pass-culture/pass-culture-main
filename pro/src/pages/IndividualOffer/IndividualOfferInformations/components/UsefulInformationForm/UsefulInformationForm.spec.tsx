@@ -1,8 +1,5 @@
-import { screen } from '@testing-library/react'
-import { useForm, FormProvider } from 'react-hook-form'
-import { axe } from 'vitest-axe'
-
 import { WithdrawalTypeEnum } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
@@ -14,8 +11,8 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 import {
   MOCK_SUB_CATEGORIES,
@@ -26,10 +23,12 @@ import {
   ticketWithdrawalTypeRadios,
 } from 'pages/IndividualOffer/IndividualOfferInformations/commons/constants'
 import { UsefulInformationFormValues } from 'pages/IndividualOffer/IndividualOfferInformations/commons/types'
+import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 
 import {
-  UsefulInformationFormProps,
   UsefulInformationForm,
+  UsefulInformationFormProps,
 } from './UsefulInformationForm'
 
 const LABELS = {

@@ -1,9 +1,8 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router'
-
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { Route, Routes } from 'react-router'
 
 import { ConfirmedAttachment } from '../ConfirmedAttachment'
 

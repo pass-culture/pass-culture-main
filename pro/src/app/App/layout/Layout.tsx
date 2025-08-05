@@ -1,8 +1,4 @@
 import cn from 'classnames'
-import React, { useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { NavLink } from 'react-router'
-
 import { selectCurrentUser } from 'commons/store/user/selectors'
 import { BackToNavLink } from 'components/BackToNavLink/BackToNavLink'
 import { Footer } from 'components/Footer/Footer'
@@ -10,6 +6,9 @@ import { Header } from 'components/Header/Header'
 import { SkipLinks } from 'components/SkipLinks/SkipLinks'
 import fullInfoIcon from 'icons/full-info.svg'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
+import React, { useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { NavLink } from 'react-router'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { BubbleSVG } from './assets/BubbleSVG'

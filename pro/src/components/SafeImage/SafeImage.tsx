@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react'
-
 import { usePrevious } from 'commons/hooks/usePrevious'
+import { useEffect, useState } from 'react'
 
 type SafeImageProps = {
   src: string

@@ -1,8 +1,7 @@
-import { useFieldArray, UseFormReturn } from 'react-hook-form'
-
 import { StocksCalendarFormValues } from 'components/IndividualOffer/StocksEventCreation/form/types'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullMoreIcon from 'icons/full-more.svg'
+import { UseFormReturn, useFieldArray } from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'

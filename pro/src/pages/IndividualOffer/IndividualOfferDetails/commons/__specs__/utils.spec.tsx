@@ -17,13 +17,13 @@ import {
   buildShowSubTypeOptions,
   buildSubcategoryOptions,
   completeSubcategoryConditionalFields,
-  hasMusicType,
   filterAvailableVenues,
+  getAccessibilityFormValuesFromOffer,
+  getFormReadOnlyFields,
+  getInitialValuesFromOffer,
   getInitialValuesFromVenues,
   getVenuesAsOptions,
-  getInitialValuesFromOffer,
-  getFormReadOnlyFields,
-  getAccessibilityFormValuesFromOffer,
+  hasMusicType,
 } from '../utils'
 
 describe('hasMusicType', () => {

@@ -1,7 +1,3 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import * as instantSearch from 'react-instantsearch'
-
 import {
   AdageFrontRoles,
   AuthenticatedResponse,
@@ -13,6 +9,8 @@ import {
   StudentLevels,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import * as useMediaQuery from 'commons/hooks/useMediaQuery'
 import {
   defaultCollectiveOffer,
@@ -20,10 +18,11 @@ import {
   defaultUseStatsReturn,
 } from 'commons/utils/factories/adageFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import * as instantSearch from 'react-instantsearch'
 
 import { Offers, OffersProps } from './Offers'
 

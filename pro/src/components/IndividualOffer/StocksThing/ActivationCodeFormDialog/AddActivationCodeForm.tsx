@@ -1,6 +1,5 @@
-import React from 'react'
-
 import fullDownloadIcon from 'icons/full-download.svg'
+import React from 'react'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { BaseFileInput } from 'ui-kit/form/shared/BaseFileInput/BaseFileInput'
 

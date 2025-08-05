@@ -1,24 +1,23 @@
-import { screen } from '@testing-library/react'
-import { expect } from 'vitest'
-
 import {
   GetIndividualOfferWithAddressResponseModel,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
 import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
   categoryFactory,
   getIndividualOfferFactory,
+  getOfferVenueFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
-  getOfferVenueFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { expect } from 'vitest'
 
 import { IndividualOfferSummaryDetailsScreen } from './IndividualOfferSummaryDetailsScreen'
 

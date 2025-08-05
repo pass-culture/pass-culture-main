@@ -1,5 +1,3 @@
-import { addDays, isBefore, max } from 'date-fns'
-
 import {
   CollectiveBookingBankAccountStatus,
   CollectiveBookingByIdResponseModel,
@@ -10,6 +8,7 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
 import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
 import { getDateToFrenchText } from 'commons/utils/date'
+import { addDays, isBefore, max } from 'date-fns'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'

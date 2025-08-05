@@ -1,8 +1,8 @@
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import {
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WITHDRAWAL_TYPE_LABELS,
   OFFER_WIZARD_MODE,
-  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { getDelayToFrenchText } from 'commons/utils/date'

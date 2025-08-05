@@ -1,5 +1,3 @@
-import { useFormContext } from 'react-hook-form'
-
 import {
   GetActiveEANOfferResponseModel,
   VenueListItemResponseModel,
@@ -14,6 +12,7 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import { isOfferSubcategoryOnline } from 'pages/IndividualOffer/commons/utils'
+import { useFormContext } from 'react-hook-form'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'

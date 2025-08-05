@@ -1,5 +1,3 @@
-import { format } from 'date-fns'
-
 import {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
@@ -7,6 +5,7 @@ import {
 import { FORMAT_ISO_DATE_ONLY, isDateValid } from 'commons/utils/date'
 import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
 import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
+import { format } from 'date-fns'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
 import { StockThingFormValues } from '../types'

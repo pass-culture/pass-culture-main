@@ -1,7 +1,3 @@
-import { ComponentType } from 'react'
-import { useLocation, useParams } from 'react-router'
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import {
   GetCollectiveOfferResponseModel,
@@ -14,6 +10,9 @@ import {
 } from 'commons/config/swrQueryKeys'
 import { extractOfferIdAndOfferTypeFromRouteParams } from 'commons/core/OfferEducational/utils/extractOfferIdAndOfferTypeFromRouteParams'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
+import { ComponentType } from 'react'
+import { useLocation, useParams } from 'react-router'
+import useSWR from 'swr'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export type MandatoryCollectiveOfferFromParamsProps = {

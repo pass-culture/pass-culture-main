@@ -1,13 +1,12 @@
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-
 import { api } from 'apiClient/api'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
-  CollectiveOfferTemplateAllowedAction,
   CollectiveOffersStockResponseModel,
+  CollectiveOfferTemplateAllowedAction,
 } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
@@ -220,16 +219,11 @@ describe('ActionsBar', () => {
     const confirmDeactivateButton = screen.getAllByText('Mettre en pause')[1]
     await userEvent.click(confirmDeactivateButton)
 
-    expect(
-      screen.getByText(
-        'Une erreur est survenue'
-      )
-    )
+    expect(screen.getByText('Une erreur est survenue'))
 
     expect(api.patchCollectiveOffersTemplateActiveStatus).toHaveBeenCalledTimes(
       0
     )
-
   })
 
   it('should only make one call if the ids all come from template offer', async () => {
@@ -296,8 +290,14 @@ describe('ActionsBar', () => {
         from: '/offres/collectives',
         offerType: 'collective',
         selected_offers: JSON.stringify([
-          { offerId: '1', offerStatus: CollectiveOfferDisplayedStatus.PUBLISHED },
-          { offerId: '2', offerStatus: CollectiveOfferDisplayedStatus.PUBLISHED },
+          {
+            offerId: '1',
+            offerStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
+          },
+          {
+            offerId: '2',
+            offerStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
+          },
         ]),
       }
     )

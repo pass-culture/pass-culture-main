@@ -1,5 +1,3 @@
-import { useFormContext } from 'react-hook-form'
-
 import { Address } from 'commons/core/shared/types'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { resetReactHookFormAddressFields } from 'commons/utils/resetAddressFields'
@@ -7,6 +5,7 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OpenToPublicToggle } from 'components/OpenToPublicToggle/OpenToPublicToggle'
 import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
+import { useFormContext } from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { AddressManual } from 'ui-kit/form/AddressManual/AddressManual'

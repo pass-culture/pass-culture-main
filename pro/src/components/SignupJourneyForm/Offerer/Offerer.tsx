@@ -1,10 +1,6 @@
-import { yupResolver } from '@hookform/resolvers/yup'
-import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router'
-
 import { api } from 'apiClient/api'
 import { isError } from 'apiClient/helpers'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { MainHeading } from 'app/App/layout/Layout'
 import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
@@ -14,8 +10,8 @@ import {
   GET_DATA_ERROR_MESSAGE,
 } from 'commons/core/shared/constants'
 import {
-  getSiretData,
   GetSiretDataResponse,
+  getSiretData,
 } from 'commons/core/Venue/getSiretData'
 import { humanizeSiret, unhumanizeSiret } from 'commons/core/Venue/utils'
 import { useNotification } from 'commons/hooks/useNotification'
@@ -24,6 +20,9 @@ import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayo
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { MAYBE_APP_USER_APE_CODE } from 'pages/Signup/SignupContainer/constants'
 import { MaybeAppUserDialog } from 'pages/Signup/SignupContainer/MaybeAppUserDialog/MaybeAppUserDialog'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 

@@ -1,5 +1,3 @@
-import { UseFormReturn } from 'react-hook-form'
-
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
@@ -8,6 +6,7 @@ import {
   TimeSlotTypeOption,
 } from 'components/IndividualOffer/StocksEventCreation/form/types'
 import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
+import { UseFormReturn } from 'react-hook-form'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 

@@ -6,7 +6,7 @@ export const hasProperty = <T extends string>(
     return false
   }
 
-  return Boolean(Object.prototype.hasOwnProperty.call(element, property))
+  return Boolean(Object.hasOwn(element, property))
 }
 
 export const hasProperties = <T extends string>(

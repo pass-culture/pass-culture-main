@@ -1,6 +1,3 @@
-import { useNavigate } from 'react-router'
-import useSWR, { useSWRConfig } from 'swr'
-
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
@@ -20,6 +17,8 @@ import {
 } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 import { CollectiveOfferVisibilityScreen } from 'pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
+import { useNavigate } from 'react-router'
+import useSWR, { useSWRConfig } from 'swr'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { getEducationalInstitutions } from './getEducationalInstitutions'
@@ -69,7 +68,11 @@ export const CollectiveOfferEditionVisibility = ({
   const isVisibilityEditable = isCollectiveInstitutionEditable(offer)
 
   return (
-    <CollectiveOfferLayout offer={offer} subTitle={offer.name} isTemplate={isTemplate}>
+    <CollectiveOfferLayout
+      offer={offer}
+      subTitle={offer.name}
+      isTemplate={isTemplate}
+    >
       <CollectiveOfferVisibilityScreen
         mode={isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
         initialValues={extractInitialVisibilityValues(

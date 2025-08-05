@@ -1,8 +1,6 @@
+import { api } from 'apiClient/api'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { axe } from 'vitest-axe'
-
-import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   IndividualOfferContext,
@@ -21,6 +19,7 @@ import {
 import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import * as imageUploadModule from 'pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
+import { axe } from 'vitest-axe'
 
 import {
   IndividualOfferMediaScreen,

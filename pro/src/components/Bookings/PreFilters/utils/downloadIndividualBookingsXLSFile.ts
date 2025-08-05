@@ -9,7 +9,9 @@ export const downloadIndividualBookingsXLSFile = async (
 ) => {
   const bookingsXLSText = await api.getBookingsExcel(
     filters.page,
-    filters.offererId !== DEFAULT_PRE_FILTERS.offererId ? Number(filters.offererId) : null,
+    filters.offererId !== DEFAULT_PRE_FILTERS.offererId
+      ? Number(filters.offererId)
+      : null,
     filters.offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId
       ? Number(filters.offerVenueId)
       : null,
@@ -23,7 +25,9 @@ export const downloadIndividualBookingsXLSFile = async (
       ? filters.bookingBeginningDate
       : null,
     isDateValid(filters.bookingEndingDate) ? filters.bookingEndingDate : null,
-    filters.offererAddressId !== DEFAULT_PRE_FILTERS.offererAddressId ? Number(filters.offererAddressId) : null
+    filters.offererAddressId !== DEFAULT_PRE_FILTERS.offererAddressId
+      ? Number(filters.offererAddressId)
+      : null
   )
   const date = new Date().toISOString()
   downloadFile(bookingsXLSText, `reservations_pass_culture-${date}.xlsx`)

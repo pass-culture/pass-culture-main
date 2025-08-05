@@ -1,7 +1,5 @@
-import { screen } from '@testing-library/react'
-import { FormProvider, useForm } from 'react-hook-form'
-
 import { OfferAddressType } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
 import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import {
@@ -9,6 +7,7 @@ import {
   getOfferVenueFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import {
   EVENT_ADDRESS_OTHER_ADDRESS_LABEL,

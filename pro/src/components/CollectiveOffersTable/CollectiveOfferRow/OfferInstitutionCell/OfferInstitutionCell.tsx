@@ -1,6 +1,5 @@
-import classNames from 'classnames'
-
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+import classNames from 'classnames'
 import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import styles from 'styles/components/Cells.module.scss'
 

@@ -1,13 +1,12 @@
-import { screen } from '@testing-library/react'
-import { Configure } from 'react-instantsearch'
-
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { screen } from '@testing-library/react'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
+import { Configure } from 'react-instantsearch'
 
 import { App } from '../App'
 import { DEFAULT_GEO_RADIUS } from '../components/OffersInstantSearch/OffersInstantSearch'

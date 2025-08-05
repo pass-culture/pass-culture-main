@@ -1,15 +1,10 @@
-import { yupResolver } from '@hookform/resolvers/yup'
-import { ChangeEvent, useEffect, useRef, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { useLocation, useNavigate } from 'react-router'
-import { useSWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -34,6 +29,10 @@ import fullCodeIcon from 'icons/full-code.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useLocation, useNavigate } from 'react-router'
+import { useSWRConfig } from 'swr'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'

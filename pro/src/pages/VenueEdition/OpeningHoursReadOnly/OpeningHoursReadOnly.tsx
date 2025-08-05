@@ -1,5 +1,5 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
-import { mapDayToFrench, DAYS_IN_ORDER } from 'commons/utils/date'
+import { DAYS_IN_ORDER, mapDayToFrench } from 'commons/utils/date'
 import { getFormattedAddress } from 'commons/utils/getFormattedAddress'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSubSection } from 'components/SummaryLayout/SummarySubSubSection'

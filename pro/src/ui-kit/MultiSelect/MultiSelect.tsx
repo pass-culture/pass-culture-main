@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import { useOnClickOrFocusOutside } from 'commons/hooks/useOnClickOrFocusOutside'
 import {
   ForwardedRef,
   forwardRef,
@@ -7,8 +8,6 @@ import {
   useRef,
   useState,
 } from 'react'
-
-import { useOnClickOrFocusOutside } from 'commons/hooks/useOnClickOrFocusOutside'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 
 import { SelectedValuesTags } from '../SelectedValuesTags/SelectedValuesTags'

@@ -1,9 +1,9 @@
-import { addWeeks, format } from 'date-fns';
+import { addWeeks, format } from 'date-fns'
 
 import {
   expectOffersOrBookingsAreFound,
   logInAndGoToPage,
-} from '../support/helpers.ts';
+} from '../support/helpers.ts'
 
 describe('Search collective offers', () => {
   let offerPublishedTemplate: { name: string; venueName: string }
@@ -102,15 +102,7 @@ describe('Search collective offers', () => {
         '',
         'en instruction',
       ],
-      [
-        '',
-        '',
-        offerArchived.name,
-        '',
-        offerArchived.venueName,
-        '',
-        'archivée',
-      ],
+      ['', '', offerArchived.name, '', offerArchived.venueName, '', 'archivée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -167,15 +159,7 @@ describe('Search collective offers', () => {
     cy.stepLog({ message: '5 results should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
-      [
-        '',
-        '',
-        offerArchived.name,
-        '',
-        offerArchived.venueName,
-        '',
-        'archivée',
-      ],
+      ['', '', offerArchived.name, '', offerArchived.venueName, '', 'archivée'],
       [
         '',
         '',
@@ -287,7 +271,7 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: 'I search with status "Brouillon"' })
     cy.findByRole('button', { name: 'Statut' }).click()
-    cy.findByTestId('panel-scrollable').scrollTo('bottom') 
+    cy.findByTestId('panel-scrollable').scrollTo('bottom')
     cy.findByText('Brouillon').click()
     // We click outside the filter to close it
     cy.findByRole('heading', { name: 'Offres collectives' }).click()
@@ -312,11 +296,17 @@ describe('Search collective offers', () => {
 
     cy.findByText('En instruction').should('not.be.checked')
 
-    cy.findByRole('combobox', { name: /Structure/ }).invoke('val').should('eq', 'all')
+    cy.findByRole('combobox', { name: /Structure/ })
+      .invoke('val')
+      .should('eq', 'all')
 
-    cy.findByRole('combobox', { name: /Format/ }).invoke('val').should('eq', 'all')
+    cy.findByRole('combobox', { name: /Format/ })
+      .invoke('val')
+      .should('eq', 'all')
 
-    cy.findByRole('combobox', { name: /Type de l’offre/ }).invoke('val').should('eq', 'all')
+    cy.findByRole('combobox', { name: /Type de l’offre/ })
+      .invoke('val')
+      .should('eq', 'all')
 
     cy.stepLog({ message: 'I reset the name search' })
     cy.findByLabelText(/Nom de l’offre/).clear()
@@ -365,15 +355,7 @@ describe('Search collective offers', () => {
         '',
         'publiée',
       ],
-      [
-        '',
-        '',
-        offerArchived.name,
-        '',
-        offerArchived.venueName,
-        '',
-        'archivée',
-      ],
+      ['', '', offerArchived.name, '', offerArchived.venueName, '', 'archivée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults2)

@@ -1,10 +1,9 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { createRef } from 'react'
-
 import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 import { defaultVenueProvider } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { createRef } from 'react'
 
 import { VenueProviderCard, VenueProviderCardProps } from '../VenueProviderCard'
 

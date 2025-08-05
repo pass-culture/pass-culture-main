@@ -1,8 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { forwardRef } from 'react'
-
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { forwardRef } from 'react'
 
 import { ImageUploader, ImageUploaderProps } from './ImageUploader'
 

@@ -1,8 +1,6 @@
+import { Target } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router'
-
-import { Target } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
 import {
@@ -18,6 +16,7 @@ import {
 } from 'components/SignupJourneyForm/Offerer/constants'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
+import { Route, Routes } from 'react-router'
 
 import { SignupJourneyStepper } from '../SignupJourneyStepper'
 

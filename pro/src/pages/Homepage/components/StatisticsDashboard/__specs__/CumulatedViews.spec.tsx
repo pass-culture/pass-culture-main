@@ -1,8 +1,7 @@
 import { screen } from '@testing-library/react'
-import { add, format } from 'date-fns'
-
 import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { add, format } from 'date-fns'
 
 import {
   CumulatedViews,

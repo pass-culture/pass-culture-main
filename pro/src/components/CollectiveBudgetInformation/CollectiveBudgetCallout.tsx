@@ -1,6 +1,5 @@
-import { useState } from 'react'
-
 import { storageAvailable } from 'commons/utils/storageAvailable'
+import { useState } from 'react'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 

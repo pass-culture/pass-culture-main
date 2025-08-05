@@ -1,8 +1,7 @@
 import cn from 'classnames'
-import { ComponentProps, ForwardedRef, forwardRef } from 'react'
-
 import { SelectOption } from 'commons/custom_types/form'
 import fullDownIcon from 'icons/full-down.svg'
+import { ComponentProps, ForwardedRef, forwardRef } from 'react'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Select.module.scss'

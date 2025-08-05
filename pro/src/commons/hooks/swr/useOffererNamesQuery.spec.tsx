@@ -1,6 +1,5 @@
-import { screen, waitFor } from '@testing-library/react'
-
 import { api } from 'apiClient/api'
+import { screen, waitFor } from '@testing-library/react'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 

@@ -1,7 +1,3 @@
-import cn from 'classnames'
-import { useSelector } from 'react-redux'
-import { useSWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import {
   CollectiveBookingStatus,
@@ -11,6 +7,7 @@ import {
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import cn from 'classnames'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
@@ -28,6 +25,8 @@ import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/Collecti
 import fullHideIcon from 'icons/full-hide.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
+import { useSelector } from 'react-redux'
+import { useSWRConfig } from 'swr'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'

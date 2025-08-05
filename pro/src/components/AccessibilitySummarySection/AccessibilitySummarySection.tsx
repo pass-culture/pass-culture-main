@@ -1,9 +1,8 @@
-import { ReactNode } from 'react'
-
 import { AccessibilityEnum } from 'commons/core/shared/types'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { SummarySubSubSection } from 'components/SummaryLayout/SummarySubSubSection'
+import { ReactNode } from 'react'
 import { AccessibilityLabel } from 'ui-kit/AccessibilityLabel/AccessibilityLabel'
 
 import styles from './AccessibilitySummarySection.module.scss'
@@ -75,7 +74,8 @@ export const AccessibilitySummarySection = ({
           )}
         </ul>
       )}
-  </>)
+    </>
+  )
 
   return isSubSubSection ? (
     <SummarySubSubSection title="Modalités d’accessibilité">

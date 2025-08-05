@@ -1,8 +1,3 @@
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { beforeEach, expect } from 'vitest'
-import createFetchMock from 'vitest-fetch-mock'
-
 import { api } from 'apiClient/api'
 import {
   CollectiveOfferAllowedAction,
@@ -10,6 +5,8 @@ import {
   CollectiveOfferTemplateAllowedAction,
   OfferAddressType,
 } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
@@ -26,6 +23,8 @@ import {
 import { venueListItemFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import * as storageAvailable from 'commons/utils/storageAvailable'
+import { beforeEach, expect } from 'vitest'
+import createFetchMock from 'vitest-fetch-mock'
 
 import {
   CollectiveActionsCells,

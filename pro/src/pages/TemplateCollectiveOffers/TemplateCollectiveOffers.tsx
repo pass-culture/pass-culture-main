@@ -1,13 +1,7 @@
-import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import { CollectiveOfferType } from 'apiClient/v1'
 import { Layout } from 'app/App/layout/Layout'
-import {
-  GET_VENUES_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
+import { GET_VENUES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   DEFAULT_PAGE,
@@ -22,7 +16,10 @@ import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
 import { TemplateCollectiveOffersScreen } from 'pages/TemplateCollectiveOffers/TemplateCollectiveOffersScreen/TemplateCollectiveOffersScreen'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
 import { formatAndOrderVenues } from 'repository/venuesService'
+import useSWR from 'swr'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const TemplateCollectiveOffers = (): JSX.Element => {
@@ -43,7 +40,9 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   const navigate = useNavigate()
 
   const { data: offerer } = useOfferer(
-    offererId !== DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.offererId ? offererId : null,
+    offererId !== DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.offererId
+      ? offererId
+      : null,
     true
   )
 
@@ -119,13 +118,15 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   )
 
   if (offersQuery.isLoading) {
-    return <Layout>
-      <Spinner />
-    </Layout>
+    return (
+      <Layout>
+        <Spinner />
+      </Layout>
+    )
   }
 
   return (
-    <Layout mainHeading='Offres vitrines'>
+    <Layout mainHeading="Offres vitrines">
       <TemplateCollectiveOffersScreen
         currentPageNumber={currentPageNumber}
         initialSearchFilters={apiFilters}

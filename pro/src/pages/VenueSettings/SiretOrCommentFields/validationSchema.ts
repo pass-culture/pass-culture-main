@@ -1,7 +1,6 @@
-import * as yup from 'yup'
-
 import { siretApiValidate } from 'commons/core/Venue/siretApiValidate'
 import { unhumanizeSiret } from 'commons/core/Venue/utils'
+import * as yup from 'yup'
 
 import { VenueSettingsFormValues } from '../types'
 

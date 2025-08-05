@@ -7,10 +7,14 @@ interface DeleteDraftOffersProps {
   setIsConfirmDialogOpen: (value: boolean) => void
 }
 
-export const DeleteDraftCell = ({ setIsConfirmDialogOpen }: DeleteDraftOffersProps) => {
+export const DeleteDraftCell = ({
+  setIsConfirmDialogOpen,
+}: DeleteDraftOffersProps) => {
   return (
     <DropdownItem onSelect={() => setIsConfirmDialogOpen(true)} asChild>
-      <Button icon={fullTrashIcon} variant={ButtonVariant.TERNARY}>Supprimer l’offre</Button>
+      <Button icon={fullTrashIcon} variant={ButtonVariant.TERNARY}>
+        Supprimer l’offre
+      </Button>
     </DropdownItem>
   )
 }

@@ -1,7 +1,6 @@
-import { ChangeEvent, forwardRef } from 'react'
-
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullTrashIcon from 'icons/full-trash.svg'
+import { ChangeEvent, forwardRef } from 'react'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'

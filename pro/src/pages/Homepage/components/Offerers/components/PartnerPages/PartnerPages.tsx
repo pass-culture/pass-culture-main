@@ -1,6 +1,3 @@
-import { useState } from 'react'
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import {
   GetOffererResponseModel,
@@ -13,6 +10,8 @@ import {
   getSavedPartnerPageVenueId,
   setSavedPartnerPageVenueId,
 } from 'commons/utils/savedPartnerPageVenueId'
+import { useState } from 'react'
+import useSWR from 'swr'
 import { SelectInput } from 'ui-kit/form/shared/BaseSelectInput/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 

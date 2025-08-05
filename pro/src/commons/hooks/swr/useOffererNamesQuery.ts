@@ -1,11 +1,10 @@
-import { useDispatch, useSelector } from 'react-redux'
-import useSWR, { SWRResponse } from 'swr'
-
 import { api } from 'apiClient/api'
 import { GetOfferersNamesResponseModel } from 'apiClient/v1'
 import { GET_OFFERER_NAMES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { updateOffererNames } from 'commons/store/offerer/reducer'
 import { selectOffererNames } from 'commons/store/offerer/selectors'
+import { useDispatch, useSelector } from 'react-redux'
+import useSWR, { SWRResponse } from 'swr'
 
 /**
  * Custom hook to fetch the list of offerer names

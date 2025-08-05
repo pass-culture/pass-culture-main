@@ -1,6 +1,5 @@
-import { render, screen } from '@testing-library/react'
-
 import { BookingRecapStatus } from 'apiClient/v1'
+import { render, screen } from '@testing-library/react'
 
 import {
   BookingStatusCellHistory,

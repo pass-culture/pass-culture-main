@@ -1,10 +1,9 @@
-import { useLocation } from 'react-router'
-
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { computeIndividualOffersUrl } from 'commons/core/Offers/utils/computeIndividualOffersUrl'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import fullRightIcon from 'icons/full-right.svg'
+import { useLocation } from 'react-router'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'

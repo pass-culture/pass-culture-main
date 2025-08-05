@@ -1,9 +1,8 @@
-import { screen, waitFor } from '@testing-library/react'
-
 import {
   CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
 } from 'apiClient/v1'
+import { screen, waitFor } from '@testing-library/react'
 import { Mode } from 'commons/core/OfferEducational/types'
 import * as hooks from 'commons/hooks/swr/useOfferer'
 import {
@@ -14,8 +13,8 @@ import {
 } from 'commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import {
   managedVenuesFactory,
@@ -124,7 +123,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
         },
         booking: getCollectiveOfferBookingFactory({
           id: 1,
-          status: CollectiveBookingStatus.USED
+          status: CollectiveBookingStatus.USED,
         }),
       }),
     }

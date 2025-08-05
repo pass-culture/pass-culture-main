@@ -1,9 +1,8 @@
 import { screen, waitFor } from '@testing-library/react'
-import { Routes, Route } from 'react-router'
-
 import * as useHasAccessToDidacticOnboarding from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { OnboardingLayout } from 'pages/Onboarding/components/OnboardingLayout/OnboardingLayout'
+import { Route, Routes } from 'react-router'
 
 const renderOnboardingLayout = () => {
   return renderWithProviders(

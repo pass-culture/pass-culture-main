@@ -1,6 +1,5 @@
-import cn from 'classnames'
-
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
+import cn from 'classnames'
 import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/CollectiveStatusLabel'
 import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
 import styles from 'styles/components/Cells.module.scss'

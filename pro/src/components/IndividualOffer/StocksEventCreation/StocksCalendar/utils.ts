@@ -1,3 +1,9 @@
+import { EventStockCreateBodyModel } from 'apiClient/v1'
+import {
+  FORMAT_ISO_DATE_ONLY,
+  toISOStringWithoutMilliseconds,
+} from 'commons/utils/date'
+import { serializeDateTimeToUTCFromLocalDepartment } from 'components/IndividualOffer/StocksEventEdition/serializers'
 import {
   addDays,
   format,
@@ -7,13 +13,6 @@ import {
   isSameDay,
   sub,
 } from 'date-fns'
-
-import { EventStockCreateBodyModel } from 'apiClient/v1'
-import {
-  FORMAT_ISO_DATE_ONLY,
-  toISOStringWithoutMilliseconds,
-} from 'commons/utils/date'
-import { serializeDateTimeToUTCFromLocalDepartment } from 'components/IndividualOffer/StocksEventEdition/serializers'
 
 import { weekDays } from '../form/constants'
 import { StocksCalendarFormValues } from '../form/types'

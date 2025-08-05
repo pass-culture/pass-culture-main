@@ -1,9 +1,9 @@
 import { GetCollectiveOfferCollectiveStockResponseModel } from 'apiClient/v1'
 import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'commons/core/OfferEducational/constants'
 import {
+  defaultGetCollectiveOfferRequest,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-  defaultGetCollectiveOfferRequest,
   getCollectiveOfferVenueFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
 

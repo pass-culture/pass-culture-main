@@ -1,7 +1,6 @@
+import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-
-import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,

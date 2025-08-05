@@ -1,10 +1,9 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { forwardRef } from 'react'
-
 import * as useNotification from 'commons/hooks/useNotification'
 import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { forwardRef } from 'react'
 
 import {
   ImageDragAndDropUploader,

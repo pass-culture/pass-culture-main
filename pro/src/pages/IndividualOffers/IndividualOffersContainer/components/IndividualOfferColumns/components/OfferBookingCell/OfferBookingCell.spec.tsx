@@ -1,10 +1,9 @@
-import { screen } from '@testing-library/react'
-import { addDays, format, subDays } from 'date-fns'
-
 import { OfferStatus } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
 import { FORMAT_DD_MM_YYYY } from 'commons/utils/date'
 import { listOffersOfferFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { addDays, format, subDays } from 'date-fns'
 
 import { OfferBookingCell, OfferBookingCellProps } from './OfferBookingCell'
 

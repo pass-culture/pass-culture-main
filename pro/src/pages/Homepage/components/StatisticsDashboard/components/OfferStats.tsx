@@ -1,5 +1,3 @@
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -11,6 +9,7 @@ import fullLinkIcon from 'icons/full-link.svg'
 import fullShowIcon from 'icons/full-show.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
+import useSWR from 'swr'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

@@ -1,5 +1,3 @@
-import { useFormContext } from 'react-hook-form'
-
 import { OfferAddressType } from 'apiClient/adage'
 import { CollectiveLocationType } from 'apiClient/v1'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
@@ -7,6 +5,7 @@ import fullClearIcon from 'icons/full-clear.svg'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import { departmentOptions } from 'pages/AdageIframe/app/constants/departmentOptions'
 import { Option } from 'pages/AdageIframe/app/types'
+import { useFormContext } from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

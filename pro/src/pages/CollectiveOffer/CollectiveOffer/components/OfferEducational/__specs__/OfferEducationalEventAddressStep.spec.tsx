@@ -4,8 +4,8 @@ import { userEvent } from '@testing-library/user-event'
 import * as hooks from 'commons/hooks/swr/useOfferer'
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import {
   managedVenueFactory,

@@ -1,8 +1,7 @@
 import { act, renderHook } from '@testing-library/react'
-import { Provider } from 'react-redux'
-
 import { configureTestStore } from 'commons/store/testUtils'
 import { isEqual } from 'commons/utils/isEqual'
+import { Provider } from 'react-redux'
 
 import {
   getStoredFilterConfig,

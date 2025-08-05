@@ -1,13 +1,11 @@
+import { api } from 'apiClient/api'
+import { GetVenueResponseModel } from 'apiClient/v1'
 import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router'
-
-import { api } from 'apiClient/api'
-import { GetVenueResponseModel } from 'apiClient/v1'
 import * as hooks from 'commons/hooks/swr/useOfferer'
 import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 import {
@@ -17,10 +15,11 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 import * as utils from 'commons/utils/savedPartnerPageVenueId'
+import { Route, Routes } from 'react-router'
 
 import { VenueEdition } from '../VenueEdition'
 

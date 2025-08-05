@@ -1,6 +1,6 @@
 import {
-  GetCollectiveOfferTemplateResponseModel,
   GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { Markdown } from 'components/Markdown/Markdown'
 import {

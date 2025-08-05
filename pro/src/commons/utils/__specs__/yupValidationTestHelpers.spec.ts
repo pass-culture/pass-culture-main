@@ -1,6 +1,5 @@
-import * as yup from 'yup'
-
 import { getNthParentFormValues } from 'commons/utils/yupValidationTestHelpers'
+import * as yup from 'yup'
 
 describe('getNthParentFormValues', () => {
   it('should return the correct parent', () => {

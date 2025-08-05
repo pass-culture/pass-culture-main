@@ -1,9 +1,8 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { expect } from 'vitest'
-
 import * as utils from 'commons/utils/recaptcha'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { expect } from 'vitest'
 
 import { LostPassword } from '../LostPassword'
 

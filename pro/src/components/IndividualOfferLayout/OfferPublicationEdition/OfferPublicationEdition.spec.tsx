@@ -1,12 +1,11 @@
-import { screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { addDays, subDays } from 'date-fns'
-
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
+import { addDays, subDays } from 'date-fns'
 
 import {
   getPatchOfferPayloadFromFormValues,

@@ -1,8 +1,7 @@
-import { useLocation } from 'react-router'
-
 import { Layout } from 'app/App/layout/Layout'
 import { Audience } from 'commons/core/shared/types'
 import { BookingsContainer } from 'components/Bookings/Bookings'
+import { useLocation } from 'react-router'
 
 import { getFilteredIndividualBookingsAdapter } from './adapters/getFilteredIndividualBookingsAdapter'
 import { getUserHasIndividualBookingsAdapter } from './adapters/getUserHasIndividualBookingsAdapter'
@@ -11,7 +10,7 @@ export const Bookings = (): JSX.Element => {
   const location = useLocation()
 
   return (
-    <Layout mainHeading='Réservations individuelles'>
+    <Layout mainHeading="Réservations individuelles">
       <BookingsContainer
         audience={Audience.INDIVIDUAL}
         getFilteredBookingsAdapter={getFilteredIndividualBookingsAdapter}

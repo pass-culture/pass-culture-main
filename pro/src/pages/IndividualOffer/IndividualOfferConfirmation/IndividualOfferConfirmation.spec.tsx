@@ -1,23 +1,22 @@
-import { screen } from '@testing-library/react'
-import { Route, Routes } from 'react-router'
-
 import { api } from 'apiClient/api'
 import {
   GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
 import {
-  IndividualOfferContextValues,
   IndividualOfferContext,
+  IndividualOfferContextValues,
 } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
-  getOfferVenueFactory,
   getIndividualOfferFactory,
+  getOfferVenueFactory,
   individualOfferContextValuesFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
+import { Route, Routes } from 'react-router'
 
 import { IndividualOfferConfirmation } from './IndividualOfferConfirmation'
 
@@ -106,7 +105,9 @@ describe('IndividualOfferConfirmation', () => {
     offer.publicationDate = new Date(Date.now() + 3600).toISOString()
     offer.status = OfferStatus.PENDING
     renderOffer(contextOverride)
-    expect(screen.getByText('Offre programmée en cours de validation')).toBeInTheDocument()
+    expect(
+      screen.getByText('Offre programmée en cours de validation')
+    ).toBeInTheDocument()
     expect(
       screen.queryByText('Visualiser l’offre dans l’application', {
         selector: 'a',

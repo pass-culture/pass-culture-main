@@ -1,7 +1,6 @@
+import { VenueTypeCode } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-
-import { VenueTypeCode } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
@@ -12,8 +11,8 @@ import {
 } from 'commons/utils/factories/storeFactories'
 import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 
 import {

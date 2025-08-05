@@ -1,8 +1,7 @@
-import { useSelector } from 'react-redux'
-import { Link } from 'react-router'
-
 import { Layout } from 'app/App/layout/Layout'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { useSelector } from 'react-redux'
+import { Link } from 'react-router'
 
 import styles from './Sitemap.module.scss'
 

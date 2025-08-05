@@ -1,4 +1,6 @@
+import { AdageFrontRoles } from 'apiClient/adage'
 import classNames from 'classnames'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import {
   Navigate,
   Route,
@@ -6,9 +8,6 @@ import {
   ScrollRestoration,
   useLocation,
 } from 'react-router'
-
-import { AdageFrontRoles } from 'apiClient/adage'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 
 import { MARSEILLE_EN_GRAND } from '../../constants'
 import { useAdageUser } from '../../hooks/useAdageUser'

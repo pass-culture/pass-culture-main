@@ -53,9 +53,9 @@ import fullUpIcon from 'icons/full-up.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
 import fullWarningIcon from 'icons/full-warning.svg'
-import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
-import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
+import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
+import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import stroke404Icon from 'icons/stroke-404.svg'
 import strokeAccessibilityBrainIcon from 'icons/stroke-accessibility-brain.svg'
 import strokeAccessibilityEarIcon from 'icons/stroke-accessibility-ear.svg'
@@ -129,6 +129,7 @@ import strokeVisualArtIcon from 'icons/stroke-visual-art.svg'
 import strokeWarningIcon from 'icons/stroke-warning.svg'
 import strokeWipIcon from 'icons/stroke-wip.svg'
 import strokeWrongIcon from 'icons/stroke-wrong.svg'
+
 interface IconListItem {
   src: string
   viewBox?: string

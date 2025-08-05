@@ -1,8 +1,4 @@
 /* @debt standard "Gautier: Do not load internal page dependencies"*/
-import { yupResolver } from '@hookform/resolvers/yup'
-import { addDays, isBefore } from 'date-fns'
-import { useState } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
 
 import {
   CollectiveBookingStatus,
@@ -10,6 +6,7 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { MAX_PRICE_DETAILS_LENGTH } from 'commons/core/OfferEducational/constants'
 import {
   isCollectiveOffer,
@@ -25,6 +22,9 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { addDays, isBefore } from 'date-fns'
+import { useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'

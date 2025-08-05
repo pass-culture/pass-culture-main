@@ -1,10 +1,9 @@
-import { screen, render, waitFor } from '@testing-library/react'
-import { axe } from 'vitest-axe'
-
+import { render, screen, waitFor } from '@testing-library/react'
 import {
   RadioButtonSizing,
   RadioButtonVariantProps,
 } from 'design-system/RadioButton/RadioButton'
+import { axe } from 'vitest-axe'
 
 import { RadioButtonGroup, RadioButtonGroupProps } from './RadioButtonGroup'
 

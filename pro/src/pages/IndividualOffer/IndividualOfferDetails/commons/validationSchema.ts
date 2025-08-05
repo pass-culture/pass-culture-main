@@ -1,6 +1,5 @@
 import * as yup from 'yup'
 
-
 import { DetailsFormValues } from './types'
 
 const eanValidation = yup

@@ -8,10 +8,13 @@ const TestComponent = () => {
   return <div>{useHasAccessToDidacticOnboarding() ? 'OUI' : 'NON'}</div>
 }
 
-const renderuseHasAccessToDidacticOnboarding = (features: string[] = [], userId: number = 2) => {
+const renderuseHasAccessToDidacticOnboarding = (
+  features: string[] = [],
+  userId: number = 2
+) => {
   return renderWithProviders(<TestComponent />, {
     features,
-    user: sharedCurrentUserFactory({ id: userId })
+    user: sharedCurrentUserFactory({ id: userId }),
   })
 }
 
@@ -41,21 +44,26 @@ describe('useHasAccessToDidacticOnboarding', () => {
     })
 
     describe('... and with WIP_ENABLE_PRO_DIDACTIC_ONBOARDING enabled', () => {
-
       it('should return true if user id is an even number', () => {
-        renderuseHasAccessToDidacticOnboarding([
-          'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
-          'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST',
-        ], 2)
+        renderuseHasAccessToDidacticOnboarding(
+          [
+            'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+            'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST',
+          ],
+          2
+        )
 
         expect(screen.getByText('OUI')).toBeInTheDocument()
       })
 
       it('should return false if user id is an odd number', () => {
-        renderuseHasAccessToDidacticOnboarding([
-          'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
-          'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST',
-        ], 1)
+        renderuseHasAccessToDidacticOnboarding(
+          [
+            'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+            'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST',
+          ],
+          1
+        )
         expect(screen.getByText('NON')).toBeInTheDocument()
       })
     })

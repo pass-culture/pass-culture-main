@@ -1,13 +1,12 @@
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-
 import {
+  CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
   SharedCurrentUserResponseModel,
-  CollectiveOfferAllowedAction,
   UserRole,
 } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import {
   ALL_VENUES_OPTION,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
@@ -17,12 +16,12 @@ import * as useNotification from 'commons/hooks/useNotification'
 import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 
 import {
@@ -321,8 +320,14 @@ describe('TemplateCollectiveOffersScreen', () => {
     })
     it('should check all selectable offers checkboxes', async () => {
       const offer = collectiveOfferFactory({ name: 'offer 1' })
-      const archivableOffer = collectiveOfferFactory({ name: 'offer 2', allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE] })
-      const unselctableOffer = collectiveOfferFactory({ name: 'offer 3', allowedActions: [] })
+      const archivableOffer = collectiveOfferFactory({
+        name: 'offer 2',
+        allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
+      })
+      const unselctableOffer = collectiveOfferFactory({
+        name: 'offer 3',
+        allowedActions: [],
+      })
 
       renderOffers({
         ...props,

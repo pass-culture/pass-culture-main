@@ -1,6 +1,3 @@
-import { useRef } from 'react'
-import { useFormContext } from 'react-hook-form'
-
 import { AdresseData } from 'apiClient/adresse/types'
 import {
   CollectiveLocationType,
@@ -12,6 +9,8 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
+import { useRef } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { AddressManual } from 'ui-kit/form/AddressManual/AddressManual'

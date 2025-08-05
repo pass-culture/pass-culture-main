@@ -1,10 +1,9 @@
-import { format } from 'date-fns-tz'
-
 import {
   BookingRecapResponseBookingStatusHistoryModel,
   BookingStatusHistoryResponseModel,
 } from 'apiClient/v1'
 import { toDateStrippedOfTimezone } from 'commons/utils/date'
+import { format } from 'date-fns-tz'
 
 import { getBookingStatusDisplayInformations } from '../../utils/bookingStatusConverter'
 

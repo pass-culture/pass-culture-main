@@ -1,10 +1,3 @@
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import cn from 'classnames'
-import { useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
-import { useSWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import { getErrorCode, isErrorAPIError } from 'apiClient/helpers'
 import {
@@ -14,7 +7,9 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
 } from 'apiClient/v1'
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import cn from 'classnames'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
   CollectiveBookingsEvents,
@@ -51,7 +46,11 @@ import fullPlusIcon from 'icons/full-plus.svg'
 import fullThreeDotsIcon from 'icons/full-three-dots.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
 import strokeThingIcon from 'icons/stroke-thing.svg'
+import { useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
 import styles from 'styles/components/Cells.module.scss'
+import { useSWRConfig } from 'swr'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'

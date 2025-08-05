@@ -323,13 +323,13 @@ describe('Create collective offers with OA', () => {
     cy.findAllByText('Modifier').eq(0).click()
     cy.findByLabelText('Autre adresse').click()
     // eslint-disable-next-line cypress/unsafe-to-chain-command
-    cy.findByLabelText('Intitulé de la localisation').clear().type(
-      'Libellé de mon adresse custom'
-    )
+    cy.findByLabelText('Intitulé de la localisation')
+      .clear()
+      .type('Libellé de mon adresse custom')
     cy.findByLabelText('Adresse postale *').type('10 Rue')
     cy.get('[data-testid="list"] li').first().click()
-      cy.findByText('Enregistrer et continuer').click()
-      cy.contains('Intitulé : Libellé de mon adresse custom')
-      cy.contains('Adresse : 10 Rue, 53210, Argentré')
+    cy.findByText('Enregistrer et continuer').click()
+    cy.contains('Intitulé : Libellé de mon adresse custom')
+    cy.contains('Adresse : 10 Rue, 53210, Argentré')
   })
 })

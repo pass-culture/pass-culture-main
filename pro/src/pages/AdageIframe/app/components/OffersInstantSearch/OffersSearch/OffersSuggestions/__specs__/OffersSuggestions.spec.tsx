@@ -1,10 +1,7 @@
-import { screen } from '@testing-library/react'
-import * as instantSearch from 'react-instantsearch'
-import { Configure } from 'react-instantsearch'
-
 import { AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { OfferAddressType } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
@@ -13,10 +10,12 @@ import {
   defaultUseStatsReturn,
 } from 'commons/utils/factories/adageFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import * as instantSearch from 'react-instantsearch'
+import { Configure } from 'react-instantsearch'
 
 import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../../utils'
 import { OffersSuggestions, OffersSuggestionsProps } from '../OffersSuggestions'
@@ -180,8 +179,7 @@ describe('OffersSuggestions', () => {
     expect(Configure).toHaveBeenCalledWith(
       expect.objectContaining({
         aroundRadius: 30_000_000,
-        facetFilters: [
-        ],
+        facetFilters: [],
       }),
       {}
     )
@@ -207,8 +205,7 @@ describe('OffersSuggestions', () => {
     expect(Configure).toHaveBeenCalledWith(
       expect.objectContaining({
         aroundRadius: 30_000_000,
-        facetFilters: [
-        ],
+        facetFilters: [],
       }),
       {}
     )
@@ -234,8 +231,7 @@ describe('OffersSuggestions', () => {
     expect(Configure).toHaveBeenCalledWith(
       expect.objectContaining({
         aroundRadius: 30_000_000,
-        facetFilters: [
-        ],
+        facetFilters: [],
       }),
       {}
     )

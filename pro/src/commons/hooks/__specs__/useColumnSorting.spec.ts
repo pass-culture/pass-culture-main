@@ -1,8 +1,8 @@
 import { act, renderHook } from '@testing-library/react'
 
 import {
-  SortingMode,
   giveSortingModeForAlly,
+  SortingMode,
   useColumnSorting,
 } from 'commons/hooks/useColumnSorting'
 

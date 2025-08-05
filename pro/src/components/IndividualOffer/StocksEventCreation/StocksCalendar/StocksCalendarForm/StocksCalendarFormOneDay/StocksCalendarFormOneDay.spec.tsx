@@ -1,10 +1,7 @@
-import { screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { addDays } from 'date-fns'
-import { FormProvider, useForm } from 'react-hook-form'
-
 import { api } from 'apiClient/api'
 import { SubcategoryIdEnum } from 'apiClient/v1'
+import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   getIndividualOfferFactory,
@@ -16,6 +13,8 @@ import {
   StocksCalendarFormValues,
   TimeSlotTypeOption,
 } from 'components/IndividualOffer/StocksEventCreation/form/types'
+import { addDays } from 'date-fns'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { StocksCalendarFormOneDay } from './StocksCalendarFormOneDay'
 

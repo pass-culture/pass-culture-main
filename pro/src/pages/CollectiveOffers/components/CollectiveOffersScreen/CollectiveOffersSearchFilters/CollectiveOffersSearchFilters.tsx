@@ -1,5 +1,3 @@
-import { Dispatch, FormEvent, SetStateAction } from 'react'
-
 import {
   CollectiveOfferDisplayedStatus,
   EacFormat,
@@ -19,6 +17,7 @@ import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OffersTableSearch } from 'components/OffersTable/OffersTableSearch/OffersTableSearch'
+import { Dispatch, FormEvent, SetStateAction } from 'react'
 import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'
 import { Select } from 'ui-kit/form/Select/Select'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'

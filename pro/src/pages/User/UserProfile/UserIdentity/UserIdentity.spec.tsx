@@ -18,9 +18,7 @@ describe('UserIdentity', () => {
       }
     )
 
-    expect(
-      screen.getByRole('textbox', { name: 'Prénom' })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Prénom' })).toBeInTheDocument()
   })
 
   it('should not display the user identity form when in mode read only', () => {

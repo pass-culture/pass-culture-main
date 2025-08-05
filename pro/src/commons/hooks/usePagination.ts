@@ -25,5 +25,3 @@ export const usePagination = <T>(
     pageCount,
   }
 }
-
-

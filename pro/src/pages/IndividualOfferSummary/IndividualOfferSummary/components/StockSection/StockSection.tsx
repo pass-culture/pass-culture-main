@@ -1,6 +1,3 @@
-import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router'
-
 import { api } from 'apiClient/api'
 import {
   GetIndividualOfferWithAddressResponseModel,
@@ -8,8 +5,8 @@ import {
   StockStatsResponseModel,
 } from 'apiClient/v1'
 import {
-  OFFER_WIZARD_MODE,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { useNotification } from 'commons/hooks/useNotification'
@@ -19,6 +16,8 @@ import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescript
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { getStockWarningText } from 'pages/IndividualOfferSummary/commons/getStockWarningText'
 import { StockThingSection } from 'pages/IndividualOfferSummary/components/StockThingSection/StockThingSection'
+import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { RecurrenceSection } from './RecurrenceSection/RecurrenceSection'

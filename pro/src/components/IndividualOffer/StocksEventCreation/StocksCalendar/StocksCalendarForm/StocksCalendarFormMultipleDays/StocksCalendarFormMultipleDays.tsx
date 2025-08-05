@@ -1,12 +1,11 @@
-import { addMonths, isBefore, isValid } from 'date-fns'
-import { useEffect } from 'react'
-import { UseFormReturn } from 'react-hook-form'
-
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { weekDays } from 'components/IndividualOffer/StocksEventCreation/form/constants'
 import { StocksCalendarFormValues } from 'components/IndividualOffer/StocksEventCreation/form/types'
+import { addMonths, isBefore, isValid } from 'date-fns'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
+import { useEffect } from 'react'
+import { UseFormReturn } from 'react-hook-form'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 
 import { getWeekDaysInBetweenDates } from '../../utils'

@@ -1,8 +1,4 @@
 import classnames from 'classnames'
-import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { NavLink, useLocation } from 'react-router'
-
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import {
@@ -27,6 +23,9 @@ import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeHomeIcon from 'icons/stroke-home.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { NavLink, useLocation } from 'react-router'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

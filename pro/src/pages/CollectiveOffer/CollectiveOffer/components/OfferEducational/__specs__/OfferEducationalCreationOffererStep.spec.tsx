@@ -1,14 +1,13 @@
-import { screen } from '@testing-library/react'
-
 import { api } from 'apiClient/api'
+import { screen } from '@testing-library/react'
 import * as hooks from 'commons/hooks/swr/useOfferer'
 import {
   defaultGetOffererResponseModel,
   venueListItemFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import {
   managedVenuesFactory,

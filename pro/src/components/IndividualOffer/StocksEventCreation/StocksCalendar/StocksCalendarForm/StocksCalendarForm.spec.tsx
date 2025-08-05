@@ -1,10 +1,8 @@
+import { api } from 'apiClient/api'
+import { SubcategoryIdEnum } from 'apiClient/v1'
 import * as Dialog from '@radix-ui/react-dialog'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { addDays } from 'date-fns'
-
-import { api } from 'apiClient/api'
-import { SubcategoryIdEnum } from 'apiClient/v1'
 import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import * as useNotification from 'commons/hooks/useNotification'
 import {
@@ -12,6 +10,7 @@ import {
   subcategoryFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { addDays } from 'date-fns'
 
 import {
   StocksCalendarForm,

@@ -1,20 +1,19 @@
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import * as router from 'react-router'
-
 import { api } from 'apiClient/api'
 import {
   CollectiveOfferAllowedAction,
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import * as useOfferer from 'commons/hooks/swr/useOfferer'
 import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import * as router from 'react-router'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'

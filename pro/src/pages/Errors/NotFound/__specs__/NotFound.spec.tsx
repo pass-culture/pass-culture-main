@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
-import * as router from 'react-router'
-
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import * as router from 'react-router'
 
 import { NotFound } from '../NotFound'
 

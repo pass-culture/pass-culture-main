@@ -1,13 +1,11 @@
-import { screen, waitFor, within } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { expect, it } from 'vitest'
-
 import { api } from 'apiClient/api'
 import {
   CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
   EducationalInstitutionResponseModel,
 } from 'apiClient/v1'
+import { screen, waitFor, within } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { DEFAULT_VISIBILITY_FORM_VALUES } from 'commons/core/OfferEducational/constants'
 import { Mode } from 'commons/core/OfferEducational/types'
 import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
@@ -17,9 +15,10 @@ import {
   getCollectiveOfferFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { expect, it } from 'vitest'
 
 import {
   CollectiveOfferVisibilityProps,

@@ -1,8 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { addDays } from 'date-fns'
-
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { addDays } from 'date-fns'
 
 import {
   StocksCalendarFilters,

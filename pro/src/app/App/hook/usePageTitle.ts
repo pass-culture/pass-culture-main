@@ -1,7 +1,6 @@
+import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router'
-
-import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
 
 export const usePageTitle = () => {
   const location = useLocation()

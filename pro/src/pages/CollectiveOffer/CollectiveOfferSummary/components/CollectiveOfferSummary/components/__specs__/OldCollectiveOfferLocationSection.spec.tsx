@@ -1,7 +1,6 @@
-import { screen, waitFor } from '@testing-library/react'
-
 import { api } from 'apiClient/api'
 import { OfferAddressType } from 'apiClient/v1'
+import { screen, waitFor } from '@testing-library/react'
 import * as useNotification from 'commons/hooks/useNotification'
 import {
   defaultGetVenue,

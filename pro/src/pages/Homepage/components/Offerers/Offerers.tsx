@@ -1,6 +1,3 @@
-import { useEffect, useState } from 'react'
-import { useLocation, useSearchParams } from 'react-router'
-
 import { GetOffererResponseModel, VenueTypeResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
@@ -10,6 +7,8 @@ import { RedirectDialog } from 'components/RedirectDialog/RedirectDialog'
 import { SoftDeletedOffererWarning } from 'components/SoftDeletedOffererWarning/SoftDeletedOffererWarning'
 import fullWaitIcon from 'icons/full-wait.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
+import { useEffect, useState } from 'react'
+import { useLocation, useSearchParams } from 'react-router'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { OffererCreationLinks } from './components/OffererCreationLinks/OffererCreationLinks'

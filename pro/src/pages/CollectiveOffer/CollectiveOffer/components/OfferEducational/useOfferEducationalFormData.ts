@@ -1,5 +1,3 @@
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import {
   GetCollectiveOfferResponseModel,
@@ -14,6 +12,7 @@ import {
 } from 'commons/config/swrQueryKeys'
 import { serializeEducationalOfferer } from 'commons/core/OfferEducational/utils/serializeEducationalOfferer'
 import { useEducationalDomains } from 'commons/hooks/swr/useEducationalDomains'
+import useSWR from 'swr'
 
 export type DomainOption = {
   id: string

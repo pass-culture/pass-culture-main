@@ -1,10 +1,9 @@
-import cn from 'classnames'
-
 import {
-  GetOffererResponseModel,
   type DMSApplicationForEAC,
+  GetOffererResponseModel,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import cn from 'classnames'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,

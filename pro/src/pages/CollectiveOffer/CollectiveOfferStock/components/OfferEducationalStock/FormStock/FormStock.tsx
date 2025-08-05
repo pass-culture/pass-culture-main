@@ -1,6 +1,3 @@
-import React from 'react'
-import { useFormContext } from 'react-hook-form'
-
 import {
   Mode,
   OfferEducationalStockFormValues,
@@ -10,6 +7,8 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullHelpIcon from 'icons/full-help.svg'
 import strokeCollaborator from 'icons/stroke-collaborator.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
+import React from 'react'
+import { useFormContext } from 'react-hook-form'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'

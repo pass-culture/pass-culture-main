@@ -1,8 +1,8 @@
 import {
   checkCoords,
+  dmsRe,
   getCoordsType,
   parseDms,
-  dmsRe,
 } from 'commons/utils/coords'
 
 describe('checkCoords', () => {

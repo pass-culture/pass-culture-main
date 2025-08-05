@@ -1,7 +1,6 @@
-import { forwardRef } from 'react'
-
 import { Checkbox, CheckboxProps } from 'design-system/Checkbox/Checkbox'
 import strokeDuoIcon from 'icons/stroke-duo.svg'
+import { forwardRef } from 'react'
 
 export const DuoCheckbox = forwardRef<
   HTMLInputElement,

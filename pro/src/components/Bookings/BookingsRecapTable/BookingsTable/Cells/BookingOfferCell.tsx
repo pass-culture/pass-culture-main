@@ -1,14 +1,12 @@
-import cn from 'classnames'
-import { format } from 'date-fns-tz'
-
 import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
+import cn from 'classnames'
 import {
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_STATUS_PENDING,
   OFFER_WIZARD_MODE,
-  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import {
@@ -22,6 +20,7 @@ import {
   getRemainingTime,
   shouldDisplayWarning,
 } from 'components/Bookings/BookingsRecapTable/utils/utils'
+import { format } from 'date-fns-tz'
 import fullErrorIcon from 'icons/full-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

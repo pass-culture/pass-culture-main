@@ -1,13 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { Navigate, useParams } from 'react-router'
-
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { AppDispatch } from 'commons/store/store'
 import { selectCurrentUser } from 'commons/store/user/selectors'
 import { initializeUserThunk } from 'commons/store/user/thunks'
+import { useEffect, useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Navigate, useParams } from 'react-router'
 
 type Params = { token: string }
 

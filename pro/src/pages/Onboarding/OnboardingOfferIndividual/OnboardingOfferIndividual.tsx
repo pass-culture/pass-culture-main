@@ -1,6 +1,3 @@
-import { useSelector } from 'react-redux'
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1/models/OfferStatus'
 import { MainHeading } from 'app/App/layout/Layout'
@@ -11,6 +8,8 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import editFullIcon from 'icons/full-edit.svg'
 import connectStrokeIcon from 'icons/stroke-connect.svg'
 import { CardLink } from 'pages/Onboarding/OnboardingOfferIndividual/CardLink/CardLink'
+import { useSelector } from 'react-redux'
+import useSWR from 'swr'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { OnboardingLayout } from '../components/OnboardingLayout/OnboardingLayout'
