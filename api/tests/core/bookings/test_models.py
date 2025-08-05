@@ -20,7 +20,7 @@ from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository import repository
+from pcapi.utils import repository
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

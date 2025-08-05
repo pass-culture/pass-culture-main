@@ -12,8 +12,8 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.offers.models import Offer
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
-from pcapi.repository import repository
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import repository
 
 
 logger = logging.getLogger(__name__)

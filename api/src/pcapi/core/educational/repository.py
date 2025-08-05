@@ -23,7 +23,7 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
-from pcapi.repository import repository
+from pcapi.utils import repository
 from pcapi.utils.clean_accents import clean_accents
 
 

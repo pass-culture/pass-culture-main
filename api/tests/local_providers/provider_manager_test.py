@@ -12,7 +12,7 @@ from pcapi.local_providers.provider_manager import synchronize_ems_venue_provide
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_providers
 from pcapi.models import db
-from pcapi.repository import repository
+from pcapi.utils import repository
 
 from tests.local_providers.cinema_providers.ems import fixtures as ems_fixtures
 from tests.local_providers.provider_test_utils import TestLocalProvider

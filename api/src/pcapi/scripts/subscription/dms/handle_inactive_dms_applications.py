@@ -14,7 +14,7 @@ from pcapi.connectors.dms import utils as dms_utils
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import utils as users_utils
 from pcapi.models import db
-from pcapi.repository import repository
+from pcapi.utils import repository
 
 
 logger = logging.getLogger(__name__)

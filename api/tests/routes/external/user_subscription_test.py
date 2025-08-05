@@ -32,7 +32,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.api import get_domains_credit
 from pcapi.models import db
-from pcapi.repository import repository
+from pcapi.utils import repository
 from pcapi.validation.routes import ubble as ubble_routes
 
 from tests.core.subscription import test_factories

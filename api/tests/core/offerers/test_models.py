@@ -17,7 +17,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.repository import repository
+from pcapi.utils import repository
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

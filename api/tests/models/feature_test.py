@@ -12,7 +12,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.feature import check_feature_flags_completeness
 from pcapi.models.feature import clean_feature_flags
 from pcapi.models.feature import install_feature_flags
-from pcapi.repository import repository
+from pcapi.utils import repository
 
 
 class TestingFeatureToggle(enum.Enum):

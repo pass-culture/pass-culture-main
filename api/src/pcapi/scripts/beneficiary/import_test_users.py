@@ -28,11 +28,11 @@ from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications.internal.transactional import import_test_user_failure
-from pcapi.repository import repository
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
 from pcapi.utils import crypto
+from pcapi.utils import repository
 from pcapi.utils.email import anonymize_email
 from pcapi.utils.email import sanitize_email
 from pcapi.utils.siren import complete_siren_or_siret

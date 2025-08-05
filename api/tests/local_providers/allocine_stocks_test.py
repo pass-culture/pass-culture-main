@@ -15,7 +15,7 @@ from pcapi.connectors.serialization import allocine_serializers
 from pcapi.core.categories import subcategories
 from pcapi.local_providers import AllocineStocks
 from pcapi.models import db
-from pcapi.repository import repository
+from pcapi.utils import repository
 
 import tests
 from tests.domain import fixtures

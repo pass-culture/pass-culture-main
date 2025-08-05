@@ -44,7 +44,6 @@ from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.feature import DisabledFeatureError
 from pcapi.notifications.sms import testing as sms_testing
-from pcapi.repository import repository
 from pcapi.routes.backoffice.accounts.blueprint import RegistrationStep
 from pcapi.routes.backoffice.accounts.blueprint import RegistrationStepStatus
 from pcapi.routes.backoffice.accounts.blueprint import TunnelType
@@ -67,6 +66,7 @@ from pcapi.routes.backoffice.accounts.blueprint import get_eligibility_history
 from pcapi.routes.backoffice.accounts.blueprint import get_public_account_history
 from pcapi.routes.backoffice.forms import search as search_forms
 from pcapi.utils import email as email_utils
+from pcapi.utils import repository
 
 from .helpers import button as button_helpers
 from .helpers import html_parser

@@ -26,10 +26,10 @@ from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.scheduled_tasks.logger import CronStatus
 from pcapi.scheduled_tasks.logger import build_cron_log_message
+from pcapi.utils import repository
 from pcapi.utils import requests
 
 

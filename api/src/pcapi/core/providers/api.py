@@ -14,8 +14,8 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.repository import repository
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
+from pcapi.utils import repository
 from pcapi.utils.transaction_manager import on_commit
 from pcapi.workers.update_all_offers_active_status_job import update_all_collective_offers_active_status_job
 from pcapi.workers.update_all_offers_active_status_job import update_venue_synchronized_offers_active_status_job

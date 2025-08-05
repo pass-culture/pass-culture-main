@@ -71,10 +71,10 @@ from pcapi.models import offer_mixin
 from pcapi.models import pc_object
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
+from pcapi.utils import repository
 from pcapi.utils.chunks import get_chunks
 from pcapi.utils.custom_keys import get_field
 from pcapi.utils.custom_logic import OPERATIONS

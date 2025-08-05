@@ -22,7 +22,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.constants import ELIGIBILITY_END_AGE
 from pcapi.models import db
-from pcapi.repository import repository
+from pcapi.utils import repository
 
 from tests.scripts.beneficiary.fixture import make_parsed_graphql_application
 from tests.scripts.beneficiary.fixture import make_single_application

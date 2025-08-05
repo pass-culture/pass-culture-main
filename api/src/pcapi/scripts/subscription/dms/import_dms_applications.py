@@ -8,7 +8,7 @@ from pcapi.connectors.dms import utils as dms_utils
 from pcapi.core.subscription.dms import api as dms_api
 from pcapi.core.subscription.dms import repository as dms_repository
 from pcapi.models import db
-from pcapi.repository import repository
+from pcapi.utils import repository
 
 
 logger = logging.getLogger(__name__)
