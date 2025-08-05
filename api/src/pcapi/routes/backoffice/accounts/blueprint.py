@@ -49,7 +49,7 @@ from pcapi.core.users import gdpr_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.email import update as email_update
-from pcapi.domain.password import random_password
+from pcapi.core.users.password_utils import random_password
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus

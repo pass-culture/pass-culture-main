@@ -9,7 +9,7 @@ from pydantic.v1.class_validators import validator
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.history import models as history_models
 from pcapi.core.users import models as users_models
-from pcapi.domain.password import check_password_strength
+from pcapi.core.users.password_utils import check_password_strength
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number as phone_number_utils

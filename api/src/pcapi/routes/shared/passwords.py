@@ -12,8 +12,8 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users.api import update_password_and_external_user
+from pcapi.core.users.password_utils import check_password_strength
 from pcapi.core.users.repository import find_user_by_email
-from pcapi.domain.password import check_password_strength
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api

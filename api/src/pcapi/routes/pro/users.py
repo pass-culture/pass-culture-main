@@ -27,7 +27,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.api import update_user_password
 from pcapi.core.users.email import repository as email_repository
-from pcapi.domain.password import check_password_validity
+from pcapi.core.users.password_utils import check_password_validity
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError

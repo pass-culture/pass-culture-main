@@ -43,8 +43,8 @@ from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users import models
-from pcapi.domain.password import check_password_strength
-from pcapi.domain.password import random_password
+from pcapi.core.users.password_utils import check_password_strength
+from pcapi.core.users.password_utils import random_password
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
