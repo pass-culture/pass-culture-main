@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from pcapi.domain.client_exceptions import ClientError
+from pcapi.core.core_exception import ClientError
 
 
 class OfferIsAlreadyBooked(ClientError):

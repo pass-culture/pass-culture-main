@@ -1,4 +1,12 @@
 # generic core exception, inherited by all business errors raised in core modules
+
+
+class ClientError(Exception):
+    def __init__(self, field: str, error: str):
+        super().__init__()
+        self.errors = {field: [error]}
+
+
 class CoreException(Exception):
     def __init__(self, errors: dict | None = None):
         self.errors = errors or {}
