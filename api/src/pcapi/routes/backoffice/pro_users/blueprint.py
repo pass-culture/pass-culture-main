@@ -24,8 +24,6 @@ from pcapi.core.users.email import update as email_update
 from pcapi.models import beneficiary_import as beneficiary_import_models
 from pcapi.models import beneficiary_import_status as beneficiary_import_status_models
 from pcapi.models import db
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.repository.session_management import on_commit
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
@@ -34,6 +32,8 @@ from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.tasks.batch_tasks import DeleteBatchUserAttributesRequest
 from pcapi.tasks.batch_tasks import delete_user_attributes_task
 from pcapi.utils import email as email_utils
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
+from pcapi.utils.transaction_manager import on_commit
 
 
 pro_user_blueprint = utils.child_backoffice_blueprint(

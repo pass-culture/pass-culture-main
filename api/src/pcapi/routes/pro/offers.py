@@ -26,13 +26,13 @@ from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.utils import first_or_404
 from pcapi.models.utils import get_or_404
-from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import rest
+from pcapi.utils.transaction_manager import atomic
 from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
 
 from . import blueprint

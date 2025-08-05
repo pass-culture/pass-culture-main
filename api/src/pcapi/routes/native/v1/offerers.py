@@ -2,8 +2,8 @@ import sqlalchemy.orm as sa_orm
 from flask import abort
 
 import pcapi.core.offerers.repository as offerers_repository
-from pcapi.repository.session_management import atomic
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
 from .serialization import offerers as serializers

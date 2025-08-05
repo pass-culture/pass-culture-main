@@ -21,10 +21,10 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
 from pcapi.models import db
-from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.users import forms
 from pcapi.utils.requests import ExternalAPIException
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
 logger = logging.getLogger(__name__)

@@ -8,9 +8,9 @@ import pcapi.core.reminders.models as reminders_models
 import pcapi.core.users.models as users_models
 import pcapi.routes.native.v1.serialization.reminder as serialization
 from pcapi.models import db
-from pcapi.repository.session_management import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
 

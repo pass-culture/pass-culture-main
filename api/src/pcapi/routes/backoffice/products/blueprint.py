@@ -29,11 +29,11 @@ from pcapi.core.providers.titelive_book_search import get_ineligibility_reasons
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils import requests
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import forms
 

@@ -16,11 +16,11 @@ from pcapi.models.utils import first_or_404
 from pcapi.models.utils import get_or_404
 from pcapi.models.utils import get_or_404_from_query
 from pcapi.repository import transaction
-from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import stock_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import check_user_has_access_to_offerer
+from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
 

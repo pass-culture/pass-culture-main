@@ -28,12 +28,12 @@ from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
-from pcapi.repository.session_management import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import postal_code as postal_code_utils
+from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
 from .serialization import account as serializers

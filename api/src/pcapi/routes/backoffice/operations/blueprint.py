@@ -22,13 +22,13 @@ from pcapi.core.operations import models as operations_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.filters import format_special_event_response_status_str
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.search_utils import paginate
 from pcapi.utils.clean_accents import clean_accents
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import forms as operations_forms
 

@@ -31,8 +31,8 @@ from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.logging import install_logging
 from pcapi.models import db
 from pcapi.models import install_models
-from pcapi.repository import session_management
 from pcapi.scripts.install import install_commands
+from pcapi.utils import transaction_manager
 from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.sentry import init_sentry_sdk
 
@@ -101,7 +101,7 @@ def setup_atomic() -> None:
     Must be before `setup_sentry_before_request` as it use the user and therefore call the db
     """
     if app.config.get("USE_GLOBAL_ATOMIC", False):
-        session_management._mark_session_as_managed()
+        transaction_manager._mark_session_as_managed()
         db.session.autoflush = False
 
 
@@ -282,7 +282,7 @@ def get_shell_extra_context() -> dict:
 def mark_4xx_as_invalid(response: flask.Response) -> flask.Response:
     if app.config.get("USE_GLOBAL_ATOMIC", False):
         if response.status_code >= 400:
-            session_management.mark_transaction_as_invalid()
+            transaction_manager.mark_transaction_as_invalid()
     return response
 
 
@@ -305,8 +305,8 @@ def teardown_atomic(exc: BaseException | None = None) -> None:
     if app.config.get("USE_GLOBAL_ATOMIC", False):
         try:
             if exc:
-                session_management.mark_transaction_as_invalid()
-            session_management._finalize_managed_session()
+                transaction_manager.mark_transaction_as_invalid()
+            transaction_manager._finalize_managed_session()
             db.session.autoflush = True
         except Exception as exception:
             logger.error(

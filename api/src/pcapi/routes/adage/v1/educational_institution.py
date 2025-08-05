@@ -3,10 +3,10 @@ import logging
 from pcapi.core.educational import repository
 from pcapi.core.educational.serialization import collective_booking as collective_booking_serialize
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository.session_management import atomic
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.serialization.educational_institution import EducationalInstitutionResponse
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
 

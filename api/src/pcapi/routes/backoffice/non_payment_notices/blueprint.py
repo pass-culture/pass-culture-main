@@ -18,13 +18,13 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.models.utils import get_or_404
-from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils import string as string_utils
 from pcapi.utils.clean_accents import clean_accents
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import forms
 

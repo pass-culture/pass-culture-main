@@ -46,8 +46,6 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.repository.session_management import on_commit
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.filters import format_amount
 from pcapi.routes.backoffice.filters import pluralize
@@ -56,6 +54,8 @@ from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import string as string_utils
 from pcapi.utils import urls
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
+from pcapi.utils.transaction_manager import on_commit
 
 from . import forms
 

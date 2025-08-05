@@ -7,7 +7,6 @@ from pcapi.core.users import repository as users_repository
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementCsvByInvoicesModel
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementCsvQueryModel
@@ -16,6 +15,7 @@ from pcapi.routes.serialization.reimbursement_csv_serialize import find_reimburs
 from pcapi.routes.serialization.reimbursement_csv_serialize import generate_reimbursement_details_csv
 from pcapi.routes.serialization.reimbursement_csv_serialize import validate_reimbursement_period
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
 

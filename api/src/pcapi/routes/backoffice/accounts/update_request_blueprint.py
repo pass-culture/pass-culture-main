@@ -36,7 +36,6 @@ from pcapi.core.users import ds as users_ds
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
 from pcapi.models import db
-from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
@@ -47,6 +46,7 @@ from pcapi.utils import email as email_utils
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import string as string_utils
 from pcapi.utils.clean_accents import clean_accents
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import forms as account_forms
 

@@ -19,7 +19,6 @@ from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.models import api_errors
 from pcapi.models import db
-from pcapi.repository.session_management import atomic
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public import utils as public_utils
@@ -30,6 +29,7 @@ from pcapi.routes.public.services import authorization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.custom_keys import get_field
+from pcapi.utils.transaction_manager import atomic
 from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.validation.routes.users_authentifications import provider_api_key_required
 

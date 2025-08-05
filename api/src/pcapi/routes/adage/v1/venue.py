@@ -5,10 +5,10 @@ from sqlalchemy.orm import exc as orm_exc
 from pcapi.core.educational.api import venue as educational_api_venue
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository.session_management import atomic
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.serialization import venue as venue_serialization
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
 

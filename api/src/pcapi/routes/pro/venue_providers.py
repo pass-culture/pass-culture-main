@@ -14,12 +14,12 @@ from pcapi.core.providers.constants import CINEMA_PROVIDER_NAMES
 from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import on_commit
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import venue_provider_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import rest
+from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import on_commit
 from pcapi.workers.venue_provider_job import venue_provider_job
 
 from . import blueprint

@@ -23,7 +23,6 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
-from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.bookings import forms as booking_forms
@@ -31,6 +30,7 @@ from pcapi.routes.backoffice.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.utils import urls
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
 collective_bookings_blueprint = utils.child_backoffice_blueprint(

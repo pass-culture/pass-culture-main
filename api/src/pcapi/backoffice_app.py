@@ -13,8 +13,8 @@ from sentry_sdk import set_tag
 from pcapi import settings
 from pcapi.flask_app import app
 from pcapi.flask_app import setup_metrics
-from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import static_utils
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True

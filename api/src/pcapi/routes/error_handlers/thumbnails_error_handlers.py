@@ -4,7 +4,7 @@ from flask import Response
 from flask import current_app as app
 
 from pcapi.core.offers import exceptions as offers_exceptions
-from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
 logger = logging.getLogger(__name__)

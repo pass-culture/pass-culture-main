@@ -45,8 +45,8 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
-from pcapi.repository import session_management
 from pcapi.routes.serialization import users as users_serialization
+from pcapi.utils import transaction_manager
 from pcapi.utils.date import get_naive_utc_now
 from pcapi.utils.pdf import generate_pdf_from_html
 from pcapi.utils.requests import ExternalAPIException
@@ -169,7 +169,7 @@ def anonymize_user(user: models.User, *, author: models.User | None = None) -> b
     return True
 
 
-@session_management.atomic()
+@transaction_manager.atomic()
 def anonymize_non_pro_non_beneficiary_users() -> None:
     """
     Anonymize user accounts that have never been beneficiary (no deposits), are not pro (no pro
@@ -198,9 +198,9 @@ def anonymize_non_pro_non_beneficiary_users() -> None:
         )
     )
     for user in users:
-        with session_management.atomic():
+        with transaction_manager.atomic():
             if not anonymize_user(user):
-                session_management.mark_transaction_as_invalid()
+                transaction_manager.mark_transaction_as_invalid()
 
 
 def is_beneficiary_anonymizable(user: models.User) -> bool:
@@ -247,7 +247,7 @@ def has_user_pending_anonymization(user_id: int) -> bool:
     ).scalar()
 
 
-@session_management.atomic()
+@transaction_manager.atomic()
 def anonymize_beneficiary_users() -> None:
     """
     Anonymize user accounts that have been beneficiaries which have not connected for at least 3
@@ -291,9 +291,9 @@ def anonymize_beneficiary_users() -> None:
         )
     )
     for user in itertools.chain(beneficiaries, beneficiaries_tagged_to_anonymize):
-        with session_management.atomic():
+        with transaction_manager.atomic():
             if not anonymize_user(user):
-                session_management.mark_transaction_as_invalid()
+                transaction_manager.mark_transaction_as_invalid()
 
 
 def _get_anonymize_pro_query(time_clause: sa.sql.elements.BooleanClauseList) -> typing.Any:
@@ -337,7 +337,7 @@ def _get_anonymize_pro_query(time_clause: sa.sql.elements.BooleanClauseList) -> 
     )
 
 
-@session_management.atomic()
+@transaction_manager.atomic()
 def notify_pro_users_before_anonymization() -> None:
     """
     Send an email one month before
@@ -358,7 +358,7 @@ def notify_pro_users_before_anonymization() -> None:
         transactional_mails.send_pre_anonymization_email_to_pro(user)
 
 
-@session_management.atomic()
+@transaction_manager.atomic()
 def anonymize_pro_users() -> None:
     """
     Anonymize pro accounts
@@ -376,10 +376,10 @@ def anonymize_pro_users() -> None:
     )
 
     for user in users:
-        with session_management.atomic():
+        with transaction_manager.atomic():
             anonymized = anonymize_user(user)
             if not anonymized:
-                session_management.mark_transaction_as_invalid()
+                transaction_manager.mark_transaction_as_invalid()
 
         if anonymized:
             try:
@@ -388,7 +388,7 @@ def anonymize_pro_users() -> None:
                 pass
 
 
-@session_management.atomic()
+@transaction_manager.atomic()
 def anonymize_internal_users() -> None:
     """Anonymize user who use to work for the company
 

@@ -1,9 +1,9 @@
 from pcapi.models import db
 from pcapi.models.feature import Feature
-from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import public_api
 from pcapi.routes.serialization import features_serialize
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
 

@@ -17,10 +17,10 @@ from pcapi.core.users import repository as users_repo
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.auth.forms.forms import SigninForm
 from pcapi.utils import requests
+from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import blueprint
 from . import utils

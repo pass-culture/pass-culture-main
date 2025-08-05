@@ -5,10 +5,10 @@ from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import sirene as sirene_serializers
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
 

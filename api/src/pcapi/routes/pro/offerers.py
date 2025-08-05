@@ -23,13 +23,13 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.utils import get_or_404
-from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import headline_offer_serialize
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import requests
 from pcapi.utils.rest import check_user_has_access_to_offerer
+from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
 

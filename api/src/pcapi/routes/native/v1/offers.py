@@ -17,9 +17,9 @@ from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.utils import first_or_404
 from pcapi.models.utils import get_or_404
-from pcapi.repository.session_management import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 from pcapi.workers import push_notification_job
 
 from .. import blueprint

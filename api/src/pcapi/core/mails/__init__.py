@@ -3,9 +3,9 @@ from typing import Iterable
 
 from pcapi import settings
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository.session_management import on_commit
 from pcapi.tasks.serialization import sendinblue_tasks
 from pcapi.utils.module_loading import import_string
+from pcapi.utils.transaction_manager import on_commit
 
 from . import models
 from .backends.base import BaseBackend

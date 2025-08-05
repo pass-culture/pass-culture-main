@@ -5,11 +5,11 @@ from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import Feature
-from pcapi.repository.session_management import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.apis import public_api
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 from . import serializers
 

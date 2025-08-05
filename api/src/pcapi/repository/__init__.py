@@ -3,14 +3,14 @@ from contextlib import contextmanager
 
 from pcapi.models import db
 
-from . import session_management
+from ..utils import transaction_manager
 
 
 # DEPRECATED in favor of @atomic() because @transaction() is not reentrant
 @contextmanager
 def transaction() -> typing.Iterator[None]:
-    if session_management.is_managed_transaction():
-        with session_management.atomic():
+    if transaction_manager.is_managed_transaction():
+        with transaction_manager.atomic():
             yield
     else:
         try:

@@ -5,9 +5,9 @@ import pcapi.core.users.models as users_models
 import pcapi.routes.native.v1.serialization.reaction as serialization
 from pcapi.core.reactions import exceptions as reactions_exceptions
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository.session_management import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
 

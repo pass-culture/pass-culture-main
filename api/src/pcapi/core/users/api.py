@@ -49,10 +49,10 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
-from pcapi.repository import session_management
 from pcapi.repository import transaction
 from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils import phone_number as phone_number_utils
+from pcapi.utils import transaction_manager
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.requests import ExternalAPIException
 
@@ -545,7 +545,7 @@ def unsuspend_account(
     history_api.add_action(history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user, comment=comment)
 
     db.session.flush()
-    if not session_management.is_managed_transaction():
+    if not transaction_manager.is_managed_transaction():
         db.session.commit()
 
     logger.info(

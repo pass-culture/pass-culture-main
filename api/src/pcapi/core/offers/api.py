@@ -73,16 +73,16 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
 from pcapi.repository import transaction
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import is_managed_transaction
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.repository.session_management import on_commit
 from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
 from pcapi.utils.chunks import get_chunks
 from pcapi.utils.custom_keys import get_field
 from pcapi.utils.custom_logic import OPERATIONS
 from pcapi.utils.date import get_naive_utc_now
+from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import is_managed_transaction
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
+from pcapi.utils.transaction_manager import on_commit
 from pcapi.workers import push_notification_job
 
 from . import exceptions
