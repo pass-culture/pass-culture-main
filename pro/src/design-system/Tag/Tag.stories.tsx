@@ -33,6 +33,7 @@ export const Warning: Story = {
   },
 }
 
+// biome-ignore lint/suspicious/noShadowRestrictedNames: TODO (igabriele, 2025-08-05): Very minor but easy to fix.
 export const Error: Story = {
   args: {
     label: 'Erreur',

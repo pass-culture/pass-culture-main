@@ -69,7 +69,9 @@ export const getDataFromAddress = async (
   const url = `${API_ADRESSE_BASE_URL}/search/?limit=${limit}&q=${address}`
   const response = await handleApiError(await fetch(url), 'GET', url)
 
-  if (!onlyTypes) return formatAdressApiResponse(response)
+  if (!onlyTypes) {
+    return formatAdressApiResponse(response)
+  }
 
   // Restrict results by API "types" if specifically asked
   const filteredResponse = {

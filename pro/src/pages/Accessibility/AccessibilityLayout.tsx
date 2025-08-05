@@ -16,6 +16,7 @@ export const AccessibilityLayout = ({
 }: AccessibilityLayoutProps) => {
   let isUserConnected = false
   try {
+    // biome-ignore lint/correctness/useHookAtTopLevel: Will be fixed by https://github.com/pass-culture/pass-culture-main/pull/18427.
     const user = useCurrentUser()
     isUserConnected = Boolean(user)
   } catch {

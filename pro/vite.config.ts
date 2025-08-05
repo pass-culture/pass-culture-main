@@ -8,7 +8,7 @@ import { createHtmlPlugin } from 'vite-plugin-html'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { configDefaults, coverageConfigDefaults } from 'vitest/config'
 
-// ts-unused-exports:disable-next-line
+// biome-ignore lint/style/noDefaultExport: Only way to export a Vite config.
 export default defineConfig(({ mode }) => {
   return {
     root: './src',

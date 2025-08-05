@@ -184,7 +184,7 @@ export const AdageMultiselect = ({
           // we cannot pass down the ref to basecheckbox as it is a function component
 
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { ref, ...itemProps } = getItemProps({ item, index })
+          const { ref: _ref, ...itemProps } = getItemProps({ item, index })
           const liValueKey = Array.isArray(item.value)
             ? item.value.join('_')
             : item.value
