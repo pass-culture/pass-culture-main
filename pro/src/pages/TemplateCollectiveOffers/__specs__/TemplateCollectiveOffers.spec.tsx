@@ -1,10 +1,3 @@
-import {
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-
 import { api } from 'apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
@@ -12,6 +5,12 @@ import {
   CollectiveOffersStockResponseModel,
   CollectiveOfferType,
 } from 'apiClient/v1'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import {
   ALL_VENUES_OPTION,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,

@@ -50,11 +50,15 @@ describe('Markdown', () => {
     expect(emComponent.container.innerHTML).toContain(
       '<span class="markdown" data-testid="markdown-content">texte en gras</span>'
     )
-    const aComponent = renderMarkdown('texte avec <a href="https://www.example.com">un lien</a>')
+    const aComponent = renderMarkdown(
+      'texte avec <a href="https://www.example.com">un lien</a>'
+    )
     expect(aComponent.container.innerHTML).toContain(
       '<span class="markdown" data-testid="markdown-content">texte avec un lien</span>'
     )
-    const injectScriptComponent = renderMarkdown('https://"><script>hello("coucou")</script><a ')
+    const injectScriptComponent = renderMarkdown(
+      'https://"><script>hello("coucou")</script><a '
+    )
     expect(injectScriptComponent.container.innerHTML).toContain(
       '<span class="markdown" data-testid="markdown-content">https://"&gt;</span>'
     )

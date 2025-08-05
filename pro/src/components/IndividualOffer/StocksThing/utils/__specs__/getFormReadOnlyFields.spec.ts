@@ -62,7 +62,7 @@ describe('StockThingForm::utils::getFormReadOnlyFields', () => {
   it('should not disabled field for allociné synchronized offer', () => {
     offer.lastProvider = { name: 'allociné' }
     currentStock = {
-      activationCodes: new Array<string>(),
+      activationCodes: [] as string[],
     } as StockThingFormValues
     const readOnlyFields = getFormReadOnlyFields(
       offer,

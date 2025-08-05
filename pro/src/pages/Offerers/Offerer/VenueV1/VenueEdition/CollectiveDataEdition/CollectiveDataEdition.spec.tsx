@@ -1,14 +1,13 @@
+import { api } from 'apiClient/api'
+import { ApiError } from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-
-import { api } from 'apiClient/api'
-import { ApiError } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import {
   domtomOptions,
@@ -21,8 +20,8 @@ import {
   defaultGetVenue,
 } from 'commons/utils/factories/collectiveApiFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 
 import {

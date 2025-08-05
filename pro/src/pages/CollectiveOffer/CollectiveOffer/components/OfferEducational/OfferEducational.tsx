@@ -1,8 +1,3 @@
-import { yupResolver } from '@hookform/resolvers/yup'
-import { FormProvider, useForm } from 'react-hook-form'
-import { useLocation, useNavigate } from 'react-router'
-import { useSWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import {
@@ -11,6 +6,7 @@ import {
   GetEducationalOffererResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
+import { yupResolver } from '@hookform/resolvers/yup'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
@@ -38,6 +34,9 @@ import {
   createPatchOfferPayload,
   createPatchOfferTemplatePayload,
 } from 'pages/CollectiveOffer/CollectiveOffer/CollectiveOfferEdition/utils/createPatchOfferPayload'
+import { FormProvider, useForm } from 'react-hook-form'
+import { useLocation, useNavigate } from 'react-router'
+import { useSWRConfig } from 'swr'
 
 import styles from './OfferEducational.module.scss'
 import { OfferEducationalForm } from './OfferEducationalForm/OfferEducationalForm'

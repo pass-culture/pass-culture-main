@@ -1,4 +1,3 @@
-
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
@@ -8,7 +7,7 @@ import { PriceCategoriesFormValues } from './types'
 
 export const submitToApi = async (
   values: PriceCategoriesFormValues,
-  offer: GetIndividualOfferResponseModel,
+  offer: GetIndividualOfferResponseModel
 ) => {
   try {
     await api.patchOffer(offer.id, { isDuo: values.isDuo })

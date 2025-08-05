@@ -1,6 +1,3 @@
-import type { ChangeEvent } from 'react'
-import { useFormContext } from 'react-hook-form'
-
 import {
   CategoryResponseModel,
   SubcategoryResponseModel,
@@ -20,6 +17,8 @@ import fullMoreIcon from 'icons/full-more.svg'
 import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 import { DetailsFormValues } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import { isSubCategoryCD } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
+import type { ChangeEvent } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'

@@ -3,8 +3,8 @@ import {
   GetOfferStockResponseModel,
 } from 'apiClient/v1'
 import {
-  OFFER_STATUS_REJECTED,
   OFFER_STATUS_PENDING,
+  OFFER_STATUS_REJECTED,
 } from 'commons/core/Offers/constants'
 import { isAllocineProvider } from 'commons/core/Providers/utils/utils'
 

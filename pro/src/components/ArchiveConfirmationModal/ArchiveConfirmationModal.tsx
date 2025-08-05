@@ -1,5 +1,3 @@
-import { useLocation } from 'react-router'
-
 import {
   CollectiveOfferResponseModel,
   GetCollectiveOfferResponseModel,
@@ -9,6 +7,7 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import strokeThingIcon from 'icons/stroke-thing.svg'
+import { useLocation } from 'react-router'
 
 interface OfferEducationalModalProps {
   onDismiss(): void

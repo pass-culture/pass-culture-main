@@ -1,8 +1,8 @@
-import { fileURLToPath, URL } from 'url'
+import { fontPreloads } from '@pass-culture/design-system/lib/global/font-preloads'
 
 import react from '@vitejs/plugin-react'
-import { fontPreloads } from '@pass-culture/design-system/lib/global/font-preloads'
 import { visualizer } from 'rollup-plugin-visualizer'
+import { fileURLToPath, URL } from 'url'
 import { defineConfig, PluginOption } from 'vite'
 import { createHtmlPlugin } from 'vite-plugin-html'
 import tsconfigPaths from 'vite-tsconfig-paths'

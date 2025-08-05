@@ -1,20 +1,19 @@
-import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router'
-
 import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import { Audience } from 'commons/core/shared/types'
+import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router'
 
 import { isCollectiveBooking } from './BookingsTable/Cells/BookingOfferCell'
 import { CollectiveBookingsTable } from './BookingsTable/CollectiveBookingsTable'
 import { IndividualBookingsTable } from './BookingsTable/IndividualBookingsTable'
 import {
   ALL_BOOKING_STATUS,
+  bookingIdOmnisearchFilter,
   DEFAULT_OMNISEARCH_CRITERIA,
   EMPTY_FILTER_VALUE,
-  bookingIdOmnisearchFilter,
 } from './Filters/constants'
 import { FilterByOmniSearch } from './Filters/FilterByOmniSearch'
 import styles from './Filters/Filters.module.scss'

@@ -1,11 +1,10 @@
-import { useRef } from 'react'
-import { useFieldArray, useFormContext } from 'react-hook-form'
-
 import { VenueTypeResponseModel } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { buildVenueTypesOptions } from 'pages/VenueEdition/buildVenueTypesOptions'
+import { useRef } from 'react'
+import { useFieldArray, useFormContext } from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'

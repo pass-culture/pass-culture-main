@@ -1,9 +1,9 @@
 import {
+  CollectiveOfferAllowedAction,
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-  CollectiveOfferAllowedAction,
-  CollectiveOfferTemplateAllowedAction,
-  CollectiveOfferResponseModel,
 } from 'apiClient/v1'
 import {
   isCollectiveOffer,

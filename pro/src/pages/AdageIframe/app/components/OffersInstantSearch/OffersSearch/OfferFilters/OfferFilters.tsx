@@ -1,7 +1,3 @@
-import { useState } from 'react'
-import { FormProvider, useFormContext } from 'react-hook-form'
-import useSWR from 'swr'
-
 import {
   AdageFrontRoles,
   CollectiveLocationType,
@@ -19,6 +15,9 @@ import strokeNearIcon from 'icons/stroke-near.svg'
 import { departmentOptions } from 'pages/AdageIframe/app/constants/departmentOptions'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { Option } from 'pages/AdageIframe/app/types'
+import { useState } from 'react'
+import { FormProvider, useFormContext } from 'react-hook-form'
+import useSWR from 'swr'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import {

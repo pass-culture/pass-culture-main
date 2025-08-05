@@ -1,7 +1,7 @@
 import { OfferCollectiveImage } from 'commons/core/Offers/types'
 import {
-  UploadImageValues,
   UploaderModeEnum,
+  UploadImageValues,
 } from 'commons/utils/imageUploadTypes'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ImageDragAndDropUploader } from 'components/ImageDragAndDropUploader/ImageDragAndDropUploader'

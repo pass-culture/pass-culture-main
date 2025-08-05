@@ -1,7 +1,6 @@
-import { addDays, addYears, format, subMinutes } from 'date-fns'
-
 import { OfferEducationalStockFormValues } from 'commons/core/OfferEducational/types'
 import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHelpers'
+import { addDays, addYears, format, subMinutes } from 'date-fns'
 
 import { generateValidationSchema } from '../validationSchema'
 
@@ -118,33 +117,41 @@ describe('validationSchema', () => {
       },
       expectedErrors: [],
       isReadOnly: true,
-      },
+    },
     {
-  description: 'bookingLimitDatetime: la règle ne s’applique pas si preventPriceIncrease=true',
-  formValues: {
-    ...values,
-    bookingLimitDatetime: '2000-01-01',
-  },
-  expectedErrors: [],
-  isReadOnly: false,
-  preventPriceIncrease: true,
-},
-{
-  description: 'bookingLimitDatetime: la règle s’applique si preventPriceIncrease=false',
-  formValues: {
-    ...values,
-    bookingLimitDatetime: '2000-01-01',
-  },
-  expectedErrors: [
-    'La date limite de réservation doit être égale ou postérieure à la date actuelle',
-  ],
-  isReadOnly: false,
-  preventPriceIncrease: false,
-},
+      description:
+        'bookingLimitDatetime: la règle ne s’applique pas si preventPriceIncrease=true',
+      formValues: {
+        ...values,
+        bookingLimitDatetime: '2000-01-01',
+      },
+      expectedErrors: [],
+      isReadOnly: false,
+      preventPriceIncrease: true,
+    },
+    {
+      description:
+        'bookingLimitDatetime: la règle s’applique si preventPriceIncrease=false',
+      formValues: {
+        ...values,
+        bookingLimitDatetime: '2000-01-01',
+      },
+      expectedErrors: [
+        'La date limite de réservation doit être égale ou postérieure à la date actuelle',
+      ],
+      isReadOnly: false,
+      preventPriceIncrease: false,
+    },
   ]
 
   cases.forEach(
-    ({ description, formValues, expectedErrors, isReadOnly = false, preventPriceIncrease = false }) => {
+    ({
+      description,
+      formValues,
+      expectedErrors,
+      isReadOnly = false,
+      preventPriceIncrease = false,
+    }) => {
       it(`should validate the form for case: ${description}`, async () => {
         const errors = await getYupValidationSchemaErrors(
           generateValidationSchema(preventPriceIncrease, 0, isReadOnly),

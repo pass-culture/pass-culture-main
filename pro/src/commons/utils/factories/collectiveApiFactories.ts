@@ -1,5 +1,4 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
-import { add, addDays } from 'date-fns'
 
 import { EacFormat } from 'apiClient/adage'
 import {
@@ -7,30 +6,31 @@ import {
   CollectiveBookingByIdResponseModel,
   CollectiveBookingCollectiveStockResponseModel,
   CollectiveBookingResponseModel,
+  CollectiveBookingStatus,
+  CollectiveLocationType,
+  CollectiveOfferAllowedAction,
+  CollectiveOfferDisplayedStatus,
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateAllowedAction,
   DMSApplicationForEAC,
   DMSApplicationstatus,
   EducationalInstitutionResponseModel,
   EducationalRedactorResponseModel,
+  GetCollectiveOfferBookingResponseModel,
   GetCollectiveOfferCollectiveStockResponseModel,
   GetCollectiveOfferManagingOffererResponseModel,
   GetCollectiveOfferRequestResponseModel,
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
   GetCollectiveOfferVenueResponseModel,
   GetVenueResponseModel,
+  ListOffersVenueResponseModel,
   OfferAddressType,
   StudentLevels,
   VenueTypeCode,
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
-  CollectiveOfferResponseModel,
-  ListOffersVenueResponseModel,
-  CollectiveOfferDisplayedStatus,
-  CollectiveLocationType,
-  CollectiveOfferAllowedAction,
-  CollectiveOfferTemplateAllowedAction,
-  GetCollectiveOfferBookingResponseModel,
-  CollectiveBookingStatus,
 } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
+import { add, addDays } from 'date-fns'
 
 let offerId = 1
 let stockId = 1

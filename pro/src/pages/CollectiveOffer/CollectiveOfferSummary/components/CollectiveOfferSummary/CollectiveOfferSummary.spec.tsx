@@ -1,20 +1,19 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-import { expect } from 'vitest'
-
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
   EacFormat,
   OfferContactFormEnum,
 } from 'apiClient/v1'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { expect } from 'vitest'
 
 import {
   CollectiveOfferSummary,

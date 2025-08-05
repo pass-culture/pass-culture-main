@@ -1,12 +1,11 @@
-import { format } from 'date-fns'
-
 import {
+  GetCollectiveOfferRequestResponseModel,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-  GetCollectiveOfferRequestResponseModel,
 } from 'apiClient/v1'
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
+import { format } from 'date-fns'
 
 import { DEFAULT_EAC_STOCK_FORM_VALUES } from '../constants'
 import { OfferEducationalStockFormValues } from '../types'

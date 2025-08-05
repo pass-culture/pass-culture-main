@@ -1,8 +1,7 @@
 import { screen } from '@testing-library/react'
-import { Routes, Route } from 'react-router'
-
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { IndividualOfferWizard } from 'pages/IndividualOfferWizard/IndividualOfferWizard'
+import { Route, Routes } from 'react-router'
 
 const renderOffer = (initialRoute = '/') => {
   return renderWithProviders(

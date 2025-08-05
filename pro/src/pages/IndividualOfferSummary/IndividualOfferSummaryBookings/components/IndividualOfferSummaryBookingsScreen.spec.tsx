@@ -1,13 +1,12 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-
 import { api } from 'apiClient/api'
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   bookingRecapFactory,
-  getIndividualOfferFactory,
   bookingRecapStockFactory,
+  getIndividualOfferFactory,
   individualOfferContextValuesFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'

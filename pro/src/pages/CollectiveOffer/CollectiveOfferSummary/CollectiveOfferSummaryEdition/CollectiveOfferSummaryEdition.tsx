@@ -1,6 +1,6 @@
 import {
-  GetCollectiveOfferTemplateResponseModel,
   GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { isCollectiveOffer, Mode } from 'commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'

@@ -1,10 +1,8 @@
-import { screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router'
-
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
 import { ApiError } from 'apiClient/v1'
+import { screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { getOffererNameFactory } from 'commons/utils/factories/individualApiFactories'
@@ -14,6 +12,7 @@ import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { Route, Routes } from 'react-router'
 
 import { SignupContainer } from '../SignupContainer'
 

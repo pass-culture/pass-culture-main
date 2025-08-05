@@ -1,12 +1,11 @@
 import { screen } from '@testing-library/react'
-import { describe } from 'vitest'
-
 import {
   defaultAdageUser,
   defaultCollectiveTemplateOffer,
 } from 'commons/utils/factories/adageFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { describe } from 'vitest'
 
 import {
   AdageOfferPartnerPanel,

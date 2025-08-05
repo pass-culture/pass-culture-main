@@ -1,6 +1,3 @@
-import { useState } from 'react'
-import useSWR, { mutate } from 'swr'
-
 import { api } from 'apiClient/api'
 import {
   EventStockUpdateBodyModel,
@@ -16,6 +13,8 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
 import { pluralize } from 'commons/utils/pluralize'
 import { convertTimeFromVenueTimezoneToUtc } from 'commons/utils/timezone'
+import { useState } from 'react'
+import useSWR, { mutate } from 'swr'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 
 import { StocksTableFilters, StocksTableSort } from '../form/types'

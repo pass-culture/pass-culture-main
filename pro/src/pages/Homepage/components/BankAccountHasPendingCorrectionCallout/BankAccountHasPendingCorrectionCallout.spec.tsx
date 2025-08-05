@@ -7,8 +7,8 @@ import { defaultGetOffererResponseModel } from 'commons/utils/factories/individu
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
-  BankAccountHasPendingCorrectionCalloutProps,
   BankAccountHasPendingCorrectionCallout,
+  BankAccountHasPendingCorrectionCalloutProps,
 } from './BankAccountHasPendingCorrectionCallout'
 
 const mockLogEvent = vi.fn()

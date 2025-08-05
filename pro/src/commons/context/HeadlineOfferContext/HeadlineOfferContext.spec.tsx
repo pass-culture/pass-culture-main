@@ -1,7 +1,6 @@
+import { api } from 'apiClient/api'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-
-import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import * as useNotification from 'commons/hooks/useNotification'

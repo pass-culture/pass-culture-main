@@ -1,12 +1,11 @@
-import { screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-
 import { api } from 'apiClient/api'
 import {
   CollectiveLocationType,
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
 } from 'apiClient/v1'
+import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
@@ -22,8 +21,8 @@ import {
   sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 
 import {

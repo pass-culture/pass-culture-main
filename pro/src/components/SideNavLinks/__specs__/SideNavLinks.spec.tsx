@@ -1,9 +1,6 @@
+import { api } from 'apiClient/api'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { beforeEach, describe, expect } from 'vitest'
-import { axe } from 'vitest-axe'
-
-import { api } from 'apiClient/api'
 import * as useMediaQuery from 'commons/hooks/useMediaQuery'
 import {
   defaultGetOffererResponseModel,
@@ -14,10 +11,12 @@ import {
   sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 import { SAVED_PARTNER_PAGE_VENUE_ID_KEYS } from 'commons/utils/savedPartnerPageVenueId'
+import { beforeEach, describe, expect } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { SideNavLinks } from '../SideNavLinks'
 

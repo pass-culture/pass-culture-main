@@ -1,6 +1,3 @@
-import { useNavigate } from 'react-router'
-import { useSWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
@@ -20,6 +17,8 @@ import {
 import { useNotification } from 'commons/hooks/useNotification'
 import { isCollectiveStockEditable } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
+import { useNavigate } from 'react-router'
+import { useSWRConfig } from 'swr'
 
 import {
   MandatoryCollectiveOfferFromParamsProps,
@@ -79,14 +78,14 @@ export const CollectiveOfferStockEdition = ({
   const stockCanBeEdited = isCollectiveStockEditable(offer)
 
   return (
-    <CollectiveOfferLayout offer={offer} subTitle={offer.name} isTemplate={isTemplate}>
+    <CollectiveOfferLayout
+      offer={offer}
+      subTitle={offer.name}
+      isTemplate={isTemplate}
+    >
       <OfferEducationalStock
         initialValues={initialValues}
-        mode={
-          stockCanBeEdited
-            ? Mode.EDITION
-            : Mode.READ_ONLY
-        }
+        mode={stockCanBeEdited ? Mode.EDITION : Mode.READ_ONLY}
         offer={offer}
         onSubmit={handleSubmitStock}
       />

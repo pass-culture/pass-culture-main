@@ -1,23 +1,22 @@
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import * as router from 'react-router'
-
 import {
   AuthenticatedResponse,
   CollectiveLocationType,
   OfferAddressType,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
 } from 'commons/utils/factories/adageFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import * as router from 'react-router'
 
 import { CardComponentProps, OfferCardComponent } from '../OfferCard'
 

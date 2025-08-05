@@ -35,7 +35,8 @@ describe('Edit digital individual offers', () => {
       logInAndGoToPage(login1, '/offres')
 
       cy.stepLog({ message: 'I open the first offer in the list' })
-      cy.get('tbody').findByRole('row')
+      cy.get('tbody')
+        .findByRole('row')
         .first()
         .within(() => {
           cy.findByRole('button', { name: 'Voir les actions' }).click()
@@ -68,7 +69,8 @@ describe('Edit digital individual offers', () => {
       cy.contains('Offres individuelles')
 
       cy.stepLog({ message: 'I open the first offer in the list' })
-      cy.get('tbody').findByRole('row')
+      cy.get('tbody')
+        .findByRole('row')
         .first()
         .within(() => {
           cy.findByRole('button', { name: 'Voir les actions' }).click()

@@ -1,19 +1,18 @@
-import { screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { generatePath, Route, Routes } from 'react-router'
-
 import { api } from 'apiClient/api'
 import {
   GetIndividualOfferResponseModel,
   GetIndividualOfferWithAddressResponseModel,
 } from 'apiClient/v1'
+import { screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import {
-  OFFER_WIZARD_MODE,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { generatePath, Route, Routes } from 'react-router'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 
 import {

@@ -1,6 +1,3 @@
-import React, { useState } from 'react'
-import { useFormContext } from 'react-hook-form'
-
 import { VenueListItemResponseModel } from 'apiClient/v1'
 import { AddressFormValues } from 'commons/core/shared/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -8,6 +5,8 @@ import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGrou
 import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
+import React, { useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { computeAddressDisplayName } from 'repository/venuesService'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'

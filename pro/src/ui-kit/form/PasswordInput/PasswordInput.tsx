@@ -1,8 +1,7 @@
 import cn from 'classnames'
-import React, { ForwardedRef, useState } from 'react'
-
 import strokeHideIcon from 'icons/stroke-hide.svg'
 import strokeShowIcon from 'icons/stroke-show.svg'
+import React, { ForwardedRef, useState } from 'react'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

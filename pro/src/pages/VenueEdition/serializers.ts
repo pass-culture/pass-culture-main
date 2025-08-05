@@ -1,7 +1,7 @@
 import { EditVenueBodyModel } from 'apiClient/v1'
 
 import { DEFAULT_INTITIAL_OPENING_HOURS } from './constants'
-import { VenueEditionFormValues, Day } from './types'
+import { Day, VenueEditionFormValues } from './types'
 
 export const serializeEditVenueBodyModel = (
   formValues: VenueEditionFormValues,
@@ -39,7 +39,7 @@ function serializeOpeningHours(
   formValues: VenueEditionFormValues,
   alreadyHasOpeningHours: boolean
 ): EditVenueBodyModel['openingHours'] {
-  const returnValue: {[day: string]: Array<Array<string>>} = {}
+  const returnValue: { [day: string]: Array<Array<string>> } = {}
   const days: Day[] = [
     'monday',
     'tuesday',

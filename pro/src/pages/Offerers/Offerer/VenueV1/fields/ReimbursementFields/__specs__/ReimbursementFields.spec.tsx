@@ -1,15 +1,14 @@
-import { screen, waitFor } from '@testing-library/react'
-import { FormProvider, useForm } from 'react-hook-form'
-
 import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
+import { screen, waitFor } from '@testing-library/react'
 import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { FormProvider, useForm } from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
 
 import {

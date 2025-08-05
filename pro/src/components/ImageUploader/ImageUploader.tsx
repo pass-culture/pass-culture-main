@@ -1,8 +1,8 @@
 import cn from 'classnames'
 
 import {
-  UploadImageValues,
   UploaderModeEnum,
+  UploadImageValues,
 } from 'commons/utils/imageUploadTypes'
 import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import { ImagePlaceholder } from 'components/SafeImage/ImagePlaceholder/ImagePlaceholder'

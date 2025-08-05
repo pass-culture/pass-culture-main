@@ -1,16 +1,15 @@
+import { api } from 'apiClient/api'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { FormProvider, useForm } from 'react-hook-form'
-import { expect, vi } from 'vitest'
-
-import { api } from 'apiClient/api'
 import * as siretApiValidate from 'commons/core/Venue/siretApiValidate'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { FormProvider, useForm } from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
+import { expect, vi } from 'vitest'
 
 import {
   SiretOrCommentFields,

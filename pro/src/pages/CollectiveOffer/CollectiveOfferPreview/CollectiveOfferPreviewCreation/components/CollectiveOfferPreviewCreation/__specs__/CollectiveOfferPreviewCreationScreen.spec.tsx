@@ -1,9 +1,7 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { sub } from 'date-fns'
-
 import { api } from 'apiClient/api'
 import { OfferContactFormEnum } from 'apiClient/v1'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import * as useNotification from 'commons/hooks/useNotification'
 import {
   defaultGetVenue,
@@ -16,6 +14,7 @@ import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { sub } from 'date-fns'
 
 import {
   CollectiveOfferPreviewCreationScreen,

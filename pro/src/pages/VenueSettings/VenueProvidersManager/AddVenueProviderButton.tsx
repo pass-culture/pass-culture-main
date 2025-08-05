@@ -1,6 +1,3 @@
-import { useRef, useState } from 'react'
-import useSWR, { useSWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel, ProviderResponse } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -11,6 +8,8 @@ import {
 import { SynchronizationEvents } from 'commons/core/FirebaseEvents/constants'
 import { sortByLabel } from 'commons/utils/strings'
 import fullMoreIcon from 'icons/full-more.svg'
+import { useRef, useState } from 'react'
+import useSWR, { useSWRConfig } from 'swr'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SelectInput } from 'ui-kit/form/shared/BaseSelectInput/SelectInput'

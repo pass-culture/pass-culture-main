@@ -1,6 +1,6 @@
 import {
-  OFFER_WIZARD_MODE,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 
 import { getIndividualOfferUrl } from '../getIndividualOfferUrl'

@@ -1,10 +1,9 @@
 import cn from 'classnames'
-import { useState } from 'react'
-import { useFormContext } from 'react-hook-form'
-
 import { mapDayToFrench } from 'commons/utils/date'
 import fullLessIcon from 'icons/full-less.svg'
 import fullMoreIcon from 'icons/full-more.svg'
+import { useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'

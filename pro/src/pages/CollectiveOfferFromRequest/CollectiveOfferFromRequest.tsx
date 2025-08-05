@@ -1,7 +1,3 @@
-import { useSelector } from 'react-redux'
-import { useNavigate, useParams } from 'react-router'
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Layout } from 'app/App/layout/Layout'
@@ -18,6 +14,9 @@ import { getDateToFrenchText } from 'commons/utils/date'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
+import { useSelector } from 'react-redux'
+import { useNavigate, useParams } from 'react-router'
+import useSWR from 'swr'
 import { Button } from 'ui-kit/Button/Button'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 

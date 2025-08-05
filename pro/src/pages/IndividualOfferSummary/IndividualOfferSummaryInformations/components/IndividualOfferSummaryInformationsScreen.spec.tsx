@@ -1,10 +1,9 @@
-import { screen } from '@testing-library/react'
-
 import {
   GetIndividualOfferWithAddressResponseModel,
-  WithdrawalTypeEnum,
   SubcategoryIdEnum,
+  WithdrawalTypeEnum,
 } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
 import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
 import {
@@ -13,8 +12,8 @@ import {
   individualOfferContextValuesFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 
 import { IndividualOfferSummaryInformationsScreen } from './IndividualOfferSummaryInformationsScreen'

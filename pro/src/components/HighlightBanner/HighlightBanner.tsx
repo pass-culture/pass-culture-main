@@ -1,9 +1,8 @@
 import cn from 'classnames'
-import { useState } from 'react'
-
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import fullClearIcon from 'icons/full-clear.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
+import { useState } from 'react'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

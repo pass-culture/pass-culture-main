@@ -1,5 +1,3 @@
-import { matchPath, Location } from 'react-router'
-
 import { RouteConfig, routes } from 'app/AppRouter/routesMap'
 import {
   routesIndividualOfferWizard,
@@ -7,6 +5,7 @@ import {
 } from 'app/AppRouter/subroutesIndividualOfferWizardMap'
 import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'
 import { routesSignup } from 'app/AppRouter/subroutesSignupMap'
+import { Location, matchPath } from 'react-router'
 
 import { routesReimbursements } from './subroutesReimbursements'
 

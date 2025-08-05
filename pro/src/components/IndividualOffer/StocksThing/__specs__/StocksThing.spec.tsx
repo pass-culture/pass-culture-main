@@ -1,9 +1,3 @@
-import { screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { format } from 'date-fns'
-import { Route, Routes } from 'react-router'
-import { expect } from 'vitest'
-
 import { api } from 'apiClient/api'
 import {
   ApiError,
@@ -14,6 +8,8 @@ import {
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   IndividualOfferContext,
@@ -21,8 +17,8 @@ import {
 } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
-  OFFER_WIZARD_MODE,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import {
   getIndividualOfferPath,
@@ -38,7 +34,10 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
+import { format } from 'date-fns'
+import { Route, Routes } from 'react-router'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { expect } from 'vitest'
 
 import { serializeThingBookingLimitDatetime } from '../adapters/serializers'
 import { StocksThing, StocksThingProps } from '../StocksThing'

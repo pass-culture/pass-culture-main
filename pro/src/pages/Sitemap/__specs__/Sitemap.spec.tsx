@@ -5,8 +5,8 @@ import {
   sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 
 import { Sitemap } from '../Sitemap'

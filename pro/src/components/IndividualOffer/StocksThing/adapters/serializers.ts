@@ -1,12 +1,11 @@
-import { endOfDay } from 'date-fns'
-
 import { ThingStockCreateBodyModel } from 'apiClient/v1'
 import {
+  getYearMonthDay,
   isDateValid,
   toISOStringWithoutMilliseconds,
-  getYearMonthDay,
 } from 'commons/utils/date'
 import { getUtcDateTimeFromLocalDepartement } from 'commons/utils/timezone'
+import { endOfDay } from 'date-fns'
 
 import { StockThingFormValues } from '../types'
 

@@ -1,7 +1,3 @@
-import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import { CollectiveOfferType } from 'apiClient/v1'
 import { Layout } from 'app/App/layout/Layout'
@@ -17,7 +13,10 @@ import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { getStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
 import { formatAndOrderVenues } from 'repository/venuesService'
+import useSWR from 'swr'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'

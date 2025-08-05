@@ -1,6 +1,3 @@
-import { isBefore } from 'date-fns'
-import { useRef, useState } from 'react'
-
 import {
   EventStockUpdateBodyModel,
   GetIndividualOfferResponseModel,
@@ -13,11 +10,13 @@ import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from 'commons/utils/date'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import { getPriceCategoryName } from 'components/IndividualOffer/PriceCategoriesScreen/form/getPriceCategoryOptions'
+import { isBefore } from 'date-fns'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
+import { useRef, useState } from 'react'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

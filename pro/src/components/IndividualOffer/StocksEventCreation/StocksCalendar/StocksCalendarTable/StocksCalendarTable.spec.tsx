@@ -1,14 +1,13 @@
+import { OfferStatus } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { addDays, addSeconds, subDays, subSeconds } from 'date-fns'
-
-import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { addDays, addSeconds, subDays, subSeconds } from 'date-fns'
 
 import {
   StocksCalendarTable,

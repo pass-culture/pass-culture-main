@@ -1,13 +1,12 @@
-import cn from 'classnames'
-import { useEffect, useRef, useState } from 'react'
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
+import cn from 'classnames'
 import { GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { formatPrice } from 'commons/utils/formatPrice'
 import { pluralizeString } from 'commons/utils/pluralize'
 import { doesUserPreferReducedMotion } from 'commons/utils/windowMatchMedia'
+import { useEffect, useRef, useState } from 'react'
+import useSWR from 'swr'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './BookingsTable.module.scss'

@@ -1,8 +1,7 @@
 import { StoryObj } from '@storybook/react'
-import { withRouter } from 'storybook-addon-remix-react-router'
-
 import { TagVariant } from 'design-system/Tag/Tag'
 import strokeDateIcon from 'icons/stroke-date.svg'
+import { withRouter } from 'storybook-addon-remix-react-router'
 
 import imageDemo from '../assets/dog.jpg'
 

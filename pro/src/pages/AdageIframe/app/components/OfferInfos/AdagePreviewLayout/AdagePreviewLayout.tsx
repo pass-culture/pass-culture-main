@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react'
-
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
@@ -13,6 +11,7 @@ import {
 } from 'apiClient/v1'
 import { isCollectiveOffer } from 'commons/core/OfferEducational/types'
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
+import { useEffect, useState } from 'react'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

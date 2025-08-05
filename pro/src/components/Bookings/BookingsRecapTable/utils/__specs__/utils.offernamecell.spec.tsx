@@ -1,10 +1,6 @@
 import { collectiveBookingCollectiveStockFactory } from 'commons/utils/factories/collectiveApiFactories'
 
-import {
-  getDate,
-  getRemainingTime,
-  shouldDisplayWarning,
-} from '../utils'
+import { getDate, getRemainingTime, shouldDisplayWarning } from '../utils'
 
 describe('Utils OfferNameCell', () => {
   it('should display no warning when the limit date is in more than 7 days', () => {

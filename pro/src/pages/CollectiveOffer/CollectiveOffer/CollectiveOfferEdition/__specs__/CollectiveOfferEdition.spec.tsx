@@ -1,6 +1,5 @@
-import { screen, waitFor } from '@testing-library/react'
-
 import { api } from 'apiClient/api'
+import { screen, waitFor } from '@testing-library/react'
 import * as hooks from 'commons/hooks/swr/useOfferer'
 import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'

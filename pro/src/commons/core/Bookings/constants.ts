@@ -1,9 +1,11 @@
-import { format, startOfDay, subDays } from 'date-fns'
-
 import { BookingStatusFilter } from 'apiClient/v1'
-import { ALL_OFFERER_ADDRESSES, ALL_OFFERERS } from 'commons/core/Offers/constants'
+import {
+  ALL_OFFERER_ADDRESSES,
+  ALL_OFFERERS,
+} from 'commons/core/Offers/constants'
 import { SelectOption } from 'commons/custom_types/form'
 import { FORMAT_ISO_DATE_ONLY, getToday } from 'commons/utils/date'
+import { format, startOfDay, subDays } from 'date-fns'
 
 export const BOOKING_STATUS = {
   BOOKED: 'booked',

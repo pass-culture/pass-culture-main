@@ -1,8 +1,7 @@
-import { useState } from 'react'
-
 import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
 import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import fullEditIcon from 'icons/full-edit.svg'
+import { useState } from 'react'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'

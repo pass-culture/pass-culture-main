@@ -1,11 +1,10 @@
-import { type ChangeEvent } from 'react'
-import { useFormContext } from 'react-hook-form'
-
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
 import { Tag, TagVariant } from 'design-system/Tag/Tag'
+import { type ChangeEvent } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { Divider } from 'ui-kit/Divider/Divider'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { Select } from 'ui-kit/form/Select/Select'

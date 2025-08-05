@@ -1,11 +1,10 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
 import {
   GetOffererNameResponseModel,
   GetOffererResponseModel,
 } from 'apiClient/v1'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   defaultGetOffererResponseModel,
@@ -16,8 +15,8 @@ import {
   sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 
 import { Homepage } from '../Homepage'

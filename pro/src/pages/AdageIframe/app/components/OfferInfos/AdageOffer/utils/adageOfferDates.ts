@@ -1,6 +1,6 @@
 import {
-  CollectiveOfferTemplateResponseModel,
   CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
 import {
   getDateTimeToFrenchText,

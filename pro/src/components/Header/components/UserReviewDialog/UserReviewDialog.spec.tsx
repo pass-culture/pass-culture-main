@@ -1,12 +1,11 @@
+import { api } from 'apiClient/api'
 import * as Dialog from '@radix-ui/react-dialog'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-
-import { api } from 'apiClient/api'
 import * as useNotification from 'commons/hooks/useNotification'
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Button } from 'ui-kit/Button/Button'

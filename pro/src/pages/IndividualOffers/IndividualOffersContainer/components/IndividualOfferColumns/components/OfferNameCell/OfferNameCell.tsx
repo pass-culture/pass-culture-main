@@ -1,5 +1,3 @@
-import { Link } from 'react-router'
-
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import { OFFER_STATUS_SOLD_OUT } from 'commons/core/Offers/constants'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
@@ -9,6 +7,7 @@ import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { Tag } from 'design-system/Tag/Tag'
 import fullErrorIcon from 'icons/full-error.svg'
 import styles from 'pages/IndividualOffers/IndividualOffersContainer/components/IndividualOfferColumns/components/Cells.module.scss'
+import { Link } from 'react-router'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 import { Tooltip } from 'ui-kit/Tooltip/Tooltip'

@@ -1,6 +1,3 @@
-import { useCallback } from 'react'
-import { useFormContext } from 'react-hook-form'
-
 import {
   GetEducationalOffererResponseModel,
   OfferAddressType,
@@ -11,6 +8,8 @@ import { SelectOption } from 'commons/custom_types/form'
 import { selectInterventionAreas } from 'commons/utils/selectInterventionAreas'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
+import { useCallback } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'

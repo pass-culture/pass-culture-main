@@ -1,6 +1,3 @@
-import { FC } from 'react'
-import { generatePath, useLocation } from 'react-router'
-
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -15,6 +12,8 @@ import {
   getOfferSubtypeFromParam,
   isOfferSubtypeEvent,
 } from 'pages/IndividualOffer/commons/filterCategories'
+import { FC } from 'react'
+import { generatePath, useLocation } from 'react-router'
 import { NavLinkItems } from 'ui-kit/NavLinkItems/NavLinkItems'
 
 import styles from './IndividualOfferNavigation.module.scss'

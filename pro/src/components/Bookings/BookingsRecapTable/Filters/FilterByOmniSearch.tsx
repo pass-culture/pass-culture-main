@@ -1,10 +1,9 @@
-import cn from 'classnames'
-import { ChangeEvent, useId } from 'react'
-
 import { useAnalytics } from 'app/App/analytics/firebase'
+import cn from 'classnames'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { Audience } from 'commons/core/shared/types'
 import { SelectOption } from 'commons/custom_types/form'
+import { ChangeEvent, useId } from 'react'
 import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
 import { SelectInput } from 'ui-kit/form/shared/BaseSelectInput/SelectInput'
 

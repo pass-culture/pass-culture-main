@@ -1,17 +1,16 @@
-import { screen, waitFor } from '@testing-library/react'
-import * as reactRedux from 'react-redux'
-import { Route, Routes } from 'react-router'
-
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { screen, waitFor } from '@testing-library/react'
 import * as thunks from 'commons/store/user/thunks'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import * as reactRedux from 'react-redux'
+import { Route, Routes } from 'react-router'
 
 import { SignupValidation } from '../SignUpValidation'
 

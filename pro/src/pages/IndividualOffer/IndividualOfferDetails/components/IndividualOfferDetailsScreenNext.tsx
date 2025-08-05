@@ -1,21 +1,17 @@
-import { yupResolver } from '@hookform/resolvers/yup'
-import { FormProvider, useForm } from 'react-hook-form'
-import { useLocation, useNavigate } from 'react-router'
-import { useSWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import type {
   GetIndividualOfferResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
-  OFFER_WIZARD_MODE,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
@@ -34,14 +30,17 @@ import type {
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import { useIndividualOfferImageUpload } from 'pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 import {
+  filterAvailableVenues,
+  getFormReadOnlyFields,
   getInitialValuesFromOffer,
   getInitialValuesFromVenues,
   getVenuesAsOptions,
   hasMusicType,
-  getFormReadOnlyFields,
-  filterAvailableVenues,
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { getValidationSchemaForNewOfferCreationFlow } from 'pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
+import { FormProvider, useForm } from 'react-hook-form'
+import { useLocation, useNavigate } from 'react-router'
+import { useSWRConfig } from 'swr'
 
 import {
   serializeDetailsPatchData,
@@ -222,7 +221,6 @@ export const IndividualOfferDetailsScreenNext = ({
       )
     }
   }
-
 
   const updateProduct = (ean: string, product: Product) => {
     const {

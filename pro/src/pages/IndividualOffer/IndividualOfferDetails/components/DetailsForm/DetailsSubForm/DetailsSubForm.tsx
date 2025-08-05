@@ -1,6 +1,3 @@
-import { useFormContext } from 'react-hook-form'
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import { GET_MUSIC_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { showOptionsTree } from 'commons/core/Offers/categoriesSubTypes'
@@ -11,6 +8,8 @@ import {
   buildShowSubTypeOptions,
   hasMusicType,
 } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
+import { useFormContext } from 'react-hook-form'
+import useSWR from 'swr'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 import { Select } from 'ui-kit/form/Select/Select'

@@ -1,14 +1,3 @@
-import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import {
-  Navigate,
-  Outlet,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router'
-import { SWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { useLogExtraProData } from 'app/App/hook/useLogExtraProData'
@@ -29,6 +18,16 @@ import { updateUser } from 'commons/store/user/reducer'
 import { selectCurrentUser } from 'commons/store/user/selectors'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 import { Notification } from 'components/Notification/Notification'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  Navigate,
+  Outlet,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router'
+import { SWRConfig } from 'swr'
 
 import { useBeamer } from './analytics/beamer'
 import { useFirebase } from './analytics/firebase'

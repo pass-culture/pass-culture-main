@@ -1,6 +1,5 @@
-import { addDays, subDays } from 'date-fns'
-
 import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHelpers'
+import { addDays, subDays } from 'date-fns'
 
 import { EditStockFormValues } from '../StocksCalendarTableEditStock'
 import { validationSchema } from '../validationSchema'

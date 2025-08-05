@@ -1,6 +1,3 @@
-import { screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-
 import { api } from 'apiClient/api'
 import {
   type AggregatedRevenueModel,
@@ -8,6 +5,8 @@ import {
   type GetOffererVenueResponseModel,
   type StatisticsModel,
 } from 'apiClient/v1'
+import { screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   defaultGetOffererResponseModel,

@@ -1,9 +1,8 @@
-import { fr } from 'date-fns/locale'
-import { Line } from 'react-chartjs-2'
-
 import { OffererViewsModel } from 'apiClient/v1'
+import { fr } from 'date-fns/locale'
 import fullLinkIcon from 'icons/full-link.svg'
 import strokeBookingHoldIcon from 'icons/stroke-booking-hold.svg'
+import { Line } from 'react-chartjs-2'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { chartColors } from 'ui-kit/chartGlobals'

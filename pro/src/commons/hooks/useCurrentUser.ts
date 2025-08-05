@@ -1,8 +1,7 @@
-import { useSelector } from 'react-redux'
-
 import { SharedCurrentUserResponseModel } from 'apiClient/v1'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { selectCurrentUser } from 'commons/store/user/selectors'
+import { useSelector } from 'react-redux'
 
 interface UseCurrentUserReturn {
   currentUser: SharedCurrentUserResponseModel

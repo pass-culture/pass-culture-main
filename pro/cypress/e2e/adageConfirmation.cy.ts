@@ -2,7 +2,7 @@ import {
   collectiveFormatEventDate,
   expectOffersOrBookingsAreFound,
   logInAndGoToPage,
-} from '../support/helpers.ts';
+} from '../support/helpers.ts'
 
 describe('Adage confirmation', () => {
   let login: string
@@ -173,7 +173,9 @@ describe('Adage confirmation', () => {
       cy.findByText('Réinitialiser les filtres').click()
 
       cy.stepLog({ message: 'Status filter is empty' })
-      cy.findByRole('button', { name: 'Statut' }).invoke('val').should('be.empty')
+      cy.findByRole('button', { name: 'Statut' })
+        .invoke('val')
+        .should('be.empty')
 
       cy.stepLog({ message: 'I search with status "BOOKED"' })
       cy.findByRole('button', { name: 'Statut' }).click()
@@ -216,7 +218,9 @@ describe('Adage confirmation', () => {
       cy.findByText('Réinitialiser les filtres').click()
 
       cy.stepLog({ message: 'Status filter is empty' })
-      cy.findByRole('button', { name: 'Statut' }).invoke('val').should('be.empty')
+      cy.findByRole('button', { name: 'Statut' })
+        .invoke('val')
+        .should('be.empty')
 
       cy.sandboxCall(
         'GET',

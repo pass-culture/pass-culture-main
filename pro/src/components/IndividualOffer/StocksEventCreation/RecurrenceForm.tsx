@@ -1,13 +1,6 @@
+import { PriceCategoryResponseModel } from 'apiClient/v1'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Dialog from '@radix-ui/react-dialog'
-import {
-  FormProvider,
-  useFieldArray,
-  useForm,
-  useFormContext,
-} from 'react-hook-form'
-
-import { PriceCategoryResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { SelectOption } from 'commons/custom_types/form'
@@ -18,6 +11,12 @@ import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGrou
 import fullClearIcon from 'icons/full-clear.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
+import {
+  FormProvider,
+  useFieldArray,
+  useForm,
+  useFormContext,
+} from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'

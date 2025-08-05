@@ -1,8 +1,7 @@
 import cn from 'classnames'
-import React, { useLayoutEffect, useRef, useState } from 'react'
-
 import { findLastIndex } from 'commons/utils/findLastIndex'
 import { StepContent } from 'components/Stepper/StepContent'
+import React, { useLayoutEffect, useRef, useState } from 'react'
 
 import styles from './Stepper.module.scss'
 

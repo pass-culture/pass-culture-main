@@ -1,8 +1,8 @@
 import {
-  isValidTime,
   convertTimeFromVenueTimezoneToUtc,
   formatLocalTimeDateString,
   getDepartmentTimezone,
+  isValidTime,
 } from '../timezone'
 
 describe('isValidTime', () => {

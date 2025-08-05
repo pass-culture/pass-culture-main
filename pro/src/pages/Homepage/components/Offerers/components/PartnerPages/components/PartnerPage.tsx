@@ -1,11 +1,7 @@
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useSWRConfig } from 'swr'
-
 import {
   GetOffererResponseModel,
-  VenueTypeResponseModel,
   type GetVenueResponseModel,
+  VenueTypeResponseModel,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_OFFERER_QUERY_KEY } from 'commons/config/swrQueryKeys'
@@ -13,8 +9,8 @@ import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import {
-  UploadImageValues,
   UploaderModeEnum,
+  UploadImageValues,
 } from 'commons/utils/imageUploadTypes'
 import { Card } from 'components/Card/Card'
 import { ImageUploader } from 'components/ImageUploader/ImageUploader'
@@ -22,7 +18,10 @@ import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageU
 import fullParametersIcon from 'icons/full-parameters.svg'
 import { VenueOfferSteps } from 'pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
 import { buildInitialValues } from 'pages/VenueEdition/VenueEditionHeader'
+import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
+import { useSWRConfig } from 'swr'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

@@ -1,9 +1,6 @@
+import * as apiAdresse from 'apiClient/adresse/apiAdresse'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { FormProvider, useForm } from 'react-hook-form'
-import createFetchMock from 'vitest-fetch-mock'
-
-import * as apiAdresse from 'apiClient/adresse/apiAdresse'
 import {
   Offerer,
   SignupJourneyContext,
@@ -11,11 +8,13 @@ import {
 } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
+import { FormProvider, useForm } from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
+import createFetchMock from 'vitest-fetch-mock'
 
 import {
   OffererAuthenticationForm,

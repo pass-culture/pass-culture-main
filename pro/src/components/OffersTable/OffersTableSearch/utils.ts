@@ -1,7 +1,12 @@
-import { SearchFiltersParams, CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
+import {
+  CollectiveSearchFiltersParams,
+  SearchFiltersParams,
+} from 'commons/core/Offers/types'
 import { storageAvailable } from 'commons/utils/storageAvailable'
 
-export type SelectedFilters = Partial<SearchFiltersParams> | Partial<CollectiveSearchFiltersParams>
+export type SelectedFilters =
+  | Partial<SearchFiltersParams>
+  | Partial<CollectiveSearchFiltersParams>
 type StoredFilterConfig = {
   filtersVisibility: boolean
   storedFilters: SelectedFilters
@@ -18,21 +23,30 @@ export function resetAllStoredFilterConfig() {
   const isSessionStorageAvailable = storageAvailable('sessionStorage')
   if (isSessionStorageAvailable) {
     Object.values(locallyStoredFilterConfig).forEach((key) => {
-      const previousFiltersVisibility = JSON.parse(sessionStorage.getItem(key) || '{}').filtersVisibility
+      const previousFiltersVisibility = JSON.parse(
+        sessionStorage.getItem(key) || '{}'
+      ).filtersVisibility
 
-      sessionStorage.setItem(key, JSON.stringify({
-        filtersVisibility: previousFiltersVisibility || false,
-        storedFilters: {},
-      }))
+      sessionStorage.setItem(
+        key,
+        JSON.stringify({
+          filtersVisibility: previousFiltersVisibility || false,
+          storedFilters: {},
+        })
+      )
     })
   }
 }
 
-export function getStoredFilterConfig(type: FilterConfigType): StoredFilterConfig {  
+export function getStoredFilterConfig(
+  type: FilterConfigType
+): StoredFilterConfig {
   const isSessionStorageAvailable = storageAvailable('sessionStorage')
-  const storedFilterConfig: StoredFilterConfig = isSessionStorageAvailable ?
-    JSON.parse(sessionStorage.getItem(locallyStoredFilterConfig[type]) || '{}') :
-    {}
+  const storedFilterConfig: StoredFilterConfig = isSessionStorageAvailable
+    ? JSON.parse(
+        sessionStorage.getItem(locallyStoredFilterConfig[type]) || '{}'
+      )
+    : {}
   const { filtersVisibility = false, storedFilters = {} } = storedFilterConfig
 
   return {
@@ -41,7 +55,9 @@ export function getStoredFilterConfig(type: FilterConfigType): StoredFilterConfi
   }
 }
 
-export function useStoredFilterConfig<T extends 'individual' | 'collective' | 'template'>(type: T) {
+export function useStoredFilterConfig<
+  T extends 'individual' | 'collective' | 'template',
+>(type: T) {
   const isSessionStorageAvailable = storageAvailable('sessionStorage')
 
   const onFiltersToggle = (filtersVisibility: boolean) => {
@@ -50,7 +66,7 @@ export function useStoredFilterConfig<T extends 'individual' | 'collective' | 't
       ...filterConfig,
       filtersVisibility,
     }
-  
+
     if (isSessionStorageAvailable) {
       sessionStorage.setItem(
         locallyStoredFilterConfig[type],
@@ -66,7 +82,7 @@ export function useStoredFilterConfig<T extends 'individual' | 'collective' | 't
       storedFilters: {
         ...filterConfig.storedFilters,
         ...selectedFilters,
-      }
+      },
     }
 
     // We don't want to store offererId to support offerer switching.
@@ -87,10 +103,12 @@ export function useStoredFilterConfig<T extends 'individual' | 'collective' | 't
     const newFilterConfig: StoredFilterConfig = {
       ...filterConfig,
       storedFilters: {
-        ...(!resetNameOrIsbn ? {
-          nameOrIsbn: filterConfig.storedFilters.nameOrIsbn
-        } : {}),
-      }
+        ...(!resetNameOrIsbn
+          ? {
+              nameOrIsbn: filterConfig.storedFilters.nameOrIsbn,
+            }
+          : {}),
+      },
     }
 
     if (isSessionStorageAvailable) {

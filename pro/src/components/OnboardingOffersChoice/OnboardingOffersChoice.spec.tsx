@@ -1,11 +1,10 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach } from 'vitest'
-import { axe } from 'vitest-axe'
-
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { OnboardingDidacticEvents } from 'commons/core/FirebaseEvents/constants'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { beforeEach } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { OnboardingOffersChoice } from './OnboardingOffersChoice'
 

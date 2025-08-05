@@ -1,9 +1,8 @@
-import { isAfter } from 'date-fns'
-
 import { ListOffersOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
 import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
 import { formatLocalTimeDateString } from 'commons/utils/timezone'
+import { isAfter } from 'date-fns'
 import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import waitFullIcon from 'icons/full-wait.svg'
 import styles from 'pages/IndividualOffers/IndividualOffersContainer/components/IndividualOfferColumns/components/Cells.module.scss'

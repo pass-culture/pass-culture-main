@@ -1,7 +1,6 @@
 import cn from 'classnames'
-import { ChangeEvent, FocusEvent } from 'react'
-
 import fullRightIcon from 'icons/full-right.svg'
+import { ChangeEvent, FocusEvent } from 'react'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { PhoneCodeSelectOption } from '../constants'

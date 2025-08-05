@@ -1,9 +1,8 @@
+import { apiAdage } from 'apiClient/api'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as instantSearch from 'react-instantsearch'
-
-import { apiAdage } from 'apiClient/api'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import * as instantSearch from 'react-instantsearch'
 
 import { CustomPagination } from '../Pagination'
 

@@ -1,4 +1,3 @@
-
 import { StudentLevels } from 'apiClient/v1'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'

@@ -1,11 +1,10 @@
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-
 import {
   BookingRecapResponseModel,
   BookingRecapStatus,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { Audience } from 'commons/core/shared/types'
 import {
   bookingRecapFactory,

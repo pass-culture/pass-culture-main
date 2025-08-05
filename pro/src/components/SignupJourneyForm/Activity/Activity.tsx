@@ -1,10 +1,6 @@
-import { yupResolver } from '@hookform/resolvers/yup'
-import { FormProvider, useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router'
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import { Target } from 'apiClient/v1'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { MainHeading } from 'app/App/layout/Layout'
 import { GET_VENUE_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
@@ -15,6 +11,9 @@ import { FORM_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import { useNotification } from 'commons/hooks/useNotification'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
+import { FormProvider, useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router'
+import useSWR from 'swr'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { ActionBar } from '../ActionBar/ActionBar'

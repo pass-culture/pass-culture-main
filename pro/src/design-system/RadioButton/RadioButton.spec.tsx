@@ -1,7 +1,6 @@
 import { render } from '@testing-library/react'
-import { axe } from 'vitest-axe'
-
 import { TagVariant } from 'design-system/Tag/Tag'
+import { axe } from 'vitest-axe'
 
 import { RadioButton } from './RadioButton'
 

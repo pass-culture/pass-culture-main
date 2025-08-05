@@ -1,6 +1,3 @@
-import { useRef, useState } from 'react'
-import { useSWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -11,6 +8,8 @@ import { formatDateTimeParts, isDateValid } from 'commons/utils/date'
 import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
 import fullHideIcon from 'icons/full-hide.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
+import { useRef, useState } from 'react'
+import { useSWRConfig } from 'swr'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

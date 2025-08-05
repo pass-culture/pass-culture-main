@@ -1,9 +1,8 @@
-import cn from 'classnames'
-import { useLocation } from 'react-router'
-
 import { useAnalytics } from 'app/App/analytics/firebase'
+import cn from 'classnames'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import fullLinkIcon from 'icons/full-link.svg'
+import { useLocation } from 'react-router'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'

@@ -1,9 +1,8 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Route, Routes, Link } from 'react-router'
-
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { PageTitleAnnouncer } from 'components/PageTitleAnnouncer/PageTitleAnnouncer'
+import { Link, Route, Routes } from 'react-router'
 
 import { usePageTitle } from '../usePageTitle'
 

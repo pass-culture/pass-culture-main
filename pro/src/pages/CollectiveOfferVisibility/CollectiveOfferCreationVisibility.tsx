@@ -1,6 +1,3 @@
-import { useLocation, useNavigate } from 'react-router'
-import useSWR, { useSWRConfig } from 'swr'
-
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
@@ -18,6 +15,8 @@ import {
 } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 import { CollectiveOfferVisibilityScreen } from 'pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
+import { useLocation, useNavigate } from 'react-router'
+import useSWR, { useSWRConfig } from 'swr'
 
 import { getEducationalInstitutions } from './getEducationalInstitutions'
 

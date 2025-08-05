@@ -1,6 +1,5 @@
-import { screen } from '@testing-library/react'
-
 import { AuthenticatedResponse, EacFormat } from 'apiClient/adage'
+import { screen } from '@testing-library/react'
 import {
   defaultAdageUser,
   defaultCollectiveTemplateOffer,

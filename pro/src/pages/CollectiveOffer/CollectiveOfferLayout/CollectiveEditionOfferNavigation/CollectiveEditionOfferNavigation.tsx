@@ -1,25 +1,20 @@
-import cn from 'classnames'
-import { useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router'
-import { mutate } from 'swr'
-
 import { api } from 'apiClient/api'
 import {
+  CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
-  CollectiveOfferAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import cn from 'classnames'
 import {
-  GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
   GET_COLLECTIVE_OFFER_QUERY_KEY,
+  GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import {
-  Events,
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
+  Events,
 } from 'commons/core/FirebaseEvents/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
 import { isCollectiveOffer } from 'commons/core/OfferEducational/types'
@@ -35,6 +30,10 @@ import fullArchiveIcon from 'icons/full-archive.svg'
 import fullCopyIcon from 'icons/full-duplicate.svg'
 import fullPlusIcon from 'icons/full-plus.svg'
 import fullShowIcon from 'icons/full-show.svg'
+import { useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useLocation, useNavigate } from 'react-router'
+import { mutate } from 'swr'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -49,8 +48,8 @@ export interface CollectiveEditionOfferNavigationProps {
   isTemplate: boolean
   offerId?: number
   offer?:
-  | GetCollectiveOfferResponseModel
-  | GetCollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel
 }
 
 export const CollectiveEditionOfferNavigation = ({

@@ -1,8 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router'
-
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { Route, Routes } from 'react-router'
 
 import { ButtonLink } from '../ButtonLink'
 

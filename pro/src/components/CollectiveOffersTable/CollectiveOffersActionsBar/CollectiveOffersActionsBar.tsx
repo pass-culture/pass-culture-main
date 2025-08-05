@@ -1,7 +1,3 @@
-import { useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useSWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import {
   CollectiveOfferAllowedAction,
@@ -23,6 +19,9 @@ import { computeSelectedOffersLabel } from 'components/OffersTable/utils/compute
 import fullHideIcon from 'icons/full-hide.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import strokeThingIcon from 'icons/stroke-thing.svg'
+import { useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useSWRConfig } from 'swr'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

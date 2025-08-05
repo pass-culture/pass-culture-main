@@ -1,13 +1,12 @@
+import { StudentLevels } from 'apiClient/v1'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { FormProvider, useForm } from 'react-hook-form'
-
-import { StudentLevels } from 'apiClient/v1'
 import { buildStudentLevelsMapWithDefaultValue } from 'commons/core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { studentLevelsLabels } from './constants'
 import { FormParticipants } from './FormParticipants'

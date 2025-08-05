@@ -1,17 +1,16 @@
+import { api } from 'apiClient/api'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import * as router from 'react-router'
-import { beforeEach, expect } from 'vitest'
-import { axe } from 'vitest-axe'
-
-import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { OnboardingDidacticEvents } from 'commons/core/FirebaseEvents/constants'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import * as router from 'react-router'
+import { beforeEach, expect } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { OnboardingCollectiveModal } from './OnboardingCollectiveModal'
 

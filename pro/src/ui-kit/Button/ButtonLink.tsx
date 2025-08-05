@@ -1,8 +1,7 @@
 import cn from 'classnames'
+import fullLinkIcon from 'icons/full-link.svg'
 import React, { ForwardedRef, forwardRef, MouseEventHandler } from 'react'
 import { Link } from 'react-router'
-
-import fullLinkIcon from 'icons/full-link.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Button.module.scss'

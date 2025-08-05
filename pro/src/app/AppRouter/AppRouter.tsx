@@ -1,10 +1,9 @@
 import * as Sentry from '@sentry/react'
-import { useSelector } from 'react-redux'
-import { createBrowserRouter, RouterProvider } from 'react-router'
-
 import { App } from 'app/App/App'
 import { routes } from 'app/AppRouter/routesMap'
 import { selectActiveFeatures } from 'commons/store/features/selectors'
+import { useSelector } from 'react-redux'
+import { createBrowserRouter, RouterProvider } from 'react-router'
 
 import { ErrorBoundary } from './ErrorBoundary'
 

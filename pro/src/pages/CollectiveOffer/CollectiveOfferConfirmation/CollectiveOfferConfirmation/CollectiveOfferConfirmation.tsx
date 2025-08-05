@@ -1,6 +1,5 @@
-import cn from 'classnames'
-
 import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
+import cn from 'classnames'
 import { BackToNavLink } from 'components/BackToNavLink/BackToNavLink'
 import fullValidateIcon from 'icons/full-validate.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
@@ -129,7 +128,9 @@ export const CollectiveOfferConfirmationScreen = ({
         <div className={styles['confirmation-section']}>
           <div className={styles['confirmation-section-header']}>
             <h1 className={styles['confirmation-section-title']}>{title}</h1>
-            <BackToNavLink className={styles['confirmation-section-back-to-nav-link']} />
+            <BackToNavLink
+              className={styles['confirmation-section-back-to-nav-link']}
+            />
           </div>
           <p className={styles['form-layout-section-description']}>
             {description}

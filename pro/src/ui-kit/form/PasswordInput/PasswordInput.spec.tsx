@@ -1,10 +1,9 @@
 import { screen, within } from '@testing-library/react'
-import { axe } from 'vitest-axe'
-
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { axe } from 'vitest-axe'
 
 import { PasswordInput, PasswordInputProps } from './PasswordInput'
 

@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-
 import { hardRefresh } from 'commons/utils/hardRefresh'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 describe('hardRefresh', () => {
   const originalLocation = window.location

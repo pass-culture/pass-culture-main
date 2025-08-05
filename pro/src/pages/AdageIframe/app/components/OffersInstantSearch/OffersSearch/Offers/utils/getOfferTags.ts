@@ -121,7 +121,11 @@ export function getOfferTags(
     const locationTag = locationTypeMap[offer.offerVenue.addressType]
     tags.push(...(Array.isArray(locationTag) ? locationTag : [locationTag]))
 
-    if (OfferAddressType.OFFERER_VENUE === offer.offerVenue.addressType && offer.offerVenue.distance || offer.offerVenue.distance === 0) {
+    if (
+      (OfferAddressType.OFFERER_VENUE === offer.offerVenue.addressType &&
+        offer.offerVenue.distance) ||
+      offer.offerVenue.distance === 0
+    ) {
       tags.push({
         icon: fullLocationIcon,
         text: `À ${humanizeDistance(offer.offerVenue.distance * 1000)}`,

@@ -1,7 +1,3 @@
-import { useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { mutate, useSWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import {
   OfferStatus,
@@ -24,6 +20,9 @@ import fullValidateIcon from 'icons/full-validate.svg'
 import { computeDeletionErrorMessage } from 'pages/IndividualOffers/utils/computeDeletionErrorMessage'
 import { computeDeletionSuccessMessage } from 'pages/IndividualOffers/utils/computeDeletionSuccessMessage'
 import { computeIndividualApiFilters } from 'pages/IndividualOffers/utils/computeIndividualApiFilters'
+import { useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { mutate, useSWRConfig } from 'swr'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
