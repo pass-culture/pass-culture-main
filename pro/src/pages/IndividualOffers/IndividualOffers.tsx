@@ -32,16 +32,11 @@ import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters
 
 export const IndividualOffers = (): JSX.Element => {
   const isVideoFeatureEnabled = useActiveFeature('WIP_ADD_VIDEO')
-  const isToggleAndMemorizeFiltersEnabled = useActiveFeature(
-    'WIP_COLLAPSED_MEMORIZED_FILTERS'
-  )
   const urlSearchFilters = useQuerySearchFilters()
   const { storedFilters } = getStoredFilterConfig('individual')
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...(isToggleAndMemorizeFiltersEnabled
-      ? (storedFilters as Partial<SearchFiltersParams>)
-      : {}),
+    ...(storedFilters as Partial<SearchFiltersParams>),
   }
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE

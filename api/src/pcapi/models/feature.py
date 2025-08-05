@@ -122,7 +122,6 @@ class FeatureToggle(enum.Enum):
     WIP_ASYNCHRONOUS_CELERY_MAILS = (
         "Activer le backend de tâches asynchrones Celery pour les tâches liées à l'envoi de mails"
     )
-    WIP_COLLAPSED_MEMORIZED_FILTERS = "Activer la fonction de masquage et de mémorisation des filtres en sessionStorage"
     WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION = (
         "Désactiver la notification push Batch pour l'annulation d'une réservation"
     )

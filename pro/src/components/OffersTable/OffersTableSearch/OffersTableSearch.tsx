@@ -1,7 +1,6 @@
 import cn from 'classnames'
 import { useState } from 'react'
 
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import {
   FilterConfigType,
   getStoredFilterConfig,
@@ -43,13 +42,8 @@ export const OffersTableSearch = ({
   searchButtonRef,
 }: OffersTableSearchProps) => {
   const { onFiltersToggle } = useStoredFilterConfig(type)
-  const isStoreAndToggleFiltersEnabled = useActiveFeature(
-    'WIP_COLLAPSED_MEMORIZED_FILTERS'
-  )
   const [filtersVisibility, setFiltersVisibility] = useState(
-    isStoreAndToggleFiltersEnabled
-      ? getStoredFilterConfig(type).filtersVisibility
-      : true
+    getStoredFilterConfig(type).filtersVisibility
   )
 
   const toggleFiltersVisibility = () => {
@@ -76,21 +70,19 @@ export const OffersTableSearch = ({
             value={nameInputProps.value}
           />
         </FieldLayout>
-        {isStoreAndToggleFiltersEnabled && (
-          <ButtonFilter
-            className={styles['offers-table-search-toggle-button']}
-            isActive={hasActiveFilters}
-            isOpen={filtersVisibility}
-            onClick={toggleFiltersVisibility}
-            aria-controls="offers-filter"
-            aria-expanded={filtersVisibility}
-          >
-            Filtrer
-            {hasActiveFilters && (
-              <span className={styles['visually-hidden']}>actifs</span>
-            )}
-          </ButtonFilter>
-        )}
+        <ButtonFilter
+          className={styles['offers-table-search-toggle-button']}
+          isActive={hasActiveFilters}
+          isOpen={filtersVisibility}
+          onClick={toggleFiltersVisibility}
+          aria-controls="offers-filter"
+          aria-expanded={filtersVisibility}
+        >
+          Filtrer
+          {hasActiveFilters && (
+            <span className={styles['visually-hidden']}>actifs</span>
+          )}
+        </ButtonFilter>
       </div>
       <div
         id="offers-filter"

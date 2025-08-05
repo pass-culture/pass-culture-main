@@ -2,6 +2,7 @@ import {
   ListCollectiveOffersQueryModel,
   ListOffersQueryModel,
 } from '@/apiClient/v1'
+import { isEqual } from 'commons/utils/isEqual'
 
 import { DEFAULT_SEARCH_FILTERS } from '../constants'
 import { CollectiveSearchFiltersParams, SearchFiltersParams } from '../types'
@@ -56,7 +57,7 @@ export const serializeApiCollectiveFilters = (
   return listOffersQueryKeys.reduce((accumulator, field) => {
     const filterValue = searchFilters[field]
 
-    if (filterValue && filterValue !== defaultFilters[field]) {
+    if (filterValue && !isEqual(filterValue, defaultFilters[field])) {
       return {
         ...accumulator,
         [field]: filterValue,
