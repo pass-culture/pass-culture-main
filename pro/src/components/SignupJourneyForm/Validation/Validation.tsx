@@ -8,7 +8,7 @@ import { SaveNewOnboardingDataQueryModel, Target } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { MainHeading } from 'app/App/layout/Layout'
 import { GET_VENUE_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { defaultActivityValues } from 'commons/context/SignupJourneyContext/constants'
+import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
 import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
@@ -16,7 +16,6 @@ import {
   RECAPTCHA_ERROR_MESSAGE,
   SAVED_OFFERER_ID_KEY,
 } from 'commons/core/shared/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
@@ -51,7 +50,6 @@ export const Validation = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
-  const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
 
   const { activity, offerer } = useSignupJourneyContext()
   useInitReCaptcha()
@@ -80,10 +78,7 @@ export const Validation = (): JSX.Element => {
       navigate('/parcours-inscription/identification')
       return
     }
-    if (
-      activity === null ||
-      activity === defaultActivityValues(isNewSignupEnabled)
-    ) {
+    if (activity === null || activity === DEFAULT_ACTIVITY_VALUES) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate('/parcours-inscription/activite')
     }

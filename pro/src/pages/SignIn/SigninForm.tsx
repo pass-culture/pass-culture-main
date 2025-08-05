@@ -6,7 +6,6 @@ import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useMediaQuery } from 'commons/hooks/useMediaQuery'
 import { UNAVAILABLE_ERROR_PAGE } from 'commons/utils/routes'
-import { BannerRGS } from 'components/BannerRGS/BannerRGS'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import fullKeyIcon from 'icons/full-key.svg'
@@ -28,7 +27,6 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
   const location = useLocation()
   const { logEvent } = useAnalytics()
   const isAccountCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
-  const is2025SignUpEnabled = useActiveFeature('WIP_2025_SIGN_UP')
   const isLaptopScreenAtLeast = useMediaQuery('(min-width: 64rem)')
 
   const accountCreationUrl = isAccountCreationAvailable
@@ -76,20 +74,6 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
           Réinitialisez votre mot de passe
         </ButtonLink>
         <div className={styles['buttons-field']}>
-          {!is2025SignUpEnabled && (
-            <ButtonLink
-              className={styles['buttons']}
-              variant={ButtonVariant.SECONDARY}
-              to={accountCreationUrl}
-              onClick={() =>
-                logEvent(Events.CLICKED_CREATE_ACCOUNT, {
-                  from: location.pathname,
-                })
-              }
-            >
-              Créer un compte
-            </ButtonLink>
-          )}
           <Button
             type="submit"
             className={styles['buttons']}
@@ -98,25 +82,27 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
             Se connecter
           </Button>
         </div>
-        {is2025SignUpEnabled && (
-          <aside className={styles['no-account']}>
-            <p className={styles['no-account-text']}>
-              Vous n’avez pas encore de compte ?
-            </p>
-            <ButtonLink
-              to={accountCreationUrl}
-              icon={iconFullNext}
-              variant={
-                isLaptopScreenAtLeast
-                  ? ButtonVariant.TERNARY
-                  : ButtonVariant.QUATERNARY
-              }
-            >
-              S’inscrire
-            </ButtonLink>
-          </aside>
-        )}
-        {!is2025SignUpEnabled && <BannerRGS />}
+        <aside className={styles['no-account']}>
+          <p className={styles['no-account-text']}>
+            Vous n’avez pas encore de compte ?
+          </p>
+          <ButtonLink
+            to={accountCreationUrl}
+            icon={iconFullNext}
+            variant={
+              isLaptopScreenAtLeast
+                ? ButtonVariant.TERNARY
+                : ButtonVariant.QUATERNARY
+            }
+            onClick={() =>
+              logEvent(Events.CLICKED_CREATE_ACCOUNT, {
+                from: location.pathname,
+              })
+            }
+          >
+            S’inscrire
+          </ButtonLink>
+        </aside>
       </FormLayout>
     </Form>
   )

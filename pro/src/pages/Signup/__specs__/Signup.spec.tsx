@@ -52,7 +52,6 @@ describe('src | components | pages | Signup', () => {
     expect(screen.getByLabelText(/Prénom/)).toBeInTheDocument()
     expect(screen.getByLabelText(/Adresse email/)).toBeInTheDocument()
     expect(screen.getByLabelText(/Mot de passe/)).toBeInTheDocument()
-    expect(screen.getByText(/Téléphone/)).toBeInTheDocument()
     expect(
       screen.getByLabelText(
         'J’accepte d’être contacté par email pour recevoir les nouveautés du pass Culture et contribuer à son amélioration (facultatif)'
@@ -62,17 +61,12 @@ describe('src | components | pages | Signup', () => {
     expect(screen.queryByText(/SIREN/)).not.toBeInTheDocument()
 
     expect(
-      screen.getByText(/Conditions Générales d’Utilisation/)
+      screen.getByText(/Conditions générales d’utilisation/)
     ).toHaveAttribute('href', 'https://pass.culture.fr/cgu-professionnels/')
 
     expect(
       screen.getAllByText('Charte des Données Personnelles')[0]
     ).toHaveAttribute('href', 'https://pass.culture.fr/donnees-personnelles/')
-
-    expect(screen.getByText(/Contacter notre support/)).toHaveAttribute(
-      'href',
-      'mailto:support-pro@passculture.app'
-    )
   })
 
   it('should render logo and confirmation page', () => {
@@ -81,14 +75,10 @@ describe('src | components | pages | Signup', () => {
       features: ['ENABLE_PRO_ACCOUNT_CREATION'],
     })
 
-    expect(
-      screen.getByText(/Votre compte est en cours de création/)
-    ).toBeInTheDocument()
+    expect(screen.getByText(/Validez votre adresse email/)).toBeInTheDocument()
 
     expect(
-      screen.getByText(
-        'Vous allez recevoir un lien de confirmation par email. Cliquez sur ce lien pour confirmer la création de votre compte.'
-      )
+      screen.getByText('Cliquez sur le lien envoyé par email')
     ).toBeInTheDocument()
   })
 

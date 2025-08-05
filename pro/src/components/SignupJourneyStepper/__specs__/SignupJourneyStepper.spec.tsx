@@ -124,7 +124,7 @@ describe('test SignupJourneyStepper', () => {
       venueTypeCode: 'MUSEUM',
       socialUrls: [],
       targetCustomer: Target.INDIVIDUAL,
-      phoneNumber: undefined,
+      phoneNumber: '',
     }
     const { tabAuthentication, tabActivity, tabValidation } =
       renderSignupStepper(contextValue, '/parcours-inscription/validation')

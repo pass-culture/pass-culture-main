@@ -12,7 +12,6 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from 'commons/core/shared/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
 import { useLogEventOnUnload } from 'commons/hooks/useLogEventOnUnload'
 import { useNotification } from 'commons/hooks/useNotification'
@@ -30,14 +29,13 @@ export const SignupContainer = (): JSX.Element => {
   const navigate = useNavigate()
   const notification = useNotification()
   const { logEvent } = useAnalytics()
-  const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
 
   useRedirectLoggedUser()
   useInitReCaptcha()
 
   const hookForm = useForm<ProUserCreationBodyV2Model>({
     defaultValues: SIGNUP_FORM_DEFAULT_VALUES,
-    resolver: yupResolver(validationSchema(isNewSignupEnabled)),
+    resolver: yupResolver(validationSchema),
     mode: 'onTouched',
   })
 
@@ -132,7 +130,7 @@ export const SignupContainer = (): JSX.Element => {
 
   return (
     <section className={styles['content']}>
-      {isNewSignupEnabled || <OperatingProcedures />}
+      <OperatingProcedures />
 
       <div className={styles['mandatory']}>
         <MandatoryInfo areAllFieldsMandatory={true} />

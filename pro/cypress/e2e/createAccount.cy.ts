@@ -4,10 +4,7 @@ import { logInAndGoToPage } from '../support/helpers.ts'
 describe('Account creation', () => {
   before(() => {
     cy.visit('/')
-    cy.setFeatureFlags([
-      { name: 'WIP_2025_SIGN_UP', isActive: false },
-      { name: 'WIP_2025_AUTOLOGIN', isActive: false },
-    ])
+    cy.setFeatureFlags([{ name: 'WIP_2025_AUTOLOGIN', isActive: false }])
   })
 
   beforeEach(() => {
@@ -32,20 +29,19 @@ describe('Account creation', () => {
     cy.findByLabelText('Prénom *').type('Jean')
     cy.findByLabelText('Adresse email *').type(randomEmail)
     cy.findByLabelText('Mot de passe *').type('user@AZERTY123')
-    cy.findByLabelText('Numéro de téléphone').type('612345678')
 
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
     cy.stepLog({ message: 'I submit' })
     cy.intercept({ method: 'POST', url: '/users/signup' }).as('signupUser')
-    cy.findByText('Créer mon compte').click()
+    cy.findByText('S’inscrire').click()
 
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
     cy.stepLog({ message: 'my account should be created' })
     cy.wait('@signupUser').its('response.statusCode').should('eq', 204)
     cy.url().should('contain', '/inscription/compte/confirmation')
-    cy.contains('Votre compte est en cours de création')
+    cy.contains('Validez votre adresse email')
 
     cy.stepLog({ message: 'retrieve last email received' })
 
@@ -62,19 +58,12 @@ describe('Account creation', () => {
     )
 
     cy.stepLog({
-      message:
-        'check that we are redirected to connexion with a toaster message',
+      message: 'check that we are redirected to connexion',
     })
-
-    cy.findAllByTestId('global-notification-success')
-      .contains(
-        'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.'
-      )
-      .should('not.be.visible')
     cy.url().should('contain', '/connexion')
 
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
-    logInAndGoToPage(randomEmail, '/parcours-inscription')
+    logInAndGoToPage(randomEmail, '/inscription/structure/recherche')
   })
 })

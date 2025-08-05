@@ -8,7 +8,6 @@ const signupFormDefault = {
   password: 'P@ssW0rD123123', // NOSONAR
   firstName: 'first name',
   lastName: 'last name',
-  phoneNumber: '0606060606',
   contactOk: true,
 }
 
@@ -34,19 +33,6 @@ describe('validationSchema', () => {
       expectedErrors: ['Veuillez renseigner votre nom'],
     },
     {
-      description: 'not valid form without phone',
-      formValues: { ...signupFormDefault, phoneNumber: '' },
-      expectedErrors: [
-        'Veuillez renseigner un numéro de téléphone',
-        'Veuillez renseigner un numéro de téléphone valide',
-      ],
-    },
-    {
-      description: 'not valid form with invalid phone',
-      formValues: { ...signupFormDefault, phoneNumber: 'invalid entry' },
-      expectedErrors: ['Veuillez renseigner un numéro de téléphone valide'],
-    },
-    {
       description: 'not valid form without password',
       formValues: { ...signupFormDefault, password: '' },
       expectedErrors: ['password is a required field', 'password is invalid'], // default yup message
@@ -61,7 +47,7 @@ describe('validationSchema', () => {
   cases.forEach(({ description, formValues, expectedErrors }) => {
     it(`should validate the form for case: ${description}`, async () => {
       const errors = await getYupValidationSchemaErrors(
-        validationSchema(false),
+        validationSchema,
         formValues
       )
       expect(errors).toEqual(expectedErrors)
