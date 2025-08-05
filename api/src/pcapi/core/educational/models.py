@@ -315,13 +315,13 @@ class HasImageMixin:
     FOLDER = settings.THUMBS_FOLDER_NAME
 
     id: sa_orm.Mapped[int]
-    imageId = sa.Column(sa.Text, nullable=True)
-    imageCrop: sa_orm.Mapped[dict | None] = sa.Column(
+    imageId = sa.orm.mapped_column(sa.Text, nullable=True)
+    imageCrop: sa_orm.Mapped[dict | None] = sa.orm.mapped_column(
         sa_mutable.MutableDict.as_mutable(postgresql.json.JSONB), nullable=True
     )
-    imageCredit = sa.Column(sa.Text, nullable=True)
+    imageCredit = sa.orm.mapped_column(sa.Text, nullable=True)
     # Whether or not we also stored the original image in the storage bucket.
-    imageHasOriginal = sa.Column(sa.Boolean, nullable=True)
+    imageHasOriginal = sa.orm.mapped_column(sa.Boolean, nullable=True)
 
     @hybrid_property
     def hasImage(self) -> bool:
@@ -493,59 +493,58 @@ class CollectiveOfferRejectionReason(enum.Enum):
     WRONG_PRICE = "WRONG_PRICE"
 
 
-class ValidationRuleCollectiveOfferLink(PcObject, models.Base, models.Model):
+class ValidationRuleCollectiveOfferLink(PcObject, models.Model):
     __tablename__ = "validation_rule_collective_offer_link"
-    ruleId: int = sa.Column(
+    ruleId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
     )
-    collectiveOfferId: int = sa.Column(
+    collectiveOfferId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), nullable=False
     )
 
 
-class ValidationRuleCollectiveOfferTemplateLink(PcObject, models.Base, models.Model):
+class ValidationRuleCollectiveOfferTemplateLink(PcObject, models.Model):
     __tablename__ = "validation_rule_collective_offer_template_link"
-    ruleId: int = sa.Column(
+    ruleId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
     )
-    collectiveOfferTemplateId: int = sa.Column(
+    collectiveOfferTemplateId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), nullable=False
     )
 
 
-class CollectiveOfferTemplateDomain(models.Base, models.Model):
+class CollectiveOfferTemplateDomain(models.Model):
     """An association table between CollectiveOfferTemplate and
     EducationalDomain for their many-to-many relationship.
     """
 
     __tablename__ = "collective_offer_template_domain"
 
-    collectiveOfferTemplateId: int = sa.Column(
+    collectiveOfferTemplateId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), index=True, primary_key=True
     )
-    educationalDomainId: int = sa.Column(
+    educationalDomainId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, primary_key=True
     )
 
 
-class CollectiveOfferDomain(models.Base, models.Model):
+class CollectiveOfferDomain(models.Model):
     """An association table between CollectiveOffer and
     EducationalDomain for their many-to-many relationship.
     """
 
     __tablename__ = "collective_offer_domain"
 
-    collectiveOfferId: int = sa.Column(
+    collectiveOfferId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), index=True, primary_key=True
     )
-    educationalDomainId: int = sa.Column(
+    educationalDomainId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, primary_key=True
     )
 
 
 class CollectiveOffer(
     PcObject,
-    models.Base,
     offer_mixin.ValidationMixin,
     AccessibilityMixin,
     CollectiveStatusMixin,
@@ -554,41 +553,47 @@ class CollectiveOffer(
 ):
     __tablename__ = "collective_offer"
 
-    isActive: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
+    isActive: sa_orm.Mapped[bool] = sa.orm.mapped_column(
+        sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True
+    )
 
-    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+    authorId = sa.orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
     author: sa_orm.Mapped["User | None"] = sa_orm.relationship("User", foreign_keys=[authorId], uselist=False)
 
     # the venueId is the billing address.
     # To find where the offer takes place, check offerVenue.
-    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
+    venueId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True
+    )
 
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="collectiveOffers"
     )
 
-    name: str = sa.Column(sa.String(140), nullable=False)
+    name: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.String(140), nullable=False)
 
-    bookingEmails: list[str] = sa.Column(
+    bookingEmails: sa_orm.Mapped[list[str]] = sa.orm.mapped_column(
         sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.String)),
         nullable=False,
         server_default="{}",
     )
 
-    description: str = sa.Column(sa.Text, nullable=False, server_default="", default="")
+    description: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=False, server_default="", default="")
 
-    durationMinutes = sa.Column(sa.Integer, nullable=True)
+    durationMinutes = sa.orm.mapped_column(sa.Integer, nullable=True)
 
-    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
 
-    dateArchived: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
+    dateArchived: sa_orm.Mapped[datetime.datetime | None] = sa.orm.mapped_column(sa.DateTime, nullable=True)
 
-    dateUpdated: datetime.datetime = sa.Column(
+    dateUpdated: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
     )
 
-    students: list[StudentLevels] = sa.Column(
+    students: sa_orm.Mapped[list[StudentLevels]] = sa.orm.mapped_column(
         sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.Enum(StudentLevels))),
         nullable=False,
         server_default="{}",
@@ -598,9 +603,9 @@ class CollectiveOffer(
         "CollectiveStock", back_populates="collectiveOffer", uselist=False
     )
 
-    contactEmail: str | None = sa.Column(sa.String(120), nullable=True)
+    contactEmail: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.String(120), nullable=True)
 
-    contactPhone: str | None = sa.Column(sa.Text, nullable=True)
+    contactPhone: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.Text, nullable=True)
 
     # Where the offer takes place
     # There are three types:
@@ -610,11 +615,11 @@ class CollectiveOffer(
     # Each object should have the same three keys: one for the venue
     # type, one for the venueId (filled when 1.) and one for the random
     # place (filled when 3.)
-    offerVenue: sa_orm.Mapped[OfferVenueDictStr] = sa.Column(
+    offerVenue: sa_orm.Mapped[OfferVenueDictStr] = sa.orm.mapped_column(
         sa_mutable.MutableDict.as_mutable(postgresql.json.JSONB), nullable=False
     )
 
-    interventionArea: list[str] = sa.Column(
+    interventionArea: sa_orm.Mapped[list[str]] = sa.orm.mapped_column(
         sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
     )
 
@@ -622,13 +627,15 @@ class CollectiveOffer(
         "EducationalDomain", secondary=CollectiveOfferDomain.__table__, back_populates="collectiveOffers"
     )
 
-    institutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=True)
+    institutionId = sa.orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=True
+    )
 
     institution: sa_orm.Mapped["EducationalInstitution | None"] = sa_orm.relationship(
         "EducationalInstitution", foreign_keys=[institutionId], back_populates="collectiveOffers"
     )
 
-    templateId: int | None = sa.Column(
+    templateId: sa_orm.Mapped[int | None] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), index=True, nullable=True
     )
 
@@ -636,7 +643,7 @@ class CollectiveOffer(
         "CollectiveOfferTemplate", foreign_keys=[templateId], back_populates="collectiveOffers"
     )
 
-    teacherId: int | None = sa.Column(
+    teacherId: sa_orm.Mapped[int | None] = sa.orm.mapped_column(
         sa.BigInteger,
         sa.ForeignKey("educational_redactor.id"),
         nullable=True,
@@ -649,7 +656,7 @@ class CollectiveOffer(
         uselist=False,
     )
 
-    providerId: int | None = sa.Column(
+    providerId: sa_orm.Mapped[int | None] = sa.orm.mapped_column(
         sa.BigInteger,
         sa.ForeignKey("provider.id"),
         nullable=True,
@@ -664,37 +671,37 @@ class CollectiveOffer(
         "OfferValidationRule", secondary=ValidationRuleCollectiveOfferLink.__table__, back_populates="collectiveOffers"
     )
 
-    formats: list[EacFormat] = sa.Column(
+    formats: sa_orm.Mapped[list[EacFormat]] = sa.orm.mapped_column(
         postgresql.ARRAY(sa.Enum(EacFormat, create_constraint=False, native_enum=False)), nullable=False
     )
 
-    rejectionReason: CollectiveOfferRejectionReason | None = sa.Column(
+    rejectionReason: sa_orm.Mapped[CollectiveOfferRejectionReason | None] = sa.orm.mapped_column(
         db_utils.MagicEnum(CollectiveOfferRejectionReason), default=None
     )
 
     isNonFreeOffer: sa_orm.Mapped["bool | None"] = sa_orm.query_expression()
 
-    offererAddressId: sa_orm.Mapped[int | None] = sa.Column(
+    offererAddressId: sa_orm.Mapped[int | None] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True
     )
     offererAddress: sa_orm.Mapped["OffererAddress | None"] = sa_orm.relationship(
         "OffererAddress", foreign_keys=offererAddressId, uselist=False
     )
 
-    locationType: sa_orm.Mapped[CollectiveLocationType | None] = sa.Column(
+    locationType: sa_orm.Mapped[CollectiveLocationType | None] = sa.orm.mapped_column(
         db_utils.MagicEnum(CollectiveLocationType), nullable=True, server_default=None, default=None
     )
     sa.Index("ix_collective_offer_locationType_offererAddressId", locationType, offererAddressId)
 
-    locationComment: sa_orm.Mapped[str | None] = sa.Column(sa.Text(), nullable=True)
+    locationComment: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.Text(), nullable=True)
 
-    @sa_orm.declared_attr
-    def __table_args__(self):
-        parent_args = []
+    @sa_orm.declared_attr.directive
+    def __table_args__(cls) -> tuple:
+        parent_args: list = []
         # Retrieves indexes from parent mixins defined in __table_args__
-        for base_class in self.__mro__:
+        for base_class in cls.__mro__:
             try:
-                parent_args += super(base_class, self).__table_args__
+                parent_args += super(base_class, cls).__table_args__
             except (AttributeError, TypeError):
                 pass
 
@@ -716,7 +723,7 @@ class CollectiveOffer(
         return self.providerId is not None
 
     # does the collective offer belongs to a national program
-    nationalProgramId: int | None = sa.Column(
+    nationalProgramId: sa_orm.Mapped[int | None] = sa.orm.mapped_column(
         sa.BigInteger,
         sa.ForeignKey("national_program.id"),
         nullable=True,
@@ -1047,13 +1054,15 @@ class CollectiveOffer(
         return self.collectiveStock.is_two_days_past_end()
 
 
-class CollectiveOfferTemplateEducationalRedactor(PcObject, models.Base, models.Model):
+class CollectiveOfferTemplateEducationalRedactor(PcObject, models.Model):
     """Allow adding to favorite the offer template for adage user"""
 
     __tablename__ = "collective_offer_template_educational_redactor"
 
-    educationalRedactorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("educational_redactor.id"), nullable=False)
-    collectiveOfferTemplateId: int = sa.Column(
+    educationalRedactorId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("educational_redactor.id"), nullable=False
+    )
+    collectiveOfferTemplateId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), nullable=False
     )
     collectiveOfferTemplate: sa_orm.Mapped["CollectiveOfferTemplate"] = sa_orm.relationship(
@@ -1070,54 +1079,59 @@ class CollectiveOfferTemplate(
     AccessibilityMixin,
     CollectiveStatusMixin,
     HasImageMixin,
-    models.Base,
     models.Model,
 ):
     __tablename__ = "collective_offer_template"
 
-    isActive: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
+    isActive: sa_orm.Mapped[bool] = sa.orm.mapped_column(
+        sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True
+    )
 
-    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+    authorId = sa.orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
     author: sa_orm.Mapped["User | None"] = sa_orm.relationship("User", foreign_keys=[authorId], uselist=False)
 
-    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
+    venueId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True
+    )
 
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="collectiveOfferTemplates"
     )
 
-    name: str = sa.Column(sa.String(140), nullable=False)
+    name: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.String(140), nullable=False)
 
-    description: str = sa.Column(sa.Text, nullable=False, server_default="", default="")
+    description: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=False, server_default="", default="")
 
-    durationMinutes = sa.Column(sa.Integer, nullable=True)
+    durationMinutes = sa.orm.mapped_column(sa.Integer, nullable=True)
 
-    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
 
-    dateUpdated: datetime.datetime = sa.Column(
+    dateUpdated: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
     )
 
-    students: list[StudentLevels] = sa.Column(
+    students: sa_orm.Mapped[list[StudentLevels]] = sa.orm.mapped_column(
         sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.Enum(StudentLevels))),
         nullable=False,
         server_default="{}",
     )
 
-    priceDetail = sa.Column(sa.Text, nullable=True)
+    priceDetail = sa.orm.mapped_column(sa.Text, nullable=True)
 
-    bookingEmails: list[str] = sa.Column(
+    bookingEmails: sa_orm.Mapped[list[str]] = sa.orm.mapped_column(
         sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.String)),
         nullable=False,
         server_default="{}",
     )
 
-    offerVenue: sa_orm.Mapped[OfferVenueDictStr] = sa.Column(
+    offerVenue: sa_orm.Mapped[OfferVenueDictStr] = sa.orm.mapped_column(
         sa_mutable.MutableDict.as_mutable(postgresql.json.JSONB), nullable=False
     )
 
-    interventionArea: list[str] = sa.Column(
+    interventionArea: sa_orm.Mapped[list[str]] = sa.orm.mapped_column(
         sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
     )
 
@@ -1138,7 +1152,7 @@ class CollectiveOfferTemplate(
     )
 
     # does the collective offer belongs to a national program
-    nationalProgramId: int | None = sa.Column(
+    nationalProgramId: sa_orm.Mapped[int | None] = sa.orm.mapped_column(
         sa.BigInteger,
         sa.ForeignKey("national_program.id"),
         nullable=True,
@@ -1155,9 +1169,9 @@ class CollectiveOfferTemplate(
         back_populates="favoriteCollectiveOfferTemplates",
     )
 
-    dateRange: DateTimeRange = sa.Column(postgresql.TSRANGE)
+    dateRange: sa_orm.Mapped[DateTimeRange] = sa.orm.mapped_column(postgresql.TSRANGE, nullable=True)
 
-    formats: list[EacFormat] = sa.Column(
+    formats: sa_orm.Mapped[list[EacFormat]] = sa.orm.mapped_column(
         postgresql.ARRAY(sa.Enum(EacFormat, create_constraint=False, native_enum=False)), nullable=False
     )
 
@@ -1165,43 +1179,43 @@ class CollectiveOfferTemplate(
         "CollectivePlaylist", back_populates="collective_offer_template"
     )
 
-    contactEmail: str | None = sa.Column(sa.String(120), nullable=True)
-    contactPhone: str | None = sa.Column(sa.Text, nullable=True)
-    contactUrl: str | None = sa.Column(sa.Text, nullable=True)
-    contactForm: OfferContactFormEnum | None = sa.Column(
+    contactEmail: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.String(120), nullable=True)
+    contactPhone: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.Text, nullable=True)
+    contactUrl: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.Text, nullable=True)
+    contactForm: sa_orm.Mapped[OfferContactFormEnum | None] = sa.orm.mapped_column(
         db_utils.MagicEnum(OfferContactFormEnum),
         nullable=True,
         server_default=None,
         default=None,
     )
 
-    rejectionReason: CollectiveOfferRejectionReason | None = sa.Column(
+    rejectionReason: sa_orm.Mapped[CollectiveOfferRejectionReason | None] = sa.orm.mapped_column(
         db_utils.MagicEnum(CollectiveOfferRejectionReason), default=None
     )
 
-    offererAddressId: sa_orm.Mapped[int | None] = sa.Column(
+    offererAddressId: sa_orm.Mapped[int | None] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True
     )
     offererAddress: sa_orm.Mapped["OffererAddress | None"] = sa_orm.relationship(
         "OffererAddress", foreign_keys=[offererAddressId], uselist=False
     )
 
-    locationType: sa_orm.Mapped[CollectiveLocationType | None] = sa.Column(
+    locationType: sa_orm.Mapped[CollectiveLocationType | None] = sa.orm.mapped_column(
         db_utils.MagicEnum(CollectiveLocationType), nullable=True, server_default=None, default=None
     )
     sa.Index("ix_collective_offer_template_locationType_offererAddressId", locationType, offererAddressId)
 
-    locationComment: sa_orm.Mapped[str | None] = sa.Column(sa.Text(), nullable=True)
+    locationComment: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.Text(), nullable=True)
 
-    dateArchived: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
+    dateArchived: sa_orm.Mapped[datetime.datetime | None] = sa.orm.mapped_column(sa.DateTime, nullable=True)
 
-    @sa_orm.declared_attr
-    def __table_args__(self):
-        parent_args = []
+    @sa_orm.declared_attr.directive
+    def __table_args__(cls) -> tuple:
+        parent_args: list = []
         # Retrieves indexes from parent mixins defined in __table_args__
-        for base_class in self.__mro__:
+        for base_class in cls.__mro__:
             try:
-                parent_args += super(base_class, self).__table_args__
+                parent_args += super(base_class, cls).__table_args__
             except (AttributeError, TypeError):
                 pass
         parent_args += [
@@ -1402,22 +1416,22 @@ class CollectiveOfferTemplate(
         return cls.hasStartDatetimePassed
 
 
-class CollectiveStock(PcObject, models.Base, models.Model):
+class CollectiveStock(PcObject, models.Model):
     __tablename__ = "collective_stock"
 
-    dateCreated: datetime.datetime = sa.Column(
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
     )
 
-    dateModified: datetime.datetime = sa.Column(
+    dateModified: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
     )
 
-    startDatetime: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
-    endDatetime: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
+    startDatetime: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(sa.DateTime, nullable=False)
+    endDatetime: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(sa.DateTime, nullable=False)
     sa.Index("ix_collective_stock_startDatetime_endDatetime", startDatetime, endDatetime)
 
-    collectiveOfferId: int = sa.Column(
+    collectiveOfferId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("collective_offer.id"), index=True, nullable=False, unique=True
     )
 
@@ -1429,18 +1443,18 @@ class CollectiveStock(PcObject, models.Base, models.Model):
         "CollectiveBooking", back_populates="collectiveStock"
     )
 
-    price: decimal.Decimal = sa.Column(
+    price: sa_orm.Mapped[decimal.Decimal] = sa.orm.mapped_column(
         sa.Numeric(10, 2),
         sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"),
         index=True,
         nullable=False,
     )
 
-    bookingLimitDatetime: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
+    bookingLimitDatetime: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(sa.DateTime, nullable=False)
 
-    numberOfTickets: int = sa.Column(sa.Integer, nullable=False)
+    numberOfTickets: sa_orm.Mapped[int] = sa.orm.mapped_column(sa.Integer, nullable=False)
 
-    priceDetail = sa.Column(sa.Text, nullable=True)
+    priceDetail = sa.orm.mapped_column(sa.Text, nullable=True)
 
     @property
     def lastBooking(self) -> "CollectiveBooking | None":
@@ -1520,37 +1534,39 @@ class CollectiveStock(PcObject, models.Base, models.Model):
         return False
 
 
-class EducationalInstitution(PcObject, models.Base, models.Model):
+class EducationalInstitution(PcObject, models.Model):
     __tablename__ = "educational_institution"
 
-    id: sa_orm.Mapped[int] = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+    id: sa_orm.Mapped[int] = sa.orm.mapped_column(sa.Integer, primary_key=True, autoincrement=True)
 
     # this institutionId corresponds to the UAI ("Unité Administrative Immatriculée") code
-    institutionId: str = sa.Column(sa.String(30), nullable=False, unique=True, index=True)
+    institutionId: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.String(30), nullable=False, unique=True, index=True)
 
-    institutionType: str = sa.Column(sa.String(80), nullable=False)
+    institutionType: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.String(80), nullable=False)
 
-    name: str = sa.Column(sa.Text(), nullable=False)
+    name: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text(), nullable=False)
 
-    city: str = sa.Column(sa.Text(), nullable=False)
+    city: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text(), nullable=False)
 
-    postalCode: str = sa.Column(sa.String(10), nullable=False)
+    postalCode: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.String(10), nullable=False)
 
-    email = sa.Column(sa.Text(), nullable=True)
+    email = sa.orm.mapped_column(sa.Text(), nullable=True)
 
-    phoneNumber: str = sa.Column(sa.String(30), nullable=False)
+    phoneNumber: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.String(30), nullable=False)
 
     collectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = sa_orm.relationship(
         "CollectiveOffer", back_populates="institution"
     )
 
-    isActive: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
+    isActive: sa_orm.Mapped[bool] = sa.orm.mapped_column(
+        sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True
+    )
 
     programAssociations: sa_orm.Mapped[list["EducationalInstitutionProgramAssociation"]] = sa_orm.relationship(
         "EducationalInstitutionProgramAssociation", back_populates="institution"
     )
 
-    ruralLevel: InstitutionRuralLevel = sa.Column(
+    ruralLevel: sa_orm.Mapped[InstitutionRuralLevel] = sa.orm.mapped_column(
         db_utils.MagicEnum(InstitutionRuralLevel), nullable=True, default=None
     )
 
@@ -1558,16 +1574,22 @@ class EducationalInstitution(PcObject, models.Base, models.Model):
         "CollectivePlaylist", back_populates="institution"
     )
 
-    latitude: decimal.Decimal | None = sa.Column(sa.Numeric(8, 5), nullable=True)
+    latitude: sa_orm.Mapped[decimal.Decimal | None] = sa.orm.mapped_column(sa.Numeric(8, 5), nullable=True)
 
-    longitude: decimal.Decimal | None = sa.Column(sa.Numeric(8, 5), nullable=True)
+    longitude: sa_orm.Mapped[decimal.Decimal | None] = sa.orm.mapped_column(sa.Numeric(8, 5), nullable=True)
 
     __table_args__ = (
-        sa.Index("ix_educational_institution_type_name_city", institutionType + " " + name + " " + city),
+        sa.Index(
+            "ix_educational_institution_type_name_city",
+            sa.text("""(((("institutionType"::text || ' '::text) || name) || ' '::text) || city)"""),
+            postgresql_using="gin",
+            postgresql_ops={
+                "description": "gin_trgm_ops",
+            },
+        ),
         sa.Index(
             "ix_educational_institution_department_code",
             sa.func.postal_code_to_department_code(postalCode),
-            "id",
         ),
     )
 
@@ -1579,22 +1601,22 @@ class EducationalInstitution(PcObject, models.Base, models.Model):
         return [association.program for association in self.programAssociations if date in association.timespan]
 
 
-class EducationalYear(PcObject, models.Base, models.Model):
+class EducationalYear(PcObject, models.Model):
     __tablename__ = "educational_year"
 
-    adageId: str = sa.Column(sa.String(30), unique=True, nullable=False)
+    adageId: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.String(30), unique=True, nullable=False)
 
-    beginningDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
+    beginningDate: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(sa.DateTime, nullable=False)
 
-    expirationDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
+    expirationDate: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(sa.DateTime, nullable=False)
 
 
-class EducationalDeposit(PcObject, models.Base, models.Model):
+class EducationalDeposit(PcObject, models.Model):
     __tablename__ = "educational_deposit"
 
     TEMPORARY_FUND_AVAILABLE_RATIO = 0.8
 
-    educationalInstitutionId: int = sa.Column(
+    educationalInstitutionId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=False
     )
 
@@ -1602,7 +1624,7 @@ class EducationalDeposit(PcObject, models.Base, models.Model):
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="deposits"
     )
 
-    educationalYearId: str = sa.Column(
+    educationalYearId: sa_orm.Mapped[str] = sa.orm.mapped_column(
         sa.String(30), sa.ForeignKey("educational_year.adageId"), index=True, nullable=False
     )
 
@@ -1610,9 +1632,9 @@ class EducationalDeposit(PcObject, models.Base, models.Model):
         EducationalYear, foreign_keys=[educationalYearId], backref="deposits"
     )
 
-    amount: decimal.Decimal = sa.Column(sa.Numeric(10, 2), nullable=False)
+    amount: sa_orm.Mapped[decimal.Decimal] = sa.orm.mapped_column(sa.Numeric(10, 2), nullable=False)
 
-    creditRatio: sa_orm.Mapped[decimal.Decimal | None] = sa.Column(
+    creditRatio: sa_orm.Mapped[decimal.Decimal | None] = sa.orm.mapped_column(
         sa.Numeric(10, 3),
         sa.CheckConstraint(
             '"creditRatio" IS NULL OR ("creditRatio" BETWEEN 0 AND 1)',
@@ -1621,13 +1643,13 @@ class EducationalDeposit(PcObject, models.Base, models.Model):
         nullable=True,
     )
 
-    dateCreated: datetime.datetime = sa.Column(
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
     )
 
-    isFinal: bool = sa.Column(sa.Boolean, nullable=False, default=True)
+    isFinal: sa_orm.Mapped[bool] = sa.orm.mapped_column(sa.Boolean, nullable=False, default=True)
 
-    ministry = sa.Column(
+    ministry = sa.orm.mapped_column(
         sa.Enum(Ministry),
         nullable=True,
     )
@@ -1663,18 +1685,20 @@ class EducationalDeposit(PcObject, models.Base, models.Model):
             raise exceptions.InsufficientFundFirstPeriod()
 
 
-class EducationalRedactor(PcObject, models.Base, models.Model):
+class EducationalRedactor(PcObject, models.Model):
     __tablename__ = "educational_redactor"
 
-    email: str = sa.Column(sa.String(120), nullable=False, unique=True, index=True)
+    email: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.String(120), nullable=False, unique=True, index=True)
 
-    firstName = sa.Column(sa.String(128), nullable=True)
+    firstName = sa.orm.mapped_column(sa.String(128), nullable=True)
 
-    lastName = sa.Column(sa.String(128), nullable=True)
+    lastName = sa.orm.mapped_column(sa.String(128), nullable=True)
 
-    civility = sa.Column(sa.String(20), nullable=True)
+    civility = sa.orm.mapped_column(sa.String(20), nullable=True)
 
-    preferences: sa_orm.Mapped[dict] = sa.Column(postgresql.JSONB(), server_default="{}", default={}, nullable=False)
+    preferences: sa_orm.Mapped[dict] = sa.orm.mapped_column(
+        postgresql.JSONB(), server_default="{}", default={}, nullable=False
+    )
 
     collectiveBookings: sa_orm.Mapped[list["CollectiveBooking"]] = sa_orm.relationship(
         "CollectiveBooking", back_populates="educationalRedactor"
@@ -1697,39 +1721,49 @@ class EducationalRedactor(PcObject, models.Base, models.Model):
         return (f"{self.firstName or ''} {self.lastName or ''}".strip()) or self.email
 
 
-class CollectiveBooking(PcObject, models.Base, models.Model):
+class CollectiveBooking(PcObject, models.Model):
     __tablename__ = "collective_booking"
 
-    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
     sa.Index("ix_collective_booking_date_created", dateCreated)
 
-    dateUsed = sa.Column(sa.DateTime, nullable=True, index=True)
+    dateUsed = sa.orm.mapped_column(sa.DateTime, nullable=True, index=True)
 
-    collectiveStockId: int = sa.Column(sa.BigInteger, sa.ForeignKey("collective_stock.id"), index=True, nullable=False)
+    collectiveStockId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("collective_stock.id"), index=True, nullable=False
+    )
 
     collectiveStock: sa_orm.Mapped["CollectiveStock"] = sa_orm.relationship(
         "CollectiveStock", foreign_keys=[collectiveStockId], back_populates="collectiveBookings"
     )
 
-    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
+    venueId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False
+    )
 
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", foreign_keys=[venueId], backref="collectiveBookings")
 
-    offererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False)
+    offererId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False
+    )
 
     offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship(
         "Offerer", foreign_keys=[offererId], backref="collectiveBookings"
     )
 
-    cancellationDate = sa.Column(sa.DateTime, nullable=True)
+    cancellationDate = sa.orm.mapped_column(sa.DateTime, nullable=True)
 
-    cancellationUserId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+    cancellationUserId: sa_orm.Mapped[int | None] = sa.orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id"), nullable=True
+    )
 
     cancellationUser: sa_orm.Mapped["User | None"] = sa_orm.relationship("User", foreign_keys=[cancellationUserId])
 
-    cancellationLimitDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
+    cancellationLimitDate: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(sa.DateTime, nullable=False)
 
-    cancellationReason = sa.Column(
+    cancellationReason = sa.orm.mapped_column(
         "cancellationReason",
         sa.Enum(
             CollectiveBookingCancellationReasons,
@@ -1738,32 +1772,34 @@ class CollectiveBooking(PcObject, models.Base, models.Model):
         nullable=True,
     )
 
-    status: CollectiveBookingStatus = sa.Column(
+    status: sa_orm.Mapped[CollectiveBookingStatus] = sa.orm.mapped_column(
         sa.Enum(CollectiveBookingStatus), nullable=False, default=CollectiveBookingStatus.CONFIRMED
     )
 
     sa.Index("ix_collective_booking_status", status)
 
-    reimbursementDate = sa.Column(sa.DateTime, nullable=True)
+    reimbursementDate = sa.orm.mapped_column(sa.DateTime, nullable=True)
 
-    educationalInstitutionId: int = sa.Column(
+    educationalInstitutionId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("educational_institution.id"), nullable=False
     )
     educationalInstitution: sa_orm.Mapped["EducationalInstitution"] = sa_orm.relationship(
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="collectiveBookings"
     )
 
-    educationalYearId: str = sa.Column(sa.String(30), sa.ForeignKey("educational_year.adageId"), nullable=False)
+    educationalYearId: sa_orm.Mapped[str] = sa.orm.mapped_column(
+        sa.String(30), sa.ForeignKey("educational_year.adageId"), nullable=False
+    )
     educationalYear: sa_orm.Mapped["EducationalYear"] = sa_orm.relationship(
         EducationalYear, foreign_keys=[educationalYearId]
     )
 
     sa.Index("ix_collective_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
 
-    confirmationDate = sa.Column(sa.DateTime, nullable=True)
-    confirmationLimitDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
+    confirmationDate = sa.orm.mapped_column(sa.DateTime, nullable=True)
+    confirmationLimitDate: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(sa.DateTime, nullable=False)
 
-    educationalRedactorId: int = sa.Column(
+    educationalRedactorId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger,
         sa.ForeignKey("educational_redactor.id"),
         nullable=False,
@@ -1966,13 +2002,15 @@ class CollectiveBooking(PcObject, models.Base, models.Model):
         return self.collectiveStock.price
 
 
-class EducationalDomainVenue(models.Base, models.Model):
+class EducationalDomainVenue(models.Model):
     __tablename__ = "educational_domain_venue"
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-    educationalDomainId: int = sa.Column(
+    id: sa_orm.Mapped[int] = sa.orm.mapped_column(sa.BigInteger, primary_key=True, autoincrement=True)
+    educationalDomainId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, nullable=False
     )
-    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=False)
+    venueId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=False
+    )
 
     __table_args__ = (
         sa.UniqueConstraint(
@@ -1983,17 +2021,17 @@ class EducationalDomainVenue(models.Base, models.Model):
     )
 
 
-class DomainToNationalProgram(PcObject, models.Base, models.Model):
+class DomainToNationalProgram(PcObject, models.Model):
     """Intermediate table that links `EducationalDomain`
     to `NationalProgram`. Links are unique: a domain can be linked to many
     programs but not twice the same.
     """
 
     __tablename__ = "domain_to_national_program"
-    domainId: int = sa.Column(
+    domainId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, nullable=False
     )
-    nationalProgramId: int = sa.Column(
+    nationalProgramId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("national_program.id", ondelete="CASCADE"), index=True, nullable=False
     )
 
@@ -2006,10 +2044,10 @@ class DomainToNationalProgram(PcObject, models.Base, models.Model):
     )
 
 
-class EducationalDomain(PcObject, models.Base, models.Model):
+class EducationalDomain(PcObject, models.Model):
     __tablename__ = "educational_domain"
 
-    name: str = sa.Column(sa.Text, nullable=False)
+    name: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=False)
     venues: sa_orm.Mapped[list["Venue"]] = sa_orm.relationship(
         "Venue", back_populates="collectiveDomains", secondary=EducationalDomainVenue.__table__
     )
@@ -2028,19 +2066,19 @@ class EducationalDomain(PcObject, models.Base, models.Model):
     )
 
 
-class CollectiveDmsApplication(PcObject, models.Base, models.Model):
+class CollectiveDmsApplication(PcObject, models.Model):
     __tablename__ = "collective_dms_application"
-    state: str = sa.Column(sa.String(30), nullable=False)
-    procedure: int = sa.Column(sa.BigInteger, nullable=False)
-    application: int = sa.Column(sa.BigInteger, nullable=False, index=True)
-    siret: str = sa.Column(sa.String(14), nullable=False, index=True)
-    lastChangeDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
-    depositDate = sa.Column(sa.DateTime, nullable=False)
-    expirationDate = sa.Column(sa.DateTime, nullable=True)
-    buildDate = sa.Column(sa.DateTime, nullable=True)
-    instructionDate = sa.Column(sa.DateTime, nullable=True)
-    processingDate = sa.Column(sa.DateTime, nullable=True)
-    userDeletionDate = sa.Column(sa.DateTime, nullable=True)
+    state: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.String(30), nullable=False)
+    procedure: sa_orm.Mapped[int] = sa.orm.mapped_column(sa.BigInteger, nullable=False)
+    application: sa_orm.Mapped[int] = sa.orm.mapped_column(sa.BigInteger, nullable=False, index=True)
+    siret: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.String(14), nullable=False, index=True)
+    lastChangeDate: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(sa.DateTime, nullable=False)
+    depositDate = sa.orm.mapped_column(sa.DateTime, nullable=False)
+    expirationDate = sa.orm.mapped_column(sa.DateTime, nullable=True)
+    buildDate = sa.orm.mapped_column(sa.DateTime, nullable=True)
+    instructionDate = sa.orm.mapped_column(sa.DateTime, nullable=True)
+    processingDate = sa.orm.mapped_column(sa.DateTime, nullable=True)
+    userDeletionDate = sa.orm.mapped_column(sa.DateTime, nullable=True)
 
     @hybrid_property
     def siren(self):
@@ -2083,27 +2121,31 @@ sa.event.listen(
 )
 
 
-class CollectiveOfferRequest(PcObject, models.Base, models.Model):
+class CollectiveOfferRequest(PcObject, models.Model):
     __tablename__ = "collective_offer_request"
-    _phoneNumber: str | None = sa.Column(sa.String(30), nullable=True, name="phoneNumber")
+    _phoneNumber: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.String(30), nullable=True, name="phoneNumber")
 
-    requestedDate: datetime.date | None = sa.Column(sa.Date, nullable=True)
+    requestedDate: sa_orm.Mapped[datetime.date | None] = sa.orm.mapped_column(sa.Date, nullable=True)
 
-    totalStudents: int | None = sa.Column(sa.Integer, nullable=True)
+    totalStudents: sa_orm.Mapped[int | None] = sa.orm.mapped_column(sa.Integer, nullable=True)
 
-    totalTeachers: int | None = sa.Column(sa.Integer, nullable=True)
+    totalTeachers: sa_orm.Mapped[int | None] = sa.orm.mapped_column(sa.Integer, nullable=True)
 
-    comment: str = sa.Column(sa.Text, nullable=False)
+    comment: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=False)
 
-    dateCreated: datetime.date = sa.Column(sa.Date, nullable=False, server_default=sa.func.current_date())
+    dateCreated: sa_orm.Mapped[datetime.date] = sa.orm.mapped_column(
+        sa.Date, nullable=False, server_default=sa.func.current_date()
+    )
 
-    educationalRedactorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("educational_redactor.id"), nullable=False)
+    educationalRedactorId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("educational_redactor.id"), nullable=False
+    )
 
     educationalRedactor: sa_orm.Mapped["EducationalRedactor"] = sa_orm.relationship(
         "EducationalRedactor", foreign_keys=educationalRedactorId
     )
 
-    collectiveOfferTemplateId: int = sa.Column(
+    collectiveOfferTemplateId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), index=True, nullable=False
     )
 
@@ -2111,7 +2153,7 @@ class CollectiveOfferRequest(PcObject, models.Base, models.Model):
         "CollectiveOfferTemplate", foreign_keys=collectiveOfferTemplateId
     )
 
-    educationalInstitutionId: int = sa.Column(
+    educationalInstitutionId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=False
     )
 
@@ -2135,21 +2177,23 @@ class CollectiveOfferRequest(PcObject, models.Base, models.Model):
         return cls._phoneNumber
 
 
-class NationalProgram(PcObject, models.Base, models.Model):
+class NationalProgram(PcObject, models.Model):
     """
     Keep a track of existing national program that are used to highlight
     collective offers (templates) within a coherent frame.
     """
 
     __tablename__ = "national_program"
-    name: str = sa.Column(sa.Text, unique=True)
-    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    name: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, unique=True, nullable=True)
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
     domains: sa_orm.Mapped[list["EducationalDomain"]] = sa_orm.relationship(
         "EducationalDomain",
         back_populates="nationalPrograms",
         secondary=DomainToNationalProgram.__table__,
     )
-    isActive: sa_orm.Mapped[bool] = sa.Column(
+    isActive: sa_orm.Mapped[bool] = sa.orm.mapped_column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True
     )
 
@@ -2157,13 +2201,13 @@ class NationalProgram(PcObject, models.Base, models.Model):
 PROGRAM_MARSEILLE_EN_GRAND = "marseille_en_grand"
 
 
-class EducationalInstitutionProgramAssociation(models.Base, models.Model):
+class EducationalInstitutionProgramAssociation(models.Model):
     """Association model between EducationalInstitution and
     EducationalInstitutionProgram (many-to-many)
     """
 
     __tablename__ = "educational_institution_program_association"
-    institutionId: int = sa.Column(
+    institutionId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger,
         sa.ForeignKey("educational_institution.id", ondelete="CASCADE"),
         index=True,
@@ -2178,7 +2222,7 @@ class EducationalInstitutionProgramAssociation(models.Base, models.Model):
     institution: sa_orm.Mapped["EducationalInstitution"] = sa_orm.relationship(
         "EducationalInstitution", foreign_keys=[institutionId]
     )
-    programId: int = sa.Column(
+    programId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger,
         sa.ForeignKey("educational_institution_program.id", ondelete="CASCADE"),
         index=True,
@@ -2187,7 +2231,7 @@ class EducationalInstitutionProgramAssociation(models.Base, models.Model):
     program: sa_orm.Mapped["EducationalInstitutionProgram"] = sa_orm.relationship(
         "EducationalInstitutionProgram", foreign_keys=[programId]
     )
-    timespan: sa_orm.Mapped[DateTimeRange] = sa.Column(
+    timespan: sa_orm.Mapped[DateTimeRange] = sa.orm.mapped_column(
         # the date 2023-09-01 is the beginning of the MEG program. This will need to evolve if other programs are added
         "timespan",
         postgresql.TSRANGE(),
@@ -2196,31 +2240,35 @@ class EducationalInstitutionProgramAssociation(models.Base, models.Model):
     )
 
 
-class EducationalInstitutionProgram(PcObject, models.Base, models.Model):
+class EducationalInstitutionProgram(PcObject, models.Model):
     __tablename__ = "educational_institution_program"
     # technical name
-    name: str = sa.Column(sa.Text, nullable=False, unique=True)
+    name: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=False, unique=True)
     # public (printable) name - if something different from name is needed
-    label: str | None = sa.Column(sa.Text, nullable=True)
-    description: str | None = sa.Column(sa.Text, nullable=True)
+    label: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.Text, nullable=True)
+    description: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.Text, nullable=True)
 
 
-class CollectivePlaylist(PcObject, models.Base, models.Model):
+class CollectivePlaylist(PcObject, models.Model):
     __tablename__ = "collective_playlist"
-    type: str = sa.Column(db_utils.MagicEnum(PlaylistType), nullable=False)
-    distanceInKm: float = sa.Column(sa.Float, nullable=True)
+    type: sa_orm.Mapped[str] = sa.orm.mapped_column(db_utils.MagicEnum(PlaylistType), nullable=False)
+    distanceInKm: sa_orm.Mapped[float] = sa.orm.mapped_column(sa.Float, nullable=True)
 
-    institutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=False)
+    institutionId = sa.orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=False
+    )
     institution: sa_orm.Mapped["EducationalInstitution"] = sa_orm.relationship(
         "EducationalInstitution", foreign_keys=[institutionId], back_populates="collective_playlists"
     )
 
-    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=True)
+    venueId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=True
+    )
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="collective_playlists"
     )
 
-    collectiveOfferTemplateId: int = sa.Column(
+    collectiveOfferTemplateId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), index=True, nullable=True
     )
     collective_offer_template: sa_orm.Mapped["CollectiveOfferTemplate"] = sa_orm.relationship(
@@ -2230,11 +2278,11 @@ class CollectivePlaylist(PcObject, models.Base, models.Model):
     sa.Index("ix_collective_playlist_type_institutionId", type, institutionId)
 
 
-class AdageVenueAddress(PcObject, models.Base, models.Model):
+class AdageVenueAddress(PcObject, models.Model):
     __tablename__ = "adage_venue_address"
-    adageId: str | None = sa.Column(sa.Text, nullable=True, unique=True)
-    adageInscriptionDate: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
-    venueId: int | None = sa.Column(
+    adageId: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.Text, nullable=True, unique=True)
+    adageInscriptionDate: sa_orm.Mapped[datetime.datetime | None] = sa.orm.mapped_column(sa.DateTime, nullable=True)
+    venueId: sa_orm.Mapped[int | None] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=True
     )
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(

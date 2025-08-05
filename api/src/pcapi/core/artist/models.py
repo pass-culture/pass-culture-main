@@ -5,7 +5,6 @@ import uuid
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.db import MagicEnum
@@ -25,35 +24,39 @@ class ArtistType(enum.Enum):
     PERFORMER = "performer"
 
 
-class ArtistProductLink(PcObject, Base, Model):
+class ArtistProductLink(PcObject, Model):
     __tablename__ = "artist_product_link"
 
-    artist_id = sa.Column(sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=False, index=True)
-    product_id = sa.Column(sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=False, index=True)
+    artist_id = sa.orm.mapped_column(
+        sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    product_id = sa.orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=False, index=True
+    )
 
-    artist_type = sa.Column(MagicEnum(ArtistType))
-    date_created = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
-    date_modified = sa.Column(sa.DateTime, nullable=True, onupdate=sa.func.now())
+    artist_type = sa.orm.mapped_column(MagicEnum(ArtistType))
+    date_created = sa.orm.mapped_column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    date_modified = sa.orm.mapped_column(sa.DateTime, nullable=True, onupdate=sa.func.now())
 
 
-class Artist(PcObject, Base, Model):
+class Artist(PcObject, Model):
     __tablename__ = "artist"
-    id = sa.Column(sa.Text, primary_key=True, nullable=False, default=lambda _: str(uuid.uuid4()))
-    name = sa.Column(sa.Text, nullable=False, index=True)
-    description = sa.Column(sa.Text)
-    image = sa.Column(sa.Text)
-    image_author = sa.Column(sa.Text)
-    image_license = sa.Column(sa.Text)
-    image_license_url = sa.Column(sa.Text)
-    date_created = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
-    date_modified = sa.Column(sa.DateTime, nullable=True, onupdate=sa.func.now())
+    id = sa.orm.mapped_column(sa.Text, primary_key=True, nullable=False, default=lambda _: str(uuid.uuid4()))
+    name = sa.orm.mapped_column(sa.Text, nullable=False, index=True)
+    description = sa.orm.mapped_column(sa.Text)
+    image = sa.orm.mapped_column(sa.Text)
+    image_author = sa.orm.mapped_column(sa.Text)
+    image_license = sa.orm.mapped_column(sa.Text)
+    image_license_url = sa.orm.mapped_column(sa.Text)
+    date_created = sa.orm.mapped_column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    date_modified = sa.orm.mapped_column(sa.DateTime, nullable=True, onupdate=sa.func.now())
 
     products: sa_orm.Mapped[list["Product"]] = sa_orm.relationship(
         "Product", backref="artists", secondary=ArtistProductLink.__table__
     )
 
 
-class ArtistAlias(PcObject, Base, Model):
+class ArtistAlias(PcObject, Model):
     """
     The data in this table is used by the data team
     to reconcile artists across different sources (e.g. Wikidata)
@@ -62,11 +65,13 @@ class ArtistAlias(PcObject, Base, Model):
     """
 
     __tablename__ = "artist_alias"
-    artist_id = sa.Column(sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=False, index=True)
-    artist_alias_name = sa.Column(sa.Text)
-    artist_cluster_id = sa.Column(sa.Text)
-    artist_type = sa.Column(MagicEnum(ArtistType))
-    artist_wiki_data_id = sa.Column(sa.Text)
-    offer_category_id = sa.Column(sa.Text)
-    date_created = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
-    date_modified = sa.Column(sa.DateTime, nullable=True, onupdate=sa.func.now())
+    artist_id = sa.orm.mapped_column(
+        sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    artist_alias_name = sa.orm.mapped_column(sa.Text)
+    artist_cluster_id = sa.orm.mapped_column(sa.Text)
+    artist_type = sa.orm.mapped_column(MagicEnum(ArtistType))
+    artist_wiki_data_id = sa.orm.mapped_column(sa.Text)
+    offer_category_id = sa.orm.mapped_column(sa.Text)
+    date_created = sa.orm.mapped_column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    date_modified = sa.orm.mapped_column(sa.DateTime, nullable=True, onupdate=sa.func.now())
