@@ -139,9 +139,9 @@ SUGGEST_REACTION_LONG_COOLDOWN_IN_SECONDS = int(
 )
 
 # USERS SESSION TIME
-PRO_SESSION_GRACE_TIME = timedelta(hours=int(os.environ.get("PRO_SESSION_GRACE_TIME", 1)))
-PRO_SESSION_LOGIN_TIMEOUT = timedelta(days=int(os.environ.get("PRO_SESSION_LOGIN_TIMEOUT", 14)))
-PRO_SESSION_FORCE_TIMEOUT = timedelta(days=int(os.environ.get("PRO_SESSION_FORCE_TIMEOUT", 15)))
+PRO_SESSION_GRACE_TIME_IN_HOURS = timedelta(hours=int(os.environ.get("PRO_SESSION_GRACE_TIME_IN_HOURS", 1)))
+PRO_SESSION_LOGIN_TIMEOUT_IN_DAYS = timedelta(days=int(os.environ.get("PRO_SESSION_LOGIN_TIMEOUT_IN_DAYS", 14)))
+PRO_SESSION_FORCE_TIMEOUT_IN_DAYS = timedelta(days=int(os.environ.get("PRO_SESSION_FORCE_TIMEOUT_IN_DAYS", 15)))
 
 # MAIL
 FRAUD_EMAIL_ADDRESS = os.environ.get("FRAUD_EMAIL_ADDRESS", "")

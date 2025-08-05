@@ -142,7 +142,7 @@ class ComputeProSessionValidityTest:
         assert result
 
     def test_connexion_expired_but_still_active(self, login_manager):
-        last_login = datetime.utcnow() - settings.PRO_SESSION_LOGIN_TIMEOUT
+        last_login = datetime.utcnow() - settings.PRO_SESSION_LOGIN_TIMEOUT_IN_DAYS
         last_api_call = datetime.utcnow()
 
         result = login_manager.compute_pro_session_validity(last_login, last_api_call)
@@ -150,15 +150,15 @@ class ComputeProSessionValidityTest:
         assert result
 
     def test_connexion_expired_and_not_active(self, login_manager):
-        last_login = datetime.utcnow() - settings.PRO_SESSION_LOGIN_TIMEOUT
-        last_api_call = datetime.utcnow() - (settings.PRO_SESSION_GRACE_TIME + timedelta(hours=1))
+        last_login = datetime.utcnow() - settings.PRO_SESSION_LOGIN_TIMEOUT_IN_DAYS
+        last_api_call = datetime.utcnow() - (settings.PRO_SESSION_GRACE_TIME_IN_HOURS + timedelta(hours=1))
 
         result = login_manager.compute_pro_session_validity(last_login, last_api_call)
 
         assert not result
 
     def test_connexion_expired_but_still_active_older_than_grace_time(self, login_manager):
-        last_login = datetime.utcnow() - settings.PRO_SESSION_FORCE_TIMEOUT
+        last_login = datetime.utcnow() - settings.PRO_SESSION_FORCE_TIMEOUT_IN_DAYS
         last_api_call = datetime.utcnow()
 
         result = login_manager.compute_pro_session_validity(last_login, last_api_call)
