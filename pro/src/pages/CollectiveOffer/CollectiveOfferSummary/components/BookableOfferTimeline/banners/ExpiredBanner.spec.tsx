@@ -17,6 +17,7 @@ describe('ExpiredBanner', () => {
       <ExpiredBanner
         {...baseProps}
         stepBeforeExpiredStatus={CollectiveOfferDisplayedStatus.PUBLISHED}
+        canEditDates
       />
     )
     expect(
@@ -40,6 +41,7 @@ describe('ExpiredBanner', () => {
       <ExpiredBanner
         {...baseProps}
         stepBeforeExpiredStatus={CollectiveOfferDisplayedStatus.PREBOOKED}
+        canEditDates
       />
     )
     expect(
@@ -56,5 +58,22 @@ describe('ExpiredBanner', () => {
       })
     ).toHaveAttribute('href', '/offre/42/collectif/stocks/edition')
     expect(screen.getByText(/31\/08\/2025/)).toBeInTheDocument()
+  })
+
+  it('should not show edit dates link if canEditDates is false', () => {
+    renderWithProviders(
+      <ExpiredBanner
+        offerId={42}
+        bookingLimitDatetime="2025-08-31T12:00:00Z"
+        departmentCode="75"
+        stepBeforeExpiredStatus={CollectiveOfferDisplayedStatus.PUBLISHED}
+        canEditDates={false}
+      />
+    )
+    expect(
+      screen.queryByRole('link', {
+        name: /Modifier la date limite de réservation/i,
+      })
+    ).not.toBeInTheDocument()
   })
 })

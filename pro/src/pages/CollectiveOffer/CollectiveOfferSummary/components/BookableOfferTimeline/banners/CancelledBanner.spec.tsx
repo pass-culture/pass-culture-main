@@ -75,17 +75,19 @@ describe('CancelledBanner', () => {
   it.each(
     Object.keys(messagePerReason) as CollectiveBookingCancellationReasons[]
   )('should display the correct message for reason %s', (reason) => {
-    renderWithProviders(<CancelledBanner offerId={2} reason={reason} />)
+    renderWithProviders(
+      <CancelledBanner offerId={2} reason={reason} canDuplicate />
+    )
     expect(screen.getByText(messagePerReason[reason])).toBeInTheDocument()
   })
 
   it('should display the correct message when no reason are provided', () => {
-    renderWithProviders(<CancelledBanner offerId={2} />)
+    renderWithProviders(<CancelledBanner offerId={2} canDuplicate />)
     expect(screen.getByText(cancelledByExpiredMessage)).toBeInTheDocument()
   })
 
   it('should log event on press Dupliquer', async () => {
-    renderWithProviders(<CancelledBanner offerId={2} />)
+    renderWithProviders(<CancelledBanner offerId={2} canDuplicate />)
 
     const duplicateButton = screen.getByText("Dupliquer l'offre")
     await userEvent.click(duplicateButton)
@@ -103,11 +105,16 @@ describe('CancelledBanner', () => {
   })
 
   it('should duplicate offer on press Dupliquer', async () => {
-    renderWithProviders(<CancelledBanner offerId={2} />)
+    renderWithProviders(<CancelledBanner offerId={2} canDuplicate />)
 
     const duplicateButton = screen.getByText("Dupliquer l'offre")
     await userEvent.click(duplicateButton)
 
     expect(mockDuplicateBookableOffer).toHaveBeenCalledTimes(1)
+  })
+
+  it('should not show duplicate button if canDuplicate is false', () => {
+    renderWithProviders(<CancelledBanner offerId={2} canDuplicate={false} />)
+    expect(screen.queryByText("Dupliquer l'offre")).not.toBeInTheDocument()
   })
 })
