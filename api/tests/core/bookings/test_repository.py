@@ -18,6 +18,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
+from pcapi.core.bookings.repository import get_booking_token
 from pcapi.core.bookings.repository import get_bookings_from_deposit
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.categories import subcategories
@@ -26,7 +27,6 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.models import User
-from pcapi.domain.booking_recap import utils as booking_recap_utils
 from pcapi.utils.date import get_department_timezone
 
 
@@ -716,7 +716,7 @@ class GetOfferBookingsByStatusCSVTest:
             )
         else:
             assert data_dict["Date et heure de validation"] == ""
-        token = booking_recap_utils.get_booking_token(
+        token = get_booking_token(
             booking.token,
             booking.status,
             booking.isExternal,
