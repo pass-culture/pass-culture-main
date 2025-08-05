@@ -29,7 +29,7 @@ describe('RejectedBanner', () => {
   })
 
   it('should log event on press Dupliquer', async () => {
-    renderWithProviders(<RejectedBanner offerId={2} />)
+    renderWithProviders(<RejectedBanner offerId={2} canDuplicate />)
 
     const duplicateButton = screen.getByText("Dupliquer l'offre")
     await userEvent.click(duplicateButton)
@@ -47,11 +47,16 @@ describe('RejectedBanner', () => {
   })
 
   it('should duplicate offer on press Dupliquer', async () => {
-    renderWithProviders(<RejectedBanner offerId={2} />)
+    renderWithProviders(<RejectedBanner offerId={2} canDuplicate />)
 
     const duplicateButton = screen.getByText("Dupliquer l'offre")
     await userEvent.click(duplicateButton)
 
     expect(mockDuplicateBookableOffer).toHaveBeenCalledTimes(1)
+  })
+
+  it('should not show duplicate button if canDuplicate is false', () => {
+    renderWithProviders(<RejectedBanner offerId={2} canDuplicate={false} />)
+    expect(screen.queryByText("Dupliquer l'offre")).not.toBeInTheDocument()
   })
 })
