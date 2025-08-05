@@ -6,9 +6,9 @@ import urllib.parse
 import wtforms
 from flask_wtf import FlaskForm
 
+from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.connectors.entreprise import models as sirene_models
-from pcapi.connectors.entreprise import sirene
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.repository import find_offerer_by_siren
 from pcapi.core.users import models as users_models
@@ -146,11 +146,11 @@ class CreateOffererForm(FlaskForm):
                 raise wtforms.validators.ValidationError(f"Une entité juridique existe déjà avec le SIREN {siren}")
 
             try:
-                siret_info = sirene.get_siret(siret.data, raise_if_non_public=False)
+                siret_info = entreprise_api.get_siret_open_data(siret.data)
             except sirene_exceptions.UnknownEntityException:
                 raise wtforms.validators.ValidationError(f"Le SIRET {siret.data} n'existe pas")
             except sirene_exceptions.ApiException:
-                raise wtforms.validators.ValidationError("Une erreur s'est produite lors de l'appel à l'API Sirene")
+                raise wtforms.validators.ValidationError("Une erreur s'est produite lors de l'appel à l'API Entreprise")
 
             if not siret_info.active:
                 raise wtforms.validators.ValidationError(f"L'établissement portant le SIRET {siret.data} est fermé")

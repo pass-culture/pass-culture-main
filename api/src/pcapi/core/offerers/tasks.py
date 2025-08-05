@@ -68,12 +68,9 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
 
     try:
         siren_info = sirene.get_siren(payload.siren, with_address=False, raise_if_non_public=False)
-    except entreprise_exceptions.SireneException:
-        try:
-            siren_info = entreprise_api.get_siren(payload.siren, with_address=False, raise_if_non_public=False)
-        except entreprise_exceptions.EntrepriseException as exc:
-            logger.info("Could not fetch info from Sirene API", extra={"siren": payload.siren, "exc": exc})
-            return
+    except entreprise_exceptions.EntrepriseException as exc:
+        logger.info("Could not fetch info from Sirene API", extra={"siren": payload.siren, "exc": exc})
+        return
 
     offerer = (
         db.session.query(offerers_models.Offerer)

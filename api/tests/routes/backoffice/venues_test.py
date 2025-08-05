@@ -12,6 +12,7 @@ from flask import url_for
 from pcapi.connectors import api_adresse
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.connectors.clickhouse import query_mock as clickhouse_query_mock
+from pcapi.connectors.entreprise import models as entreprise_models
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.criteria import models as criteria_models
@@ -1954,14 +1955,29 @@ class UpdateVenueTest(PostEndpointHelper):
         db.session.refresh(venue)
         assert venue.siret is None
 
-    @patch("pcapi.connectors.entreprise.sirene.siret_is_active", return_value=False)
-    def test_update_venue_create_siret_inactive(self, mock_siret_is_active, authenticated_client, offerer):
+    def test_update_venue_create_siret_inactive(self, authenticated_client, offerer):
         venue = offerers_factories.VenueWithoutSiretFactory()
 
         data = self._get_current_data(venue)
         data["siret"] = f"{venue.managingOfferer.siren}12345"
 
-        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+        with patch(
+            "pcapi.connectors.entreprise.api.get_siret_open_data",
+            return_value=entreprise_models.SiretInfo(
+                siret=f"{venue.managingOfferer.siren}12345",
+                siren=venue.managingOfferer.siren,
+                name=venue.name,
+                ape_code="90.01Z",
+                ape_label="Arts du spectacle vivant",
+                legal_category_code="5710",
+                address=entreprise_models.SireneAddress(
+                    street="35 Boulevard de Sébastopol", postal_code="75001", insee_code="75056", city="Paris"
+                ),
+                active=False,
+                diffusible=True,
+            ),
+        ):
+            response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 400
         assert (

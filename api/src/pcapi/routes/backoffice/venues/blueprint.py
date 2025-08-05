@@ -18,7 +18,6 @@ from werkzeug.exceptions import NotFound
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
-from pcapi.connectors.entreprise import sirene
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.criteria import models as criteria_models
@@ -738,7 +737,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
     venue_was_permanent = venue.isPermanent
     new_permanent = attrs.get("isPermanent")
     update_siret = False
-    unavailable_sirene = False
+    unavailable_entreprise_api = False
     if not venue.isVirtual and venue.siret != form.siret.data:
         new_siret = form.siret.data
 
@@ -780,12 +779,12 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
             return render_venue_details(venue_row, form), 400
 
         try:
-            if not sirene.siret_is_active(new_siret):
+            if not entreprise_api.get_siret_open_data(new_siret).active:
                 flash("Ce SIRET n'est plus actif, on ne peut pas l'attribuer à ce partenaire culturel", "warning")
                 mark_transaction_as_invalid()
                 return render_venue_details(venue_row, form), 400
-        except entreprise_exceptions.SireneException:
-            unavailable_sirene = True
+        except entreprise_exceptions.EntrepriseException:
+            unavailable_entreprise_api = True
 
         update_siret = True
 
@@ -854,7 +853,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         transactional_mails.send_permanent_venue_needs_picture(venue)
 
     if update_siret:
-        if unavailable_sirene:
+        if unavailable_entreprise_api:
             flash("Ce SIRET n'a pas pu être vérifié, mais la modification a néanmoins été effectuée", "warning")
         if not existing_pricing_point_id:
             offerers_api.link_venue_to_pricing_point(venue, pricing_point_id=venue.id)

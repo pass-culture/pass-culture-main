@@ -7,12 +7,12 @@ from .backends.base import get_backend
 PROTECTED_DATA_PLACEHOLDER = "[ND]"
 
 
-def get_siren_open_data(siren: str) -> models.SirenInfo:
+def get_siren_open_data(siren: str, with_address: bool = True) -> models.SirenInfo:
     """
     Get INSEE information about the requested SIREN.
     All returned data is public. If entity is "partially diffusible", name and address are replaced by placeholder value.
     """
-    return get_backend(settings.ENTREPRISE_BACKEND).get_siren_open_data(siren)
+    return get_backend(settings.ENTREPRISE_BACKEND).get_siren_open_data(siren, with_address=with_address)
 
 
 def get_siren(siren: str, with_address: bool = True, raise_if_non_public: bool = True) -> models.SirenInfo:
