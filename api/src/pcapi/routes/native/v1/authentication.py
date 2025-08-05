@@ -13,8 +13,8 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as user_models
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import User
+from pcapi.core.users.password_utils import check_password_strength
 from pcapi.core.users.repository import find_user_by_email
-from pcapi.domain.password import check_password_strength
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
