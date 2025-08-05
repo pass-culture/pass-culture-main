@@ -90,12 +90,12 @@ export const Activity = (): JSX.Element => {
   const onSubmit = (formValues: any) => {
     setActivity(serializeActivityFormToSubmit(formValues))
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    navigate('/parcours-inscription/validation')
+    navigate('/inscription/structure/confirmation')
   }
 
   const handlePreviousStep = () => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    navigate('/parcours-inscription/identification')
+    navigate('/inscription/structure/identification')
   }
 
   if (isLoading) {
@@ -128,7 +128,7 @@ export const Activity = (): JSX.Element => {
             onClickNext={handleNextStep}
             isDisabled={methods.formState.isSubmitting}
             previousTo={SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION}
-            nextTo={SIGNUP_JOURNEY_STEP_IDS.VALIDATION}
+            nextTo={SIGNUP_JOURNEY_STEP_IDS.CONFIRMATION}
           />
         </form>
       </FormProvider>

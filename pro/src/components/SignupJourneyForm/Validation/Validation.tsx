@@ -75,12 +75,12 @@ export const Validation = (): JSX.Element => {
   useEffect(() => {
     if (offerer === null || offerer === DEFAULT_OFFERER_FORM_VALUES) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigate('/parcours-inscription/identification')
+      navigate('/inscription/structure/identification')
       return
     }
     if (activity === null || activity === DEFAULT_ACTIVITY_VALUES) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigate('/parcours-inscription/activite')
+      navigate('/inscription/structure/activite')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activity, offerer])
@@ -192,7 +192,7 @@ export const Validation = (): JSX.Element => {
 
   const handlePreviousStep = () => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    navigate('/parcours-inscription/activite')
+    navigate('/inscription/structure/activite')
   }
 
   return (
@@ -206,7 +206,7 @@ export const Validation = (): JSX.Element => {
         <div className={styles['validation-screen-subtitle']}>
           <h2 className={styles['subtitle']}>Vos informations</h2>
           <ButtonLink
-            to="/parcours-inscription/identification"
+            to="/inscription/structure/identification"
             onClick={() => {
               logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
                 from: location.pathname,
@@ -236,7 +236,7 @@ export const Validation = (): JSX.Element => {
         <div className={styles['validation-screen-subtitle']}>
           <h2 className={styles['subtitle']}>Votre activité</h2>
           <ButtonLink
-            to="/parcours-inscription/activite"
+            to="/inscription/structure/activite"
             onClick={() => {
               logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
                 from: location.pathname,

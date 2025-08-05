@@ -27,12 +27,15 @@ const renderActivityScreen = (contextValue: SignupJourneyContextValues) => {
       <SignupJourneyContext.Provider value={contextValue}>
         <Routes>
           <Route
-            path="/parcours-inscription/identification"
+            path="/inscription/structure/identification"
             element={<div>Authentication screen</div>}
           />
-          <Route path="/parcours-inscription/activite" element={<Activity />} />
           <Route
-            path="/parcours-inscription/validation"
+            path="/inscription/structure/activite"
+            element={<Activity />}
+          />
+          <Route
+            path="/inscription/structure/confirmation"
             element={<div>Validation screen</div>}
           />
         </Routes>
@@ -41,7 +44,7 @@ const renderActivityScreen = (contextValue: SignupJourneyContextValues) => {
     </>,
     {
       user: sharedCurrentUserFactory(),
-      initialRouterEntries: ['/parcours-inscription/activite'],
+      initialRouterEntries: ['/inscription/structure/activite'],
     }
   )
 }
@@ -129,7 +132,9 @@ describe('screens:SignupJourney::Activity', () => {
       screen.getByRole('button', { name: 'Étape suivante' })
     )
 
-    expect(screen.getByText('Validation screen')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Validation screen')).toBeInTheDocument()
+    })
   })
 
   it('should go next step with individual target customer', async () => {

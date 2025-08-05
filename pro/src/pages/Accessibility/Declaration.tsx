@@ -333,9 +333,9 @@ export const Declaration = () => {
             <td className={styles['td']}>
               <ButtonLink
                 isExternal
-                to="https://integration.passculture.pro/parcours-inscription/structure"
+                to="https://integration.passculture.pro/inscription/structure/recherche"
               >
-                https://integration.passculture.pro/parcours-inscription/structure
+                https://integration.passculture.pro/inscription/structure/recherche
               </ButtonLink>
             </td>
           </tr>
@@ -383,9 +383,9 @@ export const Declaration = () => {
             <td className={styles['td']}>
               <ButtonLink
                 isExternal
-                to="https://integration.passculture.pro/parcours-inscription/structure/rattachement"
+                to="https://integration.passculture.pro/inscription/structure/rattachement"
               >
-                https://integration.passculture.pro/parcours-inscription/structure/rattachement
+                https://integration.passculture.pro/inscription/structure/rattachement
               </ButtonLink>
             </td>
           </tr>
@@ -394,9 +394,9 @@ export const Declaration = () => {
             <td className={styles['td']}>
               <ButtonLink
                 isExternal
-                to="https://integration.passculture.pro/parcours-inscription"
+                to="https://integration.passculture.pro/inscription/structure"
               >
-                https://integration.passculture.pro/parcours-inscription
+                https://integration.passculture.pro/inscription/structure
               </ButtonLink>
             </td>
           </tr>
@@ -405,9 +405,9 @@ export const Declaration = () => {
             <td className={styles['td']}>
               <ButtonLink
                 isExternal
-                to="https://integration.passculture.pro/parcours-inscription/structure"
+                to="https://integration.passculture.pro/inscription/structure/recherche"
               >
-                https://integration.passculture.pro/parcours-inscription/structure
+                https://integration.passculture.pro/inscription/structure/recherche
               </ButtonLink>
             </td>
           </tr>
@@ -416,9 +416,9 @@ export const Declaration = () => {
             <td className={styles['td']}>
               <ButtonLink
                 isExternal
-                to="https://integration.passculture.pro/parcours-inscription/identification"
+                to="https://integration.passculture.pro/inscription/structure/identification"
               >
-                https://integration.passculture.pro/parcours-inscription/identification
+                https://integration.passculture.pro/inscription/structure/identification
               </ButtonLink>
             </td>
           </tr>
@@ -427,9 +427,9 @@ export const Declaration = () => {
             <td className={styles['td']}>
               <ButtonLink
                 isExternal
-                to="https://integration.passculture.pro/parcours-inscription/activite"
+                to="https://integration.passculture.pro/inscription/structure/activite"
               >
-                https://integration.passculture.pro/parcours-inscription/activite
+                https://integration.passculture.pro/inscription/structure/activite
               </ButtonLink>
             </td>
           </tr>
@@ -464,9 +464,9 @@ export const Declaration = () => {
             <td className={styles['td']}>
               <ButtonLink
                 isExternal
-                to="https://integration.passculture.pro/parcours-inscription/validation"
+                to="https://integration.passculture.pro/inscription/structure/confirmation"
               >
-                https://integration.passculture.pro/parcours-inscription/validation
+                https://integration.passculture.pro/inscription/structure/confirmation
               </ButtonLink>
             </td>
           </tr>

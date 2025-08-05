@@ -150,8 +150,8 @@ export const Offerer = (): JSX.Element => {
           ? SIGNUP_JOURNEY_STEP_IDS.OFFERERS
           : SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
         path: offerer.hasVenueWithSiret
-          ? '/parcours-inscription/structure/rattachement'
-          : '/parcours-inscription/identification',
+          ? '/inscription/structure/rattachement'
+          : '/inscription/structure/identification',
       }
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises

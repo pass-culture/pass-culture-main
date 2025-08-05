@@ -1,4 +1,3 @@
-
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -16,7 +15,7 @@ export const SoftDeletedOffererWarning = (): JSX.Element => {
         <div className="actions-container">
           <ButtonLink
             variant={ButtonVariant.PRIMARY}
-            to="/parcours-inscription/structure"
+            to="/inscription/structure/recherche"
           >
             Ajouter une nouvelle structure
           </ButtonLink>

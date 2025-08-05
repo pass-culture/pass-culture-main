@@ -17,7 +17,7 @@ export const OffererCreationLinks = () => (
       <div className={styles['actions-container']}>
         <ButtonLink
           variant={ButtonVariant.PRIMARY}
-          to="/parcours-inscription/structure"
+          to="/inscription/structure/recherche"
         >
           Ajouter une nouvelle structure
         </ButtonLink>

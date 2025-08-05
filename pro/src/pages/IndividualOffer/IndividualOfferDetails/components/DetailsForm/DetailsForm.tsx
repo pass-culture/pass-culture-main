@@ -125,7 +125,7 @@ export const DetailsForm = ({
             <Callout
               links={[
                 {
-                  href: `/parcours-inscription/structure`,
+                  href: `/inscription/structure/recherche`,
                   icon: {
                     src: fullMoreIcon,
                     alt: '',

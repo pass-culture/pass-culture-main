@@ -36,7 +36,7 @@ export const ReimbursementFields = ({
             <Callout
               links={[
                 {
-                  href: `/parcours-inscription/structure`,
+                  href: `/inscription/structure/recherche`,
                   label: 'Créer une structure avec SIRET',
                 },
               ]}

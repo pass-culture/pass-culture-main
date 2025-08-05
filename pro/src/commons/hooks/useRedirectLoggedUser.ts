@@ -30,7 +30,7 @@ export const useRedirectLoggedUser = () => {
       const { offerersNames } = await api.listOfferersNames()
       if (offerersNames.length === 0) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        navigate('/parcours-inscription/structure')
+        navigate('/inscription/structure/recherche')
       } else {
         redirectToUrl()
       }

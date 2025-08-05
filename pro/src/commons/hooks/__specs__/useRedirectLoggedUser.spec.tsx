@@ -48,7 +48,7 @@ describe('useRedirectLoggedUser', () => {
     vi.mocked(useActiveFeature).mockReturnValue(false)
   })
 
-  it('should redirect to /parcours-inscription/structure page if user has no offerer names', async () => {
+  it('should redirect to /inscription/structure/recherche page if user has no offerer names', async () => {
     // Mock empty offerer names array
     vi.mocked(useActiveFeature).mockReturnValueOnce(true)
     vi.mocked(api.listOfferersNames).mockResolvedValue({ offerersNames: [] })
@@ -59,7 +59,7 @@ describe('useRedirectLoggedUser', () => {
     await vi.waitFor(() => {
       expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/parcours-inscription/structure'
+        '/inscription/structure/recherche'
       )
     })
   })

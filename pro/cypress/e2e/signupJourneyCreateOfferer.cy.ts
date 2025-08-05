@@ -60,7 +60,7 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     goToOffererCreation(login)
 
     cy.stepLog({ message: 'I specify a venue with a SIRET' })
-    cy.url().should('contain', '/parcours-inscription/structure')
+    cy.url().should('contain', '/inscription/structure/recherche')
     cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
     cy.findByText('Continuer').click()
     cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
@@ -78,7 +78,7 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     )
 
     cy.stepLog({ message: 'I fill identification form with a public name' })
-    cy.url().should('contain', '/parcours-inscription/identification')
+    cy.url().should('contain', '/inscription/structure/identification')
     cy.findByLabelText('Nom public').type(newVenueName)
     // Make the venue open to public.
     cy.findByText('Oui').click()
@@ -87,7 +87,7 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
 
     cy.stepLog({ message: 'I fill activity form without target audience' })
-    cy.url().should('contain', '/parcours-inscription/activite')
+    cy.url().should('contain', '/inscription/structure/activite')
     cy.findByLabelText('Activité principale *').select('Spectacle vivant')
     cy.findByLabelText('Numéro de téléphone').type('612345678')
     cy.findByText('Étape suivante').click()
@@ -99,12 +99,12 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
       .should('not.be.visible')
 
     cy.stepLog({ message: 'I fill in missing target audience' })
-    cy.url().should('contain', '/parcours-inscription/activite')
+    cy.url().should('contain', '/inscription/structure/activite')
     cy.findByText('Au grand public').click()
     cy.findByText('Étape suivante').click()
 
     cy.stepLog({ message: 'the next step is displayed' })
-    cy.url().should('contain', '/parcours-inscription/validation')
+    cy.url().should('contain', '/inscription/structure/confirmation')
 
     cy.stepLog({ message: 'I validate the registration' })
 
@@ -188,7 +188,7 @@ describe('Signup journey with known offerer...', () => {
       goToOffererCreation(login)
 
       cy.stepLog({ message: 'I specify a venue with a SIRET' })
-      cy.url().should('contain', '/parcours-inscription/structure')
+      cy.url().should('contain', '/inscription/structure/recherche')
       cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
       cy.findByText('Continuer').click()
       cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
@@ -206,7 +206,7 @@ describe('Signup journey with known offerer...', () => {
       )
 
       cy.stepLog({ message: 'I fill identification form with a public name' })
-      cy.url().should('contain', '/parcours-inscription/identification')
+      cy.url().should('contain', '/inscription/structure/identification')
       cy.findByLabelText('Nom public').type(newVenueName)
       // Make the venue open to public.
       cy.findByText('Oui').click()
@@ -215,14 +215,14 @@ describe('Signup journey with known offerer...', () => {
       cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
 
       cy.stepLog({ message: 'I fill completely activity form' })
-      cy.url().should('contain', '/parcours-inscription/activite')
+      cy.url().should('contain', '/inscription/structure/activite')
       cy.findByLabelText('Activité principale *').select('Spectacle vivant')
       cy.findByLabelText('Numéro de téléphone').type('612345678')
       cy.findByText('Au grand public').click()
       cy.findByText('Étape suivante').click()
 
       cy.stepLog({ message: 'the next step is displayed' })
-      cy.url().should('contain', '/parcours-inscription/validation')
+      cy.url().should('contain', '/inscription/structure/confirmation')
 
       cy.stepLog({ message: 'I validate the registration' })
       cy.findByText('Valider et créer ma structure').click()
@@ -268,7 +268,7 @@ describe('Signup journey with known offerer...', () => {
       goToOffererCreation(login)
 
       cy.stepLog({ message: 'I specify an offerer with a SIRET' })
-      cy.url().should('contain', '/parcours-inscription/structure')
+      cy.url().should('contain', '/inscription/structure/recherche')
       cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
       cy.findByText('Continuer').click()
       cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
@@ -286,13 +286,13 @@ describe('Signup journey with known offerer...', () => {
       )
 
       cy.stepLog({ message: 'I add a new offerer' })
-      cy.url().should('contain', '/parcours-inscription/structure/rattachement')
+      cy.url().should('contain', '/inscription/structure/rattachement')
 
       cy.findByText('Ajouter une nouvelle structure').click()
       cy.wait('@search5Address')
 
       cy.stepLog({ message: 'I fill identification form with a new address' })
-      cy.url().should('contain', '/parcours-inscription/identification')
+      cy.url().should('contain', '/inscription/structure/identification')
       cy.findByLabelText('Adresse postale *').clear()
       cy.findByLabelText('Adresse postale *').invoke(
         'val',
@@ -308,7 +308,7 @@ describe('Signup journey with known offerer...', () => {
       cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
 
       cy.stepLog({ message: 'I fill activity form without main activity' })
-      cy.url().should('contain', '/parcours-inscription/activite')
+      cy.url().should('contain', '/inscription/structure/activite')
       cy.findByLabelText('Activité principale *').select(
         'Sélectionnez votre activité principale'
       ) // No activity selected
@@ -325,12 +325,12 @@ describe('Signup journey with known offerer...', () => {
         .should('not.be.visible')
 
       cy.stepLog({ message: 'I fill in missing main activity' })
-      cy.url().should('contain', '/parcours-inscription/activite')
+      cy.url().should('contain', '/inscription/structure/activite')
       cy.findByLabelText('Activité principale *').select('Spectacle vivant')
       cy.findByText('Étape suivante').click()
 
       cy.stepLog({ message: 'the next step is displayed' })
-      cy.url().should('contain', '/parcours-inscription/validation')
+      cy.url().should('contain', '/inscription/structure/confirmation')
 
       cy.stepLog({ message: 'I validate the registration' })
 
@@ -351,7 +351,7 @@ describe('Signup journey with known offerer...', () => {
       goToOffererCreation(login)
 
       cy.stepLog({ message: 'I specify an offerer with a SIRET' })
-      cy.url().should('contain', '/parcours-inscription/structure')
+      cy.url().should('contain', '/inscription/structure/recherche')
       cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
       cy.findByText('Continuer').click()
       cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
@@ -509,7 +509,9 @@ function fromOnBoardingPublishMyFirstOffer() {
   // Minimal required fields are already filled by default in this step, so we can directly go to the next step
   // TODO (igabriele,  2025-08-04): Investigate this wait (it may attempt to click during an unecessary re-render).
   // eslint-disable-next-line cypress/no-unnecessary-waiting
-  cy.wait(250).findByRole('button', { name: 'Enregistrer et continuer' }).click()
+  cy.wait(250)
+    .findByRole('button', { name: 'Enregistrer et continuer' })
+    .click()
 
   cy.wait('@patchOffer')
 

@@ -79,15 +79,15 @@ const renderOffererAuthenticationScreen = (
       <SignupJourneyContext.Provider value={contextValue}>
         <Routes>
           <Route
-            path="/parcours-inscription/structure"
+            path="/inscription/structure/recherche"
             element={<div>Offerer screen</div>}
           />
           <Route
-            path="/parcours-inscription/identification"
+            path="/inscription/structure/identification"
             element={<OffererAuthentication />}
           />
           <Route
-            path="/parcours-inscription/activite"
+            path="/inscription/structure/activite"
             element={<div>Activity screen</div>}
           />
         </Routes>
@@ -96,7 +96,7 @@ const renderOffererAuthenticationScreen = (
     </>,
     {
       user: sharedCurrentUserFactory(),
-      initialRouterEntries: ['/parcours-inscription/identification'],
+      initialRouterEntries: ['/inscription/structure/identification'],
     }
   )
 }

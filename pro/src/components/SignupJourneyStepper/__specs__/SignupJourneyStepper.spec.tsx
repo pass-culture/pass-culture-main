@@ -19,22 +19,22 @@ import { SignupJourneyStepper } from '../SignupJourneyStepper'
 
 const renderSignupStepper = (
   contextValue: SignupJourneyContextValues,
-  url = '/parcours-inscription/identification'
+  url = '/inscription/structure/identification'
 ) => {
   const rtlReturns = renderWithProviders(
     <SignupJourneyContext.Provider value={contextValue}>
       <SignupJourneyStepper />
       <Routes>
         <Route
-          path={'/parcours-inscription/identification'}
+          path={'/inscription/structure/identification'}
           element={<div>Authentication screen</div>}
         />
         <Route
-          path="/parcours-inscription/activite"
+          path="/inscription/structure/activite"
           element={<div>Activity screen</div>}
         />
         <Route
-          path="/parcours-inscription/validation"
+          path="/inscription/structure/confirmation"
           element={<div>Validation screen</div>}
         />
       </Routes>
@@ -97,7 +97,7 @@ describe('test SignupJourneyStepper', () => {
     }
     const { tabAuthentication, tabValidation } = renderSignupStepper(
       contextValue,
-      '/parcours-inscription/activite'
+      '/inscription/structure/activite'
     )
 
     expect(screen.getByText('Activity screen')).toBeInTheDocument()
@@ -127,7 +127,7 @@ describe('test SignupJourneyStepper', () => {
       phoneNumber: '',
     }
     const { tabAuthentication, tabActivity, tabValidation } =
-      renderSignupStepper(contextValue, '/parcours-inscription/validation')
+      renderSignupStepper(contextValue, '/inscription/structure/confirmation')
 
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
 
@@ -154,7 +154,7 @@ describe('test SignupJourneyStepper', () => {
 
   it('should not render stepper when step is not included in steps', () => {
     const { tabAuthentication, tabActivity, tabValidation } =
-      renderSignupStepper(contextValue, '/parcours-inscription/structure')
+      renderSignupStepper(contextValue, '/inscription/structure/recherche')
 
     expect(tabAuthentication).not.toBeInTheDocument()
     expect(tabActivity).not.toBeInTheDocument()
