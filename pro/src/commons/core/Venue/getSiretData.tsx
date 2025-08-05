@@ -1,8 +1,7 @@
-import { getDataFromAddressParts } from 'apiClient/adresse/apiAdresse'
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
+import type { StructureDataBodyModel } from 'apiClient/v1'
 import { unhumanizeSiret } from 'commons/core/Venue/utils'
-import { validateSiret } from 'commons/core/Venue/validate'
 import { memoize } from 'commons/utils/memoize'
 
 export type GetSiretDataResponse = {
@@ -22,10 +21,12 @@ export type GetSiretDataResponse = {
 
 const getSiretDataRequest = async (
   humanSiret: string
-): Promise<GetSiretDataResponse> => {
+): Promise<StructureDataBodyModel> => {
   const siret = unhumanizeSiret(humanSiret || '')
   if (humanSiret === '') {
     return {
+      // TODO: le bon type
+      // @ts-expect-error
       values: {
         address: '',
         city: '',
@@ -40,41 +41,13 @@ const getSiretDataRequest = async (
       },
     }
   }
-  const error = validateSiret(siret)
+  /*const error = validateSiret(siret)
   if (error) {
     throw Error(error)
-  }
+  }*/
   try {
-    const response = await api.getSiretInfo(siret)
-    if (!response.active) {
-      throw Error('SIRET invalide')
-    }
-    const { street, city, postalCode } = response.address
-    const addressData = await getDataFromAddressParts(
-      street,
-      city,
-      postalCode,
-      1
-    )
-    if (addressData.length === 0) {
-      throw Error('Adresse introuvable')
-    }
-    const latitude = addressData[0].latitude
-    const longitude = addressData[0].longitude
-    return {
-      values: {
-        address: addressData[0].address,
-        city: addressData[0].city,
-        latitude: latitude,
-        longitude: longitude,
-        name: response.name,
-        postalCode: addressData[0].postalCode,
-        inseeCode: addressData[0].inseeCode,
-        siret: response.siret,
-        apeCode: response.ape_code,
-        banId: addressData[0].id,
-      },
-    }
+    const response = await api.getStructureData(siret)
+    return response
   } catch (e) {
     let message = 'Impossible de vérifier le SIRET saisi.'
     if (isErrorAPIError(e) && e.status === 400) {
