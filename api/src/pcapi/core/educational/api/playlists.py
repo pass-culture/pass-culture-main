@@ -24,32 +24,43 @@ BIGQUERY_PLAYLIST_BATCH_SIZE = 100_000
 class QueryCtx:
     query: type[BaseQuery]
     bq_attr_name: str
+    bq_attr_formatter: typing.Callable[[str], int]
     local_attr_name: str
     foreign_class: type
+
+
+def format_collective_offer_id(collective_offer_id: str) -> int:
+    # template ids have the form 'template-95710'
+
+    return int(collective_offer_id.split("-")[1])
 
 
 QUERY_DESC = {
     educational_models.PlaylistType.CLASSROOM: QueryCtx(
         query=big_query.ClassroomPlaylistQuery,
         bq_attr_name="collective_offer_id",
+        bq_attr_formatter=format_collective_offer_id,
         local_attr_name="collectiveOfferTemplateId",
         foreign_class=educational_models.CollectiveOfferTemplate,
     ),
     educational_models.PlaylistType.NEW_OFFER: QueryCtx(
         query=big_query.NewTemplateOffersPlaylistQuery,
         bq_attr_name="collective_offer_id",
+        bq_attr_formatter=format_collective_offer_id,
         local_attr_name="collectiveOfferTemplateId",
         foreign_class=educational_models.CollectiveOfferTemplate,
     ),
     educational_models.PlaylistType.LOCAL_OFFERER: QueryCtx(
         query=big_query.LocalOfferersQuery,
         bq_attr_name="venue_id",
+        bq_attr_formatter=int,
         local_attr_name="venueId",
         foreign_class=offerers_models.Venue,
     ),
     educational_models.PlaylistType.NEW_OFFERER: QueryCtx(
         query=big_query.NewOffererQuery,
         bq_attr_name="venue_id",
+        bq_attr_formatter=int,
         local_attr_name="venueId",
         foreign_class=offerers_models.Venue,
     ),
@@ -67,7 +78,7 @@ def synchronize_institution_playlist(
     rows: BigQueryPlaylistModels,
 ) -> None:
     ctx = QUERY_DESC[playlist_type]
-    new_rows = {int(getattr(row, ctx.bq_attr_name)): row.distance_in_km for row in rows}
+    new_rows = {ctx.bq_attr_formatter(getattr(row, ctx.bq_attr_name)): row.distance_in_km for row in rows}
 
     actual_rows = {
         getattr(row, ctx.local_attr_name): row

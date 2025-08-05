@@ -12,6 +12,10 @@ from pcapi.models import db
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+def _get_offer_id(offer_id: int) -> str:
+    return f"template-{offer_id}"
+
+
 class SynchronizePlaylistsTest:
     @pytest.mark.parametrize(
         "playlist_type",
@@ -44,22 +48,23 @@ class SynchronizePlaylistsTest:
             mock_run_query.return_value = [
                 {
                     "institution_id": str(institution.id),
-                    "collective_offer_id": str(offers[0].id),
+                    "collective_offer_id": _get_offer_id(offers[0].id),
                     "distance_in_km": initial_distance,
                 },
                 {
                     "institution_id": str(institution.id),
-                    "collective_offer_id": str(offers[1].id),
+                    "collective_offer_id": _get_offer_id(offers[1].id),
                     "distance_in_km": updated_distance,
                 },
                 {
                     "institution_id": str(institution.id),
-                    "collective_offer_id": str(offers[3].id),
+                    "collective_offer_id": _get_offer_id(offers[3].id),
                     "distance_in_km": updated_distance,
                 },
                 {
                     "institution_id": str(institution.id),
-                    "collective_offer_id": str(offers[-1].id + 100),  # offer which does not exist: has been deleted
+                    # offer which does not exist: has been deleted
+                    "collective_offer_id": _get_offer_id(offers[-1].id + 100),
                     "distance_in_km": updated_distance,
                 },
             ]
