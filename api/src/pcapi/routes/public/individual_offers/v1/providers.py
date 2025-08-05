@@ -1,7 +1,6 @@
 from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import repository as providers_repository
 from pcapi.models import api_errors
-from pcapi.repository.session_management import atomic
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
@@ -10,6 +9,7 @@ from pcapi.routes.public.serialization import providers as providers_serializati
 from pcapi.routes.public.serialization import venues as venues_serialization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
+from pcapi.utils.transaction_manager import atomic
 from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.validation.routes.users_authentifications import provider_api_key_required
 

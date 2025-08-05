@@ -34,7 +34,6 @@ from pcapi.core.reactions.factories import ReactionFactory
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
-from pcapi.repository.session_management import atomic
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_gdpr_users import create_industrial_gdpr_users
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import create_free_invoice
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import (
@@ -55,6 +54,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_venue_labels import crea
 from pcapi.sandboxes.scripts.creators.test_cases import venues_mock
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
+from pcapi.utils.transaction_manager import atomic
 
 
 if typing.TYPE_CHECKING:

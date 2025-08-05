@@ -5,8 +5,8 @@ from flask import abort
 from pcapi.core.artist.api import get_artist_image_url
 from pcapi.core.artist.models import Artist
 from pcapi.models import db
-from pcapi.repository.session_management import atomic
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
 from .serialization import artists as serializers

@@ -59,8 +59,8 @@ from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.notifications.push import testing as push_testing
-from pcapi.repository.session_management import atomic
 from pcapi.utils.human_ids import humanize
+from pcapi.utils.transaction_manager import atomic
 
 import tests
 import tests.local_providers.cinema_providers.cgr.fixtures as cgr_fixtures

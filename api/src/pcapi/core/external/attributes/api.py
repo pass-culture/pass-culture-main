@@ -26,7 +26,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository.session_management import on_commit
+from pcapi.utils.transaction_manager import on_commit
 
 
 # make sure values are in [a-z0-9_] (no uppercase characters, no '-')

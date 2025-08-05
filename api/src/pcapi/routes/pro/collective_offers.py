@@ -20,12 +20,12 @@ from pcapi.core.offers import validation as offers_validation
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
-from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization import educational_redactors
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import check_user_has_access_to_offerer
+from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
 

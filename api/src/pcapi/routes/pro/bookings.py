@@ -17,7 +17,6 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users import repository as users_repository
 from pcapi.models import api_errors
 from pcapi.models import db
-from pcapi.repository.session_management import atomic
 from pcapi.routes.serialization import bookings as serialization_bookings
 from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportStatusFilter
@@ -29,6 +28,7 @@ from pcapi.routes.serialization.bookings_recap_serialize import UserHasBookingRe
 from pcapi.routes.serialization.bookings_recap_serialize import serialize_bookings
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse
+from pcapi.utils.transaction_manager import atomic
 from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings_v2
 
 from . import blueprint

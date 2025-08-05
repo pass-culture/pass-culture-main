@@ -20,13 +20,13 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.models.utils import get_or_404
-from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms.empty import EmptyForm
 from pcapi.routes.backoffice.search_utils import paginate
 from pcapi.routes.backoffice.utils import permission_required
 from pcapi.utils import string as string_utils
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import forms
 

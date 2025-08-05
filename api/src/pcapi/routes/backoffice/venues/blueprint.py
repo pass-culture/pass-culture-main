@@ -42,8 +42,6 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import get_or_404
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.repository.session_management import on_commit
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import search_utils
@@ -57,6 +55,8 @@ from pcapi.utils import urls
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.siren import is_valid_siret
 from pcapi.utils.string import to_camelcase
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
+from pcapi.utils.transaction_manager import on_commit
 
 from . import forms
 

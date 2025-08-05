@@ -21,10 +21,10 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.core.search.backends import base
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.utils import requests
 from pcapi.utils.module_loading import import_string
+from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
 logger = logging.getLogger(__name__)

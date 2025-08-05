@@ -5,9 +5,9 @@ from unittest.mock import MagicMock
 import pytest
 
 from pcapi.core.operations import models as operations_models
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.repository.session_management import on_commit
+from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
+from pcapi.utils.transaction_manager import on_commit
 
 
 # no need to send it in db, we just need it to be an instance of pcapi.db.Model

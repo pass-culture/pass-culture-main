@@ -1,12 +1,12 @@
 import pcapi.core.educational.api.institution as api
 from pcapi.core.educational import repository
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository.session_management import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization import educational_institution
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 
 @blueprint.adage_iframe.route("/collective/institution", methods=["GET"])

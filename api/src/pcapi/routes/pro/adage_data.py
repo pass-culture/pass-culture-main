@@ -5,12 +5,12 @@ from flask_login import login_required
 
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import institution as educational_api_institution
-from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import educational_institutions
 from pcapi.routes.serialization import venues_serialize
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 
 logger = logging.getLogger(__name__)

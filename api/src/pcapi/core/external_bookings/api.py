@@ -26,11 +26,11 @@ from pcapi.core.external_bookings.models import Ticket
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository.session_management import on_commit
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import ExternalApiBookingNotificationRequest
 from pcapi.utils import requests
 from pcapi.utils.queue import add_to_queue
+from pcapi.utils.transaction_manager import on_commit
 
 from . import exceptions
 from . import serialize

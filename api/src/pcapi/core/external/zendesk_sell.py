@@ -8,8 +8,8 @@ from pcapi.core.external.zendesk_sell_backends.base import ZendeskCustomFieldsSh
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository.session_management import on_commit
 from pcapi.tasks import zendesk_sell_tasks
+from pcapi.utils.transaction_manager import on_commit
 
 
 logger = logging.getLogger(__name__)

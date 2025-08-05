@@ -45,12 +45,12 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository import transaction
-from pcapi.repository.session_management import is_managed_transaction
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.repository.session_management import on_commit
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils import queue
 from pcapi.utils.requests import exceptions as requests_exceptions
+from pcapi.utils.transaction_manager import is_managed_transaction
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
+from pcapi.utils.transaction_manager import on_commit
 from pcapi.workers import apps_flyer_job
 from pcapi.workers import push_notification_job
 from pcapi.workers import user_emails_job

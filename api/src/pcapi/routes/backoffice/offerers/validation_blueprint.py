@@ -24,12 +24,12 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.utils import get_or_404
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.utils import date as date_utils
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import forms as offerer_forms
 from . import validation_repository

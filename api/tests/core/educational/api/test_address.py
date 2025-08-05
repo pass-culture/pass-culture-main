@@ -4,7 +4,7 @@ from pcapi.core.educational import models
 from pcapi.core.educational.api import address as api
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.models import db
-from pcapi.repository.session_management import atomic
+from pcapi.utils.transaction_manager import atomic
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

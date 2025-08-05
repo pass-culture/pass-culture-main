@@ -11,10 +11,10 @@ from werkzeug.exceptions import NotFound
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.accounts import forms as accounts_forms
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
 account_tag_blueprint = utils.child_backoffice_blueprint(

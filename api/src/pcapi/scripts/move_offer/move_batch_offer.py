@@ -19,10 +19,10 @@ from pcapi.core.offers import api as offer_api
 from pcapi.core.offers import models as offer_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.models import db
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import mark_transaction_as_invalid
-from pcapi.repository.session_management import on_commit
 from pcapi.utils.blueprint import Blueprint
+from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
+from pcapi.utils.transaction_manager import on_commit
 
 
 blueprint = Blueprint(__name__, __name__)

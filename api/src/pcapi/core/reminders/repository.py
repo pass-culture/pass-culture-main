@@ -1,6 +1,6 @@
 from pcapi.core.reminders.models import OfferReminder
 from pcapi.models import db
-from pcapi.repository.session_management import atomic
+from pcapi.utils.transaction_manager import atomic
 
 
 def get_user_ids_with_reminders(offer_id: int) -> list[int]:

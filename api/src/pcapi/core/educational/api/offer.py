@@ -43,14 +43,14 @@ from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.models.utils import get_or_404
-from pcapi.repository.session_management import is_managed_transaction
-from pcapi.repository.session_management import on_commit
 from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequestBodyModel
 from pcapi.routes.public import utils as public_utils
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.utils import image_conversion
 from pcapi.utils import rest
+from pcapi.utils.transaction_manager import is_managed_transaction
+from pcapi.utils.transaction_manager import on_commit
 
 
 logger = logging.getLogger(__name__)

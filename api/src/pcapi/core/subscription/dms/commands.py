@@ -5,8 +5,8 @@ import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.dms.api as dms_api
 import pcapi.core.users.models as users_models
 from pcapi.models import db
-from pcapi.repository.session_management import atomic
 from pcapi.utils.blueprint import Blueprint
+from pcapi.utils.transaction_manager import atomic
 
 
 blueprint = Blueprint(__name__, __name__)

@@ -1,11 +1,11 @@
 from flask_login import login_required
 
 from pcapi.core.offerers import models as offerers_models
-from pcapi.repository.session_management import atomic
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.venue_types_serialize import VenueTypeListResponseModel
 from pcapi.routes.serialization.venue_types_serialize import VenueTypeResponseModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
 

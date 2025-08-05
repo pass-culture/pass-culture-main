@@ -8,8 +8,8 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.pc_object import PcObject
-from pcapi.repository.session_management import is_managed_transaction
-from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.utils.transaction_manager import is_managed_transaction
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.validation.models import entity_validator
 
 

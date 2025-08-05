@@ -19,8 +19,8 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers.titelive_book_search import get_ineligibility_reasons
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.utils import requests
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from .. import utils
 from . import forms

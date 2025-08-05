@@ -1,11 +1,11 @@
 from pcapi.models import db
 from pcapi.models.feature import Feature
-from pcapi.repository.session_management import atomic
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.serialization import features_serialize
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 
 @blueprint.adage_iframe.route("/features", methods=["GET"])

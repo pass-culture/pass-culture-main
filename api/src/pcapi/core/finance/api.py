@@ -69,10 +69,10 @@ from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.repository import transaction
-from pcapi.repository.session_management import is_managed_transaction
-from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.utils import human_ids
 from pcapi.utils.chunks import get_chunks
+from pcapi.utils.transaction_manager import is_managed_transaction
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import conf
 from . import exceptions

@@ -4,9 +4,9 @@ import pytest
 
 from pcapi.core.users.models import UserSession
 from pcapi.models import db
-from pcapi.repository.session_management import _finalize_managed_session
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.utils.transaction_manager import _finalize_managed_session
+from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
 class AtomicTest:

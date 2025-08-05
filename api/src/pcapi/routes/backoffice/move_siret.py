@@ -15,7 +15,7 @@ from pcapi.core.finance import siret_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
-from pcapi.repository.session_management import mark_transaction_as_invalid
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import utils
 from .forms import pro_support as pro_support_forms

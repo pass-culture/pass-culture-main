@@ -34,14 +34,14 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.collective_offers import forms
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import urls
+from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
 blueprint = utils.child_backoffice_blueprint(
