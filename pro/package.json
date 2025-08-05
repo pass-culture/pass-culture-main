@@ -19,7 +19,7 @@
     "lint:scss:fix": "yarn lint:scss --fix",
     "lint:scss:hook": "stylelint",
     "lint:scss:hook:fix": "yarn lint:scss:hook --fix",
-    "lint:dead-code": "ts-unused-exports tsconfig.json --excludePathsFromReport='stories;apiClient'",
+    "lint:dead-code": "ts-unused-exports tsconfig.json --excludePathsFromReport='stories;apiClient;vite.config.ts'",
     "prettier:js:changed:fix": "./scripts/lint_diff.sh",
     "serve": "vite preview",
     "start": "vite",
