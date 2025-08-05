@@ -71,7 +71,6 @@ from pcapi.models import offer_mixin
 from pcapi.models import pc_object
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
@@ -80,6 +79,7 @@ from pcapi.utils import crypto
 from pcapi.utils import human_ids
 from pcapi.utils import image_conversion
 from pcapi.utils import regions as utils_regions
+from pcapi.utils import repository
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.transaction_manager import atomic

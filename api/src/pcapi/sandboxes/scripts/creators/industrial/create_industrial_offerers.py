@@ -5,10 +5,10 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.models import db
-from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.educational_siren_mocks import MOCK_ADAGE_ELIGIBLE_SIREN
 from pcapi.sandboxes.scripts.mocks.offerer_mocks import MOCK_NAMES
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import repository
 
 
 logger = logging.getLogger(__name__)

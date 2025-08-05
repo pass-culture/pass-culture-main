@@ -23,7 +23,7 @@ from pcapi.core.users import utils as users_utils
 from pcapi.models import db
 from pcapi.models.feature import DisabledFeatureError
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import repository
+from pcapi.utils import repository
 from pcapi.utils.email import anonymize_email
 
 from . import models

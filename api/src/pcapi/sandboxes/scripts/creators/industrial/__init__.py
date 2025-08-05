@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from pcapi.repository import repository
 from pcapi.sandboxes.scripts.creators.industrial.add_accessibility_compliance_to_venues import (
     add_accessibility_compliance_to_venues,
 )
@@ -97,6 +96,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_user_account_update_requ
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_user_offerers import create_user_offerers
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import repository
 
 
 @log_func_duration

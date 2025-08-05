@@ -3,9 +3,9 @@ import logging
 from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import User
-from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.educational_siren_mocks import MOCK_ADAGE_ELIGIBLE_SIREN
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import repository
 
 
 logger = logging.getLogger(__name__)

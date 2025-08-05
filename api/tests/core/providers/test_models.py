@@ -1,6 +1,6 @@
 import pytest
 
-import pcapi.repository.repository as db_repository
+import pcapi.utils.repository as db_repository
 from pcapi.core.providers import factories
 from pcapi.models.api_errors import ApiErrors
 

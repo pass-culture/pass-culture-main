@@ -15,8 +15,8 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.notifications import sms as sms_notifications
-from pcapi.repository import repository
 from pcapi.utils import phone_number as phone_number_utils
+from pcapi.utils import repository
 from pcapi.utils import requests
 
 from . import constants

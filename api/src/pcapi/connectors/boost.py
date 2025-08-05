@@ -12,8 +12,8 @@ from pcapi.core.external_bookings.boost.exceptions import BoostAPIException
 from pcapi.core.external_bookings.boost.exceptions import BoostInvalidTokenException
 from pcapi.core.external_bookings.boost.exceptions import BoostLoginException
 from pcapi.core.providers.models import BoostCinemaDetails
-from pcapi.repository import repository
 from pcapi.routes.serialization import BaseModel
+from pcapi.utils import repository
 from pcapi.utils import requests
 from pcapi.utils.decorators import retry
 

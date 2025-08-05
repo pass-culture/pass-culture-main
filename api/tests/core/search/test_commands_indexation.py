@@ -14,7 +14,7 @@ from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.search import testing as search_testing
 from pcapi.models import db
-from pcapi.repository import repository
+from pcapi.utils import repository
 
 from tests.test_utils import run_command
 

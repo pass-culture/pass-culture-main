@@ -9,11 +9,11 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import models as users_models
-from pcapi.repository import repository
 from pcapi.routes.native import blueprint
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import repository
 
 
 class UbbleError(enum.Enum):

@@ -18,7 +18,7 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.has_thumb_mixin import HasThumbMixin
-from pcapi.repository import repository
+from pcapi.utils import repository
 from pcapi.validation.models import entity_validator
 
 

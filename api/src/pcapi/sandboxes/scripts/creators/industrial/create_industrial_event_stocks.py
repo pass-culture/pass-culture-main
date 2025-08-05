@@ -1,10 +1,10 @@
 import logging
 
 import pcapi.core.offers.factories as offers_factories
-from pcapi.repository import repository
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import EventOccurrence
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.sandboxes.scripts.utils.select import remove_every
+from pcapi.utils import repository
 
 
 logger = logging.getLogger(__name__)

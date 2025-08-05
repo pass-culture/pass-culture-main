@@ -30,8 +30,8 @@ from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.repository import repository
 from pcapi.utils import crypto
+from pcapi.utils import repository
 
 from . import models
 

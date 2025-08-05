@@ -12,7 +12,6 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.utils import first_or_404
-from pcapi.repository import repository
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.serialization.bookings import BookOfferRequest
 from pcapi.routes.native.v1.serialization.bookings import BookOfferResponse
@@ -20,6 +19,7 @@ from pcapi.routes.native.v1.serialization.bookings import BookingDisplayStatusRe
 from pcapi.routes.native.v1.serialization.bookings import BookingReponse
 from pcapi.routes.native.v1.serialization.bookings import BookingsResponse
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import repository
 
 from .. import blueprint
 

@@ -16,7 +16,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.finance.models import DepositType
 from pcapi.models import db
-from pcapi.repository import repository
+from pcapi.utils import repository
 
 
 @pytest.mark.usefixtures("db_session")

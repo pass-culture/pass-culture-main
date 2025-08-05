@@ -48,10 +48,10 @@ from pcapi.domain.password import random_password
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils import phone_number as phone_number_utils
+from pcapi.utils import repository
 from pcapi.utils import transaction_manager
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.requests import ExternalAPIException

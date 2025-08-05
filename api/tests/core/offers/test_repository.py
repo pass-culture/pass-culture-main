@@ -12,7 +12,7 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.factories as providers_factories
-import pcapi.repository.repository as db_repository
+import pcapi.utils.repository as db_repository
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.geography import factories as geography_factories

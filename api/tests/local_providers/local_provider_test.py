@@ -12,7 +12,7 @@ from pcapi.local_providers.local_provider import _upload_thumb
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository import repository
+from pcapi.utils import repository
 from pcapi.utils.human_ids import humanize
 
 from . import provider_test_utils

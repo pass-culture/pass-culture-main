@@ -15,10 +15,10 @@ from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository import repository
 from pcapi.routes.apis import public_api
 from pcapi.routes.external.serialization import sendinblue as serializers
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import repository
 from pcapi.validation.routes.users_authentifications import brevo_webhook
 
 
