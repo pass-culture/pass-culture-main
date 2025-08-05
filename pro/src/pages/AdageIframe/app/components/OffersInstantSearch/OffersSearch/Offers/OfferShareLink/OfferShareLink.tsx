@@ -1,5 +1,3 @@
-import { MouseEvent } from 'react'
-
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
@@ -7,6 +5,7 @@ import {
 import { apiAdage } from 'apiClient/api'
 import { LOGS_DATA } from 'commons/utils/config'
 import strokeShareIcon from 'icons/stroke-share.svg'
+import { MouseEvent } from 'react'
 import {
   ListIconButton,
   ListIconButtonVariant,

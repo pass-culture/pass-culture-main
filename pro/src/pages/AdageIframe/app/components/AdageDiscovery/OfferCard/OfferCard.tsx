@@ -1,11 +1,10 @@
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
-
 import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { getHumanizeRelativeDistance } from 'commons/utils/getDistance'
 import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { OfferFavoriteButton } from '../../OffersInstantSearch/OffersSearch/Offers/OfferFavoriteButton/OfferFavoriteButton'

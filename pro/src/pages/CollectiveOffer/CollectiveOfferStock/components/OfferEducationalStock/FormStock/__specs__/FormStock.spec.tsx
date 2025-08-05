@@ -1,18 +1,17 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { addDays, format } from 'date-fns'
-import { FormProvider, useForm } from 'react-hook-form'
-
 import {
   Mode,
   OfferEducationalStockFormValues,
 } from 'commons/core/OfferEducational/types'
 import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { addDays, format } from 'date-fns'
+import { FormProvider, useForm } from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
 
 import { generateValidationSchema } from '../../validationSchema'

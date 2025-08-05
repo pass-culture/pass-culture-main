@@ -1,7 +1,6 @@
 import type { StoryObj } from '@storybook/react'
-import { Provider } from 'react-redux'
-
 import { configureTestStore } from 'commons/store/testUtils'
+import { Provider } from 'react-redux'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

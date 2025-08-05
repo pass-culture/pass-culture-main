@@ -1,11 +1,10 @@
+import { api } from 'apiClient/api'
+import { OfferStatus } from 'apiClient/v1'
 import {
   screen,
   waitForElementToBeRemoved,
   within,
 } from '@testing-library/react'
-
-import { api } from 'apiClient/api'
-import { OfferStatus } from 'apiClient/v1'
 import * as useHasAccessToDidacticOnboarding from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import {
   defaultGetOffererResponseModel,
@@ -13,8 +12,8 @@ import {
   listOffersOfferFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 
 import {

@@ -1,5 +1,3 @@
-import { addDays } from 'date-fns'
-
 import {
   AdageFrontRoles,
   AuthenticatedResponse,
@@ -11,6 +9,7 @@ import {
   OfferAddressType,
 } from 'apiClient/adage'
 import { StudentLevels } from 'apiClient/v1'
+import { addDays } from 'date-fns'
 
 export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseModel =
   {

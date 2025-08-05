@@ -1,6 +1,5 @@
-import { subDays } from 'date-fns'
-
 import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHelpers'
+import { subDays } from 'date-fns'
 
 import { EventPublicationEditionFormValues } from '../types'
 import { validationSchema } from '../validationSchema'

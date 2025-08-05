@@ -1,7 +1,6 @@
-import { Link, useSearchParams } from 'react-router'
-
 import { LocalOfferersPlaylistOffer } from 'apiClient/adage'
 import strokeInstitutionIcon from 'icons/stroke-institution.svg'
+import { Link, useSearchParams } from 'react-router'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './VenueCard.module.scss'

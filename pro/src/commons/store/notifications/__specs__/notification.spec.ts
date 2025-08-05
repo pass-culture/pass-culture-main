@@ -2,10 +2,10 @@ import { NotificationTypeEnum } from 'commons/hooks/useNotification'
 
 import {
   closeNotification,
+  NotificationState,
+  initialState as notificationInitialState,
   notificationsReducer,
   showNotification,
-  initialState as notificationInitialState,
-  NotificationState,
 } from '../reducer'
 
 describe('notificationsReducer', () => {

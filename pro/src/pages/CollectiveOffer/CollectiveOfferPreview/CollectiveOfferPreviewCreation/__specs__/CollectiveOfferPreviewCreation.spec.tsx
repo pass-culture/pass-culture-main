@@ -1,7 +1,6 @@
+import { api } from 'apiClient/api'
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-
-import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { defaultAdageUser } from 'commons/utils/factories/adageFactories'
@@ -11,7 +10,10 @@ import {
   getCollectiveOfferTemplateFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
-import { managedVenueFactory, userOffererFactory } from 'commons/utils/factories/userOfferersFactories'
+import {
+  managedVenueFactory,
+  userOffererFactory,
+} from 'commons/utils/factories/userOfferersFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -35,7 +37,7 @@ vi.mock('apiClient/api', () => ({
   api: {
     listEducationalOfferers: vi.fn(),
     getVenue: vi.fn(),
-    patchCollectiveOfferPublication: vi.fn()
+    patchCollectiveOfferPublication: vi.fn(),
   },
 }))
 
@@ -64,13 +66,13 @@ const defaultProps = {
 const mockLogEvent = vi.fn()
 
 describe('CollectiveOfferPreviewCreation', () => {
-    const venue = managedVenueFactory({ id: 1 })
-    const offerer = userOffererFactory({
-      id: 1,
-      name: 'Ma super structure',
-      managedVenues: [venue],
-    })
-    
+  const venue = managedVenueFactory({ id: 1 })
+  const offerer = userOffererFactory({
+    id: 1,
+    name: 'Ma super structure',
+    managedVenues: [venue],
+  })
+
   beforeEach(() => {
     vi.spyOn(api, 'getVenue').mockResolvedValue(defaultGetVenue)
 

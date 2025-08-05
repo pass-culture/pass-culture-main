@@ -1,6 +1,3 @@
-import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-
 import { api } from 'apiClient/api'
 import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
 import { updateFeatures } from 'commons/store/features/reducer'
@@ -12,6 +9,8 @@ import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
 import { updateUser } from 'commons/store/user/reducer'
 import { getOffererData } from 'commons/utils/offererStoreHelper'
 import { storageAvailable } from 'commons/utils/storageAvailable'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './StoreProvider.module.scss'

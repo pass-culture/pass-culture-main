@@ -1,14 +1,13 @@
-import { forwardRef, Ref, useImperativeHandle, useRef, useState } from 'react'
-import { useDebouncedCallback } from 'use-debounce'
-
 import { AdresseData, FeaturePropertyType } from 'apiClient/adresse/types'
 import { getDataFromAddress } from 'apiClient/api'
 import { SelectOption } from 'commons/custom_types/form'
 import { normalizeStrForAdressSearch } from 'commons/utils/searchPatternInOptions'
+import { forwardRef, Ref, useImperativeHandle, useRef, useState } from 'react'
 import {
   type CustomEvent,
   SelectAutocomplete,
 } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
+import { useDebouncedCallback } from 'use-debounce'
 
 const DEBOUNCE_TIME_BEFORE_REQUEST = 400
 const DEFAULT_SUGGESTION_LIMIT = 5

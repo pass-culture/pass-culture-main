@@ -1,8 +1,7 @@
 import cn from 'classnames'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './AdageButtonFilter.module.scss'

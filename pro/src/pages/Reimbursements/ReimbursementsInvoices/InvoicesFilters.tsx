@@ -1,10 +1,9 @@
-import { Dispatch, SetStateAction } from 'react'
-import { useSearchParams } from 'react-router'
-
 import { SelectOption } from 'commons/custom_types/form'
 import { getToday } from 'commons/utils/date'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullRefreshIcon from 'icons/full-refresh.svg'
+import { Dispatch, SetStateAction } from 'react'
+import { useSearchParams } from 'react-router'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'

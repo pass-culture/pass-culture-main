@@ -1,10 +1,9 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Routes, Route, Link } from 'react-router'
-
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { useLogNavigation } from 'app/App/hook/useLogNavigation'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { Link, Route, Routes } from 'react-router'
 
 const mockLogEvent = vi.fn()
 

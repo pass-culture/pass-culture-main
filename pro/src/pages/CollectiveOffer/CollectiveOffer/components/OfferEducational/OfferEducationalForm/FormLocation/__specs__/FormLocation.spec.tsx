@@ -1,15 +1,14 @@
-import { screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { FormProvider, useForm } from 'react-hook-form'
-
 import * as apiAdresse from 'apiClient/adresse/apiAdresse'
 import {
   CollectiveLocationType,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { venueListItemFactory } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { FormLocation, FormLocationProps } from '../FormLocation'
 

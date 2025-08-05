@@ -2,7 +2,7 @@ import { addDays, format } from 'date-fns'
 
 import {
   expectOffersOrBookingsAreFoundForNewTable,
-  logInAndGoToPage
+  logInAndGoToPage,
 } from '../support/helpers.ts'
 
 describe('Search individual offers', () => {
@@ -291,13 +291,7 @@ describe('Search individual offers', () => {
     cy.stepLog({ message: 'These 7 results should be displayed' })
     const expectedResults2 = [
       ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
-      [
-        '',
-        offerName7,
-        `${venueName} - ${venueFullAddress}`,
-        '0',
-        'épuisée',
-      ],
+      ['', offerName7, `${venueName} - ${venueFullAddress}`, '0', 'épuisée'],
       [
         '',
         offerName6,

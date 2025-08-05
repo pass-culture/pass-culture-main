@@ -1,8 +1,3 @@
-import { useEffect, useMemo } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { generatePath, useLocation, useNavigate, useParams } from 'react-router'
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import { Layout } from 'app/App/layout/Layout'
 import {
@@ -17,6 +12,10 @@ import { getVenuePagePathToNavigateTo } from 'commons/utils/getVenuePagePathToNa
 import { setSavedPartnerPageVenueId } from 'commons/utils/savedPartnerPageVenueId'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
+import { useEffect, useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { generatePath, useLocation, useNavigate, useParams } from 'react-router'
+import useSWR from 'swr'
 import { SelectInput } from 'ui-kit/form/shared/BaseSelectInput/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import { NavLinkItem, NavLinkItems } from 'ui-kit/NavLinkItems/NavLinkItems'

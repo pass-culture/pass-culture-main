@@ -1,7 +1,3 @@
-import { screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router'
-
 import { api } from 'apiClient/api'
 import {
   ApiError,
@@ -10,10 +6,12 @@ import {
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
-  OFFER_WIZARD_MODE,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import {
   getIndividualOfferPath,
@@ -29,6 +27,7 @@ import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
+import { Route, Routes } from 'react-router'
 
 vi.mock('screens/IndividualOffer/Informations/utils', () => {
   return {

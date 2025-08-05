@@ -1,8 +1,7 @@
-import { useFormContext } from 'react-hook-form'
-
 import { AddressFormValues } from 'commons/core/shared/types'
 import { getCoordsType, parseDms } from 'commons/utils/coords'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { useFormContext } from 'react-hook-form'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'

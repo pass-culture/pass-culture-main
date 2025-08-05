@@ -1,7 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-
 import type { GetOffererNameResponseModel } from 'apiClient/v1'
 import type { GetOffererResponseModel } from 'apiClient/v1/models/GetOffererResponseModel'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export type OffererState = {
   offererNames: null | GetOffererNameResponseModel[]

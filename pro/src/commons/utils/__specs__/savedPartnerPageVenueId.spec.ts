@@ -1,7 +1,7 @@
 import {
+  getSavedPartnerPageVenueId,
   SAVED_HOME_PAGE_VENUE_ID_KEYS,
   SAVED_PARTNER_PAGE_VENUE_ID_KEYS,
-  getSavedPartnerPageVenueId,
   setSavedPartnerPageVenueId,
 } from '../savedPartnerPageVenueId'
 

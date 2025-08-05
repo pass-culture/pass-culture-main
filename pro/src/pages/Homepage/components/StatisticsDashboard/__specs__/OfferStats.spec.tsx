@@ -1,6 +1,5 @@
-import { screen } from '@testing-library/react'
-
 import { api } from 'apiClient/api'
+import { screen } from '@testing-library/react'
 import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 

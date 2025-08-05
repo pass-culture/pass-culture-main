@@ -1,5 +1,3 @@
-import useSWR from 'swr'
-
 import { api } from 'apiClient/api'
 import {
   CollectiveBookingResponseModel,
@@ -9,6 +7,7 @@ import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/Collecti
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { EducationalInstitutionDetails } from 'components/EducationalInstitutionDetails/EducationalInstitutionDetails'
+import useSWR from 'swr'
 
 import { CollectiveActionButtons } from './CollectiveActionButtons'
 import styles from './CollectiveBookingDetails.module.scss'

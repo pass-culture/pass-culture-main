@@ -1,7 +1,6 @@
-
 import {
-  RouteLeavingGuard,
   BlockerFunction,
+  RouteLeavingGuard,
 } from 'components/RouteLeavingGuard/RouteLeavingGuard'
 
 interface RouteLeavingGuardVenueEditionProps {

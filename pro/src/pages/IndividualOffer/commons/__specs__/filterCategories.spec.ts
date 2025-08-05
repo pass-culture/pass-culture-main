@@ -9,9 +9,9 @@ import {
 } from 'commons/utils/factories/individualApiFactories'
 
 import {
-  getOfferSubtypeFromParam,
-  getCategoryStatusFromOfferSubtype,
   filterCategories,
+  getCategoryStatusFromOfferSubtype,
+  getOfferSubtypeFromParam,
 } from '../filterCategories'
 
 describe('getOfferSubtypeFromParam', () => {

@@ -1,10 +1,9 @@
-import { yupResolver } from '@hookform/resolvers/yup'
-import * as Dialog from '@radix-ui/react-dialog'
-import { useForm } from 'react-hook-form'
-
 import { api } from 'apiClient/api'
 import { ManagedVenues } from 'apiClient/v1'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as Dialog from '@radix-ui/react-dialog'
 import { useNotification } from 'commons/hooks/useNotification'
+import { useForm } from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'
@@ -81,8 +80,7 @@ export const PricingPointDialog = ({
         la base d’un établissement et donc d’un SIRET. Afin de vous faire
         rembourser les offres de cette structure, vous devez sélectionner le
         SIRET à partir duquel sera calculé votre taux de remboursement.
-        Attention, vous ne pourrez plus modifier votre choix après
-        validation.{' '}
+        Attention, vous ne pourrez plus modifier votre choix après validation.{' '}
       </Callout>
       <form
         onSubmit={methods.handleSubmit(onSubmit)}

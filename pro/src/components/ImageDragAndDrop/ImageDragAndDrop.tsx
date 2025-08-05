@@ -1,9 +1,8 @@
 import cn from 'classnames'
-import { ForwardedRef, forwardRef, useState } from 'react'
-import { useDropzone } from 'react-dropzone'
-
 import fullValidateIcon from 'icons/full-validate.svg'
 import strokePicture from 'icons/stroke-picture.svg'
+import { ForwardedRef, forwardRef, useState } from 'react'
+import { useDropzone } from 'react-dropzone'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { ImageConstraintCheck } from './ImageConstraintCheck'

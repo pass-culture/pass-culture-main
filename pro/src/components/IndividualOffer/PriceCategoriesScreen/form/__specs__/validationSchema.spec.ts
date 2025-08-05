@@ -4,7 +4,10 @@ import {
 } from 'commons/utils/factories/priceCategoryFactories'
 import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHelpers'
 
-import { PRICE_CATEGORY_LABEL_MAX_LENGTH, PRICE_CATEGORY_PRICE_MAX } from '../constants'
+import {
+  PRICE_CATEGORY_LABEL_MAX_LENGTH,
+  PRICE_CATEGORY_PRICE_MAX,
+} from '../constants'
 import { PriceCategoriesFormValues } from '../types'
 import { validationSchema } from '../validationSchema'
 

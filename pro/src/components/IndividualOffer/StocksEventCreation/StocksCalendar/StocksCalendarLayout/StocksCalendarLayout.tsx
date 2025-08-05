@@ -1,5 +1,3 @@
-import { PropsWithChildren, useState } from 'react'
-
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
@@ -8,6 +6,7 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
 import fullMoreIcon from 'icons/full-more.svg'
 import strokeAddCalendarIcon from 'icons/stroke-add-calendar.svg'
+import { PropsWithChildren, useState } from 'react'
 import { Button } from 'ui-kit/Button/Button'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { Spinner } from 'ui-kit/Spinner/Spinner'

@@ -1,9 +1,9 @@
 import {
   deSerializeDurationMinutes,
-  serializeExtraData,
+  serializeDetailsPatchData,
   serializeDetailsPostData,
   serializeDurationMinutes,
-  serializeDetailsPatchData,
+  serializeExtraData,
 } from '../serializers'
 import { DetailsFormValues } from '../types'
 

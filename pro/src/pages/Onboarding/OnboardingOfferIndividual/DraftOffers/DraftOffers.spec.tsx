@@ -1,11 +1,10 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-import { axe } from 'vitest-axe'
-
 import { api } from 'apiClient/api'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { axe } from 'vitest-axe'
 
 import { DraftOffers } from './DraftOffers'
 

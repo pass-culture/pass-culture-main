@@ -71,42 +71,43 @@ export function expectOffersOrBookingsAreFound(
     ]
    expectOffersOrBookingsAreFoundForNewTable(expectedResults)
  */
-   export function expectOffersOrBookingsAreFoundForNewTable(
-    expectedResults: Array<Array<string>>
-  ) {
-    const expectedLength = expectedResults.length - 1
-    const regexExpectedCount = new RegExp(
-      expectedLength +
-        ' ' +
-        '(offre|réservation)' +
-        (expectedLength > 1 ? 's' : ''),
-      'g'
-    )
-  
-    cy.contains(regexExpectedCount)
-  
-    cy.get('tbody').findAllByRole('row').should('have.length', expectedLength)
-  
-    for (let rowLine = 0; rowLine < expectedLength; rowLine++) {
-      const lineArray = expectedResults[rowLine + 1]
-  
-      cy.get('tbody').findAllByRole('row')
-        .eq(rowLine)
-        .within(() => {
-          cy.get('td').then(($elt) => {
-            for (let column = 0; column < lineArray.length; column++) {
-              cy.wrap($elt)
-                .eq(column)
-                .then((cellValue) => {
-                  if (lineArray[column].length) {
-                    expect(cellValue.text()).to.include(lineArray[column])
-                  }
-                })
-            }
-          })
+export function expectOffersOrBookingsAreFoundForNewTable(
+  expectedResults: Array<Array<string>>
+) {
+  const expectedLength = expectedResults.length - 1
+  const regexExpectedCount = new RegExp(
+    expectedLength +
+      ' ' +
+      '(offre|réservation)' +
+      (expectedLength > 1 ? 's' : ''),
+    'g'
+  )
+
+  cy.contains(regexExpectedCount)
+
+  cy.get('tbody').findAllByRole('row').should('have.length', expectedLength)
+
+  for (let rowLine = 0; rowLine < expectedLength; rowLine++) {
+    const lineArray = expectedResults[rowLine + 1]
+
+    cy.get('tbody')
+      .findAllByRole('row')
+      .eq(rowLine)
+      .within(() => {
+        cy.get('td').then(($elt) => {
+          for (let column = 0; column < lineArray.length; column++) {
+            cy.wrap($elt)
+              .eq(column)
+              .then((cellValue) => {
+                if (lineArray[column].length) {
+                  expect(cellValue.text()).to.include(lineArray[column])
+                }
+              })
+          }
         })
-    }
+      })
   }
+}
 
 /**
  * Login

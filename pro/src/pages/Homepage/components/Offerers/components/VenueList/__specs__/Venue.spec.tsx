@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 
 import {
-  defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
 } from 'commons/utils/factories/individualApiFactories'
 import {
   RenderWithProvidersOptions,

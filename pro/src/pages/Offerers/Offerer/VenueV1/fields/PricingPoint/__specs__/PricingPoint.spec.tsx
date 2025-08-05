@@ -1,9 +1,6 @@
+import { api } from 'apiClient/api'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { FormProvider, useForm } from 'react-hook-form'
-import { expect } from 'vitest'
-
-import { api } from 'apiClient/api'
 import * as useNotification from 'commons/hooks/useNotification'
 import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 import {
@@ -11,9 +8,11 @@ import {
   defaultGetOffererVenueResponseModel,
 } from 'commons/utils/factories/individualApiFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { FormProvider, useForm } from 'react-hook-form'
+import { expect } from 'vitest'
 
 import { PricingPoint, PricingPointProps } from '../PricingPoint'
 

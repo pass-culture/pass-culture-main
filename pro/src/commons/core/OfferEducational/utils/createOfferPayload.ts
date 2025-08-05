@@ -1,10 +1,10 @@
 import {
+  CollectiveLocationType,
   DateRangeOnCreateModel,
   OfferAddressType,
-  PostCollectiveOfferTemplateBodyModel,
-  PostCollectiveOfferBodyModel,
   OfferContactFormEnum,
-  CollectiveLocationType,
+  PostCollectiveOfferBodyModel,
+  PostCollectiveOfferTemplateBodyModel,
 } from 'apiClient/v1'
 import {
   formatBrowserTimezonedDateAsUTC,

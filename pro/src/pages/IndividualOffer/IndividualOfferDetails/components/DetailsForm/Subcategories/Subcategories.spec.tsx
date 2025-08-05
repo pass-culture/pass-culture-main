@@ -1,13 +1,12 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { FormProvider, useForm } from 'react-hook-form'
-
 import {
   categoryFactory,
   subcategoryFactory,
 } from 'commons/utils/factories/individualApiFactories'
 import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 import { DetailsFormValues } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { Subcategories } from './Subcategories'
 

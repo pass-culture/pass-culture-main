@@ -1,4 +1,3 @@
-
 import fullLinkIcon from 'icons/full-link.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { ButtonLink, LinkProps } from 'ui-kit/Button/ButtonLink'

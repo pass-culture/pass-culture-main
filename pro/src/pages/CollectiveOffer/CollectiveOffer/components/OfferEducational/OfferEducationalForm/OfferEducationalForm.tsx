@@ -1,6 +1,3 @@
-import { useEffect, useState } from 'react'
-import { useFormContext } from 'react-hook-form'
-
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
@@ -27,6 +24,8 @@ import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from 'components/BannerPublicApi/BannerPublicApi'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { useEffect, useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -60,8 +59,8 @@ export type OfferEducationalFormProps = {
   onImageDelete: ImageUploaderOfferProps['onImageDelete']
   isOfferCreated?: boolean
   offer?:
-  | GetCollectiveOfferResponseModel
-  | GetCollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel
   isSubmitting: boolean
   venues?: VenueListItemResponseModel[]
 }

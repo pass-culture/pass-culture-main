@@ -14,7 +14,7 @@ import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
 import { DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES } from '../constants'
-import { getInitialValuesFromOffer, getFormReadOnlyFields } from '../utils'
+import { getFormReadOnlyFields, getInitialValuesFromOffer } from '../utils'
 
 const mockOffer: GetIndividualOfferWithAddressResponseModel =
   getIndividualOfferFactory({

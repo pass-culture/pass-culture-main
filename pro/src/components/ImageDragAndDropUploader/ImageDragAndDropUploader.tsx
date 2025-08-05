@@ -1,11 +1,9 @@
 import cn from 'classnames'
-import { useRef, useState, useEffect } from 'react'
-
 import { useNotification } from 'commons/hooks/useNotification'
 import { usePrevious } from 'commons/hooks/usePrevious'
 import {
-  UploadImageValues,
   UploaderModeEnum,
+  UploadImageValues,
 } from 'commons/utils/imageUploadTypes'
 import { ImageDragAndDrop } from 'components/ImageDragAndDrop/ImageDragAndDrop'
 import {
@@ -16,6 +14,7 @@ import { ImagePlaceholder } from 'components/SafeImage/ImagePlaceholder/ImagePla
 import { SafeImage } from 'components/SafeImage/SafeImage'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

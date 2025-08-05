@@ -1,6 +1,5 @@
-import { isBefore } from 'date-fns'
-
 import { FORMAT_DD_MM_YYYY } from 'commons/utils/date'
+import { isBefore } from 'date-fns'
 import fullEditIcon from 'icons/full-edit.svg'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'

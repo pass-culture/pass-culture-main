@@ -23,24 +23,28 @@ export const serializePatchOffer = ({
   shouldSendMail?: boolean
   isNewOfferCreationFlowFeatureActive: boolean
 }): PatchOfferBodyModel => {
-  const maybeAccessibilityProps = isNewOfferCreationFlowFeatureActive ? {} : {
-      audioDisabilityCompliant:
-        formValues.accessibility?.[AccessibilityEnum.AUDIO],
-      mentalDisabilityCompliant:
-        formValues.accessibility?.[AccessibilityEnum.MENTAL],
-      motorDisabilityCompliant:
-        formValues.accessibility?.[AccessibilityEnum.MOTOR],
-      visualDisabilityCompliant:
-        formValues.accessibility?.[AccessibilityEnum.VISUAL],
-  }
+  const maybeAccessibilityProps = isNewOfferCreationFlowFeatureActive
+    ? {}
+    : {
+        audioDisabilityCompliant:
+          formValues.accessibility?.[AccessibilityEnum.AUDIO],
+        mentalDisabilityCompliant:
+          formValues.accessibility?.[AccessibilityEnum.MENTAL],
+        motorDisabilityCompliant:
+          formValues.accessibility?.[AccessibilityEnum.MOTOR],
+        visualDisabilityCompliant:
+          formValues.accessibility?.[AccessibilityEnum.VISUAL],
+      }
 
-  if (isOfferSynchronized(offer))  {
+  if (isOfferSynchronized(offer)) {
     return maybeAccessibilityProps
   }
 
-  const maybeUrl = isNewOfferCreationFlowFeatureActive ? {
-    url: formValues.url?.trim() || undefined,
-  } : {}
+  const maybeUrl = isNewOfferCreationFlowFeatureActive
+    ? {
+        url: formValues.url?.trim() || undefined,
+      }
+    : {}
 
   let addressValues = {}
   const allAddressFieldsAreNotNull =

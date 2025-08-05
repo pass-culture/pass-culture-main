@@ -1,8 +1,5 @@
-import { screen } from '@testing-library/react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { describe, expect, it } from 'vitest'
-
 import { VenueTypeResponseModel } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
 import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
@@ -13,6 +10,8 @@ import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { FormProvider, useForm } from 'react-hook-form'
+import { describe, expect, it } from 'vitest'
 
 import { VenueSettingsFormValues } from '../types'
 import { VenueSettingsForm } from '../VenueSettingsForm'

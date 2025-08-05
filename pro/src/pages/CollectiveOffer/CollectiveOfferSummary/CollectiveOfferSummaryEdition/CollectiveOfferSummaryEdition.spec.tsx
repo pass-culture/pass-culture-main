@@ -1,12 +1,10 @@
-import { screen, waitFor } from '@testing-library/react'
-import createFetchMock from 'vitest-fetch-mock'
-
 import { api } from 'apiClient/api'
 import {
   CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
+import { screen, waitFor } from '@testing-library/react'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
@@ -17,9 +15,10 @@ import {
   userOffererFactory,
 } from 'commons/utils/factories/userOfferersFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import createFetchMock from 'vitest-fetch-mock'
 
 import { CollectiveOfferSummaryEdition } from './CollectiveOfferSummaryEdition'
 

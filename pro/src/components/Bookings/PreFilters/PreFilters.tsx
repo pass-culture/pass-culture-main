@@ -1,8 +1,5 @@
-import classNames from 'classnames'
-import { FormEvent, useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-
 import { useAnalytics } from 'app/App/analytics/firebase'
+import classNames from 'classnames'
 import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
 import {
   CollectivePreFiltersParams,
@@ -20,6 +17,8 @@ import { isEqual } from 'commons/utils/isEqual'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { MultiDownloadButtonsModal } from 'components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import fullRefreshIcon from 'icons/full-refresh.svg'
+import { FormEvent, useCallback, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SelectInput } from 'ui-kit/form/shared/BaseSelectInput/SelectInput'

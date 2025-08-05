@@ -1,9 +1,9 @@
 import {
   ALL_FRANCE_OPTION_VALUE,
-  MAINLAND_OPTION_VALUE,
   departmentLabelByValue,
   departmentOptions,
   domtomOptions,
+  MAINLAND_OPTION_VALUE,
 } from 'pages/AdageIframe/app/constants/departmentOptions'
 
 export const getInterventionAreaLabelsToDisplay = (

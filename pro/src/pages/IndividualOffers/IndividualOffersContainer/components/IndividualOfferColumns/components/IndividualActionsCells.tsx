@@ -1,7 +1,3 @@
-import { useCallback, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useSWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import { ListOffersOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -26,6 +22,9 @@ import strokeTrashIcon from 'icons/stroke-trash.svg'
 import { computeDeletionErrorMessage } from 'pages/IndividualOffers/utils/computeDeletionErrorMessage'
 import { computeDeletionSuccessMessage } from 'pages/IndividualOffers/utils/computeDeletionSuccessMessage'
 import { computeIndividualApiFilters } from 'pages/IndividualOffers/utils/computeIndividualApiFilters'
+import { useCallback, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useSWRConfig } from 'swr'
 import { DropdownMenuWrapper } from 'ui-kit/DropdownMenuWrapper/DropdownMenuWrapper'
 
 import styles from './Cells.module.scss'

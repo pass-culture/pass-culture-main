@@ -1,6 +1,5 @@
-import * as yup from 'yup'
-
 import { validationSchema as addressValidationSchema } from 'ui-kit/form/AddressSelect/validationSchema'
+import * as yup from 'yup'
 
 export const validationSchema = () => {
   return yup.object().shape({

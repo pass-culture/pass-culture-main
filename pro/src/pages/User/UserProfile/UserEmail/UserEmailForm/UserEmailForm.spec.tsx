@@ -1,7 +1,6 @@
+import { api } from 'apiClient/api'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-
-import { api } from 'apiClient/api'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
@@ -35,9 +34,7 @@ describe('components:UserEmailForm', () => {
       'test@test.com'
     )
     await userEvent.type(
-      screen.getByLabelText(
-        'Mot de passe (requis pour modifier votre email)'
-      ),
+      screen.getByLabelText('Mot de passe (requis pour modifier votre email)'),
       'test'
     )
     await userEvent.tab()
@@ -58,9 +55,7 @@ describe('components:UserEmailForm', () => {
       'test@test.com'
     )
     await userEvent.type(
-      screen.getByLabelText(
-        'Mot de passe (requis pour modifier votre email)'
-      ),
+      screen.getByLabelText('Mot de passe (requis pour modifier votre email)'),
       'test'
     )
 
@@ -77,9 +72,7 @@ describe('components:UserEmailForm', () => {
       'test@test.com'
     )
     await userEvent.type(
-      screen.getByLabelText(
-        'Mot de passe (requis pour modifier votre email)'
-      ),
+      screen.getByLabelText('Mot de passe (requis pour modifier votre email)'),
       'test'
     )
 

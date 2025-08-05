@@ -1,7 +1,3 @@
-import { FormProvider, useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router'
-
 import { api } from 'apiClient/api'
 import { CollectiveOfferType as CollectiveOfferApiType } from 'apiClient/v1'
 import {
@@ -9,9 +5,9 @@ import {
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   INDIVIDUAL_OFFER_SUBTYPE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_TYPES,
   OFFER_WIZARD_MODE,
-  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
@@ -21,6 +17,9 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
+import { FormProvider, useForm } from 'react-hook-form'
+import { useSelector } from 'react-redux'
+import { useLocation, useNavigate } from 'react-router'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { ActionsBar } from './ActionsBar/ActionsBar'

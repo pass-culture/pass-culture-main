@@ -1,6 +1,3 @@
-import { screen } from '@testing-library/react'
-import * as router from 'react-router'
-
 import { api } from 'apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
@@ -8,18 +5,20 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import * as useNotification from 'commons/hooks/useNotification'
 import {
-  getCollectiveOfferTemplateFactory,
   defaultGetVenue,
   getCollectiveOfferFactory,
+  getCollectiveOfferTemplateFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import * as router from 'react-router'
 
 import {
   CollectiveCreationOfferNavigation,

@@ -1,10 +1,9 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { axe } from 'vitest-axe'
 
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-
-import { Stepper, Step, StepperProps } from '../Stepper'
+import { Step, Stepper, StepperProps } from '../Stepper'
 
 const renderStepper = (props: StepperProps) => {
   return renderWithProviders(<Stepper {...props} />)

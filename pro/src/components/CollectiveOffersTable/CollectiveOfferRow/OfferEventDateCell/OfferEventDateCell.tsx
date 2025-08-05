@@ -1,9 +1,8 @@
-import classNames from 'classnames'
-
 import {
   CollectiveOfferResponseModel,
   ListOffersVenueResponseModel,
 } from 'apiClient/v1'
+import classNames from 'classnames'
 import {
   getDateTimeToFrenchText,
   toDateStrippedOfTimezone,

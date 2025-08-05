@@ -1,7 +1,6 @@
-import { Outlet, useLocation } from 'react-router'
-
 import { Layout } from 'app/App/layout/Layout'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { Outlet, useLocation } from 'react-router'
 
 import { SignupUnavailable } from './SignupUnavailable/SignupUnavailable'
 

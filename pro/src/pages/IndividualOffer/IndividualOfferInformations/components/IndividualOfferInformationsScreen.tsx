@@ -1,23 +1,18 @@
-import { yupResolver } from '@hookform/resolvers/yup'
-import { useRef, useState } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { useLocation, useNavigate } from 'react-router'
-import useSWR, { useSWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import {
   GetIndividualOfferResponseModel,
   type GetIndividualOfferWithAddressResponseModel,
 } from 'apiClient/v1'
+import { yupResolver } from '@hookform/resolvers/yup'
 import {
   GET_OFFER_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
-  OFFER_WIZARD_MODE,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
 } from 'commons/core/Offers/constants'
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
@@ -35,6 +30,10 @@ import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { isOfferSubcategoryOnline } from 'pages/IndividualOffer/commons/utils'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { serializePatchOffer } from 'pages/IndividualOffer/IndividualOfferInformations/commons/serializers'
+import { useRef, useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
+import { useLocation, useNavigate } from 'react-router'
+import useSWR, { useSWRConfig } from 'swr'
 import { Callout } from 'ui-kit/Callout/Callout'
 import { CalloutVariant } from 'ui-kit/Callout/types'
 

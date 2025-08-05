@@ -1,8 +1,7 @@
-import { ReactNode, useState } from 'react'
-
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { OnboardingDidacticEvents } from 'commons/core/FirebaseEvents/constants'
 import { Dialog } from 'components/Dialog/Dialog'
+import { ReactNode, useState } from 'react'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'

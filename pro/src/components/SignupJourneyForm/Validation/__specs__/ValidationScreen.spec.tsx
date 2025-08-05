@@ -1,17 +1,15 @@
-import {
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router'
-
 import { api } from 'apiClient/api'
 import {
   GetOffererResponseModel,
   PostOffererResponseModel,
   Target,
 } from 'apiClient/v1'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
 import {
   SignupJourneyContext,
@@ -24,6 +22,7 @@ import * as utils from 'commons/utils/recaptcha'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
 import { Validation } from 'components/SignupJourneyForm/Validation/Validation'
+import { Route, Routes } from 'react-router'
 
 vi.mock('apiClient/api', () => ({
   api: {

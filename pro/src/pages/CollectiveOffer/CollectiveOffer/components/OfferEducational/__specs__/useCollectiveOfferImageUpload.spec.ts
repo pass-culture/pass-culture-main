@@ -1,6 +1,5 @@
-import { act, renderHook } from '@testing-library/react'
-
 import { api } from 'apiClient/api'
+import { act, renderHook } from '@testing-library/react'
 import * as useNotification from 'commons/hooks/useNotification'
 import {
   getCollectiveOfferFactory,

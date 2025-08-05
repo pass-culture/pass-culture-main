@@ -6,7 +6,7 @@ const Profile = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
 
   return (
-    <Layout mainHeading='Profil'>
+    <Layout mainHeading="Profil">
       <UserProfile
         userIdentityInitialValues={{
           firstName: currentUser.firstName || '',

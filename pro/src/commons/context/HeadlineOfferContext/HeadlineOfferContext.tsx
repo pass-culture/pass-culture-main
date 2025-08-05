@@ -1,8 +1,3 @@
-import { createContext, useContext } from 'react'
-import { useSelector } from 'react-redux'
-import { useLocation } from 'react-router'
-import useSWR, { useSWRConfig } from 'swr'
-
 import { api } from 'apiClient/api'
 import { HeadLineOfferResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -13,6 +8,10 @@ import {
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { createContext, useContext } from 'react'
+import { useSelector } from 'react-redux'
+import { useLocation } from 'react-router'
+import useSWR, { useSWRConfig } from 'swr'
 
 type UpsertHeadlineOfferParams = {
   offerId: number

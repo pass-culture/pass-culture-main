@@ -1,8 +1,7 @@
 import { EventStockUpdateBodyModel } from 'apiClient/v1'
 import { getOfferStockFactory } from 'commons/utils/factories/individualApiFactories'
-
-import { serializeStockFormValuesForUpdate } from '../serializers'
 import { EditStockFormValues } from '../StocksCalendarTableEditStock'
+import { serializeStockFormValuesForUpdate } from '../serializers'
 
 describe('serializeStockFormValuesForUpdate', () => {
   let formValues: EditStockFormValues

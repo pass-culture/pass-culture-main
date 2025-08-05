@@ -1,7 +1,5 @@
-import { screen, waitFor } from '@testing-library/react'
-import { Route, Routes } from 'react-router'
-
 import { api } from 'apiClient/api'
+import { screen, waitFor } from '@testing-library/react'
 import { routesSignup } from 'app/AppRouter/subroutesSignupMap'
 import { getOffererNameFactory } from 'commons/utils/factories/individualApiFactories'
 import {
@@ -9,9 +7,10 @@ import {
   sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { Route, Routes } from 'react-router'
 
 import { Signup } from '../Signup'
 

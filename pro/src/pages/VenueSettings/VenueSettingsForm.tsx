@@ -1,6 +1,3 @@
-import { useFormContext } from 'react-hook-form'
-import { useLocation } from 'react-router'
-
 import {
   GetOffererResponseModel,
   GetVenueResponseModel,
@@ -16,6 +13,8 @@ import fullNextIcon from 'icons/full-next.svg'
 import { ReimbursementFields } from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { buildVenueTypesOptions } from 'pages/VenueEdition/buildVenueTypesOptions'
 import { VenueFormActionBar } from 'pages/VenueEdition/VenueFormActionBar/VenueFormActionBar'
+import { useFormContext } from 'react-hook-form'
+import { useLocation } from 'react-router'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { AddressManual } from 'ui-kit/form/AddressManual/AddressManual'

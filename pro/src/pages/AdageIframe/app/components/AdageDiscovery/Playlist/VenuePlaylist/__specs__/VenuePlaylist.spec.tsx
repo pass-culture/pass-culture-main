@@ -1,8 +1,7 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-
 import { LocalOfferersPlaylistOffer } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import * as useNotification from 'commons/hooks/useNotification'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 

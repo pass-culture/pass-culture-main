@@ -1,11 +1,10 @@
-import * as yup from 'yup'
-
 import {
   bookingAllowedDateValidationSchema,
   bookingAllowedTimeValidationSchema,
   publicationDateValidationSchema,
   publicationTimeValidationSchema,
 } from 'pages/IndividualOfferSummary/IndividualOfferSummary/components/EventPublicationForm/validationSchema'
+import * as yup from 'yup'
 
 export const validationSchema = yup.object().shape({
   publicationMode: yup.string<'now' | 'later'>().required().nullable(),

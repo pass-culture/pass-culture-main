@@ -1,12 +1,10 @@
-import { screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router'
-
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
 import { ApiError, SharedLoginUserResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
@@ -21,6 +19,7 @@ import {
 } from 'commons/utils/renderWithProviders'
 import * as storageAvailable from 'commons/utils/storageAvailable'
 import { Notification } from 'components/Notification/Notification'
+import { Route, Routes } from 'react-router'
 
 import { SignIn } from './SignIn'
 

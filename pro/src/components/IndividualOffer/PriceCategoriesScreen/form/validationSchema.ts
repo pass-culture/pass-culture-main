@@ -1,15 +1,11 @@
-import * as yup from 'yup'
-
 import { getNthParentFormValues } from 'commons/utils/yupValidationTestHelpers'
+import * as yup from 'yup'
 
 import {
   PRICE_CATEGORY_LABEL_MAX_LENGTH,
   PRICE_CATEGORY_PRICE_MAX,
 } from './constants'
-import {
-  isPriceCategoriesForm,
-  isPriceCategoriesFormValues,
-} from './types'
+import { isPriceCategoriesForm, isPriceCategoriesFormValues } from './types'
 
 const labelTooLongMsg = 'Le nom du tarif est trop long'
 const labelRequiredMsg = 'Veuillez renseigner un intitulé de tarif'
@@ -36,19 +32,19 @@ const priceCategoryValidationSchema = yup.object({
         throw new yup.ValidationError('Le formulaire n’est pas complet')
       }
 
-      if (!current.label || !current.price && current.price !== 0) {return true}
+      if (!current.label || (!current.price && current.price !== 0)) {
+        return true
+      }
 
-      const duplicates = allValues.priceCategories.filter(
-        (p) => {
-          return p.label === current.label && p.price === current.price
-        }
-      )
+      const duplicates = allValues.priceCategories.filter((p) => {
+        return p.label === current.label && p.price === current.price
+      })
 
       return duplicates.length === 1
     }),
 
   price: yup
-    .mixed<number | "">()
+    .mixed<number | ''>()
     .test('is-valid-price', 'Le prix doit être un nombre', (value) =>
       value === '' ? true : typeof value === 'number'
     )
@@ -59,7 +55,7 @@ const priceCategoryValidationSchema = yup.object({
       typeof value === 'number' ? value <= PRICE_CATEGORY_PRICE_MAX : false
     )
     .transform((value) => (value === '' ? undefined : value))
-    .required(priceRequiredMsg)
+    .required(priceRequiredMsg),
 })
 
 export const validationSchema = yup.object({

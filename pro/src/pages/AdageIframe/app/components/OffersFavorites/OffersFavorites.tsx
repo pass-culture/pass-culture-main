@@ -1,7 +1,6 @@
-import useSWR, { useSWRConfig } from 'swr'
-
 import { apiAdage } from 'apiClient/api'
 import { GET_COLLECTIVE_FAVORITES } from 'commons/config/swrQueryKeys'
+import useSWR, { useSWRConfig } from 'swr'
 
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
 import { AdageSkeleton } from '../Skeleton/AdageSkeleton'

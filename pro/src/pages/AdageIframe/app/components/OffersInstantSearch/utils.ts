@@ -52,8 +52,7 @@ export const adageFiltersToFacetFilters = (
 
   const filteredFormats: string[] = formats.map((format) => `formats:${format}`)
 
-
-    let filteredDepartments: string[] = departments.flatMap((department) => [
+  let filteredDepartments: string[] = departments.flatMap((department) => [
     `offer.interventionArea:${department}`,
     `venue.departmentCode:${department}`,
   ])

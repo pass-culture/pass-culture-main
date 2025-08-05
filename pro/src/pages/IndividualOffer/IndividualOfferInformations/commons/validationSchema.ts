@@ -1,9 +1,8 @@
-import * as yup from 'yup'
-
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 import { AccessibilityFormValues } from 'commons/core/shared/types'
 import { emailSchema } from 'commons/utils/isValidEmail'
 import { offerFormUrlRegex } from 'pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
+import * as yup from 'yup'
 
 import { validationSchema as locationSchema } from '../components/OfferLocation/validationSchema'
 
@@ -44,7 +43,6 @@ export const getValidationSchema = ({
           .required()
   )
 
-
   const url = yup.lazy(() =>
     isNewOfferCreationFlowFeatureActive
       ? yup.string().when('subcategoryId', {
@@ -66,9 +64,7 @@ export const getValidationSchema = ({
           .optional()
   )
 
-  const maybeLocationSchema = isOfferOnline
-    ? {}
-    : {...locationSchema}
+  const maybeLocationSchema = isOfferOnline ? {} : { ...locationSchema }
 
   return yup.object<UsefulInformationFormValues>().shape({
     accessibility,
@@ -128,6 +124,6 @@ export const getValidationSchema = ({
           .required('Veuillez sélectionner l’une de ces options'),
     }),
     withDrawalDetails: yup.string(),
-    ...maybeLocationSchema
+    ...maybeLocationSchema,
   })
 }

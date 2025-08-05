@@ -1,6 +1,5 @@
-import * as yup from 'yup'
-
 import { unhumanizeSiret } from 'commons/core/Venue/utils'
+import * as yup from 'yup'
 
 export const validationSchema = yup.object().shape({
   siret: yup

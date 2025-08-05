@@ -1,9 +1,8 @@
 import { StoryObj } from '@storybook/react'
-import { useState } from 'react'
-
 import { RadioButton } from 'design-system/RadioButton/RadioButton'
 import { TagVariant } from 'design-system/Tag/Tag'
 import strokeDateIcon from 'icons/stroke-date.svg'
+import { useState } from 'react'
 
 import imageDemo from '../assets/dog.jpg'
 

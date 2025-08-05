@@ -1,8 +1,7 @@
-import { isBefore } from 'date-fns'
-import * as yup from 'yup'
-
 import { isDateValid, removeTime } from 'commons/utils/date'
 import { MAX_STOCKS_QUANTITY } from 'components/IndividualOffer/StocksThing/validationSchema'
+import { isBefore } from 'date-fns'
+import * as yup from 'yup'
 
 import { EditStockFormValues } from './StocksCalendarTableEditStock'
 

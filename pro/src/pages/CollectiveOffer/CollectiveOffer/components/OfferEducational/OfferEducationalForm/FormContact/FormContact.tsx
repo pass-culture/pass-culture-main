@@ -1,6 +1,5 @@
-import { useFormContext } from 'react-hook-form'
-
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { useFormContext } from 'react-hook-form'
 import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 

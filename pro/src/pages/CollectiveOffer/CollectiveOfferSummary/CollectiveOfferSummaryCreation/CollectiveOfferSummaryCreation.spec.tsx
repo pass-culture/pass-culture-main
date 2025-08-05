@@ -1,15 +1,17 @@
-import { screen } from '@testing-library/react'
-
 import { api } from 'apiClient/api'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
 } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from 'commons/utils/factories/collectiveApiFactories'
-import { managedVenueFactory, userOffererFactory } from 'commons/utils/factories/userOfferersFactories'
+import {
+  managedVenueFactory,
+  userOffererFactory,
+} from 'commons/utils/factories/userOfferersFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,

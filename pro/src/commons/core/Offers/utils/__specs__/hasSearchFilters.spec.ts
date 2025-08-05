@@ -24,7 +24,7 @@ describe('hasSearchFilters', () => {
     expect(
       hasCollectiveSearchFilters({
         searchFilters: defaultCollectiveFilters,
-        defaultFilters: defaultCollectiveFilters
+        defaultFilters: defaultCollectiveFilters,
       })
     ).toBeFalsy()
 
@@ -34,8 +34,8 @@ describe('hasSearchFilters', () => {
         defaultFilters: {
           ...defaultCollectiveFilters,
           format: EacFormat.ATELIER_DE_PRATIQUE,
-        }
-    })
+        },
+      })
     ).toBeTruthy()
 
     expect(
@@ -44,7 +44,7 @@ describe('hasSearchFilters', () => {
         defaultFilters: {
           ...defaultCollectiveFilters,
           status: [CollectiveOfferDisplayedStatus.PUBLISHED],
-        }
+        },
       })
     ).toBeTruthy()
   })
@@ -56,7 +56,7 @@ describe('hasSearchFilters', () => {
         defaultFilters: {
           ...defaultCollectiveFilters,
           page: 10,
-        }
+        },
       })
     ).toBeFalsy()
 
@@ -66,7 +66,7 @@ describe('hasSearchFilters', () => {
         defaultFilters: {
           ...defaultCollectiveFilters,
           offererId: '816',
-        }
+        },
       })
     ).toBeFalsy()
   })

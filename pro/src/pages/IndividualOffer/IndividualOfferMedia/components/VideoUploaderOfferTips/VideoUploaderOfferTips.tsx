@@ -1,7 +1,6 @@
 import { TipsBanner } from 'ui-kit/TipsBanner/TipsBanner'
-
-import imageVideoTips from './video-tips.png'
 import styles from './VideoUploaderOfferTips.module.scss'
+import imageVideoTips from './video-tips.png'
 
 export const VideoUploaderTips = () => (
   <TipsBanner decorativeImage={imageVideoTips}>

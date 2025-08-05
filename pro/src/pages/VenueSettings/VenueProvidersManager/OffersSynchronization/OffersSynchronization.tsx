@@ -1,10 +1,9 @@
-import { useRef } from 'react'
-
 import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { AddVenueProviderButton } from 'pages/VenueSettings/VenueProvidersManager/AddVenueProviderButton'
 import style from 'pages/VenueSettings/VenueProvidersManager/OffersSynchronization/OffersSynchronization.module.scss'
 import { VenueProviderCard } from 'pages/VenueSettings/VenueProvidersManager/VenueProviderList/VenueProviderCard'
+import { useRef } from 'react'
 
 interface OffersSynchronizationProps {
   venueProviders: VenueProviderResponse[]

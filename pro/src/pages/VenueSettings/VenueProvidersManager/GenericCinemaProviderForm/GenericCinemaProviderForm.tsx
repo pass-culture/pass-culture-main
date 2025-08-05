@@ -1,11 +1,10 @@
-import * as Dialog from '@radix-ui/react-dialog'
-import { useForm } from 'react-hook-form'
-
 import { PostVenueProviderBody } from 'apiClient/v1'
+import * as Dialog from '@radix-ui/react-dialog'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { SynchronizationEvents } from 'commons/core/FirebaseEvents/constants'
 import { DuoCheckbox } from 'components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { useForm } from 'react-hook-form'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'

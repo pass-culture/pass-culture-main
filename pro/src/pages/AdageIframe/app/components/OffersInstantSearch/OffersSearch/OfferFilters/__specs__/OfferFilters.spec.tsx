@@ -1,18 +1,17 @@
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { FormProvider, useForm } from 'react-hook-form'
-
 import {
   CollectiveLocationType,
   EacFormat,
   OfferAddressType,
 } from 'apiClient/adage'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { defaultAdageUser } from 'commons/utils/factories/adageFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { FormProvider, useForm } from 'react-hook-form'
 
 import { SearchFormValues } from '../../../OffersInstantSearch'
 import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../../utils'

@@ -1,5 +1,3 @@
-import { useRef, useState } from 'react'
-
 import {
   CollectiveOfferResponseModel,
   GetOffererResponseModel,
@@ -25,6 +23,7 @@ import { CollectiveOffersActionsBar } from 'components/CollectiveOffersTable/Col
 import { CollectiveOffersTable } from 'components/CollectiveOffersTable/CollectiveOffersTable'
 import { NoData } from 'components/NoData/NoData'
 import { useStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
+import { useRef, useState } from 'react'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 
 import styles from './CollectiveOffersScreen.module.scss'
@@ -85,7 +84,8 @@ export const CollectiveOffersScreen = ({
 
   const areAllOffersSelected =
     selectedOffers.length > 0 &&
-    selectedOffers.length === offers.filter((offer) => isCollectiveOfferSelectable(offer)).length
+    selectedOffers.length ===
+      offers.filter((offer) => isCollectiveOfferSelectable(offer)).length
 
   function clearSelectedOfferIds() {
     setSelectedOffers([])
@@ -93,7 +93,9 @@ export const CollectiveOffersScreen = ({
 
   function toggleSelectAllCheckboxes() {
     setSelectedOffers(
-      areAllOffersSelected ? [] : offers.filter((offer) => isCollectiveOfferSelectable(offer))
+      areAllOffersSelected
+        ? []
+        : offers.filter((offer) => isCollectiveOfferSelectable(offer))
     )
   }
 

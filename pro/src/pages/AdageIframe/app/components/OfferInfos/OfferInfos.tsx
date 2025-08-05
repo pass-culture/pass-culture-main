@@ -1,6 +1,3 @@
-import { useLocation, useParams, useSearchParams } from 'react-router'
-import useSWR from 'swr'
-
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import {
@@ -11,6 +8,8 @@ import strokePassIcon from 'icons/stroke-pass.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
+import { useLocation, useParams, useSearchParams } from 'react-router'
+import useSWR from 'swr'
 import { Breadcrumb, Crumb } from 'ui-kit/Breadcrumb/Breadcrumb'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'

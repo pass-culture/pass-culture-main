@@ -1,6 +1,5 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-
 import { apiAdage } from 'apiClient/api'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,

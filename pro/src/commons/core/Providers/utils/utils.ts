@@ -3,9 +3,7 @@ import { GetOfferLastProviderResponseModel } from 'apiClient/v1'
 import { CINEMA_PROVIDER_NAMES } from '../constants'
 
 /* istanbul ignore next: DEBT, TO FIX */
-const isAllocineProviderName = (
-  providerName: string | null
-): boolean => {
+const isAllocineProviderName = (providerName: string | null): boolean => {
   if (providerName === null) {
     return false
   }

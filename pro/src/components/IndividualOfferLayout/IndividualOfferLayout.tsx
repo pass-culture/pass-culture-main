@@ -1,11 +1,9 @@
-import cn from 'classnames'
-import { Navigate, useLocation, useNavigate } from 'react-router'
-
 import { api } from 'apiClient/api'
 import {
   GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
+import cn from 'classnames'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
@@ -18,6 +16,7 @@ import { Tag, TagVariant } from 'design-system/Tag/Tag'
 import fullTrashIcon from 'icons/full-trash.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED } from 'pages/IndividualOffer/IndividualOfferInformations/components/IndividualOfferInformationsScreen'
+import { Navigate, useLocation, useNavigate } from 'react-router'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Callout } from 'ui-kit/Callout/Callout'

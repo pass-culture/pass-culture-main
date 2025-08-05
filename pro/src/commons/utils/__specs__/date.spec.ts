@@ -4,8 +4,8 @@ import {
   formatShortDateForInput,
   formatTimeForInput,
   getDateToFrenchText,
-  getRangeToFrenchText,
   getDelayToFrenchText,
+  getRangeToFrenchText,
   toDateStrippedOfTimezone,
   toISOStringWithoutMilliseconds,
 } from '../date'

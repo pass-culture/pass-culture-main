@@ -1,9 +1,8 @@
+import { api } from 'apiClient/api'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Route, Routes } from 'react-router'
-
-import { api } from 'apiClient/api'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { Route, Routes } from 'react-router'
 
 import { ResetPassword } from './ResetPassword'
 

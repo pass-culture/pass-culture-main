@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 
 import {
-  sharedCurrentUserFactory,
   currentOffererFactory,
+  sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { AccessibilityLayout } from 'pages/Accessibility/AccessibilityLayout'

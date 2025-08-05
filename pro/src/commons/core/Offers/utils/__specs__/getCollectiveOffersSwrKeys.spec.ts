@@ -1,8 +1,8 @@
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'commons/core/Offers/constants'
 
 import {
-  getCollectiveOffersSwrKeys,
   GetCollectiveOffersSwrKeysProps,
+  getCollectiveOffersSwrKeys,
 } from '../getCollectiveOffersSwrKeys'
 
 const props: GetCollectiveOffersSwrKeysProps = {

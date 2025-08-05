@@ -1,5 +1,3 @@
-import { useLocation } from 'react-router'
-
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -11,6 +9,7 @@ import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import fullLeftIcon from 'icons/full-left.svg'
 import fullRightIcon from 'icons/full-right.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
+import { useLocation } from 'react-router'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'

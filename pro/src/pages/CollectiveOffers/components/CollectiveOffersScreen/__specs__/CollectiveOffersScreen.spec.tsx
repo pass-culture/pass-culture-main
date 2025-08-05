@@ -1,12 +1,10 @@
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { expect } from 'vitest'
-
 import {
   CollectiveOfferResponseModel,
   SharedCurrentUserResponseModel,
   UserRole,
 } from 'apiClient/v1'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import {
   ALL_OFFERERS_OPTION,
   ALL_VENUES_OPTION,
@@ -20,9 +18,10 @@ import {
   sharedCurrentUserFactory,
 } from 'commons/utils/factories/storeFactories'
 import {
-  renderWithProviders,
   RenderWithProvidersOptions,
+  renderWithProviders,
 } from 'commons/utils/renderWithProviders'
+import { expect } from 'vitest'
 
 import {
   CollectiveOffersScreen,

@@ -1,10 +1,9 @@
-import { Outlet } from 'react-router'
-
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { Layout } from 'app/App/layout/Layout'
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { ReimbursementsTabs } from 'components/ReimbursementsTabs/ReimbursementsTabs'
+import { Outlet } from 'react-router'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './Reimbursement.module.scss'
@@ -18,7 +17,7 @@ export const Reimbursements = (): JSX.Element => {
   const {
     data: selectedOfferer,
     error: offererApiError,
-    isLoading: isOffererLoading
+    isLoading: isOffererLoading,
   } = useOfferer(selectedOffererId)
 
   if (isOffererLoading || offererApiError) {
@@ -30,7 +29,7 @@ export const Reimbursements = (): JSX.Element => {
   }
 
   return (
-    <Layout mainHeading='Gestion financière'>
+    <Layout mainHeading="Gestion financière">
       <div className={styles['reimbursements-container']}>
         <div>
           <ReimbursementsTabs selectedOfferer={selectedOfferer} />

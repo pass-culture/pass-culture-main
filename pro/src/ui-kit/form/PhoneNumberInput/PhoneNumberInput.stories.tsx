@@ -1,9 +1,8 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import type { Meta, StoryObj } from '@storybook/react'
+import { isPhoneValid } from 'commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import * as yup from 'yup'
-
-import { isPhoneValid } from 'commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 
 import { PhoneNumberInput } from './PhoneNumberInput'
 
