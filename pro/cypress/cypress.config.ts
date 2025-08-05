@@ -3,7 +3,7 @@ import fs from 'fs'
 
 import cypressFailFast = require('cypress-fail-fast/plugin')
 
-// ts-unused-exports:disable-next-line
+// biome-ignore lint/style/noDefaultExport: Only way to export a Cypress config.
 export default defineConfig({
   e2e: {
     setupNodeEvents(on, config) {

@@ -20,6 +20,7 @@ const config: StorybookConfig = {
     name: '@storybook/react-vite',
     options: {},
   },
+  // biome-ignore lint/suspicious/useAwait: TODO (igabriele, 2025-08-05): Suspicious indeed, not sure why it is needed.
   async viteFinal(config) {
     if (config.build) {
       //  Make sure that the <use> content in svgs is not inlined which is forbidden by some browsers
@@ -32,4 +33,5 @@ const config: StorybookConfig = {
   },
 }
 
+// biome-ignore lint/style/noDefaultExport: No other way to export a Storybook config.
 export default config

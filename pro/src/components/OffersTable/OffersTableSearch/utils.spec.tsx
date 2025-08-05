@@ -114,7 +114,7 @@ describe('useStoredFilterConfig', () => {
       const { storedFilters } = getStoredFilterConfig('individual')
       expect(isEqual(storedFilters, MOCKED_FILTERS)).toBeFalsy()
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { offererId, ...expectedFilters } = MOCKED_FILTERS
+      const { offererId: _offererId, ...expectedFilters } = MOCKED_FILTERS
       expect(isEqual(storedFilters, expectedFilters)).toBeTruthy()
     })
   })

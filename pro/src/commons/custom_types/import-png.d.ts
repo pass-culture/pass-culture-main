@@ -1,5 +1,5 @@
 declare module '*.png' {
   const value: string
-  // eslint-disable-next-line import/no-default-export
+  // biome-ignore lint/style/noDefaultExport: This is a TD file.
   export default value
 }

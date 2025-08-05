@@ -313,7 +313,7 @@ export const RequestFormDialog = ({
                   ).number
                   hookForm.setValue('teacherPhone', phoneNumber)
                   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                } catch (e) {
+                } catch (_e) {
                   // phone is considered invalid by the lib, so we does nothing here and let yup indicates the error
                 }
               }}

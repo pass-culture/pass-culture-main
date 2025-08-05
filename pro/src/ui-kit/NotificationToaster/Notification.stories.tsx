@@ -9,6 +9,7 @@ export default {
   component: NotificationToaster,
 }
 
+// biome-ignore lint/suspicious/noShadowRestrictedNames: TODO (igabriele, 2025-08-05): Very minor but easy to fix.
 export const Error: StoryObj<typeof NotificationToaster> = {
   args: {
     notification: {

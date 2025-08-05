@@ -183,7 +183,7 @@ Cypress.Commands.add(
     const element = cy.wrap(subject)
     element.click().then(($el) => {
       if (Cypress.dom.isAttached($el)) {
-        console.log('element still visible, retrying click')
+        console.info('element still visible, retrying click')
         element.click()
       }
     })

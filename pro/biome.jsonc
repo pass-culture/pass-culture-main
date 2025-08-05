@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.1.3/schema.json",
   // https://biomejs.dev/guides/big-projects/#monorepo
   "root": false,
   "extends": "//",
@@ -20,7 +20,13 @@
     "useEditorconfig": true
   },
   "files": {
-    "includes": ["**", "!src/apiClient/adage/*", "!src/apiClient/v1/*"],
+    "includes": [
+      "**",
+      "!node_modules/**",
+      "!scripts/customRequest.ts",
+      "!src/apiClient/adage/**",
+      "!src/apiClient/v1/**"
+    ],
     "ignoreUnknown": true
   },
   "linter": {
@@ -75,6 +81,12 @@
         "noClassAssign": "error",
         "noCommentText": "error",
         "noCompareNegZero": "error",
+        "noConsole": {
+          "level": "error",
+          "options": {
+            "allow": ["error", "info", "warn"]
+          }
+        },
         "noControlCharactersInRegex": "error",
         "noDebugger": "error",
         "noDuplicateCase": "error",

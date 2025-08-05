@@ -136,7 +136,7 @@ describe('serializePatchOffer', () => {
         manuallySetAddress: false,
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { address, ...body } = patchBody
+      const { address: _address, ...body } = patchBody
 
       expect(
         serializePatchOffer({
@@ -153,7 +153,7 @@ describe('serializePatchOffer', () => {
         city: undefined,
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { address, ...body } = patchBody
+      const { address: _address, ...body } = patchBody
 
       expect(
         serializePatchOffer({
