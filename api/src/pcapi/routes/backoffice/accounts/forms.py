@@ -1,4 +1,5 @@
 import datetime
+import enum
 
 import sqlalchemy.orm as sa_orm
 import wtforms
@@ -161,6 +162,19 @@ class AccountUpdateRequestSearchForm(utils.PCForm):
 
 class AccountUpdateRequestAcceptForm(utils.PCForm):
     motivation = fields.PCOptCommentField("Explication facultative envoyée au demandeur sur Démarches-Simplifiées")
+
+
+class CorrectionReasonOptions(enum.Enum):
+    REFUSED_FILE = "refused-file"
+    UNREADABLE_PHOTO = "unreadable-photo"
+    MISSING_FILE = "missing-file"
+
+
+class AccountUpdateRequestCorrectionForm(utils.PCForm):
+    correction_reason = fields.PCSelectField(
+        "Raison de demande de correction",
+        choices=utils.values_from_enum(CorrectionReasonOptions),
+    )
 
 
 class UserTagBaseForm(FlaskForm):

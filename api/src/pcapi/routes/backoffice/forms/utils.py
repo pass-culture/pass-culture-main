@@ -27,6 +27,10 @@ def choices_from_enum(
     return [(opt.name, formatter(opt) if formatter else opt.value) for opt in enum_cls if opt not in exclude_opts]
 
 
+def values_from_enum(enum_cls: typing.Type[enum.Enum]) -> list[tuple]:
+    return [(opt.value, opt.value) for opt in enum_cls]
+
+
 def is_slug(string: str) -> bool:
     pattern = r"^[a-z0-9\-]+$"
     return bool(re.match(pattern, string))

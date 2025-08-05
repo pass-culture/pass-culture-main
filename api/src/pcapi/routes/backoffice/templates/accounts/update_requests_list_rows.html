@@ -49,7 +49,19 @@
                     <a class="btn btn-sm d-block w-100 text-start px-3"
                        data-bs-toggle="modal"
                        data-use-dynamic-modal="true"
-                       data-bs-target="#ask-for-correction-{{ update_request.dsApplicationId }}">Photo illisible</a>
+                       data-bs-target="#ask-for-correction-unreadable-photo-{{ update_request.dsApplicationId }}">Photo illisible</a>
+                  </li>
+                  <li class="dropdown-item p-0">
+                    <a class="btn btn-sm d-block w-100 text-start px-3"
+                        data-bs-toggle="modal"
+                        data-use-dynamic-modal="true"
+                        data-bs-target="#ask-for-correction-missing-file-{{ update_request.dsApplicationId }}">Manque document officiel</a>
+                  </li>
+                  <li class="dropdown-item p-0">
+                    <a class="btn btn-sm d-block w-100 text-start px-3"
+                        data-bs-toggle="modal"
+                        data-use-dynamic-modal="true"
+                        data-bs-target="#ask-for-correction-refused-file-{{ update_request.dsApplicationId }}">Document non accepté</a>
                   </li>
                 {% endif %}
                 {% if update_request.can_be_refused %}
