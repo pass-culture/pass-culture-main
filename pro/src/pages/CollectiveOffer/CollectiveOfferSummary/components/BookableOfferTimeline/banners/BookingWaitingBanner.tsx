@@ -16,6 +16,7 @@ export const BookingWaitingBanner = ({
   offerId,
   bookingLimitDatetime,
   departmentCode,
+  canEditDates,
   contactEmail,
 }: {
   offerStatus:
@@ -24,6 +25,7 @@ export const BookingWaitingBanner = ({
   offerId: number
   bookingLimitDatetime: string
   departmentCode?: string | null
+  canEditDates: boolean
   contactEmail?: string | null
 }) => {
   const daysCountBeforeExpiration = differenceInCalendarDays(
@@ -48,11 +50,15 @@ export const BookingWaitingBanner = ({
       className={styles['callout']}
       variant={isExpiringSoon ? CalloutVariant.WARNING : CalloutVariant.INFO}
       links={[
-        {
-          label: 'Modifier la date limite de réservation',
-          icon: { src: fullEditIcon, alt: 'Modifier' },
-          href: `/offre/${offerId}/collectif/stocks/edition`,
-        },
+        ...(canEditDates
+          ? [
+              {
+                label: 'Modifier la date limite de réservation',
+                icon: { src: fullEditIcon, alt: 'Modifier' },
+                href: `/offre/${offerId}/collectif/stocks/edition`,
+              },
+            ]
+          : []),
         ...(contactEmail && isExpiringSoon
           ? [
               {

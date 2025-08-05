@@ -11,12 +11,14 @@ export const ExpiredBanner = ({
   stepBeforeExpiredStatus,
   offerId,
   bookingLimitDatetime,
+  canEditDates,
   departmentCode,
 }: {
   stepBeforeExpiredStatus: CollectiveOfferDisplayedStatus
   offerId: number
   bookingLimitDatetime: string | null
   departmentCode?: string | null
+  canEditDates: boolean
   contactEmail?: string | null
 }) => {
   const hasPublished =
@@ -33,11 +35,15 @@ export const ExpiredBanner = ({
       className={styles['callout']}
       variant={CalloutVariant.ERROR}
       links={[
-        {
-          label: 'Modifier la date limite de réservation',
-          icon: { src: fullEditIcon, alt: 'Modifier' },
-          href: `/offre/${offerId}/collectif/stocks/edition`,
-        },
+        ...(canEditDates
+          ? [
+              {
+                label: 'Modifier la date limite de réservation',
+                icon: { src: fullEditIcon, alt: 'Modifier' },
+                href: `/offre/${offerId}/collectif/stocks/edition`,
+              },
+            ]
+          : []),
       ]}
     >
       <div>
