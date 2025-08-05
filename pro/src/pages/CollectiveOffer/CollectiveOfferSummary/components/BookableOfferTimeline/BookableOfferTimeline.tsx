@@ -93,7 +93,15 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
                   : undefined
               }
             />
-            {isCurrentStep && <RejectedBanner offerId={offer.id} />}
+            {isCurrentStep && (
+              <RejectedBanner
+                offerId={offer.id}
+                canDuplicate={isActionAllowedOnCollectiveOffer(
+                  offer,
+                  CollectiveOfferAllowedAction.CAN_DUPLICATE
+                )}
+              />
+            )}
           </>
         ),
       }
@@ -181,6 +189,10 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
               offerId={offer.id}
               bookingLimitDatetime={offer.collectiveStock.bookingLimitDatetime}
               departmentCode={offer.venue.departementCode}
+              canEditDates={isActionAllowedOnCollectiveOffer(
+                offer,
+                CollectiveOfferAllowedAction.CAN_EDIT_DATES
+              )}
               contactEmail={
                 offer.booking?.educationalRedactor?.email ??
                 offer.teacher?.email
@@ -208,6 +220,10 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
               <CancelledBanner
                 offerId={offer.id}
                 reason={offer.booking?.cancellationReason}
+                canDuplicate={isActionAllowedOnCollectiveOffer(
+                  offer,
+                  CollectiveOfferAllowedAction.CAN_DUPLICATE
+                )}
               />
             )}
           </>
@@ -331,6 +347,10 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
                   offer.collectiveStock.bookingLimitDatetime
                 }
                 departmentCode={offer.venue.departementCode}
+                canEditDates={isActionAllowedOnCollectiveOffer(
+                  offer,
+                  CollectiveOfferAllowedAction.CAN_EDIT_DATES
+                )}
                 contactEmail={
                   offer.booking?.educationalRedactor?.email ??
                   offer.teacher?.email
