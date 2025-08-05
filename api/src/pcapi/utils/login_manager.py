@@ -132,16 +132,16 @@ def manage_pro_session(user: users_models.User | None) -> users_models.User | No
 def compute_pro_session_validity(last_login: datetime, last_api_call: datetime) -> bool:
     now = datetime.utcnow()
 
-    if last_login + settings.PRO_SESSION_LOGIN_TIMEOUT > now:  # connected less than 14 days ago
+    if last_login + settings.PRO_SESSION_LOGIN_TIMEOUT_IN_DAYS > now:  # connected less than 14 days ago
         return True
 
     if (
-        last_api_call + settings.PRO_SESSION_GRACE_TIME < now
+        last_api_call + settings.PRO_SESSION_GRACE_TIME_IN_HOURS < now
     ):  # connected more than 14 days ago and did not do anything in the last hour
         return False
 
     if (
-        last_login + settings.PRO_SESSION_FORCE_TIMEOUT > now
+        last_login + settings.PRO_SESSION_FORCE_TIMEOUT_IN_DAYS > now
     ):  # connected more than 14 days ago BUT less than 15 days ago, did something in the last hour
         return True
 
