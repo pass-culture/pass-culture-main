@@ -13,20 +13,11 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const renderSignup = (features: string[] = []) =>
-  renderWithProviders(<SignupConfirmation />, {
-    features,
-  })
+const renderSignup = () => renderWithProviders(<SignupConfirmation />)
 
 describe('SignupConfirmation', () => {
   it('Should render correctly', () => {
     renderSignup()
-    expect(
-      screen.getByText(/Vous allez recevoir un lien de confirmation par email/)
-    ).toBeInTheDocument()
-  })
-  it('Should render correctly with new signup FF', () => {
-    renderSignup(['WIP_2025_SIGN_UP'])
     expect(
       screen.getByText('Cliquez sur le lien envoyé par email')
     ).toBeInTheDocument()

@@ -5,10 +5,8 @@ import { Params, useNavigate, useParams } from 'react-router'
 
 import { api } from 'apiClient/api'
 import { Layout } from 'app/App/layout/Layout'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
-import { Hero } from 'ui-kit/Hero/Hero'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { ChangePasswordForm } from './ChangePasswordForm/ChangePasswordForm'
@@ -17,14 +15,11 @@ import { validationSchema } from './validationSchema'
 
 export type ResetPasswordValues = {
   newPassword: string
-  newConfirmationPassword?: string
+  newConfirmationPassword: string
 }
 
 export const ResetPassword = (): JSX.Element => {
-  const [passwordChanged, setPasswordChanged] = useState(false)
-  const [isBadToken, setIsBadToken] = useState(false)
-  const is2025SignUpEnabled = useActiveFeature('WIP_2025_SIGN_UP')
-  const [isLoading, setIsLoading] = useState(is2025SignUpEnabled ? true : false)
+  const [isLoading, setIsLoading] = useState(true)
   const { token } = useParams<Params>()
   const notify = useNotification()
   const navigate = useNavigate()
@@ -37,14 +32,13 @@ export const ResetPassword = (): JSX.Element => {
     navigate('/demande-mot-de-passe')
   }, [navigate, notify])
 
-  // If the FF WIP_2025_SIGN_UP is enabled, we check token validity on page load
   useEffect(() => {
-    if (is2025SignUpEnabled && token) {
+    if (token) {
       api.postCheckToken({ token }).then(() => {
         setIsLoading(false)
       }, invalidTokenHandler)
     }
-  }, [token, invalidTokenHandler, is2025SignUpEnabled])
+  }, [token, invalidTokenHandler])
 
   const submitChangePassword = async (values: ResetPasswordValues) => {
     const { newPassword } = values
@@ -53,28 +47,20 @@ export const ResetPassword = (): JSX.Element => {
       // token is always defined as `submitChangePassword` is callable only in that case.
       await api.postNewPassword({ newPassword, token: token as string })
 
-      if (is2025SignUpEnabled) {
-        notify.success('Mot de passe modifié.')
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        navigate('/connexion')
-      } else {
-        setPasswordChanged(true)
-      }
+      notify.success('Mot de passe modifié.')
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      navigate('/connexion')
     } catch {
-      if (is2025SignUpEnabled) {
-        invalidTokenHandler()
-      } else {
-        setIsBadToken(true)
-      }
+      invalidTokenHandler()
     }
   }
 
   const hookForm = useForm<ResetPasswordValues>({
     defaultValues: {
       newPassword: '',
-      ...(is2025SignUpEnabled ? { newConfirmationPassword: '' } : {}),
+      newConfirmationPassword: '',
     },
-    resolver: yupResolver(validationSchema(is2025SignUpEnabled)),
+    resolver: yupResolver(validationSchema),
     mode: 'onTouched',
   })
 
@@ -82,44 +68,18 @@ export const ResetPassword = (): JSX.Element => {
     return <Spinner />
   }
 
-  const mainHeading =
-    token && !passwordChanged && !isBadToken
-      ? 'Réinitialisez votre mot de passe'
-      : ''
-
   return (
-    <Layout
-      layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}
-      mainHeading={mainHeading}
-    >
+    <Layout layout="sign-up" mainHeading="Réinitialisez votre mot de passe">
       <div>
-        {passwordChanged && !isBadToken && (
-          <Hero
-            linkLabel="Se connecter"
-            linkTo="/connexion"
-            text="Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe"
-            title="Mot de passe changé !"
-          />
-        )}
-        {(!token || isBadToken) && (
-          <Hero
-            linkLabel="Recevoir un nouveau lien"
-            linkTo="/demande-mot-de-passe"
-            text="Le lien pour réinitialiser votre mot de passe a expiré. Veuillez recommencer la procédure pour recevoir un nouveau lien par email."
-            title="Ce lien a expiré !"
-          />
-        )}
-        {token && !passwordChanged && !isBadToken && (
-          <section>
-            <p className={styles['mandatory-info']}>
-              Veuillez définir votre nouveau mot de passe afin d’accéder à la
-              plateforme.
-            </p>
-            <FormProvider {...hookForm}>
-              <ChangePasswordForm onSubmit={submitChangePassword} />
-            </FormProvider>
-          </section>
-        )}
+        <section>
+          <p className={styles['mandatory-info']}>
+            Veuillez définir votre nouveau mot de passe afin d’accéder à la
+            plateforme.
+          </p>
+          <FormProvider {...hookForm}>
+            <ChangePasswordForm onSubmit={submitChangePassword} />
+          </FormProvider>
+        </section>
       </div>
     </Layout>
   )

@@ -2,12 +2,11 @@ import React, { createContext, useContext, useState } from 'react'
 
 import { Target } from 'apiClient/v1'
 import { Address } from 'commons/core/shared/types'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { ActivityFormValues } from 'components/SignupJourneyForm/Activity/ActivityForm'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
 import { OffererFormValues } from 'components/SignupJourneyForm/Offerer/Offerer'
 
-import { defaultActivityValues } from './constants'
+import { DEFAULT_ACTIVITY_VALUES } from './constants'
 
 export interface Offerer extends OffererFormValues, Address {
   name: string
@@ -50,10 +49,8 @@ interface SignupJourneyContextProviderProps {
 export function SignupJourneyContextProvider({
   children,
 }: SignupJourneyContextProviderProps) {
-  const isNewSignupEnabled = useActiveFeature('WIP_2025_SIGN_UP')
-
   const [activity, setActivity] = useState<ActivityContext | null>(
-    defaultActivityValues(isNewSignupEnabled)
+    DEFAULT_ACTIVITY_VALUES
   )
 
   const [offerer, setOfferer] = useState<Offerer | null>(

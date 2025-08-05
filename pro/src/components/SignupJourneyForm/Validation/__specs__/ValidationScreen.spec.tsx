@@ -131,7 +131,7 @@ describe('ValidationScreen', () => {
         venueTypeCode: 'MUSEUM',
         socialUrls: ['url1', 'url2'],
         targetCustomer: Target.EDUCATIONAL,
-        phoneNumber: undefined,
+        phoneNumber: '',
       },
       offerer: {
         name: 'nom',
@@ -158,7 +158,7 @@ describe('ValidationScreen', () => {
           venueTypeCode: 'MUSEUM',
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
-          phoneNumber: undefined,
+          phoneNumber: '',
         },
         offerer: {
           name: 'nom',
@@ -271,7 +271,7 @@ describe('ValidationScreen', () => {
           venueTypeCode: 'MUSEUM',
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
-          phoneNumber: undefined,
+          phoneNumber: '',
         },
         offerer: {
           name: 'nom',
@@ -323,6 +323,7 @@ describe('ValidationScreen', () => {
           },
           token: 'token',
           isOpenToPublic: false,
+          phoneNumber: '',
         })
       }
     )
@@ -342,7 +343,7 @@ describe('ValidationScreen', () => {
           venueTypeCode: 'MUSEUM',
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
-          phoneNumber: undefined,
+          phoneNumber: '',
         },
         offerer: {
           name: 'nom',

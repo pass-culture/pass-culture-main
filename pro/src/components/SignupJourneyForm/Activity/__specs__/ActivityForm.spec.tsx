@@ -69,7 +69,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
   let initialValues: Partial<ActivityFormValues>
   beforeEach(() => {
     activity = DEFAULT_ACTIVITY_VALUES
-    initialValues = defaultActivityFormValues(false)
+    initialValues = defaultActivityFormValues
     props = {
       venueTypes: venueTypes,
     }

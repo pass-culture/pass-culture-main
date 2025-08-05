@@ -11,7 +11,6 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from 'commons/core/shared/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
@@ -44,8 +43,6 @@ export const SignIn = (): JSX.Element => {
   const [shouldRedirect, setshouldRedirect] = useState(false)
   const [hasApiError, setHasApiError] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
-
-  const is2025SignUpEnabled = useActiveFeature('WIP_2025_SIGN_UP')
 
   useInitReCaptcha()
 
@@ -133,10 +130,7 @@ export const SignIn = (): JSX.Element => {
   return shouldRedirect ? (
     <Navigate to="/" replace />
   ) : (
-    <Layout
-      layout={is2025SignUpEnabled ? 'sign-up' : 'logged-out'}
-      mainHeading="Connectez-vous"
-    >
+    <Layout layout="sign-up" mainHeading="Connectez-vous">
       <MandatoryInfo areAllFieldsMandatory={true} />
       <FormProvider {...hookForm}>
         <SigninForm onSubmit={hookForm.handleSubmit(onSubmit)} />

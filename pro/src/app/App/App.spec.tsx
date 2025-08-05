@@ -46,7 +46,7 @@ const renderApp = (options?: RenderWithProvidersOptions) =>
           <Route path="/offres" element={<p>Offres</p>} />
           <Route path="/connexion" element={<p>Login page</p>} />
           <Route
-            path="/parcours-inscription"
+            path="/parcours-inscription/structure"
             element={<p>Onboarding page</p>}
           />
           <Route path="/broken-page" element={<TestBrokenCallComponent />} />
