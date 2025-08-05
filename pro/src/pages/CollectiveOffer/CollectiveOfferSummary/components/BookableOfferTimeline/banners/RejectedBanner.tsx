@@ -18,7 +18,13 @@ import { CalloutVariant } from '@/ui-kit/Callout/types'
 
 import styles from '../BookableOfferTimeline.module.scss'
 
-export const RejectedBanner = ({ offerId }: { offerId: number }) => {
+export const RejectedBanner = ({
+  offerId,
+  canDuplicate,
+}: {
+  offerId: number
+  canDuplicate: boolean
+}) => {
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
   const selectedOffererId = useSelector(selectCurrentOffererId)
@@ -31,22 +37,24 @@ export const RejectedBanner = ({ offerId }: { offerId: number }) => {
       décision. Vous pouvez dupliquer cette offre et la corriger pour la publier
       et la soumettre à nouveau à notre équipe.
       <div className={styles['callout-margin']}>
-        <Button
-          variant={ButtonVariant.TERNARY}
-          icon={fullDuplicateIcon}
-          onClick={async () => {
-            logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
-              from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_TIMELINE,
-              offererId: selectedOffererId?.toString(),
-              offerId,
-              offerStatus: CollectiveOfferDisplayedStatus.REJECTED,
-              offerType: 'collective',
-            })
-            await duplicateBookableOffer(navigate, notify, offerId)
-          }}
-        >
-          {"Dupliquer l'offre"}
-        </Button>
+        {canDuplicate && (
+          <Button
+            variant={ButtonVariant.TERNARY}
+            icon={fullDuplicateIcon}
+            onClick={async () => {
+              logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
+                from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_TIMELINE,
+                offererId: selectedOffererId?.toString(),
+                offerId,
+                offerStatus: CollectiveOfferDisplayedStatus.REJECTED,
+                offerType: 'collective',
+              })
+              await duplicateBookableOffer(navigate, notify, offerId)
+            }}
+          >
+            {"Dupliquer l'offre"}
+          </Button>
+        )}
       </div>
     </Callout>
   )

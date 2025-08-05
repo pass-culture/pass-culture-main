@@ -25,9 +25,11 @@ import styles from '../BookableOfferTimeline.module.scss'
 export const CancelledBanner = ({
   offerId,
   reason,
+  canDuplicate,
 }: {
   offerId: number
   reason?: CollectiveBookingCancellationReasons | null
+  canDuplicate: boolean
 }) => {
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
@@ -66,22 +68,24 @@ export const CancelledBanner = ({
     <Callout className={styles['callout']} variant={CalloutVariant.ERROR}>
       {message}
       <div className={styles['callout-margin']}>
-        <Button
-          variant={ButtonVariant.TERNARY}
-          icon={fullDuplicateIcon}
-          onClick={async () => {
-            logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
-              from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_TIMELINE,
-              offererId: selectedOffererId?.toString(),
-              offerId,
-              offerStatus: CollectiveOfferDisplayedStatus.CANCELLED,
-              offerType: 'collective',
-            })
-            await duplicateBookableOffer(navigate, notify, offerId)
-          }}
-        >
-          {"Dupliquer l'offre"}
-        </Button>
+        {canDuplicate && (
+          <Button
+            variant={ButtonVariant.TERNARY}
+            icon={fullDuplicateIcon}
+            onClick={async () => {
+              logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
+                from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_TIMELINE,
+                offererId: selectedOffererId?.toString(),
+                offerId,
+                offerStatus: CollectiveOfferDisplayedStatus.CANCELLED,
+                offerType: 'collective',
+              })
+              await duplicateBookableOffer(navigate, notify, offerId)
+            }}
+          >
+            {"Dupliquer l'offre"}
+          </Button>
+        )}
       </div>
     </Callout>
   )
