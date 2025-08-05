@@ -116,32 +116,34 @@ export function Subcategories({
       </FormLayout.Row>
 
       {categoryId !== DEFAULT_DETAILS_FORM_VALUES.categoryId && (
-        <Select
-          {...register('subcategoryId', {
-            onChange: handleSubcategoryChange,
-            required: 'Veuillez sélectionner une sous-catégorie',
-          })}
-          label="Sous-catégorie"
-          className={styles['subcategory-select']}
-          required
-          options={subcategoryOptions}
-          defaultOption={{
-            label: 'Choisir une sous-catégorie',
-            value: DEFAULT_DETAILS_FORM_VALUES.subcategoryId,
-          }}
-          value={subcategoryId}
-          disabled={
-            readOnlyFields.includes('subcategoryId') ||
-            subcategoryOptions.length === 1
-          }
-          error={errors.subcategoryId?.message}
-        />
-      )}
-      {!readOnlyFields.includes('categoryId') && (
-        <Callout className={styles['subcategory-callout']}>
-          En fonction de la sous-catégorie choisie, certaines étapes seront
-          adaptées automatiquement.
-        </Callout>
+        <>
+          <Select
+            {...register('subcategoryId', {
+              onChange: handleSubcategoryChange,
+              required: 'Veuillez sélectionner une sous-catégorie',
+            })}
+            label="Sous-catégorie"
+            className={styles['subcategory-select']}
+            required
+            options={subcategoryOptions}
+            defaultOption={{
+              label: 'Choisir une sous-catégorie',
+              value: DEFAULT_DETAILS_FORM_VALUES.subcategoryId,
+            }}
+            value={subcategoryId}
+            disabled={
+              readOnlyFields.includes('subcategoryId') ||
+              subcategoryOptions.length === 1
+            }
+            error={errors.subcategoryId?.message}
+          />
+          {!readOnlyFields.includes('categoryId') && (
+            <Callout className={styles['subcategory-callout']}>
+              En fonction de la sous-catégorie choisie, certaines étapes seront
+              adaptées automatiquement.
+            </Callout>
+          )}
+        </>
       )}
     </FormLayout.Section>
   )
