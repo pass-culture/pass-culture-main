@@ -10,7 +10,7 @@ import sqlalchemy.orm as sa_orm
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi import settings
 from pcapi.connectors.dms import api as ds_api
-from pcapi.connectors.dms.models import GraphQLApplicationStates
+from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms.serializer import ApplicationDetail
 from pcapi.connectors.dms.serializer import MarkWithoutContinuationApplicationDetail
 from pcapi.core.educational import models as educational_models
@@ -20,9 +20,6 @@ from pcapi.core.finance.models import BankAccountApplicationStatus
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
-from pcapi.domain.demarches_simplifiees import archive_dossier
-from pcapi.domain.demarches_simplifiees import parse_raw_bank_info_data
-from pcapi.domain.demarches_simplifiees import update_demarches_simplifiees_text_annotations
 from pcapi.models import db
 from pcapi.utils.db import make_timerange
 
@@ -39,6 +36,25 @@ PROCEDURE_ID_VERSION_MAP = {
     settings.DMS_VENUE_PROCEDURE_ID_V4: 4,
     settings.DS_BANK_ACCOUNT_PROCEDURE_ID: 5,
 }
+FIELD_NAME_TO_INTERNAL_NAME_MAPPING = {
+    ("Prénom", "prénom"): "firstname",
+    ("Nom", "nom"): "lastname",
+    ("Mon numéro de téléphone",): "phone_number",
+    ("IBAN",): "iban",
+    ("BIC",): "bic",
+    ("Intitulé du compte bancaire",): "label",
+}
+DMS_TOKEN_ID = "Q2hhbXAtMjY3NDMyMQ=="
+ACCEPTED_DMS_STATUS = (dms_models.DmsApplicationStates.closed,)
+DRAFT_DMS_STATUS = (
+    dms_models.DmsApplicationStates.received,
+    dms_models.DmsApplicationStates.initiated,
+)
+REJECTED_DMS_STATUS = (
+    dms_models.DmsApplicationStates.refused,
+    dms_models.DmsApplicationStates.without_continuation,
+)
+DMS_TOKEN_PRO_PREFIX = "PRO-"
 
 
 def update_ds_applications_for_procedure(
@@ -109,7 +125,7 @@ def mark_without_continuation_applications() -> None:
                     - don't have the field `En attente de validation Adage` checked at all
     """
     procedures = [settings.DMS_VENUE_PROCEDURE_ID_V4, settings.DS_BANK_ACCOUNT_PROCEDURE_ID]
-    states = [GraphQLApplicationStates.draft, GraphQLApplicationStates.on_going]
+    states = [dms_models.GraphQLApplicationStates.draft, dms_models.GraphQLApplicationStates.on_going]
     ds_client = ds_api.DMSGraphQLClient()
 
     for procedure in procedures:
@@ -420,7 +436,7 @@ class ImportBankAccountMixin:
                 return
             message = f"{message}, {self.application_details.error_annotation_value}"
 
-        update_demarches_simplifiees_text_annotations(
+        ds_api.update_demarches_simplifiees_text_annotations(
             dossier_id=self.application_details.dossier_id,
             annotation_id=self.application_details.error_annotation_id,
             message=message,
@@ -574,3 +590,64 @@ class ImportBankAccountFactory:
     @classmethod
     def get(cls, procedure_version: int) -> type["AbstractImportBankAccount"]:
         return cls.procedure_to_class[procedure_version]
+
+
+def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
+    result = {
+        "status": data["state"],
+        "updated_at": data["dateDerniereModification"],
+        "last_pending_correction_date": data["dateDerniereCorrectionEnAttente"],
+        "dossier_id": data["id"],
+        "application_id": data["number"],
+    }
+
+    result["error_annotation_id"] = None
+    result["venue_url_annotation_id"] = None
+    for annotation in data["annotations"]:
+        match annotation["label"]:
+            case "Erreur traitement pass Culture" | "Annotation technique (réservée à pcapi)":
+                result["error_annotation_id"] = annotation["id"]
+                result["error_annotation_value"] = annotation["stringValue"]
+            case "URL du lieu":
+                result["venue_url_annotation_id"] = annotation["id"]
+                result["venue_url_annotation_value"] = annotation["stringValue"]
+
+    match procedure_version:
+        case 4:
+            _parse_v4_content(data, result)
+        case 5:
+            _parse_v5_content(data, result)
+
+    return result
+
+
+def _parse_v4_content(data: dict, result: dict) -> dict:
+    for field in data["champs"]:
+        for mapped_fields, internal_field in FIELD_NAME_TO_INTERNAL_NAME_MAPPING.items():
+            if field["label"] in mapped_fields:
+                result[internal_field] = field["value"]
+            elif field["id"] == DMS_TOKEN_ID:
+                result["dms_token"] = _remove_dms_pro_prefix(field["value"].strip("  "))
+    return result
+
+
+def _parse_v5_content(data: dict, result: dict) -> dict:
+    for field in data["champs"]:
+        for mapped_fields, internal_field in FIELD_NAME_TO_INTERNAL_NAME_MAPPING.items():
+            if field["label"] in mapped_fields:
+                result[internal_field] = field["value"]
+    result["siret"] = data["demandeur"]["siret"]
+    result["siren"] = result["siret"][:9]
+
+    return result
+
+
+def _remove_dms_pro_prefix(dms_token: str) -> str:
+    if dms_token.startswith(DMS_TOKEN_PRO_PREFIX):
+        return dms_token[len(DMS_TOKEN_PRO_PREFIX) :]
+    return dms_token
+
+
+def archive_dossier(dossier_id: str) -> None:
+    client = ds_api.DMSGraphQLClient()
+    client.archive_application(dossier_id, settings.DMS_INSTRUCTOR_ID)
