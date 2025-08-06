@@ -70,7 +70,7 @@ jobs:
         id: compute-image-name
         run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.checksum-tag }}" | tee -a ${GITHUB_OUTPUT}
       - name: "Download artifact"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ${{ inputs.image }}-${{ inputs.checksum-tag }}.tar
           path: ${{ runner.temp }}
