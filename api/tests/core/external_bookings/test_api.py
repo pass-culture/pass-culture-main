@@ -1,6 +1,8 @@
 import datetime
 import decimal
 import json
+import logging
+from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
@@ -16,6 +18,7 @@ import pcapi.core.users.factories as user_factories
 from pcapi.core.bookings.utils import generate_hmac_signature
 from pcapi.core.external_bookings.api import EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS
 from pcapi.core.external_bookings.api import _instantiate_cinema_api_client
+from pcapi.core.external_bookings.api import book_cinema_ticket
 from pcapi.core.external_bookings.api import book_event_ticket
 from pcapi.core.external_bookings.api import cancel_event_ticket
 from pcapi.core.external_bookings.api import get_active_cinema_venue_provider
@@ -23,6 +26,7 @@ from pcapi.core.external_bookings.api import send_booking_notification_to_extern
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
+from pcapi.utils.requests import exceptions as requests_exceptions
 
 
 @pytest.mark.usefixtures("db_session")
@@ -102,6 +106,31 @@ class InstantiateCinemaApiClientTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class BookCinemaTicketTest:
+    @patch("pcapi.core.external_bookings.api._get_cinema_local_class_and_id", return_value=("BoostStocks", "test_id"))
+    def test_logs_timeout_when_booking_request_times_out(self, _get_cinema_local_class_and_id, caplog):
+        provider = providers_factories.ProviderFactory()
+        booking = bookings_factories.BookingFactory(stock__offer__lastProviderId=provider.id)
+
+        mock_client = MagicMock()
+        mock_client.book_ticket.side_effect = external_bookings_exceptions.ExternalBookingTimeoutException
+
+        with caplog.at_level(logging.WARNING):
+            with patch("pcapi.core.external_bookings.api._instantiate_cinema_api_client", return_value=mock_client):
+                with pytest.raises(external_bookings_exceptions.ExternalBookingTimeoutException):
+                    book_cinema_ticket(
+                        venue_id=123,
+                        stock_id_at_providers="showtime-id#12345",
+                        booking=booking,
+                        beneficiary=booking.user,
+                        provider=provider,
+                    )
+
+        assert caplog.records[0].extra == {"provider_id": provider.id}
+        assert caplog.records[0].technical_message_id == "external_booking_timeout"
+
+
+@pytest.mark.usefixtures("db_session")
 class BookEventTicketTest:
     def test_should_raise_because_no_ticketing_system_set(self):
         provider = providers_factories.ProviderFactory()
@@ -125,6 +154,17 @@ class BookEventTicketTest:
 
         with pytest.raises(providers_exceptions.InactiveProvider):
             book_event_ticket(booking, stock, user)
+
+    @patch("pcapi.core.external_bookings.api.requests.post", side_effect=requests_exceptions.Timeout)
+    def test_logs_timeout_when_booking_request_times_out(self, requests_post_mock, caplog):
+        provider = providers_factories.ProviderFactory(bookingExternalUrl="booking.com", cancelExternalUrl="cancel.com")
+        booking = bookings_factories.BookingFactory(stock__offer__lastProviderId=provider.id)
+
+        with pytest.raises(external_bookings_exceptions.ExternalBookingTimeoutException):
+            book_event_ticket(booking, booking.stock, booking.user)
+
+        assert caplog.records[0].extra == {"provider_id": provider.id}
+        assert caplog.records[0].technical_message_id == "external_booking_timeout"
 
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_should_successfully_book_an_event_ticket(self, requests_post):
