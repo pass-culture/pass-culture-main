@@ -16,7 +16,7 @@
   padding-bottom: rem.torem($padding);
   resize: none;
   overflow: hidden;
-  border-radius: rem.torem(6px);
+  border-radius: var(--size-border-radius-m);
 
   @include forms.input-theme-nested;
 

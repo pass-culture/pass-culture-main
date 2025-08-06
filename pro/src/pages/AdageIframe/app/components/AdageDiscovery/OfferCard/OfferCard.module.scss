@@ -43,7 +43,7 @@ $offer-image-width: rem.torem(216px);
   &:focus-visible {
     @include outline.focus-outline(rem.torem(4px));
 
-    border-radius: rem.torem(18px);
+    border-radius: var(--size-border-radius-l);
   }
 }
 

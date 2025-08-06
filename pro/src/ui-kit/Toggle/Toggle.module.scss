@@ -44,7 +44,7 @@
   box-sizing: border-box;
   width: var(--diameter);
   height: var(--diameter);
-  border-radius: 50%;
+  border-radius: var(--size-border-radius-pill);
   background-color: var(--color-background-default);
   transform: translate(0, -50%);
   will-change: transform;

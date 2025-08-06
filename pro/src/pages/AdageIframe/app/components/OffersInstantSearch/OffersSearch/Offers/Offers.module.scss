@@ -69,7 +69,7 @@
   gap: rem.torem(8px);
   background-color: var(--color-background-subtle);
   padding: rem.torem(16px);
-  border-radius: rem.torem(30px);
+  border-radius: var(--size-border-radius-xl);
   box-shadow: 0 3px 4px 0 var(--color-medium-shadow);
   cursor: pointer;
 

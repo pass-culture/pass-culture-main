@@ -33,7 +33,7 @@
       min-width: rem.torem(20px);
       width: rem.torem(20px);
       border: rem.torem(2px) solid var(--color-border-default);
-      border-radius: 50%;
+      border-radius: var(--size-border-radius-pill);
       background-color: transparent;
       appearance: none;
       outline: none;

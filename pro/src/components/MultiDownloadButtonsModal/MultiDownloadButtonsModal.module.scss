@@ -23,7 +23,7 @@
 
   .download-modal-option {
     background: var(--color-background-default);
-    border-radius: rem.torem(6px);
+    border-radius: var(--size-border-radius-m);
     border: rem.torem(1px) solid var(--color-border-subtle);
     box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px)
       var(--color-medium-shadow);

@@ -6,7 +6,7 @@
   display: flex;
   min-height: rem.torem(53px);
   border: 2px solid var(--color-border-brand-primary);
-  border-radius: 6px;
+  border-radius: var(--size-border-radius-m);
   width: 100%;
   padding: rem.torem(1px);
 
@@ -24,7 +24,6 @@
 
   .newsletter-link {
     width: 100%;
-    border-radius: 5px;
     position: relative;
     display: flex;
     align-items: center;

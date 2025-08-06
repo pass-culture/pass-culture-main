@@ -101,14 +101,14 @@ $icon-size: rem.torem(20px);
 .clear-button {
   width: calc(#{$icon-size} + #{rem.torem(2px)});
   height: calc(#{$icon-size} + #{rem.torem(2px)});
-  border-radius: 50%;
+  border-radius: var(--size-border-radius-pill);
   display: flex;
   align-items: center;
   justify-content: center;
 
   &-container {
     position: absolute;
-    border-radius: 50%;
+    border-radius: var(--size-border-radius-pill);
     right: 0;
   }
 

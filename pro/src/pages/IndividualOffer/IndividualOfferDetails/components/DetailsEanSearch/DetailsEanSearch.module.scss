@@ -18,11 +18,11 @@ $icon-size: rem.torem(20px);
   justify-content: center;
   width: calc(#{$icon-size} + #{rem.torem(2px)});
   height: calc(#{$icon-size} + #{rem.torem(2px)});
-  border-radius: 50%;
+  border-radius: var(--size-border-radius-pill);
 
   &-container {
     position: absolute;
-    border-radius: 50%;
+    border-radius: var(--size-border-radius-pill);
     top: rem.torem(65px);
     right: rem.torem(160px);
   }

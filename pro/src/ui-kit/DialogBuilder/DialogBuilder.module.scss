@@ -68,7 +68,7 @@ $animation-timing-function: ease-in-out;
 
 .dialog-builder-content {
   background-color: var(--color-background-default);
-  border-radius: rem.torem(10px);
+  border-radius: var(--size-border-radius-m);
   position: relative;
   width: initial;
   margin: rem.torem(32px) auto;

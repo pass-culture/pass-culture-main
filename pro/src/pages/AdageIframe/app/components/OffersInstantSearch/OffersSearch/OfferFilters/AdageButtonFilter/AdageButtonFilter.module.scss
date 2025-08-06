@@ -12,7 +12,7 @@
   align-items: center;
   background-color: var(--color-background-default);
   padding: rem.torem(8px) rem.torem(12px);
-  border-radius: rem.torem(10px);
+  border-radius: var(--size-border-radius-m);
   border: rem.torem(1px) solid var(--color-border-default);
   height: rem.torem(40px);
   white-space: nowrap;
@@ -49,7 +49,7 @@
   }
 
   &-children {
-    border-radius: rem.torem(10px);
+    border-radius: var(--size-border-radius-m);
     box-shadow: 0 rem.torem(2px) rem.torem(16px) 0 var(--color-large-shadow);
     border: none;
     z-index: zIndex.$modal-z-index;

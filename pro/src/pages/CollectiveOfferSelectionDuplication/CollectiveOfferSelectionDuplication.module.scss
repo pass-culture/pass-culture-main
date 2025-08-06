@@ -16,12 +16,12 @@
 }
 
 .search-input input {
-  border-radius: rem.torem(24px) 0 0 rem.torem(24px);
+  border-radius: var(--size-border-radius-m) 0 0 var(--size-border-radius-m);
 }
 
 .search-button {
   margin-left: rem.torem(-16px);
-  border-radius: 0 rem.torem(24px) rem.torem(24px) 0;
+  border-radius: 0 var(--size-border-radius-xl) var(--size-border-radius-xl) 0;
 }
 
 .search-no-results {

@@ -7,7 +7,7 @@
   border: none;
   width: rem.torem(32px);
   height: rem.torem(32px);
-  border-radius: 100%;
+  border-radius: var(--size-border-radius-pill);
   display: inline-flex;
   justify-content: center;
   align-items: center;

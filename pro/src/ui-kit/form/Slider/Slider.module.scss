@@ -12,7 +12,7 @@
     border: none;
     cursor: not-allowed;
     background-color: var(--color-background-disabled);
-    border-radius: rem.torem(6px);
+    border-radius: var(--size-border-radius-s);
     height: rem.torem(8px);
 
     &::-webkit-slider-thumb {

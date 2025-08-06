@@ -104,7 +104,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
     margin-left: 0;
     margin-top: 0;
     padding: rem.torem(8px) rem.torem(16px);
-    border-radius: rem.torem(6px);
+    border-radius: var(--size-border-radius-m);
     border: solid rem.torem(1px) var(--color-border-subtle);
   }
 }
@@ -141,7 +141,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   z-index: 15;
 
   @media screen and (min-width: size.$tablet) {
-    border-radius: rem.torem(6px);
+    border-radius: var(--size-border-radius-m);
     border: solid rem.torem(1px) var(--color-border-subtle);
   }
 
@@ -252,7 +252,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
     padding: rem.torem(8px);
 
     &[data-state="checked"] {
-      border-radius: 6px;
+      border-radius: var(--size-border-radius-s);
       border: 1px solid var(--color-border-default);
 
       @media (min-width: $sub-popin-full-width-breakpoint) {
