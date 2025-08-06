@@ -19,6 +19,7 @@ describe('BookingWaitingBanner', () => {
         offerId={123}
         offerStatus={CollectiveOfferDisplayedStatus.PUBLISHED}
         bookingLimitDatetime={inThreeDays.toISOString()}
+        canEditDates
       />
     )
 
@@ -36,6 +37,7 @@ describe('BookingWaitingBanner', () => {
         offerId={123}
         offerStatus={CollectiveOfferDisplayedStatus.PUBLISHED}
         bookingLimitDatetime={today.toISOString()}
+        canEditDates
       />
     )
 
@@ -51,6 +53,7 @@ describe('BookingWaitingBanner', () => {
         offerId={123}
         offerStatus={CollectiveOfferDisplayedStatus.PUBLISHED}
         bookingLimitDatetime={inTenDays.toISOString()}
+        canEditDates
       />
     )
 
@@ -70,6 +73,7 @@ describe('BookingWaitingBanner', () => {
         offerStatus={CollectiveOfferDisplayedStatus.PREBOOKED}
         bookingLimitDatetime={inThreeDays.toISOString()}
         contactEmail="contact@etablissement.fr"
+        canEditDates
       />
     )
 
@@ -88,6 +92,7 @@ describe('BookingWaitingBanner', () => {
         offerStatus={CollectiveOfferDisplayedStatus.PREBOOKED}
         bookingLimitDatetime={inTenDays.toISOString()}
         contactEmail="contact@etablissement.fr"
+        canEditDates
       />
     )
 
@@ -105,6 +110,7 @@ describe('BookingWaitingBanner', () => {
         offerId={123}
         offerStatus={CollectiveOfferDisplayedStatus.PUBLISHED}
         bookingLimitDatetime={inTenDays.toISOString()}
+        canEditDates
       />
     )
 
@@ -124,6 +130,7 @@ describe('BookingWaitingBanner', () => {
         offerId={123}
         offerStatus={CollectiveOfferDisplayedStatus.PREBOOKED}
         bookingLimitDatetime={inTenDays.toISOString()}
+        canEditDates
       />
     )
 
@@ -132,5 +139,23 @@ describe('BookingWaitingBanner', () => {
         /Le chef d'établissement doit impérativement confirmer la préréservation de l'offre avant le/
       )
     ).toBeInTheDocument()
+  })
+
+  it('should not show edit dates link if canEditDates is false', () => {
+    const inThreeDays = new Date()
+    inThreeDays.setDate(inThreeDays.getDate() + 3)
+    renderWithProviders(
+      <BookingWaitingBanner
+        offerId={123}
+        offerStatus={CollectiveOfferDisplayedStatus.PREBOOKED}
+        bookingLimitDatetime={inThreeDays.toISOString()}
+        canEditDates={false}
+      />
+    )
+    expect(
+      screen.queryByRole('link', {
+        name: /Modifier la date limite de réservation/i,
+      })
+    ).not.toBeInTheDocument()
   })
 })

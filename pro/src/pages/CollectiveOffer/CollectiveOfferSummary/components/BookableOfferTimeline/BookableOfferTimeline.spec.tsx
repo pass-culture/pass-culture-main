@@ -1,6 +1,9 @@
 import { screen } from '@testing-library/react'
 
-import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
+import {
+  CollectiveOfferAllowedAction,
+  CollectiveOfferDisplayedStatus,
+} from 'apiClient/v1'
 import {
   getCollectiveOfferBookingFactory,
   getCollectiveOfferFactory,
@@ -360,6 +363,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
       renderWithProviders(
         <BookableOfferTimeline
           offer={getCollectiveOfferFactory({
+            allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DATES],
             history: {
               past: [
                 {
@@ -386,6 +390,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
       renderWithProviders(
         <BookableOfferTimeline
           offer={getCollectiveOfferFactory({
+            allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DATES],
             history: {
               past: [
                 {

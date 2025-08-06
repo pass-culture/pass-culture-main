@@ -2,7 +2,10 @@ import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 
-import { CollectiveBookingCancellationReasons, CollectiveOfferDisplayedStatus } from 'apiClient/v1'
+import {
+  CollectiveBookingCancellationReasons,
+  CollectiveOfferDisplayedStatus,
+} from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import {
   Events,
@@ -19,7 +22,15 @@ import { CalloutVariant } from 'ui-kit/Callout/types'
 
 import styles from '../BookableOfferTimeline.module.scss'
 
-export const CancelledBanner = ({ offerId, reason }: { offerId: number, reason?: CollectiveBookingCancellationReasons | null }) => {
+export const CancelledBanner = ({
+  offerId,
+  reason,
+  canDuplicate,
+}: {
+  offerId: number
+  reason?: CollectiveBookingCancellationReasons | null
+  canDuplicate: boolean
+}) => {
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
   const selectedOffererId = useSelector(selectCurrentOffererId)
@@ -29,13 +40,13 @@ export const CancelledBanner = ({ offerId, reason }: { offerId: number, reason?:
     switch (reason) {
       case CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE:
       case CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER:
-        return "L’établissement scolaire a annulé la réservation."
+        return 'L’établissement scolaire a annulé la réservation.'
       case CollectiveBookingCancellationReasons.EXPIRED:
       case undefined:
-        return "La date d’évènement de votre offre est dépassée. Votre offre a automatiquement été annulée. Vous pouvez créer une nouvelle offre à partir de celle-ci."
+        return 'La date d’évènement de votre offre est dépassée. Votre offre a automatiquement été annulée. Vous pouvez créer une nouvelle offre à partir de celle-ci.'
       case CollectiveBookingCancellationReasons.OFFERER:
       case CollectiveBookingCancellationReasons.PUBLIC_API:
-        return "Vous avez annulé l’offre. Vous pouvez la dupliquer si vous souhaitez la publier à nouveau."
+        return 'Vous avez annulé l’offre. Vous pouvez la dupliquer si vous souhaitez la publier à nouveau.'
       case CollectiveBookingCancellationReasons.BENEFICIARY:
       case CollectiveBookingCancellationReasons.FRAUD:
       case CollectiveBookingCancellationReasons.FRAUD_SUSPICION:
@@ -49,7 +60,7 @@ export const CancelledBanner = ({ offerId, reason }: { offerId: number, reason?:
       case CollectiveBookingCancellationReasons.OFFERER_CONNECT_AS:
       case CollectiveBookingCancellationReasons.OFFERER_CLOSED:
       case null:
-        return "Le pass Culture a annulé votre offre. Vous avez été notifié par mail de la raison de votre annulation. Vous pouvez la dupliquer si vous souhaitez la publier à nouveau."
+        return 'Le pass Culture a annulé votre offre. Vous avez été notifié par mail de la raison de votre annulation. Vous pouvez la dupliquer si vous souhaitez la publier à nouveau.'
     }
   }, [reason])
 
@@ -57,22 +68,24 @@ export const CancelledBanner = ({ offerId, reason }: { offerId: number, reason?:
     <Callout className={styles['callout']} variant={CalloutVariant.ERROR}>
       {message}
       <div className={styles['callout-margin']}>
-        <Button
-          variant={ButtonVariant.TERNARY}
-          icon={fullDuplicateIcon}
-          onClick={async () => {
-            logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
-              from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_TIMELINE,
-              offererId: selectedOffererId?.toString(),
-              offerId,
-              offerStatus: CollectiveOfferDisplayedStatus.CANCELLED,
-              offerType: 'collective',
-            })
-            await duplicateBookableOffer(navigate, notify, offerId)
-          }}
-        >
-          {"Dupliquer l'offre"}
-        </Button>
+        {canDuplicate && (
+          <Button
+            variant={ButtonVariant.TERNARY}
+            icon={fullDuplicateIcon}
+            onClick={async () => {
+              logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
+                from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_TIMELINE,
+                offererId: selectedOffererId?.toString(),
+                offerId,
+                offerStatus: CollectiveOfferDisplayedStatus.CANCELLED,
+                offerType: 'collective',
+              })
+              await duplicateBookableOffer(navigate, notify, offerId)
+            }}
+          >
+            {"Dupliquer l'offre"}
+          </Button>
+        )}
       </div>
     </Callout>
   )
