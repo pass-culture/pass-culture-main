@@ -22,7 +22,7 @@ export const INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     status: 'Réservée',
     label: 'Réservée',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
-    variant: TagVariant.SUCCESS,
+    variant: TagVariant.WARNING,
   },
   {
     id: BOOKING_STATUS.REIMBURSED,
