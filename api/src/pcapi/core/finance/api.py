@@ -59,13 +59,13 @@ from pcapi import settings
 from pcapi.connectors import googledrive
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.finance import deposit_api
+from pcapi.core.finance import reimbursement_rules
 from pcapi.core.history import api as history_api
 from pcapi.core.logging import log_elapsed
 from pcapi.core.mails.transactional import send_booking_cancellation_by_pro_to_beneficiary_email
 from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_commercial_gesture_email
 from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_finance_incident_emails
 from pcapi.core.object_storage import store_public_object
-from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.utils import human_ids
@@ -578,8 +578,8 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
         models.FinanceEventMotive.BOOKING_USED,
         models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
     ):
-        rule_finder = reimbursement.CustomRuleFinder()
-        rule = reimbursement.get_reimbursement_rule(booking, rule_finder, new_revenue)
+        rule_finder = reimbursement_rules.CustomRuleFinder()
+        rule = reimbursement_rules.get_reimbursement_rule(booking, rule_finder, new_revenue)
         amount = -rule.apply(booking)  # outgoing, thus negative
         offerer_revenue_amount = -utils.to_cents(booking.total_amount)
         pricing_booking_id = individual_booking.id if individual_booking else None
@@ -626,7 +626,7 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
         ]
     elif event.motive == models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE:
         assert event.bookingFinanceIncident and event.bookingFinanceIncident.due_amount_by_offerer  # helps mypy
-        rule = reimbursement.CommercialGestureReimbursementRule()
+        rule = reimbursement_rules.CommercialGestureReimbursementRule()
         amount = -event.bookingFinanceIncident.due_amount_by_offerer  # outgoing, thus negative
         offerer_revenue_amount = -event.bookingFinanceIncident.due_amount_by_offerer
         pricing_booking_id = None
@@ -1656,7 +1656,7 @@ def _payment_details_row_formatter(sql_row: typing.Any) -> tuple:
 def find_reimbursement_rule(rule_reference: str | int) -> models.ReimbursementRule:
     # regular rule description
     if isinstance(rule_reference, str):
-        for regular_rule in reimbursement.REGULAR_RULES:
+        for regular_rule in reimbursement_rules.REGULAR_RULES:
             if rule_reference == regular_rule.description:
                 return regular_rule
     # CustomReimbursementRule.id
