@@ -5,7 +5,7 @@ import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHel
 import { EditStockFormValues } from '../StocksCalendarTableEditStock'
 import { validationSchema } from '../validationSchema'
 
-describe('validationSchema with FF WIP_ENABLE_EVENT_WITH_OPENING_HOUR', () => {
+describe('validationSchema for StocksCalendarTableEditStock', () => {
   const defaultValues: EditStockFormValues = {
     date: addDays(new Date(), 2).toISOString().split('T')[0],
     bookingLimitDate: addDays(new Date(), 1).toISOString().split('T')[0],

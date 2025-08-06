@@ -10,7 +10,6 @@ import {
   IndividualOfferContextValues,
 } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
-import * as useOfferWizardMode from 'commons/hooks/useOfferWizardMode'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
@@ -146,29 +145,4 @@ describe('screens:Stocks', () => {
       })
     }
   )
-
-  it('should show the calendar form if the FF WIP_ENABLE_EVENT_WITH_OPENING_HOUR is enabled for an event creation', async () => {
-    vi.spyOn(useOfferWizardMode, 'useOfferWizardMode').mockReturnValue(
-      OFFER_WIZARD_MODE.CREATION
-    )
-
-    contextOverride.offer = getIndividualOfferFactory({
-      ...contextOverride.offer,
-      isEvent: true,
-    })
-
-    renderStocksScreen(contextOverride, ['WIP_ENABLE_EVENT_WITH_OPENING_HOUR'])
-
-    await waitFor(() => {
-      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
-    })
-
-    expect(
-      screen.getByRole('heading', { name: 'Dates et capacités' })
-    ).toBeInTheDocument()
-
-    expect(
-      screen.getByRole('button', { name: 'Enregistrer et continuer' })
-    ).toBeInTheDocument()
-  })
 })
