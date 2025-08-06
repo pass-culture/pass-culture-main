@@ -499,6 +499,17 @@
     {
       "includes": ["**/*.css", "**/*.scss"],
       "javascript": { "formatter": { "quoteStyle": "double" } }
+    },
+    {
+      "includes": ["**/*.d.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off",
+            "noNamespace": "off"
+          }
+        }
+      }
     }
   ]
 }

@@ -1,4 +1,3 @@
-// biome-ignore lint/style/noNamespace: This is a TD file.
 declare namespace Cypress {
   interface Chainable {
     /**

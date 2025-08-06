@@ -6,6 +6,5 @@ declare module '*.svg' {
   >
 
   const src: string
-  // biome-ignore lint/style/noDefaultExport: This is a TD file.
   export default src
 }
