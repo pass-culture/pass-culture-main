@@ -150,7 +150,7 @@ export const BookableOfferTimeline = ({
                   : undefined
               }
             />
-            <BookedBanner
+             {isCurrentStep && <BookedBanner
               offerId={offer.id}
               cancellationLimitDate={offer.booking?.cancellationLimitDate}
               departmentCode={offer.venue.departementCode}
@@ -158,7 +158,7 @@ export const BookableOfferTimeline = ({
                 offer,
                 CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
               )}
-            />
+            />}
           </>
         ),
       }
@@ -182,7 +182,7 @@ export const BookableOfferTimeline = ({
                   : undefined
               }
             />
-            <ExpiredBanner
+             {isCurrentStep && <ExpiredBanner
               stepBeforeExpiredStatus={stepBeforeExpiredStatus}
               offerId={offer.id}
               bookingLimitDatetime={offer.collectiveStock.bookingLimitDatetime}
@@ -191,7 +191,7 @@ export const BookableOfferTimeline = ({
                 offer.booking?.educationalRedactor?.email ??
                 offer.teacher?.email
               }
-            />
+            /> }
           </>
         ),
       }
