@@ -1,6 +1,7 @@
 import datetime
 import decimal
 import random
+import time
 import typing
 import uuid
 
@@ -214,10 +215,12 @@ class OfferFactory(BaseFactory):
             and kwargs.get("validation") != models.OfferValidationStatus.DRAFT
             and "publicationDatetime" not in kwargs
         ):
-            kwargs["publicationDatetime"] = datetime.datetime.now() - datetime.timedelta(minutes=5)
+            utc_offset = time.localtime().tm_gmtoff // 3600
+            kwargs["publicationDatetime"] = datetime.datetime.now() - datetime.timedelta(minutes=5, hours=utc_offset)
 
         if kwargs.get("validation") != models.OfferValidationStatus.DRAFT and "finalizationDatetime" not in kwargs:
-            kwargs["finalizationDatetime"] = datetime.datetime.now()
+            utc_offset = time.localtime().tm_gmtoff // 3600
+            kwargs["finalizationDatetime"] = datetime.datetime.now() - datetime.timedelta(hours=utc_offset)
 
         product = kwargs.get("product")
         if product:
