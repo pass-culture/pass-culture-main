@@ -152,6 +152,7 @@ def get_capped_offers_for_filters(
                 models.Mediation.credit,
                 models.Mediation.dateCreated,
                 models.Mediation.thumbCount,
+                models.Mediation.isActive,
             )
         )
         .options(
