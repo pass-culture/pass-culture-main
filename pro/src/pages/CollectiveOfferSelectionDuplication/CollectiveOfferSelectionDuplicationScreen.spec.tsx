@@ -95,7 +95,6 @@ describe('CollectiveOfferConfirmation', () => {
       undefined,
       undefined,
       undefined,
-      undefined,
       'template',
       undefined
     )

@@ -12,7 +12,6 @@ from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
-from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
@@ -22,7 +21,6 @@ from pcapi.routes.native.v1.serialization.common_models import AccessibilityComp
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import base as base_serializers
-from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization.address_serialize import AddressResponseIsLinkedToVenueModel
 from pcapi.routes.serialization.address_serialize import VenueAddressInfoGetter
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
@@ -310,13 +308,12 @@ class ListOffersQueryModel(BaseModel):
     # is shared on the offer search page
     name_or_ean: str | None = Field(alias="nameOrIsbn")
     offerer_id: int | None
-    status: OfferStatus | CollectiveOfferDisplayedStatus | None
+    status: OfferStatus | None
     venue_id: int | None
-    categoryId: str | None
+    category_id: str | None
     creation_mode: str | None
     period_beginning_date: datetime.date | None
     period_ending_date: datetime.date | None
-    collective_offer_type: collective_offers_serialize.CollectiveOfferType | None
     offerer_address_id: int | None
 
     class Config:

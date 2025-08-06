@@ -12,10 +12,8 @@ export type SearchFiltersParams = {
   offererId: string
   venueId: string
   categoryId: string
-  format: EacFormat | typeof ALL_FORMATS
-  status: OfferStatus | CollectiveOfferDisplayedStatus[] | typeof ALL_STATUS
+  status: OfferStatus | typeof ALL_STATUS
   creationMode: string
-  collectiveOfferType: string
   periodBeginningDate: string
   periodEndingDate: string
   offererAddressId: string

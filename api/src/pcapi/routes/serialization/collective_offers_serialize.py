@@ -74,7 +74,6 @@ class ListCollectiveOffersQueryModel(BaseModel):
     offerer_id: int | None
     status: list[educational_models.CollectiveOfferDisplayedStatus] | None
     venue_id: int | None
-    creation_mode: str | None
     period_beginning_date: date | None
     period_ending_date: date | None
     collective_offer_type: CollectiveOfferType | None

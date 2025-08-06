@@ -185,7 +185,6 @@ describe('IndividualOffers', () => {
             undefined,
             undefined,
             undefined,
-            undefined,
             undefined
           )
         })
@@ -269,7 +268,6 @@ describe('IndividualOffers', () => {
             undefined,
             undefined,
             undefined,
-            undefined,
             undefined
           )
         })
@@ -296,7 +294,6 @@ describe('IndividualOffers', () => {
           expect(api.listOffers).toHaveBeenCalledWith(
             undefined,
             '1',
-            undefined,
             undefined,
             undefined,
             undefined,
@@ -339,7 +336,6 @@ describe('IndividualOffers', () => {
             undefined,
             undefined,
             undefined,
-            undefined,
             undefined
           )
         })
@@ -371,7 +367,6 @@ describe('IndividualOffers', () => {
             'imported',
             undefined,
             undefined,
-            undefined,
             undefined
           )
         })
@@ -399,7 +394,6 @@ describe('IndividualOffers', () => {
             undefined,
             '2020-12-25',
             undefined,
-            undefined,
             undefined
           )
         })
@@ -426,7 +420,6 @@ describe('IndividualOffers', () => {
             undefined,
             undefined,
             '2020-12-27',
-            undefined,
             undefined
           )
         })
@@ -471,7 +464,6 @@ describe('IndividualOffers', () => {
           undefined,
           undefined,
           undefined,
-          undefined,
           undefined
         )
       })
@@ -492,7 +484,6 @@ describe('IndividualOffers', () => {
         expect(api.listOffers).toHaveBeenCalledWith(
           undefined,
           '1',
-          undefined,
           undefined,
           undefined,
           undefined,
@@ -524,7 +515,6 @@ describe('IndividualOffers', () => {
         expect(api.listOffers).toHaveBeenCalledWith(
           undefined,
           '1',
-          undefined,
           undefined,
           undefined,
           undefined,
@@ -577,7 +567,6 @@ describe('IndividualOffers', () => {
           undefined,
           undefined,
           undefined,
-          undefined,
           undefined
         )
       })
@@ -604,7 +593,6 @@ describe('IndividualOffers', () => {
           undefined,
           '1',
           'SOLD_OUT',
-          undefined,
           undefined,
           undefined,
           undefined,
@@ -639,7 +627,6 @@ describe('IndividualOffers', () => {
           undefined,
           undefined,
           undefined,
-          undefined,
           undefined
         )
       })
@@ -664,7 +651,6 @@ describe('IndividualOffers', () => {
           undefined,
           undefined,
           'manual',
-          undefined,
           undefined,
           undefined,
           undefined
@@ -697,7 +683,6 @@ describe('IndividualOffers', () => {
         undefined,
         undefined,
         'manual',
-        undefined,
         undefined,
         undefined,
         undefined
@@ -808,7 +793,6 @@ describe('IndividualOffers', () => {
           undefined,
           undefined,
           undefined,
-          undefined,
           '2'
         )
       })
@@ -824,7 +808,6 @@ describe('IndividualOffers', () => {
         3,
         undefined,
         '1',
-        undefined,
         undefined,
         undefined,
         undefined,
@@ -875,7 +858,6 @@ describe('IndividualOffers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
         '2'
       )
 
@@ -888,7 +870,6 @@ describe('IndividualOffers', () => {
         3,
         undefined,
         '1',
-        undefined,
         undefined,
         undefined,
         undefined,
@@ -917,7 +898,6 @@ describe('IndividualOffers', () => {
         expect(api.listOffers).toHaveBeenLastCalledWith(
           nameOrIsbn,
           '1',
-          undefined,
           undefined,
           undefined,
           undefined,
@@ -956,7 +936,6 @@ describe('IndividualOffers', () => {
       expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
         defaultGetOffererResponseModel.id.toString(),
-        undefined,
         undefined,
         undefined,
         undefined,
