@@ -499,6 +499,18 @@ class Returns200Test:
             }
         ]
 
+    def should_have_one_query_for_active_mediations(self, client):
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        requested_venue = offerers_factories.VenueFactory(managingOfferer=offerer, siret="12345678912345")
+        offers_factories.MediationFactory.create_batch(10, offer__venue=requested_venue)
+
+        authenticated_client = client.with_session_auth(email=pro.email)
+        with testing.assert_num_queries(self.number_of_queries):
+            response = authenticated_client.get("/offers")
+            assert response.status_code == 200
+
     def should_not_list_offers_from_soft_deleted_venues(self):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
