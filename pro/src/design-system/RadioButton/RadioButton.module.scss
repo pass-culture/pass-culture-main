@@ -64,7 +64,7 @@
   &:focus-within {
     @include outline.focus-outline(rem.torem(4px));
 
-    border-radius: rem.torem(4px);
+    border-radius: var(--size-border-radius-s);
   }
 
   @supports selector(:has(*)) {
@@ -75,7 +75,7 @@
     &:has(.radio-button-input:focus-visible) {
       @include outline.focus-outline(rem.torem(4px));
 
-      border-radius: rem.torem(4px);
+      border-radius: var(--size-border-radius-s);
     }
   }
 
@@ -161,7 +161,7 @@
   &.variant-detailed {
     border: rem.torem(1px) solid black;
     border-color: var(--color-border-default);
-    border-radius: rem.torem(8px);
+    border-radius: var(--size-border-radius-m);
 
     > .radio-button-label {
       padding: rem.torem(16px);

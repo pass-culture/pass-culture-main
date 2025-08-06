@@ -65,7 +65,7 @@
     &:focus-visible {
       @include outline.focus-outline;
 
-      border-radius: rem.torem(8px);
+      border-radius: var(--size-border-radius-m);
     }
 
     &-link-disabled {

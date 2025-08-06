@@ -9,7 +9,7 @@
   object-fit: cover;
   width: 100%;
   height: 100%;
-  border-radius: rem.torem(4px);
+  border-radius: var(--size-border-radius-s);
 }
 
 .image.s {
@@ -27,6 +27,6 @@
   height: 120px;
 
   & > img {
-    border-radius: rem.torem(8px);
+    border-radius: var(--size-border-radius-m);
   }
 }

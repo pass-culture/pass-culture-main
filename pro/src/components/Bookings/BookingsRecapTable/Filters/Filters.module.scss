@@ -19,7 +19,7 @@
 
   .bs-filter-tooltip {
     background-color: var(--color-background-default);
-    border-radius: rem.torem(4px);
+    border-radius: var(--size-border-radius-s);
     box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 var(--color-large-shadow);
     right: 0;
     margin-top: rem.torem(8px);
@@ -66,7 +66,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  border-radius: rem.torem(4px);
+  border-radius: var(--size-border-radius-s);
 }
 
 .bs-filter-checkboxes {

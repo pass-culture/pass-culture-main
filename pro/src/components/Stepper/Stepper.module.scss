@@ -104,7 +104,7 @@ $number-size: rem.torem(30px);
           span {
             @include outline.focus-outline(rem.torem(4px));
 
-            border-radius: rem.torem(4px);
+            border-radius: var(--size-border-radius-s);
           }
         }
       }

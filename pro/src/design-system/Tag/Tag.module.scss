@@ -8,7 +8,7 @@
   padding: rem.torem(2px) rem.torem(4px);
   align-items: center;
   gap: rem.torem(4px);
-  border-radius: rem.torem(4px);
+  border-radius: var(--size-border-radius-s);
   width: fit-content;
   height: fit-content;
   color: var(--color-text-default);

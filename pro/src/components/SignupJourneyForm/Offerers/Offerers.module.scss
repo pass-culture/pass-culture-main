@@ -19,7 +19,7 @@ $small-gap: rem.torem(8px);
   background-color: var(--color-background-subtle);
   padding: $medium-gap;
   gap: $medium-gap;
-  border-radius: rem.torem(8px);
+  border-radius: var(--size-border-radius-m);
   width: 100%;
 
   .venue-list {

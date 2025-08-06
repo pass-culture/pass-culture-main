@@ -38,7 +38,7 @@
 .header-description {
   display: flex;
   border: rem.torem(1px) solid var(--color-border-subtle);
-  border-radius: rem.torem(8px);
+  border-radius: var(--size-border-radius-m);
   padding: rem.torem(24px);
 
   @media (max-width: size.$tablet) {
@@ -87,7 +87,7 @@
 .image-preview {
   height: rem.torem(192px);
   aspect-ratio: 2 / 3;
-  border-radius: rem.torem(8px);
+  border-radius: var(--size-border-radius-m);
   box-shadow: 0 1px 8px 0 var(--color-large-shadow);
   margin-right: rem.torem(24px);
 }
@@ -96,7 +96,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: rem.torem(8px);
+  border-radius: var(--size-border-radius-m);
   background: var(--color-background-subtle);
 
   svg {

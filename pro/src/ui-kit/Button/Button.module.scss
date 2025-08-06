@@ -8,7 +8,7 @@
 
   margin: 0;
   border: rem.torem(2px) solid;
-  border-radius: rem.torem(24px);
+  border-radius: var(--size-border-radius-xl);
   display: inline-flex;
   vertical-align: top;
   justify-content: center;
@@ -127,7 +127,7 @@
     align-items: flex-start;
     justify-content: flex-start;
     background-color: transparent;
-    border-radius: rem.torem(4px);
+    border-radius: var(--size-border-radius-s);
     padding: 0;
     border: none;
     height: auto;

@@ -22,7 +22,7 @@
       color: var(--color-text-brand-primary);
       padding: rem.torem(2px);
       background-color: var(--color-background-default);
-      border-radius: rem.torem(8px);
+      border-radius: var(--size-border-radius-m);
       white-space: nowrap;
     }
   }

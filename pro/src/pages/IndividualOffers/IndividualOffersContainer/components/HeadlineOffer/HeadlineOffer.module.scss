@@ -24,7 +24,7 @@
   gap: rem.torem(24px);
   align-items: center;
   border: 1px solid var(--color-border-subtle);
-  border-radius: rem.torem(8px);
+  border-radius: var(--size-border-radius-m);
   padding: rem.torem(16px);
   width: 100%;
 }

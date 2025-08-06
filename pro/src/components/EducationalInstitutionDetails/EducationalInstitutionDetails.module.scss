@@ -51,7 +51,7 @@
 .contact-details-newlayout {
   background-color: var(--color-background-subtle);
   padding: rem.torem(24px);
-  border-radius: rem.torem(8px);
+  border-radius: var(--size-border-radius-m);
 }
 
 @media (min-width: size.$tablet) {

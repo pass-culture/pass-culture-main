@@ -63,7 +63,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
     &:focus-visible {
       @include outline.focus-outline;
 
-      border-radius: rem.torem(8px);
+      border-radius: var(--size-border-radius-m);
     }
 
     &:hover {
@@ -170,7 +170,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   background-color: var(--color-background-subtle);
   outline: none;
   border: none;
-  border-radius: rem.torem(8px);
+  border-radius: var(--size-border-radius-m);
   padding: rem.torem(8px);
   max-width: rem.torem($button-width);
   height: $profil-button-size;
@@ -225,7 +225,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   &:focus-visible {
     @include outline.focus-outline;
 
-    border-radius: rem.torem(4px);
+    border-radius: var(--size-border-radius-s);
   }
 
   &:hover {

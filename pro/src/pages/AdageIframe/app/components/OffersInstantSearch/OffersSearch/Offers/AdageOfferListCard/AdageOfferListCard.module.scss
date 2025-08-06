@@ -20,7 +20,7 @@
     &::before {
       @include outline.focus-outline;
 
-      border-radius: rem.torem(16px);
+      border-radius: var(--size-border-radius-l);
     }
   }
 }
@@ -30,7 +30,7 @@
   flex-direction: column;
   gap: rem.torem(16px);
   border: 2px solid var(--color-border-subtle);
-  border-radius: rem.torem(16px);
+  border-radius: var(--size-border-radius-l);
   transition: box-shadow 0.1s ease-out;
   position: relative;
   z-index: 0;
@@ -75,7 +75,7 @@
     width: rem.torem(216px);
     min-width: rem.torem(216px);
     height: rem.torem(273px);
-    border-radius: rem.torem(16px);
+    border-radius: var(--size-border-radius-l);
     overflow: hidden;
 
     &-img {

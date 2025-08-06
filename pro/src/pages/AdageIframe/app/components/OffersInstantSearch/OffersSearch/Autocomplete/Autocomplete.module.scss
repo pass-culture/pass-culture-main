@@ -32,7 +32,7 @@
 
     position: relative;
     min-height: rem.torem(48px);
-    border-radius: rem.torem(24px);
+    border-radius: var(--size-border-radius-xl);
     border-bottom-right-radius: 0;
     border-top-right-radius: 0;
     padding-left: rem.torem(36px);
@@ -65,7 +65,7 @@
   position: absolute;
   top: rem.torem(-16px);
   right: 0;
-  border-radius: rem.torem(8px);
+  border-radius: var(--size-border-radius-m);
   z-index: 1;
   bottom: rem.torem(64px);
   padding-top: rem.torem(40px);

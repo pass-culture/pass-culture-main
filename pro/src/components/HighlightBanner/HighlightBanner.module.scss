@@ -5,7 +5,7 @@
 
 .highlight-banner-adage {
   margin-top: rem.torem(16px);
-  border-radius: rem.torem(8px);
+  border-radius: var(--size-border-radius-m);
   background-color: var(--color-background-info);
   padding: rem.torem(24px);
   position: relative;

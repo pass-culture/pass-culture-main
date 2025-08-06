@@ -3,7 +3,7 @@
 
 .soft-deleted-offerer-warning {
   border: rem.torem(1px) solid var(--color-border-subtle);
-  border-radius: rem.torem(8px);
+  border-radius: var(--size-border-radius-m);
   box-shadow: 0 rem.torem(2px) rem.torem(6px) 0
     rgb(from var(--color-black) r g b / 15%);
   overflow: hidden;

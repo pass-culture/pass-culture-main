@@ -13,7 +13,7 @@
 
     &-input input {
       min-height: $row-height;
-      border-radius: rem.torem(24px);
+      border-radius: var(--size-border-radius-xl);
       border-bottom-right-radius: 0;
       border-top-right-radius: 0;
     }
