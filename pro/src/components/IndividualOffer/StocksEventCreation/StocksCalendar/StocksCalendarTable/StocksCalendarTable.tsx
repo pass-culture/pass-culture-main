@@ -288,7 +288,7 @@ export function StocksCalendarTable({
         stockBeingDeleted.bookingsQuantity > 0 ? (
           <>
             <p className={styles['delete-warning-block']}>
-              Elle ne sera plus disponible à la réservation et
+              {'Elle ne sera plus disponible à la réservation et '}
               <strong>
                 entraînera l’annulation des réservations en cours et validées !
               </strong>
