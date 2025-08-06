@@ -1,19 +1,20 @@
-import * as apiModule from 'apiClient/api'
-import { InvoiceResponseV2Model } from 'apiClient/v1'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import * as analyticsHook from 'app/App/analytics/firebase'
-import * as useNotification from 'commons/hooks/useNotification'
 import { vi } from 'vitest'
+
+import * as apiModule from '@/apiClient//api'
+import { InvoiceResponseV2Model } from '@/apiClient//v1'
+import * as analyticsHook from '@/app/App/analytics/firebase'
+import * as useNotification from '@/commons/hooks/useNotification'
 
 import { InvoiceTable } from './InvoiceTable'
 
-vi.mock('app/App/analytics/firebase', () => ({
+vi.mock('@/app/App/analytics/firebase', () => ({
   useAnalytics: vi.fn(),
 }))
 
-vi.mock('commons/hooks/useColumnSorting', async () => {
-  const actual = await vi.importActual('commons/hooks/useColumnSorting')
+vi.mock('@/commons/hooks/useColumnSorting', async () => {
+  const actual = await vi.importActual('@/commons/hooks/useColumnSorting')
   return {
     ...actual,
     useColumnSorting: vi.fn(() => ({
@@ -24,7 +25,7 @@ vi.mock('commons/hooks/useColumnSorting', async () => {
   }
 })
 
-vi.mock('commons/utils/downloadFile', () => ({
+vi.mock('@/commons/utils/downloadFile', () => ({
   downloadFile: vi.fn(),
 }))
 

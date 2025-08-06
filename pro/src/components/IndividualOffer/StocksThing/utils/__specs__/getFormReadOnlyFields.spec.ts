@@ -1,8 +1,8 @@
-import { GetIndividualOfferResponseModel, OfferStatus } from 'apiClient/v1'
+import { GetIndividualOfferResponseModel, OfferStatus } from '@/apiClient//v1'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
-} from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/utils/factories/individualApiFactories'
 
 import { StockThingFormValues } from '../../types'
 import { getFormReadOnlyFields } from '../getFormReadOnlyFields'

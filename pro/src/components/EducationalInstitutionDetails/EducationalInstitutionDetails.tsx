@@ -1,11 +1,11 @@
-import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+import { EducationalInstitutionResponseModel } from '@/apiClient//v1'
 import {
   Contact,
   EducationalRedactorDetails,
-} from 'components/EductionalRedactorDetails/EducationalRedactorDetails'
-import { EducationalRedactorDetailsForBooking } from 'components/EductionalRedactorDetailsForBooking/EducationalRedactorDetailsForBooking'
-import strokePhoneIcon from 'icons/stroke-phone.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/components/EductionalRedactorDetails/EducationalRedactorDetails'
+import { EducationalRedactorDetailsForBooking } from '@/components/EductionalRedactorDetailsForBooking/EducationalRedactorDetailsForBooking'
+import strokePhoneIcon from '@/icons/stroke-phone.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './EducationalInstitutionDetails.module.scss'
 

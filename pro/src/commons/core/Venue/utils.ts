@@ -1,4 +1,4 @@
-import { removeWhitespaces } from 'commons/utils/string'
+import { removeWhitespaces } from '@/commons/utils/string'
 
 export const unhumanizeSiret = (siret: string) =>
   removeWhitespaces(siret.replace(/[^[0-9]/g, ''))

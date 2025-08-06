@@ -3,7 +3,7 @@ import type { StoryObj } from '@storybook/react'
 import { Divider } from './Divider'
 
 export default {
-  title: 'ui-kit/Divider',
+  title: '@/ui-kit/Divider',
   component: Divider,
   decorators: [
     (Story: any) => (

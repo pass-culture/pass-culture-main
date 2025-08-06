@@ -1,17 +1,18 @@
-import { api } from 'apiClient/api'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Route, Routes } from 'react-router'
+
+import { api } from '@/apiClient//api'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { ResetPassword } from './ResetPassword'
 
-vi.mock('commons/utils/recaptcha', () => ({
+vi.mock('@/commons/utils/recaptcha', () => ({
   initReCaptchaScript: vi.fn(() => ({ remove: vi.fn() })),
   getReCaptchaToken: vi.fn(),
 }))
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getProfile: vi.fn(),
     postNewPassword: vi.fn(),
@@ -29,8 +30,8 @@ const mockUseNotification = {
   error: vi.fn(),
   success: vi.fn(),
 }
-vi.mock('commons/hooks/useNotification', async () => ({
-  ...(await vi.importActual('commons/hooks/useNotification')),
+vi.mock('@/commons/hooks/useNotification', async () => ({
+  ...(await vi.importActual('@/commons/hooks/useNotification')),
   useNotification: () => mockUseNotification,
 }))
 

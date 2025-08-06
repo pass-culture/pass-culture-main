@@ -1,20 +1,21 @@
-import { api } from 'apiClient/api'
-import { Target } from 'apiClient/v1'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
+import { Route, Routes } from 'react-router'
+
+import { api } from '@/apiClient//api'
+import { Target } from '@/apiClient//v1'
+import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'commons/context/SignupJourneyContext/SignupJourneyContext'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
-import { Route, Routes } from 'react-router'
+} from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
 
 import { Activity } from '../Activity'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getVenueTypes: vi.fn(),
   },

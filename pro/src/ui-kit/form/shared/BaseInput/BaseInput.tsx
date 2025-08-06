@@ -1,7 +1,8 @@
 import cn from 'classnames'
-import strokeSearchIcon from 'icons/stroke-search.svg'
 import React, { ForwardedRef, forwardRef } from 'react'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import strokeSearchIcon from '@/icons/stroke-search.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BaseInput.module.scss'
 

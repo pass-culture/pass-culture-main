@@ -1,16 +1,16 @@
-import { api } from 'apiClient/api'
-import { getHumanReadableApiError } from 'apiClient/helpers'
+import { api } from '@/apiClient//api'
+import { getHumanReadableApiError } from '@/apiClient//helpers'
 import {
   GetVenueResponseModel,
   PostVenueProviderBody,
   ProviderResponse,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 import {
   isAllocineProvider,
   isCinemaProvider,
-} from 'commons/core/Providers/utils/utils'
-import { useNotification } from 'commons/hooks/useNotification'
-import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
+} from '@/commons/core/Providers/utils/utils'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import { GenericCinemaProviderForm } from './GenericCinemaProviderForm/GenericCinemaProviderForm'
 import { StocksProviderForm } from './StocksProviderForm/StocksProviderForm'

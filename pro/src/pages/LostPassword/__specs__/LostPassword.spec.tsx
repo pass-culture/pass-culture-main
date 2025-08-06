@@ -1,12 +1,13 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as utils from 'commons/utils/recaptcha'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { expect } from 'vitest'
+
+import * as utils from '@/commons/utils/recaptcha'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { LostPassword } from '../LostPassword'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getProfile: vi.fn().mockResolvedValue({}),
     resetPassword: vi.fn().mockResolvedValue({}),

@@ -1,7 +1,6 @@
 import classNames from 'classnames'
 
 import { MESSAGE_VARIANT } from '../types'
-
 import styles from './DeskInputMessage.module.scss'
 
 export function DeskInputMessage({

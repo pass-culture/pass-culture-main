@@ -1,17 +1,18 @@
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import { FormProvider, useForm } from 'react-hook-form'
+
 import {
   CollectiveLocationType,
   EacFormat,
   OfferAddressType,
-} from 'apiClient/adage'
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { defaultAdageUser } from 'commons/utils/factories/adageFactories'
+} from '@/apiClient//adage'
+import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { FormProvider, useForm } from 'react-hook-form'
+} from '@/commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import { SearchFormValues } from '../../../OffersInstantSearch'
 import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../../utils'
@@ -21,7 +22,7 @@ import { OfferFilters } from '../OfferFilters'
 const handleSubmit = vi.fn()
 const mockSetLocalisationFilterState = vi.fn()
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   apiAdage: {
     getAcademies: vi.fn(),
   },

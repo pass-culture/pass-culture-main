@@ -1,7 +1,7 @@
-import fullMailIcon from 'icons/full-mail.svg'
-import strokeUserIcon from 'icons/stroke-user.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import fullMailIcon from '@/icons/full-mail.svg'
+import strokeUserIcon from '@/icons/stroke-user.svg'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './EducationalRedactorDetails.module.scss'
 

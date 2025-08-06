@@ -1,4 +1,4 @@
-import { storageAvailable } from 'commons/utils/storageAvailable'
+import { storageAvailable } from '@/commons/utils/storageAvailable'
 
 describe('storageAvailable', () => {
   it('should check that localstorage is available', () => {

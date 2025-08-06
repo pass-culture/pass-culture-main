@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Route, Routes } from 'react-router'
+
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { NavLinkItems } from './NavLinkItems'
 

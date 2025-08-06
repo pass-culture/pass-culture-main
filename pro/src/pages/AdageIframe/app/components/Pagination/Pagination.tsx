@@ -1,12 +1,13 @@
-import { PaginationType } from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
-import { setAdagePageSaved } from 'commons/store/adageFilter/reducer'
-import { adagePageSavedSelector } from 'commons/store/adageFilter/selectors'
 import { useEffect } from 'react'
 import { usePagination } from 'react-instantsearch'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router'
-import { Pagination } from 'ui-kit/Pagination/Pagination'
+
+import { PaginationType } from '@/apiClient//adage'
+import { apiAdage } from '@/apiClient//api'
+import { setAdagePageSaved } from '@/commons/store/adageFilter/reducer'
+import { adagePageSavedSelector } from '@/commons/store/adageFilter/selectors'
+import { Pagination } from '@/ui-kit/Pagination/Pagination'
 
 interface CustomPaginationProps {
   queryId?: string

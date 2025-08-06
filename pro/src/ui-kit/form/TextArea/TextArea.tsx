@@ -10,9 +10,9 @@ import React, {
   useState,
 } from 'react'
 
-import { Button } from 'ui-kit/Button/Button'
-import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
-import { FieldLayoutCharacterCount } from 'ui-kit/form/shared/FieldLayout/FieldLayoutCharacterCount/FieldLayoutCharacterCount'
+import { Button } from '@/ui-kit/Button/Button'
+import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
+import { FieldLayoutCharacterCount } from '@/ui-kit/form/shared/FieldLayout/FieldLayoutCharacterCount/FieldLayoutCharacterCount'
 
 import styles from './TextArea.module.scss'
 

@@ -1,9 +1,10 @@
-import { LocalOfferersPlaylistOffer } from 'apiClient/adage'
 import { screen } from '@testing-library/react'
-import { defaultAdageUser } from 'commons/utils/factories/adageFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import * as router from 'react-router'
+
+import { LocalOfferersPlaylistOffer } from '@/apiClient//adage'
+import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import { VenueCard, VenueCardProps } from '../VenueCard'
 

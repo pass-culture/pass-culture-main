@@ -1,17 +1,18 @@
-import { api } from 'apiClient/api'
-import { OfferStatus } from 'apiClient/v1'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
-import * as useHasAccessToDidacticOnboarding from 'commons/hooks/useHasAccessToDidacticOnboarding'
-import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
+import { addDays } from 'date-fns'
+import { Route, Routes } from 'react-router'
+
+import { api } from '@/apiClient//api'
+import { OfferStatus } from '@/apiClient//v1'
+import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import * as useHasAccessToDidacticOnboarding from '@/commons/hooks/useHasAccessToDidacticOnboarding'
+import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
-import { addDays } from 'date-fns'
-import { Route, Routes } from 'react-router'
+} from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
 
 import {
   IndividualOfferLayout,

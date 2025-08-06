@@ -1,7 +1,7 @@
 import { FieldSuccess } from './FieldSuccess'
 
 export default {
-  title: 'ui-kit/forms/shared/FieldSuccess',
+  title: '@/ui-kit/forms/shared/FieldSuccess',
   component: FieldSuccess,
 }
 

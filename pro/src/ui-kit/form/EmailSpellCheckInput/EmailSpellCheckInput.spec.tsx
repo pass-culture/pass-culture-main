@@ -1,9 +1,10 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { emailSchema } from 'commons/utils/isValidEmail'
 import { FormProvider, useForm } from 'react-hook-form'
 import * as yup from 'yup'
+
+import { emailSchema } from '@/commons/utils/isValidEmail'
 
 import { EmailSpellCheckInput } from './EmailSpellCheckInput'
 

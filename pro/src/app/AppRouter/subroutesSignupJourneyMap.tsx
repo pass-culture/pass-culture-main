@@ -1,11 +1,12 @@
 /* No need to test this file */
 /* istanbul ignore file */
-import { Activity } from 'components/SignupJourneyForm/Activity/Activity'
-import { OffererAuthentication } from 'components/SignupJourneyForm/Authentication/OffererAuthentication'
-import { ConfirmedAttachment } from 'components/SignupJourneyForm/ConfirmedAttachment/ConfirmedAttachment'
-import { Offerer } from 'components/SignupJourneyForm/Offerer/Offerer'
-import { Offerers as SignupJourneyOfferers } from 'components/SignupJourneyForm/Offerers/Offerers'
-import { Validation } from 'components/SignupJourneyForm/Validation/Validation'
+
+import { Activity } from '@/components/SignupJourneyForm/Activity/Activity'
+import { OffererAuthentication } from '@/components/SignupJourneyForm/Authentication/OffererAuthentication'
+import { ConfirmedAttachment } from '@/components/SignupJourneyForm/ConfirmedAttachment/ConfirmedAttachment'
+import { Offerer } from '@/components/SignupJourneyForm/Offerer/Offerer'
+import { Offerers as SignupJourneyOfferers } from '@/components/SignupJourneyForm/Offerers/Offerers'
+import { Validation } from '@/components/SignupJourneyForm/Validation/Validation'
 
 import type { RouteConfig } from './routesMap'
 

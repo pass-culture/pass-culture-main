@@ -1,17 +1,18 @@
-import { api } from 'apiClient/api'
-import { Layout } from 'app/App/layout/Layout'
+import { useNavigate, useParams } from 'react-router'
+import useSWR from 'swr'
+
+import { api } from '@/apiClient//api'
+import { Layout } from '@/app/App/layout/Layout'
 import {
   GET_VENUE_PROVIDERS_QUERY_KEY,
   GET_VENUE_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
-import { useOfferer } from 'commons/hooks/swr/useOfferer'
-import fullBackIcon from 'icons/full-back.svg'
-import { useNavigate, useParams } from 'react-router'
-import useSWR from 'swr'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+} from '@/commons/config/swrQueryKeys'
+import { useOfferer } from '@/commons/hooks/swr/useOfferer'
+import fullBackIcon from '@/icons/full-back.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { setInitialFormValues } from './setInitialFormValues'
 import { VenueSettingsScreen } from './VenueSettingsScreen'

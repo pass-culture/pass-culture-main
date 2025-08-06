@@ -1,8 +1,8 @@
 import cn from 'classnames'
 
-import { Mode } from 'commons/core/OfferEducational/types'
-import fullValidateIcon from 'icons/full-validate.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { Mode } from '@/commons/core/OfferEducational/types'
+import fullValidateIcon from '@/icons/full-validate.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import style from './ActionsBarSticky.module.scss'
 

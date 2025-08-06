@@ -1,13 +1,14 @@
-import { HeadLineOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
-import { HeadlineOfferContextProvider } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
-import { listOffersOfferFactory } from 'commons/utils/factories/individualApiFactories'
+
+import { HeadLineOfferResponseModel, OfferStatus } from '@/apiClient//v1'
+import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
+import { listOffersOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Table, TableVariant } from 'ui-kit/Table/Table'
+} from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import { getIndividualOfferColumns } from './IndividualOfferColumns'
 

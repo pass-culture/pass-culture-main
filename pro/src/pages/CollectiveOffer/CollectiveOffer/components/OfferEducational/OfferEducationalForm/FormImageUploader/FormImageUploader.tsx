@@ -1,11 +1,11 @@
-import { OfferCollectiveImage } from 'commons/core/Offers/types'
+import { OfferCollectiveImage } from '@/commons/core/Offers/types'
 import {
   UploaderModeEnum,
   UploadImageValues,
-} from 'commons/utils/imageUploadTypes'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { ImageDragAndDropUploader } from 'components/ImageDragAndDropUploader/ImageDragAndDropUploader'
-import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+} from '@/commons/utils/imageUploadTypes'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
+import { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 
 export interface ImageUploaderOfferProps {
   onImageUpload: (values: OnImageUploadArgs) => void

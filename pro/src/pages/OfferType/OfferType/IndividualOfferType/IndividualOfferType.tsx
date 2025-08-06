@@ -1,12 +1,13 @@
 import cn from 'classnames'
-import { INDIVIDUAL_OFFER_SUBTYPE } from 'commons/core/Offers/constants'
-import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
-import strokeDateIcon from 'icons/stroke-date.svg'
-import thingStrokeIcon from 'icons/stroke-thing.svg'
-import strokeVirtualEventIcon from 'icons/stroke-virtual-event.svg'
-import strokeVirtualThingIcon from 'icons/stroke-virtual-thing.svg'
 import { useFormContext } from 'react-hook-form'
 import { useLocation } from 'react-router'
+
+import { INDIVIDUAL_OFFER_SUBTYPE } from '@/commons/core/Offers/constants'
+import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
+import strokeDateIcon from '@/icons/stroke-date.svg'
+import thingStrokeIcon from '@/icons/stroke-thing.svg'
+import strokeVirtualEventIcon from '@/icons/stroke-virtual-event.svg'
+import strokeVirtualThingIcon from '@/icons/stroke-virtual-thing.svg'
 
 import styles from './IndividualOfferType.module.scss'
 

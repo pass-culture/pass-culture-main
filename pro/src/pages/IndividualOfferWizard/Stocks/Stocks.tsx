@@ -1,11 +1,11 @@
-import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { EventCancellationBanner } from 'components/EventCancellationBanner/EventCancellationBanner'
-import { StocksCalendar } from 'components/IndividualOffer/StocksEventCreation/StocksCalendar/StocksCalendar'
-import { StocksThing } from 'components/IndividualOffer/StocksThing/StocksThing'
-import { IndividualOfferLayout } from 'components/IndividualOfferLayout/IndividualOfferLayout'
-import { getTitle } from 'components/IndividualOfferLayout/utils/getTitle'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { EventCancellationBanner } from '@/components/EventCancellationBanner/EventCancellationBanner'
+import { StocksCalendar } from '@/components/IndividualOffer/StocksEventCreation/StocksCalendar/StocksCalendar'
+import { StocksThing } from '@/components/IndividualOffer/StocksThing/StocksThing'
+import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
+import { getTitle } from '@/components/IndividualOfferLayout/utils/getTitle'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 export const Stocks = (): JSX.Element | null => {
   const { offer, publishedOfferWithSameEAN } = useIndividualOfferContext()

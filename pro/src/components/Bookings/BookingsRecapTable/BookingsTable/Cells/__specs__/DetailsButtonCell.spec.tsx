@@ -1,9 +1,9 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { CollectiveBookingsEvents } from '@/commons/core/FirebaseEvents/constants'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { DetailsButtonCell, DetailsButtonCellProps } from '../DetailsButtonCell'
 
@@ -15,7 +15,7 @@ describe('DetailsButtonCell', () => {
   it('should log event when clicking on the button', async () => {
     const mockLogEvent = vi.fn()
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      ...vi.importActual('app/App/analytics/firebase'),
+      ...vi.importActual('@/app/App/analytics/firebase'),
       logEvent: mockLogEvent,
     }))
 

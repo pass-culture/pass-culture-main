@@ -1,9 +1,9 @@
-import { useHeadlineOfferContext } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
-import { WEBAPP_URL } from 'commons/utils/config'
-import fullLinkIcon from 'icons/full-link.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { Thumb } from 'ui-kit/Thumb/Thumb'
+import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
+import { WEBAPP_URL } from '@/commons/utils/config'
+import fullLinkIcon from '@/icons/full-link.svg'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Thumb } from '@/ui-kit/Thumb/Thumb'
 
 import styles from './HeadlineOffer.module.scss'
 

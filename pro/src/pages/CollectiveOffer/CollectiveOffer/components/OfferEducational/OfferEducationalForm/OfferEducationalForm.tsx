@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react'
+import { useFormContext } from 'react-hook-form'
+
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
@@ -5,34 +8,31 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
   VenueListItemResponseModel,
-} from 'apiClient/v1'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { Events } from 'commons/core/FirebaseEvents/constants'
+} from '@/apiClient//v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
   isCollectiveOffer,
   Mode,
   OfferEducationalFormValues,
-} from 'commons/core/OfferEducational/types'
-import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
-import { SelectOption } from 'commons/custom_types/form'
-import { useOfferer } from 'commons/hooks/swr/useOfferer'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
-import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
-import { sortByLabel } from 'commons/utils/strings'
-import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
-import { BannerPublicApi } from 'components/BannerPublicApi/BannerPublicApi'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { useEffect, useState } from 'react'
-import { useFormContext } from 'react-hook-form'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { Callout } from 'ui-kit/Callout/Callout'
+} from '@/commons/core/OfferEducational/types'
+import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
+import { SelectOption } from '@/commons/custom_types/form'
+import { useOfferer } from '@/commons/hooks/swr/useOfferer'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
+import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
+import { sortByLabel } from '@/commons/utils/strings'
+import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
+import { BannerPublicApi } from '@/components/BannerPublicApi/BannerPublicApi'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Callout } from '@/ui-kit/Callout/Callout'
 
 import { DomainOption } from '../useOfferEducationalFormData'
-
 import { FormAccessibility } from './FormAccessibility/FormAccessibility'
 import { FormContact } from './FormContact/FormContact'
 import { FormContactTemplate } from './FormContactTemplate/FormContactTemplate'

@@ -1,7 +1,8 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { forwardRef } from 'react'
+
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { ImageUploader, ImageUploaderProps } from './ImageUploader'
 
@@ -30,7 +31,7 @@ vi.mock('react-avatar-editor', () => {
 })
 
 vi.mock(
-  'components/ImageUploader/components/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/validationSchema',
+  '@/components/ImageUploader/components/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/validationSchema',
   () => ({ getValidationSchema: () => ({ validate: vi.fn() }) })
 )
 

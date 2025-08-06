@@ -1,7 +1,8 @@
-import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
 import React from 'react'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import logoPassCultureIcon from '@/icons/logo-pass-culture.svg'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BannerPublicApi.module.scss'
 

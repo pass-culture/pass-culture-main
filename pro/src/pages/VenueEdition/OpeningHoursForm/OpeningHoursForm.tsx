@@ -1,10 +1,10 @@
 import cn from 'classnames'
-import { mapDayToFrench } from 'commons/utils/date'
 import { useFormContext } from 'react-hook-form'
-import { DayCheckbox } from 'ui-kit/form/DayCheckbox/DayCheckbox'
+
+import { mapDayToFrench } from '@/commons/utils/date'
+import { DayCheckbox } from '@/ui-kit/form/DayCheckbox/DayCheckbox'
 
 import { Day, VenueEditionFormValues } from '../types'
-
 import { HourLine } from './HourLine'
 import styles from './OpeningHoursForm.module.scss'
 

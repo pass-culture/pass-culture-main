@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import strokeAccessibilityLeg from 'icons/stroke-accessibility-leg.svg'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import strokeAccessibilityLeg from '@/icons/stroke-accessibility-leg.svg'
 
 import {
   ExternalAccessibilityCollapse,

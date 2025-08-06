@@ -1,4 +1,4 @@
-import { TipsBanner } from 'ui-kit/TipsBanner/TipsBanner'
+import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
 export const MarkdownInfoBox = () => {
   return (

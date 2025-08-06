@@ -4,7 +4,29 @@
   "root": false,
   "extends": "//",
   "assist": {
-    "enabled": true
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              [
+                ":BUN:",
+                ":NODE:",
+                ":PACKAGE:",
+                ":PACKAGE_WITH_PROTOCOL:",
+                ":URL:"
+              ],
+              ":BLANK_LINE:",
+              ":ALIAS:",
+              ":BLANK_LINE:",
+              [":PATH:", "**"]
+            ]
+          }
+        }
+      }
+    }
   },
   "formatter": {
     "enabled": true,
@@ -22,6 +44,8 @@
   "files": {
     "includes": [
       "**",
+      "!build/**",
+      "!coverage/**",
       "!node_modules/**",
       "!scripts/customRequest.ts",
       "!src/apiClient/adage/**",

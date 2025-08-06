@@ -1,23 +1,24 @@
-import { api } from 'apiClient/api'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+
+import { api } from '@/apiClient//api'
 import {
   CancelablePromise,
   CollectiveBookingByIdResponseModel,
-} from 'apiClient/v1'
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
+} from '@/apiClient//v1'
 import {
   collectiveBookingByIdFactory,
   collectiveBookingCollectiveStockFactory,
   collectiveBookingFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/factories/collectiveApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   CollectiveTableRow,
   CollectiveTableRowProps,
 } from '../CollectiveTableRow'
 
-vi.mock('apiClient/api')
+vi.mock('@/apiClient//api')
 vi.mock(
   'screens/Bookings/BookingsRecapTable/components/Table/Body/TableRow/TableRow',
   () => ({
@@ -28,7 +29,7 @@ vi.mock(
 
 const scrollIntoViewMock = vi.fn()
 
-vi.mock('commons/utils/windowMatchMedia', () => ({
+vi.mock('@/commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(),
 }))
 

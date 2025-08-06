@@ -1,16 +1,17 @@
-import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
-import { api, apiAdage } from 'apiClient/api'
 import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
-import * as useIsElementVisible from 'commons/hooks/useIsElementVisible'
-import * as useNotification from 'commons/hooks/useNotification'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+
+import { AdageFrontRoles, AuthenticatedResponse } from '@/apiClient//adage'
+import { api, apiAdage } from '@/apiClient//api'
+import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import * as useIsElementVisible from '@/commons/hooks/useIsElementVisible'
+import * as useNotification from '@/commons/hooks/useNotification'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import { AdageDiscovery } from '../AdageDiscovery'
 import { DOMAINS_PLAYLIST } from '../constant'
@@ -22,7 +23,7 @@ Object.defineProperty(window, 'matchMedia', {
   }),
 })
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   apiAdage: {
     logHasSeenAllPlaylist: vi.fn(),
     logConsultPlaylistElement: vi.fn(),
@@ -37,7 +38,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('commons/hooks/useIsElementVisible', () => ({
+vi.mock('@/commons/hooks/useIsElementVisible', () => ({
   useIsElementVisible: vi.fn(() => [false, false]),
 }))
 
@@ -61,7 +62,7 @@ describe('AdageDiscovery', () => {
 
   beforeEach(async () => {
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

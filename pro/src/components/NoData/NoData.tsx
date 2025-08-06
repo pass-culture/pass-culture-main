@@ -1,6 +1,6 @@
-import strokeBookingHold from 'icons/stroke-booking-hold.svg'
-import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import strokeBookingHold from '@/icons/stroke-booking-hold.svg'
+import strokeNoBookingIcon from '@/icons/stroke-no-booking.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './NoData.module.scss'
 

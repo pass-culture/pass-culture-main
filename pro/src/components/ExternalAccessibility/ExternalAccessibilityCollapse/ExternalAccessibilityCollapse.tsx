@@ -1,9 +1,10 @@
 import cn from 'classnames'
-import fullClearIcon from 'icons/full-clear.svg'
-import fullDownIcon from 'icons/full-down.svg'
-import fullValidateIcon from 'icons/full-validate.svg'
 import React, { ReactNode, useId } from 'react'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import fullClearIcon from '@/icons/full-clear.svg'
+import fullDownIcon from '@/icons/full-down.svg'
+import fullValidateIcon from '@/icons/full-validate.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ExternalAccessibilityCollapse.module.scss'
 

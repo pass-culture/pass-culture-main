@@ -1,8 +1,8 @@
 import classNames from 'classnames'
 import React, { ForwardedRef, useId } from 'react'
 
-import { BaseDatePicker } from 'ui-kit/form/shared/BaseDatePicker/BaseDatePicker'
-import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
+import { BaseDatePicker } from '@/ui-kit/form/shared/BaseDatePicker/BaseDatePicker'
+import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
 
 import styles from './DatePicker.module.scss'
 

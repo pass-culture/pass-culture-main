@@ -1,9 +1,9 @@
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { IconRadioGroup } from 'ui-kit/form/IconRadioGroup/IconRadioGroup'
+import { IconRadioGroup } from '@/ui-kit/form/IconRadioGroup/IconRadioGroup'
 
 export default {
-  title: 'ui-kit/forms/IconRadioGroup',
+  title: '@/ui-kit/forms/IconRadioGroup',
   component: IconRadioGroup,
 }
 

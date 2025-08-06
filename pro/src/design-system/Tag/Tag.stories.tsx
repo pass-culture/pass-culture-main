@@ -1,11 +1,11 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import icon from 'icons/full-location.svg'
+import icon from '@/icons/full-location.svg'
 
 import { Tag, TagVariant } from './Tag'
 
 const meta: Meta<typeof Tag> = {
-  title: 'design-system/Tag',
+  title: '@/design-system/Tag',
   component: Tag,
 }
 

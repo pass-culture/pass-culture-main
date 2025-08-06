@@ -1,5 +1,5 @@
-import { StudentLevels } from 'apiClient/v1'
-import { DEFAULT_MARSEILLE_STUDENTS } from 'commons/core/shared/constants'
+import { StudentLevels } from '@/apiClient//v1'
+import { DEFAULT_MARSEILLE_STUDENTS } from '@/commons/core/shared/constants'
 
 export const buildStudentLevelsMapWithDefaultValue = (
   value: boolean | ((studentKey: StudentLevels) => boolean),

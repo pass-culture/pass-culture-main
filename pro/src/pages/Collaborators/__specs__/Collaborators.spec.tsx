@@ -1,19 +1,20 @@
-import { api } from 'apiClient/api'
-import { ApiError, OffererMemberStatus } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
+
+import { api } from '@/apiClient//api'
+import { ApiError, OffererMemberStatus } from '@/apiClient//v1'
+import { ApiRequestOptions } from '@/apiClient//v1/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient//v1/core/ApiResult'
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
-import { Collaborators } from 'pages/Collaborators/Collaborators'
+} from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
+import { Collaborators } from '@/pages/Collaborators/Collaborators'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getOffererMembers: vi.fn(),
     inviteMember: vi.fn(),

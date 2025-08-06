@@ -4,7 +4,7 @@ import { withRouter } from 'storybook-addon-remix-react-router'
 import { NavLinkItems } from './NavLinkItems'
 
 export default {
-  title: 'ui-kit/NavLinkItems',
+  title: '@/ui-kit/NavLinkItems',
   decorators: [withRouter],
   component: NavLinkItems,
 }

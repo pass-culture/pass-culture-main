@@ -1,4 +1,4 @@
-import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
+import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
 
 import { getFormattedAddress } from '../getFormattedAddress'
 

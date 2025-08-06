@@ -1,14 +1,13 @@
 import type { StoryObj } from '@storybook/react'
 
-import { TagVariant } from 'design-system/Tag/Tag'
-import strokeCalendarIcon from 'icons/stroke-date.svg'
+import { TagVariant } from '@/design-system/Tag/Tag'
+import strokeCalendarIcon from '@/icons/stroke-date.svg'
 
 import dog from '../assets/dog.jpg'
-
 import { Checkbox } from './Checkbox'
 
 export default {
-  title: 'design-system/Checkbox',
+  title: '@/design-system/Checkbox',
   component: Checkbox,
   parameters: {
     controls: {

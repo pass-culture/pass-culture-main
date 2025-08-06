@@ -1,6 +1,8 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
 
-import { EacFormat } from 'apiClient/adage'
+import { add, addDays } from 'date-fns'
+
+import { EacFormat } from '@/apiClient//adage'
 import {
   CollectiveBookingBankAccountStatus,
   CollectiveBookingByIdResponseModel,
@@ -28,9 +30,8 @@ import {
   OfferAddressType,
   StudentLevels,
   VenueTypeCode,
-} from 'apiClient/v1'
-import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
-import { add, addDays } from 'date-fns'
+} from '@/apiClient//v1'
+import { BOOKING_STATUS } from '@/commons/core/Bookings/constants'
 
 let offerId = 1
 let stockId = 1

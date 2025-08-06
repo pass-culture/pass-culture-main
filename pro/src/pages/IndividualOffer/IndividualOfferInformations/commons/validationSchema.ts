@@ -1,11 +1,11 @@
-import { WithdrawalTypeEnum } from 'apiClient/v1'
-import { AccessibilityFormValues } from 'commons/core/shared/types'
-import { emailSchema } from 'commons/utils/isValidEmail'
-import { offerFormUrlRegex } from 'pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
 import * as yup from 'yup'
 
-import { validationSchema as locationSchema } from '../components/OfferLocation/validationSchema'
+import { WithdrawalTypeEnum } from '@/apiClient//v1'
+import { AccessibilityFormValues } from '@/commons/core/shared/types'
+import { emailSchema } from '@/commons/utils/isValidEmail'
+import { offerFormUrlRegex } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
 
+import { validationSchema as locationSchema } from '../components/OfferLocation/validationSchema'
 import { UsefulInformationFormValues } from './types'
 
 const isAnyTrue = (values: Record<string, boolean>): boolean =>

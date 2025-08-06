@@ -1,9 +1,9 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 
-import fullOtherIcon from 'icons/full-other.svg'
-import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import fullOtherIcon from '@/icons/full-other.svg'
+import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './DropdownMenuWrapper.module.scss'
 

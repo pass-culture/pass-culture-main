@@ -1,39 +1,39 @@
-import { api } from 'apiClient/api'
-import { isErrorAPIError } from 'apiClient/helpers'
-import {
-  CreateThumbnailResponseModel,
-  GetIndividualOfferWithAddressResponseModel,
-} from 'apiClient/v1'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import {
-  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
-  OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
-import { isOfferProductBased } from 'commons/core/Offers/utils/typology'
-import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { ImageDragAndDropUploader } from 'components/ImageDragAndDropUploader/ImageDragAndDropUploader'
-import { getIndividualOfferImage } from 'components/IndividualOffer/utils/getIndividualOfferImage'
-import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
-import { ScrollToFirstHookFormErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
-import { useIndividualOfferImageUpload } from 'pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
-import { Divider } from 'ui-kit/Divider/Divider'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+
+import { api } from '@/apiClient//api'
+import { isErrorAPIError } from '@/apiClient//helpers'
+import {
+  CreateThumbnailResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
+} from '@/apiClient//v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import {
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
+import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
+import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
+import { getIndividualOfferImage } from '@/components/IndividualOffer/utils/getIndividualOfferImage'
+import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
+import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
+import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
+import { Divider } from '@/ui-kit/Divider/Divider'
+import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { buildInitialValues } from '../commons/buildInitialValues'
 import { IndividualOfferMediaFormValues } from '../commons/types'
 import { getValidationSchema } from '../commons/validationSchema'
-
 import styles from './IndividualOfferMediaScreen.module.scss'
 import { VideoUploaderTips } from './VideoUploaderOfferTips/VideoUploaderOfferTips'
 

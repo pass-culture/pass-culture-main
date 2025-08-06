@@ -1,16 +1,17 @@
-import { AdageFrontRoles, StudentLevels } from 'apiClient/adage'
-import { CollectiveLocationType, OfferAddressType } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
+
+import { AdageFrontRoles, StudentLevels } from '@/apiClient//adage'
+import { CollectiveLocationType, OfferAddressType } from '@/apiClient//v1'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
-} from 'commons/utils/factories/adageFactories'
+} from '@/commons/utils/factories/adageFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+} from '@/commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import { AdageOfferHeader, AdageOfferHeaderProps } from '../AdageOfferHeader'
 

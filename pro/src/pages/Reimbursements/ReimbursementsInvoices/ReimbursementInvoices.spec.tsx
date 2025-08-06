@@ -1,30 +1,31 @@
-import { api } from 'apiClient/api'
-import { BankAccountResponseModel } from 'apiClient/v1'
 import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { defaultBankAccount } from 'commons/utils/factories/individualApiFactories'
+import { expect } from 'vitest'
+
+import { api } from '@/apiClient//api'
+import { BankAccountResponseModel } from '@/apiClient//v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { defaultBankAccount } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { expect } from 'vitest'
+} from '@/commons/utils/renderWithProviders'
 
 import { ReimbursementsInvoices } from './ReimbursementsInvoices'
 
 const mockLogEvent = vi.fn()
 
-vi.mock('commons/utils/date', async () => ({
-  ...(await vi.importActual('commons/utils/date')),
+vi.mock('@/commons/utils/date', async () => ({
+  ...(await vi.importActual('@/commons/utils/date')),
   getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
 }))
 

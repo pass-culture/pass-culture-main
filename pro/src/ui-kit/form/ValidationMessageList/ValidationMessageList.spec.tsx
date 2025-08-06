@@ -1,13 +1,14 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
+
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/renderWithProviders'
 import {
   getPasswordRuleLabel,
   PasswordValidationCheck,
-} from 'ui-kit/form/PasswordInput/validation'
-import { axe } from 'vitest-axe'
+} from '@/ui-kit/form/PasswordInput/validation'
 
 import {
   ValidationMessageList,

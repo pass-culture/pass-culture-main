@@ -1,22 +1,23 @@
-import { api } from 'apiClient/api'
 import { screen, waitFor } from '@testing-library/react'
-import * as hooks from 'commons/hooks/swr/useOfferer'
-import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
+
+import { api } from '@/apiClient//api'
+import * as hooks from '@/commons/hooks/swr/useOfferer'
+import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/storeFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
-} from 'commons/utils/factories/userOfferersFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/factories/userOfferersFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { MandatoryCollectiveOfferFromParamsProps } from '../../components/OfferEducational/useCollectiveOfferFromParams'
 import { CollectiveOfferEdition } from '../CollectiveOfferEdition'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     listEducationalDomains: vi.fn(),
     listEducationalOfferers: vi.fn(),

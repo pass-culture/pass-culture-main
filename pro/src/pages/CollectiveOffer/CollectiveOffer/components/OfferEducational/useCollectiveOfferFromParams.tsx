@@ -1,19 +1,20 @@
-import { api } from 'apiClient/api'
+import { ComponentType } from 'react'
+import { useLocation, useParams } from 'react-router'
+import useSWR from 'swr'
+
+import { api } from '@/apiClient//api'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetOffererResponseModel,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
-import { extractOfferIdAndOfferTypeFromRouteParams } from 'commons/core/OfferEducational/utils/extractOfferIdAndOfferTypeFromRouteParams'
-import { useOfferer } from 'commons/hooks/swr/useOfferer'
-import { ComponentType } from 'react'
-import { useLocation, useParams } from 'react-router'
-import useSWR from 'swr'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+} from '@/commons/config/swrQueryKeys'
+import { extractOfferIdAndOfferTypeFromRouteParams } from '@/commons/core/OfferEducational/utils/extractOfferIdAndOfferTypeFromRouteParams'
+import { useOfferer } from '@/commons/hooks/swr/useOfferer'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 export type MandatoryCollectiveOfferFromParamsProps = {
   offer:

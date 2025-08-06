@@ -7,7 +7,7 @@ import { SummarySection } from './SummarySection'
 import { SummarySubSection } from './SummarySubSection'
 
 export default {
-  title: 'components/SummaryLayout',
+  title: '@/components/SummaryLayout',
   component: SummaryLayout,
   decorators: [withRouter],
 }

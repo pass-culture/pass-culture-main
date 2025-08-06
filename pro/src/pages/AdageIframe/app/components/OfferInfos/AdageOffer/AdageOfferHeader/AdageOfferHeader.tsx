@@ -4,15 +4,15 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
   OfferAddressType,
-} from 'apiClient/adage'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import strokeCalendarIcon from 'icons/stroke-calendar.svg'
-import strokeEuroIcon from 'icons/stroke-euro.svg'
-import strokeLocationIcon from 'icons/stroke-location.svg'
-import strokeOfferIcon from 'icons/stroke-offer.svg'
-import strokeUserIcon from 'icons/stroke-user.svg'
-import { isCollectiveOfferBookable } from 'pages/AdageIframe/app/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/apiClient//adage'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import strokeCalendarIcon from '@/icons/stroke-calendar.svg'
+import strokeEuroIcon from '@/icons/stroke-euro.svg'
+import strokeLocationIcon from '@/icons/stroke-location.svg'
+import strokeOfferIcon from '@/icons/stroke-offer.svg'
+import strokeUserIcon from '@/icons/stroke-user.svg'
+import { isCollectiveOfferBookable } from '@/pages/AdageIframe/app/types'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { OfferFavoriteButton } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferFavoriteButton/OfferFavoriteButton'
 import { OfferShareLink } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferShareLink/OfferShareLink'
@@ -27,7 +27,6 @@ import {
 } from '../utils/adageOfferDates'
 import { getBookableOfferInstitutionAndTeacherName } from '../utils/adageOfferInstitution'
 import { getBookableOfferStockPrice } from '../utils/adageOfferStocks'
-
 import styles from './AdageOfferHeader.module.scss'
 
 export type AdageOfferHeaderProps = {

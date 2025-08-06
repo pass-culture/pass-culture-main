@@ -1,11 +1,11 @@
 /* istanbul ignore file: DEBT, TO FIX */
 
-import { PatchOfferBodyModel } from 'apiClient/v1'
-import { AccessibilityEnum } from 'commons/core/shared/types'
-import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
-import { getOfferLastProvider } from 'commons/utils/factories/providerFactories'
-import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
-import { UsefulInformationFormValues } from 'pages/IndividualOffer/IndividualOfferInformations/commons/types'
+import { PatchOfferBodyModel } from '@/apiClient//v1'
+import { AccessibilityEnum } from '@/commons/core/shared/types'
+import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { getOfferLastProvider } from '@/commons/utils/factories/providerFactories'
+import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
+import { UsefulInformationFormValues } from '@/pages/IndividualOffer/IndividualOfferInformations/commons/types'
 
 import { serializePatchOffer } from '../serializers'
 

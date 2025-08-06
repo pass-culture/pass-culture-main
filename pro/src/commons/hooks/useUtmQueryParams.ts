@@ -1,5 +1,6 @@
-import { parse } from 'commons/utils/query-string'
 import { useLocation } from 'react-router'
+
+import { parse } from '@/commons/utils/query-string'
 
 export const useUtmQueryParams = () => {
   const location = useLocation()

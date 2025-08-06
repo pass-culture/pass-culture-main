@@ -1,6 +1,6 @@
-import { GetVenueResponseModel } from 'apiClient/v1'
-import { AccessibilityEnum } from 'commons/core/shared/types'
-import { DEFAULT_INTITIAL_OPENING_HOURS } from 'pages/VenueEdition/constants'
+import { GetVenueResponseModel } from '@/apiClient//v1'
+import { AccessibilityEnum } from '@/commons/core/shared/types'
+import { DEFAULT_INTITIAL_OPENING_HOURS } from '@/pages/VenueEdition/constants'
 
 import { Day, DayValues, VenueEditionFormValues } from './types'
 

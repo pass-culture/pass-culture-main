@@ -1,5 +1,5 @@
-import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
-import { SelectOption } from 'commons/custom_types/form'
+import { OfferStatus, WithdrawalTypeEnum } from '@/apiClient//v1'
+import { SelectOption } from '@/commons/custom_types/form'
 
 import {
   CollectiveOfferTypeEnum,

@@ -1,25 +1,26 @@
-import { api } from 'apiClient/api'
-import { GetVenueResponseModel } from 'apiClient/v1'
 import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as hooks from 'commons/hooks/swr/useOfferer'
-import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
+import { Route, Routes } from 'react-router'
+
+import { api } from '@/apiClient//api'
+import { GetVenueResponseModel } from '@/apiClient//v1'
+import * as hooks from '@/commons/hooks/swr/useOfferer'
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
   defaultVenueProvider,
-} from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import * as utils from 'commons/utils/savedPartnerPageVenueId'
-import { Route, Routes } from 'react-router'
+} from '@/commons/utils/renderWithProviders'
+import * as utils from '@/commons/utils/savedPartnerPageVenueId'
 
 import { VenueEdition } from '../VenueEdition'
 
@@ -76,8 +77,8 @@ vi.mock('react-redux', async () => {
 })
 
 const selectCurrentOffererId = vi.hoisted(() => vi.fn())
-vi.mock('commons/store/offerer/selectors', async () => ({
-  ...(await vi.importActual('commons/store/offerer/selectors')),
+vi.mock('@/commons/store/offerer/selectors', async () => ({
+  ...(await vi.importActual('@/commons/store/offerer/selectors')),
   selectCurrentOffererId,
 }))
 

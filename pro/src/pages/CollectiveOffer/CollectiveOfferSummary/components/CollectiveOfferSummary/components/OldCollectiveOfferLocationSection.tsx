@@ -1,20 +1,21 @@
-import { api } from 'apiClient/api'
+import { useSelector } from 'react-redux'
+import useSWR from 'swr'
+
+import { api } from '@/apiClient//api'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from 'apiClient/v1'
-import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { useOfferer } from 'commons/hooks/swr/useOfferer'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+} from '@/apiClient//v1'
+import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { useOfferer } from '@/commons/hooks/swr/useOfferer'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import {
   Description,
   SummaryDescriptionList,
-} from 'components/SummaryLayout/SummaryDescriptionList'
-import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { getInterventionAreaLabels } from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
-import { useSelector } from 'react-redux'
-import useSWR from 'swr'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+} from '@/components/SummaryLayout/SummaryDescriptionList'
+import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
+import { getInterventionAreaLabels } from '@/pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { formatOfferEventAddress } from './utils/formatOfferEventAddress'
 

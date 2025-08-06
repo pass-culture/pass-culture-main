@@ -1,5 +1,5 @@
-import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
-import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
+import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
+import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
 
 interface CollectiveOfferNotificationSectionProps {
   bookingEmails: string[]

@@ -1,11 +1,10 @@
-import fullLinkIcon from 'icons/full-link.svg'
-import fullNextIcon from 'icons/full-next.svg'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink, LinkProps } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import fullLinkIcon from '@/icons/full-link.svg'
+import fullNextIcon from '@/icons/full-next.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonLink, LinkProps } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { Dialog, DialogProps } from '../Dialog/Dialog'
-
 import styles from './RedirectDialog.module.scss'
 
 type RedirectDialogProps = DialogProps & {

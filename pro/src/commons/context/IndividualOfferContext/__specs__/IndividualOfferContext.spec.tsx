@@ -1,15 +1,16 @@
-import { ApiError } from 'apiClient/adage'
-import { ApiRequestOptions } from 'apiClient/adage/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/adage/core/ApiResult'
-import { api } from 'apiClient/api'
+import { screen, waitFor } from '@testing-library/react'
+
+import { ApiError } from '@/apiClient//adage'
+import { ApiRequestOptions } from '@/apiClient//adage/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient//adage/core/ApiResult'
+import { api } from '@/apiClient//api'
 import {
   GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
   SubcategoryIdEnum,
-} from 'apiClient/v1'
-import { screen, waitFor } from '@testing-library/react'
-import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+} from '@/apiClient//v1'
+import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { IndividualOfferContextProvider } from '../IndividualOfferContext'
 

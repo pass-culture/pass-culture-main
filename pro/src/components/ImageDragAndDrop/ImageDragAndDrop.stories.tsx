@@ -3,7 +3,7 @@ import type { StoryObj } from '@storybook/react'
 import { ImageDragAndDrop } from './ImageDragAndDrop'
 
 export default {
-  title: 'components/ImageDragAndDrop/ImageDragAndDrop',
+  title: '@/components/ImageDragAndDrop/ImageDragAndDrop',
   component: ImageDragAndDrop,
 }
 

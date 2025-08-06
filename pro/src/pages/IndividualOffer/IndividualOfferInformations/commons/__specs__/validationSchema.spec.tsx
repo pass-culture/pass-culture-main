@@ -1,4 +1,4 @@
-import { WithdrawalTypeEnum } from 'apiClient/v1'
+import { WithdrawalTypeEnum } from '@/apiClient//v1'
 
 import type { UsefulInformationFormValues } from '../types'
 import { getValidationSchema } from '../validationSchema'

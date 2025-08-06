@@ -3,13 +3,13 @@ import { screen } from '@testing-library/react'
 import {
   defaultAdageUser,
   defaultUseInfiniteHitsReturn,
-} from 'commons/utils/factories/adageFactories'
+} from '@/commons/utils/factories/adageFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { MARSEILLE_EN_GRAND } from 'pages/AdageIframe/app/constants'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+} from '@/commons/utils/renderWithProviders'
+import { MARSEILLE_EN_GRAND } from '@/pages/AdageIframe/app/constants'
+import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import { AppLayout } from '../AppLayout'
 
@@ -32,7 +32,7 @@ vi.mock(
   }
 )
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   apiAdage: {
     getVenueById: vi.fn(),
     authenticate: vi.fn(),
@@ -60,16 +60,16 @@ vi.mock('react-instantsearch', async () => {
   }
 })
 
-vi.mock('commons/utils/config', async () => {
+vi.mock('@/commons/utils/config', async () => {
   return {
-    ...(await vi.importActual('commons/utils/config')),
+    ...(await vi.importActual('@/commons/utils/config')),
     ALGOLIA_API_KEY: 'adage-api-key',
     ALGOLIA_APP_ID: '1',
     ALGOLIA_COLLECTIVE_OFFERS_INDEX: 'adage-collective-offers',
   }
 })
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   apiAdage: {
     logHasSeenAllPlaylist: vi.fn(),
     logConsultPlaylistElement: vi.fn(),
@@ -84,7 +84,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('commons/hooks/useIsElementVisible', () => ({
+vi.mock('@/commons/hooks/useIsElementVisible', () => ({
   useIsElementVisible: vi.fn(() => [false, false]),
 }))
 

@@ -1,8 +1,8 @@
 import {
   CollectiveOfferResponseModel,
   ListOffersOfferResponseModel,
-} from 'apiClient/v1'
-import { isOfferEducational } from 'commons/core/OfferEducational/types'
+} from '@/apiClient//v1'
+import { isOfferEducational } from '@/commons/core/OfferEducational/types'
 
 //  Given any two offers in the offers tables, verify whether or not they are the same
 export function isSameOffer(

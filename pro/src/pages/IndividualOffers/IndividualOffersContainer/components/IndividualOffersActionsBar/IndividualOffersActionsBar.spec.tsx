@@ -1,17 +1,18 @@
-import { api } from 'apiClient/api'
-import { OfferStatus } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { defaultCollectiveTemplateOffer } from 'commons/utils/factories/adageFactories'
+import * as router from 'react-router'
+import { beforeEach, expect } from 'vitest'
+
+import { api } from '@/apiClient//api'
+import { OfferStatus } from '@/apiClient//v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
-import * as router from 'react-router'
-import { beforeEach, expect } from 'vitest'
+} from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
 
 import {
   IndividualOffersActionsBar,
@@ -37,7 +38,7 @@ vi.mock('react-router', async () => ({
   useLocation: vi.fn(),
 }))
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     patchOffersActiveStatus: vi.fn(),
     deleteDraftOffers: vi.fn(),

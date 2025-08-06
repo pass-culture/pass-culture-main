@@ -1,17 +1,16 @@
 import {
   AuthenticatedResponse,
   CollectiveOfferTemplateResponseModel,
-} from 'apiClient/adage'
-import { getHumanizeRelativeDistance } from 'commons/utils/getDistance'
-import fullLinkIcon from 'icons/full-link.svg'
-import strokeInstitutionIcon from 'icons/stroke-institution.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/apiClient//adage'
+import { getHumanizeRelativeDistance } from '@/commons/utils/getDistance'
+import fullLinkIcon from '@/icons/full-link.svg'
+import strokeInstitutionIcon from '@/icons/stroke-institution.svg'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { ContactButton } from '../../../OffersInstantSearch/OffersSearch/Offers/ContactButton/ContactButton'
-
 import styles from './AdageOfferPartnerPanel.module.scss'
 
 export type AdageOfferPartnerPanelProps = {

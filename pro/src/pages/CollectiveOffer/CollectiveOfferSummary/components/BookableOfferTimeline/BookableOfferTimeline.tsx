@@ -2,10 +2,10 @@ import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   GetCollectiveOfferResponseModel,
-} from 'apiClient/v1'
-import { FORMAT_DD_MMMM_YYYY } from 'commons/utils/date'
-import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
-import { Timeline, TimelineStepType } from 'ui-kit/Timeline/Timeline'
+} from '@/apiClient//v1'
+import { FORMAT_DD_MMMM_YYYY } from '@/commons/utils/date'
+import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
+import { Timeline, TimelineStepType } from '@/ui-kit/Timeline/Timeline'
 
 import { formatDateTime } from '../CollectiveOfferSummary/components/utils/formatDatetime'
 import styles from './BookableOfferTimeline.module.scss'

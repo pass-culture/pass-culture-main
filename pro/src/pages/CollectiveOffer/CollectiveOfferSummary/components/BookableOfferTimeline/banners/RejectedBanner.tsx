@@ -1,19 +1,20 @@
-import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
-import { useAnalytics } from 'app/App/analytics/firebase'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
+
+import { CollectiveOfferDisplayedStatus } from '@/apiClient//v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
   Events,
-} from 'commons/core/FirebaseEvents/constants'
-import { duplicateBookableOffer } from 'commons/core/OfferEducational/utils/duplicateBookableOffer'
-import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import fullDuplicateIcon from 'icons/full-duplicate.svg'
-import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
+} from '@/commons/core/FirebaseEvents/constants'
+import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import fullDuplicateIcon from '@/icons/full-duplicate.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { CalloutVariant } from '@/ui-kit/Callout/types'
 
 import styles from '../BookableOfferTimeline.module.scss'
 

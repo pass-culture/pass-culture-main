@@ -1,11 +1,11 @@
 import type { StoryObj } from '@storybook/react'
 
-import strokeTrashIcon from 'icons/stroke-trash.svg'
+import strokeTrashIcon from '@/icons/stroke-trash.svg'
 
 import { ConfirmDialog } from './ConfirmDialog'
 
 export default {
-  title: 'components/Dialog/ConfirmDialog',
+  title: '@/components/Dialog/ConfirmDialog',
   component: ConfirmDialog,
 }
 

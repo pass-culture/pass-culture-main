@@ -1,15 +1,16 @@
+import { ChangeEvent } from 'react'
+import { useFormContext } from 'react-hook-form'
+
 import {
   OfferDatesType,
   OfferEducationalFormValues,
-} from 'commons/core/OfferEducational/types'
-import { isDateValid } from 'commons/utils/date'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
-import { ChangeEvent } from 'react'
-import { useFormContext } from 'react-hook-form'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
-import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
+} from '@/commons/core/OfferEducational/types'
+import { isDateValid } from '@/commons/utils/date'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
+import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 
 import styles from './FormDates.module.scss'
 

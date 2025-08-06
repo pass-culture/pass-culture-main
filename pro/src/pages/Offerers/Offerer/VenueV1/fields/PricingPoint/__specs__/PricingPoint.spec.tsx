@@ -1,22 +1,23 @@
-import { api } from 'apiClient/api'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useNotification from 'commons/hooks/useNotification'
-import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
-import {
-  defaultGetOffererResponseModel,
-  defaultGetOffererVenueResponseModel,
-} from 'commons/utils/factories/individualApiFactories'
-import {
-  RenderWithProvidersOptions,
-  renderWithProviders,
-} from 'commons/utils/renderWithProviders'
 import { FormProvider, useForm } from 'react-hook-form'
 import { expect } from 'vitest'
 
+import { api } from '@/apiClient//api'
+import * as useNotification from '@/commons/hooks/useNotification'
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
+} from '@/commons/utils/factories/individualApiFactories'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from '@/commons/utils/renderWithProviders'
+
 import { PricingPoint, PricingPointProps } from '../PricingPoint'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     linkVenueToPricingPoint: vi.fn(),
   },
@@ -80,7 +81,7 @@ describe('PricingPoint', () => {
     })
     const mockNotifyError = vi.fn()
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

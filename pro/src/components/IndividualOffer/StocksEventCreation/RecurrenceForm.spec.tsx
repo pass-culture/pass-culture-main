@@ -1,12 +1,13 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
-import { priceCategoryFactory } from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { addDays, format } from 'date-fns'
 import { axe } from 'vitest-axe'
+
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
+import { priceCategoryFactory } from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { RecurrenceForm, RecurrenceFormProps } from './RecurrenceForm'
 

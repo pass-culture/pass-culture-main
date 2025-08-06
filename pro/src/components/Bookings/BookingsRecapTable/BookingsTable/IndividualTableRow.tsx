@@ -1,9 +1,10 @@
-import { BookingRecapResponseModel } from 'apiClient/v1'
 import cn from 'classnames'
-import { formatPrice } from 'commons/utils/formatPrice'
-import strokeDuoIcon from 'icons/stroke-duo.svg'
 import { useState } from 'react'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import { BookingRecapResponseModel } from '@/apiClient//v1'
+import { formatPrice } from '@/commons/utils/formatPrice'
+import strokeDuoIcon from '@/icons/stroke-duo.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BookingsTable.module.scss'
 import { BeneficiaryCell } from './Cells/BeneficiaryCell'

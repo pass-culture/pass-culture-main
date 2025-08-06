@@ -1,10 +1,12 @@
 import './styles/index.scss'
-import { Root } from 'Root'
-import { initializeSentry } from 'app/App/analytics/sentry'
-import { SENTRY_SERVER_URL } from 'commons/utils/config'
+
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 
+import { initializeSentry } from '@/app/App/analytics/sentry'
+import { SENTRY_SERVER_URL } from '@/commons/utils/config'
+
+import { Root } from 'Root'
 import { unregister } from './registerServiceWorker'
 
 const isAdageIframe = window.location.href.includes('adage-iframe')

@@ -1,9 +1,10 @@
 import cn from 'classnames'
-import fullDownIcon from 'icons/full-down.svg'
-import fullUpIcon from 'icons/full-up.svg'
 import React from 'react'
-import { SharedButtonProps } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import fullDownIcon from '@/icons/full-down.svg'
+import fullUpIcon from '@/icons/full-up.svg'
+import { SharedButtonProps } from '@/ui-kit/Button/types'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ButtonFilter.module.scss'
 

@@ -1,46 +1,46 @@
-import { api } from 'apiClient/api'
+import cn from 'classnames'
+import { useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useLocation, useNavigate } from 'react-router'
+import { mutate } from 'swr'
+
+import { api } from '@/apiClient//api'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from 'apiClient/v1'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import cn from 'classnames'
+} from '@/apiClient//v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
+} from '@/commons/config/swrQueryKeys'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
   Events,
-} from 'commons/core/FirebaseEvents/constants'
-import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
-import { isCollectiveOffer } from 'commons/core/OfferEducational/types'
-import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { createOfferFromTemplate } from 'commons/core/OfferEducational/utils/createOfferFromTemplate'
-import { duplicateBookableOffer } from 'commons/core/OfferEducational/utils/duplicateBookableOffer'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
-import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
-import fullArchiveIcon from 'icons/full-archive.svg'
-import fullCopyIcon from 'icons/full-duplicate.svg'
-import fullPlusIcon from 'icons/full-plus.svg'
-import fullShowIcon from 'icons/full-show.svg'
-import { useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router'
-import { mutate } from 'swr'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { NavLinkItem, NavLinkItems } from 'ui-kit/NavLinkItems/NavLinkItems'
+} from '@/commons/core/FirebaseEvents/constants'
+import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
+import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'
+import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
+import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
+import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
+import fullArchiveIcon from '@/icons/full-archive.svg'
+import fullCopyIcon from '@/icons/full-duplicate.svg'
+import fullPlusIcon from '@/icons/full-plus.svg'
+import fullShowIcon from '@/icons/full-show.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { NavLinkItem, NavLinkItems } from '@/ui-kit/NavLinkItems/NavLinkItems'
 
 import { CollectiveOfferStep } from '../CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
-
 import styles from './CollectiveEditionOfferNavigation.module.scss'
 
 export interface CollectiveEditionOfferNavigationProps {

@@ -1,14 +1,15 @@
-import { api } from 'apiClient/api'
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+
+import { api } from '@/apiClient//api'
 import {
   defaultGetVenue,
   getCollectiveOfferTemplateFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
+} from '@/commons/utils/factories/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { MandatoryCollectiveOfferFromParamsProps } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+} from '@/commons/utils/renderWithProviders'
+import { MandatoryCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
 import { CollectiveOfferPreviewEdition } from '../CollectiveOfferPreviewEdition'
 
@@ -22,7 +23,7 @@ vi.mock('react-router', async () => ({
   default: vi.fn(),
 }))
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getVenue: vi.fn(),
   },

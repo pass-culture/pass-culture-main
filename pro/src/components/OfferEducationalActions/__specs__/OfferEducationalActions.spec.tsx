@@ -1,33 +1,34 @@
-import { api } from 'apiClient/api'
+import { screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+
+import { api } from '@/apiClient//api'
 import {
   CollectiveBookingStatus,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
-} from 'apiClient/v1'
-import { screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
-import { Mode } from 'commons/core/OfferEducational/types'
-import * as useNotification from 'commons/hooks/useNotification'
+} from '@/apiClient//v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { CollectiveBookingsEvents } from '@/commons/core/FirebaseEvents/constants'
+import { Mode } from '@/commons/core/OfferEducational/types'
+import * as useNotification from '@/commons/hooks/useNotification'
 import {
   getCollectiveOfferBookingFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
+} from '@/commons/utils/factories/collectiveApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   OfferEducationalActions,
   OfferEducationalActionsProps,
 } from '../OfferEducationalActions'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     patchCollectiveOffersActiveStatus: vi.fn(),
     patchCollectiveOffersTemplateActiveStatus: vi.fn(),
@@ -67,7 +68,7 @@ describe('OfferEducationalActions', () => {
 
   beforeEach(async () => {
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
 
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
@@ -204,7 +205,7 @@ describe('OfferEducationalActions', () => {
   it('should log event when clicked on booking link', async () => {
     const mockLogEvent = vi.fn()
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      ...vi.importActual('app/App/analytics/firebase'),
+      ...vi.importActual('@/app/App/analytics/firebase'),
       logEvent: mockLogEvent,
     }))
     renderOfferEducationalActions({

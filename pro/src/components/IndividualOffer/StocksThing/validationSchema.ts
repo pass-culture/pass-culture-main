@@ -1,6 +1,7 @@
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { isValid } from 'date-fns'
 import * as yup from 'yup'
+
+import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 
 export const MAX_STOCKS_QUANTITY = 1000000
 

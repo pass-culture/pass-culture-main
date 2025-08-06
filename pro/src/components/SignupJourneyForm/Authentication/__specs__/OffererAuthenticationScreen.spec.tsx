@@ -1,25 +1,26 @@
-import * as apiAdresse from 'apiClient/adresse/apiAdresse'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { Route, Routes } from 'react-router'
+import createFetchMock from 'vitest-fetch-mock'
+
+import * as apiAdresse from '@/apiClient//adresse/apiAdresse'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'commons/context/SignupJourneyContext/SignupJourneyContext'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
-import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
-import { Route, Routes } from 'react-router'
-import createFetchMock from 'vitest-fetch-mock'
+} from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
+import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 
 import { OffererAuthentication } from '../OffererAuthentication'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
-vi.mock('apiClient/adresse/apiAdresse', async () => {
+vi.mock('@/apiClient//adresse/apiAdresse', async () => {
   return {
-    ...(await vi.importActual('apiClient/adresse/apiAdresse')),
+    ...(await vi.importActual('@/apiClient//adresse/apiAdresse')),
     default: {
       getDataFromAddress: vi.fn(),
     },

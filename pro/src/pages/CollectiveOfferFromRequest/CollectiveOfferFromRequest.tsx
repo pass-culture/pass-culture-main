@@ -1,24 +1,25 @@
-import { api } from 'apiClient/api'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { Layout } from 'app/App/layout/Layout'
-import {
-  GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
-  GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { createOfferFromTemplate } from 'commons/core/OfferEducational/utils/createOfferFromTemplate'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { getDateToFrenchText } from 'commons/utils/date'
-import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
-import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
-import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
-import { Button } from 'ui-kit/Button/Button'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+
+import { api } from '@/apiClient//api'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { Layout } from '@/app/App/layout/Layout'
+import {
+  GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
+  GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { getDateToFrenchText } from '@/commons/utils/date'
+import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
+import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
+import { SummarySection } from '@/components/SummaryLayout/SummarySection'
+import { Button } from '@/ui-kit/Button/Button'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './CollectiveOfferFromRequest.module.scss'
 

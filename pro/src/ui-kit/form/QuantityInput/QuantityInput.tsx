@@ -1,7 +1,8 @@
 import classNames from 'classnames'
-import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { useEffect, useRef, useState } from 'react'
-import { TextInput, TextInputProps } from 'ui-kit/form/TextInput/TextInput'
+
+import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import { TextInput, TextInputProps } from '@/ui-kit/form/TextInput/TextInput'
 
 import styles from './QuantityInput.module.scss'
 

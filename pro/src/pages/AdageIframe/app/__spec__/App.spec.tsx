@@ -1,12 +1,13 @@
-import { AdageFrontRoles } from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
 import { screen } from '@testing-library/react'
+import { Configure } from 'react-instantsearch'
+
+import { AdageFrontRoles } from '@/apiClient//adage'
+import { apiAdage } from '@/apiClient//api'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
-import { Configure } from 'react-instantsearch'
+} from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
 
 import { App } from '../App'
 import { DEFAULT_GEO_RADIUS } from '../components/OffersInstantSearch/OffersInstantSearch'
@@ -47,9 +48,9 @@ vi.mock('react-instantsearch', async () => {
   }
 })
 
-vi.mock('commons/utils/config', async () => {
+vi.mock('@/commons/utils/config', async () => {
   return {
-    ...(await vi.importActual('commons/utils/config')),
+    ...(await vi.importActual('@/commons/utils/config')),
     ALGOLIA_API_KEY: 'adage-api-key',
     ALGOLIA_APP_ID: '1',
     ALGOLIA_COLLECTIVE_OFFERS_INDEX: 'adage-collective-offers',
@@ -64,7 +65,7 @@ const venue = {
   departementCode: '75',
 }
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   apiAdage: {
     getVenueById: vi.fn(() => {
       return venue

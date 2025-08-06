@@ -1,11 +1,12 @@
 import { screen } from '@testing-library/react'
+import { Route, Routes } from 'react-router'
+
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { OfferType } from 'pages/OfferType/OfferType'
-import { Route, Routes } from 'react-router'
+} from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { OfferType } from '@/pages/OfferType/OfferType'
 
 const renderOfferTypes = (initialRoute = '/') => {
   renderWithProviders(

@@ -1,8 +1,9 @@
 import classNames from 'classnames'
-import { SortingMode, useColumnSorting } from 'commons/hooks/useColumnSorting'
-import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import React, { useMemo, useState } from 'react'
-import { Skeleton } from 'ui-kit/Skeleton/Skeleton'
+
+import { SortingMode, useColumnSorting } from '@/commons/hooks/useColumnSorting'
+import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import { Skeleton } from '@/ui-kit/Skeleton/Skeleton'
 
 import { SortColumn } from './SortColumn/SortColumn'
 import styles from './Table.module.scss'

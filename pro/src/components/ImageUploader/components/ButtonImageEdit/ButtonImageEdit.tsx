@@ -1,18 +1,19 @@
 import cn from 'classnames'
+import { useState } from 'react'
+
 import {
   UploaderModeEnum,
   UploadImageValues,
-} from 'commons/utils/imageUploadTypes'
+} from '@/commons/utils/imageUploadTypes'
 import {
   ModalImageUpsertOrEdit,
   OnImageUploadArgs,
-} from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
-import fullEditIcon from 'icons/full-edit.svg'
-import fullMoreIcon from 'icons/full-more.svg'
-import { useState } from 'react'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import fullEditIcon from '@/icons/full-edit.svg'
+import fullMoreIcon from '@/icons/full-more.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import style from './ButtonImageEdit.module.scss'
 

@@ -1,4 +1,4 @@
-import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
+import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 
 import style from './DeleteVenueProviderDialog.module.scss'
 

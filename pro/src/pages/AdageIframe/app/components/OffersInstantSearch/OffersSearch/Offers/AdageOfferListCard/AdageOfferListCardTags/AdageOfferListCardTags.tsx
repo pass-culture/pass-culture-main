@@ -2,12 +2,11 @@ import {
   AuthenticatedResponse,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from 'apiClient/adage'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { Tag } from 'design-system/Tag/Tag'
+} from '@/apiClient//adage'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { Tag } from '@/design-system/Tag/Tag'
 
 import { getOfferTags } from '../../utils/getOfferTags'
-
 import styles from './AdageOfferListCardTags.module.scss'
 
 type AdageOfferListCardTagsProps = {

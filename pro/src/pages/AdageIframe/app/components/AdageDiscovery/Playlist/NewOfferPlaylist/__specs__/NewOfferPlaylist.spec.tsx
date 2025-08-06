@@ -1,20 +1,21 @@
-import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
 import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
-import * as useNotification from 'commons/hooks/useNotification'
-import { defaultCollectiveTemplateOffer } from 'commons/utils/factories/adageFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+
+import { AdageFrontRoles, AuthenticatedResponse } from '@/apiClient//adage'
+import { apiAdage } from '@/apiClient//api'
+import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import * as useNotification from '@/commons/hooks/useNotification'
+import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import { NewOfferPlaylist } from '../NewOfferPlaylist'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   apiAdage: {
     logConsultPlaylistElement: vi.fn(),
     newTemplateOffersPlaylist: vi.fn(),
@@ -52,7 +53,7 @@ describe('AdageDiscovery', () => {
     })
 
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

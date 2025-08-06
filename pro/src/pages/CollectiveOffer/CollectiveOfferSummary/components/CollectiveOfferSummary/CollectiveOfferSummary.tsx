@@ -1,22 +1,22 @@
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
-} from 'commons/core/OfferEducational/types'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+} from '@/commons/core/OfferEducational/types'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import {
   isCollectiveInstitutionEditable,
   isCollectiveOfferDetailsEditable,
   isCollectiveStockEditable,
-} from 'commons/utils/isActionAllowedOnCollectiveOffer'
-import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
-import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
-import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
-import { SummarySection } from 'components/SummaryLayout/SummarySection'
-import { SynchronizedProviderInformation } from 'components/SynchronisedProviderInformation/SynchronizedProviderInformation'
+} from '@/commons/utils/isActionAllowedOnCollectiveOffer'
+import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
+import { SummaryContent } from '@/components/SummaryLayout/SummaryContent'
+import { SummaryLayout } from '@/components/SummaryLayout/SummaryLayout'
+import { SummarySection } from '@/components/SummaryLayout/SummarySection'
+import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
 
 import styles from './CollectiveOfferSummary.module.scss'
 import { CollectiveOfferContactSection } from './components/CollectiveOfferContactSection'

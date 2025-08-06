@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import * as useIsElementVisible from 'commons/hooks/useIsElementVisible'
+import * as useIsElementVisible from '@/commons/hooks/useIsElementVisible'
 
 import { Carousel } from '../Carousel'
 
-vi.mock('commons/hooks/useIsElementVisible', () => ({
+vi.mock('@/commons/hooks/useIsElementVisible', () => ({
   useIsElementVisible: vi.fn(() => [false, false]),
 }))
 

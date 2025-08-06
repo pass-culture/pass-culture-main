@@ -1,33 +1,34 @@
-import { api } from 'apiClient/api'
-import {
-  CollectiveOfferDisplayedStatus,
-  CollectiveOfferResponseModel,
-  CollectiveOffersStockResponseModel,
-  CollectiveOfferType,
-} from 'apiClient/v1'
 import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+
+import { api } from '@/apiClient//api'
+import {
+  CollectiveOfferDisplayedStatus,
+  CollectiveOfferResponseModel,
+  CollectiveOffersStockResponseModel,
+  CollectiveOfferType,
+} from '@/apiClient//v1'
 import {
   ALL_VENUES_OPTION,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-} from 'commons/core/Offers/constants'
-import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
-import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
-import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
+} from '@/commons/core/Offers/constants'
+import { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
+import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
+import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
   venueListItemFactory,
-} from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { TemplateCollectiveOffers } from '../TemplateCollectiveOffers'
 

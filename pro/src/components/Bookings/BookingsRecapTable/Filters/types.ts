@@ -1,4 +1,4 @@
-import { BookingsFilters } from 'components/Bookings/BookingsRecapTable/types'
+import { BookingsFilters } from '@/components/Bookings/BookingsRecapTable/types'
 
 export type BookingOmniSearchFilters = Pick<
   BookingsFilters,

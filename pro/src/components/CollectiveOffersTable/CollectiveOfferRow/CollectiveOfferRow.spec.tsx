@@ -1,4 +1,7 @@
-import { api } from 'apiClient/api'
+import { screen, within } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+
+import { api } from '@/apiClient//api'
 import {
   ApiError,
   CollectiveBookingStatus,
@@ -7,31 +10,29 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOffersStockResponseModel,
   CollectiveOfferTemplateAllowedAction,
-} from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { screen, within } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
-import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'commons/core/Offers/constants'
-import { getToday } from 'commons/utils/date'
+} from '@/apiClient//v1'
+import { ApiRequestOptions } from '@/apiClient//v1/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient//v1/core/ApiResult'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { CollectiveBookingsEvents } from '@/commons/core/FirebaseEvents/constants'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
+import { getToday } from '@/commons/utils/date'
 import {
   collectiveOfferFactory,
   listOffersVenueFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
+} from '@/commons/utils/factories/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
+} from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
 
 import {
   CollectiveOfferRow,
   CollectiveOfferRowProps,
 } from './CollectiveOfferRow'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     deleteDraftOffers: vi.fn(),
     cancelCollectiveOfferBooking: vi.fn(),
@@ -343,7 +344,7 @@ describe('ollectiveOfferRow', () => {
   it('should log event when clicking booking link', async () => {
     const mockLogEvent = vi.fn()
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      ...vi.importActual('app/App/analytics/firebase'),
+      ...vi.importActual('@/app/App/analytics/firebase'),
       logEvent: mockLogEvent,
     }))
 
@@ -556,7 +557,7 @@ describe('ollectiveOfferRow', () => {
   })
 
   it('should use the new collective offer detail URL when feature flag is active', () => {
-    vi.mock('commons/hooks/useActiveFeature', () => ({
+    vi.mock('@/commons/hooks/useActiveFeature', () => ({
       useActiveFeature: vi.fn(() => true),
     }))
 

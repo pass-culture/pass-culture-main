@@ -1,6 +1,6 @@
-import fullNextIcon from 'icons/full-next.svg'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
+import fullNextIcon from '@/icons/full-next.svg'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { CalloutVariant } from '@/ui-kit/Callout/types'
 
 import styles from '../BookableOfferTimeline.module.scss'
 

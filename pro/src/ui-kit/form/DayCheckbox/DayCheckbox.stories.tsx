@@ -5,7 +5,7 @@ import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { DayCheckbox } from './DayCheckbox'
 
 const meta: Meta<typeof DayCheckbox> = {
-  title: 'ui-kit/formsV2/DayCheckbox',
+  title: '@/ui-kit/formsV2/DayCheckbox',
   component: DayCheckbox,
 }
 

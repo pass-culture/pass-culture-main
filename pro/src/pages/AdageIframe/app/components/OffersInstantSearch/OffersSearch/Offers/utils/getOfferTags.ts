@@ -4,21 +4,21 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
   OfferAddressType,
-} from 'apiClient/adage'
+} from '@/apiClient//adage'
 import {
   getHumanizeRelativeDistance,
   humanizeDistance,
-} from 'commons/utils/getDistance'
-import fullLocationIcon from 'icons/full-location.svg'
-import fullProfileIcon from 'icons/full-profil.svg'
-import fullWaitIcon from 'icons/full-wait.svg'
-import strokeBagIcon from 'icons/stroke-bag.svg'
-import strokeEuroIcon from 'icons/stroke-euro.svg'
+} from '@/commons/utils/getDistance'
+import fullLocationIcon from '@/icons/full-location.svg'
+import fullProfileIcon from '@/icons/full-profil.svg'
+import fullWaitIcon from '@/icons/full-wait.svg'
+import strokeBagIcon from '@/icons/stroke-bag.svg'
+import strokeEuroIcon from '@/icons/stroke-euro.svg'
 import {
   getFormattedDatesForBookableOffer,
   getFormattedDatesForTemplateOffer,
-} from 'pages/AdageIframe/app/components/OfferInfos/AdageOffer/utils/adageOfferDates'
-import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
+} from '@/pages/AdageIframe/app/components/OfferInfos/AdageOffer/utils/adageOfferDates'
+import { isCollectiveOfferTemplate } from '@/pages/AdageIframe/app/types'
 
 type OfferTag = {
   icon?: string

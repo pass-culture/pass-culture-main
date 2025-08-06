@@ -1,27 +1,28 @@
-import { api } from 'apiClient/api'
-import {
-  GetIndividualOfferWithAddressResponseModel,
-  GetOfferStockResponseModel,
-} from 'apiClient/v1'
 import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { api } from '@/apiClient//api'
+import {
+  GetIndividualOfferWithAddressResponseModel,
+  GetOfferStockResponseModel,
+} from '@/apiClient//v1'
+import { IndividualOfferContextProvider } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import {
   getIndividualOfferFactory,
   listOffersOfferFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+} from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { PRICE_CATEGORY_MAX_LENGTH } from './form/constants'
 import { PriceCategoriesScreen } from './PriceCategoriesScreen'

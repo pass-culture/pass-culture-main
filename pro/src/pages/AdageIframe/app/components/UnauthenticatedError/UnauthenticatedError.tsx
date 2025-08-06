@@ -1,5 +1,5 @@
-import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import logoPassCultureIcon from '@/icons/logo-pass-culture.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './UnauthenticatedError.module.scss'
 

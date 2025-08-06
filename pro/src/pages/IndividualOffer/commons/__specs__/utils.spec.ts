@@ -1,5 +1,5 @@
-import { SubcategoryIdEnum } from 'apiClient/v1'
-import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
+import { SubcategoryIdEnum } from '@/apiClient//v1'
+import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
 import { MOCK_SUB_CATEGORIES, MOCK_SUB_CATEGORY } from '../__mocks__/constants'
 import { isOfferSubcategoryOnline } from '../utils'

@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
-import { Mode } from 'commons/core/OfferEducational/types'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { Mode } from '@/commons/core/OfferEducational/types'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { ActionsBarSticky } from './ActionsBarSticky'
 

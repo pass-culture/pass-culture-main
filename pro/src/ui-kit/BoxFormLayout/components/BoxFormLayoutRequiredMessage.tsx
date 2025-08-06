@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-import { FormLayout } from 'components/FormLayout/FormLayout'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
 
 import style from '../BoxFormLayout.module.scss'
 

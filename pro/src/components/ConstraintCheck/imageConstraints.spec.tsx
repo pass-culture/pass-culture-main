@@ -1,5 +1,6 @@
-import { createImageFile } from 'commons/utils/testFileHelpers'
 import { MockInstance } from 'vitest'
+
+import { createImageFile } from '@/commons/utils/testFileHelpers'
 
 import { getValidatorErrors, imageConstraints } from './imageConstraints'
 

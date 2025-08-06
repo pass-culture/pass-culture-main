@@ -1,7 +1,8 @@
-import { api } from 'apiClient/api'
-import { GetOffererResponseModel } from 'apiClient/v1'
-import { GET_OFFERER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import useSWR from 'swr'
+
+import { api } from '@/apiClient//api'
+import { GetOffererResponseModel } from '@/apiClient//v1'
+import { GET_OFFERER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 
 export const useOfferer = (
   selectedOffererId?: number | string | null,

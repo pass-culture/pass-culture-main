@@ -1,14 +1,14 @@
-import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import { GetIndividualOfferWithAddressResponseModel } from '@/apiClient//v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
-import { StocksCalendar } from 'components/IndividualOffer/StocksEventCreation/StocksCalendar/StocksCalendar'
-import { SummarySection } from 'components/SummaryLayout/SummarySection'
-import { getStockWarningText } from 'pages/IndividualOfferSummary/commons/getStockWarningText'
-import { Callout } from 'ui-kit/Callout/Callout'
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
+import { StocksCalendar } from '@/components/IndividualOffer/StocksEventCreation/StocksCalendar/StocksCalendar'
+import { SummarySection } from '@/components/SummaryLayout/SummarySection'
+import { getStockWarningText } from '@/pages/IndividualOfferSummary/commons/getStockWarningText'
+import { Callout } from '@/ui-kit/Callout/Callout'
 
 type StocksCalendarSummaryScreenProps = {
   offer: GetIndividualOfferWithAddressResponseModel

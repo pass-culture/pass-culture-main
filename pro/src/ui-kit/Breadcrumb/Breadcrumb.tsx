@@ -1,7 +1,7 @@
-import rightIcon from 'icons/stroke-right.svg'
-import { ButtonLink, LinkProps } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import rightIcon from '@/icons/stroke-right.svg'
+import { ButtonLink, LinkProps } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Breadcrumb.module.scss'
 

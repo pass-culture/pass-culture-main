@@ -1,23 +1,24 @@
-import { api } from 'apiClient/api'
+import { screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+
+import { api } from '@/apiClient//api'
 import {
   type AggregatedRevenueModel,
   type GetOffererResponseModel,
   type GetOffererVenueResponseModel,
   type StatisticsModel,
-} from 'apiClient/v1'
-import { screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
+} from '@/apiClient//v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-} from 'commons/utils/factories/individualApiFactories'
-import { statisticsFactory } from 'commons/utils/factories/statisticsFactories'
+} from '@/commons/utils/factories/individualApiFactories'
+import { statisticsFactory } from '@/commons/utils/factories/statisticsFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { Income } from './Income'
 import { isCollectiveAndIndividualRevenue, isCollectiveRevenue } from './utils'
@@ -80,7 +81,7 @@ const renderIncome = () => {
   })
 }
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getOfferer: vi.fn(),
     getStatistics: vi.fn(),

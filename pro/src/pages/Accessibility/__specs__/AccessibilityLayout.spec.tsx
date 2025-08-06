@@ -3,9 +3,9 @@ import { screen } from '@testing-library/react'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { AccessibilityLayout } from 'pages/Accessibility/AccessibilityLayout'
+} from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { AccessibilityLayout } from '@/pages/Accessibility/AccessibilityLayout'
 
 describe('Accessibility layout', () => {
   it('should handle connected users', () => {

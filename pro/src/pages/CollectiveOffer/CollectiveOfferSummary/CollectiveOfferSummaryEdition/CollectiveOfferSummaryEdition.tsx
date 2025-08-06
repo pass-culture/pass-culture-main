@@ -1,21 +1,20 @@
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from 'apiClient/v1'
-import { isCollectiveOffer, Mode } from 'commons/core/OfferEducational/types'
-import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
-import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
-import { withCollectiveOfferFromParams } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
-import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
-import { CollectiveOfferSummary } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/CollectiveOfferSummary'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
+} from '@/apiClient//v1'
+import { isCollectiveOffer, Mode } from '@/commons/core/OfferEducational/types'
+import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
+import { OfferEducationalActions } from '@/components/OfferEducationalActions/OfferEducationalActions'
+import { withCollectiveOfferFromParams } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
+import { CollectiveOfferSummary } from '@/pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/CollectiveOfferSummary'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { BookableOfferSummary } from '../BookableOfferSummary/BookableOfferSummary'
-
 import styles from './CollectiveOfferSummaryEdition.module.scss'
 
 interface CollectiveOfferSummaryEditionProps {

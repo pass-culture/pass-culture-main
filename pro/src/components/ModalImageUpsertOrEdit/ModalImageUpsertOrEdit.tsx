@@ -1,29 +1,30 @@
-import { getFileFromURL } from 'apiClient/helpers'
 import * as Dialog from '@radix-ui/react-dialog'
-import { useAnalytics } from 'app/App/analytics/firebase'
 import cn from 'classnames'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { useGetImageBitmap } from 'commons/hooks/useGetBitmap'
-import { useNotification } from 'commons/hooks/useNotification'
+import { useEffect, useRef, useState } from 'react'
+import AvatarEditor, { CroppedRect } from 'react-avatar-editor'
+
+import { getFileFromURL } from '@/apiClient//helpers'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useGetImageBitmap } from '@/commons/hooks/useGetBitmap'
+import { useNotification } from '@/commons/hooks/useNotification'
 import {
   UploaderModeEnum,
   UploadImageValues,
-} from 'commons/utils/imageUploadTypes'
-import { ImageDragAndDrop } from 'components/ImageDragAndDrop/ImageDragAndDrop'
-import fullDownloadIcon from 'icons/full-download.svg'
-import fullTrashIcon from 'icons/full-trash.svg'
-import { useEffect, useRef, useState } from 'react'
-import AvatarEditor, { CroppedRect } from 'react-avatar-editor'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
+} from '@/commons/utils/imageUploadTypes'
+import { ImageDragAndDrop } from '@/components/ImageDragAndDrop/ImageDragAndDrop'
+import fullDownloadIcon from '@/icons/full-download.svg'
+import fullTrashIcon from '@/icons/full-trash.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { CalloutVariant } from '@/ui-kit/Callout/types'
 import {
   DialogBuilder,
   DialogBuilderProps,
-} from 'ui-kit/DialogBuilder/DialogBuilder'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+} from '@/ui-kit/DialogBuilder/DialogBuilder'
+import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ImageEditor } from './components/ImageEditor/ImageEditor'
 import {

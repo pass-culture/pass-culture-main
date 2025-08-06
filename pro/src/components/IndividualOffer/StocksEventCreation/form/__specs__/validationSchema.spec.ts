@@ -1,5 +1,6 @@
-import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHelpers'
 import { addDays, addMonths } from 'date-fns'
+
+import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
 import { MonthlyOption, RecurrenceFormValues, RecurrenceType } from '../types'
 import { getValidationSchema } from '../validationSchema'

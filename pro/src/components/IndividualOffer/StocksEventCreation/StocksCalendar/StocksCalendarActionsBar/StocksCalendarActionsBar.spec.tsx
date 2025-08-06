@@ -1,9 +1,9 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
+import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
 
 import {
   StocksCalendarActionsBar,

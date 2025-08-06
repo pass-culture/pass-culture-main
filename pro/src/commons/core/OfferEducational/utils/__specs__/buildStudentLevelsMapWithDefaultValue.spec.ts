@@ -1,4 +1,4 @@
-import { StudentLevels } from 'apiClient/adage'
+import { StudentLevels } from '@/apiClient//adage'
 
 import { buildStudentLevelsMapWithDefaultValue } from '../buildStudentLevelsMapWithDefaultValue'
 

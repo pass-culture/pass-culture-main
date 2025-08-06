@@ -1,14 +1,15 @@
-import { apiAdage } from 'apiClient/api'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import * as instantSearch from 'react-instantsearch'
+
+import { apiAdage } from '@/apiClient//api'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CustomPagination } from '../Pagination'
 
 const mockRefinePagination = vi.fn()
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   apiAdage: {
     logSearchShowMore: vi.fn(),
   },

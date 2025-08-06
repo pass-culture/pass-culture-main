@@ -4,7 +4,7 @@ import { withRouter } from 'storybook-addon-remix-react-router'
 import { Skeleton } from './Skeleton'
 
 export default {
-  title: 'ui-kit/Skeleton',
+  title: '@/ui-kit/Skeleton',
   decorators: [withRouter],
   component: Skeleton,
 }

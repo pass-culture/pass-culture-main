@@ -1,10 +1,11 @@
 import { screen } from '@testing-library/react'
-import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
+import { describe } from 'vitest'
+
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { describe } from 'vitest'
+} from '@/commons/utils/renderWithProviders'
 
 import { OffererBanners, OffererBannersProps } from './OffererBanners'
 

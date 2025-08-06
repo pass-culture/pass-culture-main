@@ -1,11 +1,12 @@
-import { api } from 'apiClient/api'
-import { OfferStatus } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
 import { addDays, subDays } from 'date-fns'
+
+import { api } from '@/apiClient//api'
+import { OfferStatus } from '@/apiClient//v1'
+import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
 
 import {
   getPatchOfferPayloadFromFormValues,
@@ -14,7 +15,7 @@ import {
 } from './OfferPublicationEdition'
 import { EventPublicationEditionFormValues } from './OfferPublicationEditionForm/types'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     patchOffer: vi.fn(),
   },

@@ -1,10 +1,11 @@
 /* istanbul ignore file */
-import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from 'commons/core/Offers/constants'
-import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { IndividualOfferLayout } from 'components/IndividualOfferLayout/IndividualOfferLayout'
-import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+
+import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from '@/commons/core/Offers/constants'
+import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
+import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { IndividualOfferSummaryDetailsScreen } from './components/IndividualOfferSummaryDetailsScreen'
 

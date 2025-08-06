@@ -1,7 +1,6 @@
-import { CollectiveStockCreationBodyModel } from 'apiClient/v1'
+import { CollectiveStockCreationBodyModel } from '@/apiClient//v1'
 
 import { OfferEducationalStockFormValues } from '../types'
-
 import {
   buildBookingLimitDatetimeForStockPayload,
   buildDatetimeForStockPayload,

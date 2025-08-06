@@ -1,4 +1,4 @@
-import { API_URL } from 'commons/utils/config'
+import { API_URL } from '@/commons/utils/config'
 
 import { AppClientAdage } from './adage/AppClientAdage'
 import { AppClient, OpenAPIConfig } from './v1'
@@ -23,7 +23,8 @@ const configAdage: OpenAPIConfig = {
 
 export const api = new AppClient(config).default
 export const apiAdage = new AppClientAdage(configAdage).default
+
 export {
   getDataFromAddress,
   getDataFromAddressParts,
-} from 'apiClient/adresse/apiAdresse'
+} from '@/apiClient//adresse/apiAdresse'

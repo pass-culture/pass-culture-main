@@ -1,4 +1,4 @@
-import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
+import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 
 import { getCropMaxDimension } from './getCropMaxDimension'
 

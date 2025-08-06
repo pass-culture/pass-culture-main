@@ -5,12 +5,12 @@ import {
   SubcategoryIdEnum,
   SubcategoryResponseModel,
   WithdrawalTypeEnum,
-} from 'apiClient/v1'
-import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
+} from '@/apiClient//v1'
+import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
   subcategoryFactory,
-} from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/utils/factories/individualApiFactories'
 
 import { serializeOfferSectionData } from '../serializer'
 

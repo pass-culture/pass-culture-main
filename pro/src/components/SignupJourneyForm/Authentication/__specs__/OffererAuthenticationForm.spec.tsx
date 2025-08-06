@@ -1,20 +1,21 @@
-import * as apiAdresse from 'apiClient/adresse/apiAdresse'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { FormProvider, useForm } from 'react-hook-form'
+import createFetchMock from 'vitest-fetch-mock'
+
+import * as apiAdresse from '@/apiClient//adresse/apiAdresse'
 import {
   Offerer,
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'commons/context/SignupJourneyContext/SignupJourneyContext'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+} from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
-import { FormProvider, useForm } from 'react-hook-form'
-import { Button } from 'ui-kit/Button/Button'
-import createFetchMock from 'vitest-fetch-mock'
+} from '@/commons/utils/renderWithProviders'
+import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
+import { Button } from '@/ui-kit/Button/Button'
 
 import {
   OffererAuthenticationForm,
@@ -24,9 +25,9 @@ import {
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
-vi.mock('apiClient/adresse/apiAdresse', async () => {
+vi.mock('@/apiClient//adresse/apiAdresse', async () => {
   return {
-    ...(await vi.importActual('apiClient/adresse/apiAdresse')),
+    ...(await vi.importActual('@/apiClient//adresse/apiAdresse')),
     default: {
       getDataFromAddress: vi.fn(),
     },

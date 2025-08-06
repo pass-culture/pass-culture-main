@@ -1,10 +1,11 @@
 import cn from 'classnames'
-import fullClearIcon from 'icons/full-clear.svg'
-import fullEllipseIcon from 'icons/full-ellipse.svg'
-import fullValidateIcon from 'icons/full-validate.svg'
-import strokeWrongIcon from 'icons/stroke-wrong.svg'
 import { ReactNode } from 'react'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import fullClearIcon from '@/icons/full-clear.svg'
+import fullEllipseIcon from '@/icons/full-ellipse.svg'
+import fullValidateIcon from '@/icons/full-validate.svg'
+import strokeWrongIcon from '@/icons/stroke-wrong.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Timeline.module.scss'
 

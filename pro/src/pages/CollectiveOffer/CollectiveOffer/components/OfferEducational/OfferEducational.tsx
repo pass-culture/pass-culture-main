@@ -1,42 +1,43 @@
-import { api } from 'apiClient/api'
-import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { FormProvider, useForm } from 'react-hook-form'
+import { useLocation, useNavigate } from 'react-router'
+import { useSWRConfig } from 'swr'
+
+import { api } from '@/apiClient//api'
+import { isErrorAPIError, serializeApiErrors } from '@/apiClient//helpers'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
   VenueListItemResponseModel,
-} from 'apiClient/v1'
-import { yupResolver } from '@hookform/resolvers/yup'
+} from '@/apiClient//v1'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
+} from '@/commons/config/swrQueryKeys'
 import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
   Mode,
   OfferEducationalFormValues,
-} from 'commons/core/OfferEducational/types'
-import { applyVenueDefaultsToFormValues } from 'commons/core/OfferEducational/utils/applyVenueDefaultsToFormValues'
-import { computeInitialValuesFromOffer } from 'commons/core/OfferEducational/utils/computeInitialValuesFromOffer'
-import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
+} from '@/commons/core/OfferEducational/types'
+import { applyVenueDefaultsToFormValues } from '@/commons/core/OfferEducational/utils/applyVenueDefaultsToFormValues'
+import { computeInitialValuesFromOffer } from '@/commons/core/OfferEducational/utils/computeInitialValuesFromOffer'
+import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import {
   createCollectiveOfferPayload,
   createCollectiveOfferTemplatePayload,
-} from 'commons/core/OfferEducational/utils/createOfferPayload'
-import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useNotification } from 'commons/hooks/useNotification'
-import { queryParamsFromOfferer } from 'commons/utils/queryParamsFromOfferer'
-import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
-import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
+} from '@/commons/core/OfferEducational/utils/createOfferPayload'
+import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
+import { OfferEducationalActions } from '@/components/OfferEducationalActions/OfferEducationalActions'
+import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import {
   createPatchOfferPayload,
   createPatchOfferTemplatePayload,
-} from 'pages/CollectiveOffer/CollectiveOffer/CollectiveOfferEdition/utils/createPatchOfferPayload'
-import { FormProvider, useForm } from 'react-hook-form'
-import { useLocation, useNavigate } from 'react-router'
-import { useSWRConfig } from 'swr'
+} from '@/pages/CollectiveOffer/CollectiveOffer/CollectiveOfferEdition/utils/createPatchOfferPayload'
 
 import styles from './OfferEducational.module.scss'
 import { OfferEducationalForm } from './OfferEducationalForm/OfferEducationalForm'

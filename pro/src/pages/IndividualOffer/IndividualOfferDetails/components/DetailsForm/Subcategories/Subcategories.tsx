@@ -1,17 +1,21 @@
-import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
-import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetails/commons/constants'
-import { DetailsFormValues } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'
+import { ChangeEvent } from 'react'
+import { useFormContext } from 'react-hook-form'
+
+import {
+  CategoryResponseModel,
+  SubcategoryResponseModel,
+} from '@/apiClient//v1'
+import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
+import { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import {
   buildCategoryOptions,
   buildSubcategoryOptions,
   completeSubcategoryConditionalFields,
-} from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
-import { ChangeEvent } from 'react'
-import { useFormContext } from 'react-hook-form'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { Select } from 'ui-kit/form/Select/Select'
+} from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { Select } from '@/ui-kit/form/Select/Select'
 
 import styles from './Subcategories.module.scss'
 

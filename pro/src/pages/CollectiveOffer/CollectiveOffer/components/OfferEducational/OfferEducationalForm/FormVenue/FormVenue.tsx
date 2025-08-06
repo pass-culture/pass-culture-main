@@ -1,19 +1,20 @@
+import { useFormContext } from 'react-hook-form'
+
 import {
   CollectiveBookingStatus,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
   VenueListItemResponseModel,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 import {
   isCollectiveOffer,
   OfferEducationalFormValues,
-} from 'commons/core/OfferEducational/types'
-import { applyVenueDefaultsToFormValues } from 'commons/core/OfferEducational/utils/applyVenueDefaultsToFormValues'
-import { SelectOption } from 'commons/custom_types/form'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { useFormContext } from 'react-hook-form'
-import { Select } from 'ui-kit/form/Select/Select'
+} from '@/commons/core/OfferEducational/types'
+import { applyVenueDefaultsToFormValues } from '@/commons/core/OfferEducational/utils/applyVenueDefaultsToFormValues'
+import { SelectOption } from '@/commons/custom_types/form'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Select } from '@/ui-kit/form/Select/Select'
 
 import { STRUCTURE_LABEL } from '../../constants/labels'
 

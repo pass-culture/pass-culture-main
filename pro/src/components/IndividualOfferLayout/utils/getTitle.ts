@@ -1,4 +1,4 @@
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 
 export const getTitle = (mode: OFFER_WIZARD_MODE) =>
   ({

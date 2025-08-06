@@ -1,11 +1,11 @@
 import { screen } from '@testing-library/react'
 
-import * as useHasAccessToDidacticOnboarding from 'commons/hooks/useHasAccessToDidacticOnboarding'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import * as useHasAccessToDidacticOnboarding from '@/commons/hooks/useHasAccessToDidacticOnboarding'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { OnboardingOffersTypeChoice } from './OnboardingOffersTypeChoice'
 
-vi.mock('commons/hooks/useHasAccessToDidacticOnboarding')
+vi.mock('@/commons/hooks/useHasAccessToDidacticOnboarding')
 describe('OnboardingOffersChoice Component', () => {
   beforeEach(() => {
     vi.spyOn(

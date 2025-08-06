@@ -4,7 +4,7 @@ import { withRouter } from 'storybook-addon-remix-react-router'
 import { ButtonFilter } from './ButtonFilter'
 
 export default {
-  title: 'ui-kit/ButtonFilter',
+  title: '@/ui-kit/ButtonFilter',
   decorators: [
     withRouter,
     (Story: any) => (

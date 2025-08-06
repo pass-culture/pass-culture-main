@@ -1,15 +1,15 @@
-import { apiAdage } from 'apiClient/api'
-import { GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import strokeMyInstitution from 'icons/stroke-my-institution.svg'
 import useSWR from 'swr'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import { apiAdage } from '@/apiClient//api'
+import { GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import strokeMyInstitution from '@/icons/stroke-my-institution.svg'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { DisabledPrebookCallout } from '../DisabledPrebookCallout/DisabledPrebookCallout'
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
 import { AdageSkeleton } from '../Skeleton/AdageSkeleton'
-
 import styles from './OffersForMyInstitution.module.scss'
 
 export const OffersForMyInstitution = () => {

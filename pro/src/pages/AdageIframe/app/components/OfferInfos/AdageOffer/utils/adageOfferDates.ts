@@ -1,13 +1,13 @@
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from 'apiClient/adage'
+} from '@/apiClient//adage'
 import {
   getDateTimeToFrenchText,
   getRangeToFrenchText,
   toDateStrippedOfTimezone,
-} from 'commons/utils/date'
-import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
+} from '@/commons/utils/date'
+import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
 
 export function getFormattedDatesForTemplateOffer(
   offer: CollectiveOfferTemplateResponseModel,

@@ -1,4 +1,4 @@
-import { AddressFormValues } from 'commons/core/shared/types'
+import { AddressFormValues } from '@/commons/core/shared/types'
 
 export interface VenueSettingsFormValues extends AddressFormValues {
   bookingEmail: string

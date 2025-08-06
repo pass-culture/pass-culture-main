@@ -1,10 +1,11 @@
-import { OfferAddressType } from 'apiClient/adage'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { ALGOLIA_COLLECTIVE_OFFERS_INDEX } from 'commons/utils/config'
-import { isNumber } from 'commons/utils/types'
-import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { ReactNode } from 'react'
 import { Configure, Index, useInstantSearch } from 'react-instantsearch'
+
+import { OfferAddressType } from '@/apiClient//adage'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { ALGOLIA_COLLECTIVE_OFFERS_INDEX } from '@/commons/utils/config'
+import { isNumber } from '@/commons/utils/types'
+import { useAdageUser } from '@/pages/AdageIframe/app/hooks/useAdageUser'
 
 import {
   algoliaSearchDefaultAttributesToRetrieve,
@@ -13,7 +14,6 @@ import {
 } from '../../OffersInstantSearch'
 import { adageFiltersToFacetFilters } from '../../utils'
 import { Offers } from '../Offers/Offers'
-
 import styles from './OffersSuggestions.module.scss'
 import { OffersSuggestionsHeader } from './OffersSuggestionsHeader/OffersSuggestionsHeader'
 

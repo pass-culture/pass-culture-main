@@ -5,17 +5,16 @@ import {
   GetEducationalOffererResponseModel,
   StudentLevels,
   VenueListItemResponseModel,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 import {
   formatShortDateForInput,
   formatTimeForInput,
   getToday,
   toDateStrippedOfTimezone,
-} from 'commons/utils/date'
+} from '@/commons/utils/date'
 
 import { getDefaultEducationalValues } from '../constants'
 import { isCollectiveOfferTemplate, OfferEducationalFormValues } from '../types'
-
 import { buildStudentLevelsMapWithDefaultValue } from './buildStudentLevelsMapWithDefaultValue'
 
 const computeDurationString = (

@@ -1,19 +1,20 @@
+import { useCallback } from 'react'
+import { useFormContext } from 'react-hook-form'
+
 import {
   GetEducationalOffererResponseModel,
   OfferAddressType,
-} from 'apiClient/v1'
-import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
-import { offerInterventionOptions } from 'commons/core/shared/interventionOptions'
-import { SelectOption } from 'commons/custom_types/form'
-import { selectInterventionAreas } from 'commons/utils/selectInterventionAreas'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
-import { useCallback } from 'react'
-import { useFormContext } from 'react-hook-form'
-import { Select } from 'ui-kit/form/Select/Select'
-import { TextArea } from 'ui-kit/form/TextArea/TextArea'
-import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
-import { TipsBanner } from 'ui-kit/TipsBanner/TipsBanner'
+} from '@/apiClient//v1'
+import { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
+import { offerInterventionOptions } from '@/commons/core/shared/interventionOptions'
+import { SelectOption } from '@/commons/custom_types/form'
+import { selectInterventionAreas } from '@/commons/utils/selectInterventionAreas'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
+import { Select } from '@/ui-kit/form/Select/Select'
+import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
+import { MultiSelect, Option } from '@/ui-kit/MultiSelect/MultiSelect'
+import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
 import {
   EVENT_ADDRESS_OTHER_ADDRESS_LABEL,

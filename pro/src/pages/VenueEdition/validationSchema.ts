@@ -1,6 +1,7 @@
-import { isPhoneValid } from 'commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
-import { emailSchema } from 'commons/utils/isValidEmail'
 import * as yup from 'yup'
+
+import { isPhoneValid } from '@/commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
+import { emailSchema } from '@/commons/utils/isValidEmail'
 
 import { Day } from './types'
 

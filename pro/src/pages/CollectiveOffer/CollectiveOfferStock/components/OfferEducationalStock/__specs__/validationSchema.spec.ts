@@ -1,6 +1,7 @@
-import { OfferEducationalStockFormValues } from 'commons/core/OfferEducational/types'
-import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHelpers'
 import { addDays, addYears, format, subMinutes } from 'date-fns'
+
+import { OfferEducationalStockFormValues } from '@/commons/core/OfferEducational/types'
+import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
 import { generateValidationSchema } from '../validationSchema'
 

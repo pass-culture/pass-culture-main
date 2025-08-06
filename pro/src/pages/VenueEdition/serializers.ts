@@ -1,4 +1,4 @@
-import { EditVenueBodyModel } from 'apiClient/v1'
+import { EditVenueBodyModel } from '@/apiClient//v1'
 
 import { DEFAULT_INTITIAL_OPENING_HOURS } from './constants'
 import { Day, VenueEditionFormValues } from './types'

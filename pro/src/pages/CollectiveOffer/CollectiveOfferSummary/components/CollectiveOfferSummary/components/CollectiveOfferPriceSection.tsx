@@ -1,6 +1,6 @@
-import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
-import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
-import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
+import { GetCollectiveOfferTemplateResponseModel } from '@/apiClient//v1'
+import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
+import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
 
 import { DEFAULT_RECAP_VALUE } from './constants'
 

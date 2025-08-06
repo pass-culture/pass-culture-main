@@ -1,21 +1,21 @@
-import { api } from 'apiClient/api'
-import { configureTestStore } from 'commons/store/testUtils'
+import { api } from '@/apiClient//api'
+import { configureTestStore } from '@/commons/store/testUtils'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 
 import { initializeUserThunk } from '../thunks'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     listOfferersNames: vi.fn(),
     getOfferer: vi.fn(),
   },
 }))
 
-vi.mock('commons/utils/storageAvailable', () => ({
+vi.mock('@/commons/utils/storageAvailable', () => ({
   storageAvailable: vi.fn().mockReturnValue(true),
 }))
 

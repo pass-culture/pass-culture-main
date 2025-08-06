@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 
-import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
-import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
+import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
 
 import { Hours, OpeningHoursReadOnly } from '../OpeningHoursReadOnly'
 

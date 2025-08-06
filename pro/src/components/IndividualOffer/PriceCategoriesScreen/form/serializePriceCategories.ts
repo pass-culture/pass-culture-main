@@ -1,4 +1,4 @@
-import { PriceCategoryBody } from 'apiClient/v1'
+import { PriceCategoryBody } from '@/apiClient//v1'
 
 import { PriceCategoriesFormValues } from './types'
 

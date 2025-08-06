@@ -7,8 +7,8 @@ import React, {
   useState,
 } from 'react'
 
-import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
-import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
+import { BaseInput } from '@/ui-kit/form/shared/BaseInput/BaseInput'
+import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
 
 import { CountryCodeSelect } from './CodeCountrySelect/CountryCodeSelect'
 import {

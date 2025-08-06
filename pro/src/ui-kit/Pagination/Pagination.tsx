@@ -1,6 +1,6 @@
-import strokeLeftIcon from 'icons/stroke-left.svg'
-import strokeRightIcon from 'icons/stroke-right.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import strokeLeftIcon from '@/icons/stroke-left.svg'
+import strokeRightIcon from '@/icons/stroke-right.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Pagination.module.scss'
 

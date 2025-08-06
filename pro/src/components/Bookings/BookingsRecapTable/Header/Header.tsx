@@ -1,7 +1,7 @@
-import { pluralize } from 'commons/utils/pluralize'
-import fullRefreshIcon from 'icons/full-refresh.svg'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { pluralize } from '@/commons/utils/pluralize'
+import fullRefreshIcon from '@/icons/full-refresh.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 
 import styles from './Header.module.scss'
 

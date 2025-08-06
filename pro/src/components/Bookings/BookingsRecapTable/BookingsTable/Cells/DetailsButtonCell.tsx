@@ -1,10 +1,11 @@
-import { useAnalytics } from 'app/App/analytics/firebase'
 import cn from 'classnames'
-import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
-import fullDownIcon from 'icons/full-down.svg'
-import fullUpIcon from 'icons/full-up.svg'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { CollectiveBookingsEvents } from '@/commons/core/FirebaseEvents/constants'
+import fullDownIcon from '@/icons/full-down.svg'
+import fullUpIcon from '@/icons/full-up.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 
 export interface DetailsButtonCellProps {
   controlledId: string

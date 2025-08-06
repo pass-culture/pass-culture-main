@@ -1,60 +1,61 @@
-import { api } from 'apiClient/api'
-import { getErrorCode, isErrorAPIError } from 'apiClient/helpers'
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import cn from 'classnames'
+import { useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
+import styles from 'styles/components/Cells.module.scss'
+import { useSWRConfig } from 'swr'
+
+import { api } from '@/apiClient//api'
+import { getErrorCode, isErrorAPIError } from '@/apiClient//helpers'
 import {
   CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
-} from 'apiClient/v1'
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import cn from 'classnames'
+} from '@/apiClient//v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
   CollectiveBookingsEvents,
   Events,
-} from 'commons/core/FirebaseEvents/constants'
-import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
-import { createOfferFromTemplate } from 'commons/core/OfferEducational/utils/createOfferFromTemplate'
-import { duplicateBookableOffer } from 'commons/core/OfferEducational/utils/duplicateBookableOffer'
-import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'commons/core/Offers/constants'
-import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
-import { getCollectiveOffersSwrKeys } from 'commons/core/Offers/utils/getCollectiveOffersSwrKeys'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+} from '@/commons/core/FirebaseEvents/constants'
+import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
+import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
+import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
+import { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
+import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
   isDateValid,
-} from 'commons/utils/date'
+} from '@/commons/utils/date'
 import {
   isActionAllowedOnCollectiveOffer,
   isCollectiveOfferEditable,
-} from 'commons/utils/isActionAllowedOnCollectiveOffer'
-import { storageAvailable } from 'commons/utils/storageAvailable'
-import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
-import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
-import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
-import fullClearIcon from 'icons/full-clear.svg'
-import fullCopyIcon from 'icons/full-duplicate.svg'
-import fullPenIcon from 'icons/full-edit.svg'
-import fullHideIcon from 'icons/full-hide.svg'
-import fullNextIcon from 'icons/full-next.svg'
-import fullPlusIcon from 'icons/full-plus.svg'
-import fullThreeDotsIcon from 'icons/full-three-dots.svg'
-import strokeCheckIcon from 'icons/stroke-check.svg'
-import strokeThingIcon from 'icons/stroke-thing.svg'
-import { useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router'
-import styles from 'styles/components/Cells.module.scss'
-import { useSWRConfig } from 'swr'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { DropdownMenuWrapper } from 'ui-kit/DropdownMenuWrapper/DropdownMenuWrapper'
+} from '@/commons/utils/isActionAllowedOnCollectiveOffer'
+import { storageAvailable } from '@/commons/utils/storageAvailable'
+import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
+import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
+import { getCellsDefinition } from '@/components/OffersTable/utils/cellDefinitions'
+import fullClearIcon from '@/icons/full-clear.svg'
+import fullCopyIcon from '@/icons/full-duplicate.svg'
+import fullPenIcon from '@/icons/full-edit.svg'
+import fullHideIcon from '@/icons/full-hide.svg'
+import fullNextIcon from '@/icons/full-next.svg'
+import fullPlusIcon from '@/icons/full-plus.svg'
+import fullThreeDotsIcon from '@/icons/full-three-dots.svg'
+import strokeCheckIcon from '@/icons/stroke-check.svg'
+import strokeThingIcon from '@/icons/stroke-thing.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { DropdownMenuWrapper } from '@/ui-kit/DropdownMenuWrapper/DropdownMenuWrapper'
 
 import { BookingLinkCell } from './BookingLinkCell'
 import { DuplicateOfferDialog } from './DuplicateOfferDialog/DuplicateOfferDialog'

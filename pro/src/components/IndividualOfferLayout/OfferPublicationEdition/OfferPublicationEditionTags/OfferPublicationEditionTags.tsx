@@ -1,14 +1,15 @@
+import { isAfter } from 'date-fns'
+
 import {
   GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
-} from 'apiClient/v1'
-import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
-import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
-import { formatLocalTimeDateString } from 'commons/utils/timezone'
-import { StatusLabel } from 'components/StatusLabel/StatusLabel'
-import { isAfter } from 'date-fns'
-import { Tag, TagVariant } from 'design-system/Tag/Tag'
-import fullWaitIcon from 'icons/full-wait.svg'
+} from '@/apiClient//v1'
+import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
+import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
+import { formatLocalTimeDateString } from '@/commons/utils/timezone'
+import { StatusLabel } from '@/components/StatusLabel/StatusLabel'
+import { Tag, TagVariant } from '@/design-system/Tag/Tag'
+import fullWaitIcon from '@/icons/full-wait.svg'
 
 import styles from './OfferPublicationEditionTags.module.scss'
 

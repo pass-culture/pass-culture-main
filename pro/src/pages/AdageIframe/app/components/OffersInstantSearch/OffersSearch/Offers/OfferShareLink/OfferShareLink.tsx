@@ -1,15 +1,16 @@
+import { MouseEvent } from 'react'
+
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
-import { LOGS_DATA } from 'commons/utils/config'
-import strokeShareIcon from 'icons/stroke-share.svg'
-import { MouseEvent } from 'react'
+} from '@/apiClient//adage'
+import { apiAdage } from '@/apiClient//api'
+import { LOGS_DATA } from '@/commons/utils/config'
+import strokeShareIcon from '@/icons/stroke-share.svg'
 import {
   ListIconButton,
   ListIconButtonVariant,
-} from 'ui-kit/ListIconButton/ListIconButton'
+} from '@/ui-kit/ListIconButton/ListIconButton'
 
 export interface OfferShareLinkProps {
   offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel

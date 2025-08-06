@@ -1,5 +1,5 @@
-import fullBackIcon from 'icons/full-back.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import fullBackIcon from '@/icons/full-back.svg'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 
 import { AccessibilityLayout } from './AccessibilityLayout'
 import styles from './MultiyearScheme.module.scss'

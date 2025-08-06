@@ -1,25 +1,26 @@
-import { api } from 'apiClient/api'
-import { GetOffererResponseModel } from 'apiClient/v1'
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES } from 'commons/config/swrQueryKeys'
-import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
+import { Outlet, Route, Routes } from 'react-router'
+import { expect } from 'vitest'
+
+import { api } from '@/apiClient//api'
+import { GetOffererResponseModel } from '@/apiClient//v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES } from '@/commons/config/swrQueryKeys'
+import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import {
   defaultBankAccount,
   defaultGetOffererResponseModel,
   defaultManagedVenues,
   getOffererNameFactory,
-} from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
-import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
-import { Outlet, Route, Routes } from 'react-router'
-import { expect } from 'vitest'
+} from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
+import { BankInformations } from '@/pages/Reimbursements/BankInformations/BankInformations'
 
 const mockMutate = vi.fn()
 vi.mock('swr', async () => ({

@@ -1,7 +1,8 @@
 import classNames from 'classnames'
-import { Checkbox, CheckboxProps } from 'design-system/Checkbox/Checkbox'
 import { useId } from 'react'
-import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
+
+import { Checkbox, CheckboxProps } from '@/design-system/Checkbox/Checkbox'
+import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
 
 import styles from './CheckboxGroup.module.scss'
 

@@ -1,15 +1,16 @@
+import { computeAddressDisplayName } from 'repository/venuesService'
+
 import {
   HeadLineOfferResponseModel,
   ListOffersOfferResponseModel,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_STATUS_DRAFT,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { computeAddressDisplayName } from 'repository/venuesService'
-import { Column } from 'ui-kit/Table/Table'
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { Column } from '@/ui-kit/Table/Table'
 
 import { IndividualActionsCells } from './components/IndividualActionsCells'
 import { OfferBookingCell } from './components/OfferBookingCell/OfferBookingCell'

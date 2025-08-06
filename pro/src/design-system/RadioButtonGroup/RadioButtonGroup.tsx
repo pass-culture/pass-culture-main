@@ -1,13 +1,14 @@
 import cn from 'classnames'
+import { ElementType, useId } from 'react'
+
 import {
   RadioButton,
   RadioButtonProps,
   RadioButtonSizing,
   RadioButtonVariantProps,
-} from 'design-system/RadioButton/RadioButton'
-import fullErrorIcon from 'icons/full-error.svg'
-import { ElementType, useId } from 'react'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/design-system/RadioButton/RadioButton'
+import fullErrorIcon from '@/icons/full-error.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './RadioButtonGroup.module.scss'
 

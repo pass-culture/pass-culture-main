@@ -1,4 +1,4 @@
-import { RECAPTCHA_ERROR } from 'commons/core/shared/constants'
+import { RECAPTCHA_ERROR } from '@/commons/core/shared/constants'
 
 import { IS_DEV, RECAPTCHA_SITE_KEY } from './config'
 

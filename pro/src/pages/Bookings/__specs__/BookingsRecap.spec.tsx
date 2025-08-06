@@ -1,33 +1,34 @@
-import { api } from 'apiClient/api'
-import { ApiError, GetOffererAddressResponseModel } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
-import { ALL_OFFERER_ADDRESS_OPTION } from 'commons/core/Offers/constants'
-import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
-import { DeepPartial } from 'commons/custom_types/utils'
-import { RootState } from 'commons/store/rootReducer'
+
+import { api } from '@/apiClient//api'
+import { ApiError, GetOffererAddressResponseModel } from '@/apiClient//v1'
+import { ApiRequestOptions } from '@/apiClient//v1/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient//v1/core/ApiResult'
+import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
+import { ALL_OFFERER_ADDRESS_OPTION } from '@/commons/core/Offers/constants'
+import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import { DeepPartial } from '@/commons/custom_types/utils'
+import { RootState } from '@/commons/store/rootReducer'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
-} from 'commons/utils/date'
+} from '@/commons/utils/date'
 import {
   bookingRecapFactory,
   venueListItemFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { offererAddressFactory } from 'commons/utils/factories/offererAddressFactories'
+} from '@/commons/utils/factories/individualApiFactories'
+import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
+} from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
 
 import { Bookings } from '../Bookings'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getProfile: vi.fn(),
     getBookingsPro: vi.fn(),
@@ -38,9 +39,9 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('commons/utils/date', async () => {
+vi.mock('@/commons/utils/date', async () => {
   return {
-    ...(await vi.importActual('commons/utils/date')),
+    ...(await vi.importActual('@/commons/utils/date')),
     getToday: vi.fn().mockReturnValue(new Date('2020-06-15T12:00:00Z')),
   }
 })

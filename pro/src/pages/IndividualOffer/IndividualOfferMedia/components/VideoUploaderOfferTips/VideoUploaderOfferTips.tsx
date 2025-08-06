@@ -1,4 +1,5 @@
-import { TipsBanner } from 'ui-kit/TipsBanner/TipsBanner'
+import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
+
 import styles from './VideoUploaderOfferTips.module.scss'
 import imageVideoTips from './video-tips.png'
 

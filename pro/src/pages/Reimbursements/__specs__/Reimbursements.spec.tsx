@@ -1,20 +1,21 @@
-import { api } from 'apiClient/api'
 import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
-import { routesReimbursements } from 'app/AppRouter/subroutesReimbursements'
+import { Route, Routes } from 'react-router'
+
+import { api } from '@/apiClient//api'
+import { routesReimbursements } from '@/app/AppRouter/subroutesReimbursements'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
-} from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Route, Routes } from 'react-router'
+} from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { Reimbursements, ReimbursementsContextProps } from '../Reimbursements'
 

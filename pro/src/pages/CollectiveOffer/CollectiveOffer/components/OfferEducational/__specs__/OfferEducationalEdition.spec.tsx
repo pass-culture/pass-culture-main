@@ -1,20 +1,21 @@
-import { api } from 'apiClient/api'
 import { screen, waitFor } from '@testing-library/react'
-import { Mode } from 'commons/core/OfferEducational/types'
-import * as hooks from 'commons/hooks/swr/useOfferer'
+
+import { api } from '@/apiClient//api'
+import { Mode } from '@/commons/core/OfferEducational/types'
+import * as hooks from '@/commons/hooks/swr/useOfferer'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferVenueFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
+} from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
   venueListItemFactory,
-} from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/utils/factories/individualApiFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
-} from 'commons/utils/factories/userOfferersFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/factories/userOfferersFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { defaultEditionProps } from '../__tests-utils__/defaultProps'
 import {

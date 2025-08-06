@@ -1,8 +1,9 @@
 import { screen, waitFor } from '@testing-library/react'
-import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { addDays } from 'date-fns'
-import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
+
+import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import {
   OfferPublicationEditionForm,

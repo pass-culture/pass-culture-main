@@ -1,11 +1,11 @@
 import type { StoryObj } from '@storybook/react'
 
-import strokeUserIcon from 'icons/stroke-user.svg'
+import strokeUserIcon from '@/icons/stroke-user.svg'
 
 import { SvgIcon, SvgIconProps } from './SvgIcon'
 
 export default {
-  title: 'ui-kit/SvgIcon',
+  title: '@/ui-kit/SvgIcon',
   component: SvgIcon,
 }
 

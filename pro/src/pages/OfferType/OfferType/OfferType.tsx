@@ -1,5 +1,9 @@
-import { api } from 'apiClient/api'
-import { CollectiveOfferType as CollectiveOfferApiType } from 'apiClient/v1'
+import { FormProvider, useForm } from 'react-hook-form'
+import { useSelector } from 'react-redux'
+import { useLocation, useNavigate } from 'react-router'
+
+import { api } from '@/apiClient//api'
+import { CollectiveOfferType as CollectiveOfferApiType } from '@/apiClient//v1'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
@@ -8,19 +12,16 @@ import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_TYPES,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
-import { useOfferer } from 'commons/hooks/swr/useOfferer'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
-import { FormProvider, useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializer'
+import { useOfferer } from '@/commons/hooks/swr/useOfferer'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ActionsBar } from './ActionsBar/ActionsBar'
 import { CollectiveOfferType } from './CollectiveOfferType/CollectiveOfferType'

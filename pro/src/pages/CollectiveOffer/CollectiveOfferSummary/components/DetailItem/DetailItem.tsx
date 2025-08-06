@@ -1,4 +1,4 @@
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './DetailItem.module.scss'
 

@@ -1,9 +1,9 @@
 import cn from 'classnames'
 
-import strokeDuoIcon from 'icons/stroke-duo.svg'
-import strokePassIcon from 'icons/stroke-pass.svg'
-import strokePriceIcon from 'icons/stroke-price.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import strokeDuoIcon from '@/icons/stroke-duo.svg'
+import strokePassIcon from '@/icons/stroke-pass.svg'
+import strokePriceIcon from '@/icons/stroke-price.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import style from './OptionsIcons.module.scss'
 

@@ -1,7 +1,7 @@
 import { FieldError } from './FieldError'
 
 export default {
-  title: 'ui-kit/forms/shared/FieldError',
+  title: '@/ui-kit/forms/shared/FieldError',
   component: FieldError,
 }
 

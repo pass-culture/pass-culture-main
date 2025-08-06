@@ -1,25 +1,25 @@
-import { AdresseData } from 'apiClient/adresse/types'
+import { useRef } from 'react'
+import { useFormContext } from 'react-hook-form'
+
+import { AdresseData } from '@/apiClient//adresse/types'
 import {
   CollectiveLocationType,
   VenueListItemResponseModel,
-} from 'apiClient/v1'
-import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
-import { resetReactHookFormAddressFields } from 'commons/utils/resetAddressFields'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
-import fullBackIcon from 'icons/full-back.svg'
-import fullNextIcon from 'icons/full-next.svg'
-import { useRef } from 'react'
-import { useFormContext } from 'react-hook-form'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { AddressManual } from 'ui-kit/form/AddressManual/AddressManual'
-import { AddressSelect } from 'ui-kit/form/AddressSelect/AddressSelect'
-import { TextArea } from 'ui-kit/form/TextArea/TextArea'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+} from '@/apiClient//v1'
+import { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
+import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
+import fullBackIcon from '@/icons/full-back.svg'
+import fullNextIcon from '@/icons/full-next.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
+import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
+import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
+import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import styles from '../OfferEducationalForm.module.scss'
-
 import { InterventionAreaMultiSelect } from './InterventionAreaMultiSelect'
 export interface FormLocationProps {
   disableForm: boolean

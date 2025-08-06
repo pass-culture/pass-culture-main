@@ -1,24 +1,24 @@
-import { api } from 'apiClient/api'
+import { useState } from 'react'
+import useSWR, { mutate } from 'swr'
+
+import { api } from '@/apiClient//api'
 import {
   EventStockUpdateBodyModel,
   GetIndividualOfferWithAddressResponseModel,
   StocksOrderedBy,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 import {
   GET_OFFER_QUERY_KEY,
   GET_STOCKS_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
-import { useNotification } from 'commons/hooks/useNotification'
-import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
-import { pluralize } from 'commons/utils/pluralize'
-import { convertTimeFromVenueTimezoneToUtc } from 'commons/utils/timezone'
-import { useState } from 'react'
-import useSWR, { mutate } from 'swr'
-import { Pagination } from 'ui-kit/Pagination/Pagination'
+} from '@/commons/config/swrQueryKeys'
+import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
+import { pluralize } from '@/commons/utils/pluralize'
+import { convertTimeFromVenueTimezoneToUtc } from '@/commons/utils/timezone'
+import { Pagination } from '@/ui-kit/Pagination/Pagination'
 
 import { StocksTableFilters, StocksTableSort } from '../form/types'
-
 import styles from './StocksCalendar.module.scss'
 import { StocksCalendarActionsBar } from './StocksCalendarActionsBar/StocksCalendarActionsBar'
 import { StocksCalendarFilters } from './StocksCalendarFilters/StocksCalendarFilters'

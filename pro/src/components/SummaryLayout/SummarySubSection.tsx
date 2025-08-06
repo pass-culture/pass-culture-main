@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { Divider } from 'ui-kit/Divider/Divider'
+import { Divider } from '@/ui-kit/Divider/Divider'
 
 import style from './SummaryLayout.module.scss'
 

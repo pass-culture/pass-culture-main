@@ -1,7 +1,7 @@
 import {
   ThingStockCreateBodyModel,
   ThingStockUpdateBodyModel,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../constants'
 import { StockThingFormValues } from '../../types'

@@ -1,20 +1,21 @@
-import { api } from 'apiClient/api'
-import { GET_MUSIC_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { showOptionsTree } from 'commons/core/Offers/categoriesSubTypes'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetails/commons/constants'
-import { DetailsFormValues } from 'pages/IndividualOffer/IndividualOfferDetails/commons/types'
+import { useFormContext } from 'react-hook-form'
+import useSWR from 'swr'
+
+import { api } from '@/apiClient//api'
+import { GET_MUSIC_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
+import { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import {
   buildShowSubTypeOptions,
   hasMusicType,
-} from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
-import { useFormContext } from 'react-hook-form'
-import useSWR from 'swr'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
-import { Select } from 'ui-kit/form/Select/Select'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
+} from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { CalloutVariant } from '@/ui-kit/Callout/types'
+import { Select } from '@/ui-kit/form/Select/Select'
+import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
+import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 
 import styles from './DetailsSubForm.module.scss'
 

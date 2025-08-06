@@ -1,8 +1,9 @@
-import { sendSentryCustomError } from 'commons/utils/sendSentryCustomError'
-import { storageAvailable } from 'commons/utils/storageAvailable'
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 import { v4 as uuidv4 } from 'uuid'
+
+import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
+import { storageAvailable } from '@/commons/utils/storageAvailable'
 
 import {
   Consents,

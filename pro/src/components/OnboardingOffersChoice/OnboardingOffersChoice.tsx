@@ -1,10 +1,11 @@
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { OnboardingDidacticEvents } from 'commons/core/FirebaseEvents/constants'
-import { Dialog } from 'components/Dialog/Dialog'
 import { ReactNode, useState } from 'react'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
+
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { OnboardingDidacticEvents } from '@/commons/core/FirebaseEvents/constants'
+import { Dialog } from '@/components/Dialog/Dialog'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import collective from './assets/collective.jpeg'
 import individuelle from './assets/individuelle.jpeg'

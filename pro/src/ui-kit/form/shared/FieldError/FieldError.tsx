@@ -1,7 +1,7 @@
 import cn from 'classnames'
 
-import strokeErrorIcon from 'icons/stroke-error.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import strokeErrorIcon from '@/icons/stroke-error.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './FieldError.module.scss'
 

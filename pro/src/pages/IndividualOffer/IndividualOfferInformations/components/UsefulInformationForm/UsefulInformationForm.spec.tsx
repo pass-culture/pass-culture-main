@@ -1,30 +1,31 @@
-import { WithdrawalTypeEnum } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
+import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
+
+import { WithdrawalTypeEnum } from '@/apiClient//v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+} from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
   venueListItemFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/renderWithProviders'
 import {
   MOCK_SUB_CATEGORIES,
   MOCK_SUB_CATEGORY,
-} from 'pages/IndividualOffer/commons/__mocks__/constants'
+} from '@/pages/IndividualOffer/commons/__mocks__/constants'
 import {
   providedTicketWithdrawalTypeRadios,
   ticketWithdrawalTypeRadios,
-} from 'pages/IndividualOffer/IndividualOfferInformations/commons/constants'
-import { UsefulInformationFormValues } from 'pages/IndividualOffer/IndividualOfferInformations/commons/types'
-import { FormProvider, useForm } from 'react-hook-form'
-import { axe } from 'vitest-axe'
+} from '@/pages/IndividualOffer/IndividualOfferInformations/commons/constants'
+import { UsefulInformationFormValues } from '@/pages/IndividualOffer/IndividualOfferInformations/commons/types'
 
 import {
   UsefulInformationForm,
@@ -58,7 +59,7 @@ const LABELS = {
   notificationEmail: /Email auquel envoyer les notifications/,
 }
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getCategories: vi.fn(),
     bulkCreateEventStocks: vi.fn(),

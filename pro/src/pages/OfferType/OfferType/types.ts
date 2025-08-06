@@ -3,7 +3,7 @@ import {
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
   INDIVIDUAL_OFFER_SUBTYPE,
   OFFER_TYPES,
-} from 'commons/core/Offers/constants'
+} from '@/commons/core/Offers/constants'
 
 export interface OfferTypeFormValues {
   offer: {

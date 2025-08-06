@@ -1,13 +1,14 @@
-import { OfferAddressType } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
-import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
-import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
+import { FormProvider, useForm } from 'react-hook-form'
+
+import { OfferAddressType } from '@/apiClient//v1'
+import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
+import { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import {
   getOfferManagingOffererFactory,
   getOfferVenueFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { FormProvider, useForm } from 'react-hook-form'
+} from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   EVENT_ADDRESS_OTHER_ADDRESS_LABEL,

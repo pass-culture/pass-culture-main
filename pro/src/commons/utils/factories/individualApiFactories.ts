@@ -27,11 +27,11 @@ import {
   VenueListItemResponseModel,
   VenueProviderResponse,
   VenueTypeCode,
-} from 'apiClient/v1'
-import { IndividualOfferContextValues } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { REIMBURSEMENT_RULES } from 'commons/core/Finances/constants'
-import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
-import { StocksEvent } from 'components/IndividualOffer/StocksEventCreation/form/types'
+} from '@/apiClient//v1'
+import { IndividualOfferContextValues } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
+import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
+import { StocksEvent } from '@/components/IndividualOffer/StocksEventCreation/form/types'
 
 import { listOffersVenueFactory } from './collectiveApiFactories'
 

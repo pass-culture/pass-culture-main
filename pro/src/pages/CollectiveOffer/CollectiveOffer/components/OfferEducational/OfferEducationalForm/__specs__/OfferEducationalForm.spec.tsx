@@ -1,27 +1,28 @@
-import { CollectiveOfferTemplateAllowedAction } from 'apiClient/v1'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
+import { FormProvider, useForm } from 'react-hook-form'
+import { describe, expect } from 'vitest'
+
+import { CollectiveOfferTemplateAllowedAction } from '@/apiClient//v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
 import {
   Mode,
   OfferEducationalFormValues,
-} from 'commons/core/OfferEducational/types'
-import * as hooks from 'commons/hooks/swr/useOfferer'
-import { getCollectiveOfferTemplateFactory } from 'commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/core/OfferEducational/types'
+import * as hooks from '@/commons/hooks/swr/useOfferer'
+import { getCollectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
-} from 'commons/utils/factories/userOfferersFactories'
-import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
+} from '@/commons/utils/factories/userOfferersFactories'
+import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { FormProvider, useForm } from 'react-hook-form'
-import { describe, expect } from 'vitest'
+} from '@/commons/utils/renderWithProviders'
 
 import {
   OfferEducationalForm,

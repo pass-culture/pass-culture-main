@@ -1,5 +1,5 @@
-import { RedirectDialog } from 'components/RedirectDialog/RedirectDialog'
-import strokeFraudIcon from 'icons/stroke-fraud.svg'
+import { RedirectDialog } from '@/components/RedirectDialog/RedirectDialog'
+import strokeFraudIcon from '@/icons/stroke-fraud.svg'
 
 export const MaybeAppUserDialog = ({
   onCancel,

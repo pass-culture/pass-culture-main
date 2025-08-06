@@ -1,7 +1,7 @@
-import fullTrashIcon from 'icons/full-trash.svg'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { DropdownItem } from 'ui-kit/DropdownMenuWrapper/DropdownItem'
+import fullTrashIcon from '@/icons/full-trash.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { DropdownItem } from '@/ui-kit/DropdownMenuWrapper/DropdownItem'
 
 interface DeleteDraftOffersProps {
   setIsConfirmDialogOpen: (value: boolean) => void

@@ -1,10 +1,10 @@
-import { apiAdage } from 'apiClient/api'
-import { GET_COLLECTIVE_FAVORITES } from 'commons/config/swrQueryKeys'
 import useSWR, { useSWRConfig } from 'swr'
+
+import { apiAdage } from '@/apiClient//api'
+import { GET_COLLECTIVE_FAVORITES } from '@/commons/config/swrQueryKeys'
 
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
 import { AdageSkeleton } from '../Skeleton/AdageSkeleton'
-
 import styles from './OffersFavorites.module.scss'
 import { OffersFavoritesNoResult } from './OffersFavoritesNoResult/OffersFavoritesNoResult'
 

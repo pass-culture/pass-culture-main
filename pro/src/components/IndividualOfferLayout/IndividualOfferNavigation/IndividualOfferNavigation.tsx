@@ -1,20 +1,21 @@
-import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { FC } from 'react'
+import { generatePath, useLocation } from 'react-router'
+
+import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useActiveStep } from 'commons/hooks/useActiveStep'
-import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { Step, StepPattern, Stepper } from 'components/Stepper/Stepper'
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useActiveStep } from '@/commons/hooks/useActiveStep'
+import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { Step, StepPattern, Stepper } from '@/components/Stepper/Stepper'
 import {
   getOfferSubtypeFromParam,
   isOfferSubtypeEvent,
-} from 'pages/IndividualOffer/commons/filterCategories'
-import { FC } from 'react'
-import { generatePath, useLocation } from 'react-router'
-import { NavLinkItems } from 'ui-kit/NavLinkItems/NavLinkItems'
+} from '@/pages/IndividualOffer/commons/filterCategories'
+import { NavLinkItems } from '@/ui-kit/NavLinkItems/NavLinkItems'
 
 import styles from './IndividualOfferNavigation.module.scss'
 import { LabelBooking } from './LabelBooking/LabelBooking'

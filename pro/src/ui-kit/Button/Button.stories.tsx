@@ -1,14 +1,15 @@
 import type { StoryObj } from '@storybook/react'
-import fullEditIcon from 'icons/full-edit.svg'
-import fullLinkIcon from 'icons/full-link.svg'
-import fullNextIcon from 'icons/full-next.svg'
 import { withRouter } from 'storybook-addon-remix-react-router'
+
+import fullEditIcon from '@/icons/full-edit.svg'
+import fullLinkIcon from '@/icons/full-link.svg'
+import fullNextIcon from '@/icons/full-next.svg'
 
 import { Button } from './Button'
 import { ButtonVariant, IconPositionEnum } from './types'
 
 export default {
-  title: 'ui-kit/Button',
+  title: '@/ui-kit/Button',
   decorators: [
     withRouter,
     (Story: any) => (

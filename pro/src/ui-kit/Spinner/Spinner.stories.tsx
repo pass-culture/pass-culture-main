@@ -4,7 +4,7 @@ import { withRouter } from 'storybook-addon-remix-react-router'
 import { Spinner } from './Spinner'
 
 export default {
-  title: 'ui-kit/Spinner',
+  title: '@/ui-kit/Spinner',
   decorators: [withRouter],
   component: Spinner,
 }

@@ -1,26 +1,27 @@
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { expect } from 'vitest'
+
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
   EacFormat,
   OfferContactFormEnum,
-} from 'apiClient/v1'
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+} from '@/apiClient//v1'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
+} from '@/commons/utils/factories/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { expect } from 'vitest'
+} from '@/commons/utils/renderWithProviders'
 
 import {
   CollectiveOfferSummary,
   CollectiveOfferSummaryProps,
 } from './CollectiveOfferSummary'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),

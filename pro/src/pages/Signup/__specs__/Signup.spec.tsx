@@ -1,20 +1,21 @@
-import { api } from 'apiClient/api'
 import { screen, waitFor } from '@testing-library/react'
-import { routesSignup } from 'app/AppRouter/subroutesSignupMap'
-import { getOffererNameFactory } from 'commons/utils/factories/individualApiFactories'
+import { Route, Routes } from 'react-router'
+
+import { api } from '@/apiClient//api'
+import { routesSignup } from '@/app/AppRouter/subroutesSignupMap'
+import { getOffererNameFactory } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { Route, Routes } from 'react-router'
+} from '@/commons/utils/renderWithProviders'
 
 import { Signup } from '../Signup'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getProfile: vi.fn(),
     listFeatures: vi.fn(),

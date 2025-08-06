@@ -1,7 +1,7 @@
 import cn from 'classnames'
 
-import strokeValidIcon from 'icons/stroke-valid.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import strokeValidIcon from '@/icons/stroke-valid.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './FieldSuccess.module.scss'
 

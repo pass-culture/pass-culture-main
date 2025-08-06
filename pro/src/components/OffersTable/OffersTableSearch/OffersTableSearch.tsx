@@ -1,17 +1,18 @@
 import cn from 'classnames'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useState } from 'react'
+
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import {
   FilterConfigType,
   getStoredFilterConfig,
   useStoredFilterConfig,
-} from 'components/OffersTable/OffersTableSearch/utils'
-import fullRefreshIcon from 'icons/full-refresh.svg'
-import { useState } from 'react'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { ButtonFilter } from 'ui-kit/ButtonFilter/ButtonFilter'
-import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
-import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
+} from '@/components/OffersTable/OffersTableSearch/utils'
+import fullRefreshIcon from '@/icons/full-refresh.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { ButtonFilter } from '@/ui-kit/ButtonFilter/ButtonFilter'
+import { BaseInput } from '@/ui-kit/form/shared/BaseInput/BaseInput'
+import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import styles from './OffersTableSearch.module.scss'
 

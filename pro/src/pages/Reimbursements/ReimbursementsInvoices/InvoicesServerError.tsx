@@ -1,5 +1,5 @@
-import strokeWipIcon from 'icons/stroke-wip.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import strokeWipIcon from '@/icons/stroke-wip.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './InvoicesServerError.module.scss'
 

@@ -1,18 +1,19 @@
-import { api } from 'apiClient/api'
-import { ApiError } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
-import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
-import * as useNotification from 'commons/hooks/useNotification'
+import { addDays } from 'date-fns'
+
+import { api } from '@/apiClient//api'
+import { ApiError } from '@/apiClient//v1'
+import { ApiRequestOptions } from '@/apiClient//v1/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient//v1/core/ApiResult'
+import { BOOKING_STATUS } from '@/commons/core/Bookings/constants'
+import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
+import * as useNotification from '@/commons/hooks/useNotification'
 import {
   collectiveBookingCollectiveStockFactory,
   collectiveBookingFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { addDays } from 'date-fns'
+} from '@/commons/utils/factories/collectiveApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   CollectiveActionButtons,
@@ -64,7 +65,7 @@ describe('collectiveActionButton api call', () => {
   const notifySuccess = vi.fn()
   beforeEach(async () => {
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

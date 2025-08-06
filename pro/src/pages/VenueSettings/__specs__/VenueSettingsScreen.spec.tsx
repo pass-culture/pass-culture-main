@@ -1,18 +1,19 @@
-import { api } from 'apiClient/api'
-import { VenueTypeResponseModel } from 'apiClient/v1'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
+import { expect } from 'vitest'
+
+import { api } from '@/apiClient//api'
+import { VenueTypeResponseModel } from '@/apiClient//v1'
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
   defaultVenueProvider,
-} from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { expect } from 'vitest'
+} from '@/commons/utils/renderWithProviders'
 
 import { VenueSettingsScreen } from '../VenueSettingsScreen'
 

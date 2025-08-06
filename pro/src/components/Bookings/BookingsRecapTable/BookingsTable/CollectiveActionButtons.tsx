@@ -1,19 +1,20 @@
-import { api } from 'apiClient/api'
-import { getErrorCode, isErrorAPIError } from 'apiClient/helpers'
-import { CollectiveBookingResponseModel } from 'apiClient/v1'
+import { useState } from 'react'
+import { useSWRConfig } from 'swr'
+
+import { api } from '@/apiClient//api'
+import { getErrorCode, isErrorAPIError } from '@/apiClient//helpers'
+import { CollectiveBookingResponseModel } from '@/apiClient//v1'
 import {
   GET_BOOKINGS_QUERY_KEY,
   GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
-import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
-import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
-import { useNotification } from 'commons/hooks/useNotification'
-import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
-import { useState } from 'react'
-import { useSWRConfig } from 'swr'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
+} from '@/commons/config/swrQueryKeys'
+import { BOOKING_STATUS } from '@/commons/core/Bookings/constants'
+import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './CollectiveActionButtons.module.scss'
 

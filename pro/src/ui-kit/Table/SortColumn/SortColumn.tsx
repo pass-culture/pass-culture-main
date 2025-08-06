@@ -1,9 +1,9 @@
 import cn from 'classnames'
 
-import { SortingMode } from 'commons/hooks/useColumnSorting'
-import fullDownIcon from 'icons/full-down.svg'
-import fullUpIcon from 'icons/full-up.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { SortingMode } from '@/commons/hooks/useColumnSorting'
+import fullDownIcon from '@/icons/full-down.svg'
+import fullUpIcon from '@/icons/full-up.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SortColumn.module.scss'
 

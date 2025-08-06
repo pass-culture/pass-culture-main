@@ -1,5 +1,6 @@
-import { getImageBitmap } from 'commons/utils/image'
 import { useEffect, useState } from 'react'
+
+import { getImageBitmap } from '@/commons/utils/image'
 
 export const useGetImageBitmap = (file?: File) => {
   const [width, setWidth] = useState<number>(0)

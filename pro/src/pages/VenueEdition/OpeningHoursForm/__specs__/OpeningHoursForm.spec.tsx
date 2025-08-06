@@ -1,10 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
-import { setInitialFormValues } from 'pages/VenueEdition/setInitialFormValues'
-import { VenueEditionFormValues } from 'pages/VenueEdition/types'
 import { FormProvider, useForm } from 'react-hook-form'
-import { Button } from 'ui-kit/Button/Button'
+
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
+import { setInitialFormValues } from '@/pages/VenueEdition/setInitialFormValues'
+import { VenueEditionFormValues } from '@/pages/VenueEdition/types'
+import { Button } from '@/ui-kit/Button/Button'
 
 import { OpeningHoursForm } from '../OpeningHoursForm'
 

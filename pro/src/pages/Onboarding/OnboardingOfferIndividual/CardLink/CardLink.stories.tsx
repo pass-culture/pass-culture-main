@@ -1,12 +1,13 @@
 import { StoryObj } from '@storybook/react'
-import strokeProfIcon from 'icons/stroke-prof.svg'
-import strokeThingIcon from 'icons/stroke-thing.svg'
 import { withRouter } from 'storybook-addon-remix-react-router'
+
+import strokeProfIcon from '@/icons/stroke-prof.svg'
+import strokeThingIcon from '@/icons/stroke-thing.svg'
 
 import { CardLink } from './CardLink'
 
 export default {
-  title: 'ui-kit/CardLink',
+  title: '@/ui-kit/CardLink',
   decorators: [withRouter],
   component: CardLink,
 }

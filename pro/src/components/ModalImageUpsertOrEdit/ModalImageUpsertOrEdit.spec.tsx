@@ -1,9 +1,9 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import * as imageUtils from 'commons/utils/image'
-import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import * as imageUtils from '@/commons/utils/image'
+import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   ModalImageUpsertOrEdit,

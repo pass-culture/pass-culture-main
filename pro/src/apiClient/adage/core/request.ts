@@ -1,6 +1,6 @@
 // overwrites request.ts to handle redirection to maintenance
 
-import { URL_FOR_MAINTENANCE } from 'commons/utils/config'
+import { URL_FOR_MAINTENANCE } from '@/commons/utils/config'
 import { ApiError } from './ApiError'
 import type { ApiRequestOptions } from './ApiRequestOptions'
 import type { ApiResult } from './ApiResult'

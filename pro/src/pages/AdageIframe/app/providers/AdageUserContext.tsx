@@ -1,4 +1,3 @@
-import { AuthenticatedResponse } from 'apiClient/adage'
 import {
   createContext,
   Dispatch,
@@ -7,6 +6,8 @@ import {
   useEffect,
   useState,
 } from 'react'
+
+import { AuthenticatedResponse } from '@/apiClient//adage'
 
 type AdageUserContextType = {
   adageUser: AuthenticatedResponse | null

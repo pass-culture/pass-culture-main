@@ -1,16 +1,17 @@
-import { Layout } from 'app/App/layout/Layout'
-import { Mode } from 'commons/core/OfferEducational/types'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { queryParamsFromOfferer } from 'commons/utils/queryParamsFromOfferer'
+import { useSelector } from 'react-redux'
+import { useLocation } from 'react-router'
+
+import { Layout } from '@/app/App/layout/Layout'
+import { Mode } from '@/commons/core/OfferEducational/types'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
 import {
   OptionalCollectiveOfferFromParamsProps,
   withOptionalCollectiveOfferFromParams,
-} from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
-import { useOfferEducationalFormData } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useOfferEducationalFormData'
-import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
-import { useSelector } from 'react-redux'
-import { useLocation } from 'react-router'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+} from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+import { useOfferEducationalFormData } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useOfferEducationalFormData'
+import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { OfferEducational } from '../components/OfferEducational/OfferEducational'
 

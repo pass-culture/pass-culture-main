@@ -1,4 +1,4 @@
-import { Option } from 'pages/AdageIframe/app/types'
+import { Option } from '@/pages/AdageIframe/app/types'
 
 export const domtomOptions = [
   { value: '971', label: '971 - Guadeloupe' },

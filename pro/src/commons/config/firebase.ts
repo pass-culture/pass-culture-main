@@ -6,7 +6,7 @@ import {
   FIREBASE_MESSAGING_SENDER_ID,
   FIREBASE_PROJECT_ID,
   FIREBASE_STORAGE_BUCKET,
-} from 'commons/utils/config'
+} from '@/commons/utils/config'
 
 export const firebaseConfig = {
   apiKey: FIREBASE_API_KEY,

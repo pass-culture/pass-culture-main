@@ -1,7 +1,7 @@
 import cn from 'classnames'
 
-import strokeDesk from 'icons/stroke-desk.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import strokeDesk from '@/icons/stroke-desk.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ChoosePreFiltersMessage.module.scss'
 

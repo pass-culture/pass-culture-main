@@ -1,30 +1,31 @@
-import { api } from 'apiClient/api'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import { beforeEach, expect } from 'vitest'
+import createFetchMock from 'vitest-fetch-mock'
+
+import { api } from '@/apiClient//api'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
   OfferAddressType,
-} from 'apiClient/v1'
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
+} from '@/apiClient//v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
   Events,
-} from 'commons/core/FirebaseEvents/constants'
-import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'commons/core/Offers/constants'
-import * as useNotification from 'commons/hooks/useNotification'
+} from '@/commons/core/FirebaseEvents/constants'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
+import * as useNotification from '@/commons/hooks/useNotification'
 import {
   collectiveOfferFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
   getCollectiveOfferVenueFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
-import { venueListItemFactory } from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import * as storageAvailable from 'commons/utils/storageAvailable'
-import { beforeEach, expect } from 'vitest'
-import createFetchMock from 'vitest-fetch-mock'
+} from '@/commons/utils/factories/collectiveApiFactories'
+import { venueListItemFactory } from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import * as storageAvailable from '@/commons/utils/storageAvailable'
 
 import {
   CollectiveActionsCells,
@@ -72,7 +73,7 @@ const renderCollectiveActionsCell = (
   )
 }
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     patchCollectiveOffersArchive: vi.fn(),
     createCollectiveOffer: vi.fn(),
@@ -95,7 +96,7 @@ describe('CollectiveActionsCells', () => {
 
   beforeEach(async () => {
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

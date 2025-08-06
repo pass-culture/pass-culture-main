@@ -1,22 +1,23 @@
-import { api } from 'apiClient/api'
+import { screen } from '@testing-library/react'
+
+import { api } from '@/apiClient//api'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
-} from 'apiClient/v1'
-import { screen } from '@testing-library/react'
+} from '@/apiClient//v1'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
+} from '@/commons/utils/factories/collectiveApiFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
-} from 'commons/utils/factories/userOfferersFactories'
+} from '@/commons/utils/factories/userOfferersFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { MandatoryCollectiveOfferFromParamsProps } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+} from '@/commons/utils/renderWithProviders'
+import { MandatoryCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
 import { CollectiveOfferSummaryCreation } from './CollectiveOfferSummaryCreation'
 
@@ -30,7 +31,7 @@ vi.mock('react-router', async () => ({
   default: vi.fn(),
 }))
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     listEducationalOfferers: vi.fn(),
     getCollectiveOffer: vi.fn(),

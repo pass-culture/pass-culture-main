@@ -1,10 +1,10 @@
-import { FormLayout } from 'components/FormLayout/FormLayout'
 import { useFormContext } from 'react-hook-form'
-import { PhoneNumberInput } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
+import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { EMAIL_LABEL } from '../../constants/labels'
-
 import styles from './FormContact.module.scss'
 
 interface FormContactProps {

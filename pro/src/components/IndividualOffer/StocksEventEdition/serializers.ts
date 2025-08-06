@@ -1,5 +1,8 @@
-import { isDateValid, toISOStringWithoutMilliseconds } from 'commons/utils/date'
-import { getUtcDateTimeFromLocalDepartement } from 'commons/utils/timezone'
+import {
+  isDateValid,
+  toISOStringWithoutMilliseconds,
+} from '@/commons/utils/date'
+import { getUtcDateTimeFromLocalDepartement } from '@/commons/utils/timezone'
 
 export const buildDateTime = (date: string, time: string) => {
   const hoursAndMinutes = time.split(':')

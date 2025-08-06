@@ -1,12 +1,13 @@
-import { api } from 'apiClient/api'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Layout } from 'app/App/layout/Layout'
-import { useNotification } from 'commons/hooks/useNotification'
-import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
 import { useCallback, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { Params, useNavigate, useParams } from 'react-router'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+
+import { api } from '@/apiClient//api'
+import { Layout } from '@/app/App/layout/Layout'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { useRedirectLoggedUser } from '@/commons/hooks/useRedirectLoggedUser'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ChangePasswordForm } from './ChangePasswordForm/ChangePasswordForm'
 import styles from './ResetPassword.module.scss'

@@ -3,7 +3,7 @@ import type { StoryObj } from '@storybook/react'
 import { Callout } from './Callout'
 
 export default {
-  title: 'ui-kit/Callout',
+  title: '@/ui-kit/Callout',
   component: Callout,
 }
 

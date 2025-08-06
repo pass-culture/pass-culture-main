@@ -1,24 +1,25 @@
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import { addDays } from 'date-fns'
+
 import {
   CollectiveBookingBankAccountStatus,
   CollectiveBookingByIdResponseModel,
   CollectiveBookingResponseModel,
-} from 'apiClient/v1'
-import { CollectiveBookingCancellationReasons } from 'apiClient/v1/models/CollectiveBookingCancellationReasons'
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
-import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
+} from '@/apiClient//v1'
+import { CollectiveBookingCancellationReasons } from '@/apiClient//v1/models/CollectiveBookingCancellationReasons'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { BOOKING_STATUS } from '@/commons/core/Bookings/constants'
+import { CollectiveBookingsEvents } from '@/commons/core/FirebaseEvents/constants'
 import {
   collectiveBookingByIdFactory,
   collectiveBookingCollectiveStockFactory,
   collectiveBookingFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
+} from '@/commons/utils/factories/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { addDays } from 'date-fns'
+} from '@/commons/utils/renderWithProviders'
 
 import { CollectiveTimeLine } from '../CollectiveTimeLine'
 
@@ -171,7 +172,7 @@ describe('collective timeline', () => {
   it('should log event when clicking modify booking limit date', async () => {
     const mockLogEvent = vi.fn()
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      ...vi.importActual('app/App/analytics/firebase'),
+      ...vi.importActual('@/app/App/analytics/firebase'),
       logEvent: mockLogEvent,
     }))
     const bookingRecap = collectiveBookingFactory({

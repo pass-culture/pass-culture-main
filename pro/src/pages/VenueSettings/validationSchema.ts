@@ -1,6 +1,7 @@
-import { checkCoords } from 'commons/utils/coords'
-import { emailSchema } from 'commons/utils/isValidEmail'
 import * as yup from 'yup'
+
+import { checkCoords } from '@/commons/utils/coords'
+import { emailSchema } from '@/commons/utils/isValidEmail'
 
 export const getValidationSchema = (isVenueVirtual: boolean) =>
   yup.object().shape({

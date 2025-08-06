@@ -1,5 +1,5 @@
-import { getProviderInfo } from 'commons/core/Providers/utils/getProviderInfo'
-import { Callout } from 'ui-kit/Callout/Callout'
+import { getProviderInfo } from '@/commons/core/Providers/utils/getProviderInfo'
+import { Callout } from '@/ui-kit/Callout/Callout'
 
 import styles from './SynchronizedProviderInformation.module.scss'
 

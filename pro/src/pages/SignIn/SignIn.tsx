@@ -1,23 +1,24 @@
-import { api } from 'apiClient/api'
-import { HTTP_STATUS, isErrorAPIError } from 'apiClient/helpers'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Layout } from 'app/App/layout/Layout'
-import {
-  RECAPTCHA_ERROR,
-  RECAPTCHA_ERROR_MESSAGE,
-} from 'commons/core/shared/constants'
-import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
-import { useNotification } from 'commons/hooks/useNotification'
-import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
-import { AppDispatch } from 'commons/store/store'
-import { updateUser } from 'commons/store/user/reducer'
-import { initializeUserThunk } from 'commons/store/user/thunks'
-import { getReCaptchaToken } from 'commons/utils/recaptcha'
-import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { Navigate, useSearchParams } from 'react-router'
+
+import { api } from '@/apiClient//api'
+import { HTTP_STATUS, isErrorAPIError } from '@/apiClient//helpers'
+import { Layout } from '@/app/App/layout/Layout'
+import {
+  RECAPTCHA_ERROR,
+  RECAPTCHA_ERROR_MESSAGE,
+} from '@/commons/core/shared/constants'
+import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { useRedirectLoggedUser } from '@/commons/hooks/useRedirectLoggedUser'
+import { AppDispatch } from '@/commons/store/store'
+import { updateUser } from '@/commons/store/user/reducer'
+import { initializeUserThunk } from '@/commons/store/user/thunks'
+import { getReCaptchaToken } from '@/commons/utils/recaptcha'
+import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
 import { SigninForm } from './SigninForm'

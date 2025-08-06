@@ -1,7 +1,8 @@
 import classnames from 'classnames'
-import { setIsStickyBarOpen } from 'commons/store/notifications/reducer'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
+
+import { setIsStickyBarOpen } from '@/commons/store/notifications/reducer'
 
 import style from './ActionsBarSticky.module.scss'
 import { Left } from './ActionsBarStickyLeft'

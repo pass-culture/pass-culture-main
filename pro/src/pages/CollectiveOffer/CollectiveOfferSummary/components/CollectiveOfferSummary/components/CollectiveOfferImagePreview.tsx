@@ -1,11 +1,12 @@
+import cn from 'classnames'
+
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from 'apiClient/v1'
-import cn from 'classnames'
-import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import strokeOfferIcon from 'icons/stroke-offer.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/apiClient//v1'
+import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
+import strokeOfferIcon from '@/icons/stroke-offer.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './CollectiveOfferImagePreview.module.scss'
 

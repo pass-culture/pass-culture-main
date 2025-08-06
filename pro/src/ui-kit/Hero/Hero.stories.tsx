@@ -4,7 +4,7 @@ import { withRouter } from 'storybook-addon-remix-react-router'
 import { Hero } from './Hero'
 
 export default {
-  title: 'components/Hero',
+  title: '@/components/Hero',
   component: Hero,
   decorators: [withRouter],
 }

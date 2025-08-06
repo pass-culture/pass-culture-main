@@ -1,33 +1,34 @@
-import { api } from 'apiClient/api'
+import { screen, waitFor, within } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import { computeAddressDisplayName } from 'repository/venuesService'
+import { expect } from 'vitest'
+
+import { api } from '@/apiClient//api'
 import {
   GetOffererAddressResponseModel,
   ListOffersOfferResponseModel,
   OfferStatus,
-} from 'apiClient/v1'
-import { screen, waitFor, within } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { HeadlineOfferContextProvider } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
+} from '@/apiClient//v1'
+import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   ALL_OFFERER_ADDRESS_OPTION,
   DEFAULT_SEARCH_FILTERS,
-} from 'commons/core/Offers/constants'
-import { SearchFiltersParams } from 'commons/core/Offers/types'
-import * as useNotification from 'commons/hooks/useNotification'
+} from '@/commons/core/Offers/constants'
+import { SearchFiltersParams } from '@/commons/core/Offers/types'
+import * as useNotification from '@/commons/hooks/useNotification'
 import {
   listOffersOfferFactory,
   venueListItemFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { offererAddressFactory } from 'commons/utils/factories/offererAddressFactories'
+} from '@/commons/utils/factories/individualApiFactories'
+import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { computeAddressDisplayName } from 'repository/venuesService'
-import { expect } from 'vitest'
+} from '@/commons/utils/renderWithProviders'
 
 import {
   IndividualOffersContainer,
@@ -83,16 +84,16 @@ const offererAddressOptions = [
   { value: '2', label: '1 rue de paris 75001 New York' },
 ]
 
-vi.mock('commons/utils/date', async () => {
+vi.mock('@/commons/utils/date', async () => {
   return {
-    ...(await vi.importActual('commons/utils/date')),
+    ...(await vi.importActual('@/commons/utils/date')),
     getToday: vi
       .fn()
       .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
   }
 })
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     listOfferersNames: vi.fn().mockReturnValue({}),
     deleteDraftOffers: vi.fn(),
@@ -125,7 +126,7 @@ describe('IndividualOffersScreen', () => {
     }
 
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

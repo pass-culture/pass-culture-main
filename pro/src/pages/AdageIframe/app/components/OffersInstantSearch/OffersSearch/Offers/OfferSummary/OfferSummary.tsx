@@ -2,18 +2,18 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
   OfferAddressType,
-} from 'apiClient/adage'
-import { formatLocalTimeDateString } from 'commons/utils/timezone'
-import buildingStrokeIcon from 'icons/stroke-building.svg'
-import strokeCalendarIcon from 'icons/stroke-calendar.svg'
-import strokeDateIcon from 'icons/stroke-date.svg'
-import strokeEuroIcon from 'icons/stroke-euro.svg'
-import strokeLocationIcon from 'icons/stroke-location.svg'
-import strokeOfferIcon from 'icons/stroke-offer.svg'
-import strokeUserIcon from 'icons/stroke-user.svg'
-import { getFormattedDatesForTemplateOffer } from 'pages/AdageIframe/app/components/OfferInfos/AdageOffer/utils/adageOfferDates'
-import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/apiClient//adage'
+import { formatLocalTimeDateString } from '@/commons/utils/timezone'
+import buildingStrokeIcon from '@/icons/stroke-building.svg'
+import strokeCalendarIcon from '@/icons/stroke-calendar.svg'
+import strokeDateIcon from '@/icons/stroke-date.svg'
+import strokeEuroIcon from '@/icons/stroke-euro.svg'
+import strokeLocationIcon from '@/icons/stroke-location.svg'
+import strokeOfferIcon from '@/icons/stroke-offer.svg'
+import strokeUserIcon from '@/icons/stroke-user.svg'
+import { getFormattedDatesForTemplateOffer } from '@/pages/AdageIframe/app/components/OfferInfos/AdageOffer/utils/adageOfferDates'
+import { isCollectiveOfferTemplate } from '@/pages/AdageIframe/app/types'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './OfferSummary.module.scss'
 

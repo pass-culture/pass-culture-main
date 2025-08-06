@@ -1,35 +1,36 @@
-import { api } from 'apiClient/api'
+import cn from 'classnames'
+import { useSelector } from 'react-redux'
+import { useSWRConfig } from 'swr'
+
+import { api } from '@/apiClient//api'
 import {
   CollectiveBookingStatus,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from 'apiClient/v1'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import cn from 'classnames'
+} from '@/apiClient//v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
-import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
-import { isCollectiveOffer, Mode } from 'commons/core/OfferEducational/types'
-import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+} from '@/commons/config/swrQueryKeys'
+import { CollectiveBookingsEvents } from '@/commons/core/FirebaseEvents/constants'
+import { isCollectiveOffer, Mode } from '@/commons/core/OfferEducational/types'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
-} from 'commons/utils/date'
-import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
-import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/CollectiveStatusLabel'
-import fullHideIcon from 'icons/full-hide.svg'
-import fullNextIcon from 'icons/full-next.svg'
-import strokeCheckIcon from 'icons/stroke-check.svg'
-import { useSelector } from 'react-redux'
-import { useSWRConfig } from 'swr'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+} from '@/commons/utils/date'
+import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
+import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
+import fullHideIcon from '@/icons/full-hide.svg'
+import fullNextIcon from '@/icons/full-next.svg'
+import strokeCheckIcon from '@/icons/stroke-check.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 
 import style from './OfferEducationalActions.module.scss'
 

@@ -1,4 +1,4 @@
-import { GetIndividualOfferResponseModel, OfferStatus } from 'apiClient/v1'
+import { GetIndividualOfferResponseModel, OfferStatus } from '@/apiClient//v1'
 
 export const getStockWarningText = (offer: GetIndividualOfferResponseModel) => {
   if (!offer.hasStocks) {

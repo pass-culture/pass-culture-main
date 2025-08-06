@@ -1,29 +1,33 @@
-import { api } from 'apiClient/api'
-import { OfferContactFormEnum } from 'apiClient/v1'
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useNotification from 'commons/hooks/useNotification'
+import { sub } from 'date-fns'
+
+import { api } from '@/apiClient//api'
+import { OfferContactFormEnum } from '@/apiClient//v1'
+import * as useNotification from '@/commons/hooks/useNotification'
 import {
   defaultGetVenue,
   getCollectiveOfferCollectiveStockFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/utils/factories/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { sub } from 'date-fns'
+} from '@/commons/utils/renderWithProviders'
 
 import {
   CollectiveOfferPreviewCreationScreen,
   CollectiveOfferSummaryCreationProps,
 } from '../CollectiveOfferPreviewCreationScreen'
 
-vi.mock('commons/core/OfferEducational/utils/createOfferFromTemplate', () => ({
-  createOfferFromTemplate: vi.fn(),
-}))
+vi.mock(
+  '@/commons/core/OfferEducational/utils/createOfferFromTemplate',
+  () => ({
+    createOfferFromTemplate: vi.fn(),
+  })
+)
 
 const renderCollectiveOfferPreviewCreation = (
   props: CollectiveOfferSummaryCreationProps,
@@ -46,7 +50,7 @@ describe('CollectiveOfferConfirmation', () => {
 
   beforeEach(async () => {
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

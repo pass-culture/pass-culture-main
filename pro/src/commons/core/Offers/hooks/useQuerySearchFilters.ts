@@ -1,8 +1,9 @@
-import { Audience } from 'commons/core/shared/types'
-import { parseUrlParams } from 'commons/utils/parseUrlParams'
-import { translateQueryParamsToApiParams } from 'commons/utils/translate'
 import { useMemo } from 'react'
 import { useLocation } from 'react-router'
+
+import { Audience } from '@/commons/core/shared/types'
+import { parseUrlParams } from '@/commons/utils/parseUrlParams'
+import { translateQueryParamsToApiParams } from '@/commons/utils/translate'
 
 import { CollectiveSearchFiltersParams, SearchFiltersParams } from '../types'
 

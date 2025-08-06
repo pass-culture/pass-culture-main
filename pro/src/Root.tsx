@@ -1,8 +1,9 @@
-import { AppRouter } from 'app/AppRouter/AppRouter'
-import { StoreProvider } from 'commons/store/StoreProvider/StoreProvider'
-import { createStore } from 'commons/store/store'
-import { PageTitleAnnouncer } from 'components/PageTitleAnnouncer/PageTitleAnnouncer'
 import { Provider } from 'react-redux'
+
+import { AppRouter } from '@/app/AppRouter/AppRouter'
+import { StoreProvider } from '@/commons/store/StoreProvider/StoreProvider'
+import { createStore } from '@/commons/store/store'
+import { PageTitleAnnouncer } from '@/components/PageTitleAnnouncer/PageTitleAnnouncer'
 
 interface RootProps {
   isAdageIframe: boolean

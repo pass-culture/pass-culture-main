@@ -17,7 +17,7 @@ const Wrapper = ({ children }: PropsWithChildren) => {
 }
 
 const meta: Meta<typeof Select> = {
-  title: 'ui-kit/formsV2/Select',
+  title: '@/ui-kit/formsV2/Select',
   component: Select,
 }
 

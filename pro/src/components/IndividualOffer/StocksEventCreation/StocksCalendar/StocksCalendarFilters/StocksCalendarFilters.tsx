@@ -1,16 +1,15 @@
-import { StocksOrderedBy } from 'apiClient/v1'
-import { PriceCategoryResponseModel } from 'apiClient/v1/models/PriceCategoryResponseModel'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
-import { getPriceCategoryOptions } from 'components/IndividualOffer/PriceCategoriesScreen/form/getPriceCategoryOptions'
-import fullRefreshIcon from 'icons/full-refresh.svg'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
-import { Select } from 'ui-kit/form/Select/Select'
-import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
+import { StocksOrderedBy } from '@/apiClient//v1'
+import { PriceCategoryResponseModel } from '@/apiClient//v1/models/PriceCategoryResponseModel'
+import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { getPriceCategoryOptions } from '@/components/IndividualOffer/PriceCategoriesScreen/form/getPriceCategoryOptions'
+import fullRefreshIcon from '@/icons/full-refresh.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
+import { Select } from '@/ui-kit/form/Select/Select'
+import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 
 import { StocksTableFilters, StocksTableSort } from '../../form/types'
-
 import styles from './StocksCalendarFilters.module.scss'
 
 export type StocksCalendarFiltersProps = {

@@ -3,10 +3,10 @@ import cn from 'classnames'
 import {
   UploaderModeEnum,
   UploadImageValues,
-} from 'commons/utils/imageUploadTypes'
-import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
-import { ImagePlaceholder } from 'components/SafeImage/ImagePlaceholder/ImagePlaceholder'
-import { SafeImage } from 'components/SafeImage/SafeImage'
+} from '@/commons/utils/imageUploadTypes'
+import { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import { ImagePlaceholder } from '@/components/SafeImage/ImagePlaceholder/ImagePlaceholder'
+import { SafeImage } from '@/components/SafeImage/SafeImage'
 
 import { ButtonImageDelete } from './components/ButtonImageDelete/ButtonImageDelete'
 import { ButtonImageEdit } from './components/ButtonImageEdit/ButtonImageEdit'

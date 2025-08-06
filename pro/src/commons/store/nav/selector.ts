@@ -1,4 +1,4 @@
-import { RootState } from 'commons/store/rootReducer'
+import { RootState } from '@/commons/store/rootReducer'
 
 export const selectIsIndividualSectionOpen = (state: RootState) =>
   state.nav.isIndividualSectionOpen

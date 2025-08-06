@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-import buttonStyle from 'ui-kit/Button/Button.module.scss'
+import buttonStyle from '@/ui-kit/Button/Button.module.scss'
 
 import style from './BaseFileInput.module.scss'
 

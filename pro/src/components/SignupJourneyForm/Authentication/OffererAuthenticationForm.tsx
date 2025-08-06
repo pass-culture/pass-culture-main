@@ -1,19 +1,19 @@
-import { Address } from 'commons/core/shared/types'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { resetReactHookFormAddressFields } from 'commons/utils/resetAddressFields'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { OpenToPublicToggle } from 'components/OpenToPublicToggle/OpenToPublicToggle'
-import fullBackIcon from 'icons/full-back.svg'
-import fullNextIcon from 'icons/full-next.svg'
 import { useFormContext } from 'react-hook-form'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { AddressManual } from 'ui-kit/form/AddressManual/AddressManual'
-import { AddressSelect } from 'ui-kit/form/AddressSelect/AddressSelect'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+
+import { Address } from '@/commons/core/shared/types'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { OpenToPublicToggle } from '@/components/OpenToPublicToggle/OpenToPublicToggle'
+import fullBackIcon from '@/icons/full-back.svg'
+import fullNextIcon from '@/icons/full-next.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
+import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
+import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { OffererFormValues } from '../Offerer/Offerer'
-
 import styles from './OffererAuthenticationForm.module.scss'
 
 export interface OffererAuthenticationFormValues

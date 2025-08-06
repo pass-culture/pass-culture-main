@@ -1,8 +1,9 @@
-import { Layout } from 'app/App/layout/Layout'
 import cn from 'classnames'
-import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import { type ReactNode } from 'react'
 import { Navigate } from 'react-router'
+
+import { Layout } from '@/app/App/layout/Layout'
+import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 
 import styles from './OnboardingLayout.module.scss'
 

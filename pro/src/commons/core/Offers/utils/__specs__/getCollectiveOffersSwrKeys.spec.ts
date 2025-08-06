@@ -1,4 +1,4 @@
-import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'commons/core/Offers/constants'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 
 import {
   GetCollectiveOffersSwrKeysProps,

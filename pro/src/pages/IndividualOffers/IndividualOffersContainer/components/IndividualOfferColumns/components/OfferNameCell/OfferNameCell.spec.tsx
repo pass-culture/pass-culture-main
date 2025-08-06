@@ -1,17 +1,18 @@
-import { OfferStatus } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
-import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
+
+import { OfferStatus } from '@/apiClient//v1'
+import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
+import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   listOffersOfferFactory,
   listOffersStockFactory,
-} from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/utils/factories/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { formatLocalTimeDateString } from 'commons/utils/timezone'
+} from '@/commons/utils/renderWithProviders'
+import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 
 import { OfferNameCell, OfferNameCellProps } from './OfferNameCell'
 

@@ -1,4 +1,4 @@
-import { NotificationTypeEnum } from 'commons/hooks/useNotification'
+import { NotificationTypeEnum } from '@/commons/hooks/useNotification'
 
 import {
   closeNotification,

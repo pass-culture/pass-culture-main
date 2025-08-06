@@ -1,11 +1,12 @@
 import { screen } from '@testing-library/react'
+import { Route, Routes } from 'react-router'
+
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { individualOfferContextValuesFactory } from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Route, Routes } from 'react-router'
+} from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { individualOfferContextValuesFactory } from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { PriceCategories } from '../PriceCategories'
 

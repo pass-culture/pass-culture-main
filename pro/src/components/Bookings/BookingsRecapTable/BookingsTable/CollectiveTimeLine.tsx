@@ -1,23 +1,24 @@
+import { addDays, isBefore, max } from 'date-fns'
+
 import {
   CollectiveBookingBankAccountStatus,
   CollectiveBookingByIdResponseModel,
   CollectiveBookingResponseModel,
-} from 'apiClient/v1'
-import { CollectiveBookingCancellationReasons } from 'apiClient/v1/models/CollectiveBookingCancellationReasons'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
-import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
-import { getDateToFrenchText } from 'commons/utils/date'
-import { addDays, isBefore, max } from 'date-fns'
-import fullEditIcon from 'icons/full-edit.svg'
-import fullLinkIcon from 'icons/full-link.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
+} from '@/apiClient//v1'
+import { CollectiveBookingCancellationReasons } from '@/apiClient//v1/models/CollectiveBookingCancellationReasons'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { BOOKING_STATUS } from '@/commons/core/Bookings/constants'
+import { CollectiveBookingsEvents } from '@/commons/core/FirebaseEvents/constants'
+import { getDateToFrenchText } from '@/commons/utils/date'
+import fullEditIcon from '@/icons/full-edit.svg'
+import fullLinkIcon from '@/icons/full-link.svg'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 import {
   Timeline,
   TimelineStep,
   TimelineStepType,
-} from 'ui-kit/Timeline/Timeline'
+} from '@/ui-kit/Timeline/Timeline'
 
 import styles from './CollectiveTimeLine.module.scss'
 

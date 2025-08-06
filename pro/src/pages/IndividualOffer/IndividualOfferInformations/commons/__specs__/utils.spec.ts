@@ -1,17 +1,18 @@
+import { computeAddressDisplayName } from 'repository/venuesService'
+
 import {
   GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
   VenueListItemResponseModel,
   WithdrawalTypeEnum,
-} from 'apiClient/v1'
-import { AccessibilityEnum } from 'commons/core/shared/types'
-import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
+} from '@/apiClient//v1'
+import { AccessibilityEnum } from '@/commons/core/shared/types'
+import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
   venueListItemFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
-import { computeAddressDisplayName } from 'repository/venuesService'
+} from '@/commons/utils/factories/individualApiFactories'
+import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
 
 import { DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES } from '../constants'
 import { getFormReadOnlyFields, getInitialValuesFromOffer } from '../utils'

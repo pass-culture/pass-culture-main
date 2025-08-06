@@ -1,8 +1,8 @@
 import {
   CollectiveSearchFiltersParams,
   SearchFiltersParams,
-} from 'commons/core/Offers/types'
-import { storageAvailable } from 'commons/utils/storageAvailable'
+} from '@/commons/core/Offers/types'
+import { storageAvailable } from '@/commons/utils/storageAvailable'
 
 export type SelectedFilters =
   | Partial<SearchFiltersParams>

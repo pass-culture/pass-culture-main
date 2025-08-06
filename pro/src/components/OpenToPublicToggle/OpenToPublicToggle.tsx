@@ -1,4 +1,4 @@
-import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
+import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 
 export interface OpenToPublicToggleProps {
   className?: string

@@ -2,16 +2,17 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
-import { Button } from 'ui-kit/Button/Button'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import * as yup from 'yup'
+
+import { Button } from '@/ui-kit/Button/Button'
+import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { ScrollToFirstHookFormErrorAfterSubmit } from './ScrollToFirstErrorAfterSubmit'
 
 const scrollIntoViewMock = vi.fn()
 const onSubmit = vi.fn()
 
-vi.mock('commons/utils/windowMatchMedia', () => ({
+vi.mock('@/commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 

@@ -1,9 +1,10 @@
-import fullNextIcon from 'icons/full-next.svg'
 import { ForwardedRef, forwardRef, useState } from 'react'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
-import { suggestEmail } from 'ui-kit/form/EmailSpellCheckInput/suggestEmail'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+
+import fullNextIcon from '@/icons/full-next.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
+import { suggestEmail } from '@/ui-kit/form/EmailSpellCheckInput/suggestEmail'
+import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import styles from './EmailSpellCheckInput.module.scss'
 

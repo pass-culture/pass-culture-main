@@ -1,33 +1,34 @@
-import { api } from 'apiClient/api'
+import { screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import { Route, Routes } from 'react-router'
+
+import { api } from '@/apiClient//api'
 import {
   ApiError,
   GetIndividualOfferResponseModel,
   GetIndividualOfferWithAddressResponseModel,
-} from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+} from '@/apiClient//v1'
+import { ApiRequestOptions } from '@/apiClient//v1/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient//v1/core/ApiResult'
+import { IndividualOfferContextProvider } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
+} from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
-} from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { PATCH_SUCCESS_MESSAGE } from 'commons/core/shared/constants'
+} from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { PATCH_SUCCESS_MESSAGE } from '@/commons/core/shared/constants'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
   listOffersOfferFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
-import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
-import { Route, Routes } from 'react-router'
+} from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
+import { Stocks } from '@/pages/IndividualOfferWizard/Stocks/Stocks'
 
 vi.mock('screens/IndividualOffer/Informations/utils', () => {
   return {
@@ -39,9 +40,9 @@ vi.mock('repository/pcapi/pcapi', () => ({
   postThumbnail: vi.fn(),
 }))
 
-vi.mock('commons/utils/date', async () => {
+vi.mock('@/commons/utils/date', async () => {
   return {
-    ...(await vi.importActual('commons/utils/date')),
+    ...(await vi.importActual('@/commons/utils/date')),
     getToday: vi
       .fn()
       .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),

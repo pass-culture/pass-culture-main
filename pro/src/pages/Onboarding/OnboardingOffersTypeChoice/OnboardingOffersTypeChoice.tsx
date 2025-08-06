@@ -1,8 +1,7 @@
-import { MainHeading } from 'app/App/layout/Layout'
-import { OnboardingOffersChoice } from 'components/OnboardingOffersChoice/OnboardingOffersChoice'
+import { MainHeading } from '@/app/App/layout/Layout'
+import { OnboardingOffersChoice } from '@/components/OnboardingOffersChoice/OnboardingOffersChoice'
 
 import { OnboardingLayout } from '../components/OnboardingLayout/OnboardingLayout'
-
 import styles from './OnboardingOffersTypeChoice.module.scss'
 
 export const OnboardingOffersTypeChoice = () => {

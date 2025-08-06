@@ -1,17 +1,18 @@
-import { api } from 'apiClient/api'
-import { SubcategoryIdEnum } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+
+import { api } from '@/apiClient//api'
+import { SubcategoryIdEnum } from '@/apiClient//v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { REIMBURSEMENT_RULES } from 'commons/core/Finances/constants'
+} from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import {
   CATEGORY_STATUS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
+} from '@/commons/core/Offers/constants'
+import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   categoryFactory,
   getIndividualOfferFactory,
@@ -19,12 +20,12 @@ import {
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/renderWithProviders'
 
 import {
   IndividualOfferInformationsScreen,
@@ -47,7 +48,7 @@ const renderUsefulInformationScreen = (
   )
 }
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getVenues: vi.fn().mockResolvedValue({
       venues: [],
@@ -306,7 +307,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
   describe('ConfirmDialog', () => {
     beforeEach(() => {
       // Should appear only in edition mode, and if offer has pending bookings
-      vi.mock('commons/hooks/useOfferWizardMode', () => ({
+      vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
         useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.EDITION),
       }))
       offlineOfferProps.offer.hasPendingBookings = true

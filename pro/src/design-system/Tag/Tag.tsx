@@ -1,9 +1,9 @@
 import cx from 'classnames'
 
-import bookIcon from 'icons/full-book.svg'
-import headlineIcon from 'icons/full-boosted.svg'
-import likeIcon from 'icons/full-thumb-up.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import bookIcon from '@/icons/full-book.svg'
+import headlineIcon from '@/icons/full-boosted.svg'
+import likeIcon from '@/icons/full-thumb-up.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Tag.module.scss'
 

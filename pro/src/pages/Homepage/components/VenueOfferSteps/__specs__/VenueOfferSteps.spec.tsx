@@ -3,12 +3,12 @@ import { screen } from '@testing-library/react'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-} from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/utils/factories/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import * as venueUtils from 'pages/Homepage/components/Offerers/components/VenueList/venueUtils'
+} from '@/commons/utils/renderWithProviders'
+import * as venueUtils from '@/pages/Homepage/components/Offerers/components/VenueList/venueUtils'
 
 import { VenueOfferSteps, VenueOfferStepsProps } from '../VenueOfferSteps'
 

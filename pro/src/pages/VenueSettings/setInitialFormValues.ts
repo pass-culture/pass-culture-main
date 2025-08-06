@@ -1,5 +1,5 @@
-import { GetVenueResponseModel } from 'apiClient/v1'
-import { humanizeSiret } from 'commons/core/Venue/utils'
+import { GetVenueResponseModel } from '@/apiClient//v1'
+import { humanizeSiret } from '@/commons/core/Venue/utils'
 
 import { VenueSettingsFormValues } from './types'
 

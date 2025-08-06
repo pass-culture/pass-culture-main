@@ -1,20 +1,20 @@
 import { screen } from '@testing-library/react'
 
-import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
+import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/storeFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
-} from 'commons/utils/factories/userOfferersFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { MandatoryCollectiveOfferFromParamsProps } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+} from '@/commons/utils/factories/userOfferersFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { MandatoryCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
 import { CollectiveOfferStockEdition } from '../CollectiveOfferStockEdition'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {},
 }))
 

@@ -1,15 +1,15 @@
-import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { getHumanizeRelativeDistance } from 'commons/utils/getDistance'
-import { Tag, TagVariant } from 'design-system/Tag/Tag'
-import strokeOfferIcon from 'icons/stroke-offer.svg'
-import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import { CollectiveOfferTemplateResponseModel } from '@/apiClient//adage'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { getHumanizeRelativeDistance } from '@/commons/utils/getDistance'
+import { Tag, TagVariant } from '@/design-system/Tag/Tag'
+import strokeOfferIcon from '@/icons/stroke-offer.svg'
+import { useAdageUser } from '@/pages/AdageIframe/app/hooks/useAdageUser'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { OfferFavoriteButton } from '../../OffersInstantSearch/OffersSearch/Offers/OfferFavoriteButton/OfferFavoriteButton'
 import { getOfferTags } from '../../OffersInstantSearch/OffersSearch/Offers/utils/getOfferTags'
-
 import styles from './OfferCard.module.scss'
 
 export interface CardComponentProps {

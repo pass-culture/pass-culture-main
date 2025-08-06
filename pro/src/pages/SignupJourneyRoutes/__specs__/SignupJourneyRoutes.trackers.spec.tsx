@@ -1,15 +1,16 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Route, Routes } from 'react-router'
+
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { routesSignupJourney } from '@/app/AppRouter/subroutesSignupJourneyMap'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { SignupJourneyRoutes } from '../SignupJourneyRoutes'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getVenueTypes: vi.fn(),
     signout: vi.fn(),

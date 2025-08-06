@@ -4,7 +4,7 @@ import {
   giveSortingModeForAlly,
   SortingMode,
   useColumnSorting,
-} from 'commons/hooks/useColumnSorting'
+} from '@/commons/hooks/useColumnSorting'
 
 enum SomeColumns {
   COLUMN_1 = 'column1',

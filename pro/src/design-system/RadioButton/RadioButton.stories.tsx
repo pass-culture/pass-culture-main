@@ -1,14 +1,14 @@
 import { StoryObj } from '@storybook/react'
-import { TagVariant } from 'design-system/Tag/Tag'
-import strokeDateIcon from 'icons/stroke-date.svg'
 import { withRouter } from 'storybook-addon-remix-react-router'
 
-import imageDemo from '../assets/dog.jpg'
+import { TagVariant } from '@/design-system/Tag/Tag'
+import strokeDateIcon from '@/icons/stroke-date.svg'
 
+import imageDemo from '../assets/dog.jpg'
 import { RadioButton } from './RadioButton'
 
 export default {
-  title: 'design-system/RadioButton',
+  title: '@/design-system/RadioButton',
   decorators: [withRouter],
   argTypes: {
     checked: {

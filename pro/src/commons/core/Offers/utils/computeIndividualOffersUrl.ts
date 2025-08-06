@@ -1,6 +1,6 @@
-import { DEFAULT_SEARCH_FILTERS } from 'commons/core/Offers/constants'
-import { stringify } from 'commons/utils/query-string'
-import { translateApiParamsToQueryParams } from 'commons/utils/translate'
+import { DEFAULT_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
+import { stringify } from '@/commons/utils/query-string'
+import { translateApiParamsToQueryParams } from '@/commons/utils/translate'
 
 import { Audience } from '../../shared/types'
 import { SearchFiltersParams } from '../types'

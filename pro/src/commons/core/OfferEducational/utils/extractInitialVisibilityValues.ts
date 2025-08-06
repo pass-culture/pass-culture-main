@@ -3,8 +3,8 @@ import {
   EducationalInstitutionResponseModel,
   EducationalRedactorResponseModel,
   GetCollectiveOfferRequestResponseModel,
-} from 'apiClient/v1'
-import { VisibilityFormValues } from 'pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
+} from '@/apiClient//v1'
+import { VisibilityFormValues } from '@/pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
 
 export const formatInstitutionDisplayName = (
   institution:

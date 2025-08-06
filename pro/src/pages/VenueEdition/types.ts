@@ -1,4 +1,4 @@
-import { AccessibilityFormValues } from 'commons/core/shared/types'
+import { AccessibilityFormValues } from '@/commons/core/shared/types'
 
 export type DayValues = {
   morningStartingHour: string

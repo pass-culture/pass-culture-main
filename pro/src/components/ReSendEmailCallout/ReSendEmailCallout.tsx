@@ -1,7 +1,7 @@
-import { useNotification } from 'commons/hooks/useNotification'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { Callout } from 'ui-kit/Callout/Callout'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Callout } from '@/ui-kit/Callout/Callout'
 
 import styles from './ReSendEmailCallout.module.scss'
 

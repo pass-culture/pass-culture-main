@@ -1,8 +1,8 @@
 /* istanbul ignore file */
 import React, { useState } from 'react'
 
-import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { BaseInput } from '@/ui-kit/form/shared/BaseInput/BaseInput'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Icons.module.scss'
 import { fullIcons, otherIcons, strokeIcons } from './iconsList'
@@ -127,5 +127,5 @@ export const Icons = () => {
 }
 
 export default {
-  title: 'icons/Icons',
+  title: '@/icons/Icons',
 }

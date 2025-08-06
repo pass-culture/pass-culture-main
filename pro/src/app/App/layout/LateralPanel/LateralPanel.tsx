@@ -1,11 +1,12 @@
 import classnames from 'classnames'
-import { SideNavLinks } from 'components/SideNavLinks/SideNavLinks'
-import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
-import strokeCloseIcon from 'icons/stroke-close.svg'
 import { useEffect } from 'react'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import { SideNavLinks } from '@/components/SideNavLinks/SideNavLinks'
+import logoPassCultureProIcon from '@/icons/logo-pass-culture-pro.svg'
+import strokeCloseIcon from '@/icons/stroke-close.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './LateralPanel.module.scss'
 

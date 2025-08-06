@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { ForwardedRef, forwardRef, useId } from 'react'
 
-import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
+import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 
 import styles from './IconRadio.module.scss'
 

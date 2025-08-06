@@ -1,21 +1,22 @@
+import { computeAddressDisplayName } from 'repository/venuesService'
+
 import {
   GetIndividualOfferResponseModel,
   type GetIndividualOfferWithAddressResponseModel,
   SubcategoryResponseModel,
   VenueListItemResponseModel,
   WithdrawalTypeEnum,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
-} from 'commons/core/Offers/constants'
-import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
+} from '@/commons/core/Offers/constants'
+import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import {
   FORM_DEFAULT_VALUES,
   OFFER_LOCATION,
-} from 'pages/IndividualOffer/commons/constants'
-import { getAccessibilityFormValuesFromOffer } from 'pages/IndividualOffer/IndividualOfferDetails/commons/utils'
-import { computeAddressDisplayName } from 'repository/venuesService'
+} from '@/pages/IndividualOffer/commons/constants'
+import { getAccessibilityFormValuesFromOffer } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 
 import { DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES } from './constants'
 import { UsefulInformationFormValues } from './types'

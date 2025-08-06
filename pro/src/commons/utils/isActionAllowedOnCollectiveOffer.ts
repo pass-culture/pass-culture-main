@@ -4,11 +4,11 @@ import {
   CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
-} from 'commons/core/OfferEducational/types'
+} from '@/commons/core/OfferEducational/types'
 
 export function isActionAllowedOnCollectiveOffer(
   offer:

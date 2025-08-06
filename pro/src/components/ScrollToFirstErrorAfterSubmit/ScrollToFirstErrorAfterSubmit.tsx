@@ -1,6 +1,7 @@
-import { doesUserPreferReducedMotion } from 'commons/utils/windowMatchMedia'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
+
+import { doesUserPreferReducedMotion } from '@/commons/utils/windowMatchMedia'
 
 const scrollToFirstError = () => {
   const scrollBehavior = doesUserPreferReducedMotion() ? 'auto' : 'smooth'

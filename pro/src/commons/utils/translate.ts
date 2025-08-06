@@ -1,7 +1,8 @@
-import { CollectiveOfferDisplayedStatus, OfferStatus } from 'apiClient/v1'
-import { SearchFiltersParams } from 'commons/core/Offers/types'
-import { Audience } from 'commons/core/shared/types'
 import invert from 'lodash/invert'
+
+import { CollectiveOfferDisplayedStatus, OfferStatus } from '@/apiClient//v1'
+import { SearchFiltersParams } from '@/commons/core/Offers/types'
+import { Audience } from '@/commons/core/shared/types'
 
 const translateObjectKeysAndValues = (
   originalObject: Record<string, any>,

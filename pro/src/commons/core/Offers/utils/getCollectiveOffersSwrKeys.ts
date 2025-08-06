@@ -2,7 +2,7 @@ import {
   GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY,
   GET_COLLECTIVE_OFFERS_QUERY_KEY,
   GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
+} from '@/commons/config/swrQueryKeys'
 
 import {
   DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,

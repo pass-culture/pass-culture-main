@@ -1,13 +1,13 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import type { StoryObj } from '@storybook/react'
 
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { DialogBuilder } from './DialogBuilder'
 
 export default {
-  title: 'ui-kit/DialogBuilder',
+  title: '@/ui-kit/DialogBuilder',
   component: DialogBuilder,
 }
 

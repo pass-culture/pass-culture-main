@@ -1,18 +1,19 @@
-import { api } from 'apiClient/api'
-import { OfferAddressType } from 'apiClient/v1'
 import { screen, waitFor } from '@testing-library/react'
-import * as useNotification from 'commons/hooks/useNotification'
+
+import { api } from '@/apiClient//api'
+import { OfferAddressType } from '@/apiClient//v1'
+import * as useNotification from '@/commons/hooks/useNotification'
 import {
   defaultGetVenue,
   getCollectiveOfferTemplateFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import * as getInterventionAreaLabels from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
+} from '@/commons/utils/factories/collectiveApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import * as getInterventionAreaLabels from '@/pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
 
 import { OldCollectiveOfferLocationSection } from '../OldCollectiveOfferLocationSection'
 import * as formatOfferEventAddress from '../utils/formatOfferEventAddress'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getVenue: vi.fn(),
   },
@@ -27,7 +28,7 @@ describe('CollectiveOfferLocationSection', () => {
     })
 
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

@@ -1,17 +1,18 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
 
-import {
-  FeatureResponseModel,
-  SharedCurrentUserResponseModel,
-} from 'apiClient/v1'
 import { render } from '@testing-library/react'
-import { DeepPartial } from 'commons/custom_types/utils'
-import { RootState } from 'commons/store/rootReducer'
-import { configureTestStore } from 'commons/store/testUtils'
 import { ReactNode } from 'react'
 import { Provider } from 'react-redux'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { SWRConfig } from 'swr'
+
+import {
+  FeatureResponseModel,
+  SharedCurrentUserResponseModel,
+} from '@/apiClient//v1'
+import { DeepPartial } from '@/commons/custom_types/utils'
+import { RootState } from '@/commons/store/rootReducer'
+import { configureTestStore } from '@/commons/store/testUtils'
 
 interface RenderComponentFunctionParams<
   ComponentProps extends Record<string, any> | void = void,

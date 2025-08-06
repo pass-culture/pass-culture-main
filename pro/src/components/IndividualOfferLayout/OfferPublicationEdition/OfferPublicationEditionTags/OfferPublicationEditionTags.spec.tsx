@@ -1,7 +1,8 @@
-import { OfferStatus } from 'apiClient/v1'
 import { render, screen } from '@testing-library/react'
-import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
 import { addDays } from 'date-fns'
+
+import { OfferStatus } from '@/apiClient//v1'
+import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
 import {
   OfferPublicationEditionProps,

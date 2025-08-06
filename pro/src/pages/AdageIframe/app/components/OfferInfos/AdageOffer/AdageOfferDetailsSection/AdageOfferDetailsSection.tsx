@@ -1,9 +1,9 @@
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from 'apiClient/adage'
-import { Markdown } from 'components/Markdown/Markdown'
-import { Tag } from 'design-system/Tag/Tag'
+} from '@/apiClient//adage'
+import { Markdown } from '@/components/Markdown/Markdown'
+import { Tag } from '@/design-system/Tag/Tag'
 
 import styles from '../AdageOffer.module.scss'
 

@@ -1,8 +1,8 @@
 import classNames from 'classnames'
 import { ForwardedRef, forwardRef, useId } from 'react'
 
-import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
-import { Tooltip, TooltipProps } from 'ui-kit/Tooltip/Tooltip'
+import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
+import { Tooltip, TooltipProps } from '@/ui-kit/Tooltip/Tooltip'
 
 import styles from './DayCheckbox.module.scss'
 

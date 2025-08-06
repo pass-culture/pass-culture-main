@@ -1,11 +1,10 @@
 import classNames from 'classnames'
 
-import { CollectiveOffersSortingColumn } from 'commons/core/OfferEducational/types'
-import { SortingMode } from 'commons/hooks/useColumnSorting'
-import { SortArrow } from 'ui-kit/SortArrow/SortArrow'
+import { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
+import { SortingMode } from '@/commons/hooks/useColumnSorting'
+import { SortArrow } from '@/ui-kit/SortArrow/SortArrow'
 
 import { CellDefinition, getCellsDefinition } from '../utils/cellDefinitions'
-
 import styles from './OffersTableHead.module.scss'
 
 export type Columns = CellDefinition & {

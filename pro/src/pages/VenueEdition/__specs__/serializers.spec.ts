@@ -1,4 +1,4 @@
-import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 
 import { serializeEditVenueBodyModel } from '../serializers'
 import { setInitialFormValues } from '../setInitialFormValues'

@@ -1,10 +1,11 @@
 /* No need to test this file */
 /* istanbul ignore file */
 
-import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
-import { Income } from 'pages/Reimbursements/Income/Income'
-import { ReimbursementsInvoices } from 'pages/Reimbursements/ReimbursementsInvoices/ReimbursementsInvoices'
 import { Navigate } from 'react-router'
+
+import { BankInformations } from '@/pages/Reimbursements/BankInformations/BankInformations'
+import { Income } from '@/pages/Reimbursements/Income/Income'
+import { ReimbursementsInvoices } from '@/pages/Reimbursements/ReimbursementsInvoices/ReimbursementsInvoices'
 
 import type { RouteConfig } from './routesMap'
 

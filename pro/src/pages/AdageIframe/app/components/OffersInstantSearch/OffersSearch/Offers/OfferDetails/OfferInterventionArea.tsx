@@ -4,7 +4,7 @@ import {
   departmentOptions,
   domtomOptions,
   MAINLAND_OPTION_VALUE,
-} from 'pages/AdageIframe/app/constants/departmentOptions'
+} from '@/pages/AdageIframe/app/constants/departmentOptions'
 
 export const getInterventionAreaLabelsToDisplay = (
   interventionArea: string[]

@@ -1,22 +1,22 @@
-import { api } from 'apiClient/api'
-import {
-  GET_HAS_INVOICE_QUERY_KEY,
-  GET_INVOICES_QUERY_KEY,
-  GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { FORMAT_ISO_DATE_ONLY, getToday } from 'commons/utils/date'
-import { isEqual } from 'commons/utils/isEqual'
-import { sortByLabel } from 'commons/utils/strings'
 import { format, subMonths } from 'date-fns'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router'
 import useSWR from 'swr'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+
+import { api } from '@/apiClient//api'
+import {
+  GET_HAS_INVOICE_QUERY_KEY,
+  GET_INVOICES_QUERY_KEY,
+  GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { FORMAT_ISO_DATE_ONLY, getToday } from '@/commons/utils/date'
+import { isEqual } from '@/commons/utils/isEqual'
+import { sortByLabel } from '@/commons/utils/strings'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { DEFAULT_INVOICES_FILTERS } from '../_constants'
-
 import { BannerReimbursementsInfo } from './BannerReimbursementsInfo'
 import { InvoicesFilters } from './InvoicesFilters'
 import { InvoicesServerError } from './InvoicesServerError'

@@ -2,14 +2,14 @@ import {
   OfferStatus,
   SubcategoryIdEnum,
   type VenueListItemResponseModel,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 import {
   getIndividualOfferFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { getOfferLastProvider } from 'commons/utils/factories/providerFactories'
-import { offerVenueFactory } from 'commons/utils/factories/venueFactories'
+} from '@/commons/utils/factories/individualApiFactories'
+import { getOfferLastProvider } from '@/commons/utils/factories/providerFactories'
+import { offerVenueFactory } from '@/commons/utils/factories/venueFactories'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
 import {

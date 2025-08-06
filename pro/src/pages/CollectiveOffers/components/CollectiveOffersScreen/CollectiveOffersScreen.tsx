@@ -1,30 +1,31 @@
+import { useRef, useState } from 'react'
+
 import {
   CollectiveOfferResponseModel,
   GetOffererResponseModel,
-} from 'apiClient/v1'
-import { CollectiveOffersSortingColumn } from 'commons/core/OfferEducational/types'
+} from '@/apiClient//v1'
+import { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
 import {
   DEFAULT_PAGE,
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
-} from 'commons/core/Offers/constants'
-import { useDefaultCollectiveSearchFilters } from 'commons/core/Offers/hooks/useDefaultCollectiveSearchFilters'
-import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
-import { hasCollectiveSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
-import { SelectOption } from 'commons/custom_types/form'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useColumnSorting } from 'commons/hooks/useColumnSorting'
-import { usePagination } from 'commons/hooks/usePagination'
-import { isCollectiveOfferSelectable } from 'commons/utils/isActionAllowedOnCollectiveOffer'
-import { isSameOffer } from 'commons/utils/isSameOffer'
-import { sortCollectiveOffers } from 'commons/utils/sortCollectiveOffers'
-import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/CollectiveBudgetCallout'
-import { CollectiveOffersActionsBar } from 'components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
-import { CollectiveOffersTable } from 'components/CollectiveOffersTable/CollectiveOffersTable'
-import { NoData } from 'components/NoData/NoData'
-import { useStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
-import { useRef, useState } from 'react'
-import { Pagination } from 'ui-kit/Pagination/Pagination'
+} from '@/commons/core/Offers/constants'
+import { useDefaultCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useDefaultCollectiveSearchFilters'
+import { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
+import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
+import { SelectOption } from '@/commons/custom_types/form'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
+import { usePagination } from '@/commons/hooks/usePagination'
+import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
+import { isSameOffer } from '@/commons/utils/isSameOffer'
+import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
+import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformation/CollectiveBudgetCallout'
+import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
+import { CollectiveOffersTable } from '@/components/CollectiveOffersTable/CollectiveOffersTable'
+import { NoData } from '@/components/NoData/NoData'
+import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import { Pagination } from '@/ui-kit/Pagination/Pagination'
 
 import styles from './CollectiveOffersScreen.module.scss'
 import { CollectiveOffersSearchFilters } from './CollectiveOffersSearchFilters/CollectiveOffersSearchFilters'

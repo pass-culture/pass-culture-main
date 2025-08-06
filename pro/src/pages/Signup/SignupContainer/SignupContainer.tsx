@@ -1,22 +1,23 @@
-import { api } from 'apiClient/api'
-import { isErrorAPIError } from 'apiClient/helpers'
-import { ProUserCreationBodyV2Model } from 'apiClient/v1'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import {
-  RECAPTCHA_ERROR,
-  RECAPTCHA_ERROR_MESSAGE,
-} from 'commons/core/shared/constants'
-import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
-import { useLogEventOnUnload } from 'commons/hooks/useLogEventOnUnload'
-import { useNotification } from 'commons/hooks/useNotification'
-import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
-import { getReCaptchaToken } from 'commons/utils/recaptcha'
-import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { useEffect, useRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
+
+import { api } from '@/apiClient//api'
+import { isErrorAPIError } from '@/apiClient//helpers'
+import { ProUserCreationBodyV2Model } from '@/apiClient//v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import {
+  RECAPTCHA_ERROR,
+  RECAPTCHA_ERROR_MESSAGE,
+} from '@/commons/core/shared/constants'
+import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
+import { useLogEventOnUnload } from '@/commons/hooks/useLogEventOnUnload'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { useRedirectLoggedUser } from '@/commons/hooks/useRedirectLoggedUser'
+import { getReCaptchaToken } from '@/commons/utils/recaptcha'
+import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 
 import { SIGNUP_FORM_DEFAULT_VALUES } from './constants'
 import { OperatingProcedures } from './OperationProcedures/OperationProcedures'

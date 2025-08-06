@@ -1,17 +1,17 @@
-import { api } from 'apiClient/api'
-import { isErrorAPIError } from 'apiClient/helpers'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useNotification } from 'commons/hooks/useNotification'
-import { FormLayout } from 'components/FormLayout/FormLayout'
 import { useForm } from 'react-hook-form'
-import { BoxFormLayout } from 'ui-kit/BoxFormLayout/BoxFormLayout'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { PasswordInput } from 'ui-kit/form/PasswordInput/PasswordInput'
-import { ValidationMessageList } from 'ui-kit/form/ValidationMessageList/ValidationMessageList'
+
+import { api } from '@/apiClient//api'
+import { isErrorAPIError } from '@/apiClient//helpers'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { PasswordInput } from '@/ui-kit/form/PasswordInput/PasswordInput'
+import { ValidationMessageList } from '@/ui-kit/form/ValidationMessageList/ValidationMessageList'
 
 import styles from '../UserPhoneForm/UserForm.module.scss'
-
 import { validationSchema } from './validationSchema'
 
 export interface UserPasswordFormProps {

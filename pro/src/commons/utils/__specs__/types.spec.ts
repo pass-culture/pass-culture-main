@@ -1,4 +1,4 @@
-import { hasProperty, isNumber } from 'commons/utils/types'
+import { hasProperty, isNumber } from '@/commons/utils/types'
 
 describe('hasProperty', () => {
   it('should return true if the object has the property', () => {

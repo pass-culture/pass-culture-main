@@ -1,4 +1,4 @@
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { GetIndividualOfferResponseModel } from '@/apiClient//v1'
 
 import { isAllocineProvider } from './utils'
 

@@ -1,16 +1,17 @@
-import { api } from 'apiClient/api'
-import { VenueTypeCode } from 'apiClient/v1'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
+import { beforeEach, expect } from 'vitest'
+
+import { api } from '@/apiClient//api'
+import { VenueTypeCode } from '@/apiClient//v1'
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-} from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import * as utils from 'commons/utils/savedPartnerPageVenueId'
-import { SAVED_HOME_PAGE_VENUE_ID_KEYS } from 'commons/utils/savedPartnerPageVenueId'
-import { beforeEach, expect } from 'vitest'
+} from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import * as utils from '@/commons/utils/savedPartnerPageVenueId'
+import { SAVED_HOME_PAGE_VENUE_ID_KEYS } from '@/commons/utils/savedPartnerPageVenueId'
 
 import { PartnerPages, PartnerPagesProps } from './PartnerPages'
 

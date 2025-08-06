@@ -1,31 +1,32 @@
-import { api } from 'apiClient/api'
+import { screen, waitFor, within } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import { expect, it } from 'vitest'
+
+import { api } from '@/apiClient//api'
 import {
   CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
   EducationalInstitutionResponseModel,
-} from 'apiClient/v1'
-import { screen, waitFor, within } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { DEFAULT_VISIBILITY_FORM_VALUES } from 'commons/core/OfferEducational/constants'
-import { Mode } from 'commons/core/OfferEducational/types'
-import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
-import * as useNotification from 'commons/hooks/useNotification'
+} from '@/apiClient//v1'
+import { DEFAULT_VISIBILITY_FORM_VALUES } from '@/commons/core/OfferEducational/constants'
+import { Mode } from '@/commons/core/OfferEducational/types'
+import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import * as useNotification from '@/commons/hooks/useNotification'
 import {
   getCollectiveOfferBookingFactory,
   getCollectiveOfferFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
+} from '@/commons/utils/factories/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { expect, it } from 'vitest'
+} from '@/commons/utils/renderWithProviders'
 
 import {
   CollectiveOfferVisibilityProps,
   CollectiveOfferVisibilityScreen,
 } from '../CollectiveOfferVisibility'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getAutocompleteEducationalRedactorsForUai: vi.fn(),
     getCollectiveOfferRequest: vi.fn(),
@@ -240,7 +241,7 @@ describe('CollectiveOfferVisibility', () => {
     const notifyError = vi.fn()
 
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

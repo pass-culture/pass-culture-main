@@ -1,5 +1,8 @@
-import { PatchDraftOfferBodyModel, PostDraftOfferBodyModel } from 'apiClient/v1'
-import { trimStringsInObject } from 'commons/utils/trimStringsInObject'
+import {
+  PatchDraftOfferBodyModel,
+  PostDraftOfferBodyModel,
+} from '@/apiClient//v1'
+import { trimStringsInObject } from '@/commons/utils/trimStringsInObject'
 
 import { DetailsFormValues } from './types'
 

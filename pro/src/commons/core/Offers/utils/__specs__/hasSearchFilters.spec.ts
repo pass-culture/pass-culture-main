@@ -1,5 +1,5 @@
-import { EacFormat } from 'apiClient/adage'
-import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
+import { EacFormat } from '@/apiClient//adage'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient//v1'
 
 import {
   CollectiveOfferTypeEnum,

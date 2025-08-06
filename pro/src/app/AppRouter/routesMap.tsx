@@ -1,9 +1,10 @@
 /* No need to test this file */
 /* istanbul ignore file */
 
-import { parse } from 'commons/utils/query-string'
-import { UNAVAILABLE_ERROR_PAGE } from 'commons/utils/routes'
 import { Navigate, NavigateProps, useLocation } from 'react-router'
+
+import { parse } from '@/commons/utils/query-string'
+import { UNAVAILABLE_ERROR_PAGE } from '@/commons/utils/routes'
 
 import {
   routesIndividualOfferWizard,
@@ -48,60 +49,60 @@ export const routes: RouteConfig[] = [
         path: '*',
         meta: { public: true },
         title: 'ADAGE',
-        lazy: () => import('pages/AdageIframe/app/App'),
+        lazy: () => import('@/pages/AdageIframe/app/App'),
       },
     ],
   },
   {
     lazy: () =>
       import(
-        'pages/AdageIframe/app/components/UnauthenticatedError/UnauthenticatedError'
+        '@/pages/AdageIframe/app/components/UnauthenticatedError/UnauthenticatedError'
       ),
     path: '/adage-iframe/erreur',
     meta: { public: true },
     title: 'ADAGE',
   },
   {
-    lazy: () => import('pages/Signup/Signup'),
+    lazy: () => import('@/pages/Signup/Signup'),
     path: '/inscription',
     title: 'Créez votre compte',
     meta: { public: true },
     children: routesSignup,
   },
   {
-    lazy: () => import('pages/Errors/Unavailable/Unavailable'),
+    lazy: () => import('@/pages/Errors/Unavailable/Unavailable'),
     path: UNAVAILABLE_ERROR_PAGE,
     title: 'Page indisponible',
     meta: { public: true },
   },
   {
-    lazy: () => import('pages/Homepage/Homepage'),
+    lazy: () => import('@/pages/Homepage/Homepage'),
     path: '/accueil',
     title: 'Espace acteurs culturels',
   },
   {
-    lazy: () => import('pages/Desk/Desk'),
+    lazy: () => import('@/pages/Desk/Desk'),
     path: '/guichet',
     title: 'Guichet',
   },
   {
-    lazy: () => import('pages/Bookings/Bookings'),
+    lazy: () => import('@/pages/Bookings/Bookings'),
     path: '/reservations',
     title: 'Réservations individuelles',
   },
   {
-    lazy: () => import('pages/CollectiveBookings/CollectiveBookings'),
+    lazy: () => import('@/pages/CollectiveBookings/CollectiveBookings'),
     path: '/reservations/collectives',
     title: 'Réservations collectives',
   },
   {
-    lazy: () => import('pages/SignIn/SignIn'),
+    lazy: () => import('@/pages/SignIn/SignIn'),
     path: '/connexion',
     title: 'Connectez-vous',
     meta: { public: true },
   },
   {
-    lazy: () => import('pages/EmailChangeValidation/EmailChangeValidation'),
+    lazy: () => import('@/pages/EmailChangeValidation/EmailChangeValidation'),
     path: '/email_validation',
     title: 'Valider l’adresse email',
     meta: { public: true },
@@ -117,87 +118,87 @@ export const routes: RouteConfig[] = [
     title: 'Créer un lieu',
   },
   {
-    lazy: () => import('pages/VenueEdition/VenueEdition'),
+    lazy: () => import('@/pages/VenueEdition/VenueEdition'),
     path: '/structures/:offererId/lieux/:venueId/page-partenaire',
     title: 'Gérer ma page sur l’application',
     children: [
       {
-        lazy: () => import('pages/VenueEdition/VenueEdition'),
+        lazy: () => import('@/pages/VenueEdition/VenueEdition'),
         path: '*',
         title: 'Gérer ma page sur l’application',
       },
     ],
   },
   {
-    lazy: () => import('pages/VenueEdition/VenueEdition'),
+    lazy: () => import('@/pages/VenueEdition/VenueEdition'),
     path: '/structures/:offererId/lieux/:venueId/collectif',
     title: 'Gérer ma page sur ADAGE',
     children: [
       {
-        lazy: () => import('pages/VenueEdition/VenueEdition'),
+        lazy: () => import('@/pages/VenueEdition/VenueEdition'),
         path: '*',
         title: 'Gérer ma page sur ADAGE',
       },
     ],
   },
   {
-    lazy: () => import('pages/VenueEdition/VenueEdition'),
+    lazy: () => import('@/pages/VenueEdition/VenueEdition'),
     path: '/structures/:offererId/lieux/:venueId',
     title: 'Gérer ma page adresse',
     children: [
       {
-        lazy: () => import('pages/VenueEdition/VenueEdition'),
+        lazy: () => import('@/pages/VenueEdition/VenueEdition'),
         path: '*',
         title: 'Gérer ma page adresse',
       },
     ],
   },
   {
-    lazy: () => import('pages/VenueSettings/VenueSettings'),
+    lazy: () => import('@/pages/VenueSettings/VenueSettings'),
     path: '/structures/:offererId/lieux/:venueId/page-partenaire/parametres',
     title: 'Paramètres généraux',
   },
   {
-    lazy: () => import('pages/VenueSettings/VenueSettings'),
+    lazy: () => import('@/pages/VenueSettings/VenueSettings'),
     path: '/structures/:offererId/lieux/:venueId/collectif/parametres',
     title: 'Paramètres généraux',
   },
   {
-    lazy: () => import('pages/VenueSettings/VenueSettings'),
+    lazy: () => import('@/pages/VenueSettings/VenueSettings'),
     path: '/structures/:offererId/lieux/:venueId/parametres',
     title: 'Paramètres généraux',
   },
   {
-    lazy: () => import('pages/OfferType/OfferType'),
+    lazy: () => import('@/pages/OfferType/OfferType'),
     path: '/offre/creation',
     title: 'Choix de la nature de l’offre - Créer une offre',
   },
   {
-    lazy: () => import('pages/OfferType/OfferType'),
+    lazy: () => import('@/pages/OfferType/OfferType'),
     path: '/onboarding/offre/creation',
     title: 'Choix de la nature de l’offre - Créer une offre - Onboarding',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {
-    lazy: () => import('pages/IndividualOffers/IndividualOffers'),
+    lazy: () => import('@/pages/IndividualOffers/IndividualOffers'),
     path: '/offres',
     title: 'Offres individuelles',
   },
   {
-    lazy: () => import('pages/CollectiveOffers/CollectiveOffers'),
+    lazy: () => import('@/pages/CollectiveOffers/CollectiveOffers'),
     path: '/offres/collectives',
     title: 'Offres collectives',
   },
   {
     lazy: () =>
-      import('pages/TemplateCollectiveOffers/TemplateCollectiveOffers'),
+      import('@/pages/TemplateCollectiveOffers/TemplateCollectiveOffers'),
     path: '/offres/vitrines',
     title: 'Offres vitrines',
   },
   {
     lazy: () =>
       import(
-        'pages/CollectiveOfferSelectionDuplication/CollectiveOfferSelectionDuplication'
+        '@/pages/CollectiveOfferSelectionDuplication/CollectiveOfferSelectionDuplication'
       ),
     path: '/offre/creation/collectif/selection',
     title: 'Edition d’une offre collective',
@@ -205,7 +206,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOffer/CollectiveOfferStock/CollectiveOfferStockCreation/CollectiveOfferStockCreation'
+        '@/pages/CollectiveOffer/CollectiveOfferStock/CollectiveOfferStockCreation/CollectiveOfferStockCreation'
       ),
     path: '/offre/:offerId/collectif/stocks',
     title: 'Dates et prix - Créer une offre réservable',
@@ -213,7 +214,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOffer/CollectiveOffer/CollectiveOfferCreation/CollectiveOfferCreation'
+        '@/pages/CollectiveOffer/CollectiveOffer/CollectiveOfferCreation/CollectiveOfferCreation'
       ),
     path: '/offre/creation/collectif',
     title: 'Détails - Créer une offre réservable',
@@ -221,7 +222,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOffer/CollectiveOffer/CollectiveOfferCreation/CollectiveOfferCreation'
+        '@/pages/CollectiveOffer/CollectiveOffer/CollectiveOfferCreation/CollectiveOfferCreation'
       ),
     path: '/offre/creation/collectif/vitrine',
     title: 'Détails - Créer une offre collective vitrine',
@@ -229,7 +230,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOffer/CollectiveOffer/CollectiveOfferCreation/CollectiveOfferCreation'
+        '@/pages/CollectiveOffer/CollectiveOffer/CollectiveOfferCreation/CollectiveOfferCreation'
       ),
     path: '/offre/collectif/:offerId/creation',
     title: 'Détails - Créer une offre collective vitrine',
@@ -237,7 +238,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOffer/CollectiveOffer/CollectiveOfferCreation/CollectiveOfferCreation'
+        '@/pages/CollectiveOffer/CollectiveOffer/CollectiveOfferCreation/CollectiveOfferCreation'
       ),
     path: '/offre/collectif/vitrine/:offerId/creation',
     title: 'Edition d’une offre collective',
@@ -245,7 +246,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
+        '@/pages/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
       ),
     path: '/offre/:offerId/collectif/visibilite',
     title: 'Visibilité - Créer une offre réservable',
@@ -253,7 +254,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOffer/CollectiveOfferSummary/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreation'
+        '@/pages/CollectiveOffer/CollectiveOfferSummary/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreation'
       ),
     path: '/offre/:offerId/collectif/creation/recapitulatif',
     title: 'Récapitulatif - Créer une offre réservable',
@@ -261,7 +262,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOffer/CollectiveOfferPreview/CollectiveOfferPreviewCreation/CollectiveOfferPreviewCreation'
+        '@/pages/CollectiveOffer/CollectiveOfferPreview/CollectiveOfferPreviewCreation/CollectiveOfferPreviewCreation'
       ),
     path: '/offre/:offerId/collectif/creation/apercu',
     title: 'Aperçu - Créer une offre réservable',
@@ -269,7 +270,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOffer/CollectiveOfferPreview/CollectiveOfferPreviewCreation/CollectiveOfferPreviewCreation'
+        '@/pages/CollectiveOffer/CollectiveOfferPreview/CollectiveOfferPreviewCreation/CollectiveOfferPreviewCreation'
       ),
     path: '/offre/:offerId/collectif/vitrine/creation/apercu',
     title: 'Aperçu - Créer une offre vitrine',
@@ -277,7 +278,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOffer/CollectiveOfferSummary/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreation'
+        '@/pages/CollectiveOffer/CollectiveOfferSummary/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreation'
       ),
     path: '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
     title: 'Récapitulatif - Créer une offre vitrine',
@@ -285,7 +286,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOffer/CollectiveOfferConfirmation/CollectiveOfferConfirmation'
+        '@/pages/CollectiveOffer/CollectiveOfferConfirmation/CollectiveOfferConfirmation'
       ),
     path: '/offre/:offerId/collectif/confirmation',
     title: 'Confirmation - Offre réservable publiée',
@@ -293,7 +294,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOffer/CollectiveOfferConfirmation/CollectiveOfferConfirmation'
+        '@/pages/CollectiveOffer/CollectiveOfferConfirmation/CollectiveOfferConfirmation'
       ),
     path: '/offre/:offerId/collectif/vitrine/confirmation',
     title: 'Confirmation - Offre collective vitrine publiée',
@@ -301,7 +302,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOffer/CollectiveOffer/CollectiveOfferEdition/CollectiveOfferEdition'
+        '@/pages/CollectiveOffer/CollectiveOffer/CollectiveOfferEdition/CollectiveOfferEdition'
       ),
     path: '/offre/:offerId/collectif/edition',
     title: 'Détails - Modifier une offre collective réservable',
@@ -309,7 +310,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOffer/CollectiveOfferSummary/CollectiveOfferSummaryEdition/CollectiveOfferSummaryEdition'
+        '@/pages/CollectiveOffer/CollectiveOfferSummary/CollectiveOfferSummaryEdition/CollectiveOfferSummaryEdition'
       ),
     path: '/offre/:offerId/collectif/recapitulatif',
     title: 'Récapitulatif - Modifier une offre collective réservable',
@@ -317,7 +318,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOffer/CollectiveOfferPreview/CollectiveOfferPreviewEdition/CollectiveOfferPreviewEdition'
+        '@/pages/CollectiveOffer/CollectiveOfferPreview/CollectiveOfferPreviewEdition/CollectiveOfferPreviewEdition'
       ),
     path: '/offre/:offerId/collectif/vitrine/apercu',
     title: 'Aperçu - Prévisualisation d’une offre collective vitrine',
@@ -325,7 +326,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOffer/CollectiveOfferPreview/CollectiveOfferPreviewEdition/CollectiveOfferPreviewEdition'
+        '@/pages/CollectiveOffer/CollectiveOfferPreview/CollectiveOfferPreviewEdition/CollectiveOfferPreviewEdition'
       ),
     path: '/offre/:offerId/collectif/apercu',
     title: 'Aperçu - Prévisualisation d’une offre collective réservable',
@@ -333,7 +334,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOffer/CollectiveOfferStock/CollectiveOfferStockEdition/CollectiveOfferStockEdition'
+        '@/pages/CollectiveOffer/CollectiveOfferStock/CollectiveOfferStockEdition/CollectiveOfferStockEdition'
       ),
     path: '/offre/:offerId/collectif/stocks/edition',
     title: 'Dates et prix - Modifier une offre collective réservable',
@@ -341,19 +342,19 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
+        '@/pages/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
       ),
     path: '/offre/:offerId/collectif/visibilite/edition',
     title: 'Visibilité - Modifier une offre collective réservable',
   },
   {
     lazy: () =>
-      import('pages/CollectiveOfferFromRequest/CollectiveOfferFromRequest'),
+      import('@/pages/CollectiveOfferFromRequest/CollectiveOfferFromRequest'),
     path: '/offre/collectif/creation/:offerId/requete/:requestId',
     title: 'Détails - Créer une offre réservable',
   },
   {
-    lazy: () => import('pages/ResetPassword/ResetPassword'),
+    lazy: () => import('@/pages/ResetPassword/ResetPassword'),
     path: '/demande-mot-de-passe/:token',
     title: 'Réinitialisez votre mot de passe',
     meta: { public: true },
@@ -365,78 +366,78 @@ export const routes: RouteConfig[] = [
     meta: { public: true },
   },
   {
-    lazy: () => import('pages/LostPassword/LostPassword'),
+    lazy: () => import('@/pages/LostPassword/LostPassword'),
     path: '/demande-mot-de-passe',
     title: 'Réinitialisez votre mot de passe',
     meta: { public: true },
   },
   {
-    lazy: () => import('pages/IndividualOfferWizard/IndividualOfferWizard'),
+    lazy: () => import('@/pages/IndividualOfferWizard/IndividualOfferWizard'),
     path: '/offre/individuelle',
     title: 'Offre étape par étape',
     children: routesIndividualOfferWizard,
   },
   {
-    lazy: () => import('pages/IndividualOfferWizard/IndividualOfferWizard'),
+    lazy: () => import('@/pages/IndividualOfferWizard/IndividualOfferWizard'),
     path: '/onboarding/offre/individuelle',
     title: 'Offre étape par étape',
     children: routesOnboardingIndividualOfferWizard,
   },
   {
-    lazy: () => import('pages/Reimbursements/Reimbursements'),
+    lazy: () => import('@/pages/Reimbursements/Reimbursements'),
     path: '/remboursements',
     title: 'Gestion financière',
     children: routesReimbursements,
   },
   {
-    lazy: () => import('pages/User/UserProfile'),
+    lazy: () => import('@/pages/User/UserProfile'),
     path: '/profil',
     title: 'Profil',
   },
   {
-    lazy: () => import('pages/SignupJourneyRoutes/SignupJourneyRoutes'),
+    lazy: () => import('@/pages/SignupJourneyRoutes/SignupJourneyRoutes'),
     path: '/inscription/structure',
     title: 'Parcours de souscription',
     children: routesSignupJourney,
   },
   {
-    lazy: () => import('pages/Sitemap/Sitemap'),
+    lazy: () => import('@/pages/Sitemap/Sitemap'),
     path: '/plan-du-site',
     title: 'Plan du site',
   },
   {
-    lazy: () => import('pages/Accessibility/AccessibilityMenu'),
+    lazy: () => import('@/pages/Accessibility/AccessibilityMenu'),
     path: '/accessibilite',
     title: 'Informations d’accessibilité',
     meta: { public: true },
   },
   {
-    lazy: () => import('pages/Accessibility/Commitment'),
+    lazy: () => import('@/pages/Accessibility/Commitment'),
     path: '/accessibilite/engagements',
     title: 'Les engagements du pass Culture',
     meta: { public: true },
   },
   {
-    lazy: () => import('pages/Accessibility/Declaration'),
+    lazy: () => import('@/pages/Accessibility/Declaration'),
     path: '/accessibilite/declaration',
     title: "Déclaration d'accessibilité",
     meta: { public: true },
   },
   {
-    lazy: () => import('pages/Accessibility/MultiyearScheme'),
+    lazy: () => import('@/pages/Accessibility/MultiyearScheme'),
     path: '/accessibilite/schema-pluriannuel',
     title: 'Schéma pluriannuel',
     meta: { public: true },
   },
   {
-    lazy: () => import('pages/Collaborators/Collaborators'),
+    lazy: () => import('@/pages/Collaborators/Collaborators'),
     path: '/collaborateurs',
     title: 'Collaborateurs',
   },
   {
     lazy: () =>
       import(
-        'pages/Onboarding/OnboardingOffersTypeChoice/OnboardingOffersTypeChoice'
+        '@/pages/Onboarding/OnboardingOffersTypeChoice/OnboardingOffersTypeChoice'
       ),
     path: '/onboarding',
     title: 'Onboarding',
@@ -445,14 +446,14 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/Onboarding/OnboardingOfferIndividual/OnboardingOfferIndividual'
+        '@/pages/Onboarding/OnboardingOfferIndividual/OnboardingOfferIndividual'
       ),
     path: '/onboarding/individuel',
     title: 'Offre à destination des jeunes - Onboarding',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {
-    lazy: () => import('pages/Errors/NotFound/NotFound'),
+    lazy: () => import('@/pages/Errors/NotFound/NotFound'),
     path: '/404',
     title: 'Erreur 404 - Page indisponible',
   },

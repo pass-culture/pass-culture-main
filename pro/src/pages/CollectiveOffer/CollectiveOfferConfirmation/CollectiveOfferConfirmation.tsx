@@ -1,7 +1,7 @@
-import { Layout } from 'app/App/layout/Layout'
-import { isCollectiveOfferTemplate } from 'commons/core/OfferEducational/types'
-import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
-import { CollectiveOfferConfirmationScreen } from 'pages/CollectiveOffer/CollectiveOfferConfirmation/CollectiveOfferConfirmation/CollectiveOfferConfirmation'
+import { Layout } from '@/app/App/layout/Layout'
+import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
+import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
+import { CollectiveOfferConfirmationScreen } from '@/pages/CollectiveOffer/CollectiveOfferConfirmation/CollectiveOfferConfirmation/CollectiveOfferConfirmation'
 
 import {
   MandatoryCollectiveOfferFromParamsProps,

@@ -1,16 +1,17 @@
-import { api } from 'apiClient/api'
-import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useNotification from 'commons/hooks/useNotification'
+
+import { api } from '@/apiClient//api'
+import { BankAccountResponseModel, ManagedVenues } from '@/apiClient//v1'
+import * as useNotification from '@/commons/hooks/useNotification'
 import {
   defaultBankAccount,
   defaultManagedVenues,
-} from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/utils/factories/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/renderWithProviders'
 
 import { LinkVenuesDialog } from './LinkVenuesDialog'
 
@@ -128,7 +129,7 @@ describe('LinkVenueDialog', () => {
     const mockNotifyError = vi.fn()
 
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 
-import { getCollectiveOfferCollectiveStockFactory } from 'commons/utils/factories/collectiveApiFactories'
-import { TOTAL_PRICE_LABEL } from 'pages/CollectiveOffer/CollectiveOfferStock/components/OfferEducationalStock/constants/labels'
+import { getCollectiveOfferCollectiveStockFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { TOTAL_PRICE_LABEL } from '@/pages/CollectiveOffer/CollectiveOfferStock/components/OfferEducationalStock/constants/labels'
 
 import {
   CollectiveOfferStockSection,

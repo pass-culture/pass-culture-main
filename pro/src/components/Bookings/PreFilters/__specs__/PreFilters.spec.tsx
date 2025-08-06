@@ -1,22 +1,22 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
-import { Audience } from 'commons/core/shared/types'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
+import { Audience } from '@/commons/core/shared/types'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { PreFilters, PreFiltersProps } from '../PreFilters'
 
 const mockUpdateUrl = vi.fn()
 
-vi.mock('commons/utils/date', async () => {
+vi.mock('@/commons/utils/date', async () => {
   return {
-    ...(await vi.importActual('commons/utils/date')),
+    ...(await vi.importActual('@/commons/utils/date')),
     getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
   }
 })
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: { getVenues: vi.fn() },
 }))
 

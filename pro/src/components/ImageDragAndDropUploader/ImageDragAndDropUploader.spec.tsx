@@ -1,9 +1,10 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import * as useNotification from 'commons/hooks/useNotification'
-import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { forwardRef } from 'react'
+
+import * as useNotification from '@/commons/hooks/useNotification'
+import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   ImageDragAndDropUploader,
@@ -35,7 +36,7 @@ vi.mock('react-avatar-editor', () => {
 })
 
 vi.mock(
-  'components/ImageUploader/components/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/validationSchema',
+  '@/components/ImageUploader/components/ModalImageEdit/components/ModalImageUploadBrowser/ImageUploadBrowserForm/validationSchema',
   () => ({ getValidationSchema: () => ({ validate: vi.fn() }) })
 )
 
@@ -158,7 +159,7 @@ describe('ImageDragAndDropUploader', () => {
     })
 
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,
@@ -197,7 +198,7 @@ describe('ImageDragAndDropUploader', () => {
     const mockNotifySuccess = vi.fn()
 
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

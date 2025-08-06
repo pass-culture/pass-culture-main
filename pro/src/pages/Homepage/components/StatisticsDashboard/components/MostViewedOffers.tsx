@@ -1,8 +1,9 @@
-import { TopOffersResponseData } from 'apiClient/v1'
 import cn from 'classnames'
-import { pluralizeString } from 'commons/utils/pluralize'
-import { Tag, TagVariant } from 'design-system/Tag/Tag'
-import { Thumb } from 'ui-kit/Thumb/Thumb'
+
+import { TopOffersResponseData } from '@/apiClient//v1'
+import { pluralizeString } from '@/commons/utils/pluralize'
+import { Tag, TagVariant } from '@/design-system/Tag/Tag'
+import { Thumb } from '@/ui-kit/Thumb/Thumb'
 
 import styles from './MostViewedOffers.module.scss'
 

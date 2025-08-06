@@ -2,16 +2,15 @@ import {
   AuthenticatedResponse,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from 'apiClient/adage'
-import strokeArticleIcon from 'icons/stroke-article.svg'
-import strokeInfoIcon from 'icons/stroke-info.svg'
-import strokeInstitutionIcon from 'icons/stroke-institution.svg'
-import strokeUserIcon from 'icons/stroke-user.svg'
-import { isCollectiveOfferBookable } from 'pages/AdageIframe/app/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/apiClient//adage'
+import strokeArticleIcon from '@/icons/stroke-article.svg'
+import strokeInfoIcon from '@/icons/stroke-info.svg'
+import strokeInstitutionIcon from '@/icons/stroke-institution.svg'
+import strokeUserIcon from '@/icons/stroke-user.svg'
+import { isCollectiveOfferBookable } from '@/pages/AdageIframe/app/types'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { DisabledPrebookCallout } from '../../DisabledPrebookCallout/DisabledPrebookCallout'
-
 import styles from './AdageOffer.module.scss'
 import { AdageOfferDetailsSection } from './AdageOfferDetailsSection/AdageOfferDetailsSection'
 import { AdageOfferInfoSection } from './AdageOfferDetailsSection/AdageOfferInfoSection'

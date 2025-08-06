@@ -1,4 +1,4 @@
-import { isPasswordValid } from 'ui-kit/form/PasswordInput/validation'
+import { isPasswordValid } from '@/ui-kit/form/PasswordInput/validation'
 
 describe('When validating a password', () => {
   it('should be valid if all requirements are met', () => {

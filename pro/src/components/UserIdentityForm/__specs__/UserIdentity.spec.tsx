@@ -1,12 +1,13 @@
-import { ApiError } from 'apiClient/adage'
-import { ApiRequestOptions } from 'apiClient/adage/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/adage/core/ApiResult'
-import { api } from 'apiClient/api'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
+
+import { ApiError } from '@/apiClient//adage'
+import { ApiRequestOptions } from '@/apiClient//adage/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient//adage/core/ApiResult'
+import { api } from '@/apiClient//api'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
 
 import { UserIdentityForm, UserIdentityFormProps } from '../UserIdentityForm'
 

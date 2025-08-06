@@ -1,6 +1,6 @@
-import { AdageHeaderLink } from 'apiClient/adage'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import { AdageHeaderLink } from '@/apiClient//adage'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './AdageHeaderBudget.module.scss'
 

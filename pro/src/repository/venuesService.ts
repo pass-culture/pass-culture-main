@@ -4,8 +4,8 @@ import {
   GetOffererVenueResponseModel,
   ListOffersVenueResponseModel,
   VenueListItemResponseModel,
-} from 'apiClient/v1'
-import { SelectOption } from 'commons/custom_types/form'
+} from '@/apiClient//v1'
+import { SelectOption } from '@/commons/custom_types/form'
 
 export const computeVenueDisplayName = (
   venue:

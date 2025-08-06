@@ -4,8 +4,8 @@ import {
   type GetIndividualOfferWithAddressResponseModel,
   GetMusicTypesResponse,
   SubcategoryResponseModel,
-} from 'apiClient/v1'
-import { showOptionsTree } from 'commons/core/Offers/categoriesSubTypes'
+} from '@/apiClient//v1'
+import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
 
 const getMusicData = (
   offer: GetIndividualOfferResponseModel,

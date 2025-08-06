@@ -1,24 +1,25 @@
-import { api } from 'apiClient/api'
+import { screen } from '@testing-library/react'
+import * as router from 'react-router'
+
+import { api } from '@/apiClient//api'
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseIdModel,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from 'apiClient/v1'
-import { screen } from '@testing-library/react'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import * as useNotification from 'commons/hooks/useNotification'
+} from '@/apiClient//v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import * as useNotification from '@/commons/hooks/useNotification'
 import {
   defaultGetVenue,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/collectiveApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import * as router from 'react-router'
+} from '@/commons/utils/renderWithProviders'
 
 import {
   CollectiveCreationOfferNavigation,
@@ -86,7 +87,7 @@ describe('CollectiveCreationOfferNavigation', () => {
     )
 
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

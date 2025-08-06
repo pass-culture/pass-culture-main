@@ -1,11 +1,10 @@
 import type { StoryObj } from '@storybook/react'
 
 import { BaseInput } from '../BaseInput/BaseInput'
-
 import { FieldLayout } from './FieldLayout'
 
 export default {
-  title: 'ui-kit/forms/shared/FieldLayout',
+  title: '@/ui-kit/forms/shared/FieldLayout',
   component: FieldLayout,
 }
 

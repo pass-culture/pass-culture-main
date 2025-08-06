@@ -1,16 +1,17 @@
-import { api } from 'apiClient/api'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+
+import { api } from '@/apiClient//api'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import {
   ActionBar,
   ActionBarProps,
-} from 'components/SignupJourneyForm/ActionBar/ActionBar'
-import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
-import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
+} from '@/components/SignupJourneyForm/ActionBar/ActionBar'
+import { OnboardingFormNavigationAction } from '@/components/SignupJourneyFormLayout/constants'
+import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 
 const mockLogEvent = vi.fn()
 

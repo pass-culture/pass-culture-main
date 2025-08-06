@@ -1,7 +1,8 @@
-import { Layout } from 'app/App/layout/Layout'
-import { Audience } from 'commons/core/shared/types'
-import { BookingsContainer } from 'components/Bookings/Bookings'
 import { useLocation } from 'react-router'
+
+import { Layout } from '@/app/App/layout/Layout'
+import { Audience } from '@/commons/core/shared/types'
+import { BookingsContainer } from '@/components/Bookings/Bookings'
 
 import { getFilteredIndividualBookingsAdapter } from './adapters/getFilteredIndividualBookingsAdapter'
 import { getUserHasIndividualBookingsAdapter } from './adapters/getUserHasIndividualBookingsAdapter'

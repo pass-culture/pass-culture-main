@@ -1,18 +1,19 @@
-import { api } from 'apiClient/api'
+import useSWR from 'swr'
+
+import { api } from '@/apiClient//api'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
   NationalProgramModel,
   VenueListItemResponseModel,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 import {
   GET_EDUCATIONAL_OFFERERS_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
-import { serializeEducationalOfferer } from 'commons/core/OfferEducational/utils/serializeEducationalOfferer'
-import { useEducationalDomains } from 'commons/hooks/swr/useEducationalDomains'
-import useSWR from 'swr'
+} from '@/commons/config/swrQueryKeys'
+import { serializeEducationalOfferer } from '@/commons/core/OfferEducational/utils/serializeEducationalOfferer'
+import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 
 export type DomainOption = {
   id: string

@@ -1,21 +1,22 @@
-import { AuthenticatedResponse } from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
-import { OfferAddressType } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
+import * as instantSearch from 'react-instantsearch'
+import { Configure } from 'react-instantsearch'
+
+import { AuthenticatedResponse } from '@/apiClient//adage'
+import { apiAdage } from '@/apiClient//api'
+import { OfferAddressType } from '@/apiClient//v1'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
   defaultUseInfiniteHitsReturn,
   defaultUseStatsReturn,
-} from 'commons/utils/factories/adageFactories'
+} from '@/commons/utils/factories/adageFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import * as instantSearch from 'react-instantsearch'
-import { Configure } from 'react-instantsearch'
+} from '@/commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../../utils'
 import { OffersSuggestions, OffersSuggestionsProps } from '../OffersSuggestions'
@@ -30,7 +31,7 @@ type InstantSearchHookResultMock = {
   }[]
 }
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   apiAdage: {
     getCollectiveOfferTemplate: vi.fn(),
     getCollectiveOffer: vi.fn(),

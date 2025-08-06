@@ -1,10 +1,10 @@
-import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
+import { GetCollectiveOfferTemplateResponseModel } from '@/apiClient//v1'
 import {
   getRangeToFrenchText,
   toDateStrippedOfTimezone,
-} from 'commons/utils/date'
-import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
-import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
+} from '@/commons/utils/date'
+import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
+import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
 
 export type CollectiveOfferDateSectionProps = {
   offer: GetCollectiveOfferTemplateResponseModel

@@ -1,16 +1,17 @@
 import { StoryObj } from '@storybook/react'
-import { FormLayout } from 'components/FormLayout/FormLayout'
 import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { BoxRounded } from '@/ui-kit/BoxRounded/BoxRounded'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { BoxFormLayout, BoxFormLayoutProps } from './BoxFormLayout'
 
 export default {
-  title: 'ui-kit/BoxFormLayout',
+  title: '@/ui-kit/BoxFormLayout',
   component: BoxFormLayout,
 }
 

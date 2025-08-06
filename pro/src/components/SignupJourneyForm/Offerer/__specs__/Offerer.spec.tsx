@@ -1,19 +1,20 @@
-import { api } from 'apiClient/api'
-import { ApiError } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { Route, Routes } from 'react-router'
+import createFetchMock from 'vitest-fetch-mock'
+
+import { api } from '@/apiClient//api'
+import { ApiError } from '@/apiClient//v1'
+import { ApiRequestOptions } from '@/apiClient//v1/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient//v1/core/ApiResult'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'commons/context/SignupJourneyContext/SignupJourneyContext'
-import * as siretApiValidate from 'commons/core/Venue/siretApiValidate'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
-import { Route, Routes } from 'react-router'
-import createFetchMock from 'vitest-fetch-mock'
+} from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import * as siretApiValidate from '@/commons/core/Venue/siretApiValidate'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
 
 import {
   DEFAULT_ADDRESS_FORM_VALUES,
@@ -28,7 +29,7 @@ vi.spyOn(siretApiValidate, 'siretApiValidate').mockResolvedValue(null)
 
 // Mock l’appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
 // Appel fait dans getDataFromAddress
-vi.mock('apiClient/adresse/apiAdresse', () => ({
+vi.mock('@/apiClient//adresse/apiAdresse', () => ({
   getDataFromAddressParts: () =>
     Promise.resolve([
       {

@@ -1,11 +1,12 @@
 import * as RadixDialog from '@radix-ui/react-dialog'
-import strokeErrorIcon from 'icons/stroke-error.svg'
 import React, { useId } from 'react'
+
+import strokeErrorIcon from '@/icons/stroke-error.svg'
 import {
   DialogBuilder,
   DialogBuilderProps,
-} from 'ui-kit/DialogBuilder/DialogBuilder'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/ui-kit/DialogBuilder/DialogBuilder'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Dialog.module.scss'
 

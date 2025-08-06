@@ -14,7 +14,7 @@ const FormWrapper = ({ children }: { children: React.ReactNode }) => {
 }
 
 const meta: Meta<typeof EmailSpellCheckInput> = {
-  title: 'ui-kit/formsV2/EmailSpellCheckInput',
+  title: '@/ui-kit/formsV2/EmailSpellCheckInput',
   component: EmailSpellCheckInput,
 
   decorators: [

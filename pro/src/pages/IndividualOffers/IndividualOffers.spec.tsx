@@ -1,32 +1,33 @@
-import { api } from 'apiClient/api'
+import { screen, waitFor, within } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import { Route, Routes } from 'react-router'
+import { beforeEach, expect } from 'vitest'
+
+import { api } from '@/apiClient//api'
 import {
   GetOffererAddressResponseModel,
   ListOffersOfferResponseModel,
   OfferStatus,
-} from 'apiClient/v1'
-import { screen, waitFor, within } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
+} from '@/apiClient//v1'
 import {
   ALL_CREATION_MODES,
   CREATION_MODES_OPTIONS,
   DEFAULT_SEARCH_FILTERS,
-} from 'commons/core/Offers/constants'
-import { SearchFiltersParams } from 'commons/core/Offers/types'
-import { computeIndividualOffersUrl } from 'commons/core/Offers/utils/computeIndividualOffersUrl'
-import { Audience } from 'commons/core/shared/types'
+} from '@/commons/core/Offers/constants'
+import { SearchFiltersParams } from '@/commons/core/Offers/types'
+import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
+import { Audience } from '@/commons/core/shared/types'
 import {
   defaultGetOffererResponseModel,
   listOffersOfferFactory,
   venueListItemFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { offererAddressFactory } from 'commons/utils/factories/offererAddressFactories'
+} from '@/commons/utils/factories/individualApiFactories'
+import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Route, Routes } from 'react-router'
-import { beforeEach, expect } from 'vitest'
+} from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { IndividualOffers } from './IndividualOffers'
 

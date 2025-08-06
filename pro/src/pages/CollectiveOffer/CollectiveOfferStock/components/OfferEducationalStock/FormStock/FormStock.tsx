@@ -1,19 +1,20 @@
+import React from 'react'
+import { useFormContext } from 'react-hook-form'
+
 import {
   Mode,
   OfferEducationalStockFormValues,
-} from 'commons/core/OfferEducational/types'
-import { isDateValid } from 'commons/utils/date'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import fullHelpIcon from 'icons/full-help.svg'
-import strokeCollaborator from 'icons/stroke-collaborator.svg'
-import strokeEuroIcon from 'icons/stroke-euro.svg'
-import React from 'react'
-import { useFormContext } from 'react-hook-form'
-import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
+} from '@/commons/core/OfferEducational/types'
+import { isDateValid } from '@/commons/utils/date'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import fullHelpIcon from '@/icons/full-help.svg'
+import strokeCollaborator from '@/icons/stroke-collaborator.svg'
+import strokeEuroIcon from '@/icons/stroke-euro.svg'
+import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
+import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
+import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
+import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 
 import {
   EVENT_TIME_LABEL,
@@ -21,7 +22,6 @@ import {
   START_DATE_LABEL,
   TOTAL_PRICE_LABEL,
 } from '../constants/labels'
-
 import styles from './FormStock.module.scss'
 
 export interface FormStockProps {

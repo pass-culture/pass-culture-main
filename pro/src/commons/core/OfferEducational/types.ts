@@ -1,4 +1,4 @@
-import { CollectiveLocationType, EacFormat } from 'apiClient/adage'
+import { CollectiveLocationType, EacFormat } from '@/apiClient//adage'
 import {
   CollectiveOfferResponseModel,
   GetCollectiveOfferResponseModel,
@@ -6,12 +6,12 @@ import {
   ListOffersOfferResponseModel,
   OfferAddressType,
   StudentLevels,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 import {
   AccessibilityFormValues,
   AddressFormValues,
-} from 'commons/core/shared/types'
-import { hasProperty } from 'commons/utils/types'
+} from '@/commons/core/shared/types'
+import { hasProperty } from '@/commons/utils/types'
 
 export type OfferDatesType = 'permanent' | 'specific_dates'
 

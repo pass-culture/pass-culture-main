@@ -3,7 +3,7 @@ import type { StoryObj } from '@storybook/react'
 import { AdageMultiselect } from './AdageMultiselect'
 
 export default {
-  title: 'ui-kit/formsV2/AdageMultiselect',
+  title: '@/ui-kit/formsV2/AdageMultiselect',
   component: AdageMultiselect,
 }
 

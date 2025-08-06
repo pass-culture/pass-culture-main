@@ -1,6 +1,7 @@
-import { checkCoords } from 'commons/utils/coords'
-import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
 import * as yup from 'yup'
+
+import { checkCoords } from '@/commons/utils/coords'
+import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
 
 // TODO (igabriele, 2025-07-24): Move that into IndividualOffer/IndividualOfferInformations/commons/validationSchema.ts.
 // + Add typings.

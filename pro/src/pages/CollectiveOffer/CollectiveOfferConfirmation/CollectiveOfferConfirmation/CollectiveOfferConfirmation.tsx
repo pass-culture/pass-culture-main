@@ -1,12 +1,13 @@
-import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import cn from 'classnames'
-import { BackToNavLink } from 'components/BackToNavLink/BackToNavLink'
-import fullValidateIcon from 'icons/full-validate.svg'
-import fullWaitIcon from 'icons/full-wait.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import { CollectiveOfferDisplayedStatus } from '@/apiClient//v1'
+import { BackToNavLink } from '@/components/BackToNavLink/BackToNavLink'
+import fullValidateIcon from '@/icons/full-validate.svg'
+import fullWaitIcon from '@/icons/full-wait.svg'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './CollectiveOfferConfirmation.module.scss'
 

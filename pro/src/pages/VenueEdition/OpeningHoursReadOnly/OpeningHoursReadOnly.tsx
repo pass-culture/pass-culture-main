@@ -1,8 +1,8 @@
-import { GetVenueResponseModel } from 'apiClient/v1'
-import { DAYS_IN_ORDER, mapDayToFrench } from 'commons/utils/date'
-import { getFormattedAddress } from 'commons/utils/getFormattedAddress'
-import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
-import { SummarySubSubSection } from 'components/SummaryLayout/SummarySubSubSection'
+import { GetVenueResponseModel } from '@/apiClient//v1'
+import { DAYS_IN_ORDER, mapDayToFrench } from '@/commons/utils/date'
+import { getFormattedAddress } from '@/commons/utils/getFormattedAddress'
+import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
+import { SummarySubSubSection } from '@/components/SummaryLayout/SummarySubSubSection'
 
 import styles from './OpeningHoursReadOnly.module.scss'
 

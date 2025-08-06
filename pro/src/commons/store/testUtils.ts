@@ -1,7 +1,7 @@
-import { initialState as featuresInitialState } from 'commons/store/features/reducer'
-import { initialState as notificationInitialState } from 'commons/store/notifications/reducer'
-import { createStore } from 'commons/store/store'
-import { initialState as userInitialState } from 'commons/store/user/reducer'
+import { initialState as featuresInitialState } from '@/commons/store/features/reducer'
+import { initialState as notificationInitialState } from '@/commons/store/notifications/reducer'
+import { createStore } from '@/commons/store/store'
+import { initialState as userInitialState } from '@/commons/store/user/reducer'
 
 import { RootState } from './rootReducer'
 

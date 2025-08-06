@@ -1,10 +1,11 @@
+import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router'
+
 import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
-} from 'apiClient/v1'
-import { Audience } from 'commons/core/shared/types'
-import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router'
+} from '@/apiClient//v1'
+import { Audience } from '@/commons/core/shared/types'
 
 import { isCollectiveBooking } from './BookingsTable/Cells/BookingOfferCell'
 import { CollectiveBookingsTable } from './BookingsTable/CollectiveBookingsTable'

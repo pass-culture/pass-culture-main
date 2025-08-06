@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react'
 
-import { useGetImageBitmap } from 'commons/hooks/useGetBitmap'
-import * as imageUtils from 'commons/utils/image'
+import { useGetImageBitmap } from '@/commons/hooks/useGetBitmap'
+import * as imageUtils from '@/commons/utils/image'
 
 describe('useGetImageBitmap', () => {
   it('should return width and height of provided file', async () => {

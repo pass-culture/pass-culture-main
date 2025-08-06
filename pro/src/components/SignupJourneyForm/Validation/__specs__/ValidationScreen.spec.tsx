@@ -1,30 +1,31 @@
-import { api } from 'apiClient/api'
-import {
-  GetOffererResponseModel,
-  PostOffererResponseModel,
-  Target,
-} from 'apiClient/v1'
 import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
+import { Route, Routes } from 'react-router'
+
+import { api } from '@/apiClient//api'
+import {
+  GetOffererResponseModel,
+  PostOffererResponseModel,
+  Target,
+} from '@/apiClient//v1'
+import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'commons/context/SignupJourneyContext/SignupJourneyContext'
-import { Address } from 'commons/core/shared/types'
-import { getOffererNameFactory } from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import * as utils from 'commons/utils/recaptcha'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
-import { Validation } from 'components/SignupJourneyForm/Validation/Validation'
-import { Route, Routes } from 'react-router'
+} from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { Address } from '@/commons/core/shared/types'
+import { getOffererNameFactory } from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import * as utils from '@/commons/utils/recaptcha'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
+import { Validation } from '@/components/SignupJourneyForm/Validation/Validation'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getVenueTypes: vi.fn(),
     saveNewOnboardingData: vi.fn(),
@@ -34,12 +35,12 @@ vi.mock('apiClient/api', () => ({
 }))
 
 const useHasAccessToDidacticOnboarding = vi.hoisted(() => vi.fn())
-vi.mock('commons/hooks/useHasAccessToDidacticOnboarding', () => ({
+vi.mock('@/commons/hooks/useHasAccessToDidacticOnboarding', () => ({
   useHasAccessToDidacticOnboarding,
 }))
 
 const selectCurrentOffererId = vi.hoisted(() => vi.fn())
-vi.mock('commons/store/offerer/selectors', async (importOriginal) => ({
+vi.mock('@/commons/store/offerer/selectors', async (importOriginal) => ({
   ...(await importOriginal()),
   selectCurrentOffererId,
 }))

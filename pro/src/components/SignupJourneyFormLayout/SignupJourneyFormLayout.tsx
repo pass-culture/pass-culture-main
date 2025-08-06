@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 
-import { SignupJourneyStepper } from 'components/SignupJourneyStepper/SignupJourneyStepper'
+import { SignupJourneyStepper } from '@/components/SignupJourneyStepper/SignupJourneyStepper'
 
 import styles from './SignupJourneyFormLayoutContent.module.scss'
 

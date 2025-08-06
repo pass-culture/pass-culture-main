@@ -1,4 +1,5 @@
 import { type Mock, vi } from 'vitest'
+
 import { getDataFromAddress, getDataFromAddressParts } from './apiAdresse'
 import { AdresseApiJson, FeaturePropertyType } from './types'
 

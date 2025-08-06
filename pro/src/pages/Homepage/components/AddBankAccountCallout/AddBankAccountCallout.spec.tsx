@@ -1,11 +1,11 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
-import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { AddBankAccountCallout } from 'pages/Homepage/components/AddBankAccountCallout/AddBankAccountCallout'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { AddBankAccountCallout } from '@/pages/Homepage/components/AddBankAccountCallout/AddBankAccountCallout'
 
 const mockLogEvent = vi.fn()
 

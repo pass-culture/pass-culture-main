@@ -1,9 +1,10 @@
-import { useOfferer } from 'commons/hooks/swr/useOfferer'
+import { formatAndOrderVenues } from 'repository/venuesService'
+
+import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import {
   getPhysicalVenuesFromOfferer,
   getVirtualVenueFromOfferer,
-} from 'pages/Homepage/components/Offerers/components/VenueList/venueUtils'
-import { formatAndOrderVenues } from 'repository/venuesService'
+} from '@/pages/Homepage/components/Offerers/components/VenueList/venueUtils'
 
 export const useVenuesFromOfferer = (
   selectedOffererId: number | null,

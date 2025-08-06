@@ -1,8 +1,9 @@
-import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
-import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { expect } from 'vitest'
+
+import { CollectiveOfferDisplayedStatus } from '@/apiClient//v1'
+import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { PreviewHeader } from './PreviewHeader'
 

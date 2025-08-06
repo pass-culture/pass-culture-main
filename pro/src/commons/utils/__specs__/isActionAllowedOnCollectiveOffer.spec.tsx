@@ -1,7 +1,7 @@
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 
 import {
   getCollectiveOfferFactory,

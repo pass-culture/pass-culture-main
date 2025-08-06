@@ -1,8 +1,9 @@
-import { api } from 'apiClient/api'
 import { act, renderHook } from '@testing-library/react'
-import { useIndividualOfferImageUpload } from 'pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 
-vi.mock('apiClient/api', () => ({
+import { api } from '@/apiClient//api'
+import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
+
+vi.mock('@/apiClient//api', () => ({
   api: {
     createThumbnail: vi.fn(),
     deleteThumbnail: vi.fn(),

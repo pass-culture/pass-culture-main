@@ -1,15 +1,15 @@
 import { StoryObj } from '@storybook/react'
-import { RadioButton } from 'design-system/RadioButton/RadioButton'
-import { TagVariant } from 'design-system/Tag/Tag'
-import strokeDateIcon from 'icons/stroke-date.svg'
 import { useState } from 'react'
 
-import imageDemo from '../assets/dog.jpg'
+import { RadioButton } from '@/design-system/RadioButton/RadioButton'
+import { TagVariant } from '@/design-system/Tag/Tag'
+import strokeDateIcon from '@/icons/stroke-date.svg'
 
+import imageDemo from '../assets/dog.jpg'
 import { RadioButtonGroup } from './RadioButtonGroup'
 
 export default {
-  title: 'design-system/RadioButtonGroup',
+  title: '@/design-system/RadioButtonGroup',
   component: RadioButtonGroup,
 }
 

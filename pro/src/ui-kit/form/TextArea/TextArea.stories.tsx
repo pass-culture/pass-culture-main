@@ -17,7 +17,7 @@ const Wrapper = ({ children }: PropsWithChildren) => {
 }
 
 const meta: Meta<typeof TextArea> = {
-  title: 'ui-kit/formsV2/TextArea',
+  title: '@/ui-kit/formsV2/TextArea',
   component: TextArea,
 }
 

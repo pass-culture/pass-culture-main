@@ -1,21 +1,22 @@
-import { OfferStatus } from 'apiClient/v1'
+import { Dispatch, FormEvent, SetStateAction } from 'react'
+
+import { OfferStatus } from '@/apiClient//v1'
 import {
   ALL_CATEGORIES_OPTION,
   ALL_OFFERER_ADDRESS_OPTION,
   ALL_STATUS,
   CREATION_MODES_OPTIONS,
   DEFAULT_SEARCH_FILTERS,
-} from 'commons/core/Offers/constants'
-import { SearchFiltersParams } from 'commons/core/Offers/types'
-import { SelectOption } from 'commons/custom_types/form'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { OffersTableSearch } from 'components/OffersTable/OffersTableSearch/OffersTableSearch'
-import styles from 'components/OffersTable/OffersTableSearch/OffersTableSearch.module.scss'
-import { Dispatch, FormEvent, SetStateAction } from 'react'
-import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'
-import { SelectInput } from 'ui-kit/form/shared/BaseSelectInput/SelectInput'
-import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
+} from '@/commons/core/Offers/constants'
+import { SearchFiltersParams } from '@/commons/core/Offers/types'
+import { SelectOption } from '@/commons/custom_types/form'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { OffersTableSearch } from '@/components/OffersTable/OffersTableSearch/OffersTableSearch'
+import styles from '@/components/OffersTable/OffersTableSearch/OffersTableSearch.module.scss'
+import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
+import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
+import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
 interface IndividualOffersSearchFiltersProps {
   hasFilters: boolean
