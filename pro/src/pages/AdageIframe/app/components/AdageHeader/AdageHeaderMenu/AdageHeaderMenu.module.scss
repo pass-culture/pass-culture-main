@@ -57,7 +57,7 @@
     .adage-header-link-focus {
       @include outline.focus-outline(rem.torem(4px));
 
-      border-radius: rem.torem(4px);
+      border-radius: var(--size-border-radius-s);
     }
   }
 }

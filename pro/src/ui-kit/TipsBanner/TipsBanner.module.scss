@@ -5,7 +5,7 @@
 .tips-banner {
   display: flex;
   padding: rem.torem(16px);
-  border-radius: rem.torem(8px);
+  border-radius: var(--size-border-radius-m);
   background: var(--color-background-info);
   width: fit-content;
   gap: rem.torem(8px);

@@ -54,7 +54,7 @@ $offer-image-width: rem.torem(216px);
 .offer-image {
   width: $offer-image-width;
   height: $offer-image-height;
-  border-radius: rem.torem(16px);
+  border-radius: var(--size-border-radius-l);
   border: rem.torem(1px) solid var(--color-border-inverted);
   object-fit: cover;
 

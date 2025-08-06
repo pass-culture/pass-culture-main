@@ -2,7 +2,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .desk-form-wrapper {
-  border-radius: rem.torem(8px);
+  border-radius: var(--size-border-radius-m);
   box-shadow: 0 0 rem.torem(5px) var(--color-large-shadow);
   padding: rem.torem(25px);
 }

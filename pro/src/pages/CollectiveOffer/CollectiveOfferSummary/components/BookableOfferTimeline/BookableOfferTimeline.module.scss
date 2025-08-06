@@ -11,7 +11,7 @@
 
 .timeline-container {
   border: rem.torem(1px) solid var(--color-border-subtle);
-  border-radius: rem.torem(8px);
+  border-radius: var(--size-border-radius-m);
   padding: rem.torem(24px);
 }
 

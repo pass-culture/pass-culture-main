@@ -6,7 +6,7 @@
 }
 
 .icon-stories {
-  border-radius: rem.torem(8px);
+  border-radius: var(--size-border-radius-m);
   box-shadow: 0 0 rem.torem(16px) var(--color-large-shadow);
   padding: rem.torem(16px);
 }
@@ -42,7 +42,7 @@
   padding: rem.torem(8px);
   margin: rem.torem(4px);
   box-shadow: 0 0 rem.torem(4px) var(--color-large-shadow);
-  border-radius: rem.torem(4px);
+  border-radius: var(--size-border-radius-s);
   width: rem.torem(120px);
 
   .name {

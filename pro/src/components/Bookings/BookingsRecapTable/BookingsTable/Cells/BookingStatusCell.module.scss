@@ -6,7 +6,7 @@
 .booking-status-label {
   position: relative;
   border: none;
-  border-radius: rem.torem(4px);
+  border-radius: var(--size-border-radius-s);
   width: fit-content;
 
   &:focus-visible {

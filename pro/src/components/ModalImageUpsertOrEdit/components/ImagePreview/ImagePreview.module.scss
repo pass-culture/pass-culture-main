@@ -5,7 +5,7 @@
 .image-preview-previews {
   padding: rem.torem(16px);
   border: 1px solid var(--color-border-subtle);
-  border-radius: rem.torem(8px);
+  border-radius: var(--size-border-radius-m);
 
   &-title {
     @include fonts.body-xs;
@@ -46,5 +46,3 @@
   left: rem.torem(9px);
   top: rem.torem(13px);
 }
-
-

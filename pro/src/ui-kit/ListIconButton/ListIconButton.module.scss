@@ -42,7 +42,7 @@
 }
 
 .tooltip {
-  border-radius: rem.torem(16px);
+  border-radius: var(--size-border-radius-l);
 }
 
 .variant-primary {

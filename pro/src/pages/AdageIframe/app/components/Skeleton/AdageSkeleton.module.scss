@@ -4,7 +4,7 @@
   display: flex;
   padding: rem.torem(20px);
   border: rem.torem(1px) solid var(--color-border-subtle);
-  border-radius: rem.torem(16px);
+  border-radius: var(--size-border-radius-l);
   animation: pulse 1.5s infinite alternate;
   width: 100%;
   margin-bottom: rem.torem(16px);
@@ -14,7 +14,7 @@
     height: rem.torem(250px);
     background-color: var(--color-background-subtle);
     margin-right: rem.torem(20px);
-    border-radius: rem.torem(16px);
+    border-radius: var(--size-border-radius-l);
   }
 
   &-text {
@@ -68,7 +68,7 @@
     width: rem.torem(215px);
     height: rem.torem(275px);
     background-color: var(--color-background-subtle);
-    border-radius: rem.torem(16px);
+    border-radius: var(--size-border-radius-l);
   }
 
   &-info {

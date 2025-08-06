@@ -3,7 +3,7 @@
 
 .thumb-container {
   align-items: center;
-  border-radius: rem.torem(4px);
+  border-radius: var(--size-border-radius-s);
   display: flex;
   justify-content: center;
   background-color: var(--color-background-subtle);
@@ -12,7 +12,7 @@
 }
 
 .offer-thumb {
-  border-radius: rem.torem(4px);
+  border-radius: var(--size-border-radius-s);
   object-fit: cover;
   aspect-ratio: 1 / 1;
   width: 100%;

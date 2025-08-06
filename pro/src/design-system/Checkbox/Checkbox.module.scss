@@ -24,7 +24,7 @@
   &-input {
     appearance: none;
     border: rem.torem(2px) solid var(--color-border-default);
-    border-radius: rem.torem(4px);
+    border-radius: var(--size-border-radius-s);
     flex: 0 0 auto;
     outline: none;
     padding: 0;
@@ -38,7 +38,7 @@
   &:focus-within {
     @include outline.focus-outline(rem.torem(4px));
 
-    border-radius: rem.torem(4px);
+    border-radius: var(--size-border-radius-s);
   }
 
   @supports selector(:has(*)) {
@@ -51,7 +51,7 @@
     &:has(.checkbox-input:focus-visible) {
       @include outline.focus-outline(rem.torem(4px));
 
-      border-radius: rem.torem(4px);
+      border-radius: var(--size-border-radius-s);
     }
   }
 }
@@ -164,7 +164,7 @@
 //  DETAILED DEFAULT
 .checkbox.detailed {
   border: 1px solid var(--color-border-default);
-  border-radius: rem.torem(8px);
+  border-radius: var(--size-border-radius-m);
 
   .checkbox-label {
     padding: rem.torem(16px);
