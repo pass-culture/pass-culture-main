@@ -2,7 +2,7 @@ import {
   DMSApplicationForEAC,
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 
 export const getLastCollectiveDmsApplication = (
   collectiveDmsApplications: DMSApplicationForEAC[]

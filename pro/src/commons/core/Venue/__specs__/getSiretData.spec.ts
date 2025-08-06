@@ -1,5 +1,5 @@
-import { api } from '@/apiClient//api'
-import { isError } from '@/apiClient//helpers'
+import { api } from '@/apiClient/api'
+import { isError } from '@/apiClient/helpers'
 import { getSiretData } from '@/commons/core/Venue/getSiretData'
 
 describe('getsiretData', () => {

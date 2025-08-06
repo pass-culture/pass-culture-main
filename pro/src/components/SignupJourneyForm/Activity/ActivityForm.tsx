@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
-import { VenueTypeResponseModel } from '@/apiClient//v1'
+import { VenueTypeResponseModel } from '@/apiClient/v1'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'

@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { useState } from 'react'
 
-import { apiAdage } from '@/apiClient//api'
+import { apiAdage } from '@/apiClient/api'
 import { useNotification } from '@/commons/hooks/useNotification'
 import fullLinkIcon from '@/icons/full-link.svg'
 import strokeCloseIcon from '@/icons/stroke-close.svg'

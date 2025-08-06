@@ -1,11 +1,11 @@
 import cn from 'classnames'
 import { Navigate, useLocation, useNavigate } from 'react-router'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'

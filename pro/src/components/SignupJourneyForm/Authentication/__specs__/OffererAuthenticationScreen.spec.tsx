@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import createFetchMock from 'vitest-fetch-mock'
 
-import * as apiAdresse from '@/apiClient//adresse/apiAdresse'
+import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
@@ -18,9 +18,9 @@ import { OffererAuthentication } from '../OffererAuthentication'
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
-vi.mock('@/apiClient//adresse/apiAdresse', async () => {
+vi.mock('@/apiClient/adresse/apiAdresse', async () => {
   return {
-    ...(await vi.importActual('@/apiClient//adresse/apiAdresse')),
+    ...(await vi.importActual('@/apiClient/adresse/apiAdresse')),
     default: {
       getDataFromAddress: vi.fn(),
     },

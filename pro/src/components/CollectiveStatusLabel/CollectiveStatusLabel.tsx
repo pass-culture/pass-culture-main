@@ -1,4 +1,4 @@
-import { CollectiveOfferDisplayedStatus } from '@/apiClient//v1'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 
 const COLLECTIVE_OFFER_STATUS_PROPERTIES: Record<

@@ -1,4 +1,4 @@
-import { GetVenueResponseModel } from '@/apiClient//v1'
+import { GetVenueResponseModel } from '@/apiClient/v1'
 import strokeAccessibilityBrainIcon from '@/icons/stroke-accessibility-brain.svg'
 import strokeAccessibilityEarIcon from '@/icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEyeIcon from '@/icons/stroke-accessibility-eye.svg'

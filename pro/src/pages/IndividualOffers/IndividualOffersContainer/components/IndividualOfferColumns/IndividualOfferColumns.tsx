@@ -3,7 +3,7 @@ import { computeAddressDisplayName } from 'repository/venuesService'
 import {
   HeadLineOfferResponseModel,
   ListOffersOfferResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_STATUS_DRAFT,

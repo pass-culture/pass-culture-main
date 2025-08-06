@@ -1,8 +1,8 @@
 import classNames from 'classnames'
-import styles from 'styles/components/Cells.module.scss'
 
-import { EducationalInstitutionResponseModel } from '@/apiClient//v1'
+import { EducationalInstitutionResponseModel } from '@/apiClient/v1'
 import { getCellsDefinition } from '@/components/OffersTable/utils/cellDefinitions'
+import styles from '@/styles/components/Cells.module.scss'
 
 export interface OfferInstitutionCellProps {
   rowId: string

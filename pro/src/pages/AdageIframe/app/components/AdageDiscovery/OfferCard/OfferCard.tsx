@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 
-import { CollectiveOfferTemplateResponseModel } from '@/apiClient//adage'
+import { CollectiveOfferTemplateResponseModel } from '@/apiClient/adage'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getHumanizeRelativeDistance } from '@/commons/utils/getDistance'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'

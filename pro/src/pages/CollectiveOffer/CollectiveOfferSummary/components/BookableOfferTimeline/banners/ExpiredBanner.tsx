@@ -1,4 +1,4 @@
-import { CollectiveOfferDisplayedStatus } from '@/apiClient//v1'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import fullEditIcon from '@/icons/full-edit.svg'
 import { Callout } from '@/ui-kit/Callout/Callout'

@@ -1,13 +1,13 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   type AggregatedRevenueModel,
   type GetOffererResponseModel,
   type GetOffererVenueResponseModel,
   type StatisticsModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   defaultGetOffererResponseModel,
@@ -81,7 +81,7 @@ const renderIncome = () => {
   })
 }
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getOfferer: vi.fn(),
     getStatistics: vi.fn(),

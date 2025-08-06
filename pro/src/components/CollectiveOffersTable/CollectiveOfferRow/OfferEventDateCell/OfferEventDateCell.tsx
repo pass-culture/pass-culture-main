@@ -1,16 +1,16 @@
 import classNames from 'classnames'
-import styles from 'styles/components/Cells.module.scss'
 
 import {
   CollectiveOfferResponseModel,
   ListOffersVenueResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   getDateTimeToFrenchText,
   toDateStrippedOfTimezone,
 } from '@/commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
 import { getCellsDefinition } from '@/components/OffersTable/utils/cellDefinitions'
+import styles from '@/styles/components/Cells.module.scss'
 
 export interface OfferEventDateCellProps {
   offer: CollectiveOfferResponseModel

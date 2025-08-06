@@ -1,7 +1,7 @@
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { Step, Stepper } from '@/components/Stepper/Stepper'
 

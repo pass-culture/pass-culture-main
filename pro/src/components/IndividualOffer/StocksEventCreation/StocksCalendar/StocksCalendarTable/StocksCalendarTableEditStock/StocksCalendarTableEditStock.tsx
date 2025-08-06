@@ -7,7 +7,7 @@ import {
   EventStockUpdateBodyModel,
   GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { getPriceCategoryOptions } from '@/components/IndividualOffer/PriceCategoriesScreen/form/getPriceCategoryOptions'
 import { Button } from '@/ui-kit/Button/Button'

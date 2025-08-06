@@ -1,4 +1,4 @@
-import { SubcategoryResponseModel } from '@/apiClient//v1'
+import { SubcategoryResponseModel } from '@/apiClient/v1'
 
 interface GetOfferConditionalFieldsProps {
   offerSubCategory?: SubcategoryResponseModel | null

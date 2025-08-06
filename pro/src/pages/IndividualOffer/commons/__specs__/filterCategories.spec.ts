@@ -1,7 +1,4 @@
-import {
-  CategoryResponseModel,
-  SubcategoryResponseModel,
-} from '@/apiClient//v1'
+import { CategoryResponseModel, SubcategoryResponseModel } from '@/apiClient/v1'
 import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router'
 import { formatAndOrderAddresses } from 'repository/venuesService'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { Layout } from '@/app/App/layout/Layout'
 import {
   GET_CATEGORIES_QUERY_KEY,

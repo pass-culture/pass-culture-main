@@ -2,7 +2,7 @@ import {
   AuthenticatedResponse,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient//adage'
+} from '@/apiClient/adage'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { Tag } from '@/design-system/Tag/Tag'
 

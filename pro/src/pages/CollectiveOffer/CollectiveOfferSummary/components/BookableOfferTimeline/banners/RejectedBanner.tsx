@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient//v1'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,

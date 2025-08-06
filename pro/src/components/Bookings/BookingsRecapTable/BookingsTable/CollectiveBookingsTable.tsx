@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { useEffect } from 'react'
 
-import { CollectiveBookingResponseModel } from '@/apiClient//v1'
+import { CollectiveBookingResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { Audience } from '@/commons/core/shared/types'

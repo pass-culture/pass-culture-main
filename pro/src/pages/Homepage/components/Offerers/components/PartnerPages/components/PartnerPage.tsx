@@ -7,7 +7,7 @@ import {
   GetOffererResponseModel,
   type GetVenueResponseModel,
   VenueTypeResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFERER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'

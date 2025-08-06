@@ -3,8 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 import { axe } from 'vitest-axe'
 
-import { AdresseData } from '@/apiClient//adresse/types'
-import { VenueListItemResponseModel } from '@/apiClient//v1'
+import { AdresseData } from '@/apiClient/adresse/types'
+import { VenueListItemResponseModel } from '@/apiClient/v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
@@ -74,7 +74,7 @@ const MOCK: {
 }
 
 const getDataFromAddressMock = vi.hoisted(() => vi.fn())
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   getDataFromAddress: getDataFromAddressMock,
 }))
 

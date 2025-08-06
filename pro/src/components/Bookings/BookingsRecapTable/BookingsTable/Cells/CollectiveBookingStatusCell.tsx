@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-import { CollectiveBookingResponseModel } from '@/apiClient//v1'
+import { CollectiveBookingResponseModel } from '@/apiClient/v1'
 import { Tag } from '@/design-system/Tag/Tag'
 
 import { getCollectiveBookingStatusDisplayInformations } from '../../utils/bookingStatusConverter'

@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 
 import { ExpirationCell } from './ExpirationCell'

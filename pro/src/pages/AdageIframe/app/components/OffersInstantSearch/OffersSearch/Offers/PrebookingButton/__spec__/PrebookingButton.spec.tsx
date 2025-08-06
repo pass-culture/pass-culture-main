@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiAdage } from '@/apiClient//api'
+import { apiAdage } from '@/apiClient/api'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
@@ -9,7 +9,7 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 
 import { PrebookingButton, PrebookingButtonProps } from '../PrebookingButton'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     bookCollectiveOffer: vi.fn(),
     logBookingModalButtonClick: vi.fn(),

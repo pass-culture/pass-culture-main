@@ -4,8 +4,8 @@ import {
   within,
 } from '@testing-library/react'
 
-import { api } from '@/apiClient//api'
-import { OfferStatus } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { OfferStatus } from '@/apiClient/v1'
 import * as useHasAccessToDidacticOnboarding from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import {
   defaultGetOffererResponseModel,
@@ -28,7 +28,7 @@ const renderOnboardingOfferIndividual = (
   return renderWithProviders(<OnboardingOfferIndividual />, { ...options })
 }
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     listOffers: vi.fn(),
     getOfferer: vi.fn(),

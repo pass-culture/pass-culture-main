@@ -13,8 +13,8 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
   VenueResponse,
-} from '@/apiClient//adage'
-import { apiAdage } from '@/apiClient//api'
+} from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import { GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { setSearchView } from '@/commons/store/adageFilter/reducer'

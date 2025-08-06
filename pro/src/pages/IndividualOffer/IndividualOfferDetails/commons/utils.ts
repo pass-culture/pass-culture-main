@@ -7,7 +7,7 @@ import {
   SubcategoryIdEnum,
   SubcategoryResponseModel,
   VenueListItemResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { AccessibilityFormValues } from '@/commons/core/shared/types'

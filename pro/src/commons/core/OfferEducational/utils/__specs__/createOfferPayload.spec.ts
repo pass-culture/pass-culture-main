@@ -1,4 +1,4 @@
-import { CollectiveLocationType, OfferAddressType } from '@/apiClient//v1'
+import { CollectiveLocationType, OfferAddressType } from '@/apiClient/v1'
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
 
 import {

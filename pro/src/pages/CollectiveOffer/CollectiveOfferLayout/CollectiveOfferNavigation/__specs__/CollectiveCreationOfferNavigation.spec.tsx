@@ -1,13 +1,13 @@
 import { screen } from '@testing-library/react'
 import * as router from 'react-router'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseIdModel,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as useNotification from '@/commons/hooks/useNotification'
 import {

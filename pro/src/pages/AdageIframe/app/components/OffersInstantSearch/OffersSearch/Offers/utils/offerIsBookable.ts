@@ -1,7 +1,7 @@
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient//adage'
+} from '@/apiClient/adage'
 
 export const offerIsBookable = (
   offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel

@@ -2,7 +2,7 @@ import { useFormContext } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 
-import { GetOffererResponseModel } from '@/apiClient//v1'
+import { GetOffererResponseModel } from '@/apiClient/v1'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,

@@ -1,13 +1,13 @@
 import { screen } from '@testing-library/react'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { StatisticsDashboard } from '../StatisticsDashboard'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getOffererStats: vi.fn(),
     getOffererV2Stats: vi.fn(),

@@ -1,4 +1,4 @@
-import { VenueTypeResponseModel } from '@/apiClient//v1'
+import { VenueTypeResponseModel } from '@/apiClient/v1'
 import { SelectOption } from '@/commons/custom_types/form'
 import { sortByLabel } from '@/commons/utils/strings'
 

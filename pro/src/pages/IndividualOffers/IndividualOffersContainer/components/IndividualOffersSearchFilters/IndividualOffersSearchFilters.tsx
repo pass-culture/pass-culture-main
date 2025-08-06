@@ -1,6 +1,6 @@
 import { Dispatch, FormEvent, SetStateAction } from 'react'
 
-import { OfferStatus } from '@/apiClient//v1'
+import { OfferStatus } from '@/apiClient/v1'
 import {
   ALL_CATEGORIES_OPTION,
   ALL_OFFERER_ADDRESS_OPTION,

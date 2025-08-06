@@ -2,9 +2,9 @@ import { screen } from '@testing-library/react'
 import * as instantSearch from 'react-instantsearch'
 import { Configure } from 'react-instantsearch'
 
-import { AuthenticatedResponse } from '@/apiClient//adage'
-import { apiAdage } from '@/apiClient//api'
-import { OfferAddressType } from '@/apiClient//v1'
+import { AuthenticatedResponse } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
+import { OfferAddressType } from '@/apiClient/v1'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
@@ -31,7 +31,7 @@ type InstantSearchHookResultMock = {
   }[]
 }
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     getCollectiveOfferTemplate: vi.fn(),
     getCollectiveOffer: vi.fn(),

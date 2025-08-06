@@ -1,6 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
-import { apiAdage } from '@/apiClient//api'
+import { apiAdage } from '@/apiClient/api'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
@@ -17,7 +17,7 @@ const venue = {
   departementCode: '75',
 }
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     getVenueById: vi.fn(() => {
       return venue

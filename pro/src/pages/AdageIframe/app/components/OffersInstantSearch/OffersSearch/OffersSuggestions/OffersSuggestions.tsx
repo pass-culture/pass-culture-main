@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { Configure, Index, useInstantSearch } from 'react-instantsearch'
 
-import { OfferAddressType } from '@/apiClient//adage'
+import { OfferAddressType } from '@/apiClient/adage'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { ALGOLIA_COLLECTIVE_OFFERS_INDEX } from '@/commons/utils/config'
 import { isNumber } from '@/commons/utils/types'

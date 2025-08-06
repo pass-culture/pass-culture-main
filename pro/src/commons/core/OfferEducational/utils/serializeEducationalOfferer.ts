@@ -1,4 +1,4 @@
-import { GetEducationalOffererResponseModel } from '@/apiClient//v1'
+import { GetEducationalOffererResponseModel } from '@/apiClient/v1'
 
 const serializeVenues = (
   venues: GetEducationalOffererResponseModel['managedVenues']

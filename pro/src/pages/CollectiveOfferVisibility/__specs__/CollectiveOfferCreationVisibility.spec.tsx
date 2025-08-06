@@ -6,7 +6,7 @@ import { MandatoryCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer
 
 import { CollectiveOfferVisibility } from '../CollectiveOfferCreationVisibility'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getEducationalInstitutions: vi.fn(),
     getCollectiveOffer: vi.fn(),

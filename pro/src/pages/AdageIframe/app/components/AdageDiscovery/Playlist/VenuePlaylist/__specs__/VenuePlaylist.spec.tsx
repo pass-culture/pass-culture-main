@@ -1,14 +1,14 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { LocalOfferersPlaylistOffer } from '@/apiClient//adage'
-import { apiAdage } from '@/apiClient//api'
+import { LocalOfferersPlaylistOffer } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { VenuePlaylist } from '../VenuePlaylist'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     logConsultPlaylistElement: vi.fn(),
     getLocalOfferersPlaylist: vi.fn(),

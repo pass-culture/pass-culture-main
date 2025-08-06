@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { format } from 'date-fns'
 import { useState } from 'react'
 
-import { InvoiceResponseV2Model } from '@/apiClient//v1'
+import { InvoiceResponseV2Model } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import { formatPrice } from '@/commons/utils/formatPrice'
 import strokeLessIcon from '@/icons/stroke-less.svg'

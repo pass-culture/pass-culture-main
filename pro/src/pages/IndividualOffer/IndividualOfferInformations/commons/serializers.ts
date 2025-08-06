@@ -2,7 +2,7 @@ import {
   GetIndividualOfferResponseModel,
   PatchOfferBodyModel,
   WithdrawalTypeEnum,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { AccessibilityEnum } from '@/commons/core/shared/types'
 import { removeQuotes } from '@/commons/utils/removeQuotes'

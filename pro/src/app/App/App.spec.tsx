@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { App } from '@/app/App/App'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as orejime from '@/app/App/analytics/orejime'

@@ -1,4 +1,4 @@
-import { VenueTypeCode } from '@/apiClient//v1'
+import { VenueTypeCode } from '@/apiClient/v1'
 
 export const isRecordStore = (
   venues: { venueTypeCode: VenueTypeCode }[]

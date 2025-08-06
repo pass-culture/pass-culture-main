@@ -2,11 +2,11 @@ import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   GetOffererNameResponseModel,
   GetOffererResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
@@ -84,7 +84,7 @@ describe('App', () => {
 
   describe('Switch Offerer', () => {
     beforeEach(() => {
-      vi.mock('@/apiClient//api', () => ({
+      vi.mock('@/apiClient/api', () => ({
         api: {
           getOfferer: vi.fn(),
         },

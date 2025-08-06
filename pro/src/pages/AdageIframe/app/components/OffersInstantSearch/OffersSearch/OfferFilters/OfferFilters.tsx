@@ -7,8 +7,8 @@ import {
   CollectiveLocationType,
   EacFormat,
   OfferAddressType,
-} from '@/apiClient//adage'
-import { apiAdage } from '@/apiClient//api'
+} from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import { GET_COLLECTIVE_ACADEMIES } from '@/commons/config/swrQueryKeys'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FormLayout } from '@/components/FormLayout/FormLayout'

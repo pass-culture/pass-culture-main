@@ -2,11 +2,11 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { generatePath, Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   GetIndividualOfferResponseModel,
   GetIndividualOfferWithAddressResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,

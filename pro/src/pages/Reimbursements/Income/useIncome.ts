@@ -1,7 +1,7 @@
 import useSWR from 'swr'
 
-import { api } from '@/apiClient//api'
-import { StatisticsModel } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { StatisticsModel } from '@/apiClient/v1'
 import { GET_STATISTICS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 
 export const useIncome = (selectedVenues: string[]) => {

@@ -1,6 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 
-import { getDataFromAddress } from '@/apiClient//api'
+import { getDataFromAddress } from '@/apiClient/api'
 import { getSiretData } from '@/commons/core/Venue/getSiretData'
 import { humanizeSiret, unhumanizeSiret } from '@/commons/core/Venue/utils'
 import { FormLayout } from '@/components/FormLayout/FormLayout'

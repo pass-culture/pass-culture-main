@@ -6,7 +6,7 @@ import {
   CollectiveOfferResponseModel,
   SharedCurrentUserResponseModel,
   UserRole,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   ALL_OFFERERS_OPTION,
   ALL_VENUES_OPTION,
@@ -72,7 +72,7 @@ vi.mock('@/commons/utils/date', async () => {
   }
 })
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn().mockReturnValue({}),
     deleteDraftOffers: vi.fn(),

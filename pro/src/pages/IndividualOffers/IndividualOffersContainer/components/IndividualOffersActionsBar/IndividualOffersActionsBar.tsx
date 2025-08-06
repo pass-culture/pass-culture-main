@@ -2,11 +2,11 @@ import { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { mutate, useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   OfferStatus,
   type PatchAllOffersActiveStatusBodyModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from '@/commons/core/Offers/types'

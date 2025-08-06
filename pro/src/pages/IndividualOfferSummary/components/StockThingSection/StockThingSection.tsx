@@ -1,6 +1,6 @@
 import { format } from 'date-fns-tz'
 
-import { GetOfferStockResponseModel } from '@/apiClient//v1'
+import { GetOfferStockResponseModel } from '@/apiClient/v1'
 import {
   FORMAT_DD_MM_YYYY,
   toDateStrippedOfTimezone,

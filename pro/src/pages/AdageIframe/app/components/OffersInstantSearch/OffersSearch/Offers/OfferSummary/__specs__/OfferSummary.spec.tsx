@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { CollectiveOfferTemplateResponseModel } from '@/apiClient//adage'
+import { CollectiveOfferTemplateResponseModel } from '@/apiClient/adage'
 import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageFactories'
 import {
   RenderWithProvidersOptions,

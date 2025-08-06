@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient//api'
-import { SubcategoryIdEnum } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { SubcategoryIdEnum } from '@/apiClient/v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
@@ -48,7 +48,7 @@ const renderUsefulInformationScreen = (
   )
 }
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getVenues: vi.fn().mockResolvedValue({
       venues: [],

@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { Layout } from '@/app/App/layout/Layout'
 import {
   GET_VENUE_PROVIDERS_QUERY_KEY,

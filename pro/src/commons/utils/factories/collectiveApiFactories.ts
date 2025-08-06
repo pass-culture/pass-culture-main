@@ -2,7 +2,7 @@
 
 import { add, addDays } from 'date-fns'
 
-import { EacFormat } from '@/apiClient//adage'
+import { EacFormat } from '@/apiClient/adage'
 import {
   CollectiveBookingBankAccountStatus,
   CollectiveBookingByIdResponseModel,
@@ -30,7 +30,7 @@ import {
   OfferAddressType,
   StudentLevels,
   VenueTypeCode,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { BOOKING_STATUS } from '@/commons/core/Bookings/constants'
 
 let offerId = 1

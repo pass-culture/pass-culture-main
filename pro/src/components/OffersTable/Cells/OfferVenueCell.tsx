@@ -1,9 +1,9 @@
 import classNames from 'classnames'
 import { computeVenueDisplayName } from 'repository/venuesService'
-import styles from 'styles/components/Cells.module.scss'
 
-import { ListOffersVenueResponseModel } from '@/apiClient//v1'
+import { ListOffersVenueResponseModel } from '@/apiClient/v1'
 import { getCellsDefinition } from '@/components/OffersTable/utils/cellDefinitions'
+import styles from '@/styles/components/Cells.module.scss'
 
 interface OfferVenueCellProps {
   venue: ListOffersVenueResponseModel

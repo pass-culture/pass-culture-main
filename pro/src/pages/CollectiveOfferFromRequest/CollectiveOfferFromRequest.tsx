@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Layout } from '@/app/App/layout/Layout'
 import {

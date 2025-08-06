@@ -2,11 +2,11 @@ import { format } from 'date-fns'
 import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   BookingRecapResponseModel,
   GetIndividualOfferResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DATE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   DEFAULT_PRE_FILTERS,

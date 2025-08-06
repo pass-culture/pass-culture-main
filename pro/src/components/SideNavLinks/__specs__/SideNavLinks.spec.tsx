@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { beforeEach, describe, expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import * as useMediaQuery from '@/commons/hooks/useMediaQuery'
 import {
   defaultGetOffererResponseModel,

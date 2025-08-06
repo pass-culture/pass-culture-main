@@ -14,7 +14,7 @@ import { MandatoryCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer
 
 import { CollectiveOfferStockEdition } from '../CollectiveOfferStockEdition'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {},
 }))
 

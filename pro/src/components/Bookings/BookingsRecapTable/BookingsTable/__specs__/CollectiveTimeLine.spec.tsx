@@ -6,8 +6,8 @@ import {
   CollectiveBookingBankAccountStatus,
   CollectiveBookingByIdResponseModel,
   CollectiveBookingResponseModel,
-} from '@/apiClient//v1'
-import { CollectiveBookingCancellationReasons } from '@/apiClient//v1/models/CollectiveBookingCancellationReasons'
+} from '@/apiClient/v1'
+import { CollectiveBookingCancellationReasons } from '@/apiClient/v1/models/CollectiveBookingCancellationReasons'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { BOOKING_STATUS } from '@/commons/core/Bookings/constants'
 import { CollectiveBookingsEvents } from '@/commons/core/FirebaseEvents/constants'

@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient//v1'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { BackToNavLink } from '@/components/BackToNavLink/BackToNavLink'
 import fullValidateIcon from '@/icons/full-validate.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'

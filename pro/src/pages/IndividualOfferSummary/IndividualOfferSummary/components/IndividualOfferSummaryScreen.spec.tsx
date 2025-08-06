@@ -4,7 +4,7 @@ import { add, addDays, format, set, sub } from 'date-fns'
 import { generatePath, Route, Routes } from 'react-router'
 import { expect } from 'vitest'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   ApiError,
   CancelablePromise,
@@ -12,9 +12,9 @@ import {
   GetMusicTypesResponse,
   OfferStatus,
   SubcategoryIdEnum,
-} from '@/apiClient//v1'
-import { ApiRequestOptions } from '@/apiClient//v1/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient//v1/core/ApiResult'
+} from '@/apiClient/v1'
+import { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
@@ -50,7 +50,7 @@ import { Notification } from '@/components/Notification/Notification'
 
 import { IndividualOfferSummaryScreen } from './IndividualOfferSummaryScreen'
 
-// vi.mock('@/apiClient//api', () => ({
+// vi.mock('@/apiClient/api', () => ({
 //   api: {
 //     getMusicTypes: vi.fn(),
 //     getOfferer: vi.fn(),

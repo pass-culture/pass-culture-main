@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import * as hooks from '@/commons/hooks/swr/useOfferer'
 import {
   defaultGetOffererResponseModel,

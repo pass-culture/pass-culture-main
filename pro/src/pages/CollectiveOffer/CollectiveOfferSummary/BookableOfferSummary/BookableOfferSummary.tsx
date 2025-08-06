@@ -4,12 +4,12 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { mutate } from 'swr'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   GetCollectiveOfferResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Layout } from '@/app/App/layout/Layout'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'

@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { Target } from '@/apiClient//v1'
+import { Target } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {

@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient//api'
-import { GetVenueResponseModel, ProviderResponse } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { GetVenueResponseModel, ProviderResponse } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_PROVIDERS_QUERY_KEY,

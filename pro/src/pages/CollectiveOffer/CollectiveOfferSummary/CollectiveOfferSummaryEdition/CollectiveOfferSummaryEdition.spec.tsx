@@ -1,12 +1,12 @@
 import { screen, waitFor } from '@testing-library/react'
 import createFetchMock from 'vitest-fetch-mock'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
@@ -26,7 +26,7 @@ import { CollectiveOfferSummaryEdition } from './CollectiveOfferSummaryEdition'
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     listEducationalOfferers: vi.fn(),
   },

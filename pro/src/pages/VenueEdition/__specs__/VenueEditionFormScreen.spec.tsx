@@ -4,11 +4,11 @@ import { Route, Routes } from 'react-router'
 import { expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
-import * as apiAdresse from '@/apiClient//adresse/apiAdresse'
-import { api } from '@/apiClient//api'
-import { ApiError, GetVenueResponseModel } from '@/apiClient//v1'
-import { ApiRequestOptions } from '@/apiClient//v1/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient//v1/core/ApiResult'
+import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
+import { api } from '@/apiClient/api'
+import { ApiError, GetVenueResponseModel } from '@/apiClient/v1'
+import { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -47,7 +47,7 @@ function renderForm(
   )
 }
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     postCreateVenue: vi.fn(),
     getSiretInfo: vi.fn(),
@@ -71,9 +71,9 @@ vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
   legal_category_code: '1000',
 })
 
-vi.mock('@/apiClient//adresse/apiAdresse', async () => {
+vi.mock('@/apiClient/adresse/apiAdresse', async () => {
   return {
-    ...(await vi.importActual('@/apiClient//adresse/apiAdresse')),
+    ...(await vi.importActual('@/apiClient/adresse/apiAdresse')),
     default: {
       getDataFromAddress: vi.fn(),
     },

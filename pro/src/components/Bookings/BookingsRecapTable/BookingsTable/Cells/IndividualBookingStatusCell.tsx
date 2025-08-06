@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-import { BookingRecapResponseModel } from '@/apiClient//v1'
+import { BookingRecapResponseModel } from '@/apiClient/v1'
 import { Tag } from '@/design-system/Tag/Tag'
 
 import { getBookingStatusDisplayInformations } from '../../utils/bookingStatusConverter'

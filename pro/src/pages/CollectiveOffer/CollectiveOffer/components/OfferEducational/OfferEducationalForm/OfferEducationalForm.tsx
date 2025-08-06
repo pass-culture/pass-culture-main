@@ -8,7 +8,7 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
   VenueListItemResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {

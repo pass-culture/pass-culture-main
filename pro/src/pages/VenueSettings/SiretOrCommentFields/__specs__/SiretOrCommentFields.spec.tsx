@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 import { expect, vi } from 'vitest'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import * as siretApiValidate from '@/commons/core/Venue/siretApiValidate'
 import {
   RenderWithProvidersOptions,
@@ -20,7 +20,7 @@ import { generateSiretValidationSchema } from '../validationSchema'
 
 vi.mock('@/commons/core/Venue/siretApiValidate')
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getSiretInfo: vi.fn(),
     getDataFromAddress: vi.fn(),

@@ -1,6 +1,6 @@
-import { api } from '@/apiClient//api'
-import { isErrorAPIError, serializeApiErrors } from '@/apiClient//helpers'
-import { GetIndividualOfferResponseModel } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
+import { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 
 import { serializePriceCategories } from './serializePriceCategories'
 import { PriceCategoriesFormValues } from './types'

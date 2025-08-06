@@ -10,7 +10,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { SignupJourneyRoutes } from '../SignupJourneyRoutes'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getVenueTypes: vi.fn(),
     signout: vi.fn(),

@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
@@ -69,7 +69,7 @@ const renderIndividualOfferMediaScreen = async ({
 const mockLogEvent = vi.fn()
 const mockHandleImageOnSubmit = vi.fn()
 const mockNavigate = vi.fn()
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     patchDraftOffer: vi.fn(),
   },

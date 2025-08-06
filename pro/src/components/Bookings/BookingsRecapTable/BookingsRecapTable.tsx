@@ -4,7 +4,7 @@ import { useLocation } from 'react-router'
 import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { Audience } from '@/commons/core/shared/types'
 
 import { isCollectiveBooking } from './BookingsTable/Cells/BookingOfferCell'

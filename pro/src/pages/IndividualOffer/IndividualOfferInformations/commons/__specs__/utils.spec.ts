@@ -5,7 +5,7 @@ import {
   OfferStatus,
   VenueListItemResponseModel,
   WithdrawalTypeEnum,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { AccessibilityEnum } from '@/commons/core/shared/types'
 import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
 import {

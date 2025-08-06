@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useSearchParams } from 'react-router'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { SAVED_OFFERER_ID_KEY } from '@/commons/core/shared/constants'
 import { updateCurrentOfferer } from '@/commons/store/offerer/reducer'
 import { updateUser } from '@/commons/store/user/reducer'

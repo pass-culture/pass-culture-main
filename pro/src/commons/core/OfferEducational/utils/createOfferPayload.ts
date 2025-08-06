@@ -5,7 +5,7 @@ import {
   OfferContactFormEnum,
   PostCollectiveOfferBodyModel,
   PostCollectiveOfferTemplateBodyModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   formatBrowserTimezonedDateAsUTC,
   toISOStringWithoutMilliseconds,

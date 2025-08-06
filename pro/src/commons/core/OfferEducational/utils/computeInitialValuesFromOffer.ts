@@ -5,7 +5,7 @@ import {
   GetEducationalOffererResponseModel,
   StudentLevels,
   VenueListItemResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   formatShortDateForInput,
   formatTimeForInput,

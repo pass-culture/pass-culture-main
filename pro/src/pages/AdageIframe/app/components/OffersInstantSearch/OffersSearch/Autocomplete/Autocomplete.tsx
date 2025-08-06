@@ -19,8 +19,8 @@ import { useFormContext } from 'react-hook-form'
 import { useInstantSearch, useSearchBox } from 'react-instantsearch'
 import { useDispatch } from 'react-redux'
 
-import { SuggestionType } from '@/apiClient//adage'
-import { apiAdage } from '@/apiClient//api'
+import { SuggestionType } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import {
   setAdagePageSaved,
   setAdageQuery,

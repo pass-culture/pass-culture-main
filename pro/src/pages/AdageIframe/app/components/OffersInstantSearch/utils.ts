@@ -1,5 +1,5 @@
-import { CollectiveLocationType, VenueResponse } from '@/apiClient//adage'
-import { OfferAddressType } from '@/apiClient//v1'
+import { CollectiveLocationType, VenueResponse } from '@/apiClient/adage'
+import { OfferAddressType } from '@/apiClient/v1'
 import { Facets, Option } from '@/pages/AdageIframe/app/types'
 
 import { SearchFormValues } from './OffersInstantSearch'

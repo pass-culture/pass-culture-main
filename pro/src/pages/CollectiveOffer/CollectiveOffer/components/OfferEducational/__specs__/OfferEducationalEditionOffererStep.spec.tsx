@@ -3,7 +3,7 @@ import { screen, waitFor } from '@testing-library/react'
 import {
   CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import * as hooks from '@/commons/hooks/swr/useOfferer'
 import {
@@ -26,7 +26,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { defaultEditionProps } from '../__tests-utils__/defaultProps'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getVenues: vi.fn(),
   },

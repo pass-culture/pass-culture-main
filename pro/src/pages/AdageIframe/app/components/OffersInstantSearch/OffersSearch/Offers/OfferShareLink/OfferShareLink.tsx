@@ -3,8 +3,8 @@ import { MouseEvent } from 'react'
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient//adage'
-import { apiAdage } from '@/apiClient//api'
+} from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import { LOGS_DATA } from '@/commons/utils/config'
 import strokeShareIcon from '@/icons/stroke-share.svg'
 import {

@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { api } from '@/apiClient//api'
-import { OfferAddressType } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { OfferAddressType } from '@/apiClient/v1'
 import * as useNotification from '@/commons/hooks/useNotification'
 import {
   defaultGetVenue,
@@ -13,7 +13,7 @@ import * as getInterventionAreaLabels from '@/pages/AdageIframe/app/components/O
 import { OldCollectiveOfferLocationSection } from '../OldCollectiveOfferLocationSection'
 import * as formatOfferEventAddress from '../utils/formatOfferEventAddress'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getVenue: vi.fn(),
   },

@@ -3,8 +3,8 @@ import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient//api'
-import { HeadLineOfferResponseModel } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { HeadLineOfferResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_OFFERER_HEADLINE_OFFER_QUERY_KEY,

@@ -3,12 +3,12 @@ import { userEvent } from '@testing-library/user-event'
 import { computeAddressDisplayName } from 'repository/venuesService'
 import { expect } from 'vitest'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   GetOffererAddressResponseModel,
   ListOffersOfferResponseModel,
   OfferStatus,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   ALL_OFFERER_ADDRESS_OPTION,
@@ -93,7 +93,7 @@ vi.mock('@/commons/utils/date', async () => {
   }
 })
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn().mockReturnValue({}),
     deleteDraftOffers: vi.fn(),

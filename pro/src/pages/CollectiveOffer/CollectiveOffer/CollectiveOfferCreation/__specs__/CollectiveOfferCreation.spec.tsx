@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import * as hooks from '@/commons/hooks/swr/useOfferer'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
@@ -17,7 +17,7 @@ import { OptionalCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/
 
 import { CollectiveOfferCreation } from '../CollectiveOfferCreation'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     listEducationalDomains: vi.fn(),
     listEducationalOfferers: vi.fn(),

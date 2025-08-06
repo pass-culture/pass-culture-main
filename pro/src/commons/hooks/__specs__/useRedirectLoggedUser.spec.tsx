@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react'
 import * as reactRedux from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 
 import { useRedirectLoggedUser } from '../useRedirectLoggedUser'
@@ -24,7 +24,7 @@ vi.mock('react-redux', () => ({
   useDispatch: () => mockDispatch,
 }))
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn(),
   },

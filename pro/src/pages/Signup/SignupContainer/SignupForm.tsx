@@ -1,7 +1,7 @@
 import { useId } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import { ProUserCreationBodyV2Model } from '@/apiClient//v1'
+import { ProUserCreationBodyV2Model } from '@/apiClient/v1'
 import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { LegalInfos } from '@/components/LegalInfos/LegalInfos'

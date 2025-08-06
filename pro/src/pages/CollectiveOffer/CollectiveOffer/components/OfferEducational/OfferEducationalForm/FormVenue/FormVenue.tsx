@@ -6,7 +6,7 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
   VenueListItemResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   isCollectiveOffer,
   OfferEducationalFormValues,

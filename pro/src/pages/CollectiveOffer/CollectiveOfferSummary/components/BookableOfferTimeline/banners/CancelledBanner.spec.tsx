@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import {
   CollectiveBookingCancellationReasons,
   CollectiveOfferDisplayedStatus,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,

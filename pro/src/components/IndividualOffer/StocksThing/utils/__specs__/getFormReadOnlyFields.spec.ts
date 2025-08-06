@@ -1,4 +1,4 @@
-import { GetIndividualOfferResponseModel, OfferStatus } from '@/apiClient//v1'
+import { GetIndividualOfferResponseModel, OfferStatus } from '@/apiClient/v1'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,

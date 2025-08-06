@@ -1,4 +1,4 @@
-import type { GetOffererResponseModel } from '@/apiClient//v1/models/GetOffererResponseModel'
+import type { GetOffererResponseModel } from '@/apiClient/v1/models/GetOffererResponseModel'
 
 /**
  * Returns offerer from store if id matches, otherwise fetches from API.

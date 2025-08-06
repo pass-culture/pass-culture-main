@@ -6,8 +6,8 @@ import {
 import { userEvent } from '@testing-library/user-event'
 import { generatePath, Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient//api'
-import { OfferStatus } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { OfferStatus } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,

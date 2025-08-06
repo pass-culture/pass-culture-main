@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { SharedCurrentUserResponseModel } from '@/apiClient//v1'
+import { SharedCurrentUserResponseModel } from '@/apiClient/v1'
 
 type UserState = {
   currentUser: null | SharedCurrentUserResponseModel

@@ -1,5 +1,5 @@
-import { ApiError } from '@/apiClient//v1'
-import { ApiRequestOptions } from '@/apiClient//v1/core/ApiRequestOptions'
+import { ApiError } from '@/apiClient/v1'
+import { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 
 import { API_ADRESSE_BASE_URL } from './constants'
 import { AdresseApiJson, AdresseData, FeaturePropertyType } from './types'

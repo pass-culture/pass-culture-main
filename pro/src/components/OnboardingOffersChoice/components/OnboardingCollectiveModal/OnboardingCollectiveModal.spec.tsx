@@ -4,7 +4,7 @@ import * as router from 'react-router'
 import { beforeEach, expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { OnboardingDidacticEvents } from '@/commons/core/FirebaseEvents/constants'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -66,7 +66,7 @@ describe('<OnboardingCollectiveModal />', () => {
       useNavigate: vi.fn(),
     }))
 
-    vi.mock('@/apiClient//api', () => ({
+    vi.mock('@/apiClient/api', () => ({
       api: {
         getOffererEligibility: vi.fn(),
       },

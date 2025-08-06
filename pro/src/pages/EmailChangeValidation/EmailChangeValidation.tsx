@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useLocation } from 'react-router'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { Layout } from '@/app/App/layout/Layout'
 import { updateUser } from '@/commons/store/user/reducer'
 import { parse } from '@/commons/utils/query-string'

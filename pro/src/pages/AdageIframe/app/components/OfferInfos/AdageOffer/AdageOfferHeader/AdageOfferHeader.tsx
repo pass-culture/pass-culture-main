@@ -4,7 +4,7 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
   OfferAddressType,
-} from '@/apiClient//adage'
+} from '@/apiClient/adage'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import strokeCalendarIcon from '@/icons/stroke-calendar.svg'
 import strokeEuroIcon from '@/icons/stroke-euro.svg'

@@ -3,14 +3,14 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient//api'
-import { isErrorAPIError, serializeApiErrors } from '@/apiClient//helpers'
+import { api } from '@/apiClient/api'
+import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
   VenueListItemResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,

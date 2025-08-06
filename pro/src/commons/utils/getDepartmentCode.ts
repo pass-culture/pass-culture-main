@@ -1,7 +1,7 @@
 import {
   GetIndividualOfferWithAddressResponseModel,
   ListOffersOfferResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 
 export const getDepartmentCode = (
   offer:

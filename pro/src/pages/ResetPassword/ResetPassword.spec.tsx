@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { ResetPassword } from './ResetPassword'
@@ -12,7 +12,7 @@ vi.mock('@/commons/utils/recaptcha', () => ({
   getReCaptchaToken: vi.fn(),
 }))
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
     postNewPassword: vi.fn(),

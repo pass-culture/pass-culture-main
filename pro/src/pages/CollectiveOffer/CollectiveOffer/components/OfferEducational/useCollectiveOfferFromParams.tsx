@@ -2,12 +2,12 @@ import { ComponentType } from 'react'
 import { useLocation, useParams } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetOffererResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,

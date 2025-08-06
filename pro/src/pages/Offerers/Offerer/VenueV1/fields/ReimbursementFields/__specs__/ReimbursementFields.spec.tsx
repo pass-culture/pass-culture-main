@@ -4,7 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,

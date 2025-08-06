@@ -1,7 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 
-import { OfferAddressType } from '@/apiClient//adage'
-import { CollectiveLocationType } from '@/apiClient//v1'
+import { OfferAddressType } from '@/apiClient/adage'
+import { CollectiveLocationType } from '@/apiClient/v1'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullRefreshIcon from '@/icons/full-refresh.svg'

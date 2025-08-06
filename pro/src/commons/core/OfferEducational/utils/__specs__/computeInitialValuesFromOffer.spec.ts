@@ -1,5 +1,5 @@
-import { CollectiveLocationType } from '@/apiClient//adage'
-import { OfferContactFormEnum } from '@/apiClient//v1'
+import { CollectiveLocationType } from '@/apiClient/adage'
+import { OfferContactFormEnum } from '@/apiClient/v1'
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
 import { formatShortDateForInput } from '@/commons/utils/date'
 import { getCollectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'

@@ -6,7 +6,7 @@ import {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
   WithdrawalTypeEnum,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,

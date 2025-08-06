@@ -1,4 +1,4 @@
-import { CollectiveOfferDisplayedStatus, EacFormat } from '@/apiClient//v1'
+import { CollectiveOfferDisplayedStatus, EacFormat } from '@/apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 
 import { computeCollectiveOffersUrl } from '../computeCollectiveOffersUrl'

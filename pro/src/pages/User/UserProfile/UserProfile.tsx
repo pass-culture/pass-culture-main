@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { UserPhoneBodyModel } from '@/apiClient//v1'
+import { UserPhoneBodyModel } from '@/apiClient/v1'
 import { BannerRGS } from '@/components/BannerRGS/BannerRGS'
 import { UserIdentityFormValues } from '@/components/UserIdentityForm/types'
 

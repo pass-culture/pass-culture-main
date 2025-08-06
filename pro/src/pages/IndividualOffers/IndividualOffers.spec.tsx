@@ -3,12 +3,12 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import { beforeEach, expect } from 'vitest'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   GetOffererAddressResponseModel,
   ListOffersOfferResponseModel,
   OfferStatus,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   ALL_CREATION_MODES,
   CREATION_MODES_OPTIONS,

@@ -6,8 +6,8 @@ import {
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient//api'
-import { GetVenueResponseModel } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { GetVenueResponseModel } from '@/apiClient/v1'
 import * as hooks from '@/commons/hooks/swr/useOfferer'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {

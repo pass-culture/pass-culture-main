@@ -1,4 +1,4 @@
-import { PostCollectiveRequestBodyModel } from '@/apiClient//adage'
+import { PostCollectiveRequestBodyModel } from '@/apiClient/adage'
 import { isDateValid } from '@/commons/utils/date'
 
 import { RequestFormValues } from './type'

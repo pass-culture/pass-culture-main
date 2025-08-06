@@ -1,5 +1,5 @@
-import { StocksOrderedBy } from '@/apiClient//v1'
-import { PriceCategoryResponseModel } from '@/apiClient//v1/models/PriceCategoryResponseModel'
+import { StocksOrderedBy } from '@/apiClient/v1'
+import { PriceCategoryResponseModel } from '@/apiClient/v1/models/PriceCategoryResponseModel'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { getPriceCategoryOptions } from '@/components/IndividualOffer/PriceCategoriesScreen/form/getPriceCategoryOptions'
 import fullRefreshIcon from '@/icons/full-refresh.svg'

@@ -4,16 +4,16 @@ import { format } from 'date-fns'
 import { Route, Routes } from 'react-router'
 import { expect } from 'vitest'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   ApiError,
   GetIndividualOfferResponseModel,
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
   SubcategoryIdEnum,
-} from '@/apiClient//v1'
-import { ApiRequestOptions } from '@/apiClient//v1/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient//v1/core/ApiResult'
+} from '@/apiClient/v1'
+import { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,

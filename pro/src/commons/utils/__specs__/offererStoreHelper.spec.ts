@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import type { GetOffererResponseModel } from '@/apiClient//v1/models/GetOffererResponseModel'
+import type { GetOffererResponseModel } from '@/apiClient/v1/models/GetOffererResponseModel'
 
 import { defaultGetOffererResponseModel } from '../factories/individualApiFactories'
 import { getOffererData } from '../offererStoreHelper'

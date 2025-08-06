@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { Layout } from '@/app/App/layout/Layout'
 import {
   RECAPTCHA_ERROR,

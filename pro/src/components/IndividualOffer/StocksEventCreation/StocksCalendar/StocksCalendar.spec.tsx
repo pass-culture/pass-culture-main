@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
@@ -13,7 +13,7 @@ import { Notification } from '@/components/Notification/Notification'
 
 import { StocksCalendar, StocksCalendarProps } from './StocksCalendar'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getStocks: vi.fn(),
     deleteStocks: vi.fn(),

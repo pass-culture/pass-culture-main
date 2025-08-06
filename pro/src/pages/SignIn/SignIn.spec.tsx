@@ -2,11 +2,11 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient//api'
-import { HTTP_STATUS } from '@/apiClient//helpers'
-import { ApiError, SharedLoginUserResponseModel } from '@/apiClient//v1'
-import { ApiRequestOptions } from '@/apiClient//v1/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient//v1/core/ApiResult'
+import { api } from '@/apiClient/api'
+import { HTTP_STATUS } from '@/apiClient/helpers'
+import { ApiError, SharedLoginUserResponseModel } from '@/apiClient/v1'
+import { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -24,7 +24,7 @@ import { Notification } from '@/components/Notification/Notification'
 
 import { SignIn } from './SignIn'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
     signin: vi.fn(),

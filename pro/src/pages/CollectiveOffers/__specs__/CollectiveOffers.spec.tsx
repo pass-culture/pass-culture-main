@@ -5,12 +5,12 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
   CollectiveOffersStockResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   ALL_OFFERERS_OPTION,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,

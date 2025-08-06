@@ -3,7 +3,7 @@ import {
   EacFormat,
   OfferAddressType,
   PatchCollectiveOfferBodyModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { buildStudentLevelsMapWithDefaultValue } from '@/commons/core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 

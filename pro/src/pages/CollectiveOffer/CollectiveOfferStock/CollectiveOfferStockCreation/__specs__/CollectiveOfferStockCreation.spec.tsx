@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
@@ -10,7 +10,7 @@ import { MandatoryCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer
 
 import { CollectiveOfferStockCreation } from '../CollectiveOfferStockCreation'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),

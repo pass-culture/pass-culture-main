@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 import { expect } from 'vitest'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
@@ -17,7 +17,7 @@ import {
 
 import { PricingPoint, PricingPointProps } from '../PricingPoint'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     linkVenueToPricingPoint: vi.fn(),
   },

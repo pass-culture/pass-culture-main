@@ -7,7 +7,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { LostPassword } from '../LostPassword'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getProfile: vi.fn().mockResolvedValue({}),
     resetPassword: vi.fn().mockResolvedValue({}),

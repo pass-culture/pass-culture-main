@@ -3,10 +3,10 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import createFetchMock from 'vitest-fetch-mock'
 
-import { api } from '@/apiClient//api'
-import { ApiError } from '@/apiClient//v1'
-import { ApiRequestOptions } from '@/apiClient//v1/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient//v1/core/ApiResult'
+import { api } from '@/apiClient/api'
+import { ApiError } from '@/apiClient/v1'
+import { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
@@ -29,7 +29,7 @@ vi.spyOn(siretApiValidate, 'siretApiValidate').mockResolvedValue(null)
 
 // Mock l’appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
 // Appel fait dans getDataFromAddress
-vi.mock('@/apiClient//adresse/apiAdresse', () => ({
+vi.mock('@/apiClient/adresse/apiAdresse', () => ({
   getDataFromAddressParts: () =>
     Promise.resolve([
       {

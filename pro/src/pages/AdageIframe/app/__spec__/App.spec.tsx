@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 import { Configure } from 'react-instantsearch'
 
-import { AdageFrontRoles } from '@/apiClient//adage'
-import { apiAdage } from '@/apiClient//api'
+import { AdageFrontRoles } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -65,7 +65,7 @@ const venue = {
   departementCode: '75',
 }
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     getVenueById: vi.fn(() => {
       return venue

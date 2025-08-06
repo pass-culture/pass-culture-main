@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { BookingRecapStatus } from '@/apiClient//v1'
+import { BookingRecapStatus } from '@/apiClient/v1'
 import {
   bookingRecapFactory,
   bookingRecapStockFactory,

@@ -2,8 +2,8 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient//api'
-import { CancelablePromise, GetOffererResponseModel } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { CancelablePromise, GetOffererResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useNotification from '@/commons/hooks/useNotification'
@@ -30,7 +30,7 @@ vi.mock('@firebase/remote-config', () => ({
   getValue: () => ({ asBoolean: () => true }),
 }))
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn(),
     canOffererCreateEducationalOffer: vi.fn(),

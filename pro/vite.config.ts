@@ -51,9 +51,9 @@ export default defineConfig(({ mode }) => {
         reporter: ['text', 'json'],
         exclude: [
           '**/*.stories.tsx',
-          '@/apiClient//adage/*',
-          '@/apiClient//adresse/*',
-          '@/apiClient//v1/*',
+          '@/apiClient/adage/*',
+          '@/apiClient/adresse/*',
+          '@/apiClient/v1/*',
           ...coverageConfigDefaults.exclude,
         ],
       },

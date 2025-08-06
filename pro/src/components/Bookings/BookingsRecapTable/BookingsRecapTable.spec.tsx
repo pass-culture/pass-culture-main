@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { ComponentProps } from 'react'
 import { expect } from 'vitest'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { Audience } from '@/commons/core/shared/types'
 import {
   collectiveBookingByIdFactory,

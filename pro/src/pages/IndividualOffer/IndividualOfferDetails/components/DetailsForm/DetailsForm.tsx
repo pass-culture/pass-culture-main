@@ -5,7 +5,7 @@ import {
   CategoryResponseModel,
   SubcategoryResponseModel,
   VenueListItemResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { IndividualOfferImage } from '@/commons/core/Offers/types'

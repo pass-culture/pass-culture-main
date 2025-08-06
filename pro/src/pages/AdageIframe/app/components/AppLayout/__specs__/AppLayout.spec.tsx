@@ -32,7 +32,7 @@ vi.mock(
   }
 )
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     getVenueById: vi.fn(),
     authenticate: vi.fn(),
@@ -69,7 +69,7 @@ vi.mock('@/commons/utils/config', async () => {
   }
 })
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     logHasSeenAllPlaylist: vi.fn(),
     logConsultPlaylistElement: vi.fn(),

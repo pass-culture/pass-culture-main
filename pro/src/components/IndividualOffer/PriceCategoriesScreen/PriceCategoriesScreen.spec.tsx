@@ -6,11 +6,11 @@ import {
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { IndividualOfferContextProvider } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,

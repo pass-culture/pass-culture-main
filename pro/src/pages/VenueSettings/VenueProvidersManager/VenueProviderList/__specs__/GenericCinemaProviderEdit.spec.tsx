@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultVenueProvider } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'

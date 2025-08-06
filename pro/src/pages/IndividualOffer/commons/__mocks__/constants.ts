@@ -1,7 +1,7 @@
 import {
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 import { subcategoryFactory } from '@/commons/utils/factories/individualApiFactories'

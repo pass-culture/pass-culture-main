@@ -1,8 +1,8 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { AdageFrontRoles } from '@/apiClient//adage'
-import { apiAdage } from '@/apiClient//api'
+import { AdageFrontRoles } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { defaultCollectiveOffer } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -10,7 +10,7 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 
 import { ClassroomPlaylist } from '../ClassroomPlaylist'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     logConsultPlaylistElement: vi.fn(),
     getClassroomPlaylist: vi.fn(),

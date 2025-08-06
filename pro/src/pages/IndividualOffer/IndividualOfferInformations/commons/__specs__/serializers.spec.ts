@@ -1,6 +1,6 @@
 /* istanbul ignore file: DEBT, TO FIX */
 
-import { PatchOfferBodyModel } from '@/apiClient//v1'
+import { PatchOfferBodyModel } from '@/apiClient/v1'
 import { AccessibilityEnum } from '@/commons/core/shared/types'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { getOfferLastProvider } from '@/commons/utils/factories/providerFactories'

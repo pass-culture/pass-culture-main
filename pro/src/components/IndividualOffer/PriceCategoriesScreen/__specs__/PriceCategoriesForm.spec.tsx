@@ -1,11 +1,11 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   GetIndividualOfferResponseModel,
   GetIndividualOfferWithAddressResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   getIndividualOfferFactory,

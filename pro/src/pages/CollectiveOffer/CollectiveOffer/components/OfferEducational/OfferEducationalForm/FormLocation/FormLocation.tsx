@@ -1,11 +1,11 @@
 import { useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import { AdresseData } from '@/apiClient//adresse/types'
+import { AdresseData } from '@/apiClient/adresse/types'
 import {
   CollectiveLocationType,
   VenueListItemResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'

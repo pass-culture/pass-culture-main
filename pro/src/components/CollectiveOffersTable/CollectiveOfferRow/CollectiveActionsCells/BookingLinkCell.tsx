@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux'
 
-import { CollectiveBookingStatus } from '@/apiClient//v1'
+import { CollectiveBookingStatus } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { CollectiveBookingsEvents } from '@/commons/core/FirebaseEvents/constants'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'

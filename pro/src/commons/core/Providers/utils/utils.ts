@@ -1,4 +1,4 @@
-import { GetOfferLastProviderResponseModel } from '@/apiClient//v1'
+import { GetOfferLastProviderResponseModel } from '@/apiClient/v1'
 
 import { CINEMA_PROVIDER_NAMES } from '../constants'
 

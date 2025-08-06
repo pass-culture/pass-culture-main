@@ -4,7 +4,7 @@ import { useState } from 'react'
 import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { VenueEvents } from '@/commons/core/FirebaseEvents/constants'
 import { Card } from '@/components/Card/Card'

@@ -27,4 +27,4 @@ export const apiAdage = new AppClientAdage(configAdage).default
 export {
   getDataFromAddress,
   getDataFromAddressParts,
-} from '@/apiClient//adresse/apiAdresse'
+} from '@/apiClient/adresse/apiAdresse'

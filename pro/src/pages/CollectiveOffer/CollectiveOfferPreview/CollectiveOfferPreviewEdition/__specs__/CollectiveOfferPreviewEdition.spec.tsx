@@ -1,6 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   defaultGetVenue,
   getCollectiveOfferTemplateFactory,
@@ -23,7 +23,7 @@ vi.mock('react-router', async () => ({
   default: vi.fn(),
 }))
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getVenue: vi.fn(),
   },

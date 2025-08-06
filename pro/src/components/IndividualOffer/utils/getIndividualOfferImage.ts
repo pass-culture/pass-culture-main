@@ -1,4 +1,4 @@
-import { GetIndividualOfferResponseModel } from '@/apiClient//v1'
+import { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 import { IndividualOfferImage } from '@/commons/core/Offers/types'
 
 export const getIndividualOfferImage = (

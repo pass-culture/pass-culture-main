@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router'
 
-import { GetOffererResponseModel } from '@/apiClient//v1'
+import { GetOffererResponseModel } from '@/apiClient/v1'
 import { Layout } from '@/app/App/layout/Layout'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'

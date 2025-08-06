@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiAdage } from '@/apiClient//api'
+import { apiAdage } from '@/apiClient/api'
 import {
   defaultAdageUser,
   defaultCollectiveTemplateOffer,
@@ -11,7 +11,7 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 
 import { OfferShareLink, OfferShareLinkProps } from '../OfferShareLink'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     logTrackingCtaShare: vi.fn(),
   },

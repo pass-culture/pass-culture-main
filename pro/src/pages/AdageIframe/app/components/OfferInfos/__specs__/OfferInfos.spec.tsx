@@ -1,8 +1,8 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import * as router from 'react-router'
 
-import { AdageFrontRoles, AuthenticatedResponse } from '@/apiClient//adage'
-import { apiAdage } from '@/apiClient//api'
+import { AdageFrontRoles, AuthenticatedResponse } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
@@ -16,7 +16,7 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 
 import { OfferInfos } from '../OfferInfos'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     getCollectiveOfferTemplate: vi.fn(),
     getCollectiveOffer: vi.fn(),

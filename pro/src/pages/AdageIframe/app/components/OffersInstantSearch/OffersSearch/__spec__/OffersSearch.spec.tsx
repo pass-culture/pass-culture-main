@@ -1,9 +1,9 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { AdageFrontRoles, AuthenticatedResponse } from '@/apiClient//adage'
-import { api } from '@/apiClient//api'
-import { StudentLevels } from '@/apiClient//v1'
+import { AdageFrontRoles, AuthenticatedResponse } from '@/apiClient/adage'
+import { api } from '@/apiClient/api'
+import { StudentLevels } from '@/apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useNotification from '@/commons/hooks/useNotification'
 import {
@@ -84,7 +84,7 @@ vi.mock('../Offers/Offers', () => {
   }
 })
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     listEducationalDomains: vi.fn(() => [
       { id: 1, name: 'Danse' },

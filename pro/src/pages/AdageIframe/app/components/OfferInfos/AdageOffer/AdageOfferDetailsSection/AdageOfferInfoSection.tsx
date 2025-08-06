@@ -4,7 +4,7 @@ import {
   CollectiveOfferTemplateResponseModel,
   GetCollectiveOfferLocationModel,
   OfferAddressType,
-} from '@/apiClient//adage'
+} from '@/apiClient/adage'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { isCollectiveOfferBookable } from '@/pages/AdageIframe/app/types'
 

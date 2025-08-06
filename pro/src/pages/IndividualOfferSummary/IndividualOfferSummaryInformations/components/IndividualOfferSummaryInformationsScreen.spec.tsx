@@ -4,7 +4,7 @@ import {
   GetIndividualOfferWithAddressResponseModel,
   SubcategoryIdEnum,
   WithdrawalTypeEnum,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
 import {

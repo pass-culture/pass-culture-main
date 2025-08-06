@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router'
 
-import { GetOffererResponseModel } from '@/apiClient//v1'
+import { GetOffererResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { Callout } from '@/ui-kit/Callout/Callout'

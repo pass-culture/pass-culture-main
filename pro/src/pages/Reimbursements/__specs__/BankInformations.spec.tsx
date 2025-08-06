@@ -2,11 +2,11 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   BankAccountApplicationStatus,
   BankAccountResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   defaultGetOffererResponseModel,

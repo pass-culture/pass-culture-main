@@ -1,6 +1,6 @@
 import { differenceInCalendarDays } from 'date-fns'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient//v1'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import { pluralize } from '@/commons/utils/pluralize'
 import fullEditIcon from '@/icons/full-edit.svg'

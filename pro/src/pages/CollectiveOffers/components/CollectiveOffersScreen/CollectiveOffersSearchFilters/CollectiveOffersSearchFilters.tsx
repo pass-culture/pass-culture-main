@@ -4,7 +4,7 @@ import {
   CollectiveOfferDisplayedStatus,
   EacFormat,
   GetOffererResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   ALL_FORMATS_OPTION,
   ALL_OFFERERS_OPTION,

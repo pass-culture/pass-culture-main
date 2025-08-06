@@ -4,7 +4,7 @@ import { expect } from 'vitest'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { SignupConfirmation } from '@/pages/Signup/SignupConfirmation/SignupConfirmation'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
     listFeatures: vi.fn(),

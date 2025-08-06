@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { Params, useNavigate, useParams } from 'react-router'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { Layout } from '@/app/App/layout/Layout'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useRedirectLoggedUser } from '@/commons/hooks/useRedirectLoggedUser'

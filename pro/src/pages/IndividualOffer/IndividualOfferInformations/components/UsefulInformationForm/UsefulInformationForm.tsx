@@ -4,7 +4,7 @@ import {
   GetActiveEANOfferResponseModel,
   VenueListItemResponseModel,
   WithdrawalTypeEnum,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import { useAccessibilityOptions } from '@/commons/hooks/useAccessibilityOptions'

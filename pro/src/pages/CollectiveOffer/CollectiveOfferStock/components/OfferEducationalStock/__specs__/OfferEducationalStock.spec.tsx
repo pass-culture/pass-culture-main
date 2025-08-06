@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { addDays, addMinutes, format } from 'date-fns'
 import * as router from 'react-router'
 
-import { CollectiveOfferAllowedAction } from '@/apiClient//v1'
+import { CollectiveOfferAllowedAction } from '@/apiClient/v1'
 import { DEFAULT_EAC_STOCK_FORM_VALUES } from '@/commons/core/OfferEducational/constants'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'

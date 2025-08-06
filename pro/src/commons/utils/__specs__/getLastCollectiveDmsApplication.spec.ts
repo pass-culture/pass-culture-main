@@ -1,4 +1,4 @@
-import { GetOffererResponseModel } from '@/apiClient//v1'
+import { GetOffererResponseModel } from '@/apiClient/v1'
 import { defaultDMSApplicationForEAC } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,

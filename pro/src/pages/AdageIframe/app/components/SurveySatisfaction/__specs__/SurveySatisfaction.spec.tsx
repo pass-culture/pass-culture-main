@@ -1,13 +1,13 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiAdage } from '@/apiClient//api'
+import { apiAdage } from '@/apiClient/api'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { SurveySatisfaction } from '../SurveySatisfaction'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     saveRedactorPreferences: vi.fn(),
     logOpenSatisfactionSurvey: vi.fn(),

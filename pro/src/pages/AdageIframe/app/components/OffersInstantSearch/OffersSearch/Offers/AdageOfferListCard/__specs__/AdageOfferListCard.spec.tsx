@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { AuthenticatedResponse } from '@/apiClient//adage'
+import { AuthenticatedResponse } from '@/apiClient/adage'
 import {
   defaultAdageUser,
   defaultCollectiveTemplateOffer,

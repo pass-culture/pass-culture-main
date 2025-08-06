@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 
-import { PostVenueProviderBody } from '@/apiClient//v1'
+import { PostVenueProviderBody } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { SynchronizationEvents } from '@/commons/core/FirebaseEvents/constants'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'

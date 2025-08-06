@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 
-import { ListOffersOfferResponseModel } from '@/apiClient//v1'
+import { ListOffersOfferResponseModel } from '@/apiClient/v1'
 import { OFFER_STATUS_SOLD_OUT } from '@/commons/core/Offers/constants'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'

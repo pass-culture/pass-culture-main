@@ -11,8 +11,8 @@ import {
   ListCollectiveOfferTemplateResponseModel,
   OfferAddressType,
   StudentLevels,
-} from '@/apiClient//adage'
-import { apiAdage } from '@/apiClient//api'
+} from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import * as useMediaQuery from '@/commons/hooks/useMediaQuery'
 import {
   defaultCollectiveOffer,
@@ -35,7 +35,7 @@ vi.mock('react-router', async () => ({
   }),
 }))
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),

@@ -1,4 +1,4 @@
-import { WithdrawalTypeEnum } from '@/apiClient//v1'
+import { WithdrawalTypeEnum } from '@/apiClient/v1'
 import { AccessibilityEnum } from '@/commons/core/shared/types'
 import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from '@/pages/IndividualOffer/commons/constants'
 

@@ -2,8 +2,8 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { sub } from 'date-fns'
 
-import { api } from '@/apiClient//api'
-import { OfferContactFormEnum } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { OfferContactFormEnum } from '@/apiClient/v1'
 import * as useNotification from '@/commons/hooks/useNotification'
 import {
   defaultGetVenue,

@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { expect } from 'vitest'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient//v1'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 

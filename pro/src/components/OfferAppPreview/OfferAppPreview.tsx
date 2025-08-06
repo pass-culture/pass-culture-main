@@ -1,4 +1,4 @@
-import { GetIndividualOfferWithAddressResponseModel } from '@/apiClient//v1'
+import { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { getIndividualOfferImage } from '@/components/IndividualOffer/utils/getIndividualOfferImage'
 import { Markdown } from '@/components/Markdown/Markdown'
 

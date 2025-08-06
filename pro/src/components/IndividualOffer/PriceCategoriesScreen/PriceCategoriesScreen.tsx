@@ -4,8 +4,8 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient//api'
-import { GetIndividualOfferWithAddressResponseModel } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {

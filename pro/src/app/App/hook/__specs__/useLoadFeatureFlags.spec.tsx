@@ -1,6 +1,6 @@
 import { waitFor } from '@testing-library/react'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { useLoadFeatureFlags } from '../useLoadFeatureFlags'

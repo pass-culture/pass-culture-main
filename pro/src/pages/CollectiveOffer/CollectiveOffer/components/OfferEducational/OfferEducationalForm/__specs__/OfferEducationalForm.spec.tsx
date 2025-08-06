@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 import { describe, expect } from 'vitest'
 
-import { CollectiveOfferTemplateAllowedAction } from '@/apiClient//v1'
+import { CollectiveOfferTemplateAllowedAction } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'

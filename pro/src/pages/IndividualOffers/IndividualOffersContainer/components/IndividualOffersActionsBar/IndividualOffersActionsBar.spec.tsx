@@ -3,8 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 import { beforeEach, expect } from 'vitest'
 
-import { api } from '@/apiClient//api'
-import { OfferStatus } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { OfferStatus } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageFactories'
@@ -38,7 +38,7 @@ vi.mock('react-router', async () => ({
   useLocation: vi.fn(),
 }))
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     patchOffersActiveStatus: vi.fn(),
     deleteDraftOffers: vi.fn(),

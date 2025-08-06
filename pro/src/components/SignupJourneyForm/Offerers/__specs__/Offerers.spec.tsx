@@ -2,10 +2,10 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { ApiRequestOptions } from '@/apiClient//adage/core/ApiRequestOptions'
-import { api } from '@/apiClient//api'
-import { ApiError, VenueOfOffererFromSiretResponseModel } from '@/apiClient//v1'
-import { ApiResult } from '@/apiClient//v1/core/ApiResult'
+import { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
+import { api } from '@/apiClient/api'
+import { ApiError, VenueOfOffererFromSiretResponseModel } from '@/apiClient/v1'
+import { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
@@ -19,7 +19,7 @@ import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offe
 
 import { Offerers } from '../Offerers'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getVenuesOfOffererFromSiret: vi.fn(),
     createOfferer: vi.fn(),
