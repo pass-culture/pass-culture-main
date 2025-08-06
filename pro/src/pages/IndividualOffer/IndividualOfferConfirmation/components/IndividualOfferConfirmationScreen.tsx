@@ -1,6 +1,6 @@
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_STATUS_PENDING } from 'commons/core/Offers/constants'
-import { formatDateTimeParts, isDateValid } from 'commons/utils/date'
+import { isDateValid } from 'commons/utils/date'
 import { DisplayOfferInAppLink } from 'components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
@@ -18,13 +18,11 @@ interface IndividualOfferConfirmationScreenProps {
 export const IndividualOfferConfirmationScreen = ({
   offer,
 }: IndividualOfferConfirmationScreenProps): JSX.Element => {
-  const isPublishedInTheFuture = isDateValid(offer.publicationDate)
+  const isPublishedInTheFuture =
+    isDateValid(offer.publicationDate) &&
+    new Date() < new Date(offer.publicationDate)
   const isPendingOffer = offer.status === OFFER_STATUS_PENDING
   const queryString = `?structure=${offer.venue.managingOfferer.id}&lieu=${offer.venue.id}`
-
-  const { date: publicationDate, time: publicationTime } = formatDateTimeParts(
-    offer.publicationDate
-  )
 
   return (
     <div className={styles['confirmation-container']}>
@@ -44,9 +42,7 @@ export const IndividualOfferConfirmationScreen = ({
         )}
         <h2 className={styles['confirmation-title']}>
           {isPendingOffer
-            ? isPublishedInTheFuture
-              ? `Offre programmée en cours de validation`
-              : `Offre en cours de validation`
+            ? `Offre en cours de validation`
             : `Offre créée avec succès !`}
         </h2>
 
@@ -57,21 +53,7 @@ export const IndividualOfferConfirmationScreen = ({
             <br />
             <b>Vous ne pouvez pas effectuer de modification pour l’instant.</b>
             <br />
-            {isPublishedInTheFuture ? (
-              <>
-                <>
-                  Vous recevrez un email de confirmation une fois votre offre{' '}
-                  validée.
-                </>
-                <br />
-                <>
-                  Elle sera automatiquement publiée le {publicationDate} à{' '}
-                  {publicationTime}.
-                </>
-              </>
-            ) : (
-              'Vous recevrez un email de confirmation une fois votre offre validée et disponible à la réservation.'
-            )}
+            Vous recevrez un email de confirmation une fois votre offre validée.
           </p>
         )}
       </div>
