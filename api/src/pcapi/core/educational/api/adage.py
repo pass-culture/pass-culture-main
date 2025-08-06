@@ -121,6 +121,8 @@ def synchronize_adage_ids_on_offerers(partners_from_adage: list[AdageCulturalPar
             offerers_models.Offerer.siren != None,
             offerers_models.Venue.adageId.is_not(None),
         )
+        # some venues with an adageId are soft-deleted, we need to include them so that the offerer keeps allowedOnAdage=True
+        .execution_options(include_deleted=True)
         .with_entities(offerers_models.Offerer.siren, offerers_models.Offerer.allowedOnAdage)
     )
     sirens_to_delete = sirens_to_delete - set(existing_sirens_from_synchronized_venues)

@@ -400,6 +400,22 @@ def test_synchronize_adage_ids_on_offerers_for_tricky_case(db_session):
     assert venue1.managingOfferer.allowedOnAdage
 
 
+@pytest.mark.parametrize("initial_allowed_on_adage", (True, False))
+def test_synchronize_adage_ids_on_offerers_soft_deleted_venue(db_session, initial_allowed_on_adage):
+    ADAGE_ID = 128028
+    offerer = offerers_factories.OffererFactory(allowedOnAdage=initial_allowed_on_adage)
+    venue = offerers_factories.VenueFactory(adageId=ADAGE_ID, managingOfferer=offerer)
+    venue.isSoftDeleted = True
+    db.session.add(venue)
+
+    assert offerer.allowedOnAdage is initial_allowed_on_adage
+
+    educational_api_adage.synchronize_adage_ids_on_offerers([])
+    db.session.commit()
+
+    assert offerer.allowedOnAdage
+
+
 @pytest.mark.settings(
     ADAGE_API_URL="https://adage-api-url",
     ADAGE_API_KEY="adage-api-key",
