@@ -35,16 +35,20 @@ import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
 import { getPriceCategoryOptions } from '../PriceCategoriesScreen/form/getPriceCategoryOptions'
 
 import { computeInitialValues } from './form/computeInitialValues'
-import { INITIAL_QUANTITY_PER_PRICE_CATEGORY } from './form/constants'
 import { isLastWeekOfMonth } from './form/recurrenceUtils'
 import {
   MonthlyOption,
+  QuantityPerPriceCategoryForm,
   RecurrenceDays,
   RecurrenceFormValues,
   RecurrenceType,
 } from './form/types'
 import { getValidationSchema } from './form/validationSchema'
 import styles from './RecurrenceForm.module.scss'
+
+const INITIAL_QUANTITY_PER_PRICE_CATEGORY: QuantityPerPriceCategoryForm = {
+  priceCategory: '',
+}
 
 export interface RecurrenceFormProps {
   priceCategories: PriceCategoryResponseModel[]

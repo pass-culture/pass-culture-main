@@ -49,37 +49,6 @@ export type RecurrenceFormValues = {
   monthlyOption?: MonthlyOption | null
 }
 
-//  Under WIP_ENABLE_EVENT_WITH_OPENING_HOUR FF
-export enum DurationTypeOption {
-  ONE_DAY = 'ONE_DAY',
-  MULTIPLE_DAYS_WEEKS = 'MULTIPLE_DAYS_WEEKS',
-}
-
-export enum TimeSlotTypeOption {
-  SPECIFIC_TIME = 'SPECIFIC_TIME',
-  OPENING_HOURS = 'OPENING_HOURS',
-}
-
-export type StocksCalendarFormValues = {
-  durationType: DurationTypeOption
-  oneDayDate?: string
-  multipleDaysStartDate?: string
-  multipleDaysEndDate?: string
-  multipleDaysHasNoEndDate: boolean
-  multipleDaysWeekDays: {
-    label: string
-    value: RecurrenceDays
-    checked: boolean
-  }[]
-  timeSlotType: TimeSlotTypeOption
-  specificTimeSlots: { slot: string }[]
-  pricingCategoriesQuantities: {
-    quantity?: number
-    priceCategory: string
-  }[]
-  bookingLimitDateInterval?: number
-}
-
 export type StocksTableFilters = {
   date?: string
   time?: string
