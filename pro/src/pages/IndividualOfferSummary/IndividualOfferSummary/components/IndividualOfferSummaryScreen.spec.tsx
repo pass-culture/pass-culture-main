@@ -991,7 +991,7 @@ describe('Form', () => {
     ).not.toBeInTheDocument()
     expect(
       screen.queryByText(ERROR_MESSAGES.publicationDateMustBeInFuture)
-    ).toBeVisible()
+    ).not.toBeInTheDocument()
     expect(
       screen.queryByText(ERROR_MESSAGES.publicationTimeIsRequired)
     ).toBeVisible()
@@ -1045,13 +1045,6 @@ describe('Form', () => {
       await screen.findByText(ERROR_MESSAGES.publicationDateMustBeInFuture)
     ).toBeVisible()
 
-    // await act(() =>
-    //   fireEvent.input(publicationDateInput, {
-    //     target: {
-    //       value: format(inOneMonth, 'yyyy-MM-dd'),
-    //     },
-    //   })
-    // )
     await userEvent.clear(publicationDateInput)
     await userEvent.type(publicationDateInput, format(inOneMonth, 'yyyy-MM-dd'))
 
