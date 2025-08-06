@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import { CollectiveOfferDisplayedStatus, GetOffererResponseModel } from '@/apiClient/v1'
 import {
   getCollectiveOfferBookingFactory,
   getCollectiveOfferFactory,
@@ -210,6 +210,35 @@ describe('BookableOfferTimeline', () => {
       />
     )
     expect(screen.getByText('En attente de réservation')).toBeInTheDocument()
+  })
+
+  it('should render the waiting step "Nous espérons que votre évènement s’est bien déroulé." after ENDED for less than 48h', () => {
+    const now = new Date()
+    const date47hAgo = new Date(
+      now.getTime() - 47 * 60 * 60 * 1000
+    ).toISOString()
+    renderWithProviders(
+      <BookableOfferTimeline
+        offer={getCollectiveOfferFactory({
+          history: {
+            past: [
+              {
+                status: CollectiveOfferDisplayedStatus.ENDED,
+                datetime: date47hAgo,
+              },
+            ],
+            future: [],
+          },
+        })}
+      />
+    )
+    expect(
+      screen.getByText(
+        'Nous espérons que votre évènement s’est bien déroulé. Si besoin, vous pouvez ' +
+          'annuler la réservation ou modifier à la baisse le prix ou le nombre de participants ' +
+          'jusqu’à 48 heures après la date de l’évènement.'
+      )
+    ).toBeInTheDocument()
   })
 })
 
@@ -480,33 +509,90 @@ describe('BookableOfferTimeline - step type rendering', () => {
         })
       ).toHaveAttribute('href', '/remboursements')
     })
-  })
 
-  it('should render a banner when current step is archived', () => {
-    renderWithProviders(
-      <BookableOfferTimeline
-        offer={getCollectiveOfferFactory({
-          history: {
-            past: [
-              {
-                status: CollectiveOfferDisplayedStatus.PUBLISHED,
-              },
-              {
-                status: CollectiveOfferDisplayedStatus.ARCHIVED,
-                datetime: '2025-07-07T13:00:00.000000',
-              },
-            ],
-            future: [],
-          },
-        })}
-      />
-    )
-
-    expect(
-      screen.getByText(
-        /Vous avez archivé cette offre. Elle n'est plus visible sur ADAGE./
+    it('should render a banner when current step is archived', () => {
+      renderWithProviders(
+        <BookableOfferTimeline
+          offer={getCollectiveOfferFactory({
+            history: {
+              past: [
+                {
+                  status: CollectiveOfferDisplayedStatus.PUBLISHED,
+                },
+                {
+                  status: CollectiveOfferDisplayedStatus.ARCHIVED,
+                  datetime: '2025-07-07T13:00:00.000000',
+                },
+              ],
+              future: [],
+            },
+          })}
+        />
       )
-    ).toBeInTheDocument()
-    expect(screen.getByText(/Le 07 juillet 2025/)).toBeInTheDocument()
+
+      expect(
+        screen.getByText(
+          /Vous avez archivé cette offre. Elle n'est plus visible sur ADAGE./
+        )
+      ).toBeInTheDocument()
+      expect(screen.getByText(/Le 07 juillet 2025/)).toBeInTheDocument()
+    })
+
+    it('should render a banner when offer ended less than 48 hours ago', () => {
+      const now = new Date()
+      const date47hAgo = new Date(
+        now.getTime() - 47 * 60 * 60 * 1000
+      ).toISOString()
+      renderWithProviders(
+        <BookableOfferTimeline
+          offer={getCollectiveOfferFactory({
+            history: {
+              past: [
+                {
+                  status: CollectiveOfferDisplayedStatus.ENDED,
+                  datetime: date47hAgo,
+                },
+              ],
+              future: [],
+            },
+          })}
+        />
+      )
+
+      expect(
+        screen.getByText(
+          /Nous espérons que votre évènement s’est bien déroulé. Si besoin, vous pouvez annuler la réservation ou modifier à la baisse le prix ou le nombre de participants jusqu’à 48 heures après la date de l’évènement./
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should render the reimbursement waiting banner when offer ended more than 48 hours ago', () => {
+      const now = new Date()
+      const offerer = { hasValidBankAccount: true } as GetOffererResponseModel
+      const date49hAgo = new Date(
+        now.getTime() - 49 * 60 * 60 * 1000
+      ).toISOString()
+      renderWithProviders(
+        <BookableOfferTimeline
+          offer={getCollectiveOfferFactory({
+            history: {
+              past: [
+                {
+                  status: CollectiveOfferDisplayedStatus.ENDED,
+                  datetime: date49hAgo,
+                },
+              ],
+              future: [],
+            },
+          })}
+          offerer={offerer}
+        />
+      )
+      expect(
+        screen.getByText(
+          'Les remboursements sont effectués toutes les 2 à 3 semaines. Vous serez notifié par mail une fois que le remboursement aura été versé.'
+        )
+      ).toBeInTheDocument()
+    })
   })
 })

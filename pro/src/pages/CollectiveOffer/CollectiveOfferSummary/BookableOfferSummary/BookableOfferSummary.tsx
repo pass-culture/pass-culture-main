@@ -22,7 +22,7 @@ import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { selectCurrentOfferer, selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import {
   isActionAllowedOnCollectiveOffer,
@@ -72,6 +72,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
   const notify = useNotification()
   const navigate = useNavigate()
   const selectedOffererId = useSelector(selectCurrentOffererId)
+  const offerer = useSelector(selectCurrentOfferer)
 
   const archiveButtonRef = useRef<HTMLButtonElement>(null)
   const duplicateButtonRef = useRef<HTMLButtonElement>(null)
@@ -351,7 +352,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
               : styles['partial-timeline-container']
           }
         >
-          <BookableOfferTimeline offer={offer} />
+          <BookableOfferTimeline offer={offer} offerer={offerer} />
         </div>
         {offer.institution && (
           <EducationalInstitutionDetails
