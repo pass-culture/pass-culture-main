@@ -23,7 +23,7 @@
 }
 
 .contact-details-container-oldlayout {
-  border-radius: rem.torem(6px);
+  border-radius: var(--size-border-radius-m);
   border: rem.torem(1px) solid var(--color-border-subtle);
 }
 

@@ -32,7 +32,7 @@
         padding: rem.torem(10px);
         color: var(--color-text-default);
         border: solid rem.torem(1px) var(--color-border-default);
-        border-radius: rem.torem(10px);
+        border-radius: var(--size-border-radius-m);
 
         &:hover,
         &:focus {
@@ -50,7 +50,7 @@
             width: rem.torem(8px);
             height: rem.torem(8px);
             background-color: var(--color-icon-brand-primary);
-            border-radius: 50%;
+            border-radius: var(--size-border-radius-pill);
             margin-right: rem.torem(8px);
           }
         }

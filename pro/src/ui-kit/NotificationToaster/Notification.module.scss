@@ -29,7 +29,7 @@
   }
 
   @media screen and (min-width: size.$tablet) {
-    border-radius: rem.torem(80px);
+    border-radius: var(--size-border-radius-pill);
     left: 50%;
     transform: translateX(-50%);
     width: fit-content;

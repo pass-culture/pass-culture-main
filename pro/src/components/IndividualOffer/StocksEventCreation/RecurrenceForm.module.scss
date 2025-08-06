@@ -146,7 +146,7 @@
 
     &-button {
       border: none;
-      border-radius: 100%;
+      border-radius: var(--size-border-radius-pill);
       cursor: pointer;
       display: flex;
 

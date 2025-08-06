@@ -3,7 +3,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .menu {
-  border-radius: rem.torem(6px);
+  border-radius: var(--size-border-radius-m);
   box-shadow: 0 rem.torem(3px) rem.torem(4px) var(--color-medium-shadow);
   margin: 0 rem.torem(1.6px);
   max-height: rem.torem(296px);

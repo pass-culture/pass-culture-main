@@ -31,7 +31,7 @@
 }
 
 .offer-data-container {
-  border-radius: rem.torem(3px);
+  border-radius: var(--size-border-radius-s);
   margin-bottom: rem.torem(16px);
 
   .offer-title {

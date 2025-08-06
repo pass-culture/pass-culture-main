@@ -127,7 +127,7 @@ $not-saved-size: rem.torem(16px);
   margin-right: rem.torem(4px);
   width: $not-saved-size;
   height: $not-saved-size;
-  border-radius: 50%;
+  border-radius: var(--size-border-radius-pill);
   background-color: var(--color-icon-warning);
 }
 

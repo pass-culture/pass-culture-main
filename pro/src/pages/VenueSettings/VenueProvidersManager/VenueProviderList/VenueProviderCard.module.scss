@@ -7,7 +7,7 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
-  border-radius: rem.torem(10px);
+  border-radius: var(--size-border-radius-m);
   border: 1px solid var(--color-border-subtle);
   padding: rem.torem(16px) rem.torem(24px) rem.torem(8px);
   width: 100%;
@@ -93,7 +93,7 @@
 .last-synchronisation {
   &::before {
     background-color: var(--color-icon-success);
-    border-radius: 50%;
+    border-radius: var(--size-border-radius-pill);
     content: "";
     display: inline-block;
     height: rem.torem(8px);

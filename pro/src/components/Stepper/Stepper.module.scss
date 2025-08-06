@@ -39,7 +39,7 @@ $number-size: rem.torem(30px);
         @include fonts.body-accent-xs;
 
         border: solid 1px var(--color-border-default);
-        border-radius: 50%;
+        border-radius: var(--size-border-radius-pill);
         width: $number-size;
         height: $number-size;
         text-align: center;
@@ -141,7 +141,6 @@ $number-size: rem.torem(30px);
         padding: 0 rem.torem(16px);
 
         &::after {
-          border-radius: rem.torem(2px);
           background-color: var(--color-border-subtle);
           content: "";
           width: 100%;

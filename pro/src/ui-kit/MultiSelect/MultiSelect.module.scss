@@ -106,7 +106,7 @@
   height: rem.torem(24px);
   background-color: var(--color-background-brand-primary);
   color: var(--color-text-inverted);
-  border-radius: 50%;
+  border-radius: var(--size-border-radius-pill);
 }
 
 .chevron {

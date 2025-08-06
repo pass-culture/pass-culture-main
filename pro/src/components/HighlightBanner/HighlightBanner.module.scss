@@ -64,7 +64,7 @@
     right: 16px;
     background-color: white;
     border: none;
-    border-radius: 50%;
+    border-radius: var(--size-border-radius-pill);
     width: rem.torem(24px);
     height: rem.torem(24px);
     color: var(--color-icon-brand-primary);
@@ -80,7 +80,7 @@
   width: 100%;
   min-height: rem.torem(175px);
   padding: rem.torem(24px);
-  border-radius: rem.torem(10px);
+  border-radius: var(--size-border-radius-m);
   background: linear-gradient(180deg, #6123df 30%, #320096 70%);
   display: flex;
   justify-content: space-between;

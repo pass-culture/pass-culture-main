@@ -33,7 +33,7 @@
       display: block;
       width: rem.torem(8px);
       height: rem.torem(8px);
-      border-radius: 50%;
+      border-radius: var(--size-border-radius-pill);
       margin-right: rem.torem(8px);
       background-color: var(--color-icon-brand-primary);
     }

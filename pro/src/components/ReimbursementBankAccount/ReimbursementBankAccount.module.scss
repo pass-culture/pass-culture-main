@@ -8,7 +8,7 @@
   grid-template-columns: 1fr;
   grid-template-rows: repeat(2);
   border: rem.torem(1px) solid var(--color-border-subtle);
-  border-radius: rem.torem(6px);
+  border-radius: var(--size-border-radius-m);
   box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px)
     var(--color-medium-shadow);
 
@@ -82,7 +82,7 @@
   .linked-venue {
     width: 100%;
     background-color: var(--color-background-subtle);
-    border-radius: rem.torem(6px);
+    border-radius: var(--size-border-radius-m);
     padding: rem.torem(12px) rem.torem(16px);
   }
 }
@@ -93,7 +93,7 @@
   gap: rem.torem(16px);
   padding: rem.torem(16px);
   margin-left: rem.torem(24px);
-  border-radius: rem.torem(6px);
+  border-radius: var(--size-border-radius-m);
   background-color: var(--color-background-subtle);
   color: var(color-black);
   text-align: center;

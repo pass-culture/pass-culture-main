@@ -208,7 +208,7 @@
     width: 100%;
     padding: rem.torem(12px) rem.torem(8px);
     border: rem.torem(1px) solid var(--color-border-default);
-    border-radius: rem.torem(6px);
+    border-radius: var(--size-border-radius-m);
     max-width: rem.torem(400px);
     color: var(--color-text-default);
 

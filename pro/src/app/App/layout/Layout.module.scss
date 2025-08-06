@@ -140,7 +140,7 @@ $connect-as-header-height: rem.torem(52px);
               top: rem.torem(10px);
               left: rem.torem(-5px);
               z-index: -1;
-              border-radius: 100px;
+              border-radius: var(--size-border-radius-pill);
             }
           }
 

@@ -26,7 +26,7 @@
 }
 
 .rounded-full {
-  border-radius: 100%;
+  border-radius: var(--size-border-radius-pill);
 }
 
 .visually-hidden {

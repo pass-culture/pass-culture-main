@@ -6,7 +6,7 @@
   margin-bottom: rem.torem(16px);
   background-color: var(--color-background-secondary);
   padding: rem.torem(16px);
-  border-radius: 6px;
+  border-radius: var(--size-border-radius-s);
 }
 
 .email-validation-tip {

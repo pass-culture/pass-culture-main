@@ -4,13 +4,15 @@
 .button-group-button-container {
   &:first-child {
     .button-group-button {
-      border-radius: rem.torem(36px) 0 0 rem.torem(36px);
+      border-radius: var(--size-border-radius-pill) 0 0
+        var(--size-border-radius-pill);
     }
   }
 
   &:last-child {
     .button-group-button {
-      border-radius: 0 rem.torem(36px) rem.torem(36px) 0;
+      border-radius: 0 var(--size-border-radius-pill)
+        var(--size-border-radius-pill) 0;
       border-left: none;
     }
   }
