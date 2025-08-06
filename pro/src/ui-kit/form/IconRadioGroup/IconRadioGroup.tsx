@@ -1,9 +1,8 @@
 import { useId } from 'react'
 
-import { IconRadio } from 'ui-kit/form/IconRadio/IconRadio'
+import { IconRadio } from '@/ui-kit/form/IconRadio/IconRadio'
 
 import { FieldError } from '../shared/FieldError/FieldError'
-
 import styles from './IconRadioGroup.module.scss'
 
 export type IconRadioGroupValues = {

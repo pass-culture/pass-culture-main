@@ -3,8 +3,8 @@ import {
   GetOffererVenueResponseModel,
   GetVenueResponseModel,
   OfferAddressType,
-} from 'apiClient/v1'
-import { EVENT_ADDRESS_SCHOOL_LABEL } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/constants/labels'
+} from '@/apiClient//v1'
+import { EVENT_ADDRESS_SCHOOL_LABEL } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/constants/labels'
 
 export const formatOfferEventAddress = (
   eventAddress: CollectiveOfferOfferVenueResponseModel,

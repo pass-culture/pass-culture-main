@@ -1,30 +1,31 @@
-import { api } from 'apiClient/api'
+import { screen } from '@testing-library/react'
+import { Route, Routes } from 'react-router'
+
+import { api } from '@/apiClient//api'
 import {
   GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
-} from 'apiClient/v1'
-import { screen } from '@testing-library/react'
+} from '@/apiClient//v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+} from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   getIndividualOfferFactory,
   getOfferVenueFactory,
   individualOfferContextValuesFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
-import { Route, Routes } from 'react-router'
+} from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
 
 import { IndividualOfferConfirmation } from './IndividualOfferConfirmation'
 
 window.open = vi.fn()
 
-vi.mock('commons/utils/config', async () => {
+vi.mock('@/commons/utils/config', async () => {
   return {
-    ...(await vi.importActual('commons/utils/config')),
+    ...(await vi.importActual('@/commons/utils/config')),
     WEBAPP_URL: 'https://localhost',
   }
 })

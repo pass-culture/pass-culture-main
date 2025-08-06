@@ -1,4 +1,4 @@
-import { Skeleton } from 'ui-kit/Skeleton/Skeleton'
+import { Skeleton } from '@/ui-kit/Skeleton/Skeleton'
 
 export const SkeletonLoader = () => {
   const bigSkeletonCount = 6

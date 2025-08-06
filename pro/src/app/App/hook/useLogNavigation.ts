@@ -1,8 +1,9 @@
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { parseUrlParams } from 'commons/utils/parseUrlParams'
 import { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router'
+
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { parseUrlParams } from '@/commons/utils/parseUrlParams'
 
 export const useLogNavigation = (): void => {
   const location = useLocation()

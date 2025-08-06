@@ -1,4 +1,4 @@
-import { StudentLevels } from 'apiClient/v1'
+import { StudentLevels } from '@/apiClient//v1'
 
 export type CollectiveDataFormValues = {
   collectiveDescription?: string

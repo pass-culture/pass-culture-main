@@ -1,13 +1,14 @@
-import { LocalOfferersPlaylistOffer } from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useNotification from 'commons/hooks/useNotification'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+
+import { LocalOfferersPlaylistOffer } from '@/apiClient//adage'
+import { apiAdage } from '@/apiClient//api'
+import * as useNotification from '@/commons/hooks/useNotification'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { VenuePlaylist } from '../VenuePlaylist'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   apiAdage: {
     logConsultPlaylistElement: vi.fn(),
     getLocalOfferersPlaylist: vi.fn(),
@@ -45,7 +46,7 @@ describe('VenuePlaylist', () => {
     })
 
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

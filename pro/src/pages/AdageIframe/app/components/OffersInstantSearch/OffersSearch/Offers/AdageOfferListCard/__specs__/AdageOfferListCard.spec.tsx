@@ -1,11 +1,12 @@
-import { AuthenticatedResponse } from 'apiClient/adage'
 import { screen } from '@testing-library/react'
+
+import { AuthenticatedResponse } from '@/apiClient//adage'
 import {
   defaultAdageUser,
   defaultCollectiveTemplateOffer,
-} from 'commons/utils/factories/adageFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+} from '@/commons/utils/factories/adageFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import {
   AdageOfferListCard,

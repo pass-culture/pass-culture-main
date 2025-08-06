@@ -1,17 +1,18 @@
-import { api } from 'apiClient/api'
 import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { Audience } from 'commons/core/shared/types'
+import { ComponentProps } from 'react'
+import { expect } from 'vitest'
+
+import { api } from '@/apiClient//api'
+import { Audience } from '@/commons/core/shared/types'
 import {
   collectiveBookingByIdFactory,
   collectiveBookingCollectiveStockFactory,
   collectiveBookingFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
-import { bookingRecapFactory } from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import * as filterBookingsRecap from 'components/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
-import { ComponentProps } from 'react'
-import { expect } from 'vitest'
+} from '@/commons/utils/factories/collectiveApiFactories'
+import { bookingRecapFactory } from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import * as filterBookingsRecap from '@/components/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 
 import { BookingsRecapTable } from './BookingsRecapTable'
 import {
@@ -19,7 +20,7 @@ import {
   EMPTY_FILTER_VALUE,
 } from './Filters/constants'
 
-vi.mock('commons/utils/windowMatchMedia', () => ({
+vi.mock('@/commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 Element.prototype.scrollIntoView = vi.fn()

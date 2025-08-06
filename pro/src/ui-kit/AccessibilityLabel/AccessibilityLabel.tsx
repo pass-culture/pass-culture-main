@@ -1,11 +1,11 @@
 import cn from 'classnames'
 
-import { AccessibilityEnum } from 'commons/core/shared/types'
-import strokeAccessibilityBrainIcon from 'icons/stroke-accessibility-brain.svg'
-import strokeAccessibilityEarIcon from 'icons/stroke-accessibility-ear.svg'
-import strokeAccessibilityEyeIcon from 'icons/stroke-accessibility-eye.svg'
-import strokeAccessibilityLegIcon from 'icons/stroke-accessibility-leg.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { AccessibilityEnum } from '@/commons/core/shared/types'
+import strokeAccessibilityBrainIcon from '@/icons/stroke-accessibility-brain.svg'
+import strokeAccessibilityEarIcon from '@/icons/stroke-accessibility-ear.svg'
+import strokeAccessibilityEyeIcon from '@/icons/stroke-accessibility-eye.svg'
+import strokeAccessibilityLegIcon from '@/icons/stroke-accessibility-leg.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './AccessibilityLabel.module.scss'
 

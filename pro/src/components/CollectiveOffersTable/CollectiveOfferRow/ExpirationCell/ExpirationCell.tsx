@@ -1,15 +1,19 @@
+import classNames from 'classnames'
+import { differenceInCalendarDays, format } from 'date-fns'
+
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
-} from 'apiClient/v1'
-import classNames from 'classnames'
-import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'commons/utils/date'
-import { pluralize } from 'commons/utils/pluralize'
-import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
-import { differenceInCalendarDays, format } from 'date-fns'
-import fullInfoIcon from 'icons/full-info.svg'
-import fullWaitIcon from 'icons/full-wait.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/apiClient//v1'
+import {
+  FORMAT_DD_MM_YYYY,
+  toDateStrippedOfTimezone,
+} from '@/commons/utils/date'
+import { pluralize } from '@/commons/utils/pluralize'
+import { getCellsDefinition } from '@/components/OffersTable/utils/cellDefinitions'
+import fullInfoIcon from '@/icons/full-info.svg'
+import fullWaitIcon from '@/icons/full-wait.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ExpirationCell.module.scss'
 

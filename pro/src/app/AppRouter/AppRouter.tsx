@@ -1,9 +1,10 @@
 import * as Sentry from '@sentry/react'
-import { App } from 'app/App/App'
-import { routes } from 'app/AppRouter/routesMap'
-import { selectActiveFeatures } from 'commons/store/features/selectors'
 import { useSelector } from 'react-redux'
 import { createBrowserRouter, RouterProvider } from 'react-router'
+
+import { App } from '@/app/App/App'
+import { routes } from '@/app/AppRouter/routesMap'
+import { selectActiveFeatures } from '@/commons/store/features/selectors'
 
 import { ErrorBoundary } from './ErrorBoundary'
 
@@ -26,7 +27,7 @@ export const AppRouter = (): JSX.Element => {
         children: [
           ...activeRoutes,
           {
-            lazy: () => import('pages/Errors/NotFound/NotFound'),
+            lazy: () => import('@/pages/Errors/NotFound/NotFound'),
             path: '*',
             title: 'Erreur 404 - Page indisponible',
             meta: { public: true },

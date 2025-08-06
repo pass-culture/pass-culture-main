@@ -5,15 +5,14 @@ import {
   OfferContactFormEnum,
   PostCollectiveOfferBodyModel,
   PostCollectiveOfferTemplateBodyModel,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 import {
   formatBrowserTimezonedDateAsUTC,
   toISOStringWithoutMilliseconds,
-} from 'commons/utils/date'
-import { buildDateTime } from 'components/IndividualOffer/StocksEventEdition/serializers'
+} from '@/commons/utils/date'
+import { buildDateTime } from '@/components/IndividualOffer/StocksEventEdition/serializers'
 
 import { OfferEducationalFormValues } from '../types'
-
 import { parseDuration } from './parseDuration'
 import { serializeParticipants } from './serializeParticipants'
 

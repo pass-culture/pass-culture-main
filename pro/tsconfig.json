@@ -24,6 +24,9 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "outDir": "./built",
+    "paths": {
+      "@/*": ["./*"]
+    },
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,

@@ -2,8 +2,8 @@ import {
   CollectiveOfferAllowedAction,
   CollectiveOffersStockResponseModel,
   CollectiveOfferTemplateAllowedAction,
-} from 'apiClient/v1'
-import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
+} from '@/apiClient//v1'
+import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 
 import { isCollectiveOfferArchivable } from '../isCollectiveOfferArchivable'
 

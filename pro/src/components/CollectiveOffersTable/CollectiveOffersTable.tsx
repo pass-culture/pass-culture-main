@@ -1,14 +1,14 @@
-import { CollectiveOfferResponseModel } from 'apiClient/v1'
-import { CollectiveOffersSortingColumn } from 'commons/core/OfferEducational/types'
-import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
-import { SortingMode } from 'commons/hooks/useColumnSorting'
-import { isSameOffer } from 'commons/utils/isSameOffer'
-import { OffersTable } from 'components/OffersTable/OffersTable'
+import { CollectiveOfferResponseModel } from '@/apiClient//v1'
+import { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
+import { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
+import { SortingMode } from '@/commons/hooks/useColumnSorting'
+import { isSameOffer } from '@/commons/utils/isSameOffer'
+import { OffersTable } from '@/components/OffersTable/OffersTable'
 import {
   Columns,
   OffersTableHead,
-} from 'components/OffersTable/OffersTableHead/OffersTableHead'
-import { getCellsDefinition } from 'components/OffersTable/utils/cellDefinitions'
+} from '@/components/OffersTable/OffersTableHead/OffersTableHead'
+import { getCellsDefinition } from '@/components/OffersTable/utils/cellDefinitions'
 
 import { CollectiveOfferRow } from './CollectiveOfferRow/CollectiveOfferRow'
 import styles from './CollectiveOffersTable.module.scss'

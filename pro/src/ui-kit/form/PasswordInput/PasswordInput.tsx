@@ -1,12 +1,12 @@
 import cn from 'classnames'
-import strokeHideIcon from 'icons/stroke-hide.svg'
-import strokeShowIcon from 'icons/stroke-show.svg'
 import React, { ForwardedRef, useState } from 'react'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
+
+import strokeHideIcon from '@/icons/stroke-hide.svg'
+import strokeShowIcon from '@/icons/stroke-show.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { TextInput } from '../TextInput/TextInput'
-
 import styles from './PasswordInput.module.scss'
 
 export interface PasswordInputProps {

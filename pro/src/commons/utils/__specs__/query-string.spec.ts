@@ -1,4 +1,4 @@
-import { parse, stringify } from 'commons/utils/query-string'
+import { parse, stringify } from '@/commons/utils/query-string'
 
 describe('handling of URL', () => {
   it('should transform queryParams to object / keys-values', () => {

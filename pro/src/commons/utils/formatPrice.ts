@@ -1,8 +1,8 @@
 // New 2023 standard options that should be available in TypeScript ^5.5
 // At this moment, VSCode's TypeScript version is still ^5.4
 // (See: https://github.com/microsoft/TypeScript/issues/56269)
-import { isError } from 'apiClient/helpers'
-import { sendSentryCustomError } from 'commons/utils/sendSentryCustomError'
+import { isError } from '@/apiClient//helpers'
+import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 
 type ResolvedNumberFormatOptions = Intl.NumberFormatOptions & {
   roundingPriority?: 'auto' | 'morePrecision' | 'lessPrecision' | undefined

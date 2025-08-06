@@ -1,22 +1,23 @@
-import { Target } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
+import { Route, Routes } from 'react-router'
+
+import { Target } from '@/apiClient//v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'commons/context/SignupJourneyContext/SignupJourneyContext'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+} from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import {
   DEFAULT_ADDRESS_FORM_VALUES,
   DEFAULT_OFFERER_FORM_VALUES,
-} from 'components/SignupJourneyForm/Offerer/constants'
-import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
-import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
-import { Route, Routes } from 'react-router'
+} from '@/components/SignupJourneyForm/Offerer/constants'
+import { OnboardingFormNavigationAction } from '@/components/SignupJourneyFormLayout/constants'
+import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 
 import { SignupJourneyStepper } from '../SignupJourneyStepper'
 

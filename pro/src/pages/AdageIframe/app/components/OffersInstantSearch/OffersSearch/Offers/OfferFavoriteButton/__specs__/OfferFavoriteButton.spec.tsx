@@ -1,19 +1,20 @@
-import { apiAdage } from 'apiClient/api'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+
+import { apiAdage } from '@/apiClient//api'
 import {
   defaultAdageUser,
   defaultCollectiveTemplateOffer,
-} from 'commons/utils/factories/adageFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+} from '@/commons/utils/factories/adageFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import {
   OfferFavoriteButton,
   OfferFavoriteButtonProps,
 } from '../OfferFavoriteButton'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   apiAdage: {
     logFavOfferButtonClick: vi.fn(),
     deleteFavoriteForCollectiveOfferTemplate: vi.fn(),

@@ -1,6 +1,7 @@
-import { MAX_PRICE_DETAILS_LENGTH } from 'commons/core/OfferEducational/constants'
 import { isAfter, isBefore, isSameDay } from 'date-fns'
 import * as yup from 'yup'
+
+import { MAX_PRICE_DETAILS_LENGTH } from '@/commons/core/OfferEducational/constants'
 
 import { getMaxEndDateInSchoolYear } from './utils/getMaxEndDateInSchoolYear'
 

@@ -1,5 +1,6 @@
-import { FORMAT_ISO_DATE_ONLY, getToday } from 'commons/utils/date'
 import { format, startOfDay, subDays } from 'date-fns'
+
+import { FORMAT_ISO_DATE_ONLY, getToday } from '@/commons/utils/date'
 
 const DEFAULT_INVOICES_PERIOD = 30
 export const DEFAULT_INVOICES_FILTERS = {

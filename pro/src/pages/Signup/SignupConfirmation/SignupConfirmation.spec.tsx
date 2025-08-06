@@ -1,9 +1,10 @@
 import { screen } from '@testing-library/react'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { SignupConfirmation } from 'pages/Signup/SignupConfirmation/SignupConfirmation'
 import { expect } from 'vitest'
 
-vi.mock('apiClient/api', () => ({
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { SignupConfirmation } from '@/pages/Signup/SignupConfirmation/SignupConfirmation'
+
+vi.mock('@/apiClient//api', () => ({
   api: {
     getProfile: vi.fn(),
     listFeatures: vi.fn(),

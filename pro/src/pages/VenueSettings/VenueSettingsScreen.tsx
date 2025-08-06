@@ -1,23 +1,24 @@
-import { api } from 'apiClient/api'
-import { isErrorAPIError } from 'apiClient/helpers'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
+import { useLocation, useNavigate } from 'react-router'
+import { useSWRConfig } from 'swr'
+
+import { api } from '@/apiClient//api'
+import { isErrorAPIError } from '@/apiClient//helpers'
 import {
   GetOffererResponseModel,
   GetVenueResponseModel,
   VenueProviderResponse,
   VenueTypeResponseModel,
-} from 'apiClient/v1'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { useNotification } from 'commons/hooks/useNotification'
-import { getVenuePagePathToNavigateTo } from 'commons/utils/getVenuePagePathToNavigateTo'
-import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
-import { generateSiretValidationSchema } from 'pages/VenueSettings/SiretOrCommentFields/validationSchema'
-import { useState } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { useLocation, useNavigate } from 'react-router'
-import { useSWRConfig } from 'swr'
+} from '@/apiClient//v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
+import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
+import { generateSiretValidationSchema } from '@/pages/VenueSettings/SiretOrCommentFields/validationSchema'
 
 import { serializeEditVenueBodyModel } from './serializers'
 import { VenueSettingsFormValues } from './types'

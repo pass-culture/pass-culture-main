@@ -1,23 +1,23 @@
+import cn from 'classnames'
+import React, { ChangeEvent, useRef, useState } from 'react'
+
 import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
-} from 'apiClient/v1'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import cn from 'classnames'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { Audience } from 'commons/core/shared/types'
-import { useOnClickOrFocusOutside } from 'commons/hooks/useOnClickOrFocusOutside'
-import { Checkbox } from 'design-system/Checkbox/Checkbox'
-import fullSortIcon from 'icons/full-sort.svg'
-import React, { ChangeEvent, useRef, useState } from 'react'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/apiClient//v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { Audience } from '@/commons/core/shared/types'
+import { useOnClickOrFocusOutside } from '@/commons/hooks/useOnClickOrFocusOutside'
+import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import fullSortIcon from '@/icons/full-sort.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { BookingsFilters } from '../types'
 import {
   COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS,
   INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS,
 } from '../utils/bookingStatusConverter'
-
 import styles from './Filters.module.scss'
 
 const getAvailableBookingStatuses = (audience: Audience) => {

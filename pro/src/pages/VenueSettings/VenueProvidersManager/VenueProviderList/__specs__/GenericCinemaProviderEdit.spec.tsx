@@ -1,16 +1,17 @@
-import { api } from 'apiClient/api'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
-import { defaultVenueProvider } from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+
+import { api } from '@/apiClient//api'
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
+import { defaultVenueProvider } from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   GenericCinemaProviderEdit,
   GenericCinemaProviderEditProps,
 } from '../GenericCinemaProviderEdit'
 
-vi.mock('commons/hooks/useNotification', () => ({
+vi.mock('@/commons/hooks/useNotification', () => ({
   useNotification: () => ({
     success: vi.fn(),
     error: vi.fn(),

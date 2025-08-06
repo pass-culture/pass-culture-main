@@ -1,7 +1,8 @@
 import cn from 'classnames'
-import fullCloseIcon from 'icons/full-close.svg'
 import { useRef } from 'react'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import fullCloseIcon from '@/icons/full-close.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SelectedValuesTags.module.scss'
 

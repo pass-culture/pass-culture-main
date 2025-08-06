@@ -1,8 +1,9 @@
+import { generatePath } from 'react-router'
+
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { generatePath } from 'react-router'
+} from '@/commons/core/Offers/constants'
 
 interface GetIndividualOfferPathArgs {
   isCreation?: boolean

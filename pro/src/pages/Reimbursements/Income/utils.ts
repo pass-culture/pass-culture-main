@@ -1,4 +1,4 @@
-import { CollectiveRevenue, TotalRevenue } from 'apiClient/v1'
+import { CollectiveRevenue, TotalRevenue } from '@/apiClient//v1'
 
 export const isCollectiveAndIndividualRevenue = (
   revenue: any

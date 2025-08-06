@@ -1,4 +1,4 @@
-import { removeQuotes } from 'commons/utils/removeQuotes'
+import { removeQuotes } from '@/commons/utils/removeQuotes'
 
 describe('removeQuotes', () => {
   it('should trim and removes double quotes " " from a string', () => {

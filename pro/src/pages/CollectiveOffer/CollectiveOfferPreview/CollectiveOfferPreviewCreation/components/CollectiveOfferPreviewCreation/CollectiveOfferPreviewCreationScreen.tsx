@@ -1,31 +1,32 @@
-import { api } from 'apiClient/api'
+import { isBefore } from 'date-fns'
+import { useState } from 'react'
+import { useNavigate } from 'react-router'
+import { useSWRConfig } from 'swr'
+
+import { api } from '@/apiClient//api'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetOffererResponseModel,
-} from 'apiClient/v1'
-import { useAnalytics } from 'app/App/analytics/firebase'
+} from '@/apiClient//v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
-import { Events } from 'commons/core/FirebaseEvents/constants'
+} from '@/commons/config/swrQueryKeys'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
   isCollectiveOfferTemplate,
   Mode,
-} from 'commons/core/OfferEducational/types'
-import { useNotification } from 'commons/hooks/useNotification'
-import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
-import { RedirectToBankAccountDialog } from 'components/RedirectToBankAccountDialog/RedirectToBankAccountDialog'
-import { isBefore } from 'date-fns'
-import { AdagePreviewLayout } from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
-import { PreviewHeader } from 'pages/CollectiveOffer/CollectiveOfferPreview/components/PreviewHeader'
-import { useState } from 'react'
-import { useNavigate } from 'react-router'
-import { useSWRConfig } from 'swr'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
+} from '@/commons/core/OfferEducational/types'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
+import { RedirectToBankAccountDialog } from '@/components/RedirectToBankAccountDialog/RedirectToBankAccountDialog'
+import { AdagePreviewLayout } from '@/pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
+import { PreviewHeader } from '@/pages/CollectiveOffer/CollectiveOfferPreview/components/PreviewHeader'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 export interface CollectiveOfferSummaryCreationProps {
   offer:

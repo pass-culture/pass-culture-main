@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react'
 
-import { usePagination } from 'commons/hooks/usePagination'
+import { usePagination } from '@/commons/hooks/usePagination'
 
 const itemsList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 const itemsPerPage = 3

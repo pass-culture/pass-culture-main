@@ -1,18 +1,19 @@
+import { MouseEvent, useState } from 'react'
+
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
-import { useNotification } from 'commons/hooks/useNotification'
-import fullStarIcon from 'icons/full-star.svg'
-import strokeStarIcon from 'icons/stroke-star.svg'
-import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
-import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
-import { MouseEvent, useState } from 'react'
+} from '@/apiClient//adage'
+import { apiAdage } from '@/apiClient//api'
+import { useNotification } from '@/commons/hooks/useNotification'
+import fullStarIcon from '@/icons/full-star.svg'
+import strokeStarIcon from '@/icons/stroke-star.svg'
+import { useAdageUser } from '@/pages/AdageIframe/app/hooks/useAdageUser'
+import { isCollectiveOfferTemplate } from '@/pages/AdageIframe/app/types'
 import {
   ListIconButton,
   ListIconButtonVariant,
-} from 'ui-kit/ListIconButton/ListIconButton'
+} from '@/ui-kit/ListIconButton/ListIconButton'
 
 export interface OfferFavoriteButtonProps {
   offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel

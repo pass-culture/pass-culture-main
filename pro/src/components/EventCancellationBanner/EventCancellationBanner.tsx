@@ -1,6 +1,6 @@
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
-import { FormLayoutDescription } from 'components/FormLayout/FormLayoutDescription'
+import { GetIndividualOfferResponseModel } from '@/apiClient//v1'
+import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
+import { FormLayoutDescription } from '@/components/FormLayout/FormLayoutDescription'
 
 interface EventCancellationBannerProps {
   offer: GetIndividualOfferResponseModel

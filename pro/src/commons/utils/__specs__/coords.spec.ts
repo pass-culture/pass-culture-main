@@ -3,7 +3,7 @@ import {
   dmsRe,
   getCoordsType,
   parseDms,
-} from 'commons/utils/coords'
+} from '@/commons/utils/coords'
 
 describe('checkCoords', () => {
   it('should validate the latitude, longitude format', () => {

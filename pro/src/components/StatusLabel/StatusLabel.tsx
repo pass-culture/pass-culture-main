@@ -1,12 +1,12 @@
-import { OfferStatus } from 'apiClient/v1'
-import { Tag, TagVariant } from 'design-system/Tag/Tag'
-import fullHideIcon from 'icons/full-hide.svg'
-import strokeCalendarIcon from 'icons/stroke-calendar.svg'
-import strokeCheckIcon from 'icons/stroke-check.svg'
-import strokeClockIcon from 'icons/stroke-clock.svg'
-import strokeCloseIcon from 'icons/stroke-close.svg'
-import strokeDraftIcon from 'icons/stroke-draft.svg'
-import strokeWarningIcon from 'icons/stroke-warning.svg'
+import { OfferStatus } from '@/apiClient//v1'
+import { Tag, TagVariant } from '@/design-system/Tag/Tag'
+import fullHideIcon from '@/icons/full-hide.svg'
+import strokeCalendarIcon from '@/icons/stroke-calendar.svg'
+import strokeCheckIcon from '@/icons/stroke-check.svg'
+import strokeClockIcon from '@/icons/stroke-clock.svg'
+import strokeCloseIcon from '@/icons/stroke-close.svg'
+import strokeDraftIcon from '@/icons/stroke-draft.svg'
+import strokeWarningIcon from '@/icons/stroke-warning.svg'
 
 const OFFER_STATUS_PROPERTIES: Record<
   string,

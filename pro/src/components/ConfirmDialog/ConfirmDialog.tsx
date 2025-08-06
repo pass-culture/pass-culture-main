@@ -1,11 +1,10 @@
 import * as RadixDialog from '@radix-ui/react-dialog'
 
-import strokeErrorIcon from 'icons/stroke-error.svg'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import strokeErrorIcon from '@/icons/stroke-error.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { Dialog, DialogProps } from '../Dialog/Dialog'
-
 import styles from './ConfirmDialog.module.scss'
 
 type ConfirmDialogProps = DialogProps & {

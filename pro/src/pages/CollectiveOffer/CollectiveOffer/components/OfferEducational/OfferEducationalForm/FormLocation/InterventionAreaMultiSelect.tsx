@@ -1,9 +1,10 @@
-import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
-import { offerInterventionOptions } from 'commons/core/shared/interventionOptions'
-import { selectInterventionAreas } from 'commons/utils/selectInterventionAreas'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { MultiSelect, Option } from 'ui-kit/MultiSelect/MultiSelect'
+
+import { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
+import { offerInterventionOptions } from '@/commons/core/shared/interventionOptions'
+import { selectInterventionAreas } from '@/commons/utils/selectInterventionAreas'
+import { MultiSelect, Option } from '@/ui-kit/MultiSelect/MultiSelect'
 
 import styles from '../OfferEducationalForm.module.scss'
 

@@ -1,6 +1,6 @@
-import fullLinkIcon from 'icons/full-link.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import fullLinkIcon from '@/icons/full-link.svg'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './Newsletter.module.scss'
 import { NewsletterSVG } from './NewsletterSVG'

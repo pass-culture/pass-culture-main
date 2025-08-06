@@ -1,11 +1,12 @@
 import { render, screen } from '@testing-library/react'
+import { FormProvider, useForm } from 'react-hook-form'
+
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
   INDIVIDUAL_OFFER_SUBTYPE,
   OFFER_TYPES,
-} from 'commons/core/Offers/constants'
-import { FormProvider, useForm } from 'react-hook-form'
+} from '@/commons/core/Offers/constants'
 
 import { OfferTypeFormValues } from '../../types'
 import { IndividualOfferType } from '../IndividualOfferType'

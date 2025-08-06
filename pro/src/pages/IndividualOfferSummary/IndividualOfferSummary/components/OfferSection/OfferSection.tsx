@@ -1,28 +1,29 @@
-import { api } from 'apiClient/api'
-import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
-import { GET_MUSIC_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { useLocation } from 'react-router'
+import { computeAddressDisplayName } from 'repository/venuesService'
+import useSWR from 'swr'
+
+import { api } from '@/apiClient//api'
+import { GetIndividualOfferWithAddressResponseModel } from '@/apiClient//v1'
+import { GET_MUSIC_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WITHDRAWAL_TYPE_LABELS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { getDelayToFrenchText } from 'commons/utils/date'
-import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
-import { Markdown } from 'components/Markdown/Markdown'
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { getDelayToFrenchText } from '@/commons/utils/date'
+import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
+import { Markdown } from '@/components/Markdown/Markdown'
 import {
   Description,
   SummaryDescriptionList,
-} from 'components/SummaryLayout/SummaryDescriptionList'
-import { SummarySection } from 'components/SummaryLayout/SummarySection'
-import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { serializeOfferSectionData } from 'pages/IndividualOfferSummary/commons/serializer'
-import { useLocation } from 'react-router'
-import { computeAddressDisplayName } from 'repository/venuesService'
-import useSWR from 'swr'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+} from '@/components/SummaryLayout/SummaryDescriptionList'
+import { SummarySection } from '@/components/SummaryLayout/SummarySection'
+import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
+import { serializeOfferSectionData } from '@/pages/IndividualOfferSummary/commons/serializer'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './OfferSection.module.scss'
 

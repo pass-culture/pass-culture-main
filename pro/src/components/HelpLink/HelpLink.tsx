@@ -1,7 +1,7 @@
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import fullHelpIcon from 'icons/full-help.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import fullHelpIcon from '@/icons/full-help.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './HelpLink.module.scss'
 

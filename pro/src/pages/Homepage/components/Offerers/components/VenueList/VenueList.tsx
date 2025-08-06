@@ -1,8 +1,8 @@
-import { GetOffererResponseModel } from 'apiClient/v1'
+import { GetOffererResponseModel } from '@/apiClient//v1'
 import {
   getPhysicalVenuesFromOfferer,
   getVirtualVenueFromOfferer,
-} from 'pages/Homepage/components/Offerers/components/VenueList/venueUtils'
+} from '@/pages/Homepage/components/Offerers/components/VenueList/venueUtils'
 
 import { Venue } from './Venue'
 import styles from './Venue.module.scss'

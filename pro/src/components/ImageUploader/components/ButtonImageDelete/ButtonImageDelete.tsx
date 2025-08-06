@@ -1,8 +1,9 @@
-import fullTrashIcon from 'icons/full-trash.svg'
 import { useState } from 'react'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import fullTrashIcon from '@/icons/full-trash.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ButtonImageDelete.module.scss'
 import { ModalImageDelete } from './ModalImageDelete'

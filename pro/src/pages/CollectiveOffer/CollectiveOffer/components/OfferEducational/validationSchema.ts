@@ -1,23 +1,24 @@
+import { addYears, isBefore } from 'date-fns'
+import { parsePhoneNumberFromString } from 'libphonenumber-js'
+import * as yup from 'yup'
+
 import {
   CollectiveLocationType,
   OfferAddressType,
   StudentLevels,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 import {
   MAX_DESCRIPTION_LENGTH,
   MAX_PRICE_DETAILS_LENGTH,
-} from 'commons/core/OfferEducational/constants'
+} from '@/commons/core/OfferEducational/constants'
 import {
   OfferDatesType,
   OfferEducationalFormValues,
-} from 'commons/core/OfferEducational/types'
-import { checkCoords } from 'commons/utils/coords'
-import { toDateStrippedOfTimezone } from 'commons/utils/date'
-import { emailSchema } from 'commons/utils/isValidEmail'
-import { addYears, isBefore } from 'date-fns'
-import { parsePhoneNumberFromString } from 'libphonenumber-js'
-import { extractPhoneParts } from 'ui-kit/form/PhoneNumberInput/PhoneNumberInput'
-import * as yup from 'yup'
+} from '@/commons/core/OfferEducational/types'
+import { checkCoords } from '@/commons/utils/coords'
+import { toDateStrippedOfTimezone } from '@/commons/utils/date'
+import { emailSchema } from '@/commons/utils/isValidEmail'
+import { extractPhoneParts } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 
 const threeYearsFromNow = addYears(new Date(), 3)
 

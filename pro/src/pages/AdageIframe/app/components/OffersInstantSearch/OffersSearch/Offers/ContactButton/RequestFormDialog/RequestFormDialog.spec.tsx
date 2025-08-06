@@ -1,12 +1,13 @@
-import { AdageFrontRoles } from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
 import * as Dialog from '@radix-ui/react-dialog'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useNotification from 'commons/hooks/useNotification'
-import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { format } from 'date-fns'
+
+import { AdageFrontRoles } from '@/apiClient//adage'
+import { apiAdage } from '@/apiClient//api'
+import * as useNotification from '@/commons/hooks/useNotification'
+import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { RequestFormDialog, RequestFormDialogProps } from './RequestFormDialog'
 
@@ -31,7 +32,7 @@ const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
   )
 }
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   apiAdage: {
     createCollectiveRequest: vi.fn(),
     logRequestFormPopinDismiss: vi.fn(),

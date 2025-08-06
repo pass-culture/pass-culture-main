@@ -1,10 +1,10 @@
 import cn from 'classnames'
 
-import { NotificationTypeEnum } from 'commons/hooks/useNotification'
-import fullErrorIcon from 'icons/full-error.svg'
-import fullInfoIcon from 'icons/full-info.svg'
-import fullValidateIcon from 'icons/full-validate.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { NotificationTypeEnum } from '@/commons/hooks/useNotification'
+import fullErrorIcon from '@/icons/full-error.svg'
+import fullInfoIcon from '@/icons/full-info.svg'
+import fullValidateIcon from '@/icons/full-validate.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Notification.module.scss'
 

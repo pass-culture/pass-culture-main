@@ -1,14 +1,15 @@
-import { api } from 'apiClient/api'
-import { isErrorAPIError } from 'apiClient/helpers'
-import { SharedCurrentUserResponseModel } from 'apiClient/v1'
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
+
+import { api } from '@/apiClient//api'
+import { isErrorAPIError } from '@/apiClient//helpers'
+import { SharedCurrentUserResponseModel } from '@/apiClient//v1'
+import { SAVED_OFFERER_ID_KEY } from '@/commons/core/shared/constants'
 import {
   updateCurrentOfferer,
   updateOffererNames,
-} from 'commons/store/offerer/reducer'
-import { updateUser } from 'commons/store/user/reducer'
-import { storageAvailable } from 'commons/utils/storageAvailable'
+} from '@/commons/store/offerer/reducer'
+import { updateUser } from '@/commons/store/user/reducer'
+import { storageAvailable } from '@/commons/utils/storageAvailable'
 
 export const initializeUserThunk = createAsyncThunk(
   'user/initialize',

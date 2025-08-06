@@ -1,27 +1,28 @@
-import { api } from 'apiClient/api'
+import { format } from 'date-fns'
+import { useEffect, useState } from 'react'
+import useSWR from 'swr'
+
+import { api } from '@/apiClient//api'
 import {
   BookingRecapResponseModel,
   GetIndividualOfferResponseModel,
-} from 'apiClient/v1'
-import { GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DATE_QUERY_KEY } from 'commons/config/swrQueryKeys'
+} from '@/apiClient//v1'
+import { GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DATE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   DEFAULT_PRE_FILTERS,
   EMPTY_FILTER_VALUE,
-} from 'commons/core/Bookings/constants'
-import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
-import { IndividualBookingsTable } from 'components/Bookings/BookingsRecapTable/BookingsTable/IndividualBookingsTable'
-import { DEFAULT_OMNISEARCH_CRITERIA } from 'components/Bookings/BookingsRecapTable/Filters/constants'
-import { filterBookingsRecap } from 'components/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
-import { format } from 'date-fns'
-import strokeBookingHold from 'icons/stroke-booking-hold.svg'
-import { getFilteredIndividualBookingsAdapter } from 'pages/Bookings/adapters/getFilteredIndividualBookingsAdapter'
-import { useEffect, useState } from 'react'
-import useSWR from 'swr'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/commons/core/Bookings/constants'
+import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
+import { IndividualBookingsTable } from '@/components/Bookings/BookingsRecapTable/BookingsTable/IndividualBookingsTable'
+import { DEFAULT_OMNISEARCH_CRITERIA } from '@/components/Bookings/BookingsRecapTable/Filters/constants'
+import { filterBookingsRecap } from '@/components/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
+import strokeBookingHold from '@/icons/stroke-booking-hold.svg'
+import { getFilteredIndividualBookingsAdapter } from '@/pages/Bookings/adapters/getFilteredIndividualBookingsAdapter'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { DownloadBookingsModal } from './DownloadBookingsModal/DownloadBookingsModal'
 import styles from './IndividualOfferSummaryBookingsScreen.module.scss'

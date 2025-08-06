@@ -1,11 +1,12 @@
-import { api } from 'apiClient/api'
 import { screen } from '@testing-library/react'
-import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+
+import { api } from '@/apiClient//api'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { OfferStats, OfferStatsProps } from '../components/OfferStats'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getOffererV2Stats: vi.fn(),
   },

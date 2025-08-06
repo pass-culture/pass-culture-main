@@ -1,24 +1,25 @@
-import { api } from 'apiClient/api'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import * as router from 'react-router'
+
+import { api } from '@/apiClient//api'
 import {
   CollectiveOfferAllowedAction,
   GetCollectiveOfferResponseModel,
-} from 'apiClient/v1'
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import * as useOfferer from 'commons/hooks/swr/useOfferer'
-import { getCollectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
+} from '@/apiClient//v1'
+import * as useOfferer from '@/commons/hooks/swr/useOfferer'
+import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import * as router from 'react-router'
+} from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     editCollectiveOffer: vi.fn(),
     getVenues: vi.fn(),
@@ -36,7 +37,7 @@ vi.mock('react-router', async () => ({
 
 Element.prototype.scrollIntoView = vi.fn()
 
-vi.mock('commons/utils/windowMatchMedia', () => ({
+vi.mock('@/commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 

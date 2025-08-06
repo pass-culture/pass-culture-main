@@ -1,7 +1,7 @@
 import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 
 export const sortByOfferName = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,

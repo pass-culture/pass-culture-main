@@ -3,22 +3,22 @@ import { screen } from '@testing-library/react'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+} from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
   priceCategoryFactory,
-} from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/utils/factories/individualApiFactories'
 import {
   RenderComponentFunction,
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/renderWithProviders'
 
 import {
   IndividualOfferNavigation,

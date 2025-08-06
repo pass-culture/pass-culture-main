@@ -1,7 +1,8 @@
-import { OfferStatus } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
-import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+
+import { OfferStatus } from '@/apiClient//v1'
+import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { IndividualOfferSummaryStocksCalendarScreen } from './IndividualOfferSummaryStocksCalendarScreen'
 

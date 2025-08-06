@@ -1,7 +1,7 @@
 // Distance using https://www.sunearthtools.com/fr/tools/distance.php
 // Center (EiffelTourCoordinates): {latitude: 48.85, longitude: 2.29 }
 
-import { getHumanizeRelativeDistance } from 'commons/utils/getDistance'
+import { getHumanizeRelativeDistance } from '@/commons/utils/getDistance'
 
 describe('getDistance', () => {
   it.each`

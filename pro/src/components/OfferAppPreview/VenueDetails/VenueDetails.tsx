@@ -1,5 +1,6 @@
-import { AddressResponseIsLinkedToVenueModel } from 'apiClient/v1'
 import { computeAddressDisplayName } from 'repository/venuesService'
+
+import { AddressResponseIsLinkedToVenueModel } from '@/apiClient//v1'
 
 import style from './VenueDetails.module.scss'
 

@@ -1,7 +1,7 @@
 import cn from 'classnames'
 
-import strokeNoImageIcon from 'icons/stroke-no-image.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import strokeNoImageIcon from '@/icons/stroke-no-image.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ImagePlaceholder.module.scss'
 

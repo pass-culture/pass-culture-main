@@ -1,11 +1,11 @@
 import {
   EducationalInstitutionResponseModel,
   EducationalRedactorResponseModel,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 import {
   Description,
   SummaryDescriptionList,
-} from 'components/SummaryLayout/SummaryDescriptionList'
+} from '@/components/SummaryLayout/SummaryDescriptionList'
 
 interface CollectiveOfferVisibilitySectionProps {
   institution?: EducationalInstitutionResponseModel | null

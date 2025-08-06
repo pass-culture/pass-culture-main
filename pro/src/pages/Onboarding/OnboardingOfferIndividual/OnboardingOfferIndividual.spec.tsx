@@ -1,20 +1,21 @@
-import { api } from 'apiClient/api'
-import { OfferStatus } from 'apiClient/v1'
 import {
   screen,
   waitForElementToBeRemoved,
   within,
 } from '@testing-library/react'
-import * as useHasAccessToDidacticOnboarding from 'commons/hooks/useHasAccessToDidacticOnboarding'
+
+import { api } from '@/apiClient//api'
+import { OfferStatus } from '@/apiClient//v1'
+import * as useHasAccessToDidacticOnboarding from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
   listOffersOfferFactory,
-} from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/utils/factories/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/renderWithProviders'
 
 import {
   MAX_DRAFT_TO_DISPLAY,
@@ -27,13 +28,13 @@ const renderOnboardingOfferIndividual = (
   return renderWithProviders(<OnboardingOfferIndividual />, { ...options })
 }
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     listOffers: vi.fn(),
     getOfferer: vi.fn(),
   },
 }))
-vi.mock('commons/hooks/useHasAccessToDidacticOnboarding')
+vi.mock('@/commons/hooks/useHasAccessToDidacticOnboarding')
 describe('<OnboardingOfferIndividual />', () => {
   beforeEach(() => {
     vi.spyOn(api, 'listOffers').mockResolvedValue([])

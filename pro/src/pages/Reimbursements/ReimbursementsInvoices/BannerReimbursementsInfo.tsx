@@ -1,4 +1,4 @@
-import { Callout } from 'ui-kit/Callout/Callout'
+import { Callout } from '@/ui-kit/Callout/Callout'
 
 export const BannerReimbursementsInfo = (): JSX.Element => {
   return (

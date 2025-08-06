@@ -1,13 +1,13 @@
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { ImagePlaceholder } from 'components/SafeImage/ImagePlaceholder/ImagePlaceholder'
-import { SafeImage } from 'components/SafeImage/SafeImage'
-import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
-import { SummarySection } from 'components/SummaryLayout/SummarySection'
-import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { ImagePlaceholder } from '@/components/SafeImage/ImagePlaceholder/ImagePlaceholder'
+import { SafeImage } from '@/components/SafeImage/SafeImage'
+import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
+import { SummarySection } from '@/components/SummaryLayout/SummarySection'
+import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
 
 import styles from './MediaSection.module.scss'
 

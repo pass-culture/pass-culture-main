@@ -1,23 +1,23 @@
-import { CollectiveBookingResponseModel } from 'apiClient/v1'
-import { useAnalytics } from 'app/App/analytics/firebase'
 import cn from 'classnames'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { Audience } from 'commons/core/shared/types'
-import { SortingMode, useColumnSorting } from 'commons/hooks/useColumnSorting'
-import { usePagination } from 'commons/hooks/usePagination'
-import { BookingsFilters } from 'components/Bookings/BookingsRecapTable/types'
+import { useEffect } from 'react'
+
+import { CollectiveBookingResponseModel } from '@/apiClient//v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { Audience } from '@/commons/core/shared/types'
+import { SortingMode, useColumnSorting } from '@/commons/hooks/useColumnSorting'
+import { usePagination } from '@/commons/hooks/usePagination'
+import { BookingsFilters } from '@/components/Bookings/BookingsRecapTable/types'
 import {
   sortByBookingDate,
   sortByInstitutionName,
   sortByOfferName,
-} from 'components/Bookings/BookingsRecapTable/utils/sortingFunctions'
-import { useEffect } from 'react'
-import { Pagination } from 'ui-kit/Pagination/Pagination'
-import { SortArrow } from 'ui-kit/SortArrow/SortArrow'
+} from '@/components/Bookings/BookingsRecapTable/utils/sortingFunctions'
+import { Pagination } from '@/ui-kit/Pagination/Pagination'
+import { SortArrow } from '@/ui-kit/SortArrow/SortArrow'
 
 import { FilterByBookingStatus } from '../Filters/FilterByBookingStatus'
 import { NoFilteredBookings } from '../NoFilteredBookings/NoFilteredBookings'
-
 import styles from './BookingsTable.module.scss'
 import { CollectiveTableRow } from './CollectiveTableRow'
 

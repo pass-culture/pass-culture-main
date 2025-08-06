@@ -1,9 +1,9 @@
-import { MAX_OFFERS_TO_DISPLAY } from 'commons/core/Offers/constants'
-import { getOffersCountToDisplay } from 'commons/utils/getOffersCountToDisplay'
-import { NoResults } from 'components/NoResults/NoResults'
-import { Checkbox } from 'design-system/Checkbox/Checkbox'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
+import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
+import { NoResults } from '@/components/NoResults/NoResults'
+import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './OffersTable.module.scss'
 

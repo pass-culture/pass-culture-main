@@ -1,5 +1,5 @@
-import { MAX_OFFERS_TO_DISPLAY } from 'commons/core/Offers/constants'
-import { pluralize } from 'commons/utils/pluralize'
+import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
+import { pluralize } from '@/commons/utils/pluralize'
 
 export function computeSelectedOffersLabel(offersLength: number) {
   return offersLength > MAX_OFFERS_TO_DISPLAY

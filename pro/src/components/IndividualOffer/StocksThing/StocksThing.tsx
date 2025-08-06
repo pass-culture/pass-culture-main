@@ -1,46 +1,46 @@
-import { api } from 'apiClient/api'
-import {
-  GetIndividualOfferWithAddressResponseModel,
-  GetOfferStockResponseModel,
-  SubcategoryIdEnum,
-} from 'apiClient/v1'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import {
-  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
-  OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useNotification } from 'commons/hooks/useNotification'
-import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { getToday, getYearMonthDay, isDateValid } from 'commons/utils/date'
-import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
-import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
-import { DuoCheckbox } from 'components/DuoCheckbox/DuoCheckbox'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { FormLayoutDescription } from 'components/FormLayout/FormLayoutDescription'
-import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
-import fullCodeIcon from 'icons/full-code.svg'
-import fullTrashIcon from 'icons/full-trash.svg'
-import strokeEuroIcon from 'icons/stroke-euro.svg'
-import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
-import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
-import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
+
+import { api } from '@/apiClient//api'
+import {
+  GetIndividualOfferWithAddressResponseModel,
+  GetOfferStockResponseModel,
+  SubcategoryIdEnum,
+} from '@/apiClient//v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import {
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { getToday, getYearMonthDay, isDateValid } from '@/commons/utils/date'
+import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
+import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
+import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { FormLayoutDescription } from '@/components/FormLayout/FormLayoutDescription'
+import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
+import fullCodeIcon from '@/icons/full-code.svg'
+import fullTrashIcon from '@/icons/full-trash.svg'
+import strokeEuroIcon from '@/icons/stroke-euro.svg'
+import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
+import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
+import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
+import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
+import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
 
 import { DialogStockThingDeleteConfirm } from '../DialogStockDeleteConfirm/DialogStockThingDeleteConfirm'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
-
 import { ActivationCodeFormDialog } from './ActivationCodeFormDialog/ActivationCodeFormDialog'
 import { STOCK_THING_FORM_DEFAULT_VALUES } from './constants'
 import styles from './StockThing.module.scss'

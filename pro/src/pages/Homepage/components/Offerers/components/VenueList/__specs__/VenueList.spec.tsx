@@ -3,8 +3,8 @@ import { screen, within } from '@testing-library/react'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-} from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { VenueList, VenueListProps } from '../VenueList'
 

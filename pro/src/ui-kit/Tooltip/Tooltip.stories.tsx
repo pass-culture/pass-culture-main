@@ -1,11 +1,11 @@
 import type { StoryObj } from '@storybook/react'
 
-import { Button } from 'ui-kit/Button/Button'
+import { Button } from '@/ui-kit/Button/Button'
 
 import { Tooltip } from './Tooltip'
 
 export default {
-  title: 'ui-kit/Tooltip',
+  title: '@/ui-kit/Tooltip',
   component: Tooltip,
   decorators: [
     (Story: any) => (

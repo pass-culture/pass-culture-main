@@ -1,4 +1,4 @@
-import { SelectOption } from 'commons/custom_types/form'
+import { SelectOption } from '@/commons/custom_types/form'
 
 import { RecurrenceFormValues, RecurrenceType } from './types'
 

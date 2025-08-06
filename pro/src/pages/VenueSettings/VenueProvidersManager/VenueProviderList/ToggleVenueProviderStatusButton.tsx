@@ -1,13 +1,14 @@
-import { api } from 'apiClient/api'
-import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
-import { GET_VENUE_PROVIDERS_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { useNotification } from 'commons/hooks/useNotification'
-import fullPauseIcon from 'icons/full-pause.svg'
-import fullPlayIcon from 'icons/full-play.svg'
 import { useState } from 'react'
 import { useSWRConfig } from 'swr'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
+
+import { api } from '@/apiClient//api'
+import { GetVenueResponseModel, VenueProviderResponse } from '@/apiClient//v1'
+import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { useNotification } from '@/commons/hooks/useNotification'
+import fullPauseIcon from '@/icons/full-pause.svg'
+import fullPlayIcon from '@/icons/full-play.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { ToggleVenueProviderStatusDialog } from './ToggleVenueProviderStatusDialog'
 

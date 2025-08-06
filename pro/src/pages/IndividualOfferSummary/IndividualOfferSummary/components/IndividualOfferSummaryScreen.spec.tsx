@@ -1,4 +1,10 @@
-import { api } from 'apiClient/api'
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import { add, addDays, format, set, sub } from 'date-fns'
+import { generatePath, Route, Routes } from 'react-router'
+import { expect } from 'vitest'
+
+import { api } from '@/apiClient//api'
 import {
   ApiError,
   CancelablePromise,
@@ -6,24 +12,22 @@ import {
   GetMusicTypesResponse,
   OfferStatus,
   SubcategoryIdEnum,
-} from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
+} from '@/apiClient//v1'
+import { ApiRequestOptions } from '@/apiClient//v1/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient//v1/core/ApiResult'
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+} from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
-import { getAddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/factories/commonOffersApiFactories'
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
+import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   categoryFactory,
   defaultGetOffererResponseModel,
@@ -33,23 +37,20 @@ import {
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
-import { add, addDays, format, set, sub } from 'date-fns'
-import { generatePath, Route, Routes } from 'react-router'
-import { expect } from 'vitest'
+} from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
 
 import { IndividualOfferSummaryScreen } from './IndividualOfferSummaryScreen'
 
-// vi.mock('apiClient/api', () => ({
+// vi.mock('@/apiClient//api', () => ({
 //   api: {
 //     getMusicTypes: vi.fn(),
 //     getOfferer: vi.fn(),

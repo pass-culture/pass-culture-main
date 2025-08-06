@@ -3,8 +3,8 @@ import { screen } from '@testing-library/react'
 import {
   bookingRecapFactory,
   bookingRecapStockFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   IndividualBookingsTable,

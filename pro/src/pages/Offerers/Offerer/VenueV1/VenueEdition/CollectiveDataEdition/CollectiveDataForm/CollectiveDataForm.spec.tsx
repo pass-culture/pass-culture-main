@@ -1,11 +1,12 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
+import { expect } from 'vitest'
+
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { expect } from 'vitest'
+} from '@/commons/utils/renderWithProviders'
 
 import { CollectiveDataForm } from '../CollectiveDataForm/CollectiveDataForm'
 

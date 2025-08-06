@@ -1,4 +1,4 @@
-import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 
 export const imageUploadArgsFactory = (): OnImageUploadArgs => ({
   imageFile: new File([''], 'filename'),

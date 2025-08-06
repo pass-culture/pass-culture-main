@@ -1,4 +1,4 @@
-import { translateApiParamsToQueryParams } from 'commons/utils/translate'
+import { translateApiParamsToQueryParams } from '@/commons/utils/translate'
 
 import { Audience } from '../../shared/types'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '../constants'

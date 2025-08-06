@@ -2,12 +2,12 @@ import {
   CollectiveOfferDisplayedStatus,
   EacFormat,
   OfferStatus,
-} from 'apiClient/v1'
-import { Audience } from 'commons/core/shared/types'
+} from '@/apiClient//v1'
+import { Audience } from '@/commons/core/shared/types'
 import {
   translateApiParamsToQueryParams,
   translateQueryParamsToApiParams,
-} from 'commons/utils/translate'
+} from '@/commons/utils/translate'
 
 describe('translate', () => {
   it('should translate between query params to api params for collective offers', () => {

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { Button } from 'ui-kit/Button/Button'
+import { Button } from '@/ui-kit/Button/Button'
 
 import { Tooltip } from './Tooltip'
 

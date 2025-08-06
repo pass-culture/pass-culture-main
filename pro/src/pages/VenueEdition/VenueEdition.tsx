@@ -1,25 +1,26 @@
-import { api } from 'apiClient/api'
-import { Layout } from 'app/App/layout/Layout'
-import {
-  GET_VENUE_QUERY_KEY,
-  GET_VENUE_TYPES_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
-import { SelectOption } from 'commons/custom_types/form'
-import { useOfferer } from 'commons/hooks/swr/useOfferer'
-import { setSelectedPartnerPageId } from 'commons/store/nav/reducer'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { getVenuePagePathToNavigateTo } from 'commons/utils/getVenuePagePathToNavigateTo'
-import { setSavedPartnerPageVenueId } from 'commons/utils/savedPartnerPageVenueId'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
 import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { generatePath, useLocation, useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
-import { SelectInput } from 'ui-kit/form/shared/BaseSelectInput/SelectInput'
-import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
-import { NavLinkItem, NavLinkItems } from 'ui-kit/NavLinkItems/NavLinkItems'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+
+import { api } from '@/apiClient//api'
+import { Layout } from '@/app/App/layout/Layout'
+import {
+  GET_VENUE_QUERY_KEY,
+  GET_VENUE_TYPES_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
+import { SelectOption } from '@/commons/custom_types/form'
+import { useOfferer } from '@/commons/hooks/swr/useOfferer'
+import { setSelectedPartnerPageId } from '@/commons/store/nav/reducer'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
+import { setSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { CollectiveDataEdition } from '@/pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
+import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
+import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
+import { NavLinkItem, NavLinkItems } from '@/ui-kit/NavLinkItems/NavLinkItems'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './VenueEdition.module.scss'
 import { VenueEditionFormScreen } from './VenueEditionFormScreen'

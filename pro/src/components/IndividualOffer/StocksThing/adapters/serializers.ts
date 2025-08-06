@@ -1,11 +1,12 @@
-import { ThingStockCreateBodyModel } from 'apiClient/v1'
+import { endOfDay } from 'date-fns'
+
+import { ThingStockCreateBodyModel } from '@/apiClient//v1'
 import {
   getYearMonthDay,
   isDateValid,
   toISOStringWithoutMilliseconds,
-} from 'commons/utils/date'
-import { getUtcDateTimeFromLocalDepartement } from 'commons/utils/timezone'
-import { endOfDay } from 'date-fns'
+} from '@/commons/utils/date'
+import { getUtcDateTimeFromLocalDepartement } from '@/commons/utils/timezone'
 
 import { StockThingFormValues } from '../types'
 

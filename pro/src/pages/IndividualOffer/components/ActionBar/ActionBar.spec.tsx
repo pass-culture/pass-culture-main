@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from 'commons/core/Offers/constants'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from '@/commons/core/Offers/constants'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { ActionBar, ActionBarProps } from './ActionBar'
 

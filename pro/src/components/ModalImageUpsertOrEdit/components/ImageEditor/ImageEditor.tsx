@@ -1,7 +1,8 @@
 import { forwardRef, useCallback, useEffect, useState } from 'react'
 import AvatarEditor, { Position } from 'react-avatar-editor'
-import { Slider } from 'ui-kit/form/Slider/Slider'
 import { useDebouncedCallback } from 'use-debounce'
+
+import { Slider } from '@/ui-kit/form/Slider/Slider'
 
 import { CanvasTools } from './canvas'
 import style from './ImageEditor.module.scss'

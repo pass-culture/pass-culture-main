@@ -1,4 +1,4 @@
-import { AccessibilityFormValues } from 'commons/core/shared/types'
+import { AccessibilityFormValues } from '@/commons/core/shared/types'
 
 import { DetailsFormValues } from '../types' // Assuming types are in a sibling file
 import {

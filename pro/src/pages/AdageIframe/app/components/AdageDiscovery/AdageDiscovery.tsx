@@ -1,10 +1,11 @@
-import { AdagePlaylistType } from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
-import { useEducationalDomains } from 'commons/hooks/swr/useEducationalDomains'
-import { useIsElementVisible } from 'commons/hooks/useIsElementVisible'
-import { useNotification } from 'commons/hooks/useNotification'
 import { createRef, useRef } from 'react'
+
+import { AdagePlaylistType } from '@/apiClient//adage'
+import { apiAdage } from '@/apiClient//api'
+import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
+import { useIsElementVisible } from '@/commons/hooks/useIsElementVisible'
+import { useNotification } from '@/commons/hooks/useNotification'
 
 import styles from './AdageDiscovery.module.scss'
 import { AdageDiscoveryBanner } from './AdageDiscoveryBanner/AdageDiscoveryBanner'

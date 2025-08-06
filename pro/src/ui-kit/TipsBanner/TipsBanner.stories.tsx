@@ -4,7 +4,7 @@ import mockupPng from './mockup.png'
 import { TipsBanner, TipsBannerProps } from './TipsBanner'
 
 export default {
-  title: 'ui-kit/TipsBanner',
+  title: '@/ui-kit/TipsBanner',
   component: TipsBanner,
 }
 

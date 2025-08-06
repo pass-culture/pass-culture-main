@@ -1,18 +1,19 @@
-import { api } from 'apiClient/api'
-import { GET_STOCKS_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import useSWR from 'swr'
+
+import { api } from '@/apiClient//api'
+import { GET_STOCKS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { useNotification } from 'commons/hooks/useNotification'
-import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
-import { SummarySection } from 'components/SummaryLayout/SummarySection'
-import { getStockWarningText } from 'pages/IndividualOfferSummary/commons/getStockWarningText'
-import { StockThingSection } from 'pages/IndividualOfferSummary/components/StockThingSection/StockThingSection'
-import useSWR from 'swr'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
+import { SummarySection } from '@/components/SummaryLayout/SummarySection'
+import { getStockWarningText } from '@/pages/IndividualOfferSummary/commons/getStockWarningText'
+import { StockThingSection } from '@/pages/IndividualOfferSummary/components/StockThingSection/StockThingSection'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './IndividualOfferSummaryStocksScreen.module.scss'
 

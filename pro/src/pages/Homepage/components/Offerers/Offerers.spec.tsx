@@ -1,10 +1,10 @@
 import { screen } from '@testing-library/react'
 
-import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/renderWithProviders'
 
 import { Offerers, OfferersProps } from './Offerers'
 

@@ -1,9 +1,10 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
+
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { axe } from 'vitest-axe'
+} from '@/commons/utils/renderWithProviders'
 
 import { CardLink, type CardLinkProps } from './CardLink'
 

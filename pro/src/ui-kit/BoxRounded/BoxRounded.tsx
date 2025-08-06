@@ -1,8 +1,8 @@
 import cn from 'classnames'
 
-import fullEditIcon from 'icons/full-edit.svg'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import fullEditIcon from '@/icons/full-edit.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './BoxRounded.module.scss'
 

@@ -1,8 +1,8 @@
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import strokeBookingHoldIcon from 'icons/stroke-booking-hold.svg'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import strokeBookingHoldIcon from '@/icons/stroke-booking-hold.svg'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './IncomeNoData.module.scss'
 

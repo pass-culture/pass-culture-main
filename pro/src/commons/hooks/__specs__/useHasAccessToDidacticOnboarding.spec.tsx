@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 
-import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 const TestComponent = () => {
   return <div>{useHasAccessToDidacticOnboarding() ? 'OUI' : 'NON'}</div>

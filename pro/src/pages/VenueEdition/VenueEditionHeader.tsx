@@ -1,32 +1,33 @@
-import { api } from 'apiClient/api'
+import { useState } from 'react'
+import { useSelector } from 'react-redux'
+import { postImageToVenue } from 'repository/pcapi/pcapi'
+import { useSWRConfig } from 'swr'
+
+import { api } from '@/apiClient//api'
 import {
   BannerMetaModel,
   GetOffererResponseModel,
   GetVenueResponseModel,
   VenueTypeResponseModel,
-} from 'apiClient/v1'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { WEBAPP_URL } from 'commons/utils/config'
-import { getVenuePagePathToNavigateTo } from 'commons/utils/getVenuePagePathToNavigateTo'
+} from '@/apiClient//v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { WEBAPP_URL } from '@/commons/utils/config'
+import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import {
   UploaderModeEnum,
   UploadImageValues,
-} from 'commons/utils/imageUploadTypes'
-import { ImageDragAndDropUploader } from 'components/ImageDragAndDropUploader/ImageDragAndDropUploader'
-import { ButtonImageEdit } from 'components/ImageUploader/components/ButtonImageEdit/ButtonImageEdit'
-import { OnImageUploadArgs } from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
-import fullLinkIcon from 'icons/full-link.svg'
-import fullParametersIcon from 'icons/full-parameters.svg'
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
-import { postImageToVenue } from 'repository/pcapi/pcapi'
-import { useSWRConfig } from 'swr'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
+} from '@/commons/utils/imageUploadTypes'
+import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
+import { ButtonImageEdit } from '@/components/ImageUploader/components/ButtonImageEdit/ButtonImageEdit'
+import { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import fullLinkIcon from '@/icons/full-link.svg'
+import fullParametersIcon from '@/icons/full-parameters.svg'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './VenueEditionHeader.module.scss'
 

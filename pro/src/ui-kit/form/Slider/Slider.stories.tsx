@@ -5,7 +5,7 @@ import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { Slider, SliderProps } from './Slider'
 
 const meta: Meta<typeof Slider> = {
-  title: 'ui-kit/Slider',
+  title: '@/ui-kit/Slider',
   component: Slider,
 }
 

@@ -1,6 +1,6 @@
-import { EditVenueBodyModel, VenueTypeCode } from 'apiClient/v1'
-import { unhumanizeSiret } from 'commons/core/Venue/utils'
-import { removeQuotes } from 'commons/utils/removeQuotes'
+import { EditVenueBodyModel, VenueTypeCode } from '@/apiClient//v1'
+import { unhumanizeSiret } from '@/commons/core/Venue/utils'
+import { removeQuotes } from '@/commons/utils/removeQuotes'
 
 import { VenueSettingsFormValues } from './types'
 

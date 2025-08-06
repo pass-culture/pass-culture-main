@@ -1,6 +1,6 @@
-import { api } from 'apiClient/api'
-import { toISOStringWithoutMilliseconds } from 'commons/utils/date'
-import { storageAvailable } from 'commons/utils/storageAvailable'
+import { api } from '@/apiClient//api'
+import { toISOStringWithoutMilliseconds } from '@/commons/utils/date'
+import { storageAvailable } from '@/commons/utils/storageAvailable'
 
 export enum Consents {
   FIREBASE = 'firebase',

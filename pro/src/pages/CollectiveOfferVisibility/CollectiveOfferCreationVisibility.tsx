@@ -1,22 +1,23 @@
-import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
+import { useLocation, useNavigate } from 'react-router'
+import useSWR, { useSWRConfig } from 'swr'
+
+import { GetCollectiveOfferResponseModel } from '@/apiClient//v1'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
+} from '@/commons/config/swrQueryKeys'
 import {
   isCollectiveOfferTemplate,
   Mode,
-} from 'commons/core/OfferEducational/types'
-import { extractInitialVisibilityValues } from 'commons/core/OfferEducational/utils/extractInitialVisibilityValues'
-import { queryParamsFromOfferer } from 'commons/utils/queryParamsFromOfferer'
+} from '@/commons/core/OfferEducational/types'
+import { extractInitialVisibilityValues } from '@/commons/core/OfferEducational/utils/extractInitialVisibilityValues'
+import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
-} from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
-import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
-import { CollectiveOfferVisibilityScreen } from 'pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
-import { useLocation, useNavigate } from 'react-router'
-import useSWR, { useSWRConfig } from 'swr'
+} from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
+import { CollectiveOfferVisibilityScreen } from '@/pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
 
 import { getEducationalInstitutions } from './getEducationalInstitutions'
 

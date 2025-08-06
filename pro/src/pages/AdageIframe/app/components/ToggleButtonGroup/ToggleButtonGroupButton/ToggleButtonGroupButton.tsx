@@ -1,11 +1,10 @@
 import classNames from 'classnames'
 
-import fullCheckIcon from 'icons/full-check.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { Tooltip } from 'ui-kit/Tooltip/Tooltip'
+import fullCheckIcon from '@/icons/full-check.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
+import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 
 import { ToggleButton } from '../ToggleButtonGroup'
-
 import styles from './ToggleButtonGroupButton.module.scss'
 
 interface ToggleButtonGroupButtonProps

@@ -1,8 +1,9 @@
-import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { useCombobox } from 'downshift'
-import strokeSearch from 'icons/stroke-search.svg'
 import { useEffect, useId, useState } from 'react'
-import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
+
+import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import strokeSearch from '@/icons/stroke-search.svg'
+import { BaseInput } from '@/ui-kit/form/shared/BaseInput/BaseInput'
 
 import styles from './AdageMultiselect.module.scss'
 

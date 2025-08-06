@@ -1,25 +1,3 @@
-import {
-  AdageFrontRoles,
-  CollectiveOfferResponseModel,
-  CollectiveOfferTemplateResponseModel,
-  VenueResponse,
-} from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
-import { GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { useMediaQuery } from 'commons/hooks/useMediaQuery'
-import { setSearchView } from 'commons/store/adageFilter/reducer'
-import { adageSearchViewSelector } from 'commons/store/adageFilter/selectors'
-import { LOGS_DATA } from 'commons/utils/config'
-import {
-  HighlightBanner,
-  HighlightBannerVariant,
-} from 'components/HighlightBanner/HighlightBanner'
-import fullGoTopIcon from 'icons/full-go-top.svg'
-import fullGridIcon from 'icons/full-grid.svg'
-import fullLinkIcon from 'icons/full-link.svg'
-import fullListIcon from 'icons/full-list.svg'
-import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
-import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
 import { useEffect } from 'react'
 import {
   useInfiniteHits,
@@ -29,10 +7,33 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 import useSWR from 'swr'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { ShadowTipsHelpIcon } from 'ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import {
+  AdageFrontRoles,
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+  VenueResponse,
+} from '@/apiClient//adage'
+import { apiAdage } from '@/apiClient//api'
+import { GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
+import { setSearchView } from '@/commons/store/adageFilter/reducer'
+import { adageSearchViewSelector } from '@/commons/store/adageFilter/selectors'
+import { LOGS_DATA } from '@/commons/utils/config'
+import {
+  HighlightBanner,
+  HighlightBannerVariant,
+} from '@/components/HighlightBanner/HighlightBanner'
+import fullGoTopIcon from '@/icons/full-go-top.svg'
+import fullGridIcon from '@/icons/full-grid.svg'
+import fullLinkIcon from '@/icons/full-link.svg'
+import fullListIcon from '@/icons/full-list.svg'
+import { useAdageUser } from '@/pages/AdageIframe/app/hooks/useAdageUser'
+import { isCollectiveOfferTemplate } from '@/pages/AdageIframe/app/types'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { ShadowTipsHelpIcon } from '@/ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { OfferCardComponent } from '../../../AdageDiscovery/OfferCard/OfferCard'
 import { CustomPagination } from '../../../Pagination/Pagination'
@@ -42,7 +43,6 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from '../../../ToggleButtonGroup/ToggleButtonGroup'
-
 import { AdageOfferListCard } from './AdageOfferListCard/AdageOfferListCard'
 import TFD2025 from './assets/TFD2025.svg'
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'

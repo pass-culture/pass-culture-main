@@ -1,6 +1,7 @@
-import { emailSchema } from 'commons/utils/isValidEmail'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
+
+import { emailSchema } from '@/commons/utils/isValidEmail'
 
 const isPhoneValid = (phone: string | undefined): boolean => {
   if (!phone) {

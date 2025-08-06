@@ -1,5 +1,6 @@
-import { checkCoords } from 'commons/utils/coords'
 import * as yup from 'yup'
+
+import { checkCoords } from '@/commons/utils/coords'
 
 export const validationSchema = {
   addressAutocomplete: yup.string().when(['manuallySetAddress'], {

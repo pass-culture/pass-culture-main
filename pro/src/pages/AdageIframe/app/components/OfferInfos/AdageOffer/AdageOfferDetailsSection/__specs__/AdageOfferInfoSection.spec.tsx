@@ -1,14 +1,15 @@
-import { CollectiveLocationType, OfferAddressType } from 'apiClient/adage'
 import { screen } from '@testing-library/react'
+import { expect } from 'vitest'
+
+import { CollectiveLocationType, OfferAddressType } from '@/apiClient//adage'
 import {
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
-} from 'commons/utils/factories/adageFactories'
+} from '@/commons/utils/factories/adageFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { expect } from 'vitest'
+} from '@/commons/utils/renderWithProviders'
 
 import {
   AdageOfferInfoSection,

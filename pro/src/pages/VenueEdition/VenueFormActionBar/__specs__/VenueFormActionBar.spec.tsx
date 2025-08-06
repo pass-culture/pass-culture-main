@@ -1,11 +1,12 @@
 import { screen } from '@testing-library/react'
-import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+import { FormProvider, useForm } from 'react-hook-form'
+
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { FormProvider, useForm } from 'react-hook-form'
+} from '@/commons/utils/renderWithProviders'
 
 import {
   VenueFormActionBar,

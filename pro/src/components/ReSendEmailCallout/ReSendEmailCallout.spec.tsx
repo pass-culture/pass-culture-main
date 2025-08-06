@@ -1,9 +1,10 @@
-import { CancelablePromise } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
-import { ReSendEmailCallout } from 'components/ReSendEmailCallout/ReSendEmailCallout'
+
+import { CancelablePromise } from '@/apiClient//v1'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
+import { ReSendEmailCallout } from '@/components/ReSendEmailCallout/ReSendEmailCallout'
 
 const renderComponent = (
   action: () => CancelablePromise<any> = () =>

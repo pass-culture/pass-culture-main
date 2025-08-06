@@ -1,4 +1,4 @@
-import { getDefaultEducationalValues } from 'commons/core/OfferEducational/constants'
+import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
 
 import { applyVenueDefaultsToFormValues } from '../applyVenueDefaultsToFormValues'
 

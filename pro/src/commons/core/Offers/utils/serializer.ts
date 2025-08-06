@@ -1,7 +1,7 @@
 import {
   ListCollectiveOffersQueryModel,
   ListOffersQueryModel,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 
 import { DEFAULT_SEARCH_FILTERS } from '../constants'
 import { CollectiveSearchFiltersParams, SearchFiltersParams } from '../types'

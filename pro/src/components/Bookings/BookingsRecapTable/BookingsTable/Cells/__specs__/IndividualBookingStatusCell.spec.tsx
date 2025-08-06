@@ -1,10 +1,11 @@
-import { BookingRecapStatus } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
+
+import { BookingRecapStatus } from '@/apiClient//v1'
 import {
   bookingRecapFactory,
   bookingRecapStockFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   IndividualBookingStatusCell,

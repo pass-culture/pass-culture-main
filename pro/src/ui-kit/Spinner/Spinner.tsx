@@ -1,7 +1,7 @@
 import cn from 'classnames'
 
-import strokePass from 'icons/stroke-pass.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import strokePass from '@/icons/stroke-pass.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Spinner.module.scss'
 

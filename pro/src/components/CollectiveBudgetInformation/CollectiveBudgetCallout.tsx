@@ -1,7 +1,8 @@
-import { storageAvailable } from 'commons/utils/storageAvailable'
 import { useState } from 'react'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
+
+import { storageAvailable } from '@/commons/utils/storageAvailable'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { CalloutVariant } from '@/ui-kit/Callout/types'
 
 import styles from './CollectiveBudgetInformation.module.scss'
 import {

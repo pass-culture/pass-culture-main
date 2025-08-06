@@ -1,47 +1,47 @@
-import { api } from 'apiClient/api'
-import { SaveNewOnboardingDataQueryModel, Target } from 'apiClient/v1'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { MainHeading } from 'app/App/layout/Layout'
-import { GET_VENUE_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
-import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import {
-  RECAPTCHA_ERROR,
-  RECAPTCHA_ERROR_MESSAGE,
-  SAVED_OFFERER_ID_KEY,
-} from 'commons/core/shared/constants'
-import { useCurrentUser } from 'commons/hooks/useCurrentUser'
-import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
-import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
-import { useNotification } from 'commons/hooks/useNotification'
-import {
-  updateCurrentOfferer,
-  updateOffererNames,
-} from 'commons/store/offerer/reducer'
-import {
-  selectCurrentOfferer,
-  selectCurrentOffererId,
-} from 'commons/store/offerer/selectors'
-import { updateUser } from 'commons/store/user/reducer'
-import { getOffererData } from 'commons/utils/offererStoreHelper'
-import { getReCaptchaToken } from 'commons/utils/recaptcha'
-import { storageAvailable } from 'commons/utils/storageAvailable'
-import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
-import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
-import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
-import fullEditIcon from 'icons/full-edit.svg'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+
+import { api } from '@/apiClient//api'
+import { SaveNewOnboardingDataQueryModel, Target } from '@/apiClient//v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { MainHeading } from '@/app/App/layout/Layout'
+import { GET_VENUE_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
+import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import {
+  RECAPTCHA_ERROR,
+  RECAPTCHA_ERROR_MESSAGE,
+  SAVED_OFFERER_ID_KEY,
+} from '@/commons/core/shared/constants'
+import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
+import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
+import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
+import { useNotification } from '@/commons/hooks/useNotification'
+import {
+  updateCurrentOfferer,
+  updateOffererNames,
+} from '@/commons/store/offerer/reducer'
+import {
+  selectCurrentOfferer,
+  selectCurrentOffererId,
+} from '@/commons/store/offerer/selectors'
+import { updateUser } from '@/commons/store/user/reducer'
+import { getOffererData } from '@/commons/utils/offererStoreHelper'
+import { getReCaptchaToken } from '@/commons/utils/recaptcha'
+import { storageAvailable } from '@/commons/utils/storageAvailable'
+import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
+import { OnboardingFormNavigationAction } from '@/components/SignupJourneyFormLayout/constants'
+import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import fullEditIcon from '@/icons/full-edit.svg'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ActionBar } from '../ActionBar/ActionBar'
-
 import styles from './Validation.module.scss'
 
 export const Validation = (): JSX.Element => {

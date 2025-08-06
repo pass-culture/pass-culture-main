@@ -1,6 +1,7 @@
-import type { AddressFormValues } from 'commons/core/shared/types'
-import { resetReactHookFormAddressFields } from 'commons/utils/resetAddressFields'
 import { describe, expect, it, vi } from 'vitest'
+
+import type { AddressFormValues } from '@/commons/core/shared/types'
+import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 
 describe('resetReactHookFormAddressFields', () => {
   it('calls resetField with each field name and correct default value', () => {

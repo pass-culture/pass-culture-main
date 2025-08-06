@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react'
 
-import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
+import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
 
 import style from './ConstraintCheck.module.scss'
 import { Constraint } from './imageConstraints'

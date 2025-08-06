@@ -1,18 +1,19 @@
-import { api } from 'apiClient/api'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { addDays } from 'date-fns'
+
+import { api } from '@/apiClient//api'
+import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
-import { addDays } from 'date-fns'
+} from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
 
 import { StocksCalendar, StocksCalendarProps } from './StocksCalendar'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getStocks: vi.fn(),
     deleteStocks: vi.fn(),

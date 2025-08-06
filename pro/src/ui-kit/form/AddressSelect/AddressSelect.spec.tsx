@@ -1,11 +1,12 @@
-import { AdresseData } from 'apiClient/adresse/types'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
+
+import { AdresseData } from '@/apiClient//adresse/types'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { axe } from 'vitest-axe'
+} from '@/commons/utils/renderWithProviders'
 
 import { AddressSelect, AddressSelectProps } from './AddressSelect'
 
@@ -76,7 +77,7 @@ const mockAPIResponse: AdresseData[] = [
 
 const getDataFromAddressMock = vi.hoisted(() => vi.fn())
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   getDataFromAddress: getDataFromAddressMock,
 }))
 

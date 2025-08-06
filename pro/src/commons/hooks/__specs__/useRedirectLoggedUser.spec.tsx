@@ -1,8 +1,9 @@
-import { api } from 'apiClient/api'
 import { renderHook } from '@testing-library/react'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import * as reactRedux from 'react-redux'
 import { MemoryRouter } from 'react-router'
+
+import { api } from '@/apiClient//api'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 
 import { useRedirectLoggedUser } from '../useRedirectLoggedUser'
 
@@ -23,12 +24,14 @@ vi.mock('react-redux', () => ({
   useDispatch: () => mockDispatch,
 }))
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     listOfferersNames: vi.fn(),
   },
 }))
-vi.mock('commons/hooks/useActiveFeature', () => ({ useActiveFeature: vi.fn() }))
+vi.mock('@/commons/hooks/useActiveFeature', () => ({
+  useActiveFeature: vi.fn(),
+}))
 
 const renderUseRedirectLoggedUser = (url: string) => {
   const wrapper = ({ children }: { children: any }) => (

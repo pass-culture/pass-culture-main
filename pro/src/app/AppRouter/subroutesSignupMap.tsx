@@ -1,11 +1,11 @@
 /* No need to test this file */
 /* istanbul ignore file */
 
-import { SignupValidation } from 'pages/Signup/SignUpValidation/SignUpValidation'
-
-import { SignupConfirmation } from 'pages/Signup/SignupConfirmation/SignupConfirmation'
-import { SignupContainer } from 'pages/Signup/SignupContainer/SignupContainer'
 import { generatePath, Navigate, NavigateProps, useParams } from 'react-router'
+
+import { SignupValidation } from '@/pages/Signup/SignUpValidation/SignUpValidation'
+import { SignupConfirmation } from '@/pages/Signup/SignupConfirmation/SignupConfirmation'
+import { SignupContainer } from '@/pages/Signup/SignupContainer/SignupContainer'
 
 import type { RouteConfig } from './routesMap'
 

@@ -1,13 +1,14 @@
 import type { StoryObj } from '@storybook/react'
-import { configureTestStore } from 'commons/store/testUtils'
 import { Provider } from 'react-redux'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
+
+import { configureTestStore } from '@/commons/store/testUtils'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { ActionsBarSticky } from './ActionsBarSticky'
 
 export default {
-  title: 'components/ActionsBarSticky',
+  title: '@/components/ActionsBarSticky',
   component: ActionBar,
   decorators: [
     (Story: any) => (

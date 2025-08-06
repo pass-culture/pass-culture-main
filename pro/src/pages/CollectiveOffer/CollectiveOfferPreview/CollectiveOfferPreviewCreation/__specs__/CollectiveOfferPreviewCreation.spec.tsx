@@ -1,25 +1,26 @@
-import { api } from 'apiClient/api'
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { defaultAdageUser } from 'commons/utils/factories/adageFactories'
+
+import { api } from '@/apiClient//api'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import {
   defaultGetVenue,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/utils/factories/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
-} from 'commons/utils/factories/userOfferersFactories'
+} from '@/commons/utils/factories/userOfferersFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { MandatoryCollectiveOfferFromParamsProps } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+} from '@/commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
+import { MandatoryCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
 import { CollectiveOfferPreviewCreation } from '../CollectiveOfferPreviewCreation'
 
@@ -33,7 +34,7 @@ vi.mock('react-router', async () => ({
   default: vi.fn(),
 }))
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     listEducationalOfferers: vi.fn(),
     getVenue: vi.fn(),

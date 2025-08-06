@@ -1,5 +1,5 @@
-import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { CalloutVariant } from '@/ui-kit/Callout/types'
 
 export const DisabledPrebookCallout = ({
   className,

@@ -1,17 +1,18 @@
-import { api } from 'apiClient/api'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+
+import { api } from '@/apiClient//api'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { subcategoryFactory } from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { subcategoryFactory } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetails/commons/constants'
+} from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 
 import { DetailsEanSearch, DetailsEanSearchProps } from './DetailsEanSearch'
 
@@ -76,7 +77,7 @@ const renderDetailsEanSearch = (props: DetailsEanSearchTestProps = {}) => {
   )
 }
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: { getProductByEan: vi.fn() },
 }))
 

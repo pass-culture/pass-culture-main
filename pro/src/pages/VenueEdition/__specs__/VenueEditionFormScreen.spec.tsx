@@ -1,20 +1,21 @@
-import * as apiAdresse from 'apiClient/adresse/apiAdresse'
-import { api } from 'apiClient/api'
-import { ApiError, GetVenueResponseModel } from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import {
-  RenderWithProvidersOptions,
-  renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
 import { Route, Routes } from 'react-router'
 import { expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
+
+import * as apiAdresse from '@/apiClient//adresse/apiAdresse'
+import { api } from '@/apiClient//api'
+import { ApiError, GetVenueResponseModel } from '@/apiClient//v1'
+import { ApiRequestOptions } from '@/apiClient//v1/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient//v1/core/ApiResult'
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
 
 import { VenueEditionFormScreen } from '../VenueEditionFormScreen'
 
@@ -46,7 +47,7 @@ function renderForm(
   )
 }
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     postCreateVenue: vi.fn(),
     getSiretInfo: vi.fn(),
@@ -70,9 +71,9 @@ vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
   legal_category_code: '1000',
 })
 
-vi.mock('apiClient/adresse/apiAdresse', async () => {
+vi.mock('@/apiClient//adresse/apiAdresse', async () => {
   return {
-    ...(await vi.importActual('apiClient/adresse/apiAdresse')),
+    ...(await vi.importActual('@/apiClient//adresse/apiAdresse')),
     default: {
       getDataFromAddress: vi.fn(),
     },
@@ -124,13 +125,13 @@ fetchMock.mockResponse(
   { status: 200 }
 )
 
-vi.mock('commons/utils/windowMatchMedia', () => ({
+vi.mock('@/commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(),
 }))
 
 Element.prototype.scrollIntoView = vi.fn()
 
-vi.mock('commons/core/Venue/siretApiValidate', () => ({
+vi.mock('@/commons/core/Venue/siretApiValidate', () => ({
   default: () => Promise.resolve(),
 }))
 

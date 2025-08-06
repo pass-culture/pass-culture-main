@@ -1,13 +1,14 @@
-import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { defaultDMSApplicationForEAC } from 'commons/utils/factories/collectiveApiFactories'
+
+import { DMSApplicationForEAC, DMSApplicationstatus } from '@/apiClient//v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { defaultDMSApplicationForEAC } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/renderWithProviders'
 
 import { CollectiveDmsTimeline } from './CollectiveDmsTimeline'
 
@@ -51,7 +52,7 @@ interface TestCaseProps {
 describe('CollectiveDmsTimeline', () => {
   beforeEach(() => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      ...vi.importActual('app/App/analytics/firebase'),
+      ...vi.importActual('@/app/App/analytics/firebase'),
       logEvent: mockLogEvent,
     }))
   })

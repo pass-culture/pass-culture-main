@@ -1,7 +1,8 @@
-import { api } from 'apiClient/api'
-import { StatisticsModel } from 'apiClient/v1'
-import { GET_STATISTICS_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import useSWR from 'swr'
+
+import { api } from '@/apiClient//api'
+import { StatisticsModel } from '@/apiClient//v1'
+import { GET_STATISTICS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 
 export const useIncome = (selectedVenues: string[]) => {
   // Sorting venues makes sure passed query keys are always the same

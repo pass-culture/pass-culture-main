@@ -1,9 +1,10 @@
 /* istanbul ignore file */
 
-import { Layout } from 'app/App/layout/Layout'
-import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
 import { Navigate, Outlet, useLocation } from 'react-router'
+
+import { Layout } from '@/app/App/layout/Layout'
+import { IndividualOfferContextProvider } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 
 import styles from './IndividualOfferWizard.module.scss'
 

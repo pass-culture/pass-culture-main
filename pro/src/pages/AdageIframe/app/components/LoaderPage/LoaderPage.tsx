@@ -1,4 +1,4 @@
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './LoaderPage.module.scss'
 

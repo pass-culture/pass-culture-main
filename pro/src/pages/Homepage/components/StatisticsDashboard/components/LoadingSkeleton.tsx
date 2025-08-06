@@ -1,4 +1,4 @@
-import { Skeleton } from 'ui-kit/Skeleton/Skeleton'
+import { Skeleton } from '@/ui-kit/Skeleton/Skeleton'
 
 import styles from './LoadingSkeleton.module.scss'
 

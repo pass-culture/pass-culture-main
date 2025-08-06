@@ -1,6 +1,5 @@
 /* istanbul ignore file: DEBT, TO FIX */
 
-import { isError } from 'apiClient/helpers'
 import {
   logEvent as analyticsLogEvent,
   getAnalytics,
@@ -16,12 +15,14 @@ import {
   getRemoteConfig,
   RemoteConfig,
 } from '@firebase/remote-config'
-import { firebaseConfig } from 'commons/config/firebase'
-import { useUtmQueryParams } from 'commons/hooks/useUtmQueryParams'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { selectCurrentUser } from 'commons/store/user/selectors'
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+
+import { isError } from '@/apiClient//helpers'
+import { firebaseConfig } from '@/commons/config/firebase'
+import { useUtmQueryParams } from '@/commons/hooks/useUtmQueryParams'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { selectCurrentUser } from '@/commons/store/user/selectors'
 
 let firebaseApp: firebase.FirebaseApp | undefined
 let firebaseRemoteConfig: RemoteConfig | undefined

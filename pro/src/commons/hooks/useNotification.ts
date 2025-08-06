@@ -1,12 +1,13 @@
 /* istanbul ignore file */
 
-import { NOTIFICATION_SHOW_DURATION } from 'commons/core/Notification/constants'
+import { useCallback, useMemo } from 'react'
+import { useDispatch } from 'react-redux'
+
+import { NOTIFICATION_SHOW_DURATION } from '@/commons/core/Notification/constants'
 import {
   closeNotification,
   showNotification,
-} from 'commons/store/notifications/reducer'
-import { useCallback, useMemo } from 'react'
-import { useDispatch } from 'react-redux'
+} from '@/commons/store/notifications/reducer'
 
 export enum NotificationTypeEnum {
   SUCCESS = 'success',

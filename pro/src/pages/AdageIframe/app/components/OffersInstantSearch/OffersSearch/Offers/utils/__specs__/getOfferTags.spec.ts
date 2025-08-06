@@ -4,12 +4,12 @@ import {
   CollectiveOfferTemplateResponseModel,
   OfferAddressType,
   StudentLevels,
-} from 'apiClient/adage'
+} from '@/apiClient//adage'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
-} from 'commons/utils/factories/adageFactories'
+} from '@/commons/utils/factories/adageFactories'
 
 import { getOfferTags } from '../getOfferTags'
 

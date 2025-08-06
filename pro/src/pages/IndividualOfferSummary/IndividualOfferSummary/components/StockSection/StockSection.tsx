@@ -1,24 +1,25 @@
-import { api } from 'apiClient/api'
+import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router'
+
+import { api } from '@/apiClient//api'
 import {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
   StockStatsResponseModel,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { useNotification } from 'commons/hooks/useNotification'
-import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { getDepartmentCode } from 'commons/utils/getDepartmentCode'
-import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
-import { SummarySection } from 'components/SummaryLayout/SummarySection'
-import { getStockWarningText } from 'pages/IndividualOfferSummary/commons/getStockWarningText'
-import { StockThingSection } from 'pages/IndividualOfferSummary/components/StockThingSection/StockThingSection'
-import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
+import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
+import { SummarySection } from '@/components/SummaryLayout/SummarySection'
+import { getStockWarningText } from '@/pages/IndividualOfferSummary/commons/getStockWarningText'
+import { StockThingSection } from '@/pages/IndividualOfferSummary/components/StockThingSection/StockThingSection'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { RecurrenceSection } from './RecurrenceSection/RecurrenceSection'
 import styles from './StockSection.module.scss'

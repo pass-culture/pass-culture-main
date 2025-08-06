@@ -17,7 +17,7 @@ const Wrapper = ({ children }: PropsWithChildren) => {
 }
 
 const meta: Meta<typeof QuantityInput> = {
-  title: 'ui-kit/formsV2/QuantityInput',
+  title: '@/ui-kit/formsV2/QuantityInput',
   component: QuantityInput,
 }
 

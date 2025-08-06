@@ -1,6 +1,9 @@
-import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
-import { FORMAT_DD_MM_YYYY, FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
-import { TagVariant } from 'design-system/Tag/Tag'
+import { BOOKING_STATUS } from '@/commons/core/Bookings/constants'
+import {
+  FORMAT_DD_MM_YYYY,
+  FORMAT_DD_MM_YYYY_HH_mm,
+} from '@/commons/utils/date'
+import { TagVariant } from '@/design-system/Tag/Tag'
 
 export const INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   {

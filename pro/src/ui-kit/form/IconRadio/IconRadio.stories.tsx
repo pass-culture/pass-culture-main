@@ -5,7 +5,7 @@ import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { IconRadio } from './IconRadio'
 
 const meta: Meta<typeof IconRadio> = {
-  title: 'ui-kit/formsV2/IconRadio',
+  title: '@/ui-kit/formsV2/IconRadio',
   component: IconRadio,
 }
 

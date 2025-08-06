@@ -1,13 +1,13 @@
-import { getDataFromAddress } from 'apiClient/api'
-import { getSiretData } from 'commons/core/Venue/getSiretData'
-import { humanizeSiret, unhumanizeSiret } from 'commons/core/Venue/utils'
-import { FormLayout } from 'components/FormLayout/FormLayout'
 import { useFormContext } from 'react-hook-form'
-import { TextArea } from 'ui-kit/form/TextArea/TextArea'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+
+import { getDataFromAddress } from '@/apiClient//api'
+import { getSiretData } from '@/commons/core/Venue/getSiretData'
+import { humanizeSiret, unhumanizeSiret } from '@/commons/core/Venue/utils'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
+import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { VenueSettingsFormValues } from '../types'
-
 import { isSiretStartingWithSiren, valideSiretLength } from './validationSchema'
 
 export type SiretOrCommentFieldsProps = {

@@ -1,31 +1,32 @@
-import { api } from 'apiClient/api'
+import { screen, waitFor } from '@testing-library/react'
+
+import { api } from '@/apiClient//api'
 import {
   GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
-} from 'apiClient/v1'
-import { screen, waitFor } from '@testing-library/react'
+} from '@/apiClient//v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+} from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
   getOfferVenueFactory,
   individualOfferContextValuesFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { Stocks } from './Stocks'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getStocks: vi.fn(),
   },
 }))
 
-vi.mock('commons/hooks/useOfferWizardMode', () => ({
+vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
   useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.EDITION),
 }))
 

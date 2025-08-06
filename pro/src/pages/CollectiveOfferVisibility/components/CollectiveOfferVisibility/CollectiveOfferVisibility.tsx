@@ -1,43 +1,44 @@
-import { api } from 'apiClient/api'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useEffect, useMemo, useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
+import useSWR from 'swr'
+import { InferType } from 'yup'
+
+import { api } from '@/apiClient//api'
 import {
   CollectiveOfferAllowedAction,
   EducationalInstitutionResponseModel,
   EducationalRedactor,
   GetCollectiveOfferResponseModel,
-} from 'apiClient/v1'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { isCollectiveOffer, Mode } from 'commons/core/OfferEducational/types'
+} from '@/apiClient//v1'
+import { GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { isCollectiveOffer, Mode } from '@/commons/core/OfferEducational/types'
 import {
   extractInitialVisibilityValues,
   formatInstitutionDisplayName,
-} from 'commons/core/OfferEducational/utils/extractInitialVisibilityValues'
+} from '@/commons/core/OfferEducational/utils/extractInitialVisibilityValues'
 import {
   GET_DATA_ERROR_MESSAGE,
   SENT_DATA_ERROR_MESSAGE,
-} from 'commons/core/shared/constants'
-import { SelectOption } from 'commons/custom_types/form'
-import { useNotification } from 'commons/hooks/useNotification'
-import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
+} from '@/commons/core/shared/constants'
+import { SelectOption } from '@/commons/custom_types/form'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import {
   normalizeStrForSearch,
   SelectOptionNormalized,
   searchPatternInOptions,
-} from 'commons/utils/searchPatternInOptions'
-import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
-import { BannerPublicApi } from 'components/BannerPublicApi/BannerPublicApi'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
-import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
-import { useEffect, useMemo, useState } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import useSWR from 'swr'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
-import { InferType } from 'yup'
+} from '@/commons/utils/searchPatternInOptions'
+import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
+import { BannerPublicApi } from '@/components/BannerPublicApi/BannerPublicApi'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { OfferEducationalActions } from '@/components/OfferEducationalActions/OfferEducationalActions'
+import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { SelectAutocomplete } from '@/ui-kit/form/SelectAutoComplete/SelectAutocomplete'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './CollectiveOfferVisibility.module.scss'
 import { validationSchema } from './validationSchema'

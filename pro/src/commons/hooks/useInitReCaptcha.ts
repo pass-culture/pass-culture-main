@@ -1,7 +1,8 @@
-import { isError } from 'apiClient/helpers'
-import { RECAPTCHA_SITE_KEY } from 'commons/utils/config'
-import { initReCaptchaScript } from 'commons/utils/recaptcha'
 import { useEffect } from 'react'
+
+import { isError } from '@/apiClient//helpers'
+import { RECAPTCHA_SITE_KEY } from '@/commons/utils/config'
+import { initReCaptchaScript } from '@/commons/utils/recaptcha'
 
 export const useInitReCaptcha = (): void => {
   useEffect(() => {

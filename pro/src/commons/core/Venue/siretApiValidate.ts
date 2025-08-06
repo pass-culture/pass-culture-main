@@ -1,6 +1,6 @@
-import { isError } from 'apiClient/helpers'
-import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
-import { getSiretData } from 'commons/core/Venue/getSiretData'
+import { isError } from '@/apiClient//helpers'
+import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import { getSiretData } from '@/commons/core/Venue/getSiretData'
 
 export const siretApiValidate = async (
   siret: string

@@ -1,24 +1,25 @@
-import { ApiRequestOptions } from 'apiClient/adage/core/ApiRequestOptions'
-import { api } from 'apiClient/api'
-import { ApiError, VenueOfOffererFromSiretResponseModel } from 'apiClient/v1'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { Route, Routes } from 'react-router'
+
+import { ApiRequestOptions } from '@/apiClient//adage/core/ApiRequestOptions'
+import { api } from '@/apiClient//api'
+import { ApiError, VenueOfOffererFromSiretResponseModel } from '@/apiClient//v1'
+import { ApiResult } from '@/apiClient//v1/core/ApiResult'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'commons/context/SignupJourneyContext/SignupJourneyContext'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+} from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
-import { Route, Routes } from 'react-router'
+} from '@/commons/utils/renderWithProviders'
+import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 
 import { Offerers } from '../Offerers'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getVenuesOfOffererFromSiret: vi.fn(),
     createOfferer: vi.fn(),

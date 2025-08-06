@@ -1,12 +1,12 @@
 import {
   GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
-} from 'commons/core/Offers/constants'
-import { isAllocineProvider } from 'commons/core/Providers/utils/utils'
+} from '@/commons/core/Offers/constants'
+import { isAllocineProvider } from '@/commons/core/Providers/utils/utils'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
 import { StockThingFormValues } from '../types'

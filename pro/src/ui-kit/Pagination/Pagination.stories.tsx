@@ -3,7 +3,7 @@ import type { StoryObj } from '@storybook/react'
 import { Pagination } from './Pagination'
 
 export default {
-  title: 'ui-kit/Pagination',
+  title: '@/ui-kit/Pagination',
   component: Pagination,
 }
 

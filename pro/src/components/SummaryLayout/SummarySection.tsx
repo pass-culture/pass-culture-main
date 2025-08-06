@@ -1,7 +1,8 @@
 import cn from 'classnames'
-import fullEditIcon from 'icons/full-edit.svg'
 import React, { ReactNode } from 'react'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+
+import fullEditIcon from '@/icons/full-edit.svg'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 
 import style from './SummaryLayout.module.scss'
 

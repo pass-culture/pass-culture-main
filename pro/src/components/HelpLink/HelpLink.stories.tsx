@@ -3,7 +3,7 @@ import { withRouter } from 'storybook-addon-remix-react-router'
 import { HelpLink } from './HelpLink'
 
 export default {
-  title: 'components/HelpLink',
+  title: '@/components/HelpLink',
   component: HelpLink,
   decorators: [
     (Story: any) => (

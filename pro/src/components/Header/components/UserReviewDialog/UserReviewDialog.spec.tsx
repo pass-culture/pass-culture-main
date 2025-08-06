@@ -1,14 +1,15 @@
-import { api } from 'apiClient/api'
 import * as Dialog from '@radix-ui/react-dialog'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useNotification from 'commons/hooks/useNotification'
+
+import { api } from '@/apiClient//api'
+import * as useNotification from '@/commons/hooks/useNotification'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Button } from 'ui-kit/Button/Button'
+} from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Button } from '@/ui-kit/Button/Button'
 
 import { UserReviewDialog } from './UserReviewDialog'
 
@@ -106,7 +107,7 @@ describe('UserReviewDialog', () => {
     vi.spyOn(api, 'submitUserReview').mockRejectedValueOnce(new Error())
 
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

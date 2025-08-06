@@ -1,6 +1,6 @@
-import { Card } from 'components/Card/Card'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import { Card } from '@/components/Card/Card'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './OffererCreationLinks.module.scss'
 

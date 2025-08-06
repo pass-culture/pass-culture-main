@@ -1,15 +1,16 @@
-import { api } from 'apiClient/api'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as siretApiValidate from 'commons/core/Venue/siretApiValidate'
+import { FormProvider, useForm } from 'react-hook-form'
+import { expect, vi } from 'vitest'
+
+import { api } from '@/apiClient//api'
+import * as siretApiValidate from '@/commons/core/Venue/siretApiValidate'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { FormProvider, useForm } from 'react-hook-form'
-import { Button } from 'ui-kit/Button/Button'
-import { expect, vi } from 'vitest'
+} from '@/commons/utils/renderWithProviders'
+import { Button } from '@/ui-kit/Button/Button'
 
 import {
   SiretOrCommentFields,
@@ -17,9 +18,9 @@ import {
 } from '../SiretOrCommentFields'
 import { generateSiretValidationSchema } from '../validationSchema'
 
-vi.mock('commons/core/Venue/siretApiValidate')
+vi.mock('@/commons/core/Venue/siretApiValidate')
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getSiretInfo: vi.fn(),
     getDataFromAddress: vi.fn(),

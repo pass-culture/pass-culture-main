@@ -1,5 +1,6 @@
-import { EventStockUpdateBodyModel } from 'apiClient/v1'
-import { getOfferStockFactory } from 'commons/utils/factories/individualApiFactories'
+import { EventStockUpdateBodyModel } from '@/apiClient//v1'
+import { getOfferStockFactory } from '@/commons/utils/factories/individualApiFactories'
+
 import { EditStockFormValues } from '../StocksCalendarTableEditStock'
 import { serializeStockFormValuesForUpdate } from '../serializers'
 

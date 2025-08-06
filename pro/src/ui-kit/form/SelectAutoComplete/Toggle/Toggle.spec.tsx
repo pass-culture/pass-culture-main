@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/renderWithProviders'
 
 import { Toggle, ToggleProps } from './Toggle'
 

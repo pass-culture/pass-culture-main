@@ -1,8 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import type { Meta, StoryObj } from '@storybook/react'
-import { isPhoneValid } from 'commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import * as yup from 'yup'
+
+import { isPhoneValid } from '@/commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 
 import { PhoneNumberInput } from './PhoneNumberInput'
 
@@ -27,7 +28,7 @@ const FormWrapper = ({ children }: { children: React.ReactNode }) => {
 }
 
 const meta: Meta<typeof PhoneNumberInput> = {
-  title: 'ui-kit/formsV2/PhoneNumberInput',
+  title: '@/ui-kit/formsV2/PhoneNumberInput',
   component: PhoneNumberInput,
 
   decorators: [

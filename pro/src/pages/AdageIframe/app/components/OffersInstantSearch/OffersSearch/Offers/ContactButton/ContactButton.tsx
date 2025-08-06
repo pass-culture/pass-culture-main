@@ -1,10 +1,11 @@
-import { AdageFrontRoles } from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
-import fullMailIcon from 'icons/full-mail.svg'
 import React, { useRef, useState } from 'react'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
+
+import { AdageFrontRoles } from '@/apiClient//adage'
+import { apiAdage } from '@/apiClient//api'
+import fullMailIcon from '@/icons/full-mail.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import { RequestFormDialog } from './RequestFormDialog/RequestFormDialog'
 

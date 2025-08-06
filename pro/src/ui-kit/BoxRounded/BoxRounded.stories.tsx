@@ -3,7 +3,7 @@ import type { StoryObj } from '@storybook/react'
 import { BoxRounded } from './BoxRounded'
 
 export default {
-  title: 'ui-kit/BoxRounded',
+  title: '@/ui-kit/BoxRounded',
   component: BoxRounded,
 }
 

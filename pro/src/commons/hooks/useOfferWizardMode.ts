@@ -1,5 +1,6 @@
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { useLocation } from 'react-router'
+
+import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 
 interface WizardModeDetailsList {
   pathPart: string

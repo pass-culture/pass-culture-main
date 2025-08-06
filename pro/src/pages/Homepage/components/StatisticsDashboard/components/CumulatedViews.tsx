@@ -1,12 +1,13 @@
-import { OffererViewsModel } from 'apiClient/v1'
 import { fr } from 'date-fns/locale'
-import fullLinkIcon from 'icons/full-link.svg'
-import strokeBookingHoldIcon from 'icons/stroke-booking-hold.svg'
 import { Line } from 'react-chartjs-2'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { chartColors } from 'ui-kit/chartGlobals'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import { OffererViewsModel } from '@/apiClient//v1'
+import fullLinkIcon from '@/icons/full-link.svg'
+import strokeBookingHoldIcon from '@/icons/stroke-booking-hold.svg'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { chartColors } from '@/ui-kit/chartGlobals'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './CumulatedViews.module.scss'
 

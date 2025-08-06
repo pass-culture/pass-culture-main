@@ -1,7 +1,8 @@
-import { Checkbox } from 'design-system/Checkbox/Checkbox'
-import strokeSearch from 'icons/stroke-search.svg'
 import { useMemo, useState } from 'react'
-import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
+
+import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import strokeSearch from '@/icons/stroke-search.svg'
+import { BaseInput } from '@/ui-kit/form/shared/BaseInput/BaseInput'
 
 import { Option } from './MultiSelect'
 import styles from './MultiSelect.module.scss'

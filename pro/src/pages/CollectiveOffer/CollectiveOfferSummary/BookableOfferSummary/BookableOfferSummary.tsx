@@ -1,66 +1,66 @@
-import { api } from 'apiClient/api'
-import {
-  CollectiveOfferAllowedAction,
-  CollectiveOfferDisplayedStatus,
-  GetCollectiveOfferResponseModel,
-} from 'apiClient/v1'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { Layout } from 'app/App/layout/Layout'
 import cn from 'classnames'
-import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import {
-  COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
-  Events,
-} from 'commons/core/FirebaseEvents/constants'
-import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
-import { isCollectiveOffer } from 'commons/core/OfferEducational/types'
-import { duplicateBookableOffer } from 'commons/core/OfferEducational/utils/duplicateBookableOffer'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { FORMAT_DD_MM_YYYY } from 'commons/utils/date'
-import {
-  isActionAllowedOnCollectiveOffer,
-  isCollectiveOfferEditable,
-} from 'commons/utils/isActionAllowedOnCollectiveOffer'
-import { pluralizeString } from 'commons/utils/pluralize'
-import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
-import { BackToNavLink } from 'components/BackToNavLink/BackToNavLink'
-import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
-import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/CollectiveStatusLabel'
-import { EducationalInstitutionDetails } from 'components/EducationalInstitutionDetails/EducationalInstitutionDetails'
-import { SynchronizedProviderInformation } from 'components/SynchronisedProviderInformation/SynchronizedProviderInformation'
-import fullArchiveIcon from 'icons/full-archive.svg'
-import fullClearIcon from 'icons/full-clear.svg'
-import fullCopyIcon from 'icons/full-duplicate.svg'
-import fullEditIcon from 'icons/full-edit.svg'
-import fullShowIcon from 'icons/full-show.svg'
-import strokeCalendarIcon from 'icons/stroke-calendar.svg'
-import strokeClockIcon from 'icons/stroke-clock.svg'
-import strokeEuroIcon from 'icons/stroke-euro.svg'
-import strokeHomeIcon from 'icons/stroke-home.svg'
-import strokeLocationIcon from 'icons/stroke-location.svg'
-import strokeOfferIcon from 'icons/stroke-offer.svg'
-import strokeTeacherIcon from 'icons/stroke-teacher.svg'
-import strokeUserIcon from 'icons/stroke-user.svg'
-import {
-  getLocation,
-  getLocationForOfferVenue,
-} from 'pages/AdageIframe/app/components/OfferInfos/AdageOffer/AdageOfferDetailsSection/AdageOfferInfoSection'
-import { BookableOfferTimeline } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/BookableOfferTimeline/BookableOfferTimeline'
-import { DEFAULT_RECAP_VALUE } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/constants'
-import { formatDateTime } from 'pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/utils/formatDatetime'
 import { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { mutate } from 'swr'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import { api } from '@/apiClient//api'
+import {
+  CollectiveOfferAllowedAction,
+  CollectiveOfferDisplayedStatus,
+  GetCollectiveOfferResponseModel,
+} from '@/apiClient//v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { Layout } from '@/app/App/layout/Layout'
+import { GET_COLLECTIVE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import {
+  COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
+  Events,
+} from '@/commons/core/FirebaseEvents/constants'
+import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
+import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'
+import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
+import {
+  isActionAllowedOnCollectiveOffer,
+  isCollectiveOfferEditable,
+} from '@/commons/utils/isActionAllowedOnCollectiveOffer'
+import { pluralizeString } from '@/commons/utils/pluralize'
+import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
+import { BackToNavLink } from '@/components/BackToNavLink/BackToNavLink'
+import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
+import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
+import { EducationalInstitutionDetails } from '@/components/EducationalInstitutionDetails/EducationalInstitutionDetails'
+import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
+import fullArchiveIcon from '@/icons/full-archive.svg'
+import fullClearIcon from '@/icons/full-clear.svg'
+import fullCopyIcon from '@/icons/full-duplicate.svg'
+import fullEditIcon from '@/icons/full-edit.svg'
+import fullShowIcon from '@/icons/full-show.svg'
+import strokeCalendarIcon from '@/icons/stroke-calendar.svg'
+import strokeClockIcon from '@/icons/stroke-clock.svg'
+import strokeEuroIcon from '@/icons/stroke-euro.svg'
+import strokeHomeIcon from '@/icons/stroke-home.svg'
+import strokeLocationIcon from '@/icons/stroke-location.svg'
+import strokeOfferIcon from '@/icons/stroke-offer.svg'
+import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
+import strokeUserIcon from '@/icons/stroke-user.svg'
+import {
+  getLocation,
+  getLocationForOfferVenue,
+} from '@/pages/AdageIframe/app/components/OfferInfos/AdageOffer/AdageOfferDetailsSection/AdageOfferInfoSection'
+import { BookableOfferTimeline } from '@/pages/CollectiveOffer/CollectiveOfferSummary/components/BookableOfferTimeline/BookableOfferTimeline'
+import { DEFAULT_RECAP_VALUE } from '@/pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/constants'
+import { formatDateTime } from '@/pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/utils/formatDatetime'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { DetailItem } from '../components/DetailItem/DetailItem'
-
 import styles from './BookableOfferSummary.module.scss'
 
 export type BookableOfferSummaryProps = {

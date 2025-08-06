@@ -1,7 +1,7 @@
 import cn from 'classnames'
 
-import strokeOfferIcon from 'icons/stroke-offer.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import strokeOfferIcon from '@/icons/stroke-offer.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Thumb.module.scss'
 

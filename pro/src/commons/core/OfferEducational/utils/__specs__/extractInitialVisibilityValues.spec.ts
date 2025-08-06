@@ -1,7 +1,7 @@
 import {
   EducationalInstitutionResponseModel,
   GetCollectiveOfferRequestResponseModel,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 
 import { extractInitialVisibilityValues } from '../extractInitialVisibilityValues'
 

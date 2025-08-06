@@ -1,22 +1,22 @@
+import { useEffect, useState } from 'react'
+
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from 'apiClient/adage'
-import { api } from 'apiClient/api'
+} from '@/apiClient//adage'
+import { api } from '@/apiClient//api'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetVenueResponseModel,
   OfferAddressType,
-} from 'apiClient/v1'
-import { isCollectiveOffer } from 'commons/core/OfferEducational/types'
-import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
-import { useEffect, useState } from 'react'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/apiClient//v1'
+import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'
+import logoPassCultureIcon from '@/icons/logo-pass-culture.svg'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { AdageOffer } from '../AdageOffer/AdageOffer'
-
 import styles from './AdagePreviewLayout.module.scss'
 import adageBurger from './assets/adage-burger.svg'
 import adageLogo from './assets/adage-logo.png'

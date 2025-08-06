@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { SortingMode } from 'commons/hooks/useColumnSorting'
 import { describe, expect, it, vi } from 'vitest'
+
+import { SortingMode } from '@/commons/hooks/useColumnSorting'
 
 import { SortColumn } from './SortColumn'
 

@@ -6,7 +6,7 @@ import { describe, it, vi } from 'vitest'
 import { AddressManual } from './AddressManual'
 
 // Mock utils used inside component
-vi.mock('commons/utils/coords', () => ({
+vi.mock('@/commons/utils/coords', () => ({
   getCoordsType: (input: string) => (input.includes('°') ? 'DMS' : 'DD'),
   parseDms: (dms: string) => {
     if (dms === `48°51'12.0"N`) {

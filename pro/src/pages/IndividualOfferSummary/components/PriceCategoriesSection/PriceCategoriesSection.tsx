@@ -1,14 +1,15 @@
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { useLocation } from 'react-router'
+
+import { GetIndividualOfferResponseModel } from '@/apiClient//v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { formatPrice } from 'commons/utils/formatPrice'
-import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
-import { SummarySection } from 'components/SummaryLayout/SummarySection'
-import { useLocation } from 'react-router'
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { formatPrice } from '@/commons/utils/formatPrice'
+import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
+import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 
 import styles from './PriceCategoriesSection.module.scss'
 

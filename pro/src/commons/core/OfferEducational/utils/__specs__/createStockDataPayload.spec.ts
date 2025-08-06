@@ -1,4 +1,4 @@
-import { OfferEducationalStockFormValues } from 'commons/core/OfferEducational/types'
+import { OfferEducationalStockFormValues } from '@/commons/core/OfferEducational/types'
 
 import { createStockDataPayload } from '../createStockDataPayload'
 

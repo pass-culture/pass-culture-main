@@ -1,19 +1,20 @@
-import { api } from 'apiClient/api'
+import { useState } from 'react'
+import useSWR from 'swr'
+
+import { api } from '@/apiClient//api'
 import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
   VenueTypeResponseModel,
-} from 'apiClient/v1'
-import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { SelectOption } from 'commons/custom_types/form'
+} from '@/apiClient//v1'
+import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { SelectOption } from '@/commons/custom_types/form'
 import {
   getSavedPartnerPageVenueId,
   setSavedPartnerPageVenueId,
-} from 'commons/utils/savedPartnerPageVenueId'
-import { useState } from 'react'
-import useSWR from 'swr'
-import { SelectInput } from 'ui-kit/form/shared/BaseSelectInput/SelectInput'
-import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
+} from '@/commons/utils/savedPartnerPageVenueId'
+import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
+import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import { PartnerPage } from './components/PartnerPage'
 import styles from './PartnerPages.module.scss'

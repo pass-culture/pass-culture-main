@@ -1,9 +1,9 @@
 import cn from 'classnames'
-import { isValidTime } from 'commons/utils/timezone'
 import { ForwardedRef, forwardRef, useId } from 'react'
 
-import { BaseInput, BaseInputProps } from '../BaseInput/BaseInput'
+import { isValidTime } from '@/commons/utils/timezone'
 
+import { BaseInput, BaseInputProps } from '../BaseInput/BaseInput'
 import styles from './BaseTimePicker.module.scss'
 
 export type SuggestedTimeList = {

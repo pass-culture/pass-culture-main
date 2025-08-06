@@ -1,24 +1,24 @@
-import { VenueResponse } from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
 import { liteClient } from 'algoliasearch/lite'
-import { DEFAULT_MARSEILLE_STUDENTS } from 'commons/core/shared/constants'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useNotification } from 'commons/hooks/useNotification'
-import { adageFilterSelector } from 'commons/store/adageFilter/selectors'
+import { useEffect, useState } from 'react'
+import { Configure, Index, InstantSearch } from 'react-instantsearch'
+import { useSelector } from 'react-redux'
+
+import { VenueResponse } from '@/apiClient//adage'
+import { apiAdage } from '@/apiClient//api'
+import { DEFAULT_MARSEILLE_STUDENTS } from '@/commons/core/shared/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { adageFilterSelector } from '@/commons/store/adageFilter/selectors'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
-} from 'commons/utils/config'
-import { isNumber } from 'commons/utils/types'
-import { useEffect, useState } from 'react'
-import { Configure, Index, InstantSearch } from 'react-instantsearch'
-import { useSelector } from 'react-redux'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+} from '@/commons/utils/config'
+import { isNumber } from '@/commons/utils/types'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { MARSEILLE_EN_GRAND } from '../../constants'
 import { useAdageUser } from '../../hooks/useAdageUser'
-
 import { OffersSearch } from './OffersSearch/OffersSearch'
 import {
   ADAGE_FILTERS_DEFAULT_VALUES,

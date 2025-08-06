@@ -1,7 +1,8 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { ForwardedRef } from 'react'
+
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { TextArea, TextAreaProps } from './TextArea'
 

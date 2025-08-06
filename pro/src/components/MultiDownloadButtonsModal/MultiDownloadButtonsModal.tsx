@@ -1,18 +1,19 @@
-import { useAnalytics } from 'app/App/analytics/firebase'
 import cn from 'classnames'
+import { useRef, useState } from 'react'
+
+import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   CollectivePreFiltersParams,
   PreFiltersParams,
-} from 'commons/core/Bookings/types'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { useOnClickOrFocusOutside } from 'commons/hooks/useOnClickOrFocusOutside'
-import fullDownIcon from 'icons/full-down.svg'
-import fullDownloadIcon from 'icons/full-download.svg'
-import fullUpIcon from 'icons/full-up.svg'
-import { useRef, useState } from 'react'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/commons/core/Bookings/types'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useOnClickOrFocusOutside } from '@/commons/hooks/useOnClickOrFocusOutside'
+import fullDownIcon from '@/icons/full-down.svg'
+import fullDownloadIcon from '@/icons/full-download.svg'
+import fullUpIcon from '@/icons/full-up.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import style from './MultiDownloadButtonsModal.module.scss'
 

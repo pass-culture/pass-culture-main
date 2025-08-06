@@ -4,9 +4,9 @@ import {
   CollectiveOfferTemplateResponseModel,
   GetCollectiveOfferLocationModel,
   OfferAddressType,
-} from 'apiClient/adage'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { isCollectiveOfferBookable } from 'pages/AdageIframe/app/types'
+} from '@/apiClient//adage'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { isCollectiveOfferBookable } from '@/pages/AdageIframe/app/types'
 
 import { getInterventionAreaLabelsToDisplay } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
 import styles from '../AdageOffer.module.scss'

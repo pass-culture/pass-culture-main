@@ -1,11 +1,11 @@
 import type { StoryObj } from '@storybook/react'
 
-import strokeCalendarIcon from 'icons/stroke-calendar.svg'
+import strokeCalendarIcon from '@/icons/stroke-calendar.svg'
 
 import { BaseInput } from './BaseInput'
 
 export default {
-  title: 'ui-kit/forms/shared/BaseInput',
+  title: '@/ui-kit/forms/shared/BaseInput',
   component: BaseInput,
 }
 

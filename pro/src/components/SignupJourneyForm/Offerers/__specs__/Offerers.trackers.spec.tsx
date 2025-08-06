@@ -1,21 +1,22 @@
-import { api } from 'apiClient/api'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
+
+import { api } from '@/apiClient//api'
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'commons/context/SignupJourneyContext/SignupJourneyContext'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
-import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
+} from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
+import { OnboardingFormNavigationAction } from '@/components/SignupJourneyFormLayout/constants'
 
 import { Offerers } from '../Offerers'
 
 const mockLogEvent = vi.fn()
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getVenuesOfOffererFromSiret: vi.fn(),
   },

@@ -1,7 +1,7 @@
 import {
   BlockerFunction,
   RouteLeavingGuard,
-} from 'components/RouteLeavingGuard/RouteLeavingGuard'
+} from '@/components/RouteLeavingGuard/RouteLeavingGuard'
 
 interface RouteLeavingGuardCollectiveOffer {
   when: boolean

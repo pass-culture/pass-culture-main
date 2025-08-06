@@ -1,20 +1,21 @@
-import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
-import { api } from 'apiClient/api'
-import { StudentLevels } from 'apiClient/v1'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
-import * as useNotification from 'commons/hooks/useNotification'
+
+import { AdageFrontRoles, AuthenticatedResponse } from '@/apiClient//adage'
+import { api } from '@/apiClient//api'
+import { StudentLevels } from '@/apiClient//v1'
+import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import * as useNotification from '@/commons/hooks/useNotification'
 import {
   defaultUseInfiniteHitsReturn,
   defaultUseStatsReturn,
-} from 'commons/utils/factories/adageFactories'
+} from '@/commons/utils/factories/adageFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+} from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
+import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import { MAIN_INDEX_ID } from '../../OffersInstantSearch'
 import { OffersSearch, SearchProps } from '../OffersSearch'
@@ -83,7 +84,7 @@ vi.mock('../Offers/Offers', () => {
   }
 })
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     listEducationalDomains: vi.fn(() => [
       { id: 1, name: 'Danse' },
@@ -177,7 +178,7 @@ describe('offersSearch component', () => {
     }))
 
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

@@ -1,10 +1,11 @@
-import { api } from 'apiClient/api'
-import { EventDatesInfos } from 'apiClient/v1'
 import * as Dialog from '@radix-ui/react-dialog'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+
+import { api } from '@/apiClient//api'
+import { EventDatesInfos } from '@/apiClient//v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { DownloadBookingsModal } from './DownloadBookingsModal'
 
@@ -27,7 +28,7 @@ const render = (priceCategoryAndScheduleCountByDate: EventDatesInfos) => {
   )
 }
 
-vi.mock('commons/utils/downloadFile', () => ({ downloadFile: vi.fn() }))
+vi.mock('@/commons/utils/downloadFile', () => ({ downloadFile: vi.fn() }))
 
 describe('DownloadBookingModal', () => {
   it('should display offer dates table', () => {

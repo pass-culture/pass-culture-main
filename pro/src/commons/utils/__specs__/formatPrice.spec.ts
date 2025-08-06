@@ -1,4 +1,4 @@
-import { formatPrice } from 'commons/utils/formatPrice'
+import { formatPrice } from '@/commons/utils/formatPrice'
 
 describe('formatPrice', () => {
   it('should add the currency sign to a price', () => {

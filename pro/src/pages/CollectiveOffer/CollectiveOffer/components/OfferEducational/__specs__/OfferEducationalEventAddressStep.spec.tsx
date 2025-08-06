@@ -1,23 +1,23 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import * as hooks from 'commons/hooks/swr/useOfferer'
-import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
+import * as hooks from '@/commons/hooks/swr/useOfferer'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/storeFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
-} from 'commons/utils/factories/userOfferersFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/factories/userOfferersFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
 import { INTERVENTION_AREA_LABEL } from '../constants/labels'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getVenues: vi.fn(),
   },

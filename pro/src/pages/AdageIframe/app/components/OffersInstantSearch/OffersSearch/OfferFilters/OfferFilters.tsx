@@ -1,34 +1,34 @@
+import { useState } from 'react'
+import { FormProvider, useFormContext } from 'react-hook-form'
+import useSWR from 'swr'
+
 import {
   AdageFrontRoles,
   CollectiveLocationType,
   EacFormat,
   OfferAddressType,
-} from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
-import { GET_COLLECTIVE_ACADEMIES } from 'commons/config/swrQueryKeys'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
-import strokeBuildingIcon from 'icons/stroke-building.svg'
-import strokeFranceIcon from 'icons/stroke-france.svg'
-import strokeNearIcon from 'icons/stroke-near.svg'
-import { departmentOptions } from 'pages/AdageIframe/app/constants/departmentOptions'
-import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
-import { Option } from 'pages/AdageIframe/app/types'
-import { useState } from 'react'
-import { FormProvider, useFormContext } from 'react-hook-form'
-import useSWR from 'swr'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
+} from '@/apiClient//adage'
+import { apiAdage } from '@/apiClient//api'
+import { GET_COLLECTIVE_ACADEMIES } from '@/commons/config/swrQueryKeys'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
+import strokeBuildingIcon from '@/icons/stroke-building.svg'
+import strokeFranceIcon from '@/icons/stroke-france.svg'
+import strokeNearIcon from '@/icons/stroke-near.svg'
+import { departmentOptions } from '@/pages/AdageIframe/app/constants/departmentOptions'
+import { useAdageUser } from '@/pages/AdageIframe/app/hooks/useAdageUser'
+import { Option } from '@/pages/AdageIframe/app/types'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 import {
   AdageMultiselect,
   ItemProps,
-} from 'ui-kit/form/AdageMultiselect/AdageMultiselect'
-import { Slider } from 'ui-kit/form/Slider/Slider'
+} from '@/ui-kit/form/AdageMultiselect/AdageMultiselect'
+import { Slider } from '@/ui-kit/form/Slider/Slider'
 
 import { SearchFormValues } from '../../OffersInstantSearch'
 import { LocalisationFilterStates } from '../OffersSearch'
-
 import { AdageButtonFilter } from './AdageButtonFilter/AdageButtonFilter'
 import { ModalFilterLayout } from './ModalFilterLayout/ModalFilterLayout'
 import styles from './OfferFilters.module.scss'

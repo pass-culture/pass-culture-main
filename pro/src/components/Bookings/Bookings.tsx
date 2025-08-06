@@ -1,29 +1,3 @@
-import { api } from 'apiClient/api'
-import {
-  BookingRecapResponseModel,
-  BookingStatusFilter,
-  CollectiveBookingResponseModel,
-} from 'apiClient/v1'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import {
-  GET_BOOKINGS_QUERY_KEY,
-  GET_HAS_BOOKINGS_QUERY_KEY,
-  GET_VENUES_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
-import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
-import { PreFiltersParams } from 'commons/core/Bookings/types'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { Audience } from 'commons/core/shared/types'
-import { useOfferer } from 'commons/hooks/swr/useOfferer'
-import { useOffererAddresses } from 'commons/hooks/swr/useOffererAddresses'
-import { useNotification } from 'commons/hooks/useNotification'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { isEqual } from 'commons/utils/isEqual'
-import { stringify } from 'commons/utils/query-string'
-import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/CollectiveBudgetCallout'
-import { NoData } from 'components/NoData/NoData'
-import { ChoosePreFiltersMessage } from 'pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
-import { NoBookingsForPreFiltersMessage } from 'pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router'
@@ -32,7 +6,34 @@ import {
   formatAndOrderVenues,
 } from 'repository/venuesService'
 import useSWR from 'swr'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+
+import { api } from '@/apiClient//api'
+import {
+  BookingRecapResponseModel,
+  BookingStatusFilter,
+  CollectiveBookingResponseModel,
+} from '@/apiClient//v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import {
+  GET_BOOKINGS_QUERY_KEY,
+  GET_HAS_BOOKINGS_QUERY_KEY,
+  GET_VENUES_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
+import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
+import { PreFiltersParams } from '@/commons/core/Bookings/types'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { Audience } from '@/commons/core/shared/types'
+import { useOfferer } from '@/commons/hooks/swr/useOfferer'
+import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { isEqual } from '@/commons/utils/isEqual'
+import { stringify } from '@/commons/utils/query-string'
+import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformation/CollectiveBudgetCallout'
+import { NoData } from '@/components/NoData/NoData'
+import { ChoosePreFiltersMessage } from '@/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
+import { NoBookingsForPreFiltersMessage } from '@/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { BookingsRecapTable } from './BookingsRecapTable/BookingsRecapTable'
 import { PreFilters } from './PreFilters/PreFilters'

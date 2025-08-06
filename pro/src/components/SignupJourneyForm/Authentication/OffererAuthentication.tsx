@@ -1,16 +1,16 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { MainHeading } from 'app/App/layout/Layout'
-import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
-import { removeQuotes } from 'commons/utils/removeQuotes'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { useCallback, useEffect } from 'react'
 import { FormProvider, Resolver, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
+import { MainHeading } from '@/app/App/layout/Layout'
+import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { removeQuotes } from '@/commons/utils/removeQuotes'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+
 import { ActionBar } from '../ActionBar/ActionBar'
 import { DEFAULT_OFFERER_FORM_VALUES } from '../Offerer/constants'
-
 import styles from './OffererAuthentication.module.scss'
 import {
   OffererAuthenticationForm,

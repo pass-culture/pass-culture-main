@@ -1,14 +1,15 @@
 /* istanbul ignore file */
 import type { StoryObj } from '@storybook/react'
-import fullBackIcon from 'icons/full-back.svg'
-import fullEditIcon from 'icons/full-edit.svg'
 import { withRouter } from 'storybook-addon-remix-react-router'
+
+import fullBackIcon from '@/icons/full-back.svg'
+import fullEditIcon from '@/icons/full-edit.svg'
 
 import { ButtonLink } from './ButtonLink'
 import { ButtonVariant } from './types'
 
 export default {
-  title: 'ui-kit/ButtonLink',
+  title: '@/ui-kit/ButtonLink',
   component: ButtonLink,
   decorators: [withRouter],
   argTypes: {

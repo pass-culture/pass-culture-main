@@ -1,22 +1,23 @@
-import { api } from 'apiClient/api'
+import { screen, within } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import { expect } from 'vitest'
+
+import { api } from '@/apiClient//api'
 import {
   GetOffererNameResponseModel,
   GetOffererResponseModel,
-} from 'apiClient/v1'
-import { screen, within } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
+} from '@/apiClient//v1'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-} from 'commons/utils/factories/individualApiFactories'
-import { currentOffererFactory } from 'commons/utils/factories/storeFactories'
-import { hardRefresh } from 'commons/utils/hardRefresh'
+} from '@/commons/utils/factories/individualApiFactories'
+import { currentOffererFactory } from '@/commons/utils/factories/storeFactories'
+import { hardRefresh } from '@/commons/utils/hardRefresh'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { locallyStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
-import { expect } from 'vitest'
+} from '@/commons/utils/renderWithProviders'
+import { locallyStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
 
 import { HeaderDropdown } from './HeaderDropdown'
 
@@ -83,13 +84,13 @@ describe('App', () => {
 
   describe('Switch Offerer', () => {
     beforeEach(() => {
-      vi.mock('apiClient/api', () => ({
+      vi.mock('@/apiClient//api', () => ({
         api: {
           getOfferer: vi.fn(),
         },
       }))
 
-      vi.mock('commons/utils/hardRefresh', () => ({
+      vi.mock('@/commons/utils/hardRefresh', () => ({
         hardRefresh: vi.fn(),
       }))
 

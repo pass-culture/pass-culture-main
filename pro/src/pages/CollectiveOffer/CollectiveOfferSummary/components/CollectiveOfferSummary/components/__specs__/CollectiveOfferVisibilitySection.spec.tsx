@@ -1,13 +1,14 @@
+import { screen } from '@testing-library/react'
+
 import {
   EducationalInstitutionResponseModel,
   EducationalRedactorResponseModel,
-} from 'apiClient/v1'
-import { screen } from '@testing-library/react'
+} from '@/apiClient//v1'
 import {
   defaultEducationalInstitution,
   defaultEducationalRedactor,
-} from 'commons/utils/factories/collectiveApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/factories/collectiveApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOfferVisibilitySection } from '../CollectiveOfferVisibilitySection'
 

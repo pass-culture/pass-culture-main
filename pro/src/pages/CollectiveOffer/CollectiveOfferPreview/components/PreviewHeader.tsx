@@ -2,8 +2,8 @@ import {
   CollectiveOfferDisplayedStatus,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from 'apiClient/v1'
-import { Callout } from 'ui-kit/Callout/Callout'
+} from '@/apiClient//v1'
+import { Callout } from '@/ui-kit/Callout/Callout'
 
 import styles from './PreviewHeader.module.scss'
 

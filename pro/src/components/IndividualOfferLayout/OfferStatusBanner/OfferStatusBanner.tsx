@@ -1,7 +1,7 @@
-import { OfferStatus } from 'apiClient/v1'
-import { CGU_URL } from 'commons/utils/config'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
+import { OfferStatus } from '@/apiClient//v1'
+import { CGU_URL } from '@/commons/utils/config'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { CalloutVariant } from '@/ui-kit/Callout/types'
 
 import styles from './OfferStatusBanner.module.scss'
 

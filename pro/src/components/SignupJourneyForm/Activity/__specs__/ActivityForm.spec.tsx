@@ -1,18 +1,19 @@
-import { api } from 'apiClient/api'
-import { VenueTypeResponseModel } from 'apiClient/v1'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
+import { FormProvider, useForm } from 'react-hook-form'
+import { expect } from 'vitest'
+
+import { api } from '@/apiClient//api'
+import { VenueTypeResponseModel } from '@/apiClient//v1'
+import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   ActivityContext,
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'commons/context/SignupJourneyContext/SignupJourneyContext'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { defaultActivityFormValues } from 'components/SignupJourneyForm/Activity/constants'
-import { FormProvider, useForm } from 'react-hook-form'
-import { Button } from 'ui-kit/Button/Button'
-import { expect } from 'vitest'
+} from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { defaultActivityFormValues } from '@/components/SignupJourneyForm/Activity/constants'
+import { Button } from '@/ui-kit/Button/Button'
 
 import {
   ActivityForm,
@@ -20,7 +21,7 @@ import {
   ActivityFormValues,
 } from '../ActivityForm'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getVenueTypes: vi.fn(),
   },

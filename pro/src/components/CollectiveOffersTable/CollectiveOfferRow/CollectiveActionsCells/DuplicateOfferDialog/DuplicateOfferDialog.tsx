@@ -1,6 +1,7 @@
-import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
-import { Checkbox } from 'design-system/Checkbox/Checkbox'
 import { useState } from 'react'
+
+import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
+import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 
 import styles from './DuplicateOfferDialog.module.scss'
 

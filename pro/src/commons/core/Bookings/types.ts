@@ -1,7 +1,7 @@
 import {
   BookingStatusFilter,
   CollectiveBookingStatusFilter,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 
 export type PreFiltersParams = {
   offererId: string

@@ -1,9 +1,10 @@
-import { api } from 'apiClient/api'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { createRef } from 'react'
+
+import { api } from '@/apiClient//api'
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   AddVenueProviderButton,

@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import fullMailIcon from 'icons/full-mail.svg'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import fullMailIcon from '@/icons/full-mail.svg'
 
 import { LinkNode } from '../LinkNodes'
 

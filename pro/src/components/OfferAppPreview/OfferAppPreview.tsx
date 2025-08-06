@@ -1,6 +1,6 @@
-import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
-import { getIndividualOfferImage } from 'components/IndividualOffer/utils/getIndividualOfferImage'
-import { Markdown } from 'components/Markdown/Markdown'
+import { GetIndividualOfferWithAddressResponseModel } from '@/apiClient//v1'
+import { getIndividualOfferImage } from '@/components/IndividualOffer/utils/getIndividualOfferImage'
+import { Markdown } from '@/components/Markdown/Markdown'
 
 import style from './OfferAppPreview.module.scss'
 import { OptionsIcons } from './OptionsIcons/OptionsIcons'

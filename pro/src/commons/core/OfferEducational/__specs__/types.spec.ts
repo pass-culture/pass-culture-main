@@ -1,8 +1,8 @@
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
-import { itShouldReturnFalseIfGivenUndefinedOrNull } from 'commons/utils/types'
+} from '@/commons/utils/factories/collectiveApiFactories'
+import { itShouldReturnFalseIfGivenUndefinedOrNull } from '@/commons/utils/types'
 
 import { isCollectiveOffer, isCollectiveOfferTemplate } from '../types'
 

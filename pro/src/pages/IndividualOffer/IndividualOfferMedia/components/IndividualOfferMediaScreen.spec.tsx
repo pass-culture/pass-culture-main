@@ -1,25 +1,26 @@
-import { api } from 'apiClient/api'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
+import { axe } from 'vitest-axe'
+
+import { api } from '@/apiClient//api'
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { Events } from 'commons/core/FirebaseEvents/constants'
+} from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import * as imageUploadModule from 'pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
-import { axe } from 'vitest-axe'
+} from '@/commons/utils/factories/individualApiFactories'
+import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 
 import {
   IndividualOfferMediaScreen,
@@ -68,7 +69,7 @@ const renderIndividualOfferMediaScreen = async ({
 const mockLogEvent = vi.fn()
 const mockHandleImageOnSubmit = vi.fn()
 const mockNavigate = vi.fn()
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     patchDraftOffer: vi.fn(),
   },

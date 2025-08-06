@@ -1,17 +1,17 @@
-import { api } from 'apiClient/api'
+import cn from 'classnames'
+import { format } from 'date-fns'
+import { useEffect, useState } from 'react'
+
+import { api } from '@/apiClient//api'
 import {
   GetOffererResponseModel,
   GetOffererStatsResponseModel,
-} from 'apiClient/v1'
-import cn from 'classnames'
-import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
-import { format } from 'date-fns'
-import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
-import { useEffect, useState } from 'react'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/apiClient//v1'
+import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
+import strokeNoBookingIcon from '@/icons/stroke-no-booking.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { Card } from '../../../../components/Card/Card'
-
 import { CumulatedViews } from './components/CumulatedViews'
 import { MostViewedOffers } from './components/MostViewedOffers'
 import { OfferStats } from './components/OfferStats'

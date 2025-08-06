@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import { useOnClickOrFocusOutside } from 'commons/hooks/useOnClickOrFocusOutside'
 import {
   ForwardedRef,
   forwardRef,
@@ -8,10 +7,11 @@ import {
   useRef,
   useState,
 } from 'react'
-import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
+
+import { useOnClickOrFocusOutside } from '@/commons/hooks/useOnClickOrFocusOutside'
+import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
 
 import { SelectedValuesTags } from '../SelectedValuesTags/SelectedValuesTags'
-
 import styles from './MultiSelect.module.scss'
 import { MultiSelectPanel } from './MultiSelectPanel'
 import { MultiSelectTrigger } from './MultiSelectTrigger'

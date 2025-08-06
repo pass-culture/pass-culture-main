@@ -1,15 +1,16 @@
-import { CollectiveBookingStatus } from 'apiClient/v1'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { useSelector } from 'react-redux'
+
+import { CollectiveBookingStatus } from '@/apiClient//v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { CollectiveBookingsEvents } from '@/commons/core/FirebaseEvents/constants'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
   isDateValid,
-} from 'commons/utils/date'
-import nextIcon from 'icons/full-next.svg'
-import { useSelector } from 'react-redux'
-import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
+} from '@/commons/utils/date'
+import nextIcon from '@/icons/full-next.svg'
+import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
 
 interface BookingLinkCellProps {
   bookingId: number

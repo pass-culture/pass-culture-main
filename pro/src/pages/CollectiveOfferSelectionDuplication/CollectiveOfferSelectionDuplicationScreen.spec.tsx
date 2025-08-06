@@ -1,18 +1,19 @@
-import { api } from 'apiClient/api'
-import {
-  CollectiveOfferDisplayedStatus,
-  CollectiveOfferResponseModel,
-} from 'apiClient/v1'
 import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as createFromTemplateUtils from 'commons/core/OfferEducational/utils/createOfferFromTemplate'
-import * as useNotification from 'commons/hooks/useNotification'
-import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+
+import { api } from '@/apiClient//api'
+import {
+  CollectiveOfferDisplayedStatus,
+  CollectiveOfferResponseModel,
+} from '@/apiClient//v1'
+import * as createFromTemplateUtils from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
+import * as useNotification from '@/commons/hooks/useNotification'
+import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOfferSelectionDuplication } from './CollectiveOfferSelectionDuplication'
 
@@ -20,15 +21,18 @@ function renderCollectiveOfferSelectionDuplication() {
   renderWithProviders(<CollectiveOfferSelectionDuplication />)
 }
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getCollectiveOffers: vi.fn(),
   },
 }))
 
-vi.mock('commons/core/OfferEducational/utils/createOfferFromTemplate', () => ({
-  createOfferFromTemplate: vi.fn(),
-}))
+vi.mock(
+  '@/commons/core/OfferEducational/utils/createOfferFromTemplate',
+  () => ({
+    createOfferFromTemplate: vi.fn(),
+  })
+)
 
 describe('CollectiveOfferConfirmation', () => {
   const notifyError = vi.fn()

@@ -1,13 +1,14 @@
-import { api } from 'apiClient/api'
-import { getHumanReadableApiError } from 'apiClient/helpers'
-import { useNotification } from 'commons/hooks/useNotification'
+import { format, sub } from 'date-fns'
+
+import { api } from '@/apiClient//api'
+import { getHumanReadableApiError } from '@/apiClient//helpers'
+import { useNotification } from '@/commons/hooks/useNotification'
 import {
   FORMAT_ISO_DATE_ONLY,
   isDateValid,
   toISOStringWithoutMilliseconds,
-} from 'commons/utils/date'
-import { serializeDateTimeToUTCFromLocalDepartment } from 'components/IndividualOffer/StocksEventEdition/serializers'
-import { format, sub } from 'date-fns'
+} from '@/commons/utils/date'
+import { serializeDateTimeToUTCFromLocalDepartment } from '@/components/IndividualOffer/StocksEventEdition/serializers'
 
 import {
   getDatesInInterval,

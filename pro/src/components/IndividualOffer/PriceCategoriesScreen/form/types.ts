@@ -1,4 +1,4 @@
-import { hasProperties } from 'commons/utils/types'
+import { hasProperties } from '@/commons/utils/types'
 
 export type PriceCategoryForm = {
   label: string

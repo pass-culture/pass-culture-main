@@ -1,5 +1,4 @@
 import { fontPreloads } from '@pass-culture/design-system/lib/global/font-preloads'
-
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { fileURLToPath, URL } from 'url'
@@ -52,9 +51,9 @@ export default defineConfig(({ mode }) => {
         reporter: ['text', 'json'],
         exclude: [
           '**/*.stories.tsx',
-          'apiClient/adage/*',
-          'apiClient/adresse/*',
-          'apiClient/v1/*',
+          '@/apiClient//adage/*',
+          '@/apiClient//adresse/*',
+          '@/apiClient//v1/*',
           ...coverageConfigDefaults.exclude,
         ],
       },

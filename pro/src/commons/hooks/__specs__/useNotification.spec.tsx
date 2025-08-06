@@ -1,6 +1,6 @@
-import { useNotification } from 'commons/hooks/useNotification'
-import * as notificationReducer from 'commons/store/notifications/reducer'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { useNotification } from '@/commons/hooks/useNotification'
+import * as notificationReducer from '@/commons/store/notifications/reducer'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 const TestComponent = (): JSX.Element | null => {
   const notify = useNotification()

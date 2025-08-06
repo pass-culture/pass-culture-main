@@ -1,21 +1,22 @@
-import { GetOffererResponseModel } from 'apiClient/v1'
+import { useFormContext } from 'react-hook-form'
+import { useSelector } from 'react-redux'
+import { useLocation } from 'react-router'
+
+import { GetOffererResponseModel } from '@/apiClient//v1'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
   OFFER_TYPES,
-} from 'commons/core/Offers/constants'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { getLastDmsApplicationForOfferer } from 'commons/utils/getLastCollectiveDmsApplication'
-import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
-import strokeBookedIcon from 'icons/stroke-booked.svg'
-import strokeDuplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
-import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
-import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
-import { useFormContext } from 'react-hook-form'
-import { useSelector } from 'react-redux'
-import { useLocation } from 'react-router'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
+} from '@/commons/core/Offers/constants'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { getLastDmsApplicationForOfferer } from '@/commons/utils/getLastCollectiveDmsApplication'
+import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
+import strokeBookedIcon from '@/icons/stroke-booked.svg'
+import strokeDuplicateOfferIcon from '@/icons/stroke-duplicate-offer.svg'
+import strokeNewOfferIcon from '@/icons/stroke-new-offer.svg'
+import strokeTemplateOfferIcon from '@/icons/stroke-template-offer.svg'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { CalloutVariant } from '@/ui-kit/Callout/types'
 
 import styles from './CollectiveOfferType.module.scss'
 

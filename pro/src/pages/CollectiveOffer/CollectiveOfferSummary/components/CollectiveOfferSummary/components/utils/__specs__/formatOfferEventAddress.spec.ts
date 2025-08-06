@@ -1,7 +1,7 @@
-import { OfferAddressType } from 'apiClient/v1'
-import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererVenueResponseModel } from 'commons/utils/factories/individualApiFactories'
-import { EVENT_ADDRESS_SCHOOL_LABEL } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/constants/labels'
+import { OfferAddressType } from '@/apiClient//v1'
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
+import { defaultGetOffererVenueResponseModel } from '@/commons/utils/factories/individualApiFactories'
+import { EVENT_ADDRESS_SCHOOL_LABEL } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/constants/labels'
 
 import { formatOfferEventAddress } from '../formatOfferEventAddress'
 

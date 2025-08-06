@@ -1,8 +1,8 @@
 import {
   GetIndividualOfferResponseModel,
   SubcategoryResponseModel,
-} from 'apiClient/v1'
-import { AccessibilityFormValues } from 'commons/core/shared/types'
+} from '@/apiClient//v1'
+import { AccessibilityFormValues } from '@/commons/core/shared/types'
 
 // TODO (igabriele, 2025-07-24): Make this type stricter (regarding optionals & null vs undefined).
 export type DetailsFormValues = {

@@ -1,23 +1,24 @@
 import cn from 'classnames'
-import { useNotification } from 'commons/hooks/useNotification'
-import { usePrevious } from 'commons/hooks/usePrevious'
+import { useEffect, useRef, useState } from 'react'
+
+import { useNotification } from '@/commons/hooks/useNotification'
+import { usePrevious } from '@/commons/hooks/usePrevious'
 import {
   UploaderModeEnum,
   UploadImageValues,
-} from 'commons/utils/imageUploadTypes'
-import { ImageDragAndDrop } from 'components/ImageDragAndDrop/ImageDragAndDrop'
+} from '@/commons/utils/imageUploadTypes'
+import { ImageDragAndDrop } from '@/components/ImageDragAndDrop/ImageDragAndDrop'
 import {
   ModalImageUpsertOrEdit,
   OnImageUploadArgs,
-} from 'components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
-import { ImagePlaceholder } from 'components/SafeImage/ImagePlaceholder/ImagePlaceholder'
-import { SafeImage } from 'components/SafeImage/SafeImage'
-import fullEditIcon from 'icons/full-edit.svg'
-import fullTrashIcon from 'icons/full-trash.svg'
-import { useEffect, useRef, useState } from 'react'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import { ImagePlaceholder } from '@/components/SafeImage/ImagePlaceholder/ImagePlaceholder'
+import { SafeImage } from '@/components/SafeImage/SafeImage'
+import fullEditIcon from '@/icons/full-edit.svg'
+import fullTrashIcon from '@/icons/full-trash.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ImageDragAndDropUploader.module.scss'
 export interface ImageDragAndDropUploaderProps {

@@ -1,4 +1,4 @@
-import { getImageBitmap } from 'commons/utils/image'
+import { getImageBitmap } from '@/commons/utils/image'
 
 type FileChecker = (file: File) => Promise<boolean>
 

@@ -1,3 +1,7 @@
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import * as instantSearch from 'react-instantsearch'
+
 import {
   AdageFrontRoles,
   AuthenticatedResponse,
@@ -7,22 +11,19 @@ import {
   ListCollectiveOfferTemplateResponseModel,
   OfferAddressType,
   StudentLevels,
-} from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import * as useMediaQuery from 'commons/hooks/useMediaQuery'
+} from '@/apiClient//adage'
+import { apiAdage } from '@/apiClient//api'
+import * as useMediaQuery from '@/commons/hooks/useMediaQuery'
 import {
   defaultCollectiveOffer,
   defaultUseInfiniteHitsReturn,
   defaultUseStatsReturn,
-} from 'commons/utils/factories/adageFactories'
+} from '@/commons/utils/factories/adageFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import * as instantSearch from 'react-instantsearch'
+} from '@/commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import { Offers, OffersProps } from './Offers'
 
@@ -34,7 +35,7 @@ vi.mock('react-router', async () => ({
   }),
 }))
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   apiAdage: {
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),
@@ -46,9 +47,9 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('commons/utils/config', async () => {
+vi.mock('@/commons/utils/config', async () => {
   return {
-    ...(await vi.importActual('commons/utils/config')),
+    ...(await vi.importActual('@/commons/utils/config')),
     LOGS_DATA: true,
   }
 })

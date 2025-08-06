@@ -1,11 +1,11 @@
 /* istanbul ignore file: DEBT, TO FIX */
 
-import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
-import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { IndividualOfferLayout } from 'components/IndividualOfferLayout/IndividualOfferLayout'
-import { getTitle } from 'components/IndividualOfferLayout/utils/getTitle'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
+import { getTitle } from '@/components/IndividualOfferLayout/utils/getTitle'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { IndividualOfferSummaryScreen } from './components/IndividualOfferSummaryScreen'
 

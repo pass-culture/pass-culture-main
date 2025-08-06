@@ -1,13 +1,14 @@
-import { api } from 'apiClient/api'
+import useSWR from 'swr'
+
+import { api } from '@/apiClient//api'
 import {
   CollectiveBookingResponseModel,
   CollectiveOfferAllowedAction,
-} from 'apiClient/v1'
-import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
-import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
-import { EducationalInstitutionDetails } from 'components/EducationalInstitutionDetails/EducationalInstitutionDetails'
-import useSWR from 'swr'
+} from '@/apiClient//v1'
+import { CollectiveBookingByIdResponseModel } from '@/apiClient//v1/models/CollectiveBookingByIdResponseModel'
+import { GET_COLLECTIVE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
+import { EducationalInstitutionDetails } from '@/components/EducationalInstitutionDetails/EducationalInstitutionDetails'
 
 import { CollectiveActionButtons } from './CollectiveActionButtons'
 import styles from './CollectiveBookingDetails.module.scss'

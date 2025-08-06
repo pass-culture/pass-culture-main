@@ -1,22 +1,23 @@
-import { api } from 'apiClient/api'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useMediaQuery from 'commons/hooks/useMediaQuery'
+import { beforeEach, describe, expect } from 'vitest'
+import { axe } from 'vitest-axe'
+
+import { api } from '@/apiClient//api'
+import * as useMediaQuery from '@/commons/hooks/useMediaQuery'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-} from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { SAVED_PARTNER_PAGE_VENUE_ID_KEYS } from 'commons/utils/savedPartnerPageVenueId'
-import { beforeEach, describe, expect } from 'vitest'
-import { axe } from 'vitest-axe'
+} from '@/commons/utils/renderWithProviders'
+import { SAVED_PARTNER_PAGE_VENUE_ID_KEYS } from '@/commons/utils/savedPartnerPageVenueId'
 
 import { SideNavLinks } from '../SideNavLinks'
 

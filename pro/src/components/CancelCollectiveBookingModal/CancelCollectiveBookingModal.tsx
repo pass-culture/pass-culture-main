@@ -1,6 +1,6 @@
-import { ConfirmDialog } from 'components/ConfirmDialog/ConfirmDialog'
-import strokeTrashIcon from 'icons/stroke-trash.svg'
-import strokeWrongIcon from 'icons/stroke-wrong.svg'
+import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
+import strokeTrashIcon from '@/icons/stroke-trash.svg'
+import strokeWrongIcon from '@/icons/stroke-wrong.svg'
 
 import styles from './CancelCollectiveBookingModal.module.scss'
 

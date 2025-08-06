@@ -1,11 +1,11 @@
 import type { StoryObj } from '@storybook/react'
 
-import fullTrashIcon from 'icons/full-trash.svg'
+import fullTrashIcon from '@/icons/full-trash.svg'
 
 import { ListIconButton } from './ListIconButton'
 
 export default {
-  title: 'ui-kit/ListIconButton',
+  title: '@/ui-kit/ListIconButton',
   component: ListIconButton,
   decorators: [
     (Story: any) => (

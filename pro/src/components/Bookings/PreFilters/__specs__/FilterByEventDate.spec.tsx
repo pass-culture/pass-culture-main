@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { EMPTY_FILTER_VALUE } from 'commons/core/Bookings/constants'
+import { EMPTY_FILTER_VALUE } from '@/commons/core/Bookings/constants'
 
 import { FilterByEventDate, FilterByEventDateProps } from '../FilterByEventDate'
 

@@ -1,5 +1,5 @@
-import strokeDownIcon from 'icons/stroke-down.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import strokeDownIcon from '@/icons/stroke-down.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Toggle.module.scss'
 

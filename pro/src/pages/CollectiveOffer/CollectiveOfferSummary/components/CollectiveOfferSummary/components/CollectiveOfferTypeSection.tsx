@@ -1,13 +1,13 @@
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from 'apiClient/v1'
-import { Markdown } from 'components/Markdown/Markdown'
+} from '@/apiClient//v1'
+import { Markdown } from '@/components/Markdown/Markdown'
 import {
   Description,
   SummaryDescriptionList,
-} from 'components/SummaryLayout/SummaryDescriptionList'
-import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
+} from '@/components/SummaryLayout/SummaryDescriptionList'
+import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
 
 import { DEFAULT_RECAP_VALUE } from './constants'
 import { formatDuration } from './utils/formatDuration'

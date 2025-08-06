@@ -1,24 +1,25 @@
-import { AdresseData } from 'apiClient/adresse/types'
-import { VenueListItemResponseModel } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
+
+import { AdresseData } from '@/apiClient//adresse/types'
+import { VenueListItemResponseModel } from '@/apiClient//v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+} from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   individualOfferContextValuesFactory,
   venueListItemFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
-import { UsefulInformationFormValues } from 'pages/IndividualOffer/IndividualOfferInformations/commons/types'
-import { FormProvider, useForm } from 'react-hook-form'
-import { axe } from 'vitest-axe'
+} from '@/commons/utils/renderWithProviders'
+import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
+import { UsefulInformationFormValues } from '@/pages/IndividualOffer/IndividualOfferInformations/commons/types'
 
 import { OfferLocation, OfferLocationProps } from './OfferLocation'
 
@@ -73,7 +74,7 @@ const MOCK: {
 }
 
 const getDataFromAddressMock = vi.hoisted(() => vi.fn())
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   getDataFromAddress: getDataFromAddressMock,
 }))
 

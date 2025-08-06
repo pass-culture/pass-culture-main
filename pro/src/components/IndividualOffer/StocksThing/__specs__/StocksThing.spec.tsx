@@ -1,50 +1,51 @@
-import { api } from 'apiClient/api'
+import { screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import { format } from 'date-fns'
+import { Route, Routes } from 'react-router'
+import { expect } from 'vitest'
+
+import { api } from '@/apiClient//api'
 import {
   ApiError,
   GetIndividualOfferResponseModel,
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
   SubcategoryIdEnum,
-} from 'apiClient/v1'
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
+} from '@/apiClient//v1'
+import { ApiRequestOptions } from '@/apiClient//v1/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient//v1/core/ApiResult'
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { Events } from 'commons/core/FirebaseEvents/constants'
+} from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
+} from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
-} from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
+} from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
   getOfferVenueFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
-import { format } from 'date-fns'
-import { Route, Routes } from 'react-router'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { expect } from 'vitest'
+} from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 
 import { serializeThingBookingLimitDatetime } from '../adapters/serializers'
 import { StocksThing, StocksThingProps } from '../StocksThing'
 
-vi.mock('commons/utils/date', async () => {
+vi.mock('@/commons/utils/date', async () => {
   return {
-    ...(await vi.importActual('commons/utils/date')),
+    ...(await vi.importActual('@/commons/utils/date')),
     getToday: vi
       .fn()
       .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),

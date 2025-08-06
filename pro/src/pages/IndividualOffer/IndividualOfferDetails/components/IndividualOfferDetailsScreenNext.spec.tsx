@@ -1,51 +1,52 @@
-import { api } from 'apiClient/api'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import * as router from 'react-router'
+import { Route, Routes } from 'react-router'
+import { vi } from 'vitest'
+
+import { api } from '@/apiClient//api'
 import {
   OfferStatus,
   SubcategoryIdEnum,
   SubcategoryResponseModel,
   VenueTypeCode,
-} from 'apiClient/v1'
-import { fireEvent, screen, waitFor } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
+} from '@/apiClient//v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { Events } from 'commons/core/FirebaseEvents/constants'
+} from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import {
   categoryFactory,
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
-import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
+} from '@/commons/utils/factories/storeFactories'
+import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import * as imageUploadModule from 'pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
-import * as router from 'react-router'
-import { Route, Routes } from 'react-router'
-import { vi } from 'vitest'
+} from '@/commons/utils/renderWithProviders'
+import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 
 import {
   IndividualOfferDetailsScreenNext,
   type IndividualOfferDetailsScreenNextProps,
 } from './IndividualOfferDetailsScreenNext'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getMusicTypes: vi.fn(),
     postDraftOffer: vi.fn(),
@@ -55,7 +56,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('commons/utils/windowMatchMedia', () => ({
+vi.mock('@/commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 

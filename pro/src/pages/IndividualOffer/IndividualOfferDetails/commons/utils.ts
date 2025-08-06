@@ -1,3 +1,5 @@
+import { computeVenueDisplayName } from 'repository/venuesService'
+
 import {
   CategoryResponseModel,
   GetIndividualOfferResponseModel,
@@ -5,14 +7,13 @@ import {
   SubcategoryIdEnum,
   SubcategoryResponseModel,
   VenueListItemResponseModel,
-} from 'apiClient/v1'
-import { showOptionsTree } from 'commons/core/Offers/categoriesSubTypes'
-import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
-import { AccessibilityFormValues } from 'commons/core/shared/types'
-import { SelectOption } from 'commons/custom_types/form'
-import { getAccessibilityInfoFromVenue } from 'commons/utils/getAccessibilityInfoFromVenue'
-import { Option } from 'pages/AdageIframe/app/types'
-import { computeVenueDisplayName } from 'repository/venuesService'
+} from '@/apiClient//v1'
+import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
+import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
+import { AccessibilityFormValues } from '@/commons/core/shared/types'
+import { SelectOption } from '@/commons/custom_types/form'
+import { getAccessibilityInfoFromVenue } from '@/commons/utils/getAccessibilityInfoFromVenue'
+import { Option } from '@/pages/AdageIframe/app/types'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
 import { deSerializeDurationMinutes } from './serializers'

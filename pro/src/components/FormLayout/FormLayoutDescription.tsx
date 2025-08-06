@@ -1,7 +1,7 @@
 import cn from 'classnames'
 
-import { Callout } from 'ui-kit/Callout/Callout'
-import { Link } from 'ui-kit/LinkNodes/LinkNodes'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { Link } from '@/ui-kit/LinkNodes/LinkNodes'
 
 import style from './FormLayout.module.scss'
 

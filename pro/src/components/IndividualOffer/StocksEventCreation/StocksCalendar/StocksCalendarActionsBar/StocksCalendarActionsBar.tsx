@@ -1,18 +1,19 @@
-import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { useLocation, useNavigate } from 'react-router'
+import { mutate } from 'swr'
+
+import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { useNotification } from 'commons/hooks/useNotification'
-import { pluralize } from 'commons/utils/pluralize'
-import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
-import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
-import { useLocation, useNavigate } from 'react-router'
-import { mutate } from 'swr'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useNotification } from '@/commons/hooks/useNotification'
+import { pluralize } from '@/commons/utils/pluralize'
+import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
+import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './StocksCalendarActionsBar.module.scss'
 

@@ -1,20 +1,21 @@
+import cn from 'classnames'
+import { useState } from 'react'
+
 import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
-} from 'apiClient/v1'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import cn from 'classnames'
-import { VenueEvents } from 'commons/core/FirebaseEvents/constants'
-import { Card } from 'components/Card/Card'
-import { Tag, TagVariant } from 'design-system/Tag/Tag'
-import fullDisclosureCloseIcon from 'icons/full-disclosure-close.svg'
-import fullDisclosureOpenIcon from 'icons/full-disclosure-open.svg'
-import { shouldShowVenueOfferStepsForVenue } from 'pages/Homepage/components/Offerers/components/VenueList/venueUtils'
-import { VenueOfferSteps } from 'pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
-import { useState } from 'react'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/apiClient//v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { VenueEvents } from '@/commons/core/FirebaseEvents/constants'
+import { Card } from '@/components/Card/Card'
+import { Tag, TagVariant } from '@/design-system/Tag/Tag'
+import fullDisclosureCloseIcon from '@/icons/full-disclosure-close.svg'
+import fullDisclosureOpenIcon from '@/icons/full-disclosure-open.svg'
+import { shouldShowVenueOfferStepsForVenue } from '@/pages/Homepage/components/Offerers/components/VenueList/venueUtils'
+import { VenueOfferSteps } from '@/pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Venue.module.scss'
 

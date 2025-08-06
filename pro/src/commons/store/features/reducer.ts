@@ -1,5 +1,6 @@
-import { FeatureResponseModel } from 'apiClient/v1'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+
+import { FeatureResponseModel } from '@/apiClient//v1'
 
 interface FeaturesState {
   list: FeatureResponseModel[]

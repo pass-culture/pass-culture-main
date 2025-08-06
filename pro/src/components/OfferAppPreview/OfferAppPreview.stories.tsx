@@ -1,6 +1,6 @@
 import { StoryObj } from '@storybook/react'
 
-import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
+import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
 import testImg from './__specs__/offer_storie_image.jpg'
 import { OfferAppPreview } from './OfferAppPreview'
@@ -15,7 +15,7 @@ const baseOfferData = {
 }
 
 export default {
-  title: 'components/OfferAppPreview',
+  title: '@/components/OfferAppPreview',
   component: OfferAppPreview,
 }
 

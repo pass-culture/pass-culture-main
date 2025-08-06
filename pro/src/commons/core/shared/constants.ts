@@ -1,4 +1,4 @@
-import { StudentLevels } from 'apiClient/v1'
+import { StudentLevels } from '@/apiClient//v1'
 
 export const PATCH_SUCCESS_MESSAGE =
   'Vos modifications ont bien été enregistrées'

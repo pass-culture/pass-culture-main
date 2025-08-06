@@ -3,8 +3,8 @@ import cn from 'classnames'
 import React, { ForwardedRef, forwardRef, MouseEvent } from 'react'
 import { Link } from 'react-router'
 
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { Tooltip, TooltipProps } from 'ui-kit/Tooltip/Tooltip'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
+import { Tooltip, TooltipProps } from '@/ui-kit/Tooltip/Tooltip'
 
 import styles from './ListIconButton.module.scss'
 

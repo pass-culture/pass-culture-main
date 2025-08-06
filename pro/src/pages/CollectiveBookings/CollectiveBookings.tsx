@@ -1,11 +1,12 @@
-import { api } from 'apiClient/api'
-import { CollectiveBookingResponseModel } from 'apiClient/v1'
-import { Layout } from 'app/App/layout/Layout'
-import { PreFiltersParams } from 'commons/core/Bookings/types'
-import { buildBookingsRecapQuery } from 'commons/core/Bookings/utils'
-import { Audience } from 'commons/core/shared/types'
-import { BookingsContainer } from 'components/Bookings/Bookings'
 import { useLocation } from 'react-router'
+
+import { api } from '@/apiClient//api'
+import { CollectiveBookingResponseModel } from '@/apiClient//v1'
+import { Layout } from '@/app/App/layout/Layout'
+import { PreFiltersParams } from '@/commons/core/Bookings/types'
+import { buildBookingsRecapQuery } from '@/commons/core/Bookings/utils'
+import { Audience } from '@/commons/core/shared/types'
+import { BookingsContainer } from '@/components/Bookings/Bookings'
 
 const MAX_LOADED_PAGES = 5
 

@@ -1,12 +1,13 @@
-import { api } from 'apiClient/api'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import * as useNotification from 'commons/hooks/useNotification'
-import { venueListItemFactory } from 'commons/utils/factories/individualApiFactories'
-import { currentOffererFactory } from 'commons/utils/factories/storeFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+
+import { api } from '@/apiClient//api'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import * as useNotification from '@/commons/hooks/useNotification'
+import { venueListItemFactory } from '@/commons/utils/factories/individualApiFactories'
+import { currentOffererFactory } from '@/commons/utils/factories/storeFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   HeadlineOfferContextProvider,
@@ -50,7 +51,7 @@ const MOCK_DATA = {
   },
 }
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getOffererHeadlineOffer: vi.fn(),
     upsertHeadlineOffer: vi.fn(),

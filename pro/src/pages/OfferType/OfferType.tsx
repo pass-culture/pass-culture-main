@@ -1,10 +1,11 @@
-import { Layout } from 'app/App/layout/Layout'
-import { useOfferer } from 'commons/hooks/swr/useOfferer'
-import { useHasAccessToDidacticOnboarding } from 'commons/hooks/useHasAccessToDidacticOnboarding'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { CollectiveBudgetCallout } from 'components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 import { useSelector } from 'react-redux'
 import { Navigate, useLocation } from 'react-router'
+
+import { Layout } from '@/app/App/layout/Layout'
+import { useOfferer } from '@/commons/hooks/swr/useOfferer'
+import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 
 import { OfferTypeScreen } from './OfferType/OfferType'
 

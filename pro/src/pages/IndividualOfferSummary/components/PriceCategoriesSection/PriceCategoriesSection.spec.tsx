@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
-import { getIndividualOfferFactory } from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { PriceCategoriesSection } from './PriceCategoriesSection'
 

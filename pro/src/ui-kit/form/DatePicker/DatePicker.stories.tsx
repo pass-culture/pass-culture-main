@@ -17,7 +17,7 @@ const Wrapper = ({ children }: PropsWithChildren) => {
 }
 
 const meta: Meta<typeof DatePicker> = {
-  title: 'ui-kit/formsV2/DatePicker',
+  title: '@/ui-kit/formsV2/DatePicker',
   component: DatePicker,
 }
 

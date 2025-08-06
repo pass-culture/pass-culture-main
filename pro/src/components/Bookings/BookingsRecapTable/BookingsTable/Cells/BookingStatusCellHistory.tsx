@@ -1,12 +1,12 @@
+import { format } from 'date-fns-tz'
+
 import {
   BookingRecapResponseBookingStatusHistoryModel,
   BookingStatusHistoryResponseModel,
-} from 'apiClient/v1'
-import { toDateStrippedOfTimezone } from 'commons/utils/date'
-import { format } from 'date-fns-tz'
+} from '@/apiClient//v1'
+import { toDateStrippedOfTimezone } from '@/commons/utils/date'
 
 import { getBookingStatusDisplayInformations } from '../../utils/bookingStatusConverter'
-
 import styles from './BookingStatusCellHistory.module.scss'
 
 const computeDateForStatus = (

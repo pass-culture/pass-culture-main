@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { API_URL, URL_FOR_MAINTENANCE } from 'commons/utils/config'
+import { API_URL, URL_FOR_MAINTENANCE } from '@/commons/utils/config'
 export const HTTP_STATUS = {
   NO_CONTENT: 204,
   FORBIDDEN: 403,

@@ -1,14 +1,15 @@
+import classNames from 'classnames'
+
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
-} from 'apiClient/v1'
-import classNames from 'classnames'
-import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { isCollectiveOfferSelectable } from 'commons/utils/isActionAllowedOnCollectiveOffer'
-import { CheckboxCell } from 'components/OffersTable/Cells/CheckboxCell'
-import { OfferVenueCell } from 'components/OffersTable/Cells/OfferVenueCell'
+} from '@/apiClient//v1'
+import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
+import { CheckboxCell } from '@/components/OffersTable/Cells/CheckboxCell'
+import { OfferVenueCell } from '@/components/OffersTable/Cells/OfferVenueCell'
 
 import { CollectiveActionsCells } from './CollectiveActionsCells/CollectiveActionsCells'
 import styles from './CollectiveOfferRow.module.scss'

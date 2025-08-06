@@ -1,9 +1,9 @@
-import { BookingRecapResponseModel } from 'apiClient/v1'
 import cn from 'classnames'
-import { Tag } from 'design-system/Tag/Tag'
+
+import { BookingRecapResponseModel } from '@/apiClient//v1'
+import { Tag } from '@/design-system/Tag/Tag'
 
 import { getBookingStatusDisplayInformations } from '../../utils/bookingStatusConverter'
-
 import styles from './BookingStatusCell.module.scss'
 
 export type IndividualBookingStatusCellProps = {

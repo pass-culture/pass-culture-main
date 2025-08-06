@@ -1,15 +1,16 @@
-import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
-import { AdageHeaderLink } from 'apiClient/adage/models/AdageHeaderLink'
-import { apiAdage } from 'apiClient/api'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useNotification from 'commons/hooks/useNotification'
-import { defaultEducationalInstitution } from 'commons/utils/factories/adageFactories'
+
+import { AdageFrontRoles, AuthenticatedResponse } from '@/apiClient//adage'
+import { AdageHeaderLink } from '@/apiClient//adage/models/AdageHeaderLink'
+import { apiAdage } from '@/apiClient//api'
+import * as useNotification from '@/commons/hooks/useNotification'
+import { defaultEducationalInstitution } from '@/commons/utils/factories/adageFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+} from '@/commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import { AdageHeader } from '../AdageHeader'
 
@@ -30,7 +31,7 @@ const renderAdageHeader = (
   )
 }
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   apiAdage: {
     logHeaderLinkClick: vi.fn(),
     getEducationalInstitutionWithBudget: vi.fn(),
@@ -49,7 +50,7 @@ describe('AdageHeader', () => {
 
   beforeEach(async () => {
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

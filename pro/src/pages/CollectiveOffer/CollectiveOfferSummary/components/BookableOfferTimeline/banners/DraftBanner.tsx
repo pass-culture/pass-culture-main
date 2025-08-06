@@ -1,6 +1,6 @@
-import fullEditIcon from 'icons/full-edit.svg'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
+import fullEditIcon from '@/icons/full-edit.svg'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { CalloutVariant } from '@/ui-kit/Callout/types'
 
 import styles from '../BookableOfferTimeline.module.scss'
 

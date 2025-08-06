@@ -1,8 +1,9 @@
-import * as apiHelpers from 'apiClient/helpers'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { UploaderModeEnum } from 'commons/utils/imageUploadTypes'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+
+import * as apiHelpers from '@/apiClient//helpers'
+import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { ButtonImageEdit, ButtonImageEditProps } from '../ButtonImageEdit'
 

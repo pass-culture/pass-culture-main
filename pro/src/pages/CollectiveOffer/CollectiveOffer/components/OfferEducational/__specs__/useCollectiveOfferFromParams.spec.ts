@@ -1,15 +1,16 @@
-import { api } from 'apiClient/api'
 import { renderHook, waitFor } from '@testing-library/react'
+import * as router from 'react-router'
+
+import { api } from '@/apiClient//api'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
-import * as router from 'react-router'
+} from '@/commons/utils/factories/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 
 import { useCollectiveOfferFromParams } from '../useCollectiveOfferFromParams'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getCollectiveOfferTemplate: vi.fn(),
     getCollectiveOffer: vi.fn(),

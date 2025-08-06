@@ -1,27 +1,28 @@
-import { api } from 'apiClient/api'
-import { HTTP_STATUS } from 'apiClient/helpers'
-import { ApiError } from 'apiClient/v1'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { getOffererNameFactory } from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
-import * as utils from 'commons/utils/recaptcha'
+import { Route, Routes } from 'react-router'
+
+import { api } from '@/apiClient//api'
+import { HTTP_STATUS } from '@/apiClient//helpers'
+import { ApiError } from '@/apiClient//v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { getOffererNameFactory } from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import * as utils from '@/commons/utils/recaptcha'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { Route, Routes } from 'react-router'
+} from '@/commons/utils/renderWithProviders'
 
 import { SignupContainer } from '../SignupContainer'
 
 const mockLogEvent = vi.fn()
 
-vi.mock('commons/utils/windowMatchMedia', () => ({
+vi.mock('@/commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getProfile: vi.fn().mockResolvedValue({}),
     signupPro: vi.fn(),

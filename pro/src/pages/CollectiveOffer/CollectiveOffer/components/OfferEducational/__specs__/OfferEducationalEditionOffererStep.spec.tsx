@@ -1,31 +1,32 @@
+import { screen, waitFor } from '@testing-library/react'
+
 import {
   CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
-} from 'apiClient/v1'
-import { screen, waitFor } from '@testing-library/react'
-import { Mode } from 'commons/core/OfferEducational/types'
-import * as hooks from 'commons/hooks/swr/useOfferer'
+} from '@/apiClient//v1'
+import { Mode } from '@/commons/core/OfferEducational/types'
+import * as hooks from '@/commons/hooks/swr/useOfferer'
 import {
   getCollectiveOfferBookingFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferManagingOffererFactory,
   getCollectiveOfferVenueFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/utils/factories/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/storeFactories'
 import {
   managedVenuesFactory,
   userOffererFactory,
-} from 'commons/utils/factories/userOfferersFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/factories/userOfferersFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { defaultEditionProps } from '../__tests-utils__/defaultProps'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     getVenues: vi.fn(),
   },

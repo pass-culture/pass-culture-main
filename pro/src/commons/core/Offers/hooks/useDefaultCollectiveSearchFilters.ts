@@ -1,4 +1,4 @@
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 
 import {
   DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,

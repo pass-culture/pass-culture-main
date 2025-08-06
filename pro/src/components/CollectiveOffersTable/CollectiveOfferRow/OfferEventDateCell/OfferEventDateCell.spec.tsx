@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
-import { collectiveOfferFactory } from 'commons/utils/factories/collectiveApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   OfferEventDateCell,

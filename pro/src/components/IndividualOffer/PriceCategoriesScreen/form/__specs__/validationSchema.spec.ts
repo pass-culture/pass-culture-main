@@ -1,8 +1,8 @@
 import {
   priceCategoriesFormValuesFactory,
   priceCategoryFormFactory,
-} from 'commons/utils/factories/priceCategoryFactories'
-import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHelpers'
+} from '@/commons/utils/factories/priceCategoryFactories'
+import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
 import {
   PRICE_CATEGORY_LABEL_MAX_LENGTH,

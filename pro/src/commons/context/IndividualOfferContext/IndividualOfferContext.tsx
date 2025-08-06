@@ -1,20 +1,21 @@
-import { api } from 'apiClient/api'
+import React, { createContext, useContext, useState } from 'react'
+import { useNavigate, useParams } from 'react-router'
+import useSWR, { useSWRConfig } from 'swr'
+
+import { api } from '@/apiClient//api'
 import {
   CategoryResponseModel,
   GetActiveEANOfferResponseModel,
   GetIndividualOfferWithAddressResponseModel,
   SubcategoryResponseModel,
-} from 'apiClient/v1'
+} from '@/apiClient//v1'
 import {
   GET_ACTIVE_VENUE_OFFER_BY_EAN_QUERY_KEY,
   GET_CATEGORIES_QUERY_KEY,
   GET_OFFER_QUERY_KEY,
-} from 'commons/config/swrQueryKeys'
-import { isOfferProductBased } from 'commons/core/Offers/utils/typology'
-import React, { createContext, useContext, useState } from 'react'
-import { useNavigate, useParams } from 'react-router'
-import useSWR, { useSWRConfig } from 'swr'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+} from '@/commons/config/swrQueryKeys'
+import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 export interface IndividualOfferContextValues {
   offer: GetIndividualOfferWithAddressResponseModel | null

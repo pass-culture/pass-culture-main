@@ -1,36 +1,37 @@
-import { api } from 'apiClient/api'
+import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+
+import { api } from '@/apiClient//api'
 import {
   CollectiveLocationType,
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
-} from 'apiClient/v1'
-import { screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
+} from '@/apiClient//v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
   Events,
-} from 'commons/core/FirebaseEvents/constants'
-import * as useNotification from 'commons/hooks/useNotification'
+} from '@/commons/core/FirebaseEvents/constants'
+import * as useNotification from '@/commons/hooks/useNotification'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferVenueFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
+} from '@/commons/utils/factories/collectiveApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/renderWithProviders'
 
 import {
   BookableOfferSummary,
   BookableOfferSummaryProps,
 } from './BookableOfferSummary'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   api: {
     patchCollectiveOffersArchive: vi.fn(),
     cancelCollectiveOfferBooking: vi.fn(),
@@ -57,7 +58,7 @@ describe('BookableOfferSummary', () => {
 
   beforeEach(async () => {
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

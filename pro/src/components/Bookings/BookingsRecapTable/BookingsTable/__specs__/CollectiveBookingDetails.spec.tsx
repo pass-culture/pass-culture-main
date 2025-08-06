@@ -1,12 +1,13 @@
-import { api } from 'apiClient/api'
-import { CollectiveOfferAllowedAction } from 'apiClient/v1'
 import { screen, waitFor } from '@testing-library/react'
+
+import { api } from '@/apiClient//api'
+import { CollectiveOfferAllowedAction } from '@/apiClient//v1'
 import {
   collectiveBookingByIdFactory,
   collectiveBookingFactory,
   getCollectiveOfferFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/factories/collectiveApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveBookingDetails } from '../CollectiveBookingDetails'
 

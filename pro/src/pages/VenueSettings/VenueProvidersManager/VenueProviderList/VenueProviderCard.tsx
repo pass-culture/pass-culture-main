@@ -1,10 +1,10 @@
-import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
-import { getProviderInfo } from 'commons/core/Providers/utils/getProviderInfo'
+import { GetVenueResponseModel, VenueProviderResponse } from '@/apiClient//v1'
+import { getProviderInfo } from '@/commons/core/Providers/utils/getProviderInfo'
 import {
   isAllocineProvider,
   isCinemaProvider,
-} from 'commons/core/Providers/utils/utils'
-import { formatLocalTimeDateString } from 'commons/utils/timezone'
+} from '@/commons/core/Providers/utils/utils'
+import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 
 import { DeleteVenueProviderButton } from './DeleteVenueProviderButton'
 import { GenericCinemaProviderEdit } from './GenericCinemaProviderEdit'

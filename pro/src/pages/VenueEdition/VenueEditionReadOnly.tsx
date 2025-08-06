@@ -1,9 +1,9 @@
-import { GetVenueResponseModel } from 'apiClient/v1'
-import { getVenuePagePathToNavigateTo } from 'commons/utils/getVenuePagePathToNavigateTo'
-import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
-import { SummarySection } from 'components/SummaryLayout/SummarySection'
-import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { OpeningHoursReadOnly } from 'pages/VenueEdition/OpeningHoursReadOnly/OpeningHoursReadOnly'
+import { GetVenueResponseModel } from '@/apiClient//v1'
+import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
+import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
+import { SummarySection } from '@/components/SummaryLayout/SummarySection'
+import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
+import { OpeningHoursReadOnly } from '@/pages/VenueEdition/OpeningHoursReadOnly/OpeningHoursReadOnly'
 
 import { AccessibilityReadOnly } from './AccessibilityReadOnly/AccessibilityReadOnly'
 

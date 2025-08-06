@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { addDays, format, subDays } from 'date-fns'
+
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { BookedBanner } from './BookedBanner'
 

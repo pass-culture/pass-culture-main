@@ -7,7 +7,7 @@ import * as yup from 'yup'
 import { AddressSelect } from './AddressSelect'
 
 export default {
-  title: 'ui-kit/formsV2/AddressSelect',
+  title: '@/ui-kit/formsV2/AddressSelect',
   component: AddressSelect,
 } as Meta<typeof AddressSelect>
 

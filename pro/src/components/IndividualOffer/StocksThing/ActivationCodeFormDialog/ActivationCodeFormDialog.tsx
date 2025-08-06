@@ -1,6 +1,7 @@
-import { Dialog } from 'components/Dialog/Dialog'
-import strokeCodeIcon from 'icons/stroke-code.svg'
 import React, { useCallback, useState } from 'react'
+
+import { Dialog } from '@/components/Dialog/Dialog'
+import strokeCodeIcon from '@/icons/stroke-code.svg'
 
 import {
   checkAndParseUploadedFile,

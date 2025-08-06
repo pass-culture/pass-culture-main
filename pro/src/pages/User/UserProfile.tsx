@@ -1,6 +1,6 @@
-import { Layout } from 'app/App/layout/Layout'
-import { useCurrentUser } from 'commons/hooks/useCurrentUser'
-import { UserProfile } from 'pages/User/UserProfile/UserProfile'
+import { Layout } from '@/app/App/layout/Layout'
+import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
+import { UserProfile } from '@/pages/User/UserProfile/UserProfile'
 
 const Profile = (): JSX.Element => {
   const { currentUser } = useCurrentUser()

@@ -2,8 +2,8 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { DialogBuilder, DialogBuilderProps } from './DialogBuilder'
 

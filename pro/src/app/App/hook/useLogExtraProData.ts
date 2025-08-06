@@ -1,9 +1,10 @@
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { Events } from 'commons/core/FirebaseEvents/constants'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
+
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 
 export const useLogExtraProData = (): void => {
   const { logEvent } = useAnalytics()

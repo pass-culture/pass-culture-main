@@ -1,10 +1,11 @@
 import cn from 'classnames'
+import { format } from 'date-fns-tz'
+
 import {
   FORMAT_DD_MM_YYYY,
   FORMAT_HH_mm,
   toDateStrippedOfTimezone,
-} from 'commons/utils/date'
-import { format } from 'date-fns-tz'
+} from '@/commons/utils/date'
 
 import styles from './BookingDateCell.module.scss'
 

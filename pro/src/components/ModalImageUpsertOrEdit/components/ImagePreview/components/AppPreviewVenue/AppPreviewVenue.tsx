@@ -2,7 +2,6 @@ import homeShell from '../../assets/partner-home-shell.png'
 import partnerShell from '../../assets/partner-shell.png'
 import { ImagePreview } from '../../ImagePreview'
 import { ImagePreviewsWrapper } from '../../ImagePreviewsWrapper'
-
 import homeStyle from './HomeScreenPreview.module.scss'
 import offerStyle from './OfferScreenPreview.module.scss'
 

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { RootState } from 'commons/store/rootReducer'
+import { RootState } from '@/commons/store/rootReducer'
 
 import { ButtonImageDelete, ButtonImageDeleteProps } from '../ButtonImageDelete'
 

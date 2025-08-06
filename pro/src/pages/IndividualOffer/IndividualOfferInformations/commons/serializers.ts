@@ -2,12 +2,12 @@ import {
   GetIndividualOfferResponseModel,
   PatchOfferBodyModel,
   WithdrawalTypeEnum,
-} from 'apiClient/v1'
-import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
-import { AccessibilityEnum } from 'commons/core/shared/types'
-import { removeQuotes } from 'commons/utils/removeQuotes'
-import { trimStringsInObject } from 'commons/utils/trimStringsInObject'
-import { OFFER_LOCATION } from 'pages/IndividualOffer/commons/constants'
+} from '@/apiClient//v1'
+import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
+import { AccessibilityEnum } from '@/commons/core/shared/types'
+import { removeQuotes } from '@/commons/utils/removeQuotes'
+import { trimStringsInObject } from '@/commons/utils/trimStringsInObject'
+import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
 
 import { UsefulInformationFormValues } from './types'
 

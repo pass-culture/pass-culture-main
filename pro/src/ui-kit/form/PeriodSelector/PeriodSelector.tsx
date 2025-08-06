@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-import { BaseDatePicker } from 'ui-kit/form/shared/BaseDatePicker/BaseDatePicker'
+import { BaseDatePicker } from '@/ui-kit/form/shared/BaseDatePicker/BaseDatePicker'
 
 import styles from './PeriodSelector.module.scss'
 

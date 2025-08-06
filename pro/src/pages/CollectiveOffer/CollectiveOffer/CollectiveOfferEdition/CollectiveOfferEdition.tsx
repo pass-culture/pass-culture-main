@@ -1,11 +1,11 @@
-import { Layout } from 'app/App/layout/Layout'
+import { Layout } from '@/app/App/layout/Layout'
 import {
   isCollectiveOfferTemplate,
   Mode,
-} from 'commons/core/OfferEducational/types'
-import { isCollectiveOfferDetailsEditable } from 'commons/utils/isActionAllowedOnCollectiveOffer'
-import { CollectiveOfferLayout } from 'pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+} from '@/commons/core/OfferEducational/types'
+import { isCollectiveOfferDetailsEditable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
+import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { OfferEducational } from '../components/OfferEducational/OfferEducational'
 import {

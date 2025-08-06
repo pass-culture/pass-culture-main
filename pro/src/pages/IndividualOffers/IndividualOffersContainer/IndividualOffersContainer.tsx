@@ -1,25 +1,26 @@
-import { ListOffersOfferResponseModel, OfferStatus } from 'apiClient/v1'
-import { useHeadlineOfferContext } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
+import { useRef, useState } from 'react'
+
+import { ListOffersOfferResponseModel, OfferStatus } from '@/apiClient//v1'
+import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
   MAX_OFFERS_TO_DISPLAY,
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
-} from 'commons/core/Offers/constants'
-import { SearchFiltersParams } from 'commons/core/Offers/types'
-import { hasSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
-import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
-import { Audience } from 'commons/core/shared/types'
-import { SelectOption } from 'commons/custom_types/form'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { getOffersCountToDisplay } from 'commons/utils/getOffersCountToDisplay'
-import { useStoredFilterConfig } from 'components/OffersTable/OffersTableSearch/utils'
-import strokeNoBooking from 'icons/stroke-no-booking.svg'
-import { useRef, useState } from 'react'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { Pagination } from 'ui-kit/Pagination/Pagination'
-import { Table, TableVariant } from 'ui-kit/Table/Table'
+} from '@/commons/core/Offers/constants'
+import { SearchFiltersParams } from '@/commons/core/Offers/types'
+import { hasSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
+import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
+import { Audience } from '@/commons/core/shared/types'
+import { SelectOption } from '@/commons/custom_types/form'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
+import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import strokeNoBooking from '@/icons/stroke-no-booking.svg'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { Pagination } from '@/ui-kit/Pagination/Pagination'
+import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import { HeadlineOffer } from './components/HeadlineOffer/HeadlineOffer'
 import { getIndividualOfferColumns } from './components/IndividualOfferColumns/IndividualOfferColumns'

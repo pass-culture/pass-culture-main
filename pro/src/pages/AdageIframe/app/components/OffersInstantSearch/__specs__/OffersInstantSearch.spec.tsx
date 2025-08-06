@@ -1,9 +1,10 @@
-import { apiAdage } from 'apiClient/api'
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-import { defaultAdageUser } from 'commons/utils/factories/adageFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+
+import { apiAdage } from '@/apiClient//api'
+import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
+import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import { OffersInstantSearch } from '../OffersInstantSearch'
 import * as utils from '../utils'
@@ -16,7 +17,7 @@ const venue = {
   departementCode: '75',
 }
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   apiAdage: {
     getVenueById: vi.fn(() => {
       return venue

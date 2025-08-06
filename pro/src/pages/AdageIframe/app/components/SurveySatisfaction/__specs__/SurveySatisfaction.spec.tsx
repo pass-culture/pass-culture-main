@@ -1,12 +1,13 @@
-import { apiAdage } from 'apiClient/api'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as useNotification from 'commons/hooks/useNotification'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+
+import { apiAdage } from '@/apiClient//api'
+import * as useNotification from '@/commons/hooks/useNotification'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { SurveySatisfaction } from '../SurveySatisfaction'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   apiAdage: {
     saveRedactorPreferences: vi.fn(),
     logOpenSatisfactionSurvey: vi.fn(),
@@ -39,7 +40,7 @@ describe('SurveySatisfaction', () => {
     const notifyError = vi.fn()
 
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

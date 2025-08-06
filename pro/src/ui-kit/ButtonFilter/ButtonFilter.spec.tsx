@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 
 import { ButtonFilter } from './ButtonFilter'
 
-vi.mock('ui-kit/SvgIcon/SvgIcon', () => ({
+vi.mock('@/ui-kit/SvgIcon/SvgIcon', () => ({
   SvgIcon: vi.fn(() => <span data-testid="mock-icon" />),
 }))
 

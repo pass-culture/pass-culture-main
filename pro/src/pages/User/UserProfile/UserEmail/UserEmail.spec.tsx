@@ -1,5 +1,6 @@
-import { api } from 'apiClient/api'
 import { render, screen } from '@testing-library/react'
+
+import { api } from '@/apiClient//api'
 
 import { UserEmail } from './UserEmail'
 

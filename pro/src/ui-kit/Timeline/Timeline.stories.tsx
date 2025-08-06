@@ -3,7 +3,7 @@ import type { StoryObj } from '@storybook/react'
 import { Timeline, TimelineStepType } from './Timeline'
 
 export default {
-  title: 'ui-kit/Timeline',
+  title: '@/ui-kit/Timeline',
   component: Timeline,
 }
 

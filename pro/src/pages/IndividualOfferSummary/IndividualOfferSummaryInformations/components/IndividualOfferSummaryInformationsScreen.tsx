@@ -1,21 +1,22 @@
-import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import { computeAddressDisplayName } from 'repository/venuesService'
+
+import { GetIndividualOfferWithAddressResponseModel } from '@/apiClient//v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WITHDRAWAL_TYPE_LABELS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { getDelayToFrenchText } from 'commons/utils/date'
-import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
-import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { getDelayToFrenchText } from '@/commons/utils/date'
+import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
+import { SummaryContent } from '@/components/SummaryLayout/SummaryContent'
 import {
   Description,
   SummaryDescriptionList,
-} from 'components/SummaryLayout/SummaryDescriptionList'
-import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
-import { SummarySection } from 'components/SummaryLayout/SummarySection'
-import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { computeAddressDisplayName } from 'repository/venuesService'
+} from '@/components/SummaryLayout/SummaryDescriptionList'
+import { SummaryLayout } from '@/components/SummaryLayout/SummaryLayout'
+import { SummarySection } from '@/components/SummaryLayout/SummarySection'
+import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
 
 type DetailsSummaryScreenProps = {
   offer: GetIndividualOfferWithAddressResponseModel

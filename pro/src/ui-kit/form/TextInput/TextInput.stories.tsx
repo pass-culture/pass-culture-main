@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { Button } from 'ui-kit/Button/Button'
+import { Button } from '@/ui-kit/Button/Button'
 
 import { TextInput } from './TextInput'
 
 const meta: Meta<typeof TextInput> = {
-  title: 'ui-kit/formsV2/TextInput',
+  title: '@/ui-kit/formsV2/TextInput',
   component: TextInput,
 }
 

@@ -1,28 +1,29 @@
+import cn from 'classnames'
+import { format } from 'date-fns-tz'
+
 import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
-} from 'apiClient/v1'
-import cn from 'classnames'
+} from '@/apiClient//v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_STATUS_PENDING,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import {
   FORMAT_DD_MM_YYYY_HH_mm,
   toDateStrippedOfTimezone,
-} from 'commons/utils/date'
-import { formatPrice } from 'commons/utils/formatPrice'
-import { pluralize } from 'commons/utils/pluralize'
+} from '@/commons/utils/date'
+import { formatPrice } from '@/commons/utils/formatPrice'
+import { pluralize } from '@/commons/utils/pluralize'
 import {
   getDate,
   getRemainingTime,
   shouldDisplayWarning,
-} from 'components/Bookings/BookingsRecapTable/utils/utils'
-import { format } from 'date-fns-tz'
-import fullErrorIcon from 'icons/full-error.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/components/Bookings/BookingsRecapTable/utils/utils'
+import fullErrorIcon from '@/icons/full-error.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BookingOfferCell.module.scss'
 

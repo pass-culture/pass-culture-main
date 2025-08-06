@@ -1,10 +1,11 @@
-import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
+
+import { CollectiveOfferDisplayedStatus } from '@/apiClient//v1'
 import {
   getCollectiveOfferBookingFactory,
   getCollectiveOfferFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+} from '@/commons/utils/factories/collectiveApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { BookableOfferTimeline } from './BookableOfferTimeline'
 

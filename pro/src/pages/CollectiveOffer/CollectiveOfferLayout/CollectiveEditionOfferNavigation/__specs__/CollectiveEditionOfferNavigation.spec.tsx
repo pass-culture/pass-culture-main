@@ -1,6 +1,10 @@
-import { ApiRequestOptions } from 'apiClient/adage/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/adage/core/ApiResult'
-import { api } from 'apiClient/api'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import * as router from 'react-router'
+
+import { ApiRequestOptions } from '@/apiClient//adage/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient//adage/core/ApiResult'
+import { api } from '@/apiClient//api'
 import {
   ApiError,
   CollectiveOfferAllowedAction,
@@ -9,31 +13,28 @@ import {
   CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from 'apiClient/v1'
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
+} from '@/apiClient//v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
   Events,
-} from 'commons/core/FirebaseEvents/constants'
-import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
-import * as useNotification from 'commons/hooks/useNotification'
+} from '@/commons/core/FirebaseEvents/constants'
+import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import * as useNotification from '@/commons/hooks/useNotification'
 import {
   defaultGetVenue,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'commons/utils/factories/collectiveApiFactories'
-import { venueListItemFactory } from 'commons/utils/factories/individualApiFactories'
+} from '@/commons/utils/factories/collectiveApiFactories'
+import { venueListItemFactory } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
-} from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import * as router from 'react-router'
+} from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOfferStep } from '../../CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 import {
@@ -103,7 +104,7 @@ describe('CollectiveEditionOfferNavigation', () => {
     )
 
     const notifsImport = (await vi.importActual(
-      'commons/hooks/useNotification'
+      '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

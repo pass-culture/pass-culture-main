@@ -1,7 +1,8 @@
-import { GetVenueResponseModel } from 'apiClient/v1'
 import { useLocation } from 'react-router'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
+
+import { GetVenueResponseModel } from '@/apiClient//v1'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { CalloutVariant } from '@/ui-kit/Callout/types'
 
 import { VenueEditionForm } from './VenueEditionForm'
 import styles from './VenueEditionFormScreen.module.scss'

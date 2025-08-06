@@ -1,5 +1,5 @@
-import strokePageNotFoundIcon from 'icons/stroke-page-not-found.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import strokePageNotFoundIcon from '@/icons/stroke-page-not-found.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './IncomeError.module.scss'
 

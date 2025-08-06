@@ -1,9 +1,13 @@
+import { format } from 'date-fns-tz'
+
 import {
   CollectiveBookingCollectiveStockResponseModel,
   CollectiveOffersStockResponseModel,
-} from 'apiClient/v1'
-import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'commons/utils/date'
-import { format } from 'date-fns-tz'
+} from '@/apiClient//v1'
+import {
+  FORMAT_DD_MM_YYYY,
+  toDateStrippedOfTimezone,
+} from '@/commons/utils/date'
 
 export const getRemainingTime = (
   stock:

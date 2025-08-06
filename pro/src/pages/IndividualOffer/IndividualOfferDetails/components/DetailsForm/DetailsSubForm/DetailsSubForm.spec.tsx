@@ -1,17 +1,18 @@
 import { screen } from '@testing-library/react'
+import { FormProvider, useForm } from 'react-hook-form'
+import { Route, Routes } from 'react-router'
+
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+} from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
-} from 'commons/core/Offers/constants'
-import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { DEFAULT_DETAILS_FORM_VALUES } from 'pages/IndividualOffer/IndividualOfferDetails/commons/constants'
-import { FormProvider, useForm } from 'react-hook-form'
-import { Route, Routes } from 'react-router'
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 
 import {
   ARTISTIC_INFORMATION_FIELDS,

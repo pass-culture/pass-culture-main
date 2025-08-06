@@ -1,8 +1,8 @@
-import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { IndividualOfferLayout } from 'components/IndividualOfferLayout/IndividualOfferLayout'
-import { getTitle } from 'components/IndividualOfferLayout/utils/getTitle'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
+import { getTitle } from '@/components/IndividualOfferLayout/utils/getTitle'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { IndividualOfferInformationsScreen } from './components/IndividualOfferInformationsScreen'
 

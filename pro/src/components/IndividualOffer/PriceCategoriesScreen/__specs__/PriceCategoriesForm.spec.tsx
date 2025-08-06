@@ -1,18 +1,19 @@
-import { api } from 'apiClient/api'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+
+import { api } from '@/apiClient//api'
 import {
   GetIndividualOfferResponseModel,
   GetIndividualOfferWithAddressResponseModel,
-} from 'apiClient/v1'
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
-import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+} from '@/apiClient//v1'
+import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   getIndividualOfferFactory,
   priceCategoryFactory,
   subcategoryFactory,
-} from 'commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { PriceCategoriesScreen } from 'components/IndividualOffer/PriceCategoriesScreen/PriceCategoriesScreen'
+} from '@/commons/utils/factories/individualApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { PriceCategoriesScreen } from '@/components/IndividualOffer/PriceCategoriesScreen/PriceCategoriesScreen'
 
 const renderPriceCategoriesForm = (
   canBeDuo = true,

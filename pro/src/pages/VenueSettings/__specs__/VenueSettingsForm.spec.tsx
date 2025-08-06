@@ -1,17 +1,18 @@
-import { VenueTypeResponseModel } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
-import { defaultGetVenue } from 'commons/utils/factories/collectiveApiFactories'
+import { FormProvider, useForm } from 'react-hook-form'
+import { describe, expect, it } from 'vitest'
+
+import { VenueTypeResponseModel } from '@/apiClient//v1'
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
   defaultVenueProvider,
-} from 'commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from 'commons/utils/factories/storeFactories'
+} from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { FormProvider, useForm } from 'react-hook-form'
-import { describe, expect, it } from 'vitest'
+} from '@/commons/utils/renderWithProviders'
 
 import { VenueSettingsFormValues } from '../types'
 import { VenueSettingsForm } from '../VenueSettingsForm'

@@ -1,4 +1,4 @@
-import { AccessibilityEnum } from 'commons/core/shared/types'
+import { AccessibilityEnum } from '@/commons/core/shared/types'
 
 export const SUBCATEGORIES_FIELDS_DEFAULT_VALUES = {
   gtl_id: '',

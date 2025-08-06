@@ -1,23 +1,24 @@
+import { useFormContext } from 'react-hook-form'
+
 import {
   GetActiveEANOfferResponseModel,
   VenueListItemResponseModel,
   WithdrawalTypeEnum,
-} from 'apiClient/v1'
-import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
-import { REIMBURSEMENT_RULES } from 'commons/core/Finances/constants'
-import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useCurrentUser } from 'commons/hooks/useCurrentUser'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { Checkbox } from 'design-system/Checkbox/Checkbox'
-import { RadioButtonGroup } from 'design-system/RadioButtonGroup/RadioButtonGroup'
-import { isOfferSubcategoryOnline } from 'pages/IndividualOffer/commons/utils'
-import { useFormContext } from 'react-hook-form'
-import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
-import { Select } from 'ui-kit/form/Select/Select'
-import { TextArea } from 'ui-kit/form/TextArea/TextArea'
-import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+} from '@/apiClient//v1'
+import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
+import { useAccessibilityOptions } from '@/commons/hooks/useAccessibilityOptions'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
+import { isOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/utils'
+import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
+import { Select } from '@/ui-kit/form/Select/Select'
+import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
+import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import {
   DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES,
@@ -29,7 +30,6 @@ import {
 import { UsefulInformationFormValues } from '../../commons/types'
 import { getFormReadOnlyFields } from '../../commons/utils'
 import { OfferLocation } from '../OfferLocation/OfferLocation'
-
 import { OfferRefundWarning } from './OfferRefundWarning'
 import styles from './UsefulInformationForm.module.scss'
 import { WithdrawalReminder } from './WithdrawalReminder'

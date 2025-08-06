@@ -1,15 +1,16 @@
+import { screen } from '@testing-library/react'
+
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from 'apiClient/adage'
-import { screen } from '@testing-library/react'
+} from '@/apiClient//adage'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
-} from 'commons/utils/factories/adageFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+} from '@/commons/utils/factories/adageFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import { AdageOffer } from '../AdageOffer'
 

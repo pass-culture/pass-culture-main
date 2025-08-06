@@ -4,7 +4,7 @@ import { ConstraintCheck } from './ConstraintCheck'
 import { imageConstraints } from './imageConstraints'
 
 export default {
-  title: 'components/ConstraintCheck',
+  title: '@/components/ConstraintCheck',
   component: ConstraintCheck,
 }
 

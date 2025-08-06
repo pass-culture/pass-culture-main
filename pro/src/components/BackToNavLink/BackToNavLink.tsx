@@ -1,8 +1,8 @@
 import classnames from 'classnames'
 
-import { useMediaQuery } from 'commons/hooks/useMediaQuery'
-import fullGoTop from 'icons/full-go-top.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
+import fullGoTop from '@/icons/full-go-top.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BackToNavLink.module.scss'
 

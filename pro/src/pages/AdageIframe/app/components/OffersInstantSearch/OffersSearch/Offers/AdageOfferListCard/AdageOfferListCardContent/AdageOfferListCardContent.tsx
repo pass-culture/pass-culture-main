@@ -1,11 +1,10 @@
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from 'apiClient/adage'
-import { Markdown } from 'components/Markdown/Markdown'
+} from '@/apiClient//adage'
+import { Markdown } from '@/components/Markdown/Markdown'
 
 import { getOfferVenueAndOffererName } from '../../utils/getOfferVenueAndOffererName'
-
 import styles from './AdageOfferListCardContent.module.scss'
 
 export type AdageOfferListCardContentProps = {

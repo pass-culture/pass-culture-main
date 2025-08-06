@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { PasswordInput } from './PasswordInput'
 
 const meta: Meta<typeof PasswordInput> = {
-  title: 'ui-kit/formsV2/PasswordInput',
+  title: '@/ui-kit/formsV2/PasswordInput',
   component: PasswordInput,
 }
 

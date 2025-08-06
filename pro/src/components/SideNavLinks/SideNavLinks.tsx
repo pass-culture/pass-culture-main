@@ -1,34 +1,35 @@
 import classnames from 'classnames'
-import { useOfferer } from 'commons/hooks/swr/useOfferer'
-import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { NavLink, useLocation } from 'react-router'
+
+import { useOfferer } from '@/commons/hooks/swr/useOfferer'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import {
   SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY,
   useMediaQuery,
-} from 'commons/hooks/useMediaQuery'
+} from '@/commons/hooks/useMediaQuery'
 import {
   setIsCollectiveSectionOpen,
   setIsIndividualSectionOpen,
-} from 'commons/store/nav/reducer'
+} from '@/commons/store/nav/reducer'
 import {
   selectIsCollectiveSectionOpen,
   selectIsIndividualSectionOpen,
   selectSelectedPartnerPageId,
-} from 'commons/store/nav/selector'
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
-import { getSavedPartnerPageVenueId } from 'commons/utils/savedPartnerPageVenueId'
-import fullDownIcon from 'icons/full-down.svg'
-import fullUpIcon from 'icons/full-up.svg'
-import strokeCollaboratorIcon from 'icons/stroke-collaborator.svg'
-import strokeEuroIcon from 'icons/stroke-euro.svg'
-import strokeHomeIcon from 'icons/stroke-home.svg'
-import strokePhoneIcon from 'icons/stroke-phone.svg'
-import strokeTeacherIcon from 'icons/stroke-teacher.svg'
-import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { NavLink, useLocation } from 'react-router'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+} from '@/commons/store/nav/selector'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { getSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
+import fullDownIcon from '@/icons/full-down.svg'
+import fullUpIcon from '@/icons/full-up.svg'
+import strokeCollaboratorIcon from '@/icons/stroke-collaborator.svg'
+import strokeEuroIcon from '@/icons/stroke-euro.svg'
+import strokeHomeIcon from '@/icons/stroke-home.svg'
+import strokePhoneIcon from '@/icons/stroke-phone.svg'
+import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SideNavLinks.module.scss'
 

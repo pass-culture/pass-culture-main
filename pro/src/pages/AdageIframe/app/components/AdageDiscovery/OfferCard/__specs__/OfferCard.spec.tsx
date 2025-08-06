@@ -1,26 +1,27 @@
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import * as router from 'react-router'
+
 import {
   AuthenticatedResponse,
   CollectiveLocationType,
   OfferAddressType,
-} from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
-import { screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
+} from '@/apiClient//adage'
+import { apiAdage } from '@/apiClient//api'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
-} from 'commons/utils/factories/adageFactories'
+} from '@/commons/utils/factories/adageFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import * as router from 'react-router'
+} from '@/commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import { CardComponentProps, OfferCardComponent } from '../OfferCard'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   apiAdage: {
     logConsultPlaylistElement: vi.fn(),
   },

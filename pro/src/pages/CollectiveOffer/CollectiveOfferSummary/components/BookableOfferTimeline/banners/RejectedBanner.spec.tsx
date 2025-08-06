@@ -1,13 +1,14 @@
-import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import * as useAnalytics from 'app/App/analytics/firebase'
+
+import { CollectiveOfferDisplayedStatus } from '@/apiClient//v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
   Events,
-} from 'commons/core/FirebaseEvents/constants'
-import * as duplicateBookableOffer from 'commons/core/OfferEducational/utils/duplicateBookableOffer'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+} from '@/commons/core/FirebaseEvents/constants'
+import * as duplicateBookableOffer from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { RejectedBanner } from './RejectedBanner'
 
@@ -17,7 +18,7 @@ describe('RejectedBanner', () => {
 
   beforeEach(() => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      ...vi.importActual('app/App/analytics/firebase'),
+      ...vi.importActual('@/app/App/analytics/firebase'),
       logEvent: mockLogEvent,
     }))
 

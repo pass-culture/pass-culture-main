@@ -1,5 +1,5 @@
-import { GetVenueResponseModel } from 'apiClient/v1'
-import { Callout } from 'ui-kit/Callout/Callout'
+import { GetVenueResponseModel } from '@/apiClient//v1'
+import { Callout } from '@/ui-kit/Callout/Callout'
 
 interface AccessibilityCalloutProps {
   externalAccessibilityId?: GetVenueResponseModel['externalAccessibilityId']

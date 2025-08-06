@@ -1,5 +1,5 @@
-import { DEFAULT_SEARCH_FILTERS } from 'commons/core/Offers/constants'
-import { SearchFiltersParams } from 'commons/core/Offers/types'
+import { DEFAULT_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
+import { SearchFiltersParams } from '@/commons/core/Offers/types'
 
 export function computeIndividualApiFilters(
   finalSearchFilters: Partial<SearchFiltersParams>,

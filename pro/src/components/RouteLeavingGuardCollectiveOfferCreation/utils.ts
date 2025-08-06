@@ -1,4 +1,4 @@
-import { BlockerFunction } from 'components/RouteLeavingGuard/RouteLeavingGuard'
+import { BlockerFunction } from '@/components/RouteLeavingGuard/RouteLeavingGuard'
 
 const STEP_OFFER = 'offer'
 const STEP_OFFER_EDITION = 'offer_edition'

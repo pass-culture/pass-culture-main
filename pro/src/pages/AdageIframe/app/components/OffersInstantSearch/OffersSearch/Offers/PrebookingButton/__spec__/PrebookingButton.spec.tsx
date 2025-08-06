@@ -1,23 +1,24 @@
-import { apiAdage } from 'apiClient/api'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { defaultAdageUser } from 'commons/utils/factories/adageFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { Notification } from 'components/Notification/Notification'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+
+import { apiAdage } from '@/apiClient//api'
+import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
+import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import { PrebookingButton, PrebookingButtonProps } from '../PrebookingButton'
 
-vi.mock('apiClient/api', () => ({
+vi.mock('@/apiClient//api', () => ({
   apiAdage: {
     bookCollectiveOffer: vi.fn(),
     logBookingModalButtonClick: vi.fn(),
   },
 }))
 
-vi.mock('commons/utils/config', async () => {
+vi.mock('@/commons/utils/config', async () => {
   return {
-    ...(await vi.importActual('commons/utils/config')),
+    ...(await vi.importActual('@/commons/utils/config')),
     LOGS_DATA: true,
   }
 })

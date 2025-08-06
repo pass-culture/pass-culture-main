@@ -1,10 +1,11 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { createRef } from 'react'
+
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'commons/utils/renderWithProviders'
-import { createRef } from 'react'
+} from '@/commons/utils/renderWithProviders'
 
 import { OptionsList, OptionsListProps } from './OptionsList'
 

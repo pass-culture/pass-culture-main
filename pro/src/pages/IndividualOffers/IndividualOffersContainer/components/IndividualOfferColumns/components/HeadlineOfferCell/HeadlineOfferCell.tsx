@@ -1,10 +1,10 @@
-import { ListOffersOfferResponseModel } from 'apiClient/v1'
-import { useHeadlineOfferContext } from 'commons/context/HeadlineOfferContext/HeadlineOfferContext'
-import { Tag, TagVariant } from 'design-system/Tag/Tag'
-import fullBoostedIcon from 'icons/full-boosted.svg'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { DropdownItem } from 'ui-kit/DropdownMenuWrapper/DropdownItem'
+import { ListOffersOfferResponseModel } from '@/apiClient//v1'
+import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
+import { Tag, TagVariant } from '@/design-system/Tag/Tag'
+import fullBoostedIcon from '@/icons/full-boosted.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { DropdownItem } from '@/ui-kit/DropdownMenuWrapper/DropdownItem'
 
 import styles from './HeadlineOfferCell.module.scss'
 
