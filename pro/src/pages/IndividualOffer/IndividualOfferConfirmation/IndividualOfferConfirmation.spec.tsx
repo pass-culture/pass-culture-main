@@ -106,7 +106,7 @@ describe('IndividualOfferConfirmation', () => {
     offer.publicationDate = new Date(Date.now() + 3600).toISOString()
     offer.status = OfferStatus.PENDING
     renderOffer(contextOverride)
-    expect(screen.getByText('Offre programmée en cours de validation')).toBeInTheDocument()
+    expect(screen.getByText('Offre en cours de validation')).toBeInTheDocument()
     expect(
       screen.queryByText('Visualiser l’offre dans l’application', {
         selector: 'a',
