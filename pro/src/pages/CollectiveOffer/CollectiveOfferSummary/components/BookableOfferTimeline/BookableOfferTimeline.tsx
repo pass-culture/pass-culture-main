@@ -2,6 +2,7 @@ import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   GetCollectiveOfferResponseModel,
+  GetOffererResponseModel,
 } from '@/apiClient/v1'
 import { FORMAT_DD_MMMM_YYYY } from '@/commons/utils/date'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
@@ -15,12 +16,15 @@ import { BookingWaitingBanner } from './banners/BookingWaitingBanner'
 import { CancelledBanner } from './banners/CancelledBanner'
 import { DraftBanner } from './banners/DraftBanner'
 import { ExpiredBanner } from './banners/ExpiredBanner'
+import { EndBanner } from './banners/EndBanner'
 import { ReimbursedBanner } from './banners/ReimbursedBanner'
+import { ReimbursementWaitingBanner } from './banners/ReimbursementWaitingBanner'
 import { RejectedBanner } from './banners/RejectedBanner'
 import { UnderReviewBanner } from './banners/UnderReviewBanner'
 
 type BookableOfferTimeline = {
   offer: GetCollectiveOfferResponseModel
+  offerer?: GetOffererResponseModel | null
 }
 
 const statusLabelMapping = {
@@ -45,7 +49,10 @@ const isMoreThan48hAgo = (dateString: string) => {
   return diffMs > 48 * 60 * 60 * 1000
 }
 
-export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
+export const BookableOfferTimeline = ({
+  offer,
+  offerer,
+}: BookableOfferTimeline) => {
   const { past, future } = offer.history
 
   const venueDepartmentCode =
@@ -215,10 +222,12 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
     }
 
     if (status === CollectiveOfferDisplayedStatus.ENDED) {
+      const endedMoreThan48hAgo = datetime && isMoreThan48hAgo(datetime)
       return {
         type: TimelineStepType.SUCCESS,
         content: (
-          <StatusWithDate
+          <>
+            <StatusWithDate
             status={statusLabel}
             date={
               datetime
@@ -226,6 +235,16 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
                 : undefined
             }
           />
+            {isCurrentStep && !endedMoreThan48hAgo ? (
+              <EndBanner
+                offerId={offer.id}
+                canEditDiscount={isActionAllowedOnCollectiveOffer(
+                  offer,
+                  CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
+                )}
+              />
+            ) : null}
+          </>
         ),
       }
     }
@@ -307,7 +326,13 @@ export const BookableOfferTimeline = ({ offer }: BookableOfferTimeline) => {
         const waitingStep = {
           type: TimelineStepType.WAITING,
           content: (
-            <StatusWithDate status={waitingWording[lastPastStepStatus]} />
+            <>
+              <StatusWithDate status={waitingWording[lastPastStepStatus]} />
+              <ReimbursementWaitingBanner
+                hasValidBankAccount={offerer?.hasValidBankAccount}
+                hasPendingBankAccount={offerer?.hasPendingBankAccount}
+              />
+            </>
           ),
         }
         return [...pastSteps, waitingStep, ...futureSteps]
