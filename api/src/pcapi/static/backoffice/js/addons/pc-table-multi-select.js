@@ -71,6 +71,7 @@ class PcTableMultiSelect extends PcAddOn {
       selectedRowsIds: new Set(this.state[tableMultiSelectId] ? this.state[tableMultiSelectId].selectedRowsIds || [] : []),
       selectedCheckboxes: new Set(this.state[tableMultiSelectId] ? this.state[tableMultiSelectId].selectedCheckboxes || [] : []),
     }
+    this.#emitChangeEvent($table)
   }
 
   refreshState = () => {
