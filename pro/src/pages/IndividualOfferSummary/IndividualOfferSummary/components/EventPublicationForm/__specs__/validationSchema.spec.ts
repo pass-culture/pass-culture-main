@@ -57,10 +57,10 @@ describe('EventPublicationForm validationSchema', () => {
         publicationDate: new Date().toISOString().split('T')[0],
         publicationTime: '00:00',
       },
-      expectedErrors: ['Veuillez indiquer une date dans le futur'],
+      expectedErrors: ['Veuillez indiquer une heure dans le futur'],
     },
     {
-      description: 'should not be able to make an aoofer bookable in the past',
+      description: 'should not be able to make an offer bookable in the past',
       formValues: {
         ...defaultValues,
         bookingAllowedMode: 'later',
@@ -70,15 +70,14 @@ describe('EventPublicationForm validationSchema', () => {
       expectedErrors: ['Veuillez indiquer une date dans le futur'],
     },
     {
-      description:
-        'should not be able to make an aoofer bookable earlier today',
+      description: 'should not be able to make an offer bookable earlier today',
       formValues: {
         ...defaultValues,
         bookingAllowedMode: 'later',
         bookingAllowedDate: new Date().toISOString().split('T')[0],
         bookingAllowedTime: '00:00',
       },
-      expectedErrors: ['Veuillez indiquer une date dans le futur'],
+      expectedErrors: ['Veuillez indiquer une heure dans le futur'],
     },
   ]
 

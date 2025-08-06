@@ -92,13 +92,18 @@ export function OfferPublicationEditionForm({
   const form = useForm<EventPublicationEditionFormValues>({
     defaultValues: getDefaultValuesFromOffer(offer, publicationHoursOptions),
     resolver: yupResolver(validationSchema),
+    mode: 'onBlur',
   })
 
   const isPaused = form.watch('isPaused')
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className={styles['form']}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className={styles['form']}
+        noValidate
+      >
         <ScrollToFirstHookFormErrorAfterSubmit />
         <MandatoryInfo />
         <div className={styles['form-content']}>
@@ -137,6 +142,10 @@ export function OfferPublicationEditionForm({
                       disabled={isPaused}
                       required
                       {...form.register('publicationDate')}
+                      onBlur={async (e) => {
+                        await form.register('publicationDate').onBlur(e)
+                        await form.trigger('publicationTime')
+                      }}
                       error={form.formState.errors.publicationDate?.message}
                     />
                     <Select
@@ -189,6 +198,10 @@ export function OfferPublicationEditionForm({
                       disabled={isPaused}
                       required
                       {...form.register('bookingAllowedDate')}
+                      onBlur={async (e) => {
+                        await form.register('bookingAllowedDate').onBlur(e)
+                        await form.trigger('bookingAllowedDate')
+                      }}
                       error={form.formState.errors.bookingAllowedDate?.message}
                     />
                     <Select
