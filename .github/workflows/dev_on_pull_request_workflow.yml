@@ -38,6 +38,7 @@ jobs:
             api/**
             !api/documentation/**
             !api/src/pcapi/scripts/**/main.py
+            !api/src/pcapi/scripts/**/test_script.py
             !api/src/pcapi/scripts/**/main.sql
       - name: "Check api documentation folder changes"
         id: check-api-documentation-changes
