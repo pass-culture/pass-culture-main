@@ -13,7 +13,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.factories import UsedCollectiveBookingFactory
 from pcapi.core.factories import BaseFactory
-from pcapi.domain import reimbursement
+from pcapi.core.finance import reimbursement_rules
 
 from . import api
 from . import conf
@@ -279,7 +279,7 @@ class CashflowFactory(BaseFactory):
 # Factories below are deprecated and should probably NOT BE USED in
 # any new test. See comment in `models.py` above the definition of the
 # `Payment` model.
-REIMBURSEMENT_RULE_DESCRIPTIONS = {t.description for t in reimbursement.REGULAR_RULES}
+REIMBURSEMENT_RULE_DESCRIPTIONS = {t.description for t in reimbursement_rules.REGULAR_RULES}
 
 
 class PaymentFactory(BaseFactory):
@@ -295,8 +295,8 @@ class PaymentFactory(BaseFactory):
     recipientSiren = factory.SelfAttribute("booking.stock.offer.venue.managingOfferer.siren")
     reimbursementRule: str | factory.Iterator | None = factory.Iterator(REIMBURSEMENT_RULE_DESCRIPTIONS)
     reimbursementRate: decimal.Decimal | factory.LazyAttribute | None = factory.LazyAttribute(
-        lambda payment: reimbursement.get_reimbursement_rule(  # type: ignore[attr-defined]
-            payment.collectiveBooking or payment.booking, reimbursement.CustomRuleFinder(), 0
+        lambda payment: reimbursement_rules.get_reimbursement_rule(  # type: ignore[attr-defined]
+            payment.collectiveBooking or payment.booking, reimbursement_rules.CustomRuleFinder(), 0
         ).rate
     )
     recipientName = "Récipiendaire"
