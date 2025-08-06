@@ -76,7 +76,7 @@ class ImportDSBankAccountApplicationsTest:
         assert not latest_import.isProcessing
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
-    @patch("pcapi.core.finance.ds.update_demarches_simplifiees_text_annotations")
+    @patch("pcapi.connectors.dms.api.update_demarches_simplifiees_text_annotations")
     @patch("pcapi.core.finance.ds.archive_dossier")
     def test_if_an_import_issue_an_error_it_doesnt_get_stuck_in_import_state(
         self, mock_archive_dossier, mock_update_text_annotation, mock_graphql_client
@@ -517,7 +517,7 @@ class MarkWithoutApplicationTooOldApplicationsTest:
 
 
 @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
-@patch("pcapi.core.finance.ds.update_demarches_simplifiees_text_annotations")
+@patch("pcapi.connectors.dms.api.update_demarches_simplifiees_text_annotations")
 @patch("pcapi.core.finance.ds.archive_dossier")
 @pytest.mark.usefixtures("db_session")
 class BankAccountJourneyTest:

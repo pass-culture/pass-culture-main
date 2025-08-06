@@ -753,7 +753,7 @@ class HandleDmsAnnotationsTest:
     def test_compute_new_annotation(self, field_errors, birth_date_error, expected_annotation):
         assert dms_subscription_api._compute_new_annotation(field_errors, birth_date_error) == expected_annotation
 
-    @mock.patch("pcapi.core.subscription.dms.api.update_demarches_simplifiees_text_annotations")
+    @mock.patch("pcapi.connectors.dms.api.update_demarches_simplifiees_text_annotations")
     def test_update_application_annotations(self, mock_update_annotations):
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.DMS)
         dms_subscription_api._update_application_annotations(
@@ -779,7 +779,7 @@ class HandleDmsAnnotationsTest:
             == "Aucune erreur détectée. Le dossier peut être passé en instruction."
         )
 
-    @mock.patch("pcapi.core.subscription.dms.api.update_demarches_simplifiees_text_annotations")
+    @mock.patch("pcapi.connectors.dms.api.update_demarches_simplifiees_text_annotations")
     def test_update_application_annotations_dont_update_if_no_modification(self, mock_update_annotations):
         dms_subscription_api._update_application_annotations(
             "St1l3s",
@@ -796,7 +796,7 @@ class HandleDmsAnnotationsTest:
 
         mock_update_annotations.assert_not_called()
 
-    @mock.patch("pcapi.core.subscription.dms.api.update_demarches_simplifiees_text_annotations")
+    @mock.patch("pcapi.connectors.dms.api.update_demarches_simplifiees_text_annotations")
     def test_update_application_annotations_with_no_annotation_logs_error(self, mock_update_annotations, caplog):
         dms_content = fraud_factories.DMSContentFactory()
         dms_subscription_api._update_application_annotations(

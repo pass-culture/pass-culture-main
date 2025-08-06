@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.domain.demarches_simplifiees import parse_raw_bank_info_data
+from pcapi.core.finance.ds import parse_raw_bank_info_data
 
 
 VENUE_DMS_TOKEN_FIELD_WITHOUT_PRO_PREFIX = {

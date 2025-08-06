@@ -25,7 +25,6 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users.repository import find_user_by_email
-from pcapi.domain.demarches_simplifiees import update_demarches_simplifiees_text_annotations
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import repository
@@ -250,7 +249,9 @@ def _update_application_annotations(
 
     logger.info("[DMS] Updating annotation for application %s", application_content.application_number)
     try:
-        update_demarches_simplifiees_text_annotations(application_scalar_id, annotation.id, new_annotation_value)
+        dms_connector_api.update_demarches_simplifiees_text_annotations(
+            application_scalar_id, annotation.id, new_annotation_value
+        )
     except Exception as exc:
         logger.exception(
             "[DMS] Error while updating annotation for application %s",

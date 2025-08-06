@@ -510,3 +510,17 @@ def get_dms_stats(dms_application_id: int | None, api_v4: bool = False) -> DmsSt
         lastChangeDate=datetime.datetime.fromisoformat(dossier[date_field]),
         url=api_url,
     )
+
+
+def update_demarches_simplifiees_text_annotations(dossier_id: str, annotation_id: str, message: str) -> None:
+    client = DMSGraphQLClient()
+    result = client.update_text_annotation(dossier_id, settings.DMS_INSTRUCTOR_ID, annotation_id, message)
+    errors = result["dossierModifierAnnotationText"].get("errors")
+    if errors:
+        logger.error(
+            "Got error when updating DMS annotation",
+            extra={
+                "errors": errors,
+                "dossier": dossier_id,
+            },
+        )
