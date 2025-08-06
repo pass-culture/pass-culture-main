@@ -50,6 +50,21 @@
                    data-bs-toggle="modal"
                    data-bs-target="#edit-modal-{{ notice.id }}">Modifier les informations</a>
               </li>
+              <li class="dropdown-item p-0">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#pending-modal-{{ notice.id }}">Mettre en attente de retour</a>
+              </li>
+              <li class="dropdown-item p-0">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#no-continuation-modal-{{ notice.id }}">Classer sans suite</a>
+              </li>
+              <li class="dropdown-item p-0">
+                <a class="btn btn-sm d-block w-100 text-start px-3"
+                   data-bs-toggle="modal"
+                   data-bs-target="#close-modal-{{ notice.id }}">Terminer</a>
+              </li>
             </ul>
           </div>
         {% endif %}
@@ -79,5 +94,8 @@
 {% block after_table %}
   {% for notice in rows %}
     {{ build_lazy_modal(url_for("backoffice_web.non_payment_notices.get_edit_form", notice_id=notice.id) , "edit-modal-" + notice.id|string) }}
+    {{ build_lazy_modal(url_for("backoffice_web.non_payment_notices.get_set_pending_form", notice_id=notice.id) , "pending-modal-" + notice.id|string) }}
+    {{ build_lazy_modal(url_for("backoffice_web.non_payment_notices.get_set_no_continuation_form", notice_id=notice.id) , "no-continuation-modal-" + notice.id|string) }}
+    {{ build_lazy_modal(url_for("backoffice_web.non_payment_notices.get_close_form", notice_id=notice.id) , "close-modal-" + notice.id|string) }}
   {% endfor %}
 {% endblock after_table %}

@@ -163,4 +163,9 @@ class TransactionalEmail(Enum):
     RETRIEVE_DEBIT_NOTE_ON_INDIVIDUAL_BOOKINGS = models.TemplatePro(id_prod=119, id_not_prod=60)
     COMMERCIAL_GESTURE_REIMBURSEMENT = models.TemplatePro(id_prod=80, id_not_prod=56)
 
+    # Non-payment notices
+    NON_PAYMENT_NOTICE_PENDING = models.TemplatePro(id_prod=0, id_not_prod=0)  # TODO ids
+    NON_PAYMENT_NOTICE_WITHOUT_CONTINUATION = models.TemplatePro(id_prod=356, id_not_prod=70)
+    NON_PAYMENT_NOTICE_CLOSED = models.TemplatePro(id_prod=355, id_not_prod=69)  # TODO ids à confirmer (tous les cas ?)
+
     PROVIDER_REIMBURSEMENT_CSV = models.TemplatePro(id_prod=81, id_not_prod=57)
