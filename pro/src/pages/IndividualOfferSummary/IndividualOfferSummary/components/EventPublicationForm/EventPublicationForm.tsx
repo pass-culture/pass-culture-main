@@ -110,7 +110,7 @@ export const EventPublicationForm = () => {
             }
           >
             <RadioButtonGroup
-              label="Quand votre offre doit-elle être publiée dans l’application ?"
+              label="Quand votre offre doit-elle être publiée&nbsp;?"
               name="publicationMode"
               variant="detailed"
               options={[
@@ -161,7 +161,7 @@ export const EventPublicationForm = () => {
         {isNewPublicationDatetimeEnabled && (
           <FormLayout.Section>
             <RadioButtonGroup
-              label="Quand votre offre pourra être réservable ?"
+              label="Quand votre offre pourra être réservable&nbsp;?"
               name="bookingAllowedMode"
               variant="detailed"
               options={[

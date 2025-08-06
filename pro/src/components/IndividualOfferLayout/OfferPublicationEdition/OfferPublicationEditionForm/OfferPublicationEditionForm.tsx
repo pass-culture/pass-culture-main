@@ -122,7 +122,7 @@ export function OfferPublicationEditionForm({
           </div>
           <RadioButtonGroup
             className={styles['group']}
-            label="Quand votre offre doit-elle être publiée dans l’application ?"
+            label="Quand votre offre doit-elle être publiée&nbsp;?"
             name="publicationMode"
             variant="detailed"
             disabled={isPaused}
@@ -175,7 +175,7 @@ export function OfferPublicationEditionForm({
           />
           <RadioButtonGroup
             className={styles['group']}
-            label="Quand votre offre pourra être réservable ?"
+            label="Quand votre offre pourra être réservable&nbsp;?"
             name="bookingAllowedMode"
             variant="detailed"
             disabled={isPaused}
