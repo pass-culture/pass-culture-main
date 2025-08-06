@@ -1,11 +1,11 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   CancelablePromise,
   CollectiveBookingByIdResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   collectiveBookingByIdFactory,
   collectiveBookingCollectiveStockFactory,
@@ -18,7 +18,7 @@ import {
   CollectiveTableRowProps,
 } from '../CollectiveTableRow'
 
-vi.mock('@/apiClient//api')
+vi.mock('@/apiClient/api')
 vi.mock(
   'screens/Bookings/BookingsRecapTable/components/Table/Body/TableRow/TableRow',
   () => ({

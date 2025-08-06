@@ -3,8 +3,8 @@ import { useSelector } from 'react-redux'
 import { useLocation, useOutletContext } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient//api'
-import { BankAccountResponseModel } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { BankAccountResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES,

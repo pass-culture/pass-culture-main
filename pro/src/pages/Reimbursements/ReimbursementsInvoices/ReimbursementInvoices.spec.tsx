@@ -6,8 +6,8 @@ import {
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
-import { api } from '@/apiClient//api'
-import { BankAccountResponseModel } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { BankAccountResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { defaultBankAccount } from '@/commons/utils/factories/individualApiFactories'

@@ -1,5 +1,5 @@
-import { api } from '@/apiClient//api'
-import { InvoiceResponseV2Model } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { InvoiceResponseV2Model } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'

@@ -2,7 +2,7 @@ import {
   DMSApplicationstatus,
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { getLastCollectiveDmsApplication } from '@/commons/utils/getLastCollectiveDmsApplication'
 import { VenueThing } from '@/pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
 

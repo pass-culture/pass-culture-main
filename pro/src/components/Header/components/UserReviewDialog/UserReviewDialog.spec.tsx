@@ -2,7 +2,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import * as useNotification from '@/commons/hooks/useNotification'
 import {
   currentOffererFactory,

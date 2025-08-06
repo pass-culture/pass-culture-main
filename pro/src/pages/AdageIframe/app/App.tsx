@@ -6,8 +6,8 @@ import {
   AdageFrontRoles,
   AuthenticatedResponse,
   CatalogViewBody,
-} from '@/apiClient//adage'
-import { apiAdage } from '@/apiClient//api'
+} from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import { LOG_CATALOG_VIEW_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { LOGS_DATA } from '@/commons/utils/config'

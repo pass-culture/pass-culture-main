@@ -1,8 +1,8 @@
 import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient//api'
-import { OfferStatus } from '@/apiClient//v1/models/OfferStatus'
+import { api } from '@/apiClient/api'
+import { OfferStatus } from '@/apiClient/v1/models/OfferStatus'
 import { MainHeading } from '@/app/App/layout/Layout'
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'

@@ -1,4 +1,4 @@
-import { GetVenueResponseModel } from '@/apiClient//v1'
+import { GetVenueResponseModel } from '@/apiClient/v1'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'

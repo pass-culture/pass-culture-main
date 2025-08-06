@@ -1,4 +1,4 @@
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { useNotification } from '@/commons/hooks/useNotification'
 
 import { OfferEducationalFormValues } from '../types'

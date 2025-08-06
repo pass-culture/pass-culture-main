@@ -3,12 +3,12 @@ import { format } from 'date-fns'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   BookingExportType,
   BookingsExportStatusFilter,
   EventDatesInfos,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'

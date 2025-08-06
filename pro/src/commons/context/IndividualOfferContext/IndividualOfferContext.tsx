@@ -2,13 +2,13 @@ import React, { createContext, useContext, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   CategoryResponseModel,
   GetActiveEANOfferResponseModel,
   GetIndividualOfferWithAddressResponseModel,
   SubcategoryResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   GET_ACTIVE_VENUE_OFFER_BY_EAN_QUERY_KEY,
   GET_CATEGORIES_QUERY_KEY,

@@ -1,7 +1,7 @@
 import { createRef, useRef } from 'react'
 
-import { AdagePlaylistType } from '@/apiClient//adage'
-import { apiAdage } from '@/apiClient//api'
+import { AdagePlaylistType } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useIsElementVisible } from '@/commons/hooks/useIsElementVisible'

@@ -1,8 +1,8 @@
 import classNames from 'classnames'
 import useSWR from 'swr'
 
-import { AdagePlaylistType } from '@/apiClient//adage/models/AdagePlaylistType'
-import { apiAdage } from '@/apiClient//api'
+import { AdagePlaylistType } from '@/apiClient/adage/models/AdagePlaylistType'
+import { apiAdage } from '@/apiClient/api'
 import { GET_LOCAL_OFFERERS_PLAYLIST_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 
 import { Carousel } from '../../Carousel/Carousel'

@@ -2,12 +2,12 @@ import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect, it } from 'vitest'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
   EducationalInstitutionResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { DEFAULT_VISIBILITY_FORM_VALUES } from '@/commons/core/OfferEducational/constants'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
@@ -26,7 +26,7 @@ import {
   CollectiveOfferVisibilityScreen,
 } from '../CollectiveOfferVisibility'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getAutocompleteEducationalRedactorsForUai: vi.fn(),
     getCollectiveOfferRequest: vi.fn(),

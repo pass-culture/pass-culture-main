@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient//api'
-import { BankAccountResponseModel, ManagedVenues } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { BankAccountResponseModel, ManagedVenues } from '@/apiClient/v1'
 import * as useNotification from '@/commons/hooks/useNotification'
 import {
   defaultBankAccount,

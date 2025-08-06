@@ -5,7 +5,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOfferEditionVisibility } from '../CollectiveOfferEditionVisibility'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getEducationalInstitutions: vi.fn(),
     getCollectiveOffer: vi.fn(),

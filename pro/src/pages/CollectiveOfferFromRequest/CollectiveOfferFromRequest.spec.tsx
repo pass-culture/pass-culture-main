@@ -1,7 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as useNotification from '@/commons/hooks/useNotification'
 import {
@@ -17,7 +17,7 @@ const offererId = 666
 const mockLogEvent = vi.fn()
 const mockNavigate = vi.fn()
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getCollectiveOfferTemplate: vi.fn(),
     getCollectiveOfferRequest: vi.fn(),

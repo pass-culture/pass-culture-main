@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { apiAdage } from '@/apiClient//api'
+import { apiAdage } from '@/apiClient/api'
 import {
   defaultAdageUser,
   defaultCollectiveTemplateOffer,
@@ -14,7 +14,7 @@ import {
   OfferFavoriteButtonProps,
 } from '../OfferFavoriteButton'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     logFavOfferButtonClick: vi.fn(),
     deleteFavoriteForCollectiveOfferTemplate: vi.fn(),

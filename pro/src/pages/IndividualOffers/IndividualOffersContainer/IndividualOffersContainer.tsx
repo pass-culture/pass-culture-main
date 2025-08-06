@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 
-import { ListOffersOfferResponseModel, OfferStatus } from '@/apiClient//v1'
+import { ListOffersOfferResponseModel, OfferStatus } from '@/apiClient/v1'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   DEFAULT_PAGE,

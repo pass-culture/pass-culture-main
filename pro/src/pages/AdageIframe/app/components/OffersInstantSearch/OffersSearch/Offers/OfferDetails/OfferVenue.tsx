@@ -1,4 +1,4 @@
-import { CollectiveOfferOfferVenue, OfferAddressType } from '@/apiClient//adage'
+import { CollectiveOfferOfferVenue, OfferAddressType } from '@/apiClient/adage'
 
 interface OfferVenueProps {
   offerVenue: CollectiveOfferOfferVenue

@@ -4,7 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import {
   GetEducationalOffererResponseModel,
   OfferAddressType,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { offerInterventionOptions } from '@/commons/core/shared/interventionOptions'
 import { SelectOption } from '@/commons/custom_types/form'

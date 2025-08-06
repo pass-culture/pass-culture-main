@@ -1,4 +1,4 @@
-import { CollectiveLocationType, EacFormat } from '@/apiClient//adage'
+import { CollectiveLocationType, EacFormat } from '@/apiClient/adage'
 import {
   CollectiveOfferResponseModel,
   GetCollectiveOfferResponseModel,
@@ -6,7 +6,7 @@ import {
   ListOffersOfferResponseModel,
   OfferAddressType,
   StudentLevels,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   AccessibilityFormValues,
   AddressFormValues,

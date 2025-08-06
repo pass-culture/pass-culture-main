@@ -1,6 +1,6 @@
 import { Dispatch, FormEvent, SetStateAction } from 'react'
 
-import { EacFormat, GetOffererResponseModel } from '@/apiClient//v1'
+import { EacFormat, GetOffererResponseModel } from '@/apiClient/v1'
 import {
   ALL_FORMATS_OPTION,
   ALL_VENUES_OPTION,

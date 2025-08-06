@@ -3,9 +3,9 @@ import { useEffect, useRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
-import { api } from '@/apiClient//api'
-import { isErrorAPIError } from '@/apiClient//helpers'
-import { ProUserCreationBodyV2Model } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { isErrorAPIError } from '@/apiClient/helpers'
+import { ProUserCreationBodyV2Model } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {

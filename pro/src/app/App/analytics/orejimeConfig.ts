@@ -1,4 +1,4 @@
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { toISOStringWithoutMilliseconds } from '@/commons/utils/date'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 

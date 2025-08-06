@@ -6,8 +6,8 @@ import {
   AuthenticatedResponse,
   CollectiveLocationType,
   OfferAddressType,
-} from '@/apiClient//adage'
-import { apiAdage } from '@/apiClient//api'
+} from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
@@ -21,7 +21,7 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 
 import { CardComponentProps, OfferCardComponent } from '../OfferCard'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     logConsultPlaylistElement: vi.fn(),
   },

@@ -3,7 +3,7 @@ import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
 import AvatarEditor, { CroppedRect } from 'react-avatar-editor'
 
-import { getFileFromURL } from '@/apiClient//helpers'
+import { getFileFromURL } from '@/apiClient/helpers'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useGetImageBitmap } from '@/commons/hooks/useGetBitmap'

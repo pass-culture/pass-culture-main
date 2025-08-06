@@ -7,12 +7,12 @@ import {
 } from 'repository/venuesService'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   BookingRecapResponseModel,
   BookingStatusFilter,
   CollectiveBookingResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_BOOKINGS_QUERY_KEY,

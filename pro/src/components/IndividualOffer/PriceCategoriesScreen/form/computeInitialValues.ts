@@ -1,4 +1,4 @@
-import { GetIndividualOfferResponseModel } from '@/apiClient//v1'
+import { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 
 import { FIRST_INITIAL_PRICE_CATEGORY } from './constants'
 import { PriceCategoriesFormValues, PriceCategoryForm } from './types'

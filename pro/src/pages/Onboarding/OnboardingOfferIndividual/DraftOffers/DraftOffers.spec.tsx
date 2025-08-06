@@ -1,7 +1,7 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -13,7 +13,7 @@ const renderDraftOffers = (options?: RenderWithProvidersOptions) => {
   return renderWithProviders(<DraftOffers offers={[]} />, { ...options })
 }
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getCategories: vi.fn(),
   },

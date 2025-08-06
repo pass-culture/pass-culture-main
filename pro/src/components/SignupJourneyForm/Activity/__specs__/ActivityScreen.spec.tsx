@@ -2,8 +2,8 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient//api'
-import { Target } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { Target } from '@/apiClient/v1'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   SignupJourneyContext,
@@ -15,7 +15,7 @@ import { Notification } from '@/components/Notification/Notification'
 
 import { Activity } from '../Activity'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getVenueTypes: vi.fn(),
   },

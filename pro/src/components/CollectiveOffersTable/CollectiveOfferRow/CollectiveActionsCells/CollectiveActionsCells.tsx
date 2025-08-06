@@ -3,18 +3,17 @@ import cn from 'classnames'
 import { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
-import styles from 'styles/components/Cells.module.scss'
 import { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient//api'
-import { getErrorCode, isErrorAPIError } from '@/apiClient//helpers'
+import { api } from '@/apiClient/api'
+import { getErrorCode, isErrorAPIError } from '@/apiClient/helpers'
 import {
   CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
@@ -52,6 +51,7 @@ import fullPlusIcon from '@/icons/full-plus.svg'
 import fullThreeDotsIcon from '@/icons/full-three-dots.svg'
 import strokeCheckIcon from '@/icons/stroke-check.svg'
 import strokeThingIcon from '@/icons/stroke-thing.svg'
+import styles from '@/styles/components/Cells.module.scss'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'

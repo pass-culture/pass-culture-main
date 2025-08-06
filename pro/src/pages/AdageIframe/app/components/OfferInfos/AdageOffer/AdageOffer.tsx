@@ -2,7 +2,7 @@ import {
   AuthenticatedResponse,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient//adage'
+} from '@/apiClient/adage'
 import strokeArticleIcon from '@/icons/stroke-article.svg'
 import strokeInfoIcon from '@/icons/stroke-info.svg'
 import strokeInstitutionIcon from '@/icons/stroke-institution.svg'

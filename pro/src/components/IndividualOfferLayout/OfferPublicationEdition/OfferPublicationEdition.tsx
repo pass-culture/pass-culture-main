@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { mutate } from 'swr'
 
-import { api } from '@/apiClient//api'
-import { GetIndividualOfferWithAddressResponseModel } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'

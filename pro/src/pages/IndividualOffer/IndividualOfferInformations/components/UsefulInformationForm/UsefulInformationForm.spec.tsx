@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { axe } from 'vitest-axe'
 
-import { WithdrawalTypeEnum } from '@/apiClient//v1'
+import { WithdrawalTypeEnum } from '@/apiClient/v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
@@ -59,7 +59,7 @@ const LABELS = {
   notificationEmail: /Email auquel envoyer les notifications/,
 }
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getCategories: vi.fn(),
     bulkCreateEventStocks: vi.fn(),

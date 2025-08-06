@@ -1,7 +1,7 @@
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient//adage'
+} from '@/apiClient/adage'
 import { Markdown } from '@/components/Markdown/Markdown'
 
 import { getOfferVenueAndOffererName } from '../../utils/getOfferVenueAndOffererName'

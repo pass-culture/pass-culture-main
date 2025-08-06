@@ -6,7 +6,7 @@ import {
   CollectiveLocationType,
   OfferAddressType,
   StudentLevels,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   MAX_DESCRIPTION_LENGTH,
   MAX_PRICE_DETAILS_LENGTH,

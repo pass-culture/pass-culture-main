@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
-import { api } from '@/apiClient//api'
-import { UserRole } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { UserRole } from '@/apiClient/v1'
 import { getOffererNameFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -15,7 +15,7 @@ const renderStoreProvider = () => {
   )
 }
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
     listFeatures: vi.fn(),

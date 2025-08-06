@@ -3,14 +3,14 @@ import { useEffect, useState } from 'react'
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient//adage'
-import { api } from '@/apiClient//api'
+} from '@/apiClient/adage'
+import { api } from '@/apiClient/api'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetVenueResponseModel,
   OfferAddressType,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'
 import logoPassCultureIcon from '@/icons/logo-pass-culture.svg'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'

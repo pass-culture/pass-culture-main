@@ -2,8 +2,8 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { beforeEach, expect } from 'vitest'
 
-import { api } from '@/apiClient//api'
-import { VenueTypeCode } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { VenueTypeCode } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,

@@ -4,7 +4,7 @@ import { expect } from 'vitest'
 import {
   GetIndividualOfferWithAddressResponseModel,
   SubcategoryIdEnum,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'

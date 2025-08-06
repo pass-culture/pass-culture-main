@@ -1,10 +1,10 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient//api'
-import { ApiError, GetOffererAddressResponseModel } from '@/apiClient//v1'
-import { ApiRequestOptions } from '@/apiClient//v1/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient//v1/core/ApiResult'
+import { api } from '@/apiClient/api'
+import { ApiError, GetOffererAddressResponseModel } from '@/apiClient/v1'
+import { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import { ALL_OFFERER_ADDRESS_OPTION } from '@/commons/core/Offers/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
@@ -28,7 +28,7 @@ import { Notification } from '@/components/Notification/Notification'
 
 import { Bookings } from '../Bookings'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
     getBookingsPro: vi.fn(),

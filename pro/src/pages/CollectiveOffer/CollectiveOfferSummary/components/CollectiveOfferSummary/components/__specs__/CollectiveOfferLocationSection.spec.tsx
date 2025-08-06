@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { CollectiveLocationType } from '@/apiClient//adage'
+import { CollectiveLocationType } from '@/apiClient/adage'
 import { getCollectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 

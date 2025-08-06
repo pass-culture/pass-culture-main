@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { generatePath, useLocation, useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { Layout } from '@/app/App/layout/Layout'
 import {
   GET_VENUE_QUERY_KEY,

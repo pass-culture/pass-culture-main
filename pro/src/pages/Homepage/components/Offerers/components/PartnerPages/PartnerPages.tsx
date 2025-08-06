@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
   VenueTypeResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { SelectOption } from '@/commons/custom_types/form'
 import {

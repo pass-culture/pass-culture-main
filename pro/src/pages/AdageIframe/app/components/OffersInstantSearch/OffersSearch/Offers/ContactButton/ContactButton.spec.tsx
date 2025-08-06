@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { AdageFrontRoles } from '@/apiClient//adage'
-import { apiAdage } from '@/apiClient//api'
+import { AdageFrontRoles } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -16,7 +16,7 @@ const renderContactButton = (
 ) => {
   return renderWithProviders(<ContactButton {...props} />, options)
 }
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     logContactModalButtonClick: vi.fn(),
     logRequestFormPopinDismiss: vi.fn(),

@@ -4,7 +4,7 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
   OfferAddressType,
-} from '@/apiClient//adage'
+} from '@/apiClient/adage'
 import {
   getHumanizeRelativeDistance,
   humanizeDistance,

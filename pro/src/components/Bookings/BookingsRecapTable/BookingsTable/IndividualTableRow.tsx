@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { useState } from 'react'
 
-import { BookingRecapResponseModel } from '@/apiClient//v1'
+import { BookingRecapResponseModel } from '@/apiClient/v1'
 import { formatPrice } from '@/commons/utils/formatPrice'
 import strokeDuoIcon from '@/icons/stroke-duo.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'

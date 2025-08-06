@@ -3,7 +3,7 @@ import merge from 'lodash/merge'
 import {
   GetEducationalOffererResponseModel,
   GetEducationalOffererVenueResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 
 let venueId = 1
 

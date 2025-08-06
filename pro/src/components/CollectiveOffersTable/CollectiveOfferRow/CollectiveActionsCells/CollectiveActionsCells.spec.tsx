@@ -3,13 +3,13 @@ import { userEvent } from '@testing-library/user-event'
 import { beforeEach, expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
   OfferAddressType,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
@@ -73,7 +73,7 @@ const renderCollectiveActionsCell = (
   )
 }
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     patchCollectiveOffersArchive: vi.fn(),
     createCollectiveOffer: vi.fn(),

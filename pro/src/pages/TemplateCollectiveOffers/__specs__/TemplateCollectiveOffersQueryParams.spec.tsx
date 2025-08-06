@@ -6,11 +6,11 @@ import {
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   CollectiveOfferResponseModel,
   CollectiveOffersStockResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'

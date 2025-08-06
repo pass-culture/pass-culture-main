@@ -1,11 +1,11 @@
 import useSWR from 'swr'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   CategoryResponseModel,
   ListOffersOfferResponseModel,
   SubcategoryResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { GET_CATEGORIES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import strokOfferIcon from '@/icons/stroke-offer.svg'
 import { CardLink } from '@/pages/Onboarding/OnboardingOfferIndividual/CardLink/CardLink'

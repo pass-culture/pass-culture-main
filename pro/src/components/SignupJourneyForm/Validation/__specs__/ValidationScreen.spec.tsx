@@ -6,12 +6,12 @@ import {
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   GetOffererResponseModel,
   PostOffererResponseModel,
   Target,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   SignupJourneyContext,
@@ -25,7 +25,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 import { Validation } from '@/components/SignupJourneyForm/Validation/Validation'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getVenueTypes: vi.fn(),
     saveNewOnboardingData: vi.fn(),

@@ -4,9 +4,9 @@ import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient//api'
-import { getHumanReadableApiError } from '@/apiClient//helpers'
-import { CreateOffererQueryModel } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { getHumanReadableApiError } from '@/apiClient/helpers'
+import { CreateOffererQueryModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {

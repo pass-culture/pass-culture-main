@@ -1,14 +1,14 @@
 import { screen, waitFor } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { routesSignupJourney } from '@/app/AppRouter/subroutesSignupJourneyMap'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { SignupJourneyRoutes } from '../SignupJourneyRoutes'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getVenueTypes: vi.fn(),
   },

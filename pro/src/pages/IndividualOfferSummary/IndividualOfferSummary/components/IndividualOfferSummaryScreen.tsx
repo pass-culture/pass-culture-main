@@ -5,8 +5,8 @@ import { useSelector } from 'react-redux'
 import { useLocation, useNavigate, useSearchParams } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient//api'
-import { getHumanReadableApiError } from '@/apiClient//helpers'
+import { api } from '@/apiClient/api'
+import { getHumanReadableApiError } from '@/apiClient/helpers'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {

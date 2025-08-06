@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 
-import { AdageFrontRoles } from '@/apiClient//adage'
-import { apiAdage } from '@/apiClient//api'
+import { AdageFrontRoles } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import fullMailIcon from '@/icons/full-mail.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'

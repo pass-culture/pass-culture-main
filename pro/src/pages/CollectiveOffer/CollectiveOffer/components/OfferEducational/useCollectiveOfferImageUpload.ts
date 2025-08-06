@@ -1,10 +1,10 @@
 import { useCallback, useState } from 'react'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { OfferCollectiveImage } from '@/commons/core/Offers/types'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'

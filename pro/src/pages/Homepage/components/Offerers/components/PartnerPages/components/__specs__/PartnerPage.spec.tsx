@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { VenueTypeCode } from '@/apiClient//v1'
+import { VenueTypeCode } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'

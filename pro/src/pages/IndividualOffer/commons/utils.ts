@@ -1,7 +1,7 @@
 import type {
   GetIndividualOfferResponseModel,
   SubcategoryResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 
 export const isOfferSubcategoryOnline = (

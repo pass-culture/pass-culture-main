@@ -1,4 +1,4 @@
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { configureTestStore } from '@/commons/store/testUtils'
 import {
   defaultGetOffererResponseModel,
@@ -8,7 +8,7 @@ import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactori
 
 import { initializeUserThunk } from '../thunks'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn(),
     getOfferer: vi.fn(),

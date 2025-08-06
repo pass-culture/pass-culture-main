@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays, addSeconds, subDays, subSeconds } from 'date-fns'
 
-import { OfferStatus } from '@/apiClient//v1'
+import { OfferStatus } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
@@ -15,7 +15,7 @@ import {
   StocksCalendarTableProps,
 } from './StocksCalendarTable'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getCategories: vi.fn(),
   },

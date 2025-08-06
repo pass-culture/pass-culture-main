@@ -1,6 +1,6 @@
 import { computeAddressDisplayName } from 'repository/venuesService'
 
-import { GetIndividualOfferWithAddressResponseModel } from '@/apiClient//v1'
+import { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WITHDRAWAL_TYPE_LABELS,

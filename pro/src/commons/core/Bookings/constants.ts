@@ -1,6 +1,6 @@
 import { format, startOfDay, subDays } from 'date-fns'
 
-import { BookingStatusFilter } from '@/apiClient//v1'
+import { BookingStatusFilter } from '@/apiClient/v1'
 import {
   ALL_OFFERER_ADDRESSES,
   ALL_OFFERERS,

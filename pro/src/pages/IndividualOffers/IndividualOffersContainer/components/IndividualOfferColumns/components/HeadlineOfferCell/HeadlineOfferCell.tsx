@@ -1,4 +1,4 @@
-import { ListOffersOfferResponseModel } from '@/apiClient//v1'
+import { ListOffersOfferResponseModel } from '@/apiClient/v1'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullBoostedIcon from '@/icons/full-boosted.svg'

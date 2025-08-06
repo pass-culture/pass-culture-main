@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useSearchParams } from 'react-router'
 
-import {
-  GetOffererResponseModel,
-  VenueTypeResponseModel,
-} from '@/apiClient//v1'
+import { GetOffererResponseModel, VenueTypeResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { SelectOption } from '@/commons/custom_types/form'

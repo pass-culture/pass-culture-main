@@ -5,8 +5,8 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { AdageFrontRoles, AuthenticatedResponse } from '@/apiClient//adage'
-import { apiAdage } from '@/apiClient//api'
+import { AdageFrontRoles, AuthenticatedResponse } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageFactories'
@@ -15,7 +15,7 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 
 import { NewOfferPlaylist } from '../NewOfferPlaylist'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     logConsultPlaylistElement: vi.fn(),
     newTemplateOffersPlaylist: vi.fn(),

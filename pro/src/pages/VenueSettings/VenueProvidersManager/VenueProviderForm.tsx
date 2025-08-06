@@ -1,10 +1,10 @@
-import { api } from '@/apiClient//api'
-import { getHumanReadableApiError } from '@/apiClient//helpers'
+import { api } from '@/apiClient/api'
+import { getHumanReadableApiError } from '@/apiClient/helpers'
 import {
   GetVenueResponseModel,
   PostVenueProviderBody,
   ProviderResponse,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   isAllocineProvider,
   isCinemaProvider,

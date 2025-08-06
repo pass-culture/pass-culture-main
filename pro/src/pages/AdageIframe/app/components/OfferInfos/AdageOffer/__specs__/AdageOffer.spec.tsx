@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient//adage'
+} from '@/apiClient/adage'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,

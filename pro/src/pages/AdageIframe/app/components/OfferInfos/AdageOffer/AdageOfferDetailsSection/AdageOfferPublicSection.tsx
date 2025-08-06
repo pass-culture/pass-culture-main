@@ -1,7 +1,7 @@
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient//adage'
+} from '@/apiClient/adage'
 
 import styles from '../AdageOffer.module.scss'
 

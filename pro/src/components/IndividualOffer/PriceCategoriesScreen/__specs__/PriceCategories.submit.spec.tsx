@@ -3,8 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import { generatePath } from 'react-router'
 import { expect } from 'vitest'
 
-import { api } from '@/apiClient//api'
-import { GetIndividualOfferResponseModel } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,

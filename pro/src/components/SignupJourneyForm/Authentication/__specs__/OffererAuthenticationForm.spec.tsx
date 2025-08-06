@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 import createFetchMock from 'vitest-fetch-mock'
 
-import * as apiAdresse from '@/apiClient//adresse/apiAdresse'
+import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import {
   Offerer,
   SignupJourneyContext,
@@ -25,9 +25,9 @@ import {
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
-vi.mock('@/apiClient//adresse/apiAdresse', async () => {
+vi.mock('@/apiClient/adresse/apiAdresse', async () => {
   return {
-    ...(await vi.importActual('@/apiClient//adresse/apiAdresse')),
+    ...(await vi.importActual('@/apiClient/adresse/apiAdresse')),
     default: {
       getDataFromAddress: vi.fn(),
     },

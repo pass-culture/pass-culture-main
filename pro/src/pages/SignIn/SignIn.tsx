@@ -4,8 +4,8 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { Navigate, useSearchParams } from 'react-router'
 
-import { api } from '@/apiClient//api'
-import { HTTP_STATUS, isErrorAPIError } from '@/apiClient//helpers'
+import { api } from '@/apiClient/api'
+import { HTTP_STATUS, isErrorAPIError } from '@/apiClient/helpers'
 import { Layout } from '@/app/App/layout/Layout'
 import {
   RECAPTCHA_ERROR,

@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
@@ -77,7 +77,7 @@ const renderDetailsEanSearch = (props: DetailsEanSearchTestProps = {}) => {
   )
 }
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: { getProductByEan: vi.fn() },
 }))
 

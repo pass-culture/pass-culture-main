@@ -1,4 +1,4 @@
-import { GetIndividualOfferResponseModel } from '@/apiClient//v1'
+import { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 import { isAllocineProvider } from '@/commons/core/Providers/utils/utils'
 
 export const isOfferSynchronized = (

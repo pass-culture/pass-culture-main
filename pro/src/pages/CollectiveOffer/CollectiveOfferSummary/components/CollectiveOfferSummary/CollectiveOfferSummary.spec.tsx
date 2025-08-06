@@ -6,7 +6,7 @@ import {
   CollectiveOfferTemplateAllowedAction,
   EacFormat,
   OfferContactFormEnum,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
@@ -21,7 +21,7 @@ import {
   CollectiveOfferSummaryProps,
 } from './CollectiveOfferSummary'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),

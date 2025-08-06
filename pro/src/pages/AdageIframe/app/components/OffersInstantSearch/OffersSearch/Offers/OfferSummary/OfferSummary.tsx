@@ -2,7 +2,7 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
   OfferAddressType,
-} from '@/apiClient//adage'
+} from '@/apiClient/adage'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 import buildingStrokeIcon from '@/icons/stroke-building.svg'
 import strokeCalendarIcon from '@/icons/stroke-calendar.svg'

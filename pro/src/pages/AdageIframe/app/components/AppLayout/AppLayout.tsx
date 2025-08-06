@@ -7,7 +7,7 @@ import {
   useLocation,
 } from 'react-router'
 
-import { AdageFrontRoles } from '@/apiClient//adage'
+import { AdageFrontRoles } from '@/apiClient/adage'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 
 import { MARSEILLE_EN_GRAND } from '../../constants'

@@ -2,7 +2,7 @@ import {
   CollectiveOfferDisplayedStatus,
   EacFormat,
   OfferStatus,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { CropParams } from '@/commons/utils/imageUploadTypes'
 
 import { ALL_FORMATS, ALL_STATUS } from './constants'

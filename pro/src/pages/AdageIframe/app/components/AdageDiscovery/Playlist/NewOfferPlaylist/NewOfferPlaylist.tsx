@@ -1,9 +1,9 @@
 import classNames from 'classnames'
 import { useEffect, useState } from 'react'
 
-import { CollectiveOfferTemplateResponseModel } from '@/apiClient//adage'
-import { AdagePlaylistType } from '@/apiClient//adage/models/AdagePlaylistType'
-import { apiAdage } from '@/apiClient//api'
+import { CollectiveOfferTemplateResponseModel } from '@/apiClient/adage'
+import { AdagePlaylistType } from '@/apiClient/adage/models/AdagePlaylistType'
+import { apiAdage } from '@/apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useNotification } from '@/commons/hooks/useNotification'
 

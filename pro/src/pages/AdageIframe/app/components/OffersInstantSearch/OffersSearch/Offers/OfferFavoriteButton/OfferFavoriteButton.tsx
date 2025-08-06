@@ -3,8 +3,8 @@ import { MouseEvent, useState } from 'react'
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient//adage'
-import { apiAdage } from '@/apiClient//api'
+} from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import { useNotification } from '@/commons/hooks/useNotification'
 import fullStarIcon from '@/icons/full-star.svg'
 import strokeStarIcon from '@/icons/stroke-star.svg'

@@ -1,10 +1,10 @@
 import { screen, waitFor } from '@testing-library/react'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
@@ -20,7 +20,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { Stocks } from './Stocks'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getStocks: vi.fn(),
   },

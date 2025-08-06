@@ -1,4 +1,4 @@
-import { GetOfferVenueResponseModel } from '@/apiClient//v1'
+import { GetOfferVenueResponseModel } from '@/apiClient/v1'
 
 let VENUE_ID = 0
 

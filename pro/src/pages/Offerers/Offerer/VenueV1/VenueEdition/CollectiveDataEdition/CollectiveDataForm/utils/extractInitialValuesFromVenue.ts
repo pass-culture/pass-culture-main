@@ -1,4 +1,4 @@
-import { GetVenueResponseModel } from '@/apiClient//v1'
+import { GetVenueResponseModel } from '@/apiClient/v1'
 
 import { CollectiveDataFormValues } from '../type'
 

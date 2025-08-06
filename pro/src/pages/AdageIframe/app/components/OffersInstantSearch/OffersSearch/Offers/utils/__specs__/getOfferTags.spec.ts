@@ -4,7 +4,7 @@ import {
   CollectiveOfferTemplateResponseModel,
   OfferAddressType,
   StudentLevels,
-} from '@/apiClient//adage'
+} from '@/apiClient/adage'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,

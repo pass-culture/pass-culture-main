@@ -6,7 +6,7 @@ import {
   GetVenueResponseModel,
   VenueProviderResponse,
   VenueTypeResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'

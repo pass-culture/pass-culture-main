@@ -1,4 +1,4 @@
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { isDateValid } from '@/commons/utils/date'

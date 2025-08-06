@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import useSWR, { mutate } from 'swr'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   EventStockUpdateBodyModel,
   GetIndividualOfferWithAddressResponseModel,
   StocksOrderedBy,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   GET_OFFER_QUERY_KEY,
   GET_STOCKS_QUERY_KEY,

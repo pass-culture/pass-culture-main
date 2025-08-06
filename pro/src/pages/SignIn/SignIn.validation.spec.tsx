@@ -2,8 +2,8 @@ import { screen } from '@testing-library/react'
 import * as router from 'react-router'
 import { Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient//api'
-import { SharedLoginUserResponseModel } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { SharedLoginUserResponseModel } from '@/apiClient/v1'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
@@ -18,7 +18,7 @@ import { Notification } from '@/components/Notification/Notification'
 
 import { SignIn } from './SignIn'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
     signin: vi.fn(),

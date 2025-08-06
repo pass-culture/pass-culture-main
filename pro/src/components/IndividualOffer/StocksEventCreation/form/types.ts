@@ -1,4 +1,4 @@
-import { StocksOrderedBy } from '@/apiClient//v1'
+import { StocksOrderedBy } from '@/apiClient/v1'
 
 export interface StocksEvent {
   id: number

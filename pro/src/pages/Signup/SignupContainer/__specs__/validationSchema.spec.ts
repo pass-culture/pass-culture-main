@@ -1,4 +1,4 @@
-import { ProUserCreationBodyV2Model } from '@/apiClient//v1'
+import { ProUserCreationBodyV2Model } from '@/apiClient/v1'
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
 import { validationSchema } from '../validationSchema'

@@ -1,11 +1,11 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
-import { api } from '@/apiClient//api'
-import { HTTP_STATUS } from '@/apiClient//helpers'
+import { api } from '@/apiClient/api'
+import { HTTP_STATUS } from '@/apiClient/helpers'
 import {
   GetOffererNameResponseModel,
   GetOffererResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   defaultGetOffererResponseModel,

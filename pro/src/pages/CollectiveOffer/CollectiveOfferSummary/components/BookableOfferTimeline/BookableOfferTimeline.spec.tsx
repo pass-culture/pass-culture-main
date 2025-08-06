@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient//v1'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import {
   getCollectiveOfferBookingFactory,
   getCollectiveOfferFactory,

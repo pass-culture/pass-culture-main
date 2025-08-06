@@ -1,9 +1,9 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { AdageFrontRoles, AuthenticatedResponse } from '@/apiClient//adage'
-import { AdageHeaderLink } from '@/apiClient//adage/models/AdageHeaderLink'
-import { apiAdage } from '@/apiClient//api'
+import { AdageFrontRoles, AuthenticatedResponse } from '@/apiClient/adage'
+import { AdageHeaderLink } from '@/apiClient/adage/models/AdageHeaderLink'
+import { apiAdage } from '@/apiClient/api'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { defaultEducationalInstitution } from '@/commons/utils/factories/adageFactories'
 import {
@@ -31,7 +31,7 @@ const renderAdageHeader = (
   )
 }
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     logHeaderLinkClick: vi.fn(),
     getEducationalInstitutionWithBudget: vi.fn(),

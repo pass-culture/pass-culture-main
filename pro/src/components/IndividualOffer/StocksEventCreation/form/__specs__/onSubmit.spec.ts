@@ -1,5 +1,5 @@
-import { api } from '@/apiClient//api'
-import { isError } from '@/apiClient//helpers'
+import { api } from '@/apiClient/api'
+import { isError } from '@/apiClient/helpers'
 import { StocksEventFactory } from '@/commons/utils/factories/individualApiFactories'
 
 import { onSubmit } from '../onSubmit'

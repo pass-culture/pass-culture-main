@@ -1,7 +1,7 @@
 import {
   AuthenticatedResponse,
   CollectiveOfferTemplateResponseModel,
-} from '@/apiClient//adage'
+} from '@/apiClient/adage'
 import { getHumanizeRelativeDistance } from '@/commons/utils/getDistance'
 import fullLinkIcon from '@/icons/full-link.svg'
 import strokeInstitutionIcon from '@/icons/stroke-institution.svg'

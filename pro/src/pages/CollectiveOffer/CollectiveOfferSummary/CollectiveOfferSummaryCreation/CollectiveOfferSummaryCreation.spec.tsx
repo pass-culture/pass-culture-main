@@ -1,10 +1,10 @@
 import { screen } from '@testing-library/react'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
@@ -31,7 +31,7 @@ vi.mock('react-router', async () => ({
   default: vi.fn(),
 }))
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     listEducationalOfferers: vi.fn(),
     getCollectiveOffer: vi.fn(),

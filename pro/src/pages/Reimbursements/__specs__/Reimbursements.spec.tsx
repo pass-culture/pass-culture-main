@@ -5,7 +5,7 @@ import {
 } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { routesReimbursements } from '@/app/AppRouter/subroutesReimbursements'
 import {
   defaultGetOffererResponseModel,

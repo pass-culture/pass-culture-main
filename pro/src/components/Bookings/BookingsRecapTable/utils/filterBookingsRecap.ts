@@ -1,7 +1,7 @@
 import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 
 import { EMPTY_FILTER_VALUE } from '../Filters/constants'
 import { BookingsFilters } from '../types'

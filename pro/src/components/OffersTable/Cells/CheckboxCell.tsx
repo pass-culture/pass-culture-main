@@ -1,7 +1,7 @@
 import classNames from 'classnames'
-import styles from 'styles/components/Cells.module.scss'
 
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import styles from '@/styles/components/Cells.module.scss'
 
 import { getCellsDefinition } from '../utils/cellDefinitions'
 

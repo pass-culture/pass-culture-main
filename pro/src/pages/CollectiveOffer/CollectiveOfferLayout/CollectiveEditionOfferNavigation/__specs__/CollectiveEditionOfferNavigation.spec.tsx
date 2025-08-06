@@ -2,9 +2,9 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 
-import { ApiRequestOptions } from '@/apiClient//adage/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient//adage/core/ApiResult'
-import { api } from '@/apiClient//api'
+import { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient/adage/core/ApiResult'
+import { api } from '@/apiClient/api'
 import {
   ApiError,
   CollectiveOfferAllowedAction,
@@ -13,7 +13,7 @@ import {
   CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,

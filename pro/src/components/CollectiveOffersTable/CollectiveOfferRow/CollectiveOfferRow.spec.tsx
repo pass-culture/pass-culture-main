@@ -1,7 +1,7 @@
 import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   ApiError,
   CollectiveBookingStatus,
@@ -10,9 +10,9 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOffersStockResponseModel,
   CollectiveOfferTemplateAllowedAction,
-} from '@/apiClient//v1'
-import { ApiRequestOptions } from '@/apiClient//v1/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient//v1/core/ApiResult'
+} from '@/apiClient/v1'
+import { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { CollectiveBookingsEvents } from '@/commons/core/FirebaseEvents/constants'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
@@ -32,7 +32,7 @@ import {
   CollectiveOfferRowProps,
 } from './CollectiveOfferRow'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     deleteDraftOffers: vi.fn(),
     cancelCollectiveOfferBooking: vi.fn(),

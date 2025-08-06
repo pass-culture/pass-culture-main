@@ -5,11 +5,11 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import * as createFromTemplateUtils from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
@@ -21,7 +21,7 @@ function renderCollectiveOfferSelectionDuplication() {
   renderWithProviders(<CollectiveOfferSelectionDuplication />)
 }
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getCollectiveOffers: vi.fn(),
   },

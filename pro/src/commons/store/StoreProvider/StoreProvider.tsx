@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import { SAVED_OFFERER_ID_KEY } from '@/commons/core/shared/constants'
 import { updateFeatures } from '@/commons/store/features/reducer'
 import {

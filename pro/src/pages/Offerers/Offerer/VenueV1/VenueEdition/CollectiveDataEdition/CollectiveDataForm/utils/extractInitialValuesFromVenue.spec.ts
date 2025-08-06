@@ -1,4 +1,4 @@
-import { GetVenueResponseModel, StudentLevels } from '@/apiClient//v1'
+import { GetVenueResponseModel, StudentLevels } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 
 import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from '../initialValues'

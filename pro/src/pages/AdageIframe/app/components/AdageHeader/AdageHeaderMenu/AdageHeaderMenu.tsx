@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { NavLink } from 'react-router'
 
-import { AdageFrontRoles, AdageHeaderLink } from '@/apiClient//adage'
+import { AdageFrontRoles, AdageHeaderLink } from '@/apiClient/adage'
 import strokePassIcon from '@/icons/stroke-pass.svg'
 import strokeSearchIcon from '@/icons/stroke-search.svg'
 import strokeStarIcon from '@/icons/stroke-star.svg'

@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 
-import { apiAdage } from '@/apiClient//api'
+import { apiAdage } from '@/apiClient/api'
 import { GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import strokeMyInstitution from '@/icons/stroke-my-institution.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'

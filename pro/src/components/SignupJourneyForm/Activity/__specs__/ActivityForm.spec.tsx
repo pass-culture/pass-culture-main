@@ -3,8 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 import { expect } from 'vitest'
 
-import { api } from '@/apiClient//api'
-import { VenueTypeResponseModel } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { VenueTypeResponseModel } from '@/apiClient/v1'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   ActivityContext,
@@ -21,7 +21,7 @@ import {
   ActivityFormValues,
 } from '../ActivityForm'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getVenueTypes: vi.fn(),
   },

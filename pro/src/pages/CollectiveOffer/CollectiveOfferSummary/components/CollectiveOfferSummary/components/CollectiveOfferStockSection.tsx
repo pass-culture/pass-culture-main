@@ -1,4 +1,4 @@
-import { GetCollectiveOfferCollectiveStockResponseModel } from '@/apiClient//v1'
+import { GetCollectiveOfferCollectiveStockResponseModel } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from '@/commons/utils/date'
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'

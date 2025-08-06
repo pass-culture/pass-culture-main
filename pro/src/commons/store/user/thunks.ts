@@ -1,8 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
-import { api } from '@/apiClient//api'
-import { isErrorAPIError } from '@/apiClient//helpers'
-import { SharedCurrentUserResponseModel } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { isErrorAPIError } from '@/apiClient/helpers'
+import { SharedCurrentUserResponseModel } from '@/apiClient/v1'
 import { SAVED_OFFERER_ID_KEY } from '@/commons/core/shared/constants'
 import {
   updateCurrentOfferer,

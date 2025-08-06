@@ -1,8 +1,8 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 
-import { api } from '@/apiClient//api'
-import { isErrorAPIError } from '@/apiClient//helpers'
+import { api } from '@/apiClient/api'
+import { isErrorAPIError } from '@/apiClient/helpers'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'

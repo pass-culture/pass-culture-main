@@ -1,4 +1,4 @@
-import { EducationalInstitutionResponseModel } from '@/apiClient//v1'
+import { EducationalInstitutionResponseModel } from '@/apiClient/v1'
 import {
   Contact,
   EducationalRedactorDetails,

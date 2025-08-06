@@ -17,7 +17,7 @@ import { defaultCreationProps } from '../__tests-utils__/defaultProps'
 import { INTERVENTION_AREA_LABEL } from '../constants/labels'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getVenues: vi.fn(),
   },

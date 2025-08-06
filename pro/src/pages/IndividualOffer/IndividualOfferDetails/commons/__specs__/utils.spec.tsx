@@ -2,7 +2,7 @@ import {
   OfferStatus,
   SubcategoryIdEnum,
   type VenueListItemResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   getIndividualOfferFactory,
   subcategoryFactory,

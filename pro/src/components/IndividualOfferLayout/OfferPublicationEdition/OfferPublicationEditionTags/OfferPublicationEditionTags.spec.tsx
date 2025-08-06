@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { addDays } from 'date-fns'
 
-import { OfferStatus } from '@/apiClient//v1'
+import { OfferStatus } from '@/apiClient/v1'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
 import {

@@ -1,13 +1,13 @@
 import useSWR from 'swr'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
   NationalProgramModel,
   VenueListItemResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import {
   GET_EDUCATIONAL_OFFERERS_QUERY_KEY,
   GET_VENUES_QUERY_KEY,

@@ -1,4 +1,4 @@
-import { GetOffererResponseModel } from '@/apiClient//v1'
+import { GetOffererResponseModel } from '@/apiClient/v1'
 import { Callout } from '@/ui-kit/Callout/Callout'
 
 import { hasOffererAtLeastOnePhysicalVenue } from '../VenueList/venueUtils'

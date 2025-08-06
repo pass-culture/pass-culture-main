@@ -9,8 +9,8 @@ import {
 } from 'react-router'
 import { SWRConfig } from 'swr'
 
-import { api } from '@/apiClient//api'
-import { isErrorAPIError } from '@/apiClient//helpers'
+import { api } from '@/apiClient/api'
+import { isErrorAPIError } from '@/apiClient/helpers'
 import { useLogExtraProData } from '@/app/App/hook/useLogExtraProData'
 import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
 import {

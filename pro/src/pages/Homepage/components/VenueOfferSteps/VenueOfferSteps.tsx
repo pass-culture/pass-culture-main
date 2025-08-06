@@ -3,7 +3,7 @@ import cn from 'classnames'
 import {
   type DMSApplicationForEAC,
   GetOffererResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   Events,

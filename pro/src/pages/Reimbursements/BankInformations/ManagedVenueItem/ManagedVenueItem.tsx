@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { BankAccountResponseModel, ManagedVenues } from '@/apiClient//v1'
+import { BankAccountResponseModel, ManagedVenues } from '@/apiClient/v1'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import fullEditIcon from '@/icons/full-edit.svg'
 import { Button } from '@/ui-kit/Button/Button'

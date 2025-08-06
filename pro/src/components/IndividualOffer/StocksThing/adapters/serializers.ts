@@ -1,6 +1,6 @@
 import { endOfDay } from 'date-fns'
 
-import { ThingStockCreateBodyModel } from '@/apiClient//v1'
+import { ThingStockCreateBodyModel } from '@/apiClient/v1'
 import {
   getYearMonthDay,
   isDateValid,

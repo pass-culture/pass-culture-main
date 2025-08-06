@@ -1,7 +1,7 @@
 import { fr } from 'date-fns/locale'
 import { Line } from 'react-chartjs-2'
 
-import { OffererViewsModel } from '@/apiClient//v1'
+import { OffererViewsModel } from '@/apiClient/v1'
 import fullLinkIcon from '@/icons/full-link.svg'
 import strokeBookingHoldIcon from '@/icons/stroke-booking-hold.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'

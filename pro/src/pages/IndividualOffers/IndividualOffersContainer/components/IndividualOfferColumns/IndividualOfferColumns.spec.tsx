@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { HeadLineOfferResponseModel, OfferStatus } from '@/apiClient//v1'
+import { HeadLineOfferResponseModel, OfferStatus } from '@/apiClient/v1'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { listOffersOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import {

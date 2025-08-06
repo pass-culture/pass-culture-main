@@ -1,4 +1,4 @@
-import { CollectiveLocationType, OfferAddressType } from '@/apiClient//v1'
+import { CollectiveLocationType, OfferAddressType } from '@/apiClient/v1'
 import { VisibilityFormValues } from '@/pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
 
 import {

@@ -9,8 +9,8 @@ import {
   EacFormat,
   EducationalInstitutionWithBudgetResponseModel,
   OfferAddressType,
-} from '@/apiClient//adage'
-import { StudentLevels } from '@/apiClient//v1'
+} from '@/apiClient/adage'
+import { StudentLevels } from '@/apiClient/v1'
 
 export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseModel =
   {

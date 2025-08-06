@@ -4,13 +4,13 @@ import { FormProvider, useForm } from 'react-hook-form'
 import useSWR from 'swr'
 import { InferType } from 'yup'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   CollectiveOfferAllowedAction,
   EducationalInstitutionResponseModel,
   EducationalRedactor,
   GetCollectiveOfferResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { isCollectiveOffer, Mode } from '@/commons/core/OfferEducational/types'
 import {

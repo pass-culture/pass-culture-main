@@ -1,4 +1,4 @@
-import { BookingStatusFilter } from '@/apiClient//v1'
+import { BookingStatusFilter } from '@/apiClient/v1'
 import { BOOKING_STATUS_FILTER_OPTIONS } from '@/commons/core/Bookings/constants'
 import { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'

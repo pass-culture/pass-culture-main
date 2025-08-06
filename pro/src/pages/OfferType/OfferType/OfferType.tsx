@@ -2,8 +2,8 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router'
 
-import { api } from '@/apiClient//api'
-import { CollectiveOfferType as CollectiveOfferApiType } from '@/apiClient//v1'
+import { api } from '@/apiClient/api'
+import { CollectiveOfferType as CollectiveOfferApiType } from '@/apiClient/v1'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,

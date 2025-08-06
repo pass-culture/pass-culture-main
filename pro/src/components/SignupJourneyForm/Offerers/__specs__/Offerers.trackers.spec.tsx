@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   SignupJourneyContext,
@@ -16,7 +16,7 @@ import { OnboardingFormNavigationAction } from '@/components/SignupJourneyFormLa
 import { Offerers } from '../Offerers'
 
 const mockLogEvent = vi.fn()
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getVenuesOfOffererFromSiret: vi.fn(),
   },

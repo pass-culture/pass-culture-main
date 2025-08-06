@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { OfferStatus } from '@/apiClient//v1'
+import { OfferStatus } from '@/apiClient/v1'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { StatusLabel } from '../StatusLabel'

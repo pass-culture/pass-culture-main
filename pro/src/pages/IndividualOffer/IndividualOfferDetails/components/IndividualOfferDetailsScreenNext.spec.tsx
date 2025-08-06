@@ -4,13 +4,13 @@ import * as router from 'react-router'
 import { Route, Routes } from 'react-router'
 import { vi } from 'vitest'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   OfferStatus,
   SubcategoryIdEnum,
   SubcategoryResponseModel,
   VenueTypeCode,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
@@ -46,7 +46,7 @@ import {
   type IndividualOfferDetailsScreenNextProps,
 } from './IndividualOfferDetailsScreenNext'
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   api: {
     getMusicTypes: vi.fn(),
     postDraftOffer: vi.fn(),

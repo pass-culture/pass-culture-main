@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router'
 import useSWR from 'swr'
 
-import { api } from '@/apiClient//api'
+import { api } from '@/apiClient/api'
 import {
   GET_HAS_INVOICE_QUERY_KEY,
   GET_INVOICES_QUERY_KEY,

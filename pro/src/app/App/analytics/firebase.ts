@@ -18,7 +18,7 @@ import {
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { isError } from '@/apiClient//helpers'
+import { isError } from '@/apiClient/helpers'
 import { firebaseConfig } from '@/commons/config/firebase'
 import { useUtmQueryParams } from '@/commons/hooks/useUtmQueryParams'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'

@@ -6,7 +6,7 @@ import {
   CollectiveLocationType,
   EacFormat,
   OfferAddressType,
-} from '@/apiClient//adage'
+} from '@/apiClient/adage'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import {
   RenderWithProvidersOptions,
@@ -22,7 +22,7 @@ import { OfferFilters } from '../OfferFilters'
 const handleSubmit = vi.fn()
 const mockSetLocalisationFilterState = vi.fn()
 
-vi.mock('@/apiClient//api', () => ({
+vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     getAcademies: vi.fn(),
   },

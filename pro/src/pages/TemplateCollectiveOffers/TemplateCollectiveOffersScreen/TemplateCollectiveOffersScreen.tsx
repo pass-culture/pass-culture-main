@@ -3,7 +3,7 @@ import { useState } from 'react'
 import {
   CollectiveOfferResponseModel,
   GetOffererResponseModel,
-} from '@/apiClient//v1'
+} from '@/apiClient/v1'
 import { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
 import {
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,

@@ -1,4 +1,4 @@
-import { EditVenueBodyModel, VenueTypeCode } from '@/apiClient//v1'
+import { EditVenueBodyModel, VenueTypeCode } from '@/apiClient/v1'
 
 import { serializeEditVenueBodyModel } from '../serializers'
 import { VenueSettingsFormValues } from '../types'
