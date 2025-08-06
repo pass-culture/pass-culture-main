@@ -6813,7 +6813,6 @@ INSERT INTO public.feature VALUES (89, 'WIP_ENABLE_SEARCH_HISTORY_ADAGE', 'Activ
 INSERT INTO public.feature VALUES (90, 'WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API', 'Activer la création événements avec tickets dans l''API publique', false);
 INSERT INTO public.feature VALUES (91, 'WIP_ENABLE_BOOST_SHOWTIMES_FILTER', 'Activer le filtre pour les requêtes showtimes Boost', false);
 INSERT INTO public.feature VALUES (92, 'DISABLE_CGR_EXTERNAL_BOOKINGS', 'Désactiver les réservations externes CGR', false);
-INSERT INTO public.feature VALUES (93, 'API_ADRESSE_AVAILABLE', 'Active les fonctionnalitées liées à l''API Adresse', true);
 INSERT INTO public.feature VALUES (94, 'WIP_ENABLE_SUSPICIOUS_EMAIL_SEND', 'Active l''envoie d''email lors de la détection d''une connexion suspicieuse', false);
 INSERT INTO public.feature VALUES (97, 'WIP_MANDATORY_BOOKING_CONTACT', 'Rend obligatoire offer.bookingContact pour les offres retirables', true);
 INSERT INTO public.feature VALUES (99, 'ENABLE_BEAMER', 'Active Beamer, le système de notifs du portail pro', false);
