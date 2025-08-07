@@ -21,21 +21,39 @@ logger = logging.getLogger(__name__)
 
 
 def main() -> None:
-    venues_to_update_hyphen_prefix = db.session.query(offerers_models.Venue).filter(
-        func.lower(offerers_models.Venue.publicName).like("%lieu administratif - %")
+    venues_to_update_1 = db.session.query(offerers_models.Venue).filter(
+        func.lower(offerers_models.Venue.publicName).like("%(lieu administratif)%")
     )
-    insensitive_hyphen_prefix = re.compile(re.escape("lieu administratif - "), re.IGNORECASE)
-    for venue in venues_to_update_hyphen_prefix.all():
-        venue.publicName = insensitive_hyphen_prefix.sub("", venue.publicName).strip()
+    insensitive_1 = re.compile(re.escape("(lieu administratif)"), re.IGNORECASE)
+    for venue in venues_to_update_1.all():
+        venue.publicName = insensitive_1.sub("", venue.publicName).strip()
         logger.info("Update publicName for venue %d", venue.id)
         db.session.add(venue)
 
-    venues_to_update_hyphen_suffix = db.session.query(offerers_models.Venue).filter(
+    venues_to_update_2 = db.session.query(offerers_models.Venue).filter(
+        func.lower(offerers_models.Venue.publicName).like("%/ lieu administratif%")
+    )
+    insensitive_2 = re.compile(re.escape("/ lieu administratif"), re.IGNORECASE)
+    for venue in venues_to_update_2.all():
+        venue.publicName = insensitive_2.sub("", venue.publicName).strip()
+        logger.info("Update publicName for venue %d", venue.id)
+        db.session.add(venue)
+
+    venues_to_update_3 = db.session.query(offerers_models.Venue).filter(
         func.lower(offerers_models.Venue.publicName).like("% - lieu administratif%")
     )
-    insensitive_hyphen_suffix = re.compile(re.escape(" - lieu administratif"), re.IGNORECASE)
-    for venue in venues_to_update_hyphen_suffix.all():
-        venue.publicName = insensitive_hyphen_suffix.sub("", venue.publicName).strip()
+    insensitive_3 = re.compile(re.escape(" - lieu administratif"), re.IGNORECASE)
+    for venue in venues_to_update_3.all():
+        venue.publicName = insensitive_3.sub("", venue.publicName).strip()
+        logger.info("Update publicName for venue %d", venue.id)
+        db.session.add(venue)
+
+    venues_to_update_4 = db.session.query(offerers_models.Venue).filter(
+        func.lower(offerers_models.Venue.publicName).like("%-lieu administratif%")
+    )
+    insensitive_4 = re.compile(re.escape("-lieu administratif"), re.IGNORECASE)
+    for venue in venues_to_update_4.all():
+        venue.publicName = insensitive_4.sub("", venue.publicName).strip()
         logger.info("Update publicName for venue %d", venue.id)
         db.session.add(venue)
 
