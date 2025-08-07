@@ -543,7 +543,7 @@ def batch_update_offers(
 
     logger.info("Batch update of offers: start", extra={"updated_fields": update_fields})
 
-    for chunk in get_chunks(query, chunk_size=2_500):
+    for chunk in get_chunks(query, chunk_size=settings.BATCH_UPDATE_OFFERS_CHUNK_SIZE):
         raw_offer_ids, raw_venue_ids = zip(*chunk)
         offer_ids = set(raw_offer_ids)
         venue_ids = set(raw_venue_ids)
