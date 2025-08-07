@@ -1,6 +1,6 @@
 {
   "name": "@pass-culture/pass-culture-pro",
-  "version": "0.0.0",
+  "version": "352.0.0",
   "private": true,
   "homepage": "/",
   "type": "module",
@@ -135,8 +135,14 @@
     "node": ">=20 <21"
   },
   "packageManager": "yarn@1.22.22",
-  "browserslist": [">0.2%", "not dead", "not op_mini all"],
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ],
   "babel": {
-    "presets": ["react-app"]
+    "presets": [
+      "react-app"
+    ]
   }
 }
