@@ -161,7 +161,7 @@ export const EventPublicationForm = () => {
         {isNewPublicationDatetimeEnabled && (
           <FormLayout.Section>
             <RadioButtonGroup
-              label="Quand votre offre pourra être réservable&nbsp;?"
+              label="Quand votre offre pourra-t-elle être réservable&nbsp;?"
               name="bookingAllowedMode"
               variant="detailed"
               options={[
