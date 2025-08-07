@@ -12,7 +12,7 @@
   min-height: size.$input-min-height;
   line-height: 1.3;
   border: solid size.$input-border-width var(--color-border-default);
-  border-radius: rem.torem(forms.$input-border-radius);
+  border-radius: var(--size-border-radius-m);
   background-color: var(--color-background-default);
   padding: 0 rem.torem(16px);
   color: var(--color-text-default);
