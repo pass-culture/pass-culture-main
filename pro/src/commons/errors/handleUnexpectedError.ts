@@ -1,5 +1,4 @@
 import { captureException, withScope } from '@sentry/browser'
-
 import { NOTIFICATION_SHOW_DURATION } from 'commons/core/Notification/constants'
 import { NotificationTypeEnum } from 'commons/hooks/useNotification'
 import { showNotification } from 'commons/store/notifications/reducer'

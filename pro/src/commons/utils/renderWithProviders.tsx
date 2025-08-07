@@ -36,25 +36,6 @@ export type RenderComponentFunction<
     ExtraParams
 ) => void
 
-interface RenderComponentFunctionParams<
-  ComponentProps extends Record<string, any> | void = void,
-  ContextValues extends Record<string, any> | void = void,
-> {
-  contextValue?: ContextValues
-  options?: RenderWithProvidersOptions
-  path?: string
-  props?: Partial<ComponentProps>
-}
-/**
- * Common Template-Type for integration tests render functions utilizing `renderWithProviders()`.
- */
-export type RenderComponentFunction<
-  ComponentProps extends Record<string, any> | void = void,
-  ContextValues extends Record<string, any> | void = void,
-> = (
-  params: RenderComponentFunctionParams<ComponentProps, ContextValues>
-) => void
-
 export type RenderWithProvidersOptions = {
   storeOverrides?: DeepPartial<RootState>
   initialRouterEntries?: string[]
