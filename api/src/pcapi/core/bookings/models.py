@@ -346,7 +346,10 @@ class Booking(PcObject, Base, Model):
     @hybrid_property
     def validated_incident_id(self) -> int | None:
         for booking_incident in self.incidents:
-            if booking_incident.incident.status == finance_models.IncidentStatus.VALIDATED:
+            if booking_incident.incident.status in (
+                finance_models.IncidentStatus.VALIDATED,
+                finance_models.IncidentStatus.INVOICED,
+            ):
                 return booking_incident.incident.id
         return None
 
@@ -359,7 +362,9 @@ class Booking(PcObject, Base, Model):
             .where(
                 sa.and_(
                     finance_models.BookingFinanceIncident.bookingId == Booking.id,
-                    finance_models.FinanceIncident.status == finance_models.IncidentStatus.VALIDATED,
+                    finance_models.FinanceIncident.status.in_(
+                        finance_models.IncidentStatus.VALIDATED, finance_models.IncidentStatus.INVOICED
+                    ),
                 )
             )
             .limit(1)
@@ -484,7 +489,7 @@ Booking.trig_ddl = f"""
         FROM
             booking
             LEFT OUTER JOIN booking_finance_incident ON booking_finance_incident."bookingId" = booking.id
-            LEFT OUTER JOIN finance_incident ON  finance_incident.id = booking_finance_incident."incidentId" AND finance_incident."status" = '{finance_models.IncidentStatus.VALIDATED.value}'
+            LEFT OUTER JOIN finance_incident ON  finance_incident.id = booking_finance_incident."incidentId" AND finance_incident."status" IN ('{finance_models.IncidentStatus.VALIDATED.value}', '{finance_models.IncidentStatus.INVOICED.value}')
         WHERE
             booking."depositId" = deposit_id
             AND NOT booking.status = '{BookingStatus.CANCELLED.value}'

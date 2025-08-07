@@ -962,12 +962,10 @@ class PaymentMessage(PcObject, Base, Model):
     checksum: bytes = sa.Column(sa.LargeBinary(32), unique=True, nullable=False)
 
 
-##
-# When an incident is `CREATED` it can be either `CANCELLED` and it's the end of this incident. Or it can be `VALIDATED`.
-##
 class IncidentStatus(enum.Enum):
     CREATED = "created"
     VALIDATED = "validated"
+    INVOICED = "invoiced"
     CANCELLED = "cancelled"
 
 
