@@ -1189,6 +1189,8 @@ class CollectiveOfferTemplate(
     locationType: sa_orm.Mapped[CollectiveLocationType | None] = sa.Column(
         db_utils.MagicEnum(CollectiveLocationType), nullable=True, server_default=None, default=None
     )
+    sa.Index("ix_collective_offer_template_locationType_offererAddressId", locationType, offererAddressId)
+
     locationComment: sa_orm.Mapped[str | None] = sa.Column(sa.Text(), nullable=True)
 
     dateArchived: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
