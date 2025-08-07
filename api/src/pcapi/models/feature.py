@@ -31,7 +31,6 @@ class FeatureToggle(enum.Enum):
     API_SIRENE_AVAILABLE = "Active les fonctionnalitées liées à l'API Sirene"
     APP_ENABLE_AUTOCOMPLETE = "Active l'autocomplete sur la barre de recherche relative au rework de la homepage"
     BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
-    DISABLE_ENTERPRISE_API = "Désactiver les appels à l'API entreprise"
     DISABLE_BOOST_EXTERNAL_BOOKINGS = "Désactiver les réservations externes Boost"
     DISABLE_CDS_EXTERNAL_BOOKINGS = "Désactiver les réservations externes CDS"
     DISABLE_CGR_EXTERNAL_BOOKINGS = "Désactiver les réservations externes CGR"
@@ -191,7 +190,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.DISABLE_CDS_EXTERNAL_BOOKINGS,
     FeatureToggle.DISABLE_CGR_EXTERNAL_BOOKINGS,
     FeatureToggle.DISABLE_EMS_EXTERNAL_BOOKINGS,
-    FeatureToggle.DISABLE_ENTERPRISE_API,
     FeatureToggle.DISPLAY_DMS_REDIRECTION,
     FeatureToggle.EMS_CANCEL_PENDING_EXTERNAL_BOOKING,
     FeatureToggle.ENABLE_AUTO_CLOSE_CLOSED_OFFERERS,
