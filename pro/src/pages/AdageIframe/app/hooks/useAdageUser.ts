@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 
-import { assertOrFrontendError } from 'commons/errors/assertOrFrontendError'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 
 import { AdageUserContext } from '../providers/AdageUserContext'
 

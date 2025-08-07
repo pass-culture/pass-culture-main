@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { assertOrFrontendError } from 'commons/errors/assertOrFrontendError'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 
 import { hasProperty } from './types'
 
