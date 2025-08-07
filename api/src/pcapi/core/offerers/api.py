@@ -2344,6 +2344,18 @@ def create_from_onboarding_data(
     if user_offerer.validationStatus == ValidationStatus.VALIDATED:
         transactional_mails.send_welcome_to_pro_email(user, venue)
 
+    logger.info(
+        "Creating new Offerer and Venue",
+        extra={
+            "user_id": user.id,
+            "offerer_id": user_offerer.offerer.id,
+            "venue_id": venue.id,
+            "siret": venue.siret,
+            "is_diffusible": siret_info.diffusible,
+        },
+        technical_message_id="structure_creation",
+    )
+
     return user_offerer
 
 
