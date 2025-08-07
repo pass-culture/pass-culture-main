@@ -498,7 +498,7 @@ class UpdateBankAccountTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.bank_account.get", bank_account_id=bank_account.id, _external=True)
+        expected_url = url_for("backoffice_web.bank_account.get", bank_account_id=bank_account.id)
         assert response.location == expected_url
 
         assert bank_account.label == new_label
@@ -519,7 +519,7 @@ class UpdateBankAccountTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.bank_account.get", bank_account_id=bank_account.id, _external=True)
+        expected_url = url_for("backoffice_web.bank_account.get", bank_account_id=bank_account.id)
         assert response.location == expected_url
 
         assert bank_account.label == old_label

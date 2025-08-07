@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
@@ -138,23 +137,27 @@ def sync_db_permissions(session: sa_orm.Session) -> None:
     return sync_enum_with_db_field(session, Permissions, "name", Permission)
 
 
-class RolePermission(PcObject, Base, Model):
+class RolePermission(PcObject, Model):
     """
     An association table between roles and permission for their
     many-to-many relationship
     """
 
     __tablename__ = "role_permission"
-    roleId: int = sa.Column(sa.BigInteger, sa.ForeignKey("role.id", ondelete="CASCADE"))
-    permissionId: int = sa.Column(sa.BigInteger, sa.ForeignKey("permission.id", ondelete="CASCADE"))
+    roleId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("role.id", ondelete="CASCADE"), nullable=True
+    )
+    permissionId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("permission.id", ondelete="CASCADE"), nullable=True
+    )
     __table_args__ = (sa.UniqueConstraint("roleId", "permissionId", name="role_permission_roleId_permissionId_key"),)
 
 
-class Permission(PcObject, Base, Model):
+class Permission(PcObject, Model):
     __tablename__ = "permission"
 
-    name: sa_orm.Mapped[str] = sa.Column(sa.String(length=140), nullable=False, unique=True)
-    category: sa_orm.Mapped[str] = sa.Column(sa.String(140), nullable=True, default=None)
+    name: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.String(length=140), nullable=False, unique=True)
+    category: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.String(140), nullable=True, default=None)
     roles: sa_orm.Mapped[list["Role"]] = sa_orm.relationship(
         "Role", secondary=RolePermission.__table__, back_populates="permissions"
     )
@@ -202,10 +205,10 @@ def sync_db_roles(session: sa_orm.Session) -> None:
     return sync_enum_with_db_field(session, Roles, "value", Role)
 
 
-class Role(PcObject, Base, Model):
+class Role(PcObject, Model):
     __tablename__ = "role"
 
-    name: sa_orm.Mapped[str] = sa.Column(sa.String(140), nullable=False, unique=True)
+    name: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.String(140), nullable=False, unique=True)
     permissions: sa_orm.Mapped[list["Permission"]] = sa_orm.relationship(
         "Permission", secondary=RolePermission.__table__, back_populates="roles"
     )
@@ -220,12 +223,12 @@ class Role(PcObject, Base, Model):
         return False
 
 
-class BackOfficeUserProfile(Base, Model):
+class BackOfficeUserProfile(Model):
     __tablename__ = "backoffice_user_profile"
 
-    id: sa_orm.Mapped[int] = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: sa_orm.Mapped[int] = sa.orm.mapped_column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    userId: sa_orm.Mapped[int] = sa.Column(
+    userId: sa_orm.Mapped[int] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
     )
     user: sa_orm.Mapped["User"] = sa_orm.relationship(
@@ -235,7 +238,7 @@ class BackOfficeUserProfile(Base, Model):
         "Role", secondary="role_backoffice_profile", back_populates="profiles"
     )
 
-    preferences: sa_orm.Mapped[dict] = sa.Column(
+    preferences: sa_orm.Mapped[dict] = sa.orm.mapped_column(
         sa.ext.mutable.MutableDict.as_mutable(sa.dialects.postgresql.JSONB),
         nullable=False,
         default={},
@@ -243,7 +246,7 @@ class BackOfficeUserProfile(Base, Model):
     )
 
     # instructor id on Démarches Simplifiées, used to change application status
-    dsInstructorId: sa_orm.Mapped[str] = sa.Column(sa.Text, nullable=True, index=True, unique=True)
+    dsInstructorId: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=True, index=True, unique=True)
 
     @property
     def permissions(self) -> typing.Collection[Permissions]:
@@ -258,7 +261,7 @@ class BackOfficeUserProfile(Base, Model):
 
 RoleBackofficeProfile = sa.Table(
     "role_backoffice_profile",
-    Base.metadata,
+    Model.metadata,
     sa.Column("roleId", sa.ForeignKey(Role.id, ondelete="CASCADE"), nullable=False, primary_key=True),
     sa.Column(
         "profileId", sa.ForeignKey(BackOfficeUserProfile.id, ondelete="CASCADE"), nullable=False, primary_key=True
