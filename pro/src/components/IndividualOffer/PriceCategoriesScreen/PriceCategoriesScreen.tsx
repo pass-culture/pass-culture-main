@@ -28,6 +28,7 @@ import {
   PRICE_CATEGORY_MAX_LENGTH,
   UNIQUE_PRICE,
 } from '@/components/IndividualOffer/PriceCategoriesScreen/form/constants'
+import { updateLocalStorageWithLastSubmittedStep } from '@/components/IndividualOfferLayout/IndividualOfferNavigation/utils/handleLastSubmittedStep'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
@@ -198,9 +199,16 @@ export const PriceCategoriesScreen = ({
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(nextStepUrl)
+
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       notify.success(getSuccessMessage(mode))
+    } else if (mode === OFFER_WIZARD_MODE.CREATION) {
+      updateLocalStorageWithLastSubmittedStep(
+        offer.id,
+        INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
+      )
     }
+
     setIsConfirmationModalOpen(false)
   }
 

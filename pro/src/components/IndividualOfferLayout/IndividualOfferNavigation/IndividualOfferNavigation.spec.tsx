@@ -20,13 +20,11 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import {
-  IndividualOfferNavigation,
-  IndividualOfferNavigationProps,
-} from './IndividualOfferNavigation'
+import { IndividualOfferNavigation } from './IndividualOfferNavigation'
+import { getLocalStorageKeyName } from './utils/handleLastSubmittedStep'
 
 const renderIndividualOfferNavigation: RenderComponentFunction<
-  IndividualOfferNavigationProps,
+  void,
   IndividualOfferContextValues
 > = (params) => {
   const contextValues = {
@@ -36,10 +34,7 @@ const renderIndividualOfferNavigation: RenderComponentFunction<
     }),
     ...params.contextValues,
   }
-  const props: IndividualOfferNavigationProps = {
-    isUsefulInformationSubmitted: false,
-    ...params.props,
-  }
+
   const path =
     params.path ??
     getIndividualOfferPath({
@@ -53,7 +48,7 @@ const renderIndividualOfferNavigation: RenderComponentFunction<
 
   renderWithProviders(
     <IndividualOfferContext.Provider value={contextValues}>
-      <IndividualOfferNavigation {...props} />
+      <IndividualOfferNavigation />
     </IndividualOfferContext.Provider>,
     overrides
   )
@@ -77,23 +72,27 @@ describe('IndividualOfferNavigation', () => {
     priceCategories: [],
   })
 
-  it('should always display "Détails" and "Informations pratiques" active/enabled steps', () => {
+  it('should always display "Détails" and "Informations pratiques" steps', () => {
     const contextValues = individualOfferContextValuesFactory({
       offer: offerBase,
     })
 
     renderIndividualOfferNavigation({ contextValues })
 
-    const detailsStep = screen.getByRole('link', { name: LABELS.DETAILS })
-    expect(detailsStep).toBeInTheDocument()
+    const steps = screen.getAllByRole('listitem')
 
-    const usefulInformationsStep = screen.getByRole('link', {
-      name: LABELS.USEFUL_INFORMATIONS,
-    })
-    expect(usefulInformationsStep).toBeInTheDocument()
+    const detailsStep = steps.find((listitem) =>
+      listitem.textContent?.match(LABELS.DETAILS)
+    )
+    expect(detailsStep).toBeDefined()
+
+    const usefulInformationsStep = steps.find((listitem) =>
+      listitem.textContent?.match(LABELS.USEFUL_INFORMATIONS)
+    )
+    expect(usefulInformationsStep).toBeDefined()
   })
 
-  it('should display "Image et vidéo" active step when WIP_ADD_VIDEO is enabled', () => {
+  it('should display "Image et vidéo" step when WIP_ADD_VIDEO is enabled', () => {
     const contextValues = individualOfferContextValuesFactory({
       offer: offerBase,
     })
@@ -103,99 +102,49 @@ describe('IndividualOfferNavigation', () => {
 
     renderIndividualOfferNavigation({ contextValues, options })
 
-    const mediaStep = screen.getByRole('link', { name: LABELS.MEDIA })
-    expect(mediaStep).toBeInTheDocument()
+    const mediaStep = screen
+      .getAllByRole('listitem')
+      .find((listitem) => listitem.textContent?.match(LABELS.MEDIA))
+    expect(mediaStep).toBeDefined()
   })
 
   describe('when offer is an event', () => {
-    const contextValuesBase = individualOfferContextValuesFactory({
+    const contextValues = individualOfferContextValuesFactory({
       isEvent: true,
       // TODO (igabriele, 2025-08-05): We shoudn't need to "reset" factories default values.
       offer: offerBase,
     })
 
     it('should display "Tarifs" and "Dates & Capacités" steps', () => {
-      const props: IndividualOfferNavigationProps = {
-        isUsefulInformationSubmitted: false,
-      }
-
       renderIndividualOfferNavigation({
-        contextValues: contextValuesBase,
-        props,
+        contextValues,
       })
 
-      const pricesStepAsALink = screen.queryByRole('link', {
-        name: LABELS.PRICES,
-      })
-      expect(pricesStepAsALink).not.toBeInTheDocument()
-      const pricesStep = screen.getByText(LABELS.PRICES)
-      expect(pricesStep).toBeInTheDocument()
+      const steps = screen.getAllByRole('listitem')
 
-      const datesCapacitiesStepAsALink = screen.queryByRole('link', {
-        name: LABELS.DATES_CAPACITIES,
-      })
-      expect(datesCapacitiesStepAsALink).not.toBeInTheDocument()
-      const datesCapacitiesStep = screen.getByText(LABELS.DATES_CAPACITIES)
-      expect(datesCapacitiesStep).toBeInTheDocument()
-    })
+      const pricesStep = steps.find((listitem) =>
+        listitem.textContent?.match(LABELS.PRICES)
+      )
+      expect(pricesStep).toBeDefined()
 
-    it('should display "Tarifs" step as active/enabled when offer is no longer a non-published draft', () => {
-      const props: IndividualOfferNavigationProps = {
-        isUsefulInformationSubmitted: true,
-      }
-
-      renderIndividualOfferNavigation({
-        contextValues: contextValuesBase,
-        props,
-      })
-
-      const pricesStep = screen.getByText(LABELS.PRICES)
-      expect(pricesStep).toBeInTheDocument()
-
-      const datesCapacitiesStep = screen.getByText(LABELS.DATES_CAPACITIES)
-      expect(datesCapacitiesStep).toBeInTheDocument()
-    })
-
-    it('should display "Tarifs" step as active/enabled when offer has price categories', () => {
-      const contextValues: IndividualOfferContextValues = {
-        ...contextValuesBase,
-        isEvent: true,
-        offer: {
-          ...offerBase,
-          priceCategories: [priceCategoryFactory()],
-        },
-      }
-
-      renderIndividualOfferNavigation({ contextValues })
-
-      const pricesStep = screen.getByText(LABELS.PRICES)
-      expect(pricesStep).toBeInTheDocument()
-    })
-
-    it('should display "Dates et Capacités" step as active/enabled when offer has price categories', () => {
-      const contextValues: IndividualOfferContextValues = {
-        ...contextValuesBase,
-        offer: getIndividualOfferFactory({
-          hasStocks: true,
-        }),
-      }
-
-      renderIndividualOfferNavigation({ contextValues })
-
-      const datesCapacitiesStep = screen.getByText(LABELS.DATES_CAPACITIES)
-      expect(datesCapacitiesStep).toBeInTheDocument()
+      const datesCapacities = steps.find((listitem) =>
+        listitem.textContent?.match(LABELS.DATES_CAPACITIES)
+      )
+      expect(datesCapacities).toBeDefined()
     })
 
     it('should never display "Stock & Prix" step', () => {
-      renderIndividualOfferNavigation({ contextValues: contextValuesBase })
+      renderIndividualOfferNavigation({ contextValues })
 
-      const stockPricesStep = screen.queryByText(LABELS.STOCK_PRICES)
-      expect(stockPricesStep).not.toBeInTheDocument()
+      const stockPricesStep = screen
+        .getAllByRole('listitem')
+        .find((listitem) => listitem.textContent?.match(LABELS.STOCK_PRICES))
+      expect(stockPricesStep).not.toBeDefined()
     })
   })
 
   describe('when offer is not an event', () => {
-    const contextValuesBase = individualOfferContextValuesFactory({
+    const contextValues = individualOfferContextValuesFactory({
       isEvent: null,
       // TODO (igabriele, 2025-08-05): We shoudn't need to "reset" factories default values.
       offer: offerBase,
@@ -203,93 +152,60 @@ describe('IndividualOfferNavigation', () => {
 
     it('should display "Stock & Prix" step', () => {
       renderIndividualOfferNavigation({
-        contextValues: contextValuesBase,
+        contextValues,
       })
 
-      const stockStepAsALink = screen.queryByRole('link', {
-        name: LABELS.STOCK_PRICES,
-      })
-      expect(stockStepAsALink).not.toBeInTheDocument()
-      const stockStep = screen.getByText(LABELS.STOCK_PRICES)
-      expect(stockStep).toBeInTheDocument()
-    })
-
-    it('should display "Stock & Prix" step as active/enabled when offer is no longer a non-published draft', () => {
-      const props: IndividualOfferNavigationProps = {
-        isUsefulInformationSubmitted: true,
-      }
-
-      renderIndividualOfferNavigation({
-        contextValues: contextValuesBase,
-        props,
-      })
-
-      const stockStep = screen.getByText(LABELS.STOCK_PRICES)
-      expect(stockStep).toBeInTheDocument()
-    })
-
-    it('should display "Stock & Prix" step as active/enabled when offer has stocks', () => {
-      const contextValues: IndividualOfferContextValues = {
-        ...contextValuesBase,
-        isEvent: false,
-        offer: {
-          ...offerBase,
-          hasStocks: true,
-        },
-      }
-
-      renderIndividualOfferNavigation({ contextValues })
-
-      const stockStep = screen.getByText(LABELS.STOCK_PRICES)
-      expect(stockStep).toBeInTheDocument()
+      const stockStep = screen
+        .getAllByRole('listitem')
+        .find((listitem) => listitem.textContent?.match(LABELS.STOCK_PRICES))
+      expect(stockStep).toBeDefined()
     })
   })
 
   describe('on creation mode', () => {
-    const contextValuesBase = individualOfferContextValuesFactory({
-      isEvent: false,
+    const contextValues = individualOfferContextValuesFactory({
       offer: offerBase,
     })
-
     const path = getIndividualOfferPath({
       step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
       mode: OFFER_WIZARD_MODE.CREATION,
     })
 
+    it('should only display some steps as links when those where submitted', () => {
+      localStorage.setItem(
+        getLocalStorageKeyName(offerBase.id),
+        INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
+      )
+
+      renderIndividualOfferNavigation({ contextValues, path })
+
+      const steps = screen.getAllByRole('listitem')
+      const submittedStepIndex = steps.findIndex((listItem) =>
+        listItem.textContent?.match(LABELS.USEFUL_INFORMATIONS)
+      )
+
+      const links = screen.getAllByRole('link')
+      expect(links.length).toEqual(submittedStepIndex + 1)
+
+      localStorage.clear()
+    })
+
     it('should display "Récapitulatif" step', () => {
       renderIndividualOfferNavigation({ path })
 
-      const summaryStepAsALink = screen.queryByRole('link', {
-        name: LABELS.SUMMARY,
-      })
-      expect(summaryStepAsALink).not.toBeInTheDocument()
-      const summaryStep = screen.getByText(LABELS.SUMMARY)
-      expect(summaryStep).toBeInTheDocument()
-    })
-
-    it('should display "Récapitulatif" step as active/enabled when offer has stocks', () => {
-      const constextValues = {
-        ...contextValuesBase,
-        offer: {
-          ...offerBase,
-          hasStocks: true,
-        },
-      }
-
-      renderIndividualOfferNavigation({
-        contextValues: constextValues,
-        path,
-      })
-
-      const summaryStep = screen.getByText(LABELS.SUMMARY)
-      expect(summaryStep).toBeInTheDocument()
+      const summaryStep = screen
+        .getAllByRole('listitem')
+        .find((listitem) => listitem.textContent?.match(LABELS.SUMMARY))
+      expect(summaryStep).toBeDefined()
     })
 
     it('should never display "Réservation" step', () => {
       renderIndividualOfferNavigation({})
 
-      const bookingStep = screen.queryByText(LABELS.BOOKING)
-      expect(bookingStep).not.toBeInTheDocument()
+      const bookingStep = screen
+        .getAllByRole('listitem')
+        .find((listitem) => listitem.textContent?.match(LABELS.BOOKING))
+      expect(bookingStep).not.toBeDefined()
     })
   })
 
@@ -299,20 +215,30 @@ describe('IndividualOfferNavigation', () => {
       mode: OFFER_WIZARD_MODE.READ_ONLY,
     })
 
-    it('should display "Réservation" active/enabled step', () => {
+    it('should display all steps as links', () => {
       renderIndividualOfferNavigation({ path })
 
-      expect(
-        screen.getByRole('link', { name: LABELS.BOOKING })
-      ).toBeInTheDocument()
+      const steps = screen.getAllByRole('listitem')
+      const links = screen.getAllByRole('link')
+      expect(steps.length).toEqual(links.length)
+    })
+
+    it('should display "Réservation" step', () => {
+      renderIndividualOfferNavigation({ path })
+
+      const bookingStep = screen
+        .getAllByRole('listitem')
+        .find((listitem) => listitem.textContent?.match(LABELS.BOOKING))
+      expect(bookingStep).toBeDefined()
     })
 
     it('should never display "Récapitulatif" step', () => {
       renderIndividualOfferNavigation({ path })
 
-      expect(
-        screen.queryByRole('link', { name: LABELS.SUMMARY })
-      ).not.toBeInTheDocument()
+      const summaryStep = screen
+        .getAllByRole('listitem')
+        .find((listitem) => listitem.textContent?.match(LABELS.SUMMARY))
+      expect(summaryStep).not.toBeDefined()
     })
   })
 
@@ -322,20 +248,30 @@ describe('IndividualOfferNavigation', () => {
       mode: OFFER_WIZARD_MODE.READ_ONLY,
     })
 
-    it('should display "Réservation" active/enabled step', () => {
+    it('should display all steps as links', () => {
       renderIndividualOfferNavigation({ path })
 
-      expect(
-        screen.getByRole('link', { name: LABELS.BOOKING })
-      ).toBeInTheDocument()
+      const steps = screen.getAllByRole('listitem')
+      const links = screen.getAllByRole('link')
+      expect(steps.length).toEqual(links.length)
+    })
+
+    it('should display "Réservation" step', () => {
+      renderIndividualOfferNavigation({ path })
+
+      const bookingStep = screen
+        .getAllByRole('listitem')
+        .find((listitem) => listitem.textContent?.match(LABELS.BOOKING))
+      expect(bookingStep).toBeDefined()
     })
 
     it('should never display "Récapitulatif" step', () => {
       renderIndividualOfferNavigation({ path })
 
-      expect(
-        screen.queryByRole('link', { name: LABELS.SUMMARY })
-      ).not.toBeInTheDocument()
+      const summaryStep = screen
+        .getAllByRole('listitem')
+        .find((listitem) => listitem.textContent?.match(LABELS.SUMMARY))
+      expect(summaryStep).not.toBeDefined()
     })
   })
 
@@ -343,11 +279,11 @@ describe('IndividualOfferNavigation', () => {
     // Will be merged once the feature is enabled in production.
     const FF_LABELS = {
       links: {
-        DESCRIPTION: /\d Description/,
-        LOCALISATION: /\d Localisation/,
-        PRICE_LIST: /\d Tarifs/,
-        TIMETABLE: /\d Horaires/,
-        SUMMARY: /\d Récapitulatif/,
+        DESCRIPTION: /Description/,
+        LOCALISATION: /Localisation/,
+        PRICE_LIST: /Tarifs/,
+        TIMETABLE: /Horaires/,
+        SUMMARY: /Récapitulatif/,
       },
     }
 
@@ -368,21 +304,32 @@ describe('IndividualOfferNavigation', () => {
 
       renderIndividualOfferNavigation({ contextValues, options })
 
+      const steps = screen.getAllByRole('listitem')
       expect(
-        screen.getByRole('link', { name: FF_LABELS.links.DESCRIPTION })
-      ).toBeInTheDocument()
+        steps.find((listitem) =>
+          listitem.textContent?.match(FF_LABELS.links.DESCRIPTION)
+        )
+      ).toBeDefined()
       expect(
-        screen.getByRole('link', { name: FF_LABELS.links.LOCALISATION })
-      ).toBeInTheDocument()
+        steps.find((listitem) =>
+          listitem.textContent?.match(FF_LABELS.links.LOCALISATION)
+        )
+      ).toBeDefined()
       expect(
-        screen.getByRole('link', { name: FF_LABELS.links.PRICE_LIST })
-      ).toBeInTheDocument()
+        steps.find((listitem) =>
+          listitem.textContent?.match(FF_LABELS.links.PRICE_LIST)
+        )
+      ).toBeDefined()
       expect(
-        screen.getByRole('link', { name: FF_LABELS.links.TIMETABLE })
-      ).toBeInTheDocument()
+        steps.find((listitem) =>
+          listitem.textContent?.match(FF_LABELS.links.TIMETABLE)
+        )
+      ).toBeDefined()
       expect(
-        screen.getByRole('link', { name: FF_LABELS.links.SUMMARY })
-      ).toBeInTheDocument()
+        steps.find((listitem) =>
+          listitem.textContent?.match(FF_LABELS.links.SUMMARY)
+        )
+      ).toBeDefined()
     })
 
     it('should display the expected steps when the offer is NOT an event', () => {
@@ -392,21 +339,32 @@ describe('IndividualOfferNavigation', () => {
 
       renderIndividualOfferNavigation({ contextValues, options })
 
+      const steps = screen.getAllByRole('listitem')
       expect(
-        screen.getByRole('link', { name: FF_LABELS.links.DESCRIPTION })
-      ).toBeInTheDocument()
+        steps.find((listitem) =>
+          listitem.textContent?.match(FF_LABELS.links.DESCRIPTION)
+        )
+      ).toBeDefined()
       expect(
-        screen.getByRole('link', { name: FF_LABELS.links.LOCALISATION })
-      ).toBeInTheDocument()
+        steps.find((listitem) =>
+          listitem.textContent?.match(FF_LABELS.links.LOCALISATION)
+        )
+      ).toBeDefined()
       expect(
-        screen.getByRole('link', { name: FF_LABELS.links.PRICE_LIST })
-      ).toBeInTheDocument()
+        steps.find((listitem) =>
+          listitem.textContent?.match(FF_LABELS.links.PRICE_LIST)
+        )
+      ).toBeDefined()
       expect(
-        screen.queryByRole('link', { name: FF_LABELS.links.TIMETABLE })
-      ).not.toBeInTheDocument()
+        steps.find((listitem) =>
+          listitem.textContent?.match(FF_LABELS.links.TIMETABLE)
+        )
+      ).toBeDefined()
       expect(
-        screen.getByRole('link', { name: FF_LABELS.links.SUMMARY })
-      ).toBeInTheDocument()
+        steps.find((listitem) =>
+          listitem.textContent?.match(FF_LABELS.links.SUMMARY)
+        )
+      ).toBeDefined()
     })
   })
 })

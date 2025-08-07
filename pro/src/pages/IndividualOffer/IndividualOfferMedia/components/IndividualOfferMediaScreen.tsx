@@ -24,6 +24,7 @@ import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
 import { getIndividualOfferImage } from '@/components/IndividualOffer/utils/getIndividualOfferImage'
+import { updateLocalStorageWithLastSubmittedStep } from '@/components/IndividualOfferLayout/IndividualOfferNavigation/utils/handleLastSubmittedStep'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
@@ -146,6 +147,13 @@ export const IndividualOfferMediaScreen = ({
         nextStep = offer.isEvent
           ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
           : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
+
+        if (mode === OFFER_WIZARD_MODE.CREATION) {
+          updateLocalStorageWithLastSubmittedStep(
+            offer.id,
+            INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA
+          )
+        }
       }
 
       await navigate(

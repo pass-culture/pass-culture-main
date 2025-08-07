@@ -26,6 +26,7 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { getIndividualOfferImage } from '@/components/IndividualOffer/utils/getIndividualOfferImage'
+import { updateLocalStorageWithLastSubmittedStep } from '@/components/IndividualOfferLayout/IndividualOfferNavigation/utils/handleLastSubmittedStep'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import {
@@ -146,6 +147,11 @@ export const IndividualOfferDetailsScreen = ({
             formValues,
             isNewOfferCreationFlowFeatureActive
           )
+        )
+
+        updateLocalStorageWithLastSubmittedStep(
+          response.id,
+          INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS
         )
       } else if (!shouldNotPatchData && initialOfferId) {
         response = await api.patchDraftOffer(

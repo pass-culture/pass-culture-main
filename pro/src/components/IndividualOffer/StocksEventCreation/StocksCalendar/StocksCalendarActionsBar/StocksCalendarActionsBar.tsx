@@ -10,6 +10,7 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { useNotification } from '@/commons/hooks/useNotification'
 import { pluralize } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
+import { updateLocalStorageWithLastSubmittedStep } from '@/components/IndividualOfferLayout/IndividualOfferNavigation/utils/handleLastSubmittedStep'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
@@ -44,7 +45,7 @@ export function StocksCalendarActionsBar({
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
-          offerId: offerId,
+          offerId,
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
@@ -55,7 +56,7 @@ export function StocksCalendarActionsBar({
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
       getIndividualOfferUrl({
-        offerId: offerId,
+        offerId,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
         mode,
         isOnboarding,
@@ -74,12 +75,19 @@ export function StocksCalendarActionsBar({
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
       getIndividualOfferUrl({
-        offerId: offerId,
+        offerId,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
         mode,
         isOnboarding,
       })
     )
+
+    if (mode === OFFER_WIZARD_MODE.CREATION) {
+      updateLocalStorageWithLastSubmittedStep(
+        offerId,
+        INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
+      )
+    }
   }
 
   if (mode === OFFER_WIZARD_MODE.READ_ONLY) {

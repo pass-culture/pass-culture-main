@@ -1,13 +1,14 @@
 import cn from 'classnames'
 import React, { useLayoutEffect, useRef, useState } from 'react'
 
+import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from '@/commons/core/Offers/constants'
 import { findLastIndex } from '@/commons/utils/findLastIndex'
 import { StepContent } from '@/components/Stepper/StepContent'
 
 import styles from './Stepper.module.scss'
 
 export type Step = {
-  id: string
+  id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
   label: React.ReactNode
   onClick?: (e: React.MouseEvent) => void
   url?: string
@@ -15,10 +16,8 @@ export type Step = {
 }
 
 export interface StepPattern {
-  id: string
+  id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
   label: string | React.ReactNode
-  path?: string
-  isActive: boolean
 }
 
 export interface StepperProps {
