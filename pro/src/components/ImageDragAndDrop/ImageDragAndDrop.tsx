@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { ForwardedRef, forwardRef, useState } from 'react'
+import { ForwardedRef, forwardRef, useId, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
 import fullValidateIcon from '@/icons/full-validate.svg'
@@ -213,6 +213,7 @@ export const ImageDragAndDrop = forwardRef(
     // and let us define input style.
     inputProps.tabIndex = 0
     inputProps.disabled = disabled
+    inputProps.id = useId()
     delete inputProps.style
 
     const errors = fileRejections.reduce(
@@ -281,6 +282,7 @@ export const ImageDragAndDrop = forwardRef(
                   <label
                     id="drag-and-drop-label"
                     className={styles['image-drag-and-drop-text-highlight']}
+                    htmlFor={inputProps.id}
                   >
                     Importez une image
                   </label>
