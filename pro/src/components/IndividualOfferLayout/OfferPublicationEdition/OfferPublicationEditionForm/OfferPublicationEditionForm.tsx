@@ -175,7 +175,7 @@ export function OfferPublicationEditionForm({
           />
           <RadioButtonGroup
             className={styles['group']}
-            label="Quand votre offre pourra être réservable&nbsp;?"
+            label="Quand votre offre pourra-t-elle être réservable&nbsp;?"
             name="bookingAllowedMode"
             variant="detailed"
             disabled={isPaused}
