@@ -369,6 +369,9 @@ export const SelectAutocomplete = forwardRef(
             value={field || ''}
             onChange={() => {}} // Silent React warning that is irrelevant here
             data-testid="select"
+            // No matter this is hidden,
+            // this is to fix : "A form field element should have an id or name attribute"
+            name={name}
           >
             {options.map(({ label, value }) => (
               <option key={`option-${value}`} value={value}>

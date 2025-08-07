@@ -10,7 +10,7 @@ import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividua
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import { Step, StepPattern, Stepper } from '@/components/Stepper/Stepper'
+import { Step, Stepper } from '@/components/Stepper/Stepper'
 import {
   getOfferSubtypeFromParam,
   isOfferSubtypeEvent,
@@ -18,8 +18,7 @@ import {
 import { NavLinkItems } from '@/ui-kit/NavLinkItems/NavLinkItems'
 
 import styles from './IndividualOfferNavigation.module.scss'
-import { LabelBooking } from './LabelBooking/LabelBooking'
-import { getSteps } from './utils/getSteps'
+import { getSteps, StepPattern } from './utils/getSteps'
 import { getLastSubmittedStep } from './utils/handleLastSubmittedStep'
 
 export const IndividualOfferNavigation = () => {
@@ -67,7 +66,7 @@ export const IndividualOfferNavigation = () => {
       if (canBeClicked) {
         step.url = generatePath(
           getIndividualOfferPath({
-            step: step.id,
+            step: id,
             mode,
             isOnboarding,
           }),

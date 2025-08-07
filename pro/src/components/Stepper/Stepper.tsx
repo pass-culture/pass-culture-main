@@ -8,16 +8,11 @@ import { StepContent } from '@/components/Stepper/StepContent'
 import styles from './Stepper.module.scss'
 
 export type Step = {
-  id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
+  id: string
   label: React.ReactNode
   onClick?: (e: React.MouseEvent) => void
   url?: string
   hash?: string
-}
-
-export interface StepPattern {
-  id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
-  label: string | React.ReactNode
 }
 
 export interface StepperProps {

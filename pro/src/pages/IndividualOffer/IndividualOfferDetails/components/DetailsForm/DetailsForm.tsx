@@ -170,6 +170,10 @@ export const DetailsForm = ({
                 error={errors.name?.message}
                 required
                 disabled={readOnlyFields.includes('name')}
+                // This is so browsers don't raise any issue / improvement
+                // regarding the existence of an <input type="text" name="name" />
+                // that isnt about an user's name to be autofilled.
+                autoComplete="false"
               />
             </FormLayout.Row>
             <FormLayout.Row

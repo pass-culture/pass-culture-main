@@ -3,7 +3,11 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { StepPattern } from '@/components/Stepper/Stepper'
+
+export interface StepPattern {
+  id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
+  label: string | React.ReactNode
+}
 
 import { LabelBooking } from '../LabelBooking/LabelBooking'
 
