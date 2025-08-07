@@ -11,8 +11,8 @@ import {
   SignupJourneyContext,
   SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
-import * as siretApiValidate from '@/commons/core/Venue/siretApiValidate'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { structureDataBodyModelFactory } from '@/commons/utils/factories/userOfferersFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 
@@ -24,8 +24,6 @@ import { Offerer } from '../Offerer'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
-
-vi.spyOn(siretApiValidate, 'siretApiValidate').mockResolvedValue(null)
 
 // Mock l’appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
 // Appel fait dans getDataFromAddress
@@ -87,18 +85,9 @@ describe('Offerer', () => {
       venues: [],
     })
 
-    vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
-      active: true,
-      address: {
-        city: 'Paris',
-        postalCode: '75008',
-        street: 'rue du test',
-      },
-      name: 'Test',
-      siret: '12345678933333',
-      ape_code: '95.01A',
-      legal_category_code: '1000',
-    })
+    vi.spyOn(api, 'getStructureData').mockResolvedValue(
+      structureDataBodyModelFactory()
+    )
   })
 
   it('should render component', async () => {
@@ -140,6 +129,7 @@ describe('Offerer', () => {
       siret: '12345678933333',
       name: 'Test',
       hasVenueWithSiret: false,
+      isDiffusible: true,
       ...DEFAULT_ADDRESS_FORM_VALUES,
     }
 
@@ -148,7 +138,7 @@ describe('Offerer', () => {
   })
 
   it('should not display authentication screen on submit with form error', async () => {
-    vi.spyOn(api, 'getSiretInfo').mockRejectedValue(
+    vi.spyOn(api, 'getStructureData').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -173,7 +163,7 @@ describe('Offerer', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
     expect(await screen.findByText("Le SIRET n'existe pas")).toBeInTheDocument()
-    expect(api.getSiretInfo).toHaveBeenCalled()
+    expect(api.getStructureData).toHaveBeenCalled()
     expect(screen.queryByText('Authentication screen')).not.toBeInTheDocument()
     expect(
       screen.getByText('Dites-nous pour quelle structure vous travaillez')
@@ -219,6 +209,7 @@ describe('Offerer', () => {
       name: 'name',
       siret: '12345678933333',
       hasVenueWithSiret: true,
+      isDiffusible: true,
       ...DEFAULT_ADDRESS_FORM_VALUES,
     }
     renderOffererScreen(contextValue)
@@ -233,6 +224,7 @@ describe('Offerer', () => {
       name: 'name',
       siret: '12345678933333',
       hasVenueWithSiret: false,
+      isDiffusible: true,
       ...DEFAULT_ADDRESS_FORM_VALUES,
     }
     renderOffererScreen(contextValue)
@@ -266,7 +258,7 @@ describe('Offerer', () => {
   })
 
   it('should display BannerInvisibleSiren on error 400 with specific message', async () => {
-    vi.spyOn(api, 'getSiretInfo').mockRejectedValueOnce(
+    vi.spyOn(api, 'getStructureData').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -298,7 +290,7 @@ describe('Offerer', () => {
     })
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
-    expect(api.getSiretInfo).toHaveBeenCalled()
+    expect(api.getStructureData).toHaveBeenCalled()
     expect(
       screen.getByText('Modifier la visibilité de mon SIRET')
     ).toBeInTheDocument()
@@ -311,7 +303,7 @@ describe('Offerer', () => {
       screen.getByLabelText('Numéro de SIRET à 14 chiffres *')
     )
     await userEvent.tab()
-    expect(api.getSiretInfo).not.toHaveBeenCalled()
+    expect(api.getStructureData).not.toHaveBeenCalled()
 
     await userEvent.type(
       screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
@@ -319,14 +311,14 @@ describe('Offerer', () => {
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
-    expect(api.getSiretInfo).toHaveBeenCalled()
+    expect(api.getStructureData).toHaveBeenCalled()
     expect(
       screen.queryByText('Il semblerait que tu ne sois pas')
     ).not.toBeInTheDocument()
   })
 
   it('should not display MaybeAppUserDialog component if siret is incorrect', async () => {
-    vi.spyOn(api, 'getSiretInfo').mockRejectedValue(
+    vi.spyOn(api, 'getStructureData').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -350,25 +342,16 @@ describe('Offerer', () => {
     })
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
-    expect(api.getSiretInfo).toHaveBeenCalled()
+    expect(api.getStructureData).toHaveBeenCalled()
     expect(
       screen.queryByText('Il semblerait que tu ne sois pas')
     ).not.toBeInTheDocument()
   })
 
   it('should display MaybeAppUserDialog and hide on cancel button', async () => {
-    vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
-      active: true,
-      address: {
-        city: 'Paris',
-        postalCode: '75008',
-        street: 'rue du test',
-      },
-      name: 'Test',
-      siret: '12345678933335',
-      ape_code: '85.31Z',
-      legal_category_code: '1000',
-    })
+    vi.spyOn(api, 'getStructureData').mockResolvedValue(
+      structureDataBodyModelFactory({ apeCode: '85.31Z' })
+    )
     renderOffererScreen(contextValue)
 
     await userEvent.type(
@@ -377,7 +360,7 @@ describe('Offerer', () => {
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
-    expect(api.getSiretInfo).toHaveBeenCalled()
+    expect(api.getStructureData).toHaveBeenCalled()
 
     await waitFor(() => {
       expect(
@@ -399,7 +382,7 @@ describe('Offerer', () => {
   })
 
   it("should render error message when siret doesn't exist", async () => {
-    vi.spyOn(api, 'getSiretInfo').mockRejectedValueOnce(
+    vi.spyOn(api, 'getStructureData').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -421,7 +404,7 @@ describe('Offerer', () => {
   })
 
   it('should render error message when siret is not visible', async () => {
-    vi.spyOn(api, 'getSiretInfo').mockRejectedValueOnce(
+    vi.spyOn(api, 'getStructureData').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {

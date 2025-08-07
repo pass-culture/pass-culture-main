@@ -47,6 +47,7 @@ export const OffererAuthentication = (): JSX.Element => {
       city: removeQuotes(formValues.city),
       street: removeQuotes(formValues.street),
       hasVenueWithSiret: false,
+      isDiffusible: offerer?.isDiffusible || true, // TODO: abouabdallaoui-pass handle with assertOrFrontendError ?
     })
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/inscription/structure/activite')
