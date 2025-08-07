@@ -551,13 +551,12 @@ def get_collective_stock(collective_stock_id: int) -> educational_models.Collect
 def get_collective_offers_by_filters(
     filters: schemas.CollectiveOffersFilter,
 ) -> "sa_orm.Query[educational_models.CollectiveOffer]":
-    query = db.session.query(educational_models.CollectiveOffer)
+    query = db.session.query(educational_models.CollectiveOffer).join(educational_models.CollectiveOffer.venue)
 
     if not filters.user_is_admin:
         query = (
-            query.join(offerers_models.Venue)
-            .join(offerers_models.Offerer)
-            .join(offerers_models.UserOfferer)
+            query.join(offerers_models.Venue.managingOfferer)
+            .join(offerers_models.Offerer.UserOfferers)
             .filter(
                 offerers_models.UserOfferer.userId == filters.user_id,
                 offerers_models.UserOfferer.isValidated,
@@ -565,8 +564,6 @@ def get_collective_offers_by_filters(
         )
 
     if filters.offerer_id is not None:
-        if filters.user_is_admin:
-            query = query.join(offerers_models.Venue)
         query = query.filter(offerers_models.Venue.managingOffererId == filters.offerer_id)
 
     if filters.venue_id is not None:
@@ -644,16 +641,17 @@ def get_collective_offers_by_filters(
 
 
 def get_collective_offers_template_by_filters(filters: schemas.CollectiveOffersFilter) -> sa_orm.Query:
-    query = db.session.query(educational_models.CollectiveOfferTemplate)
+    query = db.session.query(educational_models.CollectiveOfferTemplate).join(
+        educational_models.CollectiveOfferTemplate.venue
+    )
 
     if filters.period_beginning_date is not None or filters.period_ending_date is not None:
         query = query.filter(sa.false())
 
     if not filters.user_is_admin:
         query = (
-            query.join(offerers_models.Venue)
-            .join(offerers_models.Offerer)
-            .join(offerers_models.UserOfferer)
+            query.join(offerers_models.Venue.managingOfferer)
+            .join(offerers_models.Offerer.UserOfferers)
             .filter(
                 offerers_models.UserOfferer.userId == filters.user_id,
                 offerers_models.UserOfferer.isValidated,
@@ -661,8 +659,6 @@ def get_collective_offers_template_by_filters(filters: schemas.CollectiveOffersF
         )
 
     if filters.offerer_id is not None:
-        if filters.user_is_admin:
-            query = query.join(offerers_models.Venue)
         query = query.filter(offerers_models.Venue.managingOffererId == filters.offerer_id)
 
     if filters.venue_id is not None:
