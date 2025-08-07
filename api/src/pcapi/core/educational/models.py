@@ -684,6 +684,8 @@ class CollectiveOffer(
     locationType: sa_orm.Mapped[CollectiveLocationType | None] = sa.Column(
         db_utils.MagicEnum(CollectiveLocationType), nullable=True, server_default=None, default=None
     )
+    sa.Index("ix_collective_offer_locationType_offererAddressId", locationType, offererAddressId)
+
     locationComment: sa_orm.Mapped[str | None] = sa.Column(sa.Text(), nullable=True)
 
     @sa_orm.declared_attr
