@@ -12,7 +12,7 @@ export type FrontendErrorOptions = Partial<{
    */
   isSilent: boolean
   /**
-   * End-user message to display when `shouldNotifyUser` is true.
+   * End-user message to display (unless `isSilent` is set to `true`).
    * @default "Une erreur est survenue de notre côté. Veuillez réessayer plus tard."
    */
   userMessage: string
