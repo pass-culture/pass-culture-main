@@ -108,7 +108,10 @@ export const DetailsForm = ({
     }
 
     const venue = venues.find((venue) => venue.id === Number(venueId))
-    assert(venue, `Venue with id ${venueId} not found in venues.`)
+    if (!venue) {
+      // TODO (igabriele, 2025-07-16): Handle that more gracefully once we have agreed on how to handle it.
+      throw new Error(`Venue with id ${venueId} not found in venues.`)
+    }
 
     const { accessibility } = getAccessibilityInfoFromVenue(venue)
     setValue('accessibility', accessibility)
@@ -167,6 +170,10 @@ export const DetailsForm = ({
                 error={errors.name?.message}
                 required
                 disabled={readOnlyFields.includes('name')}
+                // This is so browsers don't raise any issue / improvement
+                // regarding the existence of an <input type="text" name="name" />
+                // that isnt about an user's name to be autofilled.
+                autoComplete="false"
               />
             </FormLayout.Row>
             <FormLayout.Row
