@@ -398,21 +398,18 @@ def get_offers_by_filters(
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
 ) -> sa_orm.Query:
-    query = db.session.query(models.Offer)
+    query = db.session.query(models.Offer).join(models.Offer.venue)
 
     if not user_is_admin:
         query = (
-            query.join(offerers_models.Venue)
-            .join(offerers_models.Offerer)
-            .join(offerers_models.UserOfferer)
+            query.join(offerers_models.Venue.managingOfferer)
+            .join(offerers_models.Offerer.UserOfferers)
             .filter(
                 offerers_models.UserOfferer.userId == user_id,
                 offerers_models.UserOfferer.isValidated,
             )
         )
     if offerer_id is not None:
-        if user_is_admin:
-            query = query.join(offerers_models.Venue)
         query = query.filter(offerers_models.Venue.managingOffererId == offerer_id)
     if venue_id is not None:
         query = query.filter(models.Offer.venueId == venue_id)
