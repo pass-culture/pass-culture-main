@@ -29,7 +29,7 @@ from . import forms
 titelive_blueprint = utils.child_backoffice_blueprint(
     "titelive",
     __name__,
-    url_prefix="/pro/titelive",
+    url_prefix="/catalogue/titelive",
     permission=perm_models.Permissions.READ_OFFERS,
 )
 
