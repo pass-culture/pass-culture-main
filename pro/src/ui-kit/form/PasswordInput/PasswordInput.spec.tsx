@@ -2,11 +2,11 @@ import { screen, within } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { PasswordInput, PasswordInputProps } from './PasswordInput'
+import { PasswordInput, type PasswordInputProps } from './PasswordInput'
 
 const defaultProps: PasswordInputProps = {
   label: 'Mot de passe',

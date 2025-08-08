@@ -1,4 +1,4 @@
-import { StoryObj } from '@storybook/react'
+import type { StoryObj } from '@storybook/react'
 import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
@@ -8,7 +8,7 @@ import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
-import { BoxFormLayout, BoxFormLayoutProps } from './BoxFormLayout'
+import { BoxFormLayout, type BoxFormLayoutProps } from './BoxFormLayout'
 
 export default {
   title: '@/ui-kit/BoxFormLayout',

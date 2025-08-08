@@ -7,14 +7,14 @@ import { expect, vi } from 'vitest'
 import { api } from '@/apiClient/api'
 import * as siretApiValidate from '@/commons/core/Venue/siretApiValidate'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { Button } from '@/ui-kit/Button/Button'
 
 import {
   SiretOrCommentFields,
-  SiretOrCommentFieldsProps,
+  type SiretOrCommentFieldsProps,
 } from '../SiretOrCommentFields'
 import { generateSiretValidationSchema } from '../validationSchema'
 

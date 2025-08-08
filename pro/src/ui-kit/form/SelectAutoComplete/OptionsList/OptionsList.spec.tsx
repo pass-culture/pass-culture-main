@@ -3,11 +3,11 @@ import userEvent from '@testing-library/user-event'
 import { createRef } from 'react'
 
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { OptionsList, OptionsListProps } from './OptionsList'
+import { OptionsList, type OptionsListProps } from './OptionsList'
 
 const DEFAULT_PROPS: OptionsListProps = {
   fieldName: 'departement',

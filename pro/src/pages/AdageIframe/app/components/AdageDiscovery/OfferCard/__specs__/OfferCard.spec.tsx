@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 
 import {
-  AuthenticatedResponse,
+  type AuthenticatedResponse,
   CollectiveLocationType,
   OfferAddressType,
 } from '@/apiClient/adage'
@@ -14,12 +14,12 @@ import {
   defaultCollectiveTemplateOffer,
 } from '@/commons/utils/factories/adageFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
-import { CardComponentProps, OfferCardComponent } from '../OfferCard'
+import { type CardComponentProps, OfferCardComponent } from '../OfferCard'
 
 vi.mock('@/apiClient/api', () => ({
   apiAdage: {

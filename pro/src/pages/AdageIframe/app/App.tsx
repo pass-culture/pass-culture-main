@@ -4,8 +4,8 @@ import useSWRMutation from 'swr/mutation'
 
 import {
   AdageFrontRoles,
-  AuthenticatedResponse,
-  CatalogViewBody,
+  type AuthenticatedResponse,
+  type CatalogViewBody,
 } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { LOG_CATALOG_VIEW_QUERY_KEY } from '@/commons/config/swrQueryKeys'

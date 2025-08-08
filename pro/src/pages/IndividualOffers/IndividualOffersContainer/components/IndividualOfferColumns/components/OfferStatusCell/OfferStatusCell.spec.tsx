@@ -5,11 +5,11 @@ import { OfferStatus } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import { listOffersOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { OfferStatusCell, OfferStatusCellProps } from './OfferStatusCell'
+import { OfferStatusCell, type OfferStatusCellProps } from './OfferStatusCell'
 
 function renderOfferStatusCell(
   props: OfferStatusCellProps,

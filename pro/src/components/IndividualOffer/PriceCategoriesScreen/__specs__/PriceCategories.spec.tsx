@@ -6,7 +6,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   PriceCategoriesScreen,
-  PriceCategoriesScreenProps,
+  type PriceCategoriesScreenProps,
 } from '../PriceCategoriesScreen'
 
 const renderPriceCategories = (props: PriceCategoriesScreenProps) =>

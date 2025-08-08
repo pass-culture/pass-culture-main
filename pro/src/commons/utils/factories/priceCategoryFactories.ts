@@ -1,4 +1,4 @@
-import {
+import type {
   PriceCategoriesFormValues,
   PriceCategoryForm,
 } from '@/components/IndividualOffer/PriceCategoriesScreen/form/types'

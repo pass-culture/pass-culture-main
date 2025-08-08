@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import * as storageAvailable from '@/commons/utils/storageAvailable'

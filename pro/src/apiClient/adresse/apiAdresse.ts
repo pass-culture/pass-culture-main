@@ -1,8 +1,8 @@
 import { ApiError } from '@/apiClient/v1'
-import { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 
 import { API_ADRESSE_BASE_URL } from './constants'
-import { AdresseApiJson, AdresseData, FeaturePropertyType } from './types'
+import type { AdresseApiJson, AdresseData, FeaturePropertyType } from './types'
 
 const handleApiError = async (
   response: Response,

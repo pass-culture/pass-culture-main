@@ -5,7 +5,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   CollectiveBookingStatusCell,
-  CollectiveBookingStatusCellProps,
+  type CollectiveBookingStatusCellProps,
 } from '../CollectiveBookingStatusCell'
 
 const renderCollectiveBookingStatusCell = (

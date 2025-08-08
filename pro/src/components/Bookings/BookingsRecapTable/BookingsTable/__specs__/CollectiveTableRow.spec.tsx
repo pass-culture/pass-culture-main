@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from '@/apiClient/api'
 import {
   CancelablePromise,
-  CollectiveBookingByIdResponseModel,
+  type CollectiveBookingByIdResponseModel,
 } from '@/apiClient/v1'
 import {
   collectiveBookingByIdFactory,
@@ -15,7 +15,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   CollectiveTableRow,
-  CollectiveTableRowProps,
+  type CollectiveTableRowProps,
 } from '../CollectiveTableRow'
 
 vi.mock('@/apiClient/api')

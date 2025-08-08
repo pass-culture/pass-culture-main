@@ -1,4 +1,4 @@
-import {
+import type {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from '@/apiClient/v1'

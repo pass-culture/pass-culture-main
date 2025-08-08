@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
-  GetOffererResponseModel,
+  type GetOffererResponseModel,
 } from '@/apiClient/v1'
 import {
   getCollectiveOfferBookingFactory,

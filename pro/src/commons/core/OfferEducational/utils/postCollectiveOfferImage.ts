@@ -1,7 +1,7 @@
 import { api } from '@/apiClient/api'
-import { useNotification } from '@/commons/hooks/useNotification'
+import type { useNotification } from '@/commons/hooks/useNotification'
 
-import { OfferEducationalFormValues } from '../types'
+import type { OfferEducationalFormValues } from '../types'
 
 interface PostCollectiveOfferImageProps {
   initialValues: OfferEducationalFormValues

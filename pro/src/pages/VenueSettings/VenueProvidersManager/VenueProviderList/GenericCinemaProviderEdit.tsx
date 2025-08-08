@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
-import {
+import type {
   GetVenueResponseModel,
   PostVenueProviderBody,
   VenueProviderResponse,
@@ -16,7 +16,7 @@ import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import {
   GenericCinemaProviderForm,
-  GenericCinemaProviderFormValues,
+  type GenericCinemaProviderFormValues,
 } from '../GenericCinemaProviderForm/GenericCinemaProviderForm'
 import styles from './GenericCinemaProviderEdit.module.scss'
 

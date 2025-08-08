@@ -1,4 +1,4 @@
-import { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 import { OFFER_STATUS_PENDING } from '@/commons/core/Offers/constants'
 import { isDateValid } from '@/commons/utils/date'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'

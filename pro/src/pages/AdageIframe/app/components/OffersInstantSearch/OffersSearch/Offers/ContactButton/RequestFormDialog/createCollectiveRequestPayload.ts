@@ -1,7 +1,7 @@
-import { PostCollectiveRequestBodyModel } from '@/apiClient/adage'
+import type { PostCollectiveRequestBodyModel } from '@/apiClient/adage'
 import { isDateValid } from '@/commons/utils/date'
 
-import { RequestFormValues } from './type'
+import type { RequestFormValues } from './type'
 
 export const createCollectiveRequestPayload = (
   formValues: RequestFormValues

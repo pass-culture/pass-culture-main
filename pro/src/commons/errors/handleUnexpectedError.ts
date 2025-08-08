@@ -4,8 +4,8 @@ import { NotificationTypeEnum } from 'commons/hooks/useNotification'
 import { showNotification } from 'commons/store/notifications/reducer'
 import { rootStore } from 'commons/store/store'
 
-import { FrontendError } from './FrontendError'
-import { FrontendErrorOptions } from './types'
+import type { FrontendError } from './FrontendError'
+import type { FrontendErrorOptions } from './types'
 
 const DEFAULT_OPTIONS: FrontendErrorOptions = {
   isSilent: false,

@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React from 'react'
+import type React from 'react'
 
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 

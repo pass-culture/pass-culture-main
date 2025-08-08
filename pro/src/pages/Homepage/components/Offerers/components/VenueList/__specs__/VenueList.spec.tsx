@@ -6,7 +6,7 @@ import {
 } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { VenueList, VenueListProps } from '../VenueList'
+import { VenueList, type VenueListProps } from '../VenueList'
 
 const renderVenueList = (props: Partial<VenueListProps> = {}) => {
   renderWithProviders(

@@ -1,10 +1,10 @@
-import {
+import type {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from '@/apiClient/v1'
 
 import { EMPTY_FILTER_VALUE } from '../Filters/constants'
-import { BookingsFilters } from '../types'
+import type { BookingsFilters } from '../types'
 
 const doesOfferNameMatchFilter = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,

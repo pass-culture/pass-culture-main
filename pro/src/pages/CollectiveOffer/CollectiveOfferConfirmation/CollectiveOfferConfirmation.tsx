@@ -4,7 +4,7 @@ import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeav
 import { CollectiveOfferConfirmationScreen } from '@/pages/CollectiveOffer/CollectiveOfferConfirmation/CollectiveOfferConfirmation/CollectiveOfferConfirmation'
 
 import {
-  MandatoryCollectiveOfferFromParamsProps,
+  type MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from '../CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 

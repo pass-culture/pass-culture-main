@@ -1,5 +1,6 @@
 /* istanbul ignore file */
-import React, { useState } from 'react'
+import type React from 'react'
+import { useState } from 'react'
 
 import { BaseInput } from '@/ui-kit/form/shared/BaseInput/BaseInput'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'

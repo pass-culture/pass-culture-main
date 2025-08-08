@@ -1,6 +1,6 @@
-import { IndividualOfferImage } from '@/commons/core/Offers/types'
-import { UploadImageValues } from '@/commons/utils/imageUploadTypes'
-import { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import type { IndividualOfferImage } from '@/commons/core/Offers/types'
+import type { UploadImageValues } from '@/commons/utils/imageUploadTypes'
+import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 
 export const buildInitialValues = (
   imageOffer?: IndividualOfferImage | OnImageUploadArgs

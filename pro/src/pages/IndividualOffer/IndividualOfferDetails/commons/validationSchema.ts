@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { DetailsFormValues } from './types'
+import type { DetailsFormValues } from './types'
 
 const eanValidation = yup
   .string()

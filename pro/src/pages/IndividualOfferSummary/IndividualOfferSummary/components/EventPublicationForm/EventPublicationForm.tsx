@@ -1,7 +1,7 @@
-import { type ChangeEvent } from 'react'
+import type { ChangeEvent } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
@@ -12,7 +12,7 @@ import { Select } from '@/ui-kit/form/Select/Select'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
 import styles from './EventPublicationForm.module.scss'
-import { EventPublicationFormValues } from './types'
+import type { EventPublicationFormValues } from './types'
 
 const hours = [
   '00',

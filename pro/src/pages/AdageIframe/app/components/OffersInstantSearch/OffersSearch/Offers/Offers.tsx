@@ -10,9 +10,9 @@ import useSWR from 'swr'
 
 import {
   AdageFrontRoles,
-  CollectiveOfferResponseModel,
-  CollectiveOfferTemplateResponseModel,
-  VenueResponse,
+  type CollectiveOfferResponseModel,
+  type CollectiveOfferTemplateResponseModel,
+  type VenueResponse,
 } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -40,7 +40,7 @@ import { CustomPagination } from '../../../Pagination/Pagination'
 import { AdageSkeleton } from '../../../Skeleton/AdageSkeleton'
 import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
 import {
-  ToggleButton,
+  type ToggleButton,
   ToggleButtonGroup,
 } from '../../../ToggleButtonGroup/ToggleButtonGroup'
 import { AdageOfferListCard } from './AdageOfferListCard/AdageOfferListCard'

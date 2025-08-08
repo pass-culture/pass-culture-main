@@ -8,7 +8,7 @@ import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactori
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import {
   ActionBar,
-  ActionBarProps,
+  type ActionBarProps,
 } from '@/components/SignupJourneyForm/ActionBar/ActionBar'
 import { OnboardingFormNavigationAction } from '@/components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'

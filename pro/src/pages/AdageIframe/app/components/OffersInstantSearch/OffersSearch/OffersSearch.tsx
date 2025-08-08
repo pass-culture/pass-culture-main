@@ -1,11 +1,17 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
+import {
+  type Dispatch,
+  type SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useInstantSearch } from 'react-instantsearch'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router'
 import useSWRMutation from 'swr/mutation'
 
-import { AdageFrontRoles, TrackingFilterBody } from '@/apiClient/adage'
+import { AdageFrontRoles, type TrackingFilterBody } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { LOG_TRACKING_FILTER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
@@ -24,7 +30,7 @@ import { useAdageUser } from '@/pages/AdageIframe/app/hooks/useAdageUser'
 import {
   DEFAULT_GEO_RADIUS,
   MAIN_INDEX_ID,
-  SearchFormValues,
+  type SearchFormValues,
 } from '../OffersInstantSearch'
 import { ADAGE_FILTERS_DEFAULT_VALUES, serializeFiltersForData } from '../utils'
 import { Autocomplete } from './Autocomplete/Autocomplete'

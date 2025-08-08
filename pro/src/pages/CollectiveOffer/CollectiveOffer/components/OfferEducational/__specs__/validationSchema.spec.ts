@@ -4,7 +4,7 @@ import {
   OfferAddressType,
   StudentLevels,
 } from '@/apiClient/v1'
-import { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
+import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
 import { getOfferEducationalValidationSchema } from '../validationSchema'

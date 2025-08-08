@@ -4,7 +4,7 @@ import { Mode } from '@/commons/core/OfferEducational/types'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import {
-  MandatoryCollectiveOfferFromParamsProps,
+  type MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'

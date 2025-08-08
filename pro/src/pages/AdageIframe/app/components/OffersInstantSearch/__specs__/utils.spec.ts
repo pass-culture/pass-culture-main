@@ -1,6 +1,6 @@
 import { EacFormat } from '@/apiClient/adage'
 
-import { SearchFormValues } from '../OffersInstantSearch'
+import type { SearchFormValues } from '../OffersInstantSearch'
 import { adageFiltersToFacetFilters, serializeFiltersForData } from '../utils'
 
 const venueFilter = {

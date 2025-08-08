@@ -11,7 +11,7 @@ import {
   CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
-  CollectiveOfferResponseModel,
+  type CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -24,7 +24,7 @@ import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/con
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
-import { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
+import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'

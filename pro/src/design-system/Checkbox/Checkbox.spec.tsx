@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
-import { Checkbox, CheckboxProps } from './Checkbox'
+import { Checkbox, type CheckboxProps } from './Checkbox'
 
 const renderCheckbox = (props: CheckboxProps) => {
   return render(<Checkbox {...props} />)

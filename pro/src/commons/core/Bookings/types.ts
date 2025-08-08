@@ -1,4 +1,4 @@
-import {
+import type {
   BookingStatusFilter,
   CollectiveBookingStatusFilter,
 } from '@/apiClient/v1'

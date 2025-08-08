@@ -1,7 +1,7 @@
-import { CollectiveStockEditionBodyModel } from '@/apiClient/v1'
+import type { CollectiveStockEditionBodyModel } from '@/apiClient/v1'
 import { isEqual } from '@/commons/utils/isEqual'
 
-import { OfferEducationalStockFormValues } from '../types'
+import type { OfferEducationalStockFormValues } from '../types'
 import {
   buildBookingLimitDatetimeForStockPayload,
   buildDatetimeForStockPayload,

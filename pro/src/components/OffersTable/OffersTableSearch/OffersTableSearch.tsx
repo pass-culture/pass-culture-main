@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useState } from 'react'
 
 import {
-  FilterConfigType,
+  type FilterConfigType,
   getStoredFilterConfig,
   useStoredFilterConfig,
 } from '@/components/OffersTable/OffersTableSearch/utils'

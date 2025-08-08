@@ -1,9 +1,9 @@
 import cn from 'classnames'
-import React from 'react'
+import type React from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation, useParams } from 'react-router'
 
-import {
+import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
@@ -55,7 +55,7 @@ export const CollectiveOfferLayout = ({
   const { offerId: offerIdFromParams } = useParams<{
     offerId: string
   }>()
-  let title = isCreation
+  const title = isCreation
     ? isTemplate
       ? 'Créer une offre vitrine'
       : 'Créer une offre réservable'

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { SaveNewOnboardingDataQueryModel, Target } from '@/apiClient/v1'
+import { type SaveNewOnboardingDataQueryModel, Target } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { MainHeading } from '@/app/App/layout/Layout'
 import { GET_VENUE_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'

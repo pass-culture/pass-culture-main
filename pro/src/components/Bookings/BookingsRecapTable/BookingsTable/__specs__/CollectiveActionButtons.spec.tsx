@@ -4,8 +4,8 @@ import { addDays } from 'date-fns'
 
 import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/v1'
-import { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import { BOOKING_STATUS } from '@/commons/core/Bookings/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
 import * as useNotification from '@/commons/hooks/useNotification'
@@ -17,7 +17,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   CollectiveActionButtons,
-  CollectiveActionButtonsProps,
+  type CollectiveActionButtonsProps,
 } from '../CollectiveActionButtons'
 
 const renderCollectiveActionButtons = (

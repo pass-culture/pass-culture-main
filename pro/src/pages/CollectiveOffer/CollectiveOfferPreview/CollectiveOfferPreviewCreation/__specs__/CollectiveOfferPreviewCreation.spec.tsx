@@ -16,11 +16,11 @@ import {
   userOffererFactory,
 } from '@/commons/utils/factories/userOfferersFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
-import { MandatoryCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+import type { MandatoryCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
 import { CollectiveOfferPreviewCreation } from '../CollectiveOfferPreviewCreation'
 

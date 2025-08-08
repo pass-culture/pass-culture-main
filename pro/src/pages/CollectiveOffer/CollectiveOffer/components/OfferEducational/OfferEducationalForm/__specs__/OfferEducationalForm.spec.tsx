@@ -9,7 +9,7 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
 import {
   Mode,
-  OfferEducationalFormValues,
+  type OfferEducationalFormValues,
 } from '@/commons/core/OfferEducational/types'
 import * as hooks from '@/commons/hooks/swr/useOfferer'
 import { getCollectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
@@ -20,13 +20,13 @@ import {
 } from '@/commons/utils/factories/userOfferersFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
 import {
   OfferEducationalForm,
-  OfferEducationalFormProps,
+  type OfferEducationalFormProps,
 } from '../OfferEducationalForm'
 
 function renderOfferEducationalForm(

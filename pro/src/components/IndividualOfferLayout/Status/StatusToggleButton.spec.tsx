@@ -9,13 +9,13 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
 import {
   StatusToggleButton,
-  StatusToggleButtonProps,
+  type StatusToggleButtonProps,
 } from './StatusToggleButton'
 
 const mockLogEvent = vi.fn()

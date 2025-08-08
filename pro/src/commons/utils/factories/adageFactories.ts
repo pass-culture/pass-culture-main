@@ -2,12 +2,12 @@ import { addDays } from 'date-fns'
 
 import {
   AdageFrontRoles,
-  AuthenticatedResponse,
+  type AuthenticatedResponse,
   CollectiveLocationType,
-  CollectiveOfferResponseModel,
-  CollectiveOfferTemplateResponseModel,
+  type CollectiveOfferResponseModel,
+  type CollectiveOfferTemplateResponseModel,
   EacFormat,
-  EducationalInstitutionWithBudgetResponseModel,
+  type EducationalInstitutionWithBudgetResponseModel,
   OfferAddressType,
 } from '@/apiClient/adage'
 import { StudentLevels } from '@/apiClient/v1'

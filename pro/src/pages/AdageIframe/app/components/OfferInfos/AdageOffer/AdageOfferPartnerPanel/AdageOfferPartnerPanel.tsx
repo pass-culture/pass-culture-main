@@ -1,4 +1,4 @@
-import {
+import type {
   AuthenticatedResponse,
   CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/adage'

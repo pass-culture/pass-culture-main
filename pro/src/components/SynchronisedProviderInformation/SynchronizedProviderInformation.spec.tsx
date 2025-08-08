@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 
 import {
   SynchronizedProviderInformation,
-  SynchronizedProviderInformationProps,
+  type SynchronizedProviderInformationProps,
 } from './SynchronizedProviderInformation'
 
 const renderSynchronizedProviderInformation = ({

@@ -2,7 +2,7 @@ import { format, sub } from 'date-fns'
 
 import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
-import { useNotification } from '@/commons/hooks/useNotification'
+import type { useNotification } from '@/commons/hooks/useNotification'
 import {
   FORMAT_ISO_DATE_ONLY,
   isDateValid,
@@ -15,7 +15,11 @@ import {
   getDatesWithMonthlyOption,
   isTimeInTheFuture,
 } from './recurrenceUtils'
-import { RecurrenceFormValues, RecurrenceType, StocksEvent } from './types'
+import {
+  type RecurrenceFormValues,
+  RecurrenceType,
+  type StocksEvent,
+} from './types'
 
 type StocksEventWithOptionalId = Omit<StocksEvent, 'id'> & { id?: number }
 

@@ -7,10 +7,10 @@ import {
   useFormContext,
 } from 'react-hook-form'
 
-import { PriceCategoryResponseModel } from '@/apiClient/v1'
+import type { PriceCategoryResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { isDateValid, mapDayToFrench } from '@/commons/utils/date'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -37,9 +37,9 @@ import { computeInitialValues } from './form/computeInitialValues'
 import { isLastWeekOfMonth } from './form/recurrenceUtils'
 import {
   MonthlyOption,
-  QuantityPerPriceCategoryForm,
+  type QuantityPerPriceCategoryForm,
   RecurrenceDays,
-  RecurrenceFormValues,
+  type RecurrenceFormValues,
   RecurrenceType,
 } from './form/types'
 import { getValidationSchema } from './form/validationSchema'
@@ -351,7 +351,7 @@ export const RecurrenceForm = ({
                           tooltipContent={frenchDay}
                           checked={methods.watch('days').includes(day)}
                           onChange={(e) => {
-                            let newDays = new Set(methods.watch('days'))
+                            const newDays = new Set(methods.watch('days'))
                             if (e.target.checked) {
                               newDays.add(day)
                             } else {

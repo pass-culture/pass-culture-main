@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
 import {
-  RenderComponentFunction,
+  type RenderComponentFunction,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 

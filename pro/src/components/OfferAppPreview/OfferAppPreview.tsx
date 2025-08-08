@@ -1,4 +1,4 @@
-import { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { getIndividualOfferImage } from '@/components/IndividualOffer/utils/getIndividualOfferImage'
 import { Markdown } from '@/components/Markdown/Markdown'
 
@@ -29,7 +29,7 @@ export const OfferAppPreview = ({
           <img
             className={style['offer-img']}
             src={image.url}
-            alt="Image de l’offre"
+            alt="Illustration de l’offre"
           />
         ) : (
           <p>Pas d’image</p>

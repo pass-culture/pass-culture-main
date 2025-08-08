@@ -6,9 +6,9 @@ import { onSubmit } from '../onSubmit'
 import {
   MonthlyOption,
   RecurrenceDays,
-  RecurrenceFormValues,
+  type RecurrenceFormValues,
   RecurrenceType,
-  StocksEvent,
+  type StocksEvent,
 } from '../types'
 
 const mockSuccessNotification = vi.fn()

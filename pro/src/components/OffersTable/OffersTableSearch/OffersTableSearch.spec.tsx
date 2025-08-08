@@ -3,7 +3,10 @@ import { userEvent } from '@testing-library/user-event'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { OffersTableSearch, OffersTableSearchProps } from './OffersTableSearch'
+import {
+  OffersTableSearch,
+  type OffersTableSearchProps,
+} from './OffersTableSearch'
 
 const LABELS = {
   nameInput: /Nom/,

@@ -1,5 +1,8 @@
 import { DEFAULT_SEARCH_FILTERS } from '../constants'
-import { CollectiveSearchFiltersParams, SearchFiltersParams } from '../types'
+import type {
+  CollectiveSearchFiltersParams,
+  SearchFiltersParams,
+} from '../types'
 
 type HasSearchFiltersParams = {
   searchFilters: Partial<SearchFiltersParams>

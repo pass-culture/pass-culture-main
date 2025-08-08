@@ -2,17 +2,17 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 
-import { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient/adage/core/ApiResult'
+import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
+import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
 import { api } from '@/apiClient/api'
 import {
   ApiError,
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
-  CollectiveOfferResponseIdModel,
+  type CollectiveOfferResponseIdModel,
   CollectiveOfferTemplateAllowedAction,
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
+  type GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
@@ -32,14 +32,14 @@ import {
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOfferStep } from '../../CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 import {
   CollectiveEditionOfferNavigation,
-  CollectiveEditionOfferNavigationProps,
+  type CollectiveEditionOfferNavigationProps,
 } from '../CollectiveEditionOfferNavigation'
 
 const offer:

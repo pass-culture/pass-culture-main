@@ -1,4 +1,4 @@
-import { StoryObj } from '@storybook/react'
+import type { StoryObj } from '@storybook/react'
 import { withRouter } from 'storybook-addon-remix-react-router'
 
 import { Spinner } from './Spinner'

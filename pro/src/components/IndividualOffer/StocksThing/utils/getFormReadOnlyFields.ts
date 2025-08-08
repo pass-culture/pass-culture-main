@@ -1,4 +1,4 @@
-import {
+import type {
   GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
 } from '@/apiClient/v1'
@@ -9,7 +9,7 @@ import {
 import { isAllocineProvider } from '@/commons/core/Providers/utils/utils'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
-import { StockThingFormValues } from '../types'
+import type { StockThingFormValues } from '../types'
 
 export const getFormReadOnlyFields = (
   offer: GetIndividualOfferResponseModel,

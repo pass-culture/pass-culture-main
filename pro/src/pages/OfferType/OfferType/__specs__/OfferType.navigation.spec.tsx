@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 
 import { api } from '@/apiClient/api'
-import { SubcategoryIdEnum, VenueTypeCode } from '@/apiClient/v1'
+import { SubcategoryIdEnum, type VenueTypeCode } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   categoryFactory,
@@ -11,7 +11,7 @@ import {
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 

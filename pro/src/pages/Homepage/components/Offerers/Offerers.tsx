@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useSearchParams } from 'react-router'
 
-import { GetOffererResponseModel, VenueTypeResponseModel } from '@/apiClient/v1'
+import type {
+  GetOffererResponseModel,
+  VenueTypeResponseModel,
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { Card } from '@/components/Card/Card'
 import { RedirectDialog } from '@/components/RedirectDialog/RedirectDialog'
 import { SoftDeletedOffererWarning } from '@/components/SoftDeletedOffererWarning/SoftDeletedOffererWarning'

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { PriceInput, PriceInputProps } from './PriceInput'
+import { PriceInput, type PriceInputProps } from './PriceInput'
 
 const renderPriceInput = (props: Partial<PriceInputProps>) => {
   return render(

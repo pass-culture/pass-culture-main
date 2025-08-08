@@ -3,7 +3,7 @@ import { stringify } from '@/commons/utils/query-string'
 import { translateApiParamsToQueryParams } from '@/commons/utils/translate'
 
 import { Audience } from '../../shared/types'
-import { SearchFiltersParams } from '../types'
+import type { SearchFiltersParams } from '../types'
 
 const INDIVIDUAL_OFFERS_URL = '/offres'
 

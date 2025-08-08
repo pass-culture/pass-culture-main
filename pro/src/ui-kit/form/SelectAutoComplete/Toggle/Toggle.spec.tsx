@@ -2,11 +2,11 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { Toggle, ToggleProps } from './Toggle'
+import { Toggle, type ToggleProps } from './Toggle'
 
 const renderToggle = (
   props: ToggleProps,

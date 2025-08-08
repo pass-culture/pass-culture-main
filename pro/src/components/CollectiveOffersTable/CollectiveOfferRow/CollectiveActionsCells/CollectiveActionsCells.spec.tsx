@@ -29,7 +29,7 @@ import * as storageAvailable from '@/commons/utils/storageAvailable'
 
 import {
   CollectiveActionsCells,
-  CollectiveActionsCellsProps,
+  type CollectiveActionsCellsProps,
 } from './CollectiveActionsCells'
 
 const fetchMock = createFetchMock(vi)

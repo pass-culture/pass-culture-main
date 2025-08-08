@@ -6,7 +6,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   RedirectToBankAccountDialog,
-  RedirectToBankAccountDialogProps,
+  type RedirectToBankAccountDialogProps,
 } from './RedirectToBankAccountDialog'
 
 const mockLogEvent = vi.fn()

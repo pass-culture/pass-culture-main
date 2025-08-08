@@ -1,4 +1,5 @@
-import React, { FunctionComponent } from 'react'
+import type React from 'react'
+import type { FunctionComponent } from 'react'
 
 import mobileShell from './assets/mobile-shell.svg'
 import styles from './ImagePreview.module.scss'

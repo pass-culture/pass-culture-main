@@ -4,7 +4,7 @@ import {
   DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 } from '../constants'
-import { CollectiveSearchFiltersParams } from '../types'
+import type { CollectiveSearchFiltersParams } from '../types'
 
 export const useDefaultCollectiveSearchFilters =
   (): CollectiveSearchFiltersParams => {

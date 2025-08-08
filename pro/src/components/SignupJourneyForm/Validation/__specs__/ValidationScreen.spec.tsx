@@ -8,16 +8,16 @@ import { Route, Routes } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import {
-  GetOffererResponseModel,
-  PostOffererResponseModel,
+  type GetOffererResponseModel,
+  type PostOffererResponseModel,
   Target,
 } from '@/apiClient/v1'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   SignupJourneyContext,
-  SignupJourneyContextValues,
+  type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
-import { Address } from '@/commons/core/shared/types'
+import type { Address } from '@/commons/core/shared/types'
 import { getOffererNameFactory } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import * as utils from '@/commons/utils/recaptcha'

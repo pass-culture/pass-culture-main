@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 
 import {
   CollectiveOfferDisplayedStatus,
-  CollectiveOfferResponseModel,
+  type CollectiveOfferResponseModel,
 } from '@/apiClient/v1'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 

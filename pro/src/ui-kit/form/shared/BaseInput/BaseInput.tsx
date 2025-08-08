@@ -1,5 +1,6 @@
 import cn from 'classnames'
-import React, { ForwardedRef, forwardRef } from 'react'
+import type React from 'react'
+import { type ForwardedRef, forwardRef } from 'react'
 
 import strokeSearchIcon from '@/icons/stroke-search.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'

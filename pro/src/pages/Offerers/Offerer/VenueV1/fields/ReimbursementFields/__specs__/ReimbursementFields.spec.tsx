@@ -1,20 +1,20 @@
 import { screen, waitFor } from '@testing-library/react'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import {
+import type {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
 } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { Button } from '@/ui-kit/Button/Button'
 
 import {
   ReimbursementFields,
-  ReimbursementFieldsProps,
+  type ReimbursementFieldsProps,
 } from '../ReimbursementFields'
 
 const renderReimbursementFields = async (

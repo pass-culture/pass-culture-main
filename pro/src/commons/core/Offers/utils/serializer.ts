@@ -1,12 +1,15 @@
 import { isEqual } from 'commons/utils/isEqual'
 
-import {
+import type {
   ListCollectiveOffersQueryModel,
   ListOffersQueryModel,
 } from '@/apiClient/v1'
 
 import { DEFAULT_SEARCH_FILTERS } from '../constants'
-import { CollectiveSearchFiltersParams, SearchFiltersParams } from '../types'
+import type {
+  CollectiveSearchFiltersParams,
+  SearchFiltersParams,
+} from '../types'
 
 export const serializeApiFilters = (
   searchFilters: Partial<SearchFiltersParams>

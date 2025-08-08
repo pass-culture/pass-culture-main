@@ -1,10 +1,11 @@
-import React, { createContext, useContext, useState } from 'react'
+import type React from 'react'
+import { createContext, useContext, useState } from 'react'
 
-import { Target } from '@/apiClient/v1'
-import { Address } from '@/commons/core/shared/types'
-import { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
+import type { Target } from '@/apiClient/v1'
+import type { Address } from '@/commons/core/shared/types'
+import type { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
-import { OffererFormValues } from '@/components/SignupJourneyForm/Offerer/Offerer'
+import type { OffererFormValues } from '@/components/SignupJourneyForm/Offerer/Offerer'
 
 import { DEFAULT_ACTIVITY_VALUES } from './constants'
 

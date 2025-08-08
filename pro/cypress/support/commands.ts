@@ -189,5 +189,3 @@ Cypress.Commands.add(
     })
   }
 )
-
-export {}

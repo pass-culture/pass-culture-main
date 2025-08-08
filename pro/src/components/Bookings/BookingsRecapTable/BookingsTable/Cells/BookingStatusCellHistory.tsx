@@ -1,6 +1,6 @@
 import { format } from 'date-fns-tz'
 
-import {
+import type {
   BookingRecapResponseBookingStatusHistoryModel,
   BookingStatusHistoryResponseModel,
 } from '@/apiClient/v1'

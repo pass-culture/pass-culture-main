@@ -1,4 +1,4 @@
-import { OfferVenueResponse } from '@/apiClient/adage'
+import type { OfferVenueResponse } from '@/apiClient/adage'
 
 const formatToReadableString = (input: string): string => {
   const lowerCasedInput = input.toLowerCase()

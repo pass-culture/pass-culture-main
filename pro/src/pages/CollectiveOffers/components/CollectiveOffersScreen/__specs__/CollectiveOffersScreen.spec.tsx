@@ -3,8 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
 import {
-  CollectiveOfferResponseModel,
-  SharedCurrentUserResponseModel,
+  type CollectiveOfferResponseModel,
+  type SharedCurrentUserResponseModel,
   UserRole,
 } from '@/apiClient/v1'
 import {
@@ -20,13 +20,13 @@ import {
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
 import {
   CollectiveOffersScreen,
-  CollectiveOffersScreenProps,
+  type CollectiveOffersScreenProps,
 } from '../CollectiveOffersScreen'
 
 const renderOffers = (

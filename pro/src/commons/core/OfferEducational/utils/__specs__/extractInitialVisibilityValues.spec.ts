@@ -1,4 +1,4 @@
-import {
+import type {
   EducationalInstitutionResponseModel,
   GetCollectiveOfferRequestResponseModel,
 } from '@/apiClient/v1'

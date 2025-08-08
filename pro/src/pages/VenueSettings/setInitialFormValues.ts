@@ -1,14 +1,14 @@
-import { GetVenueResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { humanizeSiret } from '@/commons/core/Venue/utils'
 
-import { VenueSettingsFormValues } from './types'
+import type { VenueSettingsFormValues } from './types'
 
 export const setInitialFormValues = ({
   venue,
 }: {
   venue: GetVenueResponseModel
 }): VenueSettingsFormValues => {
-  let autoCompleteStreet = venue.address?.street
+  const autoCompleteStreet = venue.address?.street
     ? venue.address.street + ' '
     : ''
 

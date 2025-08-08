@@ -1,4 +1,4 @@
-import { RootState } from '@/commons/store/rootReducer'
+import type { RootState } from '@/commons/store/rootReducer'
 
 export const adageFilterSelector = (state: RootState) =>
   state.adageFilter.adageFilter

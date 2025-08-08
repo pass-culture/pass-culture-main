@@ -9,12 +9,12 @@ import {
 } from '@/apiClient/adage'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
-import { SearchFormValues } from '../../../OffersInstantSearch'
+import type { SearchFormValues } from '../../../OffersInstantSearch'
 import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../../utils'
 import { LocalisationFilterStates } from '../../OffersSearch'
 import { OfferFilters } from '../OfferFilters'

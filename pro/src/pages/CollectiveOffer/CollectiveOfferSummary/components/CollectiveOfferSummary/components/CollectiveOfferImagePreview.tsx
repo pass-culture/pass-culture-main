@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-import {
+import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'

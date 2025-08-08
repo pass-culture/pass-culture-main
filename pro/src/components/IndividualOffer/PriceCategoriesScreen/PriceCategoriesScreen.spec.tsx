@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import {
+import type {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
 } from '@/apiClient/v1'

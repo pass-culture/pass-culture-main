@@ -1,10 +1,10 @@
 import cn from 'classnames'
-import { ForwardedRef, forwardRef, useId } from 'react'
+import { type ForwardedRef, forwardRef, useId } from 'react'
 
 import styles from './RadioButton.module.scss'
 import {
   RadioButtonAsset,
-  RadioButtonAssetProps,
+  type RadioButtonAssetProps,
 } from './RadioButtonAsset/RadioButtonAsset'
 
 export type RadioButtonSizing = 'hug' | 'fill'

@@ -5,7 +5,7 @@ import { axe } from 'vitest-axe'
 import { WithdrawalTypeEnum } from '@/apiClient/v1'
 import {
   IndividualOfferContext,
-  IndividualOfferContextValues,
+  type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   getIndividualOfferFactory,
@@ -14,7 +14,7 @@ import {
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import {
@@ -25,11 +25,11 @@ import {
   providedTicketWithdrawalTypeRadios,
   ticketWithdrawalTypeRadios,
 } from '@/pages/IndividualOffer/IndividualOfferInformations/commons/constants'
-import { UsefulInformationFormValues } from '@/pages/IndividualOffer/IndividualOfferInformations/commons/types'
+import type { UsefulInformationFormValues } from '@/pages/IndividualOffer/IndividualOfferInformations/commons/types'
 
 import {
   UsefulInformationForm,
-  UsefulInformationFormProps,
+  type UsefulInformationFormProps,
 } from './UsefulInformationForm'
 
 const LABELS = {

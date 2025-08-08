@@ -9,9 +9,9 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import {
-  BookingRecapResponseModel,
+  type BookingRecapResponseModel,
   BookingStatusFilter,
-  CollectiveBookingResponseModel,
+  type CollectiveBookingResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
@@ -20,7 +20,7 @@ import {
   GET_VENUES_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
-import { PreFiltersParams } from '@/commons/core/Bookings/types'
+import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { Audience } from '@/commons/core/shared/types'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'

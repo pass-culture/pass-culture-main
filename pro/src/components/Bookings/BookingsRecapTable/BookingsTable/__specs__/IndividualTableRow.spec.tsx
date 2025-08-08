@@ -6,7 +6,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   IndividualTableRow,
-  IndividualTableRowProps,
+  type IndividualTableRowProps,
 } from '../IndividualTableRow'
 
 const MOCK_DATA = {

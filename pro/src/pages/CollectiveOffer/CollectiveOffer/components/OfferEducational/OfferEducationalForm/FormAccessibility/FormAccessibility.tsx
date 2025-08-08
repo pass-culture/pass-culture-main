@@ -1,6 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 
-import { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
+import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { useAccessibilityOptions } from '@/commons/hooks/useAccessibilityOptions'
 import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 

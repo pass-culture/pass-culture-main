@@ -1,7 +1,10 @@
-import { GetOffererResponseModel } from '@/apiClient/v1'
+import type { GetOffererResponseModel } from '@/apiClient/v1'
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import fullErrorIcon from '@/icons/full-error.svg'
-import { NavLinkItem, NavLinkItems } from '@/ui-kit/NavLinkItems/NavLinkItems'
+import {
+  type NavLinkItem,
+  NavLinkItems,
+} from '@/ui-kit/NavLinkItems/NavLinkItems'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import {

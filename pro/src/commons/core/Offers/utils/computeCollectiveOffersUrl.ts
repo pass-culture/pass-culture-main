@@ -2,7 +2,7 @@ import { translateApiParamsToQueryParams } from '@/commons/utils/translate'
 
 import { Audience } from '../../shared/types'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '../constants'
-import { CollectiveSearchFiltersParams } from '../types'
+import type { CollectiveSearchFiltersParams } from '../types'
 
 const COLLECTIVE_OFFERS_URL = '/offres/collectives'
 const TEMPLATE_COLLECTIVE_OFFERS_URL = '/offres/vitrines'

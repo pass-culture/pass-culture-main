@@ -4,9 +4,9 @@ import { Route, Routes } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { HTTP_STATUS } from '@/apiClient/helpers'
-import { ApiError, SharedLoginUserResponseModel } from '@/apiClient/v1'
-import { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import { ApiError, type SharedLoginUserResponseModel } from '@/apiClient/v1'
+import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -16,7 +16,7 @@ import {
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import * as utils from '@/commons/utils/recaptcha'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import * as storageAvailable from '@/commons/utils/storageAvailable'

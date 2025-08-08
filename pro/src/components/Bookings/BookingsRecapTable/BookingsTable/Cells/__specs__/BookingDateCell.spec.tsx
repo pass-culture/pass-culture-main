@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { BookingDateCell, BookingDateCellProps } from '../BookingDateCell'
+import { BookingDateCell, type BookingDateCellProps } from '../BookingDateCell'
 
 const renderDateCell = (props: BookingDateCellProps) =>
   render(<BookingDateCell {...props} />)

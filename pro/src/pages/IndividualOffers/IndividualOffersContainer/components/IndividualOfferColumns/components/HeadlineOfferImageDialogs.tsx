@@ -3,18 +3,18 @@ import { useSelector } from 'react-redux'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
-import { ListOffersOfferResponseModel } from '@/apiClient/v1'
+import type { ListOffersOfferResponseModel } from '@/apiClient/v1'
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
-import { SearchFiltersParams } from '@/commons/core/Offers/types'
+import type { SearchFiltersParams } from '@/commons/core/Offers/types'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import {
   ModalImageUpsertOrEdit,
-  OnImageUploadArgs,
+  type OnImageUploadArgs,
 } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import { getStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
 import strokeVisualArtIcon from '@/icons/stroke-visual-art.svg'

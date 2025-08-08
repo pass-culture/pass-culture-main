@@ -1,13 +1,13 @@
 import { useFormContext } from 'react-hook-form'
 
-import { GetVenueResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { useAccessibilityOptions } from '@/commons/hooks/useAccessibilityOptions'
 import { isEqual } from '@/commons/utils/isEqual'
 import { ExternalAccessibility } from '@/components/ExternalAccessibility/ExternalAccessibility'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { AccessibilityCallout } from '@/pages/VenueEdition/AccessibilityCallout/AccessibilityCallout'
-import { VenueEditionFormValues } from '@/pages/VenueEdition/types'
+import type { VenueEditionFormValues } from '@/pages/VenueEdition/types'
 import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 
 import styles from './AccessibilityForm.module.scss'

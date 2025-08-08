@@ -7,7 +7,7 @@ import { Notification } from '@/components/Notification/Notification'
 
 import {
   StocksCalendarActionsBar,
-  StocksCalendarActionsBarProps,
+  type StocksCalendarActionsBarProps,
 } from './StocksCalendarActionsBar'
 
 const mockNavigate = vi.fn()

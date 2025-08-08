@@ -1,10 +1,10 @@
 import cn from 'classnames'
 import { format } from 'date-fns'
-import { ForwardedRef, forwardRef } from 'react'
+import { type ForwardedRef, forwardRef } from 'react'
 
 import { FORMAT_ISO_DATE_ONLY, isDateValid } from '@/commons/utils/date'
 
-import { BaseInput, BaseInputProps } from '../BaseInput/BaseInput'
+import { BaseInput, type BaseInputProps } from '../BaseInput/BaseInput'
 import styles from './BaseDatePicker.module.scss'
 
 type Props = Omit<BaseInputProps, 'value'> & {

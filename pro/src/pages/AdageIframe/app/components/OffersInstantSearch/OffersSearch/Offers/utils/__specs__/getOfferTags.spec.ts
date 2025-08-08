@@ -1,7 +1,7 @@
 import {
   CollectiveLocationType,
-  CollectiveOfferResponseModel,
-  CollectiveOfferTemplateResponseModel,
+  type CollectiveOfferResponseModel,
+  type CollectiveOfferTemplateResponseModel,
   OfferAddressType,
   StudentLevels,
 } from '@/apiClient/adage'

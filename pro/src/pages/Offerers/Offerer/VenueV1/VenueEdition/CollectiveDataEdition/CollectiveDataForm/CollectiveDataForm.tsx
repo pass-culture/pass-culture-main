@@ -4,14 +4,14 @@ import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
-import { GetVenueResponseModel, StudentLevels } from '@/apiClient/v1'
+import { type GetVenueResponseModel, StudentLevels } from '@/apiClient/v1'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   DEFAULT_MARSEILLE_STUDENTS,
   SENT_DATA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
 import { offerInterventionOptions } from '@/commons/core/shared/interventionOptions'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectInterventionAreas } from '@/commons/utils/selectInterventionAreas'
@@ -24,10 +24,10 @@ import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInpu
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
-import { MultiSelect, Option } from '@/ui-kit/MultiSelect/MultiSelect'
+import { MultiSelect, type Option } from '@/ui-kit/MultiSelect/MultiSelect'
 
 import styles from './CollectiveDataForm.module.scss'
-import { CollectiveDataFormValues } from './type'
+import type { CollectiveDataFormValues } from './type'
 import { extractInitialValuesFromVenue } from './utils/extractInitialValuesFromVenue'
 import { validationSchema } from './validationSchema'
 

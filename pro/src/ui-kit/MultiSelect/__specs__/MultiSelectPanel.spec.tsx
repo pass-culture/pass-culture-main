@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { Option } from '../MultiSelect'
+import type { Option } from '../MultiSelect'
 import { MultiSelectPanel } from '../MultiSelectPanel'
 
 describe('<MultiSelectPanel />', () => {

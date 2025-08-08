@@ -11,9 +11,9 @@ import { Notification } from '@/components/Notification/Notification'
 import {
   getPatchOfferPayloadFromFormValues,
   OfferPublicationEdition,
-  OfferPublicationEditionProps,
+  type OfferPublicationEditionProps,
 } from './OfferPublicationEdition'
-import { EventPublicationEditionFormValues } from './OfferPublicationEditionForm/types'
+import type { EventPublicationEditionFormValues } from './OfferPublicationEditionForm/types'
 
 vi.mock('@/apiClient/api', () => ({
   api: {

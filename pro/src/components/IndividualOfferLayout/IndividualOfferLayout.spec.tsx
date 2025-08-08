@@ -9,14 +9,14 @@ import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import * as useHasAccessToDidacticOnboarding from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 
 import {
   IndividualOfferLayout,
-  IndividualOfferLayoutProps,
+  type IndividualOfferLayoutProps,
 } from './IndividualOfferLayout'
 
 const renderIndividualOfferLayout = (

@@ -1,13 +1,13 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { AdageFrontRoles, AuthenticatedResponse } from '@/apiClient/adage'
+import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
 import { AdageHeaderLink } from '@/apiClient/adage/models/AdageHeaderLink'
 import { apiAdage } from '@/apiClient/api'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { defaultEducationalInstitution } from '@/commons/utils/factories/adageFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'

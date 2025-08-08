@@ -12,7 +12,7 @@ import passCultureLogo from '../logos/logo-pass-culture-dark.svg'
 import praxielLogo from '../logos/logo-praxiel.svg'
 import titeLiveLogo from '../logos/logo-titeLive.svg'
 import tmicEllipsesLogo from '../logos/logo-tmic-ellipses.svg'
-import { ProviderInfo } from '../types'
+import type { ProviderInfo } from '../types'
 
 const PROVIDERS_LOGOS: Array<{ id: string; logo: string }> = [
   { id: 'allociné', logo: allocineLogo },

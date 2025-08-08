@@ -2,7 +2,7 @@ import { Layout } from '@/app/App/layout/Layout'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { AdagePreviewLayout } from '@/pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
 import {
-  MandatoryCollectiveOfferFromParamsProps,
+  type MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'

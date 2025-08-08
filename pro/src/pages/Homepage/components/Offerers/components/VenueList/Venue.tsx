@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { useState } from 'react'
 
-import {
+import type {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
 } from '@/apiClient/v1'

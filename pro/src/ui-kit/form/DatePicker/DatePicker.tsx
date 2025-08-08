@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import React, { ForwardedRef, useId } from 'react'
+import React, { type ForwardedRef, useId } from 'react'
 
 import { BaseDatePicker } from '@/ui-kit/form/shared/BaseDatePicker/BaseDatePicker'
 import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'

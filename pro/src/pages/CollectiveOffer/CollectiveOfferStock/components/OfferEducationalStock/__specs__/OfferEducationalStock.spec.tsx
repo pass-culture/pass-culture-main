@@ -13,7 +13,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { DETAILS_PRICE_LABEL } from '../constants/labels'
 import {
   OfferEducationalStock,
-  OfferEducationalStockProps,
+  type OfferEducationalStockProps,
 } from '../OfferEducationalStock'
 
 const defaultProps: OfferEducationalStockProps = {

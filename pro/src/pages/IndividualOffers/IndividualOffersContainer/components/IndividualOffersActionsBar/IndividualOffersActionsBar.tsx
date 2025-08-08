@@ -9,7 +9,7 @@ import {
 } from '@/apiClient/v1'
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
-import { SearchFiltersParams } from '@/commons/core/Offers/types'
+import type { SearchFiltersParams } from '@/commons/core/Offers/types'
 import { serializeApiFilters } from '@/commons/core/Offers/utils/serializer'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'

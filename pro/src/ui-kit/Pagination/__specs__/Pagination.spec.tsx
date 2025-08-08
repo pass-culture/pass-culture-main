@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { Pagination, PaginationProps } from '../Pagination'
+import { Pagination, type PaginationProps } from '../Pagination'
 
 const defaultProps: PaginationProps = {
   pageCount: 10,

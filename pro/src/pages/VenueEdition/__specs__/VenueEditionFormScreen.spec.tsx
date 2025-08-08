@@ -6,13 +6,13 @@ import createFetchMock from 'vitest-fetch-mock'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import { api } from '@/apiClient/api'
-import { ApiError, GetVenueResponseModel } from '@/apiClient/v1'
-import { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import { ApiError, type GetVenueResponseModel } from '@/apiClient/v1'
+import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'

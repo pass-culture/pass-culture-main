@@ -8,13 +8,13 @@ import { api } from '@/apiClient/api'
 import {
   OfferStatus,
   SubcategoryIdEnum,
-  SubcategoryResponseModel,
+  type SubcategoryResponseModel,
   VenueTypeCode,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
-  IndividualOfferContextValues,
+  type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -36,14 +36,14 @@ import {
 } from '@/commons/utils/factories/storeFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 
 import {
   IndividualOfferDetailsScreen,
-  IndividualOfferDetailsScreenProps,
+  type IndividualOfferDetailsScreenProps,
 } from './IndividualOfferDetailsScreen'
 
 vi.mock('@/apiClient/api', () => ({

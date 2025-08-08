@@ -5,7 +5,7 @@ import * as router from 'react-router'
 import { api } from '@/apiClient/api'
 import {
   BankAccountApplicationStatus,
-  BankAccountResponseModel,
+  type BankAccountResponseModel,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
@@ -18,7 +18,7 @@ import {
 } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { BankInformations } from '@/pages/Reimbursements/BankInformations/BankInformations'
-import { ReimbursementsContextProps } from '@/pages/Reimbursements/Reimbursements'
+import type { ReimbursementsContextProps } from '@/pages/Reimbursements/Reimbursements'
 
 const defaultBankAccountResponseModel: BankAccountResponseModel = {
   bic: 'bic',

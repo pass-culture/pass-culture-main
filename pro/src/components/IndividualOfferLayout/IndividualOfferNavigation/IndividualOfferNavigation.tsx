@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import type { FC } from 'react'
 import { generatePath, useLocation } from 'react-router'
 
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -10,7 +10,11 @@ import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividua
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import { Step, StepPattern, Stepper } from '@/components/Stepper/Stepper'
+import {
+  type Step,
+  type StepPattern,
+  Stepper,
+} from '@/components/Stepper/Stepper'
 import {
   getOfferSubtypeFromParam,
   isOfferSubtypeEvent,

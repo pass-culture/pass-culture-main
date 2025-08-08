@@ -1,7 +1,7 @@
 import type { StoryObj } from '@storybook/react'
 import { withRouter } from 'storybook-addon-remix-react-router'
 
-import { Step, Stepper } from './Stepper'
+import { type Step, Stepper } from './Stepper'
 
 export default {
   title: '@/components/Stepper',

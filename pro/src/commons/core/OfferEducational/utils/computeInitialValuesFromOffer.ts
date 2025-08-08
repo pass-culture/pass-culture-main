@@ -1,10 +1,10 @@
 import {
   CollectiveLocationType,
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
-  GetEducationalOffererResponseModel,
-  StudentLevels,
-  VenueListItemResponseModel,
+  type GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferTemplateResponseModel,
+  type GetEducationalOffererResponseModel,
+  type StudentLevels,
+  type VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import {
   formatShortDateForInput,
@@ -14,7 +14,10 @@ import {
 } from '@/commons/utils/date'
 
 import { getDefaultEducationalValues } from '../constants'
-import { isCollectiveOfferTemplate, OfferEducationalFormValues } from '../types'
+import {
+  isCollectiveOfferTemplate,
+  type OfferEducationalFormValues,
+} from '../types'
 import { buildStudentLevelsMapWithDefaultValue } from './buildStudentLevelsMapWithDefaultValue'
 
 const computeDurationString = (

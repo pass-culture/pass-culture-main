@@ -5,7 +5,7 @@ import {
   serializeDurationMinutes,
   serializeExtraData,
 } from '../serializers'
-import { DetailsFormValues } from '../types'
+import type { DetailsFormValues } from '../types'
 
 describe('deSerializeDurationMinutes', () => {
   it('should correctly de serialize duration minutes', () => {

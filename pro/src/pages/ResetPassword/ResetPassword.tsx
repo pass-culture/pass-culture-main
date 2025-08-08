@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useCallback, useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { Params, useNavigate, useParams } from 'react-router'
+import { type Params, useNavigate, useParams } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { Layout } from '@/app/App/layout/Layout'

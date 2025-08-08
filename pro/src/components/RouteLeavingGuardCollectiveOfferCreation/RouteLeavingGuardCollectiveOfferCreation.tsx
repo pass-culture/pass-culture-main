@@ -1,5 +1,5 @@
 import {
-  BlockerFunction,
+  type BlockerFunction,
   RouteLeavingGuard,
 } from '@/components/RouteLeavingGuard/RouteLeavingGuard'
 

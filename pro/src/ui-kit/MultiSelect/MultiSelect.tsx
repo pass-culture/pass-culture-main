@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import {
-  ForwardedRef,
+  type ForwardedRef,
   forwardRef,
   useEffect,
   useId,

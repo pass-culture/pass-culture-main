@@ -7,13 +7,13 @@ import {
   defaultCollectiveTemplateOffer,
 } from '@/commons/utils/factories/adageFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
 import {
   AdageOfferInfoSection,
-  AdageOfferInfoSectionProps,
+  type AdageOfferInfoSectionProps,
 } from '../AdageOfferInfoSection'
 
 function renderAdageOfferInfoSection(

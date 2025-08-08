@@ -8,7 +8,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import {
   isUserPasswordError,
   UserPasswordForm,
-  UserPasswordFormProps,
+  type UserPasswordFormProps,
 } from '../UserPasswordForm'
 
 const renderUserPasswordForm = (props: UserPasswordFormProps) => {
@@ -71,7 +71,7 @@ describe('components:UserPasswordForm', () => {
       },
     })
 
-    let props: UserPasswordFormProps = {
+    const props: UserPasswordFormProps = {
       closeForm: vi.fn(),
     }
 

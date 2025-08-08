@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 
 import logoPassCultureIcon from '@/icons/logo-pass-culture.svg'
 import { Callout } from '@/ui-kit/Callout/Callout'

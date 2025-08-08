@@ -7,7 +7,7 @@ import { GET_LOCAL_OFFERERS_PLAYLIST_QUERY_KEY } from '@/commons/config/swrQuery
 
 import { Carousel } from '../../Carousel/Carousel'
 import { VENUE_PLAYLIST } from '../../constant'
-import { PlaylistTracker, VenuePlaylistTracker } from '../../types'
+import type { PlaylistTracker, VenuePlaylistTracker } from '../../types'
 import { VenueCard } from '../../VenueCard/VenueCard'
 import styles from './VenuePlaylist.module.scss'
 

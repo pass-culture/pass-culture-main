@@ -1,4 +1,4 @@
-import { ApiError } from './v1'
+import type { ApiError } from './v1'
 
 export const serializeApiErrors = (
   errors: Record<string, string[]>,

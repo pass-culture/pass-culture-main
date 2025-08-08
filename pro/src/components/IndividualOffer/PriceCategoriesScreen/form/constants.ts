@@ -1,4 +1,4 @@
-import { PriceCategoryForm } from './types'
+import type { PriceCategoryForm } from './types'
 
 export const PRICE_CATEGORY_LABEL_MAX_LENGTH = 50
 export const PRICE_CATEGORY_MAX_LENGTH = 50

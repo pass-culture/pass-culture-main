@@ -3,7 +3,10 @@ import { userEvent } from '@testing-library/user-event'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { AdageButtonFilter, AdageButtonFilterProps } from '../AdageButtonFilter'
+import {
+  AdageButtonFilter,
+  type AdageButtonFilterProps,
+} from '../AdageButtonFilter'
 
 const renderAdageButtonFilter = ({
   title,

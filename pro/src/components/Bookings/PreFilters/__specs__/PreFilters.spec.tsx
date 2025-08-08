@@ -5,7 +5,7 @@ import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import { Audience } from '@/commons/core/shared/types'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { PreFilters, PreFiltersProps } from '../PreFilters'
+import { PreFilters, type PreFiltersProps } from '../PreFilters'
 
 const mockUpdateUrl = vi.fn()
 

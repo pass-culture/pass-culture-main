@@ -4,9 +4,9 @@ import * as router from 'react-router'
 import { api } from '@/apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
-  CollectiveOfferResponseIdModel,
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
+  type CollectiveOfferResponseIdModel,
+  type GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as useNotification from '@/commons/hooks/useNotification'
@@ -17,13 +17,13 @@ import {
 } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
 import {
   CollectiveCreationOfferNavigation,
-  CollectiveCreationOfferNavigationProps,
+  type CollectiveCreationOfferNavigationProps,
   CollectiveOfferStep,
 } from '../CollectiveCreationOfferNavigation'
 

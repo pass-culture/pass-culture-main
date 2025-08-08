@@ -1,6 +1,6 @@
-import { AccessibilityFormValues } from '@/commons/core/shared/types'
+import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 
-import { DetailsFormValues } from '../types' // Assuming types are in a sibling file
+import type { DetailsFormValues } from '../types' // Assuming types are in a sibling file
 import {
   eanSearchValidationSchema,
   getValidationSchema,

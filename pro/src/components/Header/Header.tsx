@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { ForwardedRef, forwardRef } from 'react'
+import { type ForwardedRef, forwardRef } from 'react'
 import { NavLink, useLocation } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'

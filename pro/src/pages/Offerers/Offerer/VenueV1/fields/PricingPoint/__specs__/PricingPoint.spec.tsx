@@ -11,11 +11,11 @@ import {
   defaultGetOffererVenueResponseModel,
 } from '@/commons/utils/factories/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { PricingPoint, PricingPointProps } from '../PricingPoint'
+import { PricingPoint, type PricingPointProps } from '../PricingPoint'
 
 vi.mock('@/apiClient/api', () => ({
   api: {

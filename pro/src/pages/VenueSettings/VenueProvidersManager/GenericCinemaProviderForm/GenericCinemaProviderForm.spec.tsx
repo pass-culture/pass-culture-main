@@ -8,8 +8,8 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   GenericCinemaProviderForm,
-  GenericCinemaProviderFormProps,
-  GenericCinemaProviderFormValues,
+  type GenericCinemaProviderFormProps,
+  type GenericCinemaProviderFormValues,
 } from './GenericCinemaProviderForm'
 
 const mockLogEvent = vi.fn()

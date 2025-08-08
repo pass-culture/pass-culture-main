@@ -10,7 +10,7 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 
 import {
   AdageOfferPartnerPanel,
-  AdageOfferPartnerPanelProps,
+  type AdageOfferPartnerPanelProps,
 } from '../AdageOfferPartnerPanel'
 
 function renderAdageOfferPartnerPanel(

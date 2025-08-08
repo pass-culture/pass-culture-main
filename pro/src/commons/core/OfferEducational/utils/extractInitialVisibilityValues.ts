@@ -1,10 +1,10 @@
-import {
+import type {
   CollectiveOfferInstitutionModel,
   EducationalInstitutionResponseModel,
   EducationalRedactorResponseModel,
   GetCollectiveOfferRequestResponseModel,
 } from '@/apiClient/v1'
-import { VisibilityFormValues } from '@/pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
+import type { VisibilityFormValues } from '@/pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
 
 export const formatInstitutionDisplayName = (
   institution:

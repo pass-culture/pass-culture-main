@@ -4,7 +4,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   EducationalInstitutionDetails,
-  EducationalInstitutionDetailsProps,
+  type EducationalInstitutionDetailsProps,
 } from '../EducationalInstitutionDetails'
 
 describe('EducationalInstitutionDetails', () => {

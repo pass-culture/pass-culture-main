@@ -1,4 +1,4 @@
-import * as yup from 'yup'
+import type * as yup from 'yup'
 
 import { getNthParentFormValues } from '@/commons/utils/yupValidationTestHelpers'
 

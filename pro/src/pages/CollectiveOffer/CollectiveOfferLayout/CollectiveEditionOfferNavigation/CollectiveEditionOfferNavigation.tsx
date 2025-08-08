@@ -9,8 +9,8 @@ import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
+  type GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
@@ -22,7 +22,6 @@ import {
   Events,
 } from '@/commons/core/FirebaseEvents/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
-import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
@@ -38,7 +37,10 @@ import fullShowIcon from '@/icons/full-show.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { NavLinkItem, NavLinkItems } from '@/ui-kit/NavLinkItems/NavLinkItems'
+import {
+  type NavLinkItem,
+  NavLinkItems,
+} from '@/ui-kit/NavLinkItems/NavLinkItems'
 
 import { CollectiveOfferStep } from '../CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 import styles from './CollectiveEditionOfferNavigation.module.scss'
@@ -122,7 +124,9 @@ export const CollectiveEditionOfferNavigation = ({
   }
 
   const canArchiveOffer = () => {
-    if (!offer) return false
+    if (!offer) {
+      return false
+    }
 
     const archiveAction = isTemplate
       ? CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
@@ -138,7 +142,9 @@ export const CollectiveEditionOfferNavigation = ({
   }
 
   const canDuplicateOffer = () => {
-    if (!offer) return false
+    if (!offer) {
+      return false
+    }
 
     const duplicateAction = isTemplate
       ? CollectiveOfferTemplateAllowedAction.CAN_DUPLICATE

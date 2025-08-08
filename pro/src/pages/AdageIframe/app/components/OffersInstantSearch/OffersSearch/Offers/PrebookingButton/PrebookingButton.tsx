@@ -1,7 +1,8 @@
 import { format } from 'date-fns-tz'
-import React, { useCallback, useRef, useState } from 'react'
+import type React from 'react'
+import { useCallback, useRef, useState } from 'react'
 
-import { OfferStockResponse } from '@/apiClient/adage'
+import type { OfferStockResponse } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { LOGS_DATA } from '@/commons/utils/config'

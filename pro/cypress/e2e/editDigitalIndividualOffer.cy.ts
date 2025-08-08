@@ -17,7 +17,7 @@ describe('Edit digital individual offers', () => {
       )
     })
 
-    it('An edited offer is displayed with 4 links', function () {
+    it('An edited offer is displayed with 4 links', () => {
       logInAndGoToPage(login1, '/offre/individuelle/1/recapitulatif/details')
 
       cy.contains('Récapitulatif')
@@ -31,7 +31,7 @@ describe('Edit digital individual offers', () => {
       cy.findAllByRole('link', { name: 'Réservations' }).eq(1).should('exist')
     })
 
-    it('I should be able to modify the url of a digital offer', function () {
+    it('I should be able to modify the url of a digital offer', () => {
       logInAndGoToPage(login1, '/offres')
 
       cy.stepLog({ message: 'I open the first offer in the list' })
@@ -98,7 +98,7 @@ describe('Edit digital individual offers', () => {
       cy.intercept({ method: 'PATCH', url: '/stocks/bulk' }).as('patchStock')
     })
 
-    it('I should be able to change offer date and it should change date in bookings', function () {
+    it('I should be able to change offer date and it should change date in bookings', () => {
       const newDate = format(addDays(new Date(), 15), 'yyyy-MM-dd')
       logInAndGoToPage(login2, '/offre/individuelle/2/edition/stocks')
 

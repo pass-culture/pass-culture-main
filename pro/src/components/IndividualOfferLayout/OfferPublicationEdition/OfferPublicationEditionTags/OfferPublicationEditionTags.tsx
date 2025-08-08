@@ -1,7 +1,7 @@
 import { isAfter } from 'date-fns'
 
 import {
-  GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
 } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'

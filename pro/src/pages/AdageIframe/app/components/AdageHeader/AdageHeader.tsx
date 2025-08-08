@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useLocation } from 'react-router'
 import useSWR from 'swr'
 
-import { AdageFrontRoles, AdageHeaderLink } from '@/apiClient/adage'
+import { AdageFrontRoles, type AdageHeaderLink } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { GET_EDUCATIONAL_INSTITUTION_BUDGET_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import fullDownloadIcon from '@/icons/full-download.svg'
