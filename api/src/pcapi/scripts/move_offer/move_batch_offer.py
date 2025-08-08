@@ -251,16 +251,17 @@ def _create_action_history(
             actionType=history_models.ActionType.VENUE_SOFT_DELETED,
         )
     )
-    db.session.add(
-        history_models.ActionHistory(
-            venueId=destination_venue_id,
-            actionType=history_models.ActionType.VENUE_REGULARIZATION,
-            extraData={
-                "origin_venue_id": origin_venue_id,
-                "modified_info": {"isPermanent": {"old_info": False, "new_info": True}},
-            },
+    if destination_venue_updated_to_permanent:
+        db.session.add(
+            history_models.ActionHistory(
+                venueId=destination_venue_id,
+                actionType=history_models.ActionType.VENUE_REGULARIZATION,
+                extraData={
+                    "origin_venue_id": origin_venue_id,
+                    "modified_info": {"isPermanent": {"old_info": False, "new_info": True}},
+                },
+            )
         )
-    )
 
 
 def _soft_delete_origin_venue(origin_venue: offerers_models.Venue) -> None:
