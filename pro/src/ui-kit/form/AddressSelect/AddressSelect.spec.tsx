@@ -2,13 +2,13 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { AdresseData } from '@/apiClient/adresse/types'
+import type { AdresseData } from '@/apiClient/adresse/types'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { AddressSelect, AddressSelectProps } from './AddressSelect'
+import { AddressSelect, type AddressSelectProps } from './AddressSelect'
 
 const renderAddressSelect = (
   Component: React.ReactNode,

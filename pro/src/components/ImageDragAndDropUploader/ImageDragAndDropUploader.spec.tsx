@@ -8,7 +8,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   ImageDragAndDropUploader,
-  ImageDragAndDropUploaderProps,
+  type ImageDragAndDropUploaderProps,
 } from './ImageDragAndDropUploader'
 
 vi.mock('react-avatar-editor', () => {

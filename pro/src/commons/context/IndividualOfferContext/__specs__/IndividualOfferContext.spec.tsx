@@ -1,11 +1,11 @@
 import { screen, waitFor } from '@testing-library/react'
 
 import { ApiError } from '@/apiClient/adage'
-import { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient/adage/core/ApiResult'
+import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
+import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
 import { api } from '@/apiClient/api'
 import {
-  GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
   SubcategoryIdEnum,
 } from '@/apiClient/v1'

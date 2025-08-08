@@ -8,15 +8,15 @@ import { App } from '@/app/App/App'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as orejime from '@/app/App/analytics/orejime'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import { DeepPartial } from '@/commons/custom_types/utils'
+import type { DeepPartial } from '@/commons/custom_types/utils'
 import * as useHasAccessToDidacticOnboarding from '@/commons/hooks/useHasAccessToDidacticOnboarding'
-import { RootState } from '@/commons/store/rootReducer'
+import type { RootState } from '@/commons/store/rootReducer'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 

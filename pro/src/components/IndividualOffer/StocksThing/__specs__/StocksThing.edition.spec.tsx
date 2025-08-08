@@ -5,11 +5,11 @@ import { Route, Routes } from 'react-router'
 import { api } from '@/apiClient/api'
 import {
   ApiError,
-  GetIndividualOfferResponseModel,
-  GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferResponseModel,
+  type GetIndividualOfferWithAddressResponseModel,
 } from '@/apiClient/v1'
-import { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import { IndividualOfferContextProvider } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,

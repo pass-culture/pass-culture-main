@@ -6,7 +6,7 @@ import { defaultGetOffererResponseModel } from '@/commons/utils/factories/indivi
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { Layout, LayoutProps } from './Layout'
+import { Layout, type LayoutProps } from './Layout'
 
 const LABELS = {
   backToNavLink: /Revenir à la barre de navigation/,

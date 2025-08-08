@@ -4,11 +4,11 @@ import { userEvent } from '@testing-library/user-event'
 import { AdageFrontRoles } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { ContactButton, ContactButtonProps } from './ContactButton'
+import { ContactButton, type ContactButtonProps } from './ContactButton'
 
 const renderContactButton = (
   props: ContactButtonProps,

@@ -4,7 +4,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   MostViewedOffers,
-  MostViewedOffersProps,
+  type MostViewedOffersProps,
 } from '../components/MostViewedOffers'
 
 const renderCumulatedViews = (props: MostViewedOffersProps) => {

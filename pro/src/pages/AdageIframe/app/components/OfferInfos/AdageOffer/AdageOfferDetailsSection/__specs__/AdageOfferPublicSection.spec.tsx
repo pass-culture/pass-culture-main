@@ -5,7 +5,7 @@ import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageF
 
 import {
   AdageOfferPublicSection,
-  AdageOfferPublicSectionProps,
+  type AdageOfferPublicSectionProps,
 } from '../AdageOfferPublicSection'
 
 function renderAdageOfferPublicSection(

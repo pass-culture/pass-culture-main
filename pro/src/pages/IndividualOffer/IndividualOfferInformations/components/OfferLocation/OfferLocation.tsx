@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import type React from 'react'
+import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
-import { VenueListItemResponseModel } from '@/apiClient/v1'
-import { AddressFormValues } from '@/commons/core/shared/types'
+import type { VenueListItemResponseModel } from '@/apiClient/v1'
+import type { AddressFormValues } from '@/commons/core/shared/types'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import fullBackIcon from '@/icons/full-back.svg'
@@ -15,7 +16,7 @@ import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
-import { UsefulInformationFormValues } from '../../commons/types'
+import type { UsefulInformationFormValues } from '../../commons/types'
 import styles from './OfferLocation.module.scss'
 
 export interface OfferLocationProps {

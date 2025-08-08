@@ -6,7 +6,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   CumulatedViews,
-  CumulatedViewsProps,
+  type CumulatedViewsProps,
 } from '../components/CumulatedViews'
 
 const renderCumulatedViews = (props: CumulatedViewsProps) =>

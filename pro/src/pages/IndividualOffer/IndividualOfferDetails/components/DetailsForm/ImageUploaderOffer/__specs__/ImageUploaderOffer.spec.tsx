@@ -5,7 +5,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import * as imageUploaderOfferUtils from '../buildInitialValues'
 import {
   ImageUploaderOffer,
-  ImageUploaderOfferProps,
+  type ImageUploaderOfferProps,
 } from '../ImageUploaderOffer'
 
 vi.mock('../buildInitialValues', () => ({

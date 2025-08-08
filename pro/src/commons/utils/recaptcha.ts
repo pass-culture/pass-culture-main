@@ -18,7 +18,7 @@ export const getReCaptchaToken = (action: string): Promise<string> => {
   } else {
     return new Promise((resolve, reject) => {
       if (window.grecaptcha) {
-        window.grecaptcha.ready(async function () {
+        window.grecaptcha.ready(async () => {
           const token = await window.grecaptcha?.execute(RECAPTCHA_SITE_KEY, {
             action,
           })

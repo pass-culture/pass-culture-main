@@ -6,7 +6,7 @@ import { GET_MUSIC_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
-import { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
+import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import {
   buildShowSubTypeOptions,
   hasMusicType,

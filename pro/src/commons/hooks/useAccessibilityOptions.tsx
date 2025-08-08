@@ -1,12 +1,12 @@
-import { UseFormSetValue } from 'react-hook-form'
+import type { UseFormSetValue } from 'react-hook-form'
 
-import { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
+import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { AccessibilityEnum } from '@/commons/core/shared/types'
 import strokeAccessibilityBrainIcon from '@/icons/stroke-accessibility-brain.svg'
 import strokeAccessibilityEarIcon from '@/icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEyeIcon from '@/icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLegIcon from '@/icons/stroke-accessibility-leg.svg'
-import { CheckboxGroupProps } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
+import type { CheckboxGroupProps } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 
 type SetFieldValue =
   | ((field: string, value: any) => void)

@@ -3,7 +3,7 @@ import { initialState as notificationInitialState } from '@/commons/store/notifi
 import { createStore } from '@/commons/store/store'
 import { initialState as userInitialState } from '@/commons/store/user/reducer'
 
-import { RootState } from './rootReducer'
+import type { RootState } from './rootReducer'
 
 export const configureTestStore = (overrideData?: Partial<RootState>) => {
   const initialData = {

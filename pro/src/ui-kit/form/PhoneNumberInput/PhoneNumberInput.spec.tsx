@@ -2,7 +2,10 @@ import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { PHONE_CODE_COUNTRY_CODE_OPTIONS, PHONE_EXAMPLE_MAP } from './constants'
-import { PhoneNumberInput, PhoneNumberInputProps } from './PhoneNumberInput'
+import {
+  PhoneNumberInput,
+  type PhoneNumberInputProps,
+} from './PhoneNumberInput'
 
 const renderPhoneNumberInput = ({
   label = 'Mon label',

@@ -6,7 +6,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import {
+import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
   VenueProviderResponse,
@@ -21,7 +21,7 @@ import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { generateSiretValidationSchema } from '@/pages/VenueSettings/SiretOrCommentFields/validationSchema'
 
 import { serializeEditVenueBodyModel } from './serializers'
-import { VenueSettingsFormValues } from './types'
+import type { VenueSettingsFormValues } from './types'
 import { VenueSettingsForm } from './VenueSettingsForm'
 import { getValidationSchema } from './validationSchema'
 

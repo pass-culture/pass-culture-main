@@ -1,6 +1,6 @@
 import { computeAddressDisplayName } from 'repository/venuesService'
 
-import { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WITHDRAWAL_TYPE_LABELS,
@@ -11,7 +11,7 @@ import { getDelayToFrenchText } from '@/commons/utils/date'
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { SummaryContent } from '@/components/SummaryLayout/SummaryContent'
 import {
-  Description,
+  type Description,
   SummaryDescriptionList,
 } from '@/components/SummaryLayout/SummaryDescriptionList'
 import { SummaryLayout } from '@/components/SummaryLayout/SummaryLayout'

@@ -1,7 +1,7 @@
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
-  GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferResponseModel,
 } from '@/apiClient/v1'
 import { FORMAT_DD_MMMM_YYYY } from '@/commons/utils/date'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'

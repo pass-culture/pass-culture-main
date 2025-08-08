@@ -64,9 +64,7 @@ export const generateValidationSchema = (
           schema.test(
             'is-after-today',
             "La date de l’évènement doit être supérieure à aujourd'hui",
-            function (startDate) {
-              return !isBefore(startDate, todayAtMidnight())
-            }
+            (startDate) => !isBefore(startDate, todayAtMidnight())
           ),
       }),
     endDatetime: yup
@@ -79,9 +77,7 @@ export const generateValidationSchema = (
             .test(
               'is-after-today',
               "La date de l’évènement doit être supérieure à aujourd'hui",
-              function (endDate) {
-                return !isBefore(endDate, todayAtMidnight())
-              }
+              (endDate) => !isBefore(endDate, todayAtMidnight())
             )
             .test(
               'is-same-year',
@@ -140,9 +136,7 @@ export const generateValidationSchema = (
             .test(
               'is-after-today',
               'La date limite de réservation doit être égale ou postérieure à la date actuelle',
-              function (endDate) {
-                return isReadOnly || isBookingDateAfterNow(endDate)
-              }
+              (endDate) => isReadOnly || isBookingDateAfterNow(endDate)
             ),
       }),
     priceDetail: yup

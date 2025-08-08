@@ -1,5 +1,5 @@
-import { CollectiveLocationType, EacFormat } from '@/apiClient/adage'
-import {
+import type { CollectiveLocationType, EacFormat } from '@/apiClient/adage'
+import type {
   CollectiveOfferResponseModel,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -7,7 +7,7 @@ import {
   OfferAddressType,
   StudentLevels,
 } from '@/apiClient/v1'
-import {
+import type {
   AccessibilityFormValues,
   AddressFormValues,
 } from '@/commons/core/shared/types'

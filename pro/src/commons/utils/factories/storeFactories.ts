@@ -1,6 +1,6 @@
-import { SharedCurrentUserResponseModel } from '@/apiClient/v1'
-import { DeepPartial } from '@/commons/custom_types/utils'
-import { OffererState } from '@/commons/store/offerer/reducer'
+import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
+import type { DeepPartial } from '@/commons/custom_types/utils'
+import type { OffererState } from '@/commons/store/offerer/reducer'
 
 export const sharedCurrentUserFactory = (
   customSharedCurrentUser: Partial<SharedCurrentUserResponseModel> = {}

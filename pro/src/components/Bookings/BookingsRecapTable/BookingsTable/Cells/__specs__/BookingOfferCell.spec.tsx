@@ -8,7 +8,10 @@ import {
 } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { BookingOfferCell, BookingOfferCellProps } from '../BookingOfferCell'
+import {
+  BookingOfferCell,
+  type BookingOfferCellProps,
+} from '../BookingOfferCell'
 
 const renderOfferCell = (props: BookingOfferCellProps) =>
   renderWithProviders(<BookingOfferCell {...props} />)

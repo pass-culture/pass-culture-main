@@ -17,7 +17,10 @@ import {
 } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { Reimbursements, ReimbursementsContextProps } from '../Reimbursements'
+import {
+  Reimbursements,
+  type ReimbursementsContextProps,
+} from '../Reimbursements'
 
 const contextData: ReimbursementsContextProps = {
   selectedOfferer: defaultGetOffererResponseModel,

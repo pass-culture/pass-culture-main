@@ -1,11 +1,11 @@
 import {
   CollectiveLocationType,
-  GetEducationalOffererResponseModel,
-  VenueListItemResponseModel,
+  type GetEducationalOffererResponseModel,
+  type VenueListItemResponseModel,
 } from '@/apiClient/v1'
 
 import { getDefaultEducationalValues } from '../constants'
-import { OfferEducationalFormValues } from '../types'
+import type { OfferEducationalFormValues } from '../types'
 
 export const applyVenueDefaultsToFormValues = (
   values: OfferEducationalFormValues,

@@ -2,9 +2,9 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import {
-  BookingRecapResponseModel,
+  type BookingRecapResponseModel,
   BookingRecapStatus,
-  CollectiveBookingResponseModel,
+  type CollectiveBookingResponseModel,
 } from '@/apiClient/v1'
 import { Audience } from '@/commons/core/shared/types'
 import {
@@ -15,7 +15,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   FilterByBookingStatus,
-  FilterByBookingStatusProps,
+  type FilterByBookingStatusProps,
 } from '../FilterByBookingStatus'
 
 const renderFilterByBookingStatus = (

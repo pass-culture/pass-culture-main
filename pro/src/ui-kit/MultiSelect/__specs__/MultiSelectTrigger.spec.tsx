@@ -56,7 +56,7 @@ describe('<MultiSelectTrigger />', () => {
       isOpen: true,
     })
 
-    let chevronIcon = container.querySelector('svg')
+    const chevronIcon = container.querySelector('svg')
 
     expect(chevronIcon).toHaveClass('chevron chevronOpen')
   })

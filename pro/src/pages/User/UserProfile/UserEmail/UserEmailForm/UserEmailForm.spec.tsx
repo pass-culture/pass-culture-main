@@ -5,7 +5,7 @@ import { api } from '@/apiClient/api'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { UserEmailForm, UserEmailFormProps } from './UserEmailForm'
+import { UserEmailForm, type UserEmailFormProps } from './UserEmailForm'
 
 const renderUserEmailForm = (props: UserEmailFormProps) => {
   return renderWithProviders(<UserEmailForm {...props} />, {

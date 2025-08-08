@@ -2,14 +2,14 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
-import { BankAccountResponseModel, ManagedVenues } from '@/apiClient/v1'
+import type { BankAccountResponseModel, ManagedVenues } from '@/apiClient/v1'
 import * as useNotification from '@/commons/hooks/useNotification'
 import {
   defaultBankAccount,
   defaultManagedVenues,
 } from '@/commons/utils/factories/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 

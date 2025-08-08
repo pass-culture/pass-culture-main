@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { ForwardedRef, forwardRef, useId } from 'react'
+import { type ForwardedRef, forwardRef, useId } from 'react'
 
 import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 

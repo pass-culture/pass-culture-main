@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 
 import fullRefreshIcon from '@/icons/full-refresh.svg'
 import { Button } from '@/ui-kit/Button/Button'

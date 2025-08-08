@@ -5,7 +5,7 @@ import { api } from '@/apiClient/api'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
-  CollectiveOffersStockResponseModel,
+  type CollectiveOffersStockResponseModel,
   CollectiveOfferTemplateAllowedAction,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
@@ -16,7 +16,7 @@ import { Notification } from '@/components/Notification/Notification'
 
 import {
   CollectiveOffersActionsBar,
-  CollectiveOffersActionsBarProps,
+  type CollectiveOffersActionsBarProps,
 } from '../CollectiveOffersActionsBar'
 
 const renderActionsBar = (

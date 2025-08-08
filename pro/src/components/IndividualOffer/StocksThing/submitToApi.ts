@@ -1,4 +1,4 @@
-import { UseFormReset, UseFormSetError } from 'react-hook-form'
+import type { UseFormReset, UseFormSetError } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
 import {
@@ -6,14 +6,14 @@ import {
   isErrorAPIError,
   serializeApiErrors,
 } from '@/apiClient/helpers'
-import { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 
 import {
   serializeCreateThingStock,
   serializeUpdateThingStock,
 } from './adapters/serializers'
-import { StockThingFormValues } from './types'
+import type { StockThingFormValues } from './types'
 import { buildInitialValues } from './utils/buildInitialValues'
 
 export const submitToApi = async (

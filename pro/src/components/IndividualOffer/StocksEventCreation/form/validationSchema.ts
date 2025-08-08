@@ -3,7 +3,11 @@ import * as yup from 'yup'
 import { getToday, isDateValid, removeTime } from '@/commons/utils/date'
 import { MAX_STOCKS_QUANTITY } from '@/components/IndividualOffer/StocksThing/validationSchema'
 
-import { MonthlyOption, RecurrenceDays, RecurrenceType } from './types'
+import {
+  type MonthlyOption,
+  type RecurrenceDays,
+  RecurrenceType,
+} from './types'
 
 export const getValidationSchema = () =>
   yup.object().shape({
@@ -113,7 +117,7 @@ export const getValidationSchema = () =>
           priceCategory: yup.string().required('Veuillez renseigner un tarif'),
         })
       )
-      .test('isPriceCategoryUnique', function (list) {
+      .test('isPriceCategoryUnique', (list) => {
         const price_category_map = list.map((a) => a.priceCategory)
         const duplicateIndex = price_category_map.reduce<yup.ValidationError[]>(
           (ac, a, i) => {

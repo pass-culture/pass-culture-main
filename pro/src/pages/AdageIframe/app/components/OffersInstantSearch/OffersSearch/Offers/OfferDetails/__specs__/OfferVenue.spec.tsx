@@ -1,6 +1,9 @@
 import { screen } from '@testing-library/react'
 
-import { CollectiveOfferOfferVenue, OfferAddressType } from '@/apiClient/adage'
+import {
+  type CollectiveOfferOfferVenue,
+  OfferAddressType,
+} from '@/apiClient/adage'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { OfferVenue } from '../OfferVenue'

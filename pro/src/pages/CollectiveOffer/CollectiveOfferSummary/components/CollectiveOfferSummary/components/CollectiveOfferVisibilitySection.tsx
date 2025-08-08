@@ -1,9 +1,9 @@
-import {
+import type {
   EducationalInstitutionResponseModel,
   EducationalRedactorResponseModel,
 } from '@/apiClient/v1'
 import {
-  Description,
+  type Description,
   SummaryDescriptionList,
 } from '@/components/SummaryLayout/SummaryDescriptionList'
 

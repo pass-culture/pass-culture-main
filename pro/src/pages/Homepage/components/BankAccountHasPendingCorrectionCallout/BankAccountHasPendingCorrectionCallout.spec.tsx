@@ -8,7 +8,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   BankAccountHasPendingCorrectionCallout,
-  BankAccountHasPendingCorrectionCalloutProps,
+  type BankAccountHasPendingCorrectionCalloutProps,
 } from './BankAccountHasPendingCorrectionCallout'
 
 const mockLogEvent = vi.fn()

@@ -2,14 +2,14 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useMemo, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import useSWR from 'swr'
-import { InferType } from 'yup'
+import type { InferType } from 'yup'
 
 import { api } from '@/apiClient/api'
 import {
   CollectiveOfferAllowedAction,
-  EducationalInstitutionResponseModel,
-  EducationalRedactor,
-  GetCollectiveOfferResponseModel,
+  type EducationalInstitutionResponseModel,
+  type EducationalRedactor,
+  type GetCollectiveOfferResponseModel,
 } from '@/apiClient/v1'
 import { GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { isCollectiveOffer, Mode } from '@/commons/core/OfferEducational/types'
@@ -21,12 +21,12 @@ import {
   GET_DATA_ERROR_MESSAGE,
   SENT_DATA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import {
   normalizeStrForSearch,
-  SelectOptionNormalized,
+  type SelectOptionNormalized,
   searchPatternInOptions,
 } from '@/commons/utils/searchPatternInOptions'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'

@@ -1,4 +1,4 @@
-import { E164Number, parsePhoneNumberFromString } from 'libphonenumber-js'
+import { type E164Number, parsePhoneNumberFromString } from 'libphonenumber-js'
 
 import {
   FRENCH_PACIFIC_DOM_PHONE_REGION,

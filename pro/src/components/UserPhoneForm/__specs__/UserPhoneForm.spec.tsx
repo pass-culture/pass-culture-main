@@ -3,12 +3,12 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/v1'
-import { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { UserPhoneForm, UserPhoneFormProps } from '../UserPhoneForm'
+import { UserPhoneForm, type UserPhoneFormProps } from '../UserPhoneForm'
 
 const renderUserPhoneForm = (props: UserPhoneFormProps) => {
   return renderWithProviders(<UserPhoneForm {...props} />, {

@@ -4,7 +4,7 @@ import { expect } from 'vitest'
 
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 

@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullEllipseIcon from '@/icons/full-ellipse.svg'

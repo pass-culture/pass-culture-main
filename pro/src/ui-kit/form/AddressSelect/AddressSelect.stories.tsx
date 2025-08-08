@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Meta, StoryObj } from '@storybook/react'
-import { CSSProperties, PropsWithChildren } from 'react'
+import type { Meta, StoryObj } from '@storybook/react'
+import type { CSSProperties, PropsWithChildren } from 'react'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import * as yup from 'yup'
 

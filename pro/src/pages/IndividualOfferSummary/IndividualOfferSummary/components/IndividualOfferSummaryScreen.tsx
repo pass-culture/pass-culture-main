@@ -37,7 +37,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { serializeDateTimeToUTCFromLocalDepartment } from '../../../../components/IndividualOffer/StocksEventEdition/serializers'
 import { EventPublicationForm } from './EventPublicationForm/EventPublicationForm'
-import { EventPublicationFormValues } from './EventPublicationForm/types'
+import type { EventPublicationFormValues } from './EventPublicationForm/types'
 import { validationSchema } from './EventPublicationForm/validationSchema'
 import styles from './IndividualOfferSummaryScreen.module.scss'
 import { OfferSection } from './OfferSection/OfferSection'

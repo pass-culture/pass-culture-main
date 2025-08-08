@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 
-import { Step } from './Stepper'
+import type { Step } from './Stepper'
 import styles from './Stepper.module.scss'
 
 interface StepContentProps {

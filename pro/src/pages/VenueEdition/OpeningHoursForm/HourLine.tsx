@@ -9,7 +9,7 @@ import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 
-import { Day, VenueEditionFormValues } from '../types'
+import type { Day, VenueEditionFormValues } from '../types'
 import styles from './OpeningHoursForm.module.scss'
 
 type HourLineProps = {

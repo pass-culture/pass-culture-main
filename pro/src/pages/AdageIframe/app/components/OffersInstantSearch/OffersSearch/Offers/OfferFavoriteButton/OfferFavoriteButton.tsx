@@ -1,6 +1,6 @@
-import { MouseEvent, useState } from 'react'
+import { type MouseEvent, useState } from 'react'
 
-import {
+import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/adage'
@@ -95,7 +95,7 @@ export const OfferFavoriteButton = ({
     setIsLoading(false)
   }
 
-  const handleFavoriteClick = function (event: MouseEvent) {
+  const handleFavoriteClick = (event: MouseEvent) => {
     event.stopPropagation()
     event.preventDefault()
     if (isLoading) {

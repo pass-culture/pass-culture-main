@@ -11,7 +11,7 @@ import { getOffererNameFactory } from '@/commons/utils/factories/individualApiFa
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import * as utils from '@/commons/utils/recaptcha'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 

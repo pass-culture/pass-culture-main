@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { ForwardedRef, forwardRef, useState } from 'react'
+import { type ForwardedRef, forwardRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
 import fullValidateIcon from '@/icons/full-validate.svg'

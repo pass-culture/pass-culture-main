@@ -6,7 +6,7 @@ import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 
 import {
   StocksCalendarFilters,
-  StocksCalendarFiltersProps,
+  type StocksCalendarFiltersProps,
 } from './StocksCalendarFilters'
 
 function renderStocksCalendarFilters(

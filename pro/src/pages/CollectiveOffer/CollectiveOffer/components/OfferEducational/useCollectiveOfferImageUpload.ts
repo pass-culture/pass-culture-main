@@ -1,14 +1,14 @@
 import { useCallback, useState } from 'react'
 
 import { api } from '@/apiClient/api'
-import {
+import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
-import { OfferCollectiveImage } from '@/commons/core/Offers/types'
+import type { OfferCollectiveImage } from '@/commons/core/Offers/types'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
-import { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 
 export const useCollectiveOfferImageUpload = (
   offer?:

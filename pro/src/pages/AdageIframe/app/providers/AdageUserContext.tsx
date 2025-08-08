@@ -1,13 +1,13 @@
 import {
   createContext,
-  Dispatch,
-  ReactNode,
-  SetStateAction,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
   useEffect,
   useState,
 } from 'react'
 
-import { AuthenticatedResponse } from '@/apiClient/adage'
+import type { AuthenticatedResponse } from '@/apiClient/adage'
 
 type AdageUserContextType = {
   adageUser: AuthenticatedResponse | null

@@ -6,7 +6,7 @@ import { api } from '@/apiClient/api'
 import {
   CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
-  EducationalInstitutionResponseModel,
+  type EducationalInstitutionResponseModel,
 } from '@/apiClient/v1'
 import { DEFAULT_VISIBILITY_FORM_VALUES } from '@/commons/core/OfferEducational/constants'
 import { Mode } from '@/commons/core/OfferEducational/types'
@@ -17,12 +17,12 @@ import {
   getCollectiveOfferFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
 import {
-  CollectiveOfferVisibilityProps,
+  type CollectiveOfferVisibilityProps,
   CollectiveOfferVisibilityScreen,
 } from '../CollectiveOfferVisibility'
 

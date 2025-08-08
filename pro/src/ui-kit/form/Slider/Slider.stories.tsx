@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 
-import { Slider, SliderProps } from './Slider'
+import { Slider, type SliderProps } from './Slider'
 
 const meta: Meta<typeof Slider> = {
   title: '@/ui-kit/Slider',

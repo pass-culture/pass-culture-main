@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { Breadcrumb, Crumb } from '../Breadcrumb'
+import { Breadcrumb, type Crumb } from '../Breadcrumb'
 
 const crumbs: Crumb[] = [
   { title: 'Link 1', link: { to: './link1', isExternal: false } },

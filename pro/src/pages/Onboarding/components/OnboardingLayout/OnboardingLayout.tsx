@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { Navigate } from 'react-router'
 
 import { Layout } from '@/app/App/layout/Layout'

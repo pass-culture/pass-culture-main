@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { UserReviewDialogFormValues } from './UserReviewDialog'
+import type { UserReviewDialogFormValues } from './UserReviewDialog'
 
 export const validationSchema = yup.object<UserReviewDialogFormValues>().shape({
   userSatisfaction: yup.string().required(),

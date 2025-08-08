@@ -2,7 +2,7 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
 import { HTTP_STATUS } from '@/apiClient/helpers'
-import {
+import type {
   GetOffererNameResponseModel,
   GetOffererResponseModel,
 } from '@/apiClient/v1'
@@ -16,7 +16,7 @@ import {
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 

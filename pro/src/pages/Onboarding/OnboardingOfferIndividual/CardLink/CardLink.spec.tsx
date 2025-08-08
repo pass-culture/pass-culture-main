@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 

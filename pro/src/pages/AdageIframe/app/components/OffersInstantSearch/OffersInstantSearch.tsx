@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Configure, Index, InstantSearch } from 'react-instantsearch'
 import { useSelector } from 'react-redux'
 
-import { VenueResponse } from '@/apiClient/adage'
+import type { VenueResponse } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { DEFAULT_MARSEILLE_STUDENTS } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'

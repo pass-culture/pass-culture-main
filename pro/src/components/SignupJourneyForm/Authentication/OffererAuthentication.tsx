@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useCallback, useEffect } from 'react'
-import { FormProvider, Resolver, useForm } from 'react-hook-form'
+import { FormProvider, type Resolver, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
 import { MainHeading } from '@/app/App/layout/Layout'
@@ -14,7 +14,7 @@ import { DEFAULT_OFFERER_FORM_VALUES } from '../Offerer/constants'
 import styles from './OffererAuthentication.module.scss'
 import {
   OffererAuthenticationForm,
-  OffererAuthenticationFormValues,
+  type OffererAuthenticationFormValues,
 } from './OffererAuthenticationForm'
 import { validationSchema } from './validationSchema'
 

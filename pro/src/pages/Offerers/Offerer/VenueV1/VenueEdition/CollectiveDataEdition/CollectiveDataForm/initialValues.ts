@@ -1,4 +1,4 @@
-import { CollectiveDataFormValues } from './type'
+import type { CollectiveDataFormValues } from './type'
 
 export const COLLECTIVE_DATA_FORM_INITIAL_VALUES: CollectiveDataFormValues = {
   collectiveDescription: '',

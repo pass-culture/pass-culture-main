@@ -1,6 +1,6 @@
-import { Location, matchPath } from 'react-router'
+import { type Location, matchPath } from 'react-router'
 
-import { RouteConfig, routes } from '@/app/AppRouter/routesMap'
+import { type RouteConfig, routes } from '@/app/AppRouter/routesMap'
 import {
   routesIndividualOfferWizard,
   routesOnboardingIndividualOfferWizard,

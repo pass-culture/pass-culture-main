@@ -8,7 +8,7 @@ import {
   OFFER_TYPES,
 } from '@/commons/core/Offers/constants'
 
-import { OfferTypeFormValues } from '../../types'
+import type { OfferTypeFormValues } from '../../types'
 import { IndividualOfferType } from '../IndividualOfferType'
 
 const OfferTypeIndividualForm = (): JSX.Element => {

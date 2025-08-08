@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
-  DeactivationConfirmDialogProps,
+  type DeactivationConfirmDialogProps,
   IndividualDeactivationConfirmDialog,
 } from '../components/IndividualDeactivationConfirmDialog'
 

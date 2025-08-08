@@ -1,7 +1,7 @@
 import { isBefore } from 'date-fns'
 import { useRef, useState } from 'react'
 
-import {
+import type {
   EventStockUpdateBodyModel,
   GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,

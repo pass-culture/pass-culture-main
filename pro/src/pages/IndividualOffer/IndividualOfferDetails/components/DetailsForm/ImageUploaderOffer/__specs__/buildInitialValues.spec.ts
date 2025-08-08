@@ -1,5 +1,5 @@
-import { IndividualOfferImage } from '@/commons/core/Offers/types'
-import { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import type { IndividualOfferImage } from '@/commons/core/Offers/types'
+import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 
 import { buildInitialValues } from '../buildInitialValues'
 

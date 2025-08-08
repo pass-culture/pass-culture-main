@@ -6,7 +6,7 @@ import strokeAccessibilityLeg from '@/icons/stroke-accessibility-leg.svg'
 
 import {
   ExternalAccessibilityCollapse,
-  ExternalAccessibilityCollapseProps,
+  type ExternalAccessibilityCollapseProps,
 } from './ExternalAccessibilityCollapse'
 
 const renderExternalAccessibilityCollaspse = (

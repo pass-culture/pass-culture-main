@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from '@/apiClient/api'
 import {
   IndividualOfferContext,
-  IndividualOfferContextValues,
+  type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { subcategoryFactory } from '@/commons/utils/factories/individualApiFactories'
 import {
@@ -14,7 +14,10 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 
-import { DetailsEanSearch, DetailsEanSearchProps } from './DetailsEanSearch'
+import {
+  DetailsEanSearch,
+  type DetailsEanSearchProps,
+} from './DetailsEanSearch'
 
 const contextValue: IndividualOfferContextValues = {
   categories: [],

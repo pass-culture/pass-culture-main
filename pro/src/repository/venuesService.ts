@@ -1,11 +1,11 @@
-import {
-  type AddressResponseIsLinkedToVenueModel,
+import type {
+  AddressResponseIsLinkedToVenueModel,
   GetOffererAddressesResponseModel,
   GetOffererVenueResponseModel,
   ListOffersVenueResponseModel,
   VenueListItemResponseModel,
 } from '@/apiClient/v1'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 
 export const computeVenueDisplayName = (
   venue:

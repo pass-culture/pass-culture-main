@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
-import {
+import type {
   GetIndividualOfferResponseModel,
   GetIndividualOfferWithAddressResponseModel,
 } from '@/apiClient/v1'
@@ -29,7 +29,7 @@ const renderPriceCategoriesForm = (
     ],
     ...customGetIndividualOffer,
   })
-  let context = {
+  const context = {
     offer,
     categories: [],
     subCategories: [subcategoryFactory({ id: offer.subcategoryId, canBeDuo })],

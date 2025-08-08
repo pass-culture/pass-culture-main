@@ -1,7 +1,12 @@
 /* No need to test this file */
 /* istanbul ignore file */
 
-import { generatePath, Navigate, NavigateProps, useParams } from 'react-router'
+import {
+  generatePath,
+  Navigate,
+  type NavigateProps,
+  useParams,
+} from 'react-router'
 
 import { SignupValidation } from '@/pages/Signup/SignUpValidation/SignUpValidation'
 import { SignupConfirmation } from '@/pages/Signup/SignupConfirmation/SignupConfirmation'

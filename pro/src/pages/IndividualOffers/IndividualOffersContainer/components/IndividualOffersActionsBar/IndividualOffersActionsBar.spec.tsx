@@ -9,14 +9,14 @@ import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 
 import {
   IndividualOffersActionsBar,
-  IndividualOffersActionsBarProps,
+  type IndividualOffersActionsBarProps,
 } from './IndividualOffersActionsBar'
 
 const renderActionsBar = (

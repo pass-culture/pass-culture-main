@@ -5,7 +5,7 @@ import { TOTAL_PRICE_LABEL } from '@/pages/CollectiveOffer/CollectiveOfferStock/
 
 import {
   CollectiveOfferStockSection,
-  CollectiveOfferStockSectionProps,
+  type CollectiveOfferStockSectionProps,
 } from '../CollectiveOfferStockSection'
 
 const renderCollectiveOfferStockSection = (

@@ -22,7 +22,7 @@ import { ClassroomPlaylist } from './Playlist/ClassroomPlaylist/ClassroomPlaylis
 import { NewOffererPlaylist } from './Playlist/NewOffererPlaylist/NewOffererPlaylist'
 import { NewOfferPlaylist } from './Playlist/NewOfferPlaylist/NewOfferPlaylist'
 import { VenuePlaylist } from './Playlist/VenuePlaylist/VenuePlaylist'
-import { PlaylistTracker } from './types'
+import type { PlaylistTracker } from './types'
 
 export const AdageDiscovery = () => {
   const hasSeenAllPlaylist = useRef<boolean>(false)

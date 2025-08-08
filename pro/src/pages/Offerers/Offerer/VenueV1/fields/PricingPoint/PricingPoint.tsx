@@ -4,14 +4,17 @@ import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
-import { GetOffererResponseModel, GetVenueResponseModel } from '@/apiClient/v1'
+import type {
+  GetOffererResponseModel,
+  GetVenueResponseModel,
+} from '@/apiClient/v1'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import fullLinkIcon from '@/icons/full-link.svg'
 import strokeValidIcon from '@/icons/stroke-valid.svg'
-import { type VenueSettingsFormValues } from '@/pages/VenueSettings/types'
+import type { VenueSettingsFormValues } from '@/pages/VenueSettings/types'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { Callout } from '@/ui-kit/Callout/Callout'

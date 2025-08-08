@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { mutate } from 'swr'
 
 import { api } from '@/apiClient/api'
-import { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
@@ -14,7 +14,7 @@ import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import styles from './OfferPublicationEdition.module.scss'
 import { OfferPublicationEditionForm } from './OfferPublicationEditionForm/OfferPublicationEditionForm'
-import { EventPublicationEditionFormValues } from './OfferPublicationEditionForm/types'
+import type { EventPublicationEditionFormValues } from './OfferPublicationEditionForm/types'
 import { OfferPublicationEditionTags } from './OfferPublicationEditionTags/OfferPublicationEditionTags'
 
 export type OfferPublicationEditionProps = {

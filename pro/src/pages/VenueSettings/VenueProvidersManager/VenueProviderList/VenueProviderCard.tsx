@@ -1,4 +1,7 @@
-import { GetVenueResponseModel, VenueProviderResponse } from '@/apiClient/v1'
+import type {
+  GetVenueResponseModel,
+  VenueProviderResponse,
+} from '@/apiClient/v1'
 import { getProviderInfo } from '@/commons/core/Providers/utils/getProviderInfo'
 import {
   isAllocineProvider,

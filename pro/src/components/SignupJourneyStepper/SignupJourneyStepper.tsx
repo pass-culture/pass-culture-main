@@ -7,7 +7,7 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 import { OnboardingFormNavigationAction } from '@/components/SignupJourneyFormLayout/constants'
-import { Step, Stepper } from '@/components/Stepper/Stepper'
+import { type Step, Stepper } from '@/components/Stepper/Stepper'
 
 import { SIGNUP_JOURNEY_STEP_IDS } from './constants'
 import styles from './SignupJourneyStepper.module.scss'

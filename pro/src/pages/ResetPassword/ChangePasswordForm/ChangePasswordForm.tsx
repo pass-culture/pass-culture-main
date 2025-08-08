@@ -10,7 +10,7 @@ import { ButtonVariant } from '@/ui-kit/Button/types'
 import { PasswordInput } from '@/ui-kit/form/PasswordInput/PasswordInput'
 import { ValidationMessageList } from '@/ui-kit/form/ValidationMessageList/ValidationMessageList'
 
-import { type ResetPasswordValues } from '../ResetPassword'
+import type { ResetPasswordValues } from '../ResetPassword'
 import styles from './ChangePasswordForm.module.scss'
 
 type ChangePasswordFormProps = {

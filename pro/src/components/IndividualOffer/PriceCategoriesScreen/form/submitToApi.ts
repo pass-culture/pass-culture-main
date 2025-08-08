@@ -1,9 +1,9 @@
 import { api } from '@/apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
-import { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 
 import { serializePriceCategories } from './serializePriceCategories'
-import { PriceCategoriesFormValues } from './types'
+import type { PriceCategoriesFormValues } from './types'
 
 export const submitToApi = async (
   values: PriceCategoriesFormValues,

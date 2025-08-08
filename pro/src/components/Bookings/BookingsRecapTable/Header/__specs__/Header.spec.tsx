@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { Header, HeaderProps } from '../Header'
+import { Header, type HeaderProps } from '../Header'
 
 const renderHeader = (props: HeaderProps) => render(<Header {...props} />)
 

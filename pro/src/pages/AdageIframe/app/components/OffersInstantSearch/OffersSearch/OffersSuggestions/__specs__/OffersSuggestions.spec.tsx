@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import * as instantSearch from 'react-instantsearch'
 import { Configure } from 'react-instantsearch'
 
-import { AuthenticatedResponse } from '@/apiClient/adage'
+import type { AuthenticatedResponse } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { OfferAddressType } from '@/apiClient/v1'
 import {
@@ -13,13 +13,16 @@ import {
   defaultUseStatsReturn,
 } from '@/commons/utils/factories/adageFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../../utils'
-import { OffersSuggestions, OffersSuggestionsProps } from '../OffersSuggestions'
+import {
+  OffersSuggestions,
+  type OffersSuggestionsProps,
+} from '../OffersSuggestions'
 
 type InstantSearchHookResultMock = {
   scopedResults: {

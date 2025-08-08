@@ -1,9 +1,9 @@
 import { computeAddressDisplayName } from 'repository/venuesService'
 
 import {
-  GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
-  VenueListItemResponseModel,
+  type VenueListItemResponseModel,
   WithdrawalTypeEnum,
 } from '@/apiClient/v1'
 import { AccessibilityEnum } from '@/commons/core/shared/types'

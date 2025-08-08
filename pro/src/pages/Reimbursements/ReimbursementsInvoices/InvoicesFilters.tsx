@@ -1,7 +1,7 @@
-import { Dispatch, SetStateAction } from 'react'
+import type { Dispatch, SetStateAction } from 'react'
 import { useSearchParams } from 'react-router'
 
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { getToday } from '@/commons/utils/date'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
@@ -12,7 +12,7 @@ import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
 import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import styles from './InvoicesFilters.module.scss'
-import { FiltersType } from './types'
+import type { FiltersType } from './types'
 
 interface InvoicesFiltersProps {
   areFiltersDefault: boolean

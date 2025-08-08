@@ -1,14 +1,19 @@
 /* istanbul ignore file : no need to test styled html tag  */
 
 import cn from 'classnames'
-import React, { ForwardedRef, forwardRef } from 'react'
+import type React from 'react'
+import { type ForwardedRef, forwardRef } from 'react'
 
 import strokePassIcon from '@/icons/stroke-pass.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
-import { Tooltip, TooltipProps } from '@/ui-kit/Tooltip/Tooltip'
+import { Tooltip, type TooltipProps } from '@/ui-kit/Tooltip/Tooltip'
 
 import styles from './Button.module.scss'
-import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
+import {
+  ButtonVariant,
+  IconPositionEnum,
+  type SharedButtonProps,
+} from './types'
 
 export interface ButtonProps
   extends SharedButtonProps,

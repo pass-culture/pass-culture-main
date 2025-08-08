@@ -2,17 +2,17 @@ import { useFormContext } from 'react-hook-form'
 
 import {
   CollectiveBookingStatus,
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
-  GetEducationalOffererResponseModel,
-  VenueListItemResponseModel,
+  type GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferTemplateResponseModel,
+  type GetEducationalOffererResponseModel,
+  type VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import {
   isCollectiveOffer,
-  OfferEducationalFormValues,
+  type OfferEducationalFormValues,
 } from '@/commons/core/OfferEducational/types'
 import { applyVenueDefaultsToFormValues } from '@/commons/core/OfferEducational/utils/applyVenueDefaultsToFormValues'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Select } from '@/ui-kit/form/Select/Select'
 

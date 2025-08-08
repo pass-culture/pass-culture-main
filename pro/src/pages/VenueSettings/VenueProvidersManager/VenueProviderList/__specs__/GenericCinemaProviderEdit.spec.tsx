@@ -8,7 +8,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   GenericCinemaProviderEdit,
-  GenericCinemaProviderEditProps,
+  type GenericCinemaProviderEditProps,
 } from '../GenericCinemaProviderEdit'
 
 vi.mock('@/commons/hooks/useNotification', () => ({

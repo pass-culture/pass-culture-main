@@ -5,7 +5,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
-import {
+import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
@@ -19,7 +19,7 @@ import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
   Mode,
-  OfferEducationalFormValues,
+  type OfferEducationalFormValues,
 } from '@/commons/core/OfferEducational/types'
 import { applyVenueDefaultsToFormValues } from '@/commons/core/OfferEducational/utils/applyVenueDefaultsToFormValues'
 import { computeInitialValuesFromOffer } from '@/commons/core/OfferEducational/utils/computeInitialValuesFromOffer'
@@ -42,7 +42,7 @@ import {
 import styles from './OfferEducational.module.scss'
 import { OfferEducationalForm } from './OfferEducationalForm/OfferEducationalForm'
 import { useCollectiveOfferImageUpload } from './useCollectiveOfferImageUpload'
-import { DomainOption } from './useOfferEducationalFormData'
+import type { DomainOption } from './useOfferEducationalFormData'
 import { getOfferEducationalValidationSchema } from './validationSchema'
 
 export interface OfferEducationalProps {

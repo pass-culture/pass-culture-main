@@ -1,12 +1,12 @@
 import cn from 'classnames'
-import React, { ForwardedRef, useId } from 'react'
+import React, { type ForwardedRef, useId } from 'react'
 
 import {
   BaseInput,
-  BaseInputProps,
+  type BaseInputProps,
 } from '@/ui-kit/form/shared/BaseInput/BaseInput'
 import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
-import { FieldLayoutBaseProps } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
+import type { FieldLayoutBaseProps } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 import { FieldLayoutCharacterCount } from '@/ui-kit/form/shared/FieldLayout/FieldLayoutCharacterCount/FieldLayoutCharacterCount'
 
 import styles from './TextInput.module.scss'

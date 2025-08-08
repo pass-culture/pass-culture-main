@@ -1,4 +1,4 @@
-import { CategorySubtypeItem } from './types'
+import type { CategorySubtypeItem } from './types'
 
 export const showOptionsTree: CategorySubtypeItem[] = [
   {

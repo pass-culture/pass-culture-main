@@ -2,36 +2,36 @@
 
 import {
   BankAccountApplicationStatus,
-  BankAccountResponseModel,
+  type BankAccountResponseModel,
   BookingFormula,
   BookingOfferType,
-  BookingRecapResponseModel,
-  BookingRecapResponseStockModel,
+  type BookingRecapResponseModel,
+  type BookingRecapResponseStockModel,
   BookingRecapStatus,
-  CategoryResponseModel,
-  GetBookingResponse,
-  GetIndividualOfferWithAddressResponseModel,
-  GetOffererNameResponseModel,
-  GetOffererResponseModel,
-  GetOffererVenueResponseModel,
-  GetOfferManagingOffererResponseModel,
-  GetOfferStockResponseModel,
-  GetOfferVenueResponseModel,
-  ListOffersOfferResponseModel,
-  ListOffersStockResponseModel,
-  ManagedVenues,
+  type CategoryResponseModel,
+  type GetBookingResponse,
+  type GetIndividualOfferWithAddressResponseModel,
+  type GetOffererNameResponseModel,
+  type GetOffererResponseModel,
+  type GetOffererVenueResponseModel,
+  type GetOfferManagingOffererResponseModel,
+  type GetOfferStockResponseModel,
+  type GetOfferVenueResponseModel,
+  type ListOffersOfferResponseModel,
+  type ListOffersStockResponseModel,
+  type ManagedVenues,
   OfferStatus,
-  PriceCategoryResponseModel,
+  type PriceCategoryResponseModel,
   SubcategoryIdEnum,
-  SubcategoryResponseModel,
-  VenueListItemResponseModel,
-  VenueProviderResponse,
+  type SubcategoryResponseModel,
+  type VenueListItemResponseModel,
+  type VenueProviderResponse,
   VenueTypeCode,
 } from '@/apiClient/v1'
-import { IndividualOfferContextValues } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import type { IndividualOfferContextValues } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
-import { StocksEvent } from '@/components/IndividualOffer/StocksEventCreation/form/types'
+import type { StocksEvent } from '@/components/IndividualOffer/StocksEventCreation/form/types'
 
 import { listOffersVenueFactory } from './collectiveApiFactories'
 

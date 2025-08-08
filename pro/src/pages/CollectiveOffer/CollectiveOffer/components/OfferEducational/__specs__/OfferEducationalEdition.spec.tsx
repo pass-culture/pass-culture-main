@@ -23,7 +23,10 @@ import {
   NOTIFICATIONS_EMAIL_LABEL,
   STRUCTURE_LABEL,
 } from '../constants/labels'
-import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
+import {
+  OfferEducational,
+  type OfferEducationalProps,
+} from '../OfferEducational'
 
 describe('screens | OfferEducational: edition', () => {
   let props: OfferEducationalProps

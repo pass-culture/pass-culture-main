@@ -1,4 +1,4 @@
-import { AddressResponseIsLinkedToVenueModel } from '@/apiClient/v1'
+import type { AddressResponseIsLinkedToVenueModel } from '@/apiClient/v1'
 
 export const getAddressResponseIsLinkedToVenueModelFactory = (
   addressResponse: Partial<AddressResponseIsLinkedToVenueModel> = {}

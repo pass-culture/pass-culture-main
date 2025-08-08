@@ -1,7 +1,8 @@
 import cn from 'classnames'
 import classNames from 'classnames'
-import React, {
-  ForwardedRef,
+import type React from 'react'
+import {
+  type ForwardedRef,
   forwardRef,
   useEffect,
   useId,

@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import {
+import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/adage'

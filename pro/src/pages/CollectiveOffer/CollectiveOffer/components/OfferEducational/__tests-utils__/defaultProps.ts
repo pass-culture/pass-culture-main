@@ -3,7 +3,7 @@ import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveA
 import { venueListItemFactory } from '@/commons/utils/factories/individualApiFactories'
 import { userOffererFactory } from '@/commons/utils/factories/userOfferersFactories'
 
-import { OfferEducationalProps } from '../OfferEducational'
+import type { OfferEducationalProps } from '../OfferEducational'
 
 const mockUserOfferer = userOffererFactory({})
 

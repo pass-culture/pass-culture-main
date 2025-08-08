@@ -1,4 +1,5 @@
-import React, {
+import type React from 'react'
+import {
   forwardRef,
   useCallback,
   useEffect,
@@ -14,7 +15,7 @@ import { CountryCodeSelect } from './CodeCountrySelect/CountryCodeSelect'
 import {
   PHONE_CODE_COUNTRY_CODE_OPTIONS,
   PHONE_EXAMPLE_MAP,
-  PlusString,
+  type PlusString,
 } from './constants'
 import styles from './PhoneNumberInput.module.scss'
 

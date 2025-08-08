@@ -13,13 +13,13 @@ import {
 } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
 import {
   CollectiveOfferPreviewCreationScreen,
-  CollectiveOfferSummaryCreationProps,
+  type CollectiveOfferSummaryCreationProps,
 } from '../CollectiveOfferPreviewCreationScreen'
 
 vi.mock(

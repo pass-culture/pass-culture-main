@@ -1,6 +1,6 @@
 import { StudentLevels } from '@/apiClient/v1'
 
-import { OfferEducationalFormValues } from '../types'
+import type { OfferEducationalFormValues } from '../types'
 
 export const serializeParticipants = (
   participants: OfferEducationalFormValues['participants']

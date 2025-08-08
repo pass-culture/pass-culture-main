@@ -5,13 +5,13 @@ import { FormProvider, useForm } from 'react-hook-form'
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import {
   CollectiveLocationType,
-  VenueListItemResponseModel,
+  type VenueListItemResponseModel,
 } from '@/apiClient/v1'
-import { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
+import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { venueListItemFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { FormLocation, FormLocationProps } from '../FormLocation'
+import { FormLocation, type FormLocationProps } from '../FormLocation'
 
 const mockAdressData = [
   {

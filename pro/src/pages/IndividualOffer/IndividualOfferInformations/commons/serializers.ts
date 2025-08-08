@@ -1,6 +1,6 @@
 import {
-  GetIndividualOfferResponseModel,
-  PatchOfferBodyModel,
+  type GetIndividualOfferResponseModel,
+  type PatchOfferBodyModel,
   WithdrawalTypeEnum,
 } from '@/apiClient/v1'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
@@ -9,7 +9,7 @@ import { removeQuotes } from '@/commons/utils/removeQuotes'
 import { trimStringsInObject } from '@/commons/utils/trimStringsInObject'
 import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
 
-import { UsefulInformationFormValues } from './types'
+import type { UsefulInformationFormValues } from './types'
 
 // TODO (igabriele, 2025-07-24): Make the form values naming & structure closer to the API model rather than serializing back and forth.
 export const serializePatchOffer = ({

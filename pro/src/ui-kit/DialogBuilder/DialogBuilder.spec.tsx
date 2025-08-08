@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 
-import { DialogBuilder, DialogBuilderProps } from './DialogBuilder'
+import { DialogBuilder, type DialogBuilderProps } from './DialogBuilder'
 
 const defaultProps: DialogBuilderProps = {
   children: (

@@ -7,7 +7,7 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
-import { VenueSettingsFormValues } from '../types'
+import type { VenueSettingsFormValues } from '../types'
 import { isSiretStartingWithSiren, valideSiretLength } from './validationSchema'
 
 export type SiretOrCommentFieldsProps = {

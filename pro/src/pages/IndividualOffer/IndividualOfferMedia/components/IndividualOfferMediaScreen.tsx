@@ -5,7 +5,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import {
+import type {
   CreateThumbnailResponseModel,
   GetIndividualOfferWithAddressResponseModel,
 } from '@/apiClient/v1'
@@ -32,7 +32,7 @@ import { Divider } from '@/ui-kit/Divider/Divider'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { buildInitialValues } from '../commons/buildInitialValues'
-import { IndividualOfferMediaFormValues } from '../commons/types'
+import type { IndividualOfferMediaFormValues } from '../commons/types'
 import { getValidationSchema } from '../commons/validationSchema'
 import styles from './IndividualOfferMediaScreen.module.scss'
 import { VideoUploaderTips } from './VideoUploaderOfferTips/VideoUploaderOfferTips'

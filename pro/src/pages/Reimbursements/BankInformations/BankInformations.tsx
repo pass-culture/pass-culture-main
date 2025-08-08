@@ -4,7 +4,7 @@ import { useLocation, useOutletContext } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
-import { BankAccountResponseModel } from '@/apiClient/v1'
+import type { BankAccountResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES,
@@ -19,7 +19,7 @@ import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
-import { ReimbursementsContextProps } from '../Reimbursements'
+import type { ReimbursementsContextProps } from '../Reimbursements'
 import { AddBankInformationsDialog } from './AddBankInformationsDialog'
 import styles from './BankInformations.module.scss'
 import { LinkVenuesDialog } from './LinkVenuesDialog/LinkVenuesDialog'
@@ -79,7 +79,7 @@ export const BankInformations = (): JSX.Element => {
     }
   }
 
-  let bankAccountVenues = bankAccountVenuesQuery.data?.managedVenues
+  const bankAccountVenues = bankAccountVenuesQuery.data?.managedVenues
 
   const updateBankAccountVenuePricingPoint = (venueId: number) => {
     if (!bankAccountVenuesQuery.data) {

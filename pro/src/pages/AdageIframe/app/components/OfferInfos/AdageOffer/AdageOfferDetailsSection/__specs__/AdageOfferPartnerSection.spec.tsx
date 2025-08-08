@@ -4,7 +4,7 @@ import { defaultCollectiveOffer } from '@/commons/utils/factories/adageFactories
 
 import {
   AdageOfferPartnerSection,
-  AdageOfferPartnerSectionProps,
+  type AdageOfferPartnerSectionProps,
 } from '../AdageOfferPartnerSection'
 
 function renderAdageOfferInfoSection(

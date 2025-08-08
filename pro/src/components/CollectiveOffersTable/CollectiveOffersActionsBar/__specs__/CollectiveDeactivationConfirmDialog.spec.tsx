@@ -5,7 +5,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   CollectiveDeactivationConfirmDialog,
-  CollectiveDeactivationConfirmDialogProps,
+  type CollectiveDeactivationConfirmDialogProps,
 } from '../CollectiveDeactivationConfirmDialog'
 
 const renderDeactivationConfirmDialog = ({

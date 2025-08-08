@@ -1,7 +1,7 @@
-import { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 
 import { FIRST_INITIAL_PRICE_CATEGORY } from './constants'
-import { PriceCategoriesFormValues, PriceCategoryForm } from './types'
+import type { PriceCategoriesFormValues, PriceCategoryForm } from './types'
 
 const sortPriceCategories = (a: PriceCategoryForm, b: PriceCategoryForm) => {
   if (a.price === '' || b.price === '') {

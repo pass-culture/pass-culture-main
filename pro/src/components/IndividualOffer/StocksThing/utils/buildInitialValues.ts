@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
 
-import {
+import type {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
 } from '@/apiClient/v1'
@@ -9,7 +9,7 @@ import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
-import { StockThingFormValues } from '../types'
+import type { StockThingFormValues } from '../types'
 
 export const buildInitialValues = (
   offer: GetIndividualOfferWithAddressResponseModel,

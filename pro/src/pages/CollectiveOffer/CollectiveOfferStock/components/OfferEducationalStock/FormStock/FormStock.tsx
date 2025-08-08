@@ -1,9 +1,9 @@
-import React from 'react'
+import type React from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import {
   Mode,
-  OfferEducationalStockFormValues,
+  type OfferEducationalStockFormValues,
 } from '@/commons/core/OfferEducational/types'
 import { isDateValid } from '@/commons/utils/date'
 import { FormLayout } from '@/components/FormLayout/FormLayout'

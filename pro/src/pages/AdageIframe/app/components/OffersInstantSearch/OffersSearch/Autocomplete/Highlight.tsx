@@ -1,7 +1,7 @@
 import { parseAlgoliaHitHighlight } from '@algolia/autocomplete-preset-algolia'
 import { createElement, Fragment } from 'react'
 
-import { SuggestionItem } from './Autocomplete'
+import type { SuggestionItem } from './Autocomplete'
 
 type HighlightHitParams = {
   hit: SuggestionItem

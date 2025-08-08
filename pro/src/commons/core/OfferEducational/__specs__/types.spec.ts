@@ -2,7 +2,7 @@ import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
-import { itShouldReturnFalseIfGivenUndefinedOrNull } from '@/commons/utils/types'
+import { itShouldReturnFalseIfGivenUndefinedOrNull } from '@/commons/utils/tests/utils'
 
 import { isCollectiveOffer, isCollectiveOfferTemplate } from '../types'
 

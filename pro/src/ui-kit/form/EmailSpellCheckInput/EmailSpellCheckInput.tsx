@@ -1,4 +1,4 @@
-import { ForwardedRef, forwardRef, useState } from 'react'
+import { type ForwardedRef, forwardRef, useState } from 'react'
 
 import fullNextIcon from '@/icons/full-next.svg'
 import { Button } from '@/ui-kit/Button/Button'

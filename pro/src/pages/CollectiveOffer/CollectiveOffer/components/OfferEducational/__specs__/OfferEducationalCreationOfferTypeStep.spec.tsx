@@ -14,7 +14,10 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
-import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
+import {
+  OfferEducational,
+  type OfferEducationalProps,
+} from '../OfferEducational'
 
 window.HTMLElement.prototype.scrollIntoView = vi.fn()
 

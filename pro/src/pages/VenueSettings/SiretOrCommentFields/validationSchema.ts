@@ -3,7 +3,7 @@ import * as yup from 'yup'
 import { siretApiValidate } from '@/commons/core/Venue/siretApiValidate'
 import { unhumanizeSiret } from '@/commons/core/Venue/utils'
 
-import { VenueSettingsFormValues } from '../types'
+import type { VenueSettingsFormValues } from '../types'
 
 export const valideSiretLength = (siret: string) =>
   unhumanizeSiret(siret).length === 14

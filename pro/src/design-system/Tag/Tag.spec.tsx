@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { Tag, TagProps, TagVariant } from './Tag'
+import { Tag, type TagProps, TagVariant } from './Tag'
 
 function renderTag(props: TagProps) {
   return render(<Tag {...props} />)

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { AccessibilityFormValues } from '@/commons/core/shared/types'
+import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 
 import { useAccessibilityOptions } from '../useAccessibilityOptions'

@@ -5,7 +5,7 @@ import * as apiHelpers from '@/apiClient/helpers'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { ButtonImageEdit, ButtonImageEditProps } from '../ButtonImageEdit'
+import { ButtonImageEdit, type ButtonImageEditProps } from '../ButtonImageEdit'
 
 const renderButtonImageEdit = (props: ButtonImageEditProps) =>
   renderWithProviders(<ButtonImageEdit {...props} />)

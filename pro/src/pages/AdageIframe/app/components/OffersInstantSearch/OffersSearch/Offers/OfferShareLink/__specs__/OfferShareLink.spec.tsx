@@ -9,7 +9,7 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
-import { OfferShareLink, OfferShareLinkProps } from '../OfferShareLink'
+import { OfferShareLink, type OfferShareLinkProps } from '../OfferShareLink'
 
 vi.mock('@/apiClient/api', () => ({
   apiAdage: {

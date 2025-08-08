@@ -6,9 +6,9 @@ import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import {
+import type {
   GetIndividualOfferResponseModel,
-  type GetIndividualOfferWithAddressResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
 } from '@/apiClient/v1'
 import {
   GET_OFFER_QUERY_KEY,
@@ -38,7 +38,7 @@ import { serializePatchOffer } from '@/pages/IndividualOffer/IndividualOfferInfo
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
 
-import { UsefulInformationFormValues } from '../commons/types'
+import type { UsefulInformationFormValues } from '../commons/types'
 import { getInitialValuesFromOffer } from '../commons/utils'
 import { getValidationSchema } from '../commons/validationSchema'
 import styles from './IndividualOfferInformationsScreen.module.scss'

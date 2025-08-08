@@ -4,7 +4,10 @@ import { Link, Route, Routes } from 'react-router'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { RouteLeavingGuard, RouteLeavingGuardProps } from '../RouteLeavingGuard'
+import {
+  RouteLeavingGuard,
+  type RouteLeavingGuardProps,
+} from '../RouteLeavingGuard'
 
 const MiniAppTest = () => (
   <div>

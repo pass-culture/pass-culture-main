@@ -4,7 +4,7 @@ import { api } from '@/apiClient/api'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { OfferStats, OfferStatsProps } from '../components/OfferStats'
+import { OfferStats, type OfferStatsProps } from '../components/OfferStats'
 
 vi.mock('@/apiClient/api', () => ({
   api: {

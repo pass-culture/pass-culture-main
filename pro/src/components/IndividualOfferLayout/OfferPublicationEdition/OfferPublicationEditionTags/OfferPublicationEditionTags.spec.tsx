@@ -5,7 +5,7 @@ import { OfferStatus } from '@/apiClient/v1'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
 import {
-  OfferPublicationEditionProps,
+  type OfferPublicationEditionProps,
   OfferPublicationEditionTags,
 } from './OfferPublicationEditionTags'
 

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
-import { Column, Table, TableVariant } from './Table'
+import { type Column, Table, TableVariant } from './Table'
 
 interface RowType {
   id: number

@@ -1,4 +1,4 @@
-import { BookingOmniSearchFilters } from './types'
+import type { BookingOmniSearchFilters } from './types'
 
 export const ALL_BOOKING_STATUS = []
 export const DEFAULT_OMNISEARCH_CRITERIA = 'offre'

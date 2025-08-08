@@ -12,13 +12,13 @@ import {
 } from '@/commons/utils/factories/storeFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
 import {
   VenueEditionHeader,
-  VenueEditionHeaderProps,
+  type VenueEditionHeaderProps,
 } from '../VenueEditionHeader'
 
 const mockLogEvent = vi.fn()

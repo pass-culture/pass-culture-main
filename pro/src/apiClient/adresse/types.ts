@@ -20,12 +20,12 @@ export interface FeatureAdresseApi {
     context: string
     district: string
     housenumber: string
-    importance: Number
-    score: Number
+    importance: number
+    score: number
     street: string
     type: FeaturePropertyType
-    x: Number
-    y: Number
+    x: number
+    y: number
   }
 }
 

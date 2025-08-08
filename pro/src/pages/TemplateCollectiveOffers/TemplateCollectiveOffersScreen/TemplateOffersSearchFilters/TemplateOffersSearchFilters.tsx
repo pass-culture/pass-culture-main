@@ -1,13 +1,13 @@
-import { Dispatch, FormEvent, SetStateAction } from 'react'
+import type { Dispatch, FormEvent, SetStateAction } from 'react'
 
-import { EacFormat, GetOffererResponseModel } from '@/apiClient/v1'
+import { EacFormat, type GetOffererResponseModel } from '@/apiClient/v1'
 import {
   ALL_FORMATS_OPTION,
   ALL_VENUES_OPTION,
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
 } from '@/commons/core/Offers/constants'
-import { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { OffersTableSearch } from '@/components/OffersTable/OffersTableSearch/OffersTableSearch'
 import styles from '@/components/OffersTable/OffersTableSearch/OffersTableSearch.module.scss'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
