@@ -1,8 +1,12 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import {
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
+} from '@/commons/core/Offers/constants'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import * as handleLastSubmittedStep from '@/components/IndividualOfferLayout/IndividualOfferNavigation/utils/handleLastSubmittedStep'
 import { Notification } from '@/components/Notification/Notification'
 
 import {
@@ -52,6 +56,11 @@ describe('StocksCalendarActionsBar', () => {
   })
 
   it('should trigger the navigation to the form previous and next steps when creating the offer', async () => {
+    const spyUpdateLocalStorageWithLastSubmittedStep = vi.spyOn(
+      handleLastSubmittedStep,
+      'updateLocalStorageWithLastSubmittedStep'
+    )
+
     renderStocksCalendarActionsBar({
       hasStocks: true,
     })
@@ -68,6 +77,12 @@ describe('StocksCalendarActionsBar', () => {
     )
     expect(mockNavigate).toHaveBeenLastCalledWith(
       '/offre/individuelle/1/creation/recapitulatif'
+    )
+
+    // Submitted step needs to be remembered.
+    expect(spyUpdateLocalStorageWithLastSubmittedStep).toHaveBeenLastCalledWith(
+      1,
+      INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
     )
   })
 

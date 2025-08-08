@@ -29,6 +29,7 @@ import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
 import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { FormLayoutDescription } from '@/components/FormLayout/FormLayoutDescription'
+import { updateLocalStorageWithLastSubmittedStep } from '@/components/IndividualOfferLayout/IndividualOfferNavigation/utils/handleLastSubmittedStep'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import fullCodeIcon from '@/icons/full-code.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
@@ -144,8 +145,14 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     await mutate([GET_OFFER_QUERY_KEY, offer.id])
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(nextStepUrl)
+
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       notify.success(getSuccessMessage(mode))
+    } else if (mode === OFFER_WIZARD_MODE.CREATION) {
+      updateLocalStorageWithLastSubmittedStep(
+        offer.id,
+        INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
+      )
     }
   }
 

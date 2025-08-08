@@ -20,6 +20,7 @@ import {
 } from '@/commons/utils/factories/individualApiFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import * as handleLastSubmittedStep from '@/components/IndividualOfferLayout/IndividualOfferNavigation/utils/handleLastSubmittedStep'
 import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 
 import {
@@ -148,6 +149,21 @@ describe('IndividualOfferMediaScreen', () => {
 
     expect(screen.getByRole('heading', { name: LABELS.videoSubSection }))
     expect(screen.getByRole('textbox', { name: LABELS.videoInput }))
+  })
+
+  it('should memorize that this form was submitted', async () => {
+    const spyUpdateLocalStorageWithLastSubmittedStep = vi.spyOn(
+      handleLastSubmittedStep,
+      'updateLocalStorageWithLastSubmittedStep'
+    )
+    const knownOffer = getIndividualOfferFactory()
+    await renderIndividualOfferMediaScreen({ props: { offer: knownOffer } })
+
+    await updateVideoUrlAndSubmit()
+    expect(spyUpdateLocalStorageWithLastSubmittedStep).toHaveBeenLastCalledWith(
+      knownOffer.id,
+      INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA
+    )
   })
 
   describe('about image (and credit)', () => {

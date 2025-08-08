@@ -23,6 +23,7 @@ import {
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import * as handleLastSubmittedStep from '@/components/IndividualOfferLayout/IndividualOfferNavigation/utils/handleLastSubmittedStep'
 
 import { PRICE_CATEGORY_MAX_LENGTH } from './form/constants'
 import { PriceCategoriesScreen } from './PriceCategoriesScreen'
@@ -189,6 +190,10 @@ describe('PriceCategoriesScreen', () => {
     const spySubmit = vi
       .spyOn(api, 'postPriceCategories')
       .mockResolvedValue(apiOffer)
+    const spyUpdateLocalStorageWithLastSubmittedStep = vi.spyOn(
+      handleLastSubmittedStep,
+      'updateLocalStorageWithLastSubmittedStep'
+    )
 
     const offerWithStocks = {
       ...apiOffer,
@@ -221,6 +226,13 @@ describe('PriceCategoriesScreen', () => {
     await waitFor(() => {
       expect(spySubmit).toHaveBeenCalledOnce()
     })
+
+    // This follows a postPriceCategories submit, so we're in creation mode.
+    // Submitted step needs to be remembered.
+    expect(spyUpdateLocalStorageWithLastSubmittedStep).toHaveBeenLastCalledWith(
+      apiOffer.id,
+      INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
+    )
   })
 
   it('shows confirmation dialog before deleting a saved price category with stocks', async () => {

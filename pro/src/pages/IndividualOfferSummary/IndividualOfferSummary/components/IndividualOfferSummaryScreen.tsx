@@ -22,6 +22,7 @@ import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { getOfferConditionalFields } from '@/commons/utils/getOfferConditionalFields'
 import { getOffererData } from '@/commons/utils/offererStoreHelper'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
+import { cleanLocalStorageAboutLastSubmittedStep } from '@/components/IndividualOfferLayout/IndividualOfferNavigation/utils/handleLastSubmittedStep'
 import { OfferAppPreview } from '@/components/OfferAppPreview/OfferAppPreview'
 import { RedirectToBankAccountDialog } from '@/components/RedirectToBankAccountDialog/RedirectToBankAccountDialog'
 import { SummaryAside } from '@/components/SummaryLayout/SummaryAside'
@@ -115,6 +116,8 @@ export const IndividualOfferSummaryScreen = () => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         navigate(offerConfirmationStepUrl)
       }
+
+      cleanLocalStorageAboutLastSubmittedStep(offer.id)
     } catch (error) {
       notification.error(getHumanReadableApiError(error))
     }

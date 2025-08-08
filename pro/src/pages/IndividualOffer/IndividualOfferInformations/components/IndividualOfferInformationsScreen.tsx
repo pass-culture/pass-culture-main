@@ -29,6 +29,7 @@ import { getOfferConditionalFields } from '@/commons/utils/getOfferConditionalFi
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { updateLocalStorageWithLastSubmittedStep } from '@/components/IndividualOfferLayout/IndividualOfferNavigation/utils/handleLastSubmittedStep'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
@@ -44,15 +45,9 @@ import { getValidationSchema } from '../commons/validationSchema'
 import styles from './IndividualOfferInformationsScreen.module.scss'
 import { UsefulInformationForm } from './UsefulInformationForm/UsefulInformationForm'
 
-export const LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED =
-  'USEFUL_INFORMATION_SUBMITTED'
-
 export type IndividualOfferInformationsScreenProps = {
   offer: GetIndividualOfferWithAddressResponseModel
 }
-
-const getLocalStorageKeyName = (offer: GetIndividualOfferResponseModel) =>
-  `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offer.id}`
 
 export const IndividualOfferInformationsScreen = ({
   offer,
@@ -84,16 +79,6 @@ export const IndividualOfferInformationsScreen = ({
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
-
-  const addToLocalStorage = () => {
-    const keyName = getLocalStorageKeyName(offer)
-    if (
-      storageAvailable('localStorage') &&
-      localStorage.getItem(keyName) === null
-    ) {
-      localStorage.setItem(keyName, true.toString())
-    }
-  }
 
   // Getting selected venue at step 1 (details) to infer address fields
   const venuesQuery = useSWR(
@@ -181,7 +166,7 @@ export const IndividualOfferInformationsScreen = ({
 
       const nextStepForEdition =
         INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
-      const nextStepForCreation = isMediaPageEnabled
+      const nextStepForCreationAndReadOnly = isMediaPageEnabled
         ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA
         : isEvent
           ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
@@ -190,9 +175,14 @@ export const IndividualOfferInformationsScreen = ({
       const nextStep =
         mode === OFFER_WIZARD_MODE.EDITION
           ? nextStepForEdition
-          : nextStepForCreation
+          : nextStepForCreationAndReadOnly
 
-      addToLocalStorage()
+      if (mode === OFFER_WIZARD_MODE.CREATION) {
+        updateLocalStorageWithLastSubmittedStep(
+          offer.id,
+          INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
+        )
+      }
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(

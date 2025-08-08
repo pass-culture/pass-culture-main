@@ -37,6 +37,7 @@ import {
   subcategoryFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import * as handleLastSubmittedStep from '@/components/IndividualOfferLayout/IndividualOfferNavigation/utils/handleLastSubmittedStep'
 import { Notification } from '@/components/Notification/Notification'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 
@@ -204,6 +205,10 @@ describe('screens:StocksThing', () => {
   })
 
   it('should submit stock form when click on "Enregistrer et continuer"', async () => {
+    const spyUpdateLocalStorageWithLastSubmittedStep = vi.spyOn(
+      handleLastSubmittedStep,
+      'updateLocalStorageWithLastSubmittedStep'
+    )
     vi.spyOn(api, 'createThingStock').mockResolvedValue({
       id: 12,
     })
@@ -224,6 +229,12 @@ describe('screens:StocksThing', () => {
     })
     expect(screen.getByText('Next page')).toBeInTheDocument()
     expect(api.getOffer).toHaveBeenCalledWith(offer.id)
+
+    // Submitted step needs to be remembered.
+    expect(spyUpdateLocalStorageWithLastSubmittedStep).toHaveBeenLastCalledWith(
+      1,
+      INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
+    )
   })
 
   it('should submit stock form with duo informations when clicking on on "Enregistrer et continuer"', async () => {
