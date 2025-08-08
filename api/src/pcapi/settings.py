@@ -593,6 +593,7 @@ ENABLE_TEST_ROUTES = bool(int(os.environ.get("ENABLE_TEST_ROUTES", 0)))
 
 # GOOGLE MAPS
 GOOGLE_MAPS_API_KEY = secrets_utils.get("GOOGLE_MAPS_API_KEY")
+YOUTUBE_API_KEY = secrets_utils.get("YOUTUBE_API_KEY")
 
 # ACCESLIBRE
 ACCESLIBRE_BACKEND = os.environ.get("ACCESLIBRE_BACKEND")
@@ -629,6 +630,12 @@ DISCORD_BOT_TOKEN = secrets_utils.get("DISCORD_BOT_TOKEN")
 TYPEFORM_BACKEND = os.environ.get("TYPEFORM_BACKEND", "pcapi.connectors.typeform.TestingBackend")
 TYPEFORM_API_KEY = secrets_utils.get("TYPEFORM_API_KEY")
 TYPEFORM_IMPORT_CHUNK_SIZE = int(os.environ.get("TYPEFORM_IMPORT_CHUNK_SIZE", "500"))
+
+# YOUTUBE
+YOUTUBE_API_KEY = secrets_utils.get("YOUTUBE_API_KEY")
+YOUTUBE_BACKEND = os.environ.get("YOUTUBE_BACKEND", "pcapi.connectors.youtube.TestingBackend")
+YOUTUBE_API_URL = os.environ.get("YOUTUBE_API_URL", "https://www.googleapis.com/youtube/v3/videos")
+
 
 # CLICKHOUSE
 CLICKHOUSE_BACKEND = os.environ.get(
