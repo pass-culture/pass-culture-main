@@ -1,3 +1,6 @@
+import logging
+
+from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.connectors.entreprise import api as api_entreprise
@@ -11,6 +14,9 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
+
+
+logger = logging.getLogger(__name__)
 
 
 # TODO: deprecated, to delete once the frontend does not call this endpoint anymore
@@ -50,6 +56,13 @@ def get_structure_data(search_input: str) -> sirene_serializers.StructureDataBod
         address = offerers_api.find_ban_address_from_insee_address(data.diffusible, data.address)
     except offerers_exceptions.InactiveSirenException:
         raise ApiErrors(errors={"global": ["Ce SIRET n'est pas actif."]})
+
+    logger.info(
+        "Searching for structure",
+        extra={"user_id": current_user.id, "siret": data.siret, "is_diffusible": data.diffusible},
+        technical_message_id="structure_identification",
+    )
+
     return sirene_serializers.StructureDataBodyModel(
         siret=data.siret,
         siren=data.siren,
