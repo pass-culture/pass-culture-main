@@ -271,6 +271,28 @@ describe('IndividualOfferMediaScreen', () => {
         videoUrl: '',
       })
     })
+
+    it.only('should should log videoUrl when it is not youtube', async () => {
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
+      Element.prototype.scrollIntoView = vi.fn()
+      await renderIndividualOfferMediaScreen()
+
+      await updateVideoUrlAndSubmit({
+        text: 'https://www.dailymotion.com/video/x9negsq',
+      })
+
+      const videoInput = screen.getByRole('textbox', {
+        name: LABELS.videoInput,
+      })
+      expect(videoInput).toBeInvalid()
+
+      expect(mockLogEvent).toHaveBeenCalledWith('videoUrlError', {
+        offerId: 1,
+        userId: undefined,
+      })
+    })
   })
 
   describe('about navigation', () => {

@@ -77,6 +77,7 @@ export enum Events {
   CLICKED_VALIDATE_ADD_RECURRENCE_DATES = 'hasClickedValidateAddRecurrenceDates',
   FAKE_DOOR_VIDEO_INTERESTED = 'fakeDoorVideoInterested',
   CLICKED_SORT_STOCKS_TABLE = 'hasClickedSortStocksTable',
+  OFFER_FORM_VIDEO_URL_ERROR = 'videoUrlError',
 }
 
 export enum VenueEvents {

@@ -1,5 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { FormProvider, useForm } from 'react-hook-form'
+import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
@@ -20,6 +21,7 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
@@ -32,6 +34,7 @@ import { Divider } from '@/ui-kit/Divider/Divider'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { buildInitialValues } from '../commons/buildInitialValues'
+import { isYoutubeValid } from '../commons/isYoutubeValid'
 import { IndividualOfferMediaFormValues } from '../commons/types'
 import { getValidationSchema } from '../commons/validationSchema'
 import styles from './IndividualOfferMediaScreen.module.scss'
@@ -45,6 +48,7 @@ export const IndividualOfferMediaScreen = ({
   offer,
 }: IndividualOfferMediaScreenProps): JSX.Element => {
   const { logEvent } = useAnalytics()
+  const currentUser = useSelector(selectCurrentUser)
   const { mutate } = useSWRConfig()
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -216,6 +220,16 @@ export const IndividualOfferMediaScreen = ({
                   description="Format : https://www.youtube.com/watch?v=0R5PZxOgoz8"
                   error={form.formState.errors.videoUrl?.message}
                   {...form.register('videoUrl')}
+                  onBlur={(e) => {
+                    const value = e.target.value
+                    form.register('videoUrl').onBlur(e)
+                    if (value && !isYoutubeValid(value)) {
+                      logEvent(Events.OFFER_FORM_VIDEO_URL_ERROR, {
+                        offerId: offer.id,
+                        userId: currentUser?.id,
+                      })
+                    }
+                  }}
                 />
                 <VideoUploaderTips />
               </FormLayout.SubSection>
