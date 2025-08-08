@@ -228,6 +228,13 @@ class GetVenuesListForm(utils.PCForm):
     )
     regions = fields.PCSelectMultipleField("Régions", choices=get_regions_choices())
     department = fields.PCSelectMultipleField("Départements", choices=area_choices)
+    provider = fields.PCTomSelectField(
+        "Partenaire technique",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_providers",
+    )
     only_validated_offerers = fields.PCSwitchBooleanField(
         "Uniquement les entités juridiques validées",
         full_row=True,
@@ -265,6 +272,7 @@ class GetVenuesListForm(utils.PCForm):
                 self.offerer.data,
                 self.regions.data,
                 self.department.data,
+                self.provider.data,
             )
         )
 
