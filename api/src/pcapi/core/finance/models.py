@@ -115,6 +115,20 @@ class Deposit(PcObject, Base, Model):
 
         return conf.SpecificCaps(digital_cap=digital_cap, physical_cap=physical_cap)
 
+    @property
+    def initial_recredit(self) -> "Recredit | None":
+        if self.type == DepositType.GRANT_17_18:
+            if recredits_17_18 := sorted(
+                [
+                    recredit
+                    for recredit in self.recredits
+                    if recredit.recreditType in (RecreditType.RECREDIT_17, RecreditType.RECREDIT_18)
+                ],
+                key=lambda recredit: recredit.dateCreated,
+            ):
+                return recredits_17_18[0]
+        return None
+
 
 @dataclasses.dataclass
 class GrantedDeposit:
