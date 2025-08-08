@@ -235,19 +235,27 @@
         }
       }
     },
-    { "includes": ["cypress/**/*.ts"], "javascript": { "globals": [] } },
-    {
-      "includes": ["**/*.stories.tsx"],
-      "linter": { "rules": { "style": { "noDefaultExport": "off" } } }
-    },
     {
       "includes": ["**/*.css", "**/*.scss"],
       "javascript": { "formatter": { "quoteStyle": "double" } }
     },
+
+    // -------------------------------------------------------------------------
+    // Non-production codebase
+
     {
-      "includes": ["**/*.d.ts"],
+      "includes": [
+        "cypress/**/*.ts",
+        "scripts/**/*.ts",
+        "vite.config.ts",
+        "**/*.d.ts",
+        "**/*.stories.tsx"
+      ],
       "linter": {
         "rules": {
+          "correctness": {
+            "noNodejsModules": "off"
+          },
           "style": {
             "noDefaultExport": "off",
             "noNamespace": "off"
