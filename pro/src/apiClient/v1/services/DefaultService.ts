@@ -605,7 +605,6 @@ export class DefaultService {
    * @param offererId
    * @param status
    * @param venueId
-   * @param creationMode
    * @param periodBeginningDate
    * @param periodEndingDate
    * @param collectiveOfferType
@@ -620,7 +619,6 @@ export class DefaultService {
     offererId?: number | null,
     status?: Array<CollectiveOfferDisplayedStatus> | null,
     venueId?: number | null,
-    creationMode?: string | null,
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
     collectiveOfferType?: CollectiveOfferType | null,
@@ -636,7 +634,6 @@ export class DefaultService {
         'offererId': offererId,
         'status': status,
         'venueId': venueId,
-        'creationMode': creationMode,
         'periodBeginningDate': periodBeginningDate,
         'periodEndingDate': periodEndingDate,
         'collectiveOfferType': collectiveOfferType,
@@ -891,7 +888,6 @@ export class DefaultService {
    * @param offererId
    * @param status
    * @param venueId
-   * @param creationMode
    * @param periodBeginningDate
    * @param periodEndingDate
    * @param collectiveOfferType
@@ -906,7 +902,6 @@ export class DefaultService {
     offererId?: number | null,
     status?: Array<CollectiveOfferDisplayedStatus> | null,
     venueId?: number | null,
-    creationMode?: string | null,
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
     collectiveOfferType?: CollectiveOfferType | null,
@@ -922,7 +917,6 @@ export class DefaultService {
         'offererId': offererId,
         'status': status,
         'venueId': venueId,
-        'creationMode': creationMode,
         'periodBeginningDate': periodBeginningDate,
         'periodEndingDate': periodEndingDate,
         'collectiveOfferType': collectiveOfferType,
@@ -942,7 +936,6 @@ export class DefaultService {
    * @param offererId
    * @param status
    * @param venueId
-   * @param creationMode
    * @param periodBeginningDate
    * @param periodEndingDate
    * @param collectiveOfferType
@@ -957,7 +950,6 @@ export class DefaultService {
     offererId?: number | null,
     status?: Array<CollectiveOfferDisplayedStatus> | null,
     venueId?: number | null,
-    creationMode?: string | null,
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
     collectiveOfferType?: CollectiveOfferType | null,
@@ -973,7 +965,6 @@ export class DefaultService {
         'offererId': offererId,
         'status': status,
         'venueId': venueId,
-        'creationMode': creationMode,
         'periodBeginningDate': periodBeginningDate,
         'periodEndingDate': periodEndingDate,
         'collectiveOfferType': collectiveOfferType,
@@ -1752,7 +1743,6 @@ export class DefaultService {
    * @param creationMode
    * @param periodBeginningDate
    * @param periodEndingDate
-   * @param collectiveOfferType
    * @param offererAddressId
    * @returns ListOffersResponseModel OK
    * @throws ApiError
@@ -1760,13 +1750,12 @@ export class DefaultService {
   public listOffers(
     nameOrIsbn?: string | null,
     offererId?: number | null,
-    status?: (OfferStatus | CollectiveOfferDisplayedStatus) | null,
+    status?: OfferStatus | null,
     venueId?: number | null,
     categoryId?: string | null,
     creationMode?: string | null,
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
-    collectiveOfferType?: CollectiveOfferType | null,
     offererAddressId?: number | null,
   ): CancelablePromise<ListOffersResponseModel> {
     return this.httpRequest.request({
@@ -1781,7 +1770,6 @@ export class DefaultService {
         'creationMode': creationMode,
         'periodBeginningDate': periodBeginningDate,
         'periodEndingDate': periodEndingDate,
-        'collectiveOfferType': collectiveOfferType,
         'offererAddressId': offererAddressId,
       },
       errors: {

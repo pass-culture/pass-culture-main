@@ -8,7 +8,6 @@ import type { CollectiveOfferType } from './CollectiveOfferType';
 import type { EacFormat } from './EacFormat';
 export type ListCollectiveOffersQueryModel = {
   collectiveOfferType?: CollectiveOfferType | null;
-  creationMode?: string | null;
   format?: EacFormat | null;
   locationType?: CollectiveLocationType | null;
   nameOrIsbn?: string | null;

@@ -102,7 +102,6 @@ export const CollectiveOffers = (): JSX.Element => {
         offererId,
         venueId,
         status,
-        creationMode,
         periodBeginningDate,
         periodEndingDate,
         collectiveOfferType,
@@ -114,7 +113,6 @@ export const CollectiveOffers = (): JSX.Element => {
         offererId,
         status,
         venueId,
-        creationMode,
         periodBeginningDate,
         periodEndingDate,
         isNewOffersAndBookingsActive

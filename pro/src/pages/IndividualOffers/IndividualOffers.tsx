@@ -94,7 +94,6 @@ export const IndividualOffers = (): JSX.Element => {
       periodBeginningDate,
       periodEndingDate,
       offererAddressId,
-      collectiveOfferType,
     } = serializeApiFilters(apiFilters)
 
     return api.listOffers(
@@ -106,7 +105,6 @@ export const IndividualOffers = (): JSX.Element => {
       creationMode,
       periodBeginningDate,
       periodEndingDate,
-      collectiveOfferType,
       offererAddressId
     )
   })

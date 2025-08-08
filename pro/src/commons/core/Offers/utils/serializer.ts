@@ -19,7 +19,6 @@ export const serializeApiFilters = (
     'creationMode',
     'periodBeginningDate',
     'periodEndingDate',
-    'collectiveOfferType',
   ]
 
   const body: ListOffersQueryModel = {}
