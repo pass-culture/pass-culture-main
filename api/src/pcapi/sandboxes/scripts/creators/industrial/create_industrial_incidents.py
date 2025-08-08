@@ -186,7 +186,7 @@ def _create_one_individual_incident(
 
     amount = None if len(bookings) > 1 else decimal.Decimal("10")
     check_bookings = validation.check_incident_bookings(incident_bookings)
-    check_amount = True if amount is None else validation.check_total_amount(amount, incident_bookings)
+    check_amount = amount is None or validation.check_total_amount(input_amount=amount, bookings=incident_bookings)
     if not (check_bookings and check_amount):
         raise ValueError("Couldn't create overpayment incident, invalid parameters")
 
@@ -196,7 +196,8 @@ def _create_one_individual_incident(
         author=pro,
         origin=finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE,
         comment=comment,
-        amount=amount,
+        amount=amount if not multiple_bookings else None,
+        percent=decimal.Decimal(100) if multiple_bookings else None,
     )
     finance_api.validate_finance_overpayment_incident(
         finance_incident=finance_incident,

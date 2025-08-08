@@ -3237,6 +3237,7 @@ def create_overpayment_finance_incident(
     zendesk_id: int | None = None,
     comment: str | None = None,
     amount: decimal.Decimal | None = None,
+    percent: decimal.Decimal | None = None,
 ) -> models.FinanceIncident:
     incident = models.FinanceIncident(
         kind=models.IncidentType.OVERPAYMENT,
@@ -3266,14 +3267,16 @@ def create_overpayment_finance_incident(
             )
         )
     else:
+        assert percent is not None
         for booking in bookings:
             booking_finance_incidents_to_create.append(
                 models.BookingFinanceIncident(
                     bookingId=booking.id,
                     incidentId=incident.id,
                     beneficiaryId=booking.userId,
-                    # Only total overpayment if multiple bookings are selected
-                    newTotalAmount=0,
+                    newTotalAmount=utils.to_cents(
+                        booking.total_amount * (decimal.Decimal(100) - percent) / decimal.Decimal(100)
+                    ),
                 )
             )
     db.session.add_all(booking_finance_incidents_to_create)

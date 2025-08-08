@@ -451,7 +451,7 @@ def _create_one_nc_individual_incident(beneficiary: users_models.User) -> None:
 
     amount = decimal.Decimal("10")
     check_bookings = validation.check_incident_bookings([incident_booking])
-    check_amount = validation.check_total_amount(amount, [incident_booking])
+    check_amount = validation.check_total_amount(input_amount=amount, bookings=[incident_booking])
     if not (check_bookings and check_amount):
         raise ValueError("Couldn't create overpayment incident, invalid parameters")
 
