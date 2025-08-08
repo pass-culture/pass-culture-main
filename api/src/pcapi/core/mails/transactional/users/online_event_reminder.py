@@ -7,7 +7,9 @@ from pcapi.core import mails
 from pcapi.core.bookings import models as booking_models
 from pcapi.core.mails import transactional as mails_transactional
 from pcapi.core.mails.models import TransactionalEmailData
+from pcapi.core.offerers.models import OpeningHours
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.models import db
@@ -81,17 +83,19 @@ def _get_online_bookings_happening_soon() -> sa_orm.query.Query:
         .join(Stock)
         .join(Offer)
         .join(Venue)
+        .join(Offer.openingHours)
         .options(
             sa_orm.joinedload(booking_models.Booking.user, innerjoin=True),
             sa_orm.contains_eager(booking_models.Booking.stock).contains_eager(Stock.offer).contains_eager(Offer.venue),
         )
-        .filter(
-            booking_models.Booking.status == booking_models.BookingStatus.CONFIRMED,
-            Stock.beginningDatetime >= in_30_minutes,
-            Stock.beginningDatetime < in_1_hour,
-            Offer.isEvent,
-            Offer.isDigital,
-        )
+         .filter(
+             booking_models.Booking.status == booking_models.BookingStatus.CONFIRMED,
+             Stock.beginningDatetime >= in_30_minutes,
+             Stock.beginningDatetime < in_1_hour,
+             offers_repository.has_event_subcategory_filter(),
+             OpeningHours.id != None,
+             Offer.isDigital,
+         )
     )
 
     return bookings_query

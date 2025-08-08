@@ -222,7 +222,7 @@
             <th>Stock restant</th>
             {% if show_price_category %}<th>Tarif</th>{% endif %}
             <th>Prix</th>
-            {% if offer.isEvent %}
+            {% if offer.isTimestamped %}
               <th>Date / Heure</th>
               <th>Fin des réservations</th>
             {% endif %}
@@ -273,7 +273,7 @@
                   {{ stock.price | format_amount(target=offer.venue) }}
                 {% endif %}
               </td>
-              {% if offer.isEvent %}
+              {% if offer.isTimestamped %}
                 <td>{{ stock.beginningDatetime | format_date_time }}</td>
                 <td>{{ stock.bookingLimitDatetime | format_date_time }}</td>
               {% endif %}
