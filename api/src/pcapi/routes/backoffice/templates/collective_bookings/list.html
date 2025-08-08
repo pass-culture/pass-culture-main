@@ -1,7 +1,38 @@
 {% extends "layouts/list.html" %}
 {% import "components/forms.html" as forms with context %}
 {% import "components/clipboard.html" as clipboard %}
-{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
+{% macro collective_booking_form(collective_booking, dest, div_id, modale_id, title, form) %}
+  <div class="modal modal-lg fade {{ div_id }}"
+       tabindex="-1"
+       aria-labelledby="{{ modale_id }}"
+       aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form hx-post="{{ dest }}"
+              hx-target="#booking-row-{{ collective_booking.id }}"
+              hx-swap="outerHTML"
+              hx-trigger="submit"
+              name="{{ dest | action_to_name }}"
+              method="post">
+          <div class="modal-header"
+               id="{{ modale_id }}">
+            <h5 class="modal-title">{{ title }}</h5>
+          </div>
+          <div class="modal-body row">{{ forms.build_form_fields_group(form) }}</div>
+          <div class="modal-footer">
+            <button type="button"
+                    class="btn btn-outline-primary-subtle-bg"
+                    data-bs-dismiss="modal">Annuler</button>
+            <button type="submit"
+                    class="btn btn-primary"
+                    data-modal-selector=".{{ div_id }}">Confirmer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endmacro %}
 {% set pc_validate_booking_modal_id = random_hash() %}
 {% set pc_cancel_booking_modal_id = random_hash() %}
 {% set rows_count = rows|length %}
@@ -48,16 +79,14 @@
   {% include "collective_bookings/rows.html" %}
 {% endblock table_body %}
 {% block after_table %}
-  {% if has_permission("CREATE_INCIDENTS") %}
-    {% for collective_booking in rows %}
-      {% if collective_booking.isReimbursed %}
-        {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_collective_booking_overpayment_creation_form", collective_booking_id=collective_booking.id) , "overpayment-creation-modal-" + collective_booking.id|string) }}
-      {% endif %}
-    {% endfor %}
-    {% for collective_booking in rows %}
-      {% if collective_booking.isCancelled %}
-        {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_collective_booking_commercial_gesture_creation_form", collective_booking_id=collective_booking.id) , "commercial-gesture-creation-modal-" + collective_booking.id|string) }}
-      {% endif %}
-    {% endfor %}
-  {% endif %}
+  {% for collective_booking in rows %}
+    {% if has_permission("CREATE_INCIDENTS") %}
+      {{ build_dynamic_modal(url_for("backoffice_web.finance_incidents.get_collective_booking_overpayment_creation_form", collective_booking_id=collective_booking.id) , "overpayment-creation-modal-" + collective_booking.id|string) }}
+      {{ build_dynamic_modal(url_for("backoffice_web.finance_incidents.get_collective_booking_commercial_gesture_creation_form", collective_booking_id=collective_booking.id) , "commercial-gesture-creation-modal-" + collective_booking.id|string) }}
+    {% endif %}
+    {% if has_permission("MANAGE_BOOKINGS") %}
+      {{ collective_booking_form(collective_booking, url_for('backoffice_web.collective_bookings.mark_booking_as_used', collective_booking_id=collective_booking.id) , "pc-validate-booking-modal-" + collective_booking.id|string, pc_validate_booking_modal_id, "Valider la réservation" + collective_booking.id |string, mark_as_used_booking_form) }}
+      {{ collective_booking_form(collective_booking, url_for('backoffice_web.collective_bookings.mark_booking_as_cancelled', collective_booking_id=collective_booking.id) , "pc-cancel-booking-modal-" +collective_booking.id|string, pc_cancel_booking_modal_id, "Annuler la réservation" + collective_booking.id |string, cancel_booking_form) }}
+    {% endif %}
+  {% endfor %}
 {% endblock after_table %}
