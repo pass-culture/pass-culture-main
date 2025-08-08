@@ -117,11 +117,6 @@ MENU_SECTIONS = [
                 permissions=["READ_TAGS"],
             ),
             MenuItem(
-                label="Base de données produits",
-                url_name="backoffice_web.product.search_product",
-                permissions=["READ_OFFERS"],
-            ),
-            MenuItem(
                 label="Offres individuelles",
                 url_name="backoffice_web.offer.list_offers",
                 permissions=["READ_OFFERS"],
@@ -134,16 +129,6 @@ MENU_SECTIONS = [
             MenuItem(
                 label="Offres collectives vitrine",
                 url_name="backoffice_web.collective_offer_template.list_collective_offer_templates",
-                permissions=["READ_OFFERS"],
-            ),
-            MenuItem(
-                label="Opérations sur plusieurs offres",
-                url_name="backoffice_web.multiple_offers.multiple_offers_home",
-                permissions=["READ_OFFERS"],
-            ),
-            MenuItem(
-                label="Recherche EAN via Tite Live",
-                url_name="backoffice_web.titelive.search_titelive",
                 permissions=["READ_OFFERS"],
             ),
             MenuItem(
@@ -200,6 +185,31 @@ MENU_SECTIONS = [
                 label="Réservations collectives",
                 url_name="backoffice_web.collective_bookings.list_collective_bookings",
                 permissions=["READ_BOOKINGS"],
+            ),
+        ],
+    ),
+    MenuSection(
+        label="Catalogue",
+        all_items=[
+            MenuItem(
+                label="Base de données produits",
+                url_name="backoffice_web.product.search_product",
+                permissions=["READ_OFFERS"],
+            ),
+            MenuItem(
+                label="Artistes",
+                url_name="backoffice_web.artist.list_artists",
+                permissions=["READ_OFFERS"],
+            ),
+            MenuItem(
+                label="Opérations sur plusieurs offres",
+                url_name="backoffice_web.multiple_offers.multiple_offers_home",
+                permissions=["READ_OFFERS"],
+            ),
+            MenuItem(
+                label="Recherche EAN via Tite Live",
+                url_name="backoffice_web.titelive.search_titelive",
+                permissions=["READ_OFFERS"],
             ),
         ],
     ),

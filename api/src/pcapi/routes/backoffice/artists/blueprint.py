@@ -1,11 +1,15 @@
 import enum
+import typing
 
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import render_template
 from flask import request
 from flask import url_for
 from markupsafe import Markup
-from sqlalchemy import orm as sa_orm
+from markupsafe import escape
+from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import NotFound
 from werkzeug.utils import redirect
 
@@ -26,6 +30,230 @@ artists_blueprint = utils.child_backoffice_blueprint(
     url_prefix="/catalogue/artist",
     permission=perm_models.Permissions.READ_OFFERS,
 )
+
+
+ARTIST_SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
+    "ID": {
+        "field": "string",
+        "column": artist_models.Artist.id,
+    },
+    "NAME_OR_ALIAS": {
+        "field": "string",
+        "custom_filters": {
+            "EQUALS": lambda value: artist_models.Artist.id.in_(
+                sa.select(artist_models.Artist.id)
+                .where(
+                    sa.func.immutable_unaccent(artist_models.Artist.name).ilike(sa.func.immutable_unaccent(f"{value}"))
+                )
+                .union(
+                    sa.select(artist_models.ArtistAlias.artist_id).where(
+                        sa.func.immutable_unaccent(artist_models.ArtistAlias.artist_alias_name).ilike(
+                            sa.func.immutable_unaccent(f"{value}")
+                        )
+                    )
+                )
+            ),
+            "NOT_EQUALS": lambda value: artist_models.Artist.id.not_in(
+                sa.select(artist_models.Artist.id)
+                .where(
+                    sa.func.immutable_unaccent(artist_models.Artist.name).ilike(sa.func.immutable_unaccent(f"{value}"))
+                )
+                .union(
+                    sa.select(artist_models.ArtistAlias.artist_id).where(
+                        sa.func.immutable_unaccent(artist_models.ArtistAlias.artist_alias_name).ilike(
+                            sa.func.immutable_unaccent(f"{value}")
+                        )
+                    )
+                )
+            ),
+            "CONTAINS": lambda value: artist_models.Artist.id.in_(
+                sa.select(artist_models.Artist.id)
+                .where(
+                    sa.func.immutable_unaccent(artist_models.Artist.name).ilike(
+                        sa.func.immutable_unaccent(f"%{value}%")
+                    )
+                )
+                .union(
+                    sa.select(artist_models.ArtistAlias.artist_id).where(
+                        sa.func.immutable_unaccent(artist_models.ArtistAlias.artist_alias_name).ilike(
+                            sa.func.immutable_unaccent(f"%{value}%")
+                        )
+                    )
+                )
+            ),
+            "NO_CONTAINS": lambda value: artist_models.Artist.id.not_in(
+                sa.select(artist_models.Artist.id)
+                .where(
+                    sa.func.immutable_unaccent(artist_models.Artist.name).ilike(
+                        sa.func.immutable_unaccent(f"%{value}%")
+                    )
+                )
+                .union(
+                    sa.select(artist_models.ArtistAlias.artist_id).where(
+                        sa.func.immutable_unaccent(artist_models.ArtistAlias.artist_alias_name).ilike(
+                            sa.func.immutable_unaccent(f"%{value}%")
+                        )
+                    )
+                )
+            ),
+        },
+    },
+    "IS_VISIBLE": {
+        "field": "boolean",
+        "column": artist_models.Artist.is_blacklisted,
+        "special": lambda x: x == "false",
+    },
+    "PRODUCT_NAME": {
+        "field": "string",
+        "column": offers_models.Product.name,
+        "inner_join": "product",
+    },
+    "CREATION_DATE": {
+        "field": "date",
+        "column": artist_models.Artist.date_created,
+    },
+}
+
+ARTIST_JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
+    "alias": [
+        {
+            "name": "alias",
+            "args": (artist_models.ArtistAlias, artist_models.Artist.aliases),
+        },
+    ],
+    "product": [
+        {
+            "name": "artist_product_link",
+            "args": (
+                artist_models.ArtistProductLink,
+                artist_models.Artist.id == artist_models.ArtistProductLink.artist_id,
+            ),
+        },
+        {
+            "name": "product",
+            "args": (offers_models.Product, artist_models.ArtistProductLink.product_id == offers_models.Product.id),
+        },
+    ],
+}
+
+
+def _get_artist_ids_query(form: forms.GetArtistAdvancedSearchForm) -> sa_orm.Query:
+    query, _, _, warnings = utils.generate_search_query(
+        query=db.session.query(artist_models.Artist),
+        search_parameters=form.search.data,
+        fields_definition=ARTIST_SEARCH_FIELD_TO_PYTHON,
+        joins_definition=ARTIST_JOIN_DICT,
+        subqueries_definition={},
+    )
+    for warning in warnings:
+        flash(escape(warning), "warning")
+
+    return query.with_entities(artist_models.Artist.id).limit(form.limit.data + 1)
+
+
+def _get_artists_by_ids(
+    artist_ids: list[str] | sa_orm.Query, *, sort: str | None = None, order: str | None = None
+) -> list[artist_models.Artist]:
+    products_count_subquery = (
+        sa.select(sa.func.count(artist_models.ArtistProductLink.product_id))
+        .where(artist_models.ArtistProductLink.artist_id == artist_models.Artist.id)
+        .correlate(artist_models.Artist)
+        .scalar_subquery()
+    )
+
+    aliases_count_subquery = (
+        sa.select(sa.func.count(artist_models.ArtistAlias.id))
+        .where(artist_models.ArtistAlias.artist_id == artist_models.Artist.id)
+        .correlate(artist_models.Artist)
+        .scalar_subquery()
+    )
+
+    query = (
+        db.session.query(
+            artist_models.Artist,
+            products_count_subquery.label("products_count"),
+            aliases_count_subquery.label("aliases_count"),
+        )
+        .filter(artist_models.Artist.id.in_(artist_ids))
+        .options(
+            sa_orm.load_only(
+                artist_models.Artist.id,
+                artist_models.Artist.name,
+                artist_models.Artist.image,
+                artist_models.Artist.is_blacklisted,
+                artist_models.Artist.date_created,
+            )
+        )
+    )
+
+    if sort:
+        order = order or "desc"
+        sort_column = getattr(artist_models.Artist, sort)
+        query = query.order_by(getattr(sort_column, order)())
+
+    return query.all()
+
+
+def _render_artist_list(
+    rows: list | None = None,
+    advanced_form: forms.GetArtistAdvancedSearchForm | None = None,
+    code: int = 200,
+) -> utils.BackofficeResponse:
+    date_created_sort_url = None
+    if advanced_form is not None and advanced_form.sort.data:
+        date_created_sort_url = advanced_form.get_sort_link_with_search_data(".list_artists")
+
+    if not advanced_form:
+        advanced_form = forms.GetArtistAdvancedSearchForm(
+            formdata=MultiDict(
+                (
+                    ("search-0-search_field", "NAME_OR_ALIAS"),
+                    ("search-0-operator", "CONTAINS"),
+                ),
+            ),
+        )
+
+    return (
+        render_template(
+            "artists/list.html",
+            rows=rows or [],
+            advanced_form=advanced_form,
+            advanced_dst=url_for(".list_artists"),
+            date_created_sort_url=date_created_sort_url,
+        ),
+        code,
+    )
+
+
+@artists_blueprint.route("/", methods=["GET"])
+def list_artists() -> utils.BackofficeResponse:
+    form = forms.GetArtistAdvancedSearchForm(formdata=utils.get_query_params())
+    if not form.validate():
+        mark_transaction_as_invalid()
+        return _render_artist_list(
+            advanced_form=form,
+            code=400,
+        )
+
+    if form.is_empty():
+        form_data = MultiDict(utils.get_query_params())
+        form_data.update({"search-0-search_field": "NAME_OR_ALIAS", "search-0-operator": "CONTAINS"})
+        form = forms.GetArtistAdvancedSearchForm(formdata=form_data)
+        return _render_artist_list(advanced_form=form)
+
+    artist_ids = _get_artist_ids_query(form)
+
+    artists = _get_artists_by_ids(
+        artist_ids=artist_ids,
+        sort=form.sort.data,
+        order=form.order.data,
+    )
+    artists = utils.limit_rows(artists, form.limit.data)
+
+    return _render_artist_list(
+        rows=artists,
+        advanced_form=form,
+    )
 
 
 class ArtistDetailsActionType(enum.StrEnum):

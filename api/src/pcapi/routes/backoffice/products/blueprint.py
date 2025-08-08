@@ -41,7 +41,7 @@ from . import forms
 list_products_blueprint = utils.child_backoffice_blueprint(
     "product",
     __name__,
-    url_prefix="/pro/product",
+    url_prefix="/catalogue/product",
     permission=perm_models.Permissions.READ_OFFERS,
 )
 

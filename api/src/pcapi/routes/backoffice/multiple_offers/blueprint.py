@@ -23,7 +23,7 @@ from . import forms
 multiple_offers_blueprint = utils.child_backoffice_blueprint(
     "multiple_offers",
     __name__,
-    url_prefix="/pro/multiple-offers",
+    url_prefix="/catalogue/multiple-offers",
     permission=perm_models.Permissions.READ_OFFERS,
 )
 
