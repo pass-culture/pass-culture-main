@@ -143,20 +143,30 @@ def check_incident_collective_booking(collective_booking: educational_models.Col
     return Valid(True)
 
 
-def check_total_amount(input_amount: decimal.Decimal, bookings: list[bookings_models.Booking]) -> Valid:
+def check_total_amount(
+    *,
+    input_amount: decimal.Decimal | None = None,
+    input_percent: decimal.Decimal | None = None,
+    bookings: list[bookings_models.Booking],
+) -> Valid:
     _, max_amount = get_overpayment_incident_amount_interval(bookings)
 
-    if not input_amount:
-        return Valid(False, "Impossible de créer un incident d'un montant de 0 €.")
+    if len(bookings) == 1:
+        if not input_amount:
+            return Valid(False, "Impossible de créer un incident d'un montant de 0 €.")
 
-    if input_amount < 0:
-        return Valid(False, "Le montant d'un incident ne peut être négatif.")
+        if input_amount < 0:
+            return Valid(False, "Le montant d'un incident ne peut être négatif.")
 
-    if input_amount > max_amount:
-        return Valid(
-            is_valid=False,
-            message="Le montant de l'incident ne peut pas être supérieur au montant total des réservations sélectionnées.",
-        )
+        if input_amount > max_amount:
+            return Valid(
+                is_valid=False,
+                message="Le montant de l'incident ne peut pas être supérieur au montant total des réservations sélectionnées.",
+            )
+    else:
+        if not input_percent:
+            return Valid(False, "Impossible de créer un incident de 0 %%.")
+
     return Valid(True)
 
 

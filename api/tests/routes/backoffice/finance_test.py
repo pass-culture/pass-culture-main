@@ -1861,27 +1861,31 @@ class CreateOverpaymentTest(PostEndpointHelper):
         assert db.session.query(finance_models.FinanceIncident).count() == 1  # didn't create new incident
         assert db.session.query(history_models.ActionHistory).count() == 0
 
-    @pytest.mark.parametrize("zendesk_id", [None, 1])
-    @pytest.mark.parametrize("comment", [None, "Commentaire facultatif"])
-    def test_create_incident_from_multiple_booking(self, legit_user, authenticated_client, zendesk_id, comment):
+    @pytest.mark.parametrize(
+        "zendesk_id, comment, percent, expected_cents_1, expected_cents_2",
+        [(None, None, 100, 0, 0), (1, "Commentaire facultatif", 40, 1218, 1950)],
+    )
+    def test_create_incident_from_multiple_bookings(
+        self, legit_user, authenticated_client, zendesk_id, comment, percent, expected_cents_1, expected_cents_2
+    ):
         venue = offerers_factories.VenueFactory()
         offer = offers_factories.OfferFactory(venue=venue)
-        stock = offers_factories.StockFactory(offer=offer)
+        stock_1 = offers_factories.StockFactory(offer=offer, price=decimal.Decimal("20.3"))
+        stock_2 = offers_factories.StockFactory(offer=offer, price=decimal.Decimal("32.5"))
         selected_bookings = [
             bookings_factories.ReimbursedBookingFactory(
-                stock=stock, pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)]
+                stock=stock_1, pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)]
             ),
             bookings_factories.ReimbursedBookingFactory(
-                stock=stock, pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)]
+                stock=stock_2, pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)]
             ),
         ]
         object_ids = ",".join([str(booking.id) for booking in selected_bookings])
-        total_booking_amount = sum(booking.amount for booking in selected_bookings)
 
         response = self.post_to_endpoint(
             authenticated_client,
             form={
-                "total_amount": total_booking_amount,
+                "percent": percent,
                 "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
                 "comment": comment,
                 "zendesk_id": zendesk_id,
@@ -1902,7 +1906,22 @@ class CreateOverpaymentTest(PostEndpointHelper):
         assert finance_incident.comment == comment
         assert finance_incident.zendeskId == zendesk_id
         assert finance_incident.origin == finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE
+
         assert db.session.query(finance_models.BookingFinanceIncident).count() == 2
+        assert (
+            db.session.query(finance_models.BookingFinanceIncident)
+            .filter_by(bookingId=selected_bookings[0].id)
+            .one()
+            .newTotalAmount
+            == expected_cents_1
+        )
+        assert (
+            db.session.query(finance_models.BookingFinanceIncident)
+            .filter_by(bookingId=selected_bookings[1].id)
+            .one()
+            .newTotalAmount
+            == expected_cents_2
+        )
 
         action_history = db.session.query(history_models.ActionHistory).one()
         assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
@@ -1937,6 +1956,57 @@ class CreateOverpaymentTest(PostEndpointHelper):
         )
 
         assert db.session.query(finance_models.FinanceIncident).count() == 0  # didn't create new incident
+        assert db.session.query(history_models.ActionHistory).count() == 0
+
+    @pytest.mark.parametrize(
+        "percent, expected_alert",
+        [
+            ("0", "Impossible de créer un incident de 0 %%."),
+            (
+                "101",
+                "Les données envoyées comportent des erreurs. Pourcentage du montant des réservations à récupérer : Le pourcentage doit être compris entre 0 % et 100 %. ;",
+            ),
+            (
+                "-1",
+                "Les données envoyées comportent des erreurs. Pourcentage du montant des réservations à récupérer : Le pourcentage doit être compris entre 0 % et 100 %. ;",
+            ),
+        ],
+    )
+    def test_can_not_create_incident_from_multiple_bookings_with_invalid_percent(
+        self, authenticated_client, percent, expected_alert
+    ):
+        offer = offers_factories.OfferFactory()
+        stock = offers_factories.StockFactory(offer=offer)
+        selected_bookings = [
+            bookings_factories.ReimbursedBookingFactory(
+                stock=stock, pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)]
+            ),
+            bookings_factories.ReimbursedBookingFactory(
+                stock=stock, pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)]
+            ),
+        ]
+        object_ids = ",".join([str(booking.id) for booking in selected_bookings])
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "percent": percent,
+                "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
+                "comment": "test",
+                "zendesk_id": "",
+                "kind": finance_models.IncidentType.OVERPAYMENT.name,
+                "object_ids": object_ids,
+            },
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert expected_alert in alerts["warning"]
+
+        assert db.session.query(finance_models.FinanceIncident).count() == 0
+        assert db.session.query(finance_models.BookingFinanceIncident).count() == 0
         assert db.session.query(history_models.ActionHistory).count() == 0
 
 

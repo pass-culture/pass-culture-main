@@ -399,7 +399,7 @@ def get_history(finance_incident_id: int) -> utils.BackofficeResponse:
 def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeResponse:
     form = forms.BookingOverPaymentIncidentForm()
     additional_data = {}
-    alert = None
+    info = None
 
     if form.object_ids.data:
         bookings = (
@@ -435,19 +435,18 @@ def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeRespo
                 messages=valid.messages,
             )
 
-        min_amount, max_amount = validation.get_overpayment_incident_amount_interval(bookings)
-
-        form.total_amount.data = max_amount
         additional_data = _initialize_additional_data(bookings)
         if len(bookings) > 1:
-            form.total_amount.flags.readonly = True
-            alert = (
-                "Le montant n'est pas modifiable parce qu'il n'est possible de créer qu'un "
-                "incident trop perçu total si plusieurs réservations sont sélectionnées."
+            del form.total_amount
+            info = (
+                "Pour effectuer un incident trop perçu total, renseigner 100% dans le champ du pourcentage à récupérer."
             )
         else:
+            min_amount, max_amount = validation.get_overpayment_incident_amount_interval(bookings)
+            form.total_amount.data = max_amount
             form.total_amount.flags.max = max_amount
             form.total_amount.flags.min = min_amount
+            del form.percent
 
     return render_template(
         "components/dynamic/modal_form.html",
@@ -458,7 +457,7 @@ def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeRespo
         title="Création d'un incident",
         button_text="Créer l'incident",
         additional_data=additional_data.items(),
-        alert=alert,
+        info=info,
     )
 
 
@@ -640,8 +639,6 @@ def create_individual_booking_overpayment() -> utils.BackofficeResponse:
         mark_transaction_as_invalid()
         return _render_individual_bookings()
 
-    amount = form.total_amount.data
-
     bookings = (
         db.session.query(bookings_models.Booking)
         .options(
@@ -658,14 +655,21 @@ def create_individual_booking_overpayment() -> utils.BackofficeResponse:
         .all()
     )
 
-    if len(bookings) != len(form.object_ids_list):
+    num_bookings = len(form.object_ids_list)
+    if len(bookings) != num_bookings:
         flash(
             'Au moins une des réservations sélectionnées est dans un état différent de "remboursé".',
             "warning",
         )
         return _render_individual_bookings(form.object_ids_list)
 
-    if not (valid := validation.check_incident_bookings(bookings) and validation.check_total_amount(amount, bookings)):
+    amount = form.total_amount.data
+    percent = form.percent.data
+
+    if not (
+        valid := validation.check_incident_bookings(bookings)
+        and validation.check_total_amount(input_amount=amount, input_percent=percent, bookings=bookings)
+    ):
         for message in valid.messages:
             flash(message, "warning")
         mark_transaction_as_invalid()
@@ -678,6 +682,7 @@ def create_individual_booking_overpayment() -> utils.BackofficeResponse:
         zendesk_id=form.zendesk_id.data,
         comment=form.comment.data,
         amount=amount,
+        percent=percent,
     )
     incident_url = url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=incident.id)
 
