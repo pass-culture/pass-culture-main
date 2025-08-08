@@ -26,6 +26,6 @@ def get_artist_type(artist_type: str | None) -> artist_models.ArtistType | None:
     if not artist_type:
         return None
     try:
-        return artist_models.ArtistType[artist_type]
-    except KeyError:
+        return artist_models.ArtistType(artist_type)
+    except ValueError:
         return None
