@@ -39,7 +39,7 @@ jobs:
       - run: yarn install --immutable
       - run: yarn tsc -b
       - run: yarn lint:dead-code
-      - run: yarn lint:js
+      - run: yarn lint:js --diagnostic-level=error
       - run: yarn lint:scss
 
   pro-run-tests:
