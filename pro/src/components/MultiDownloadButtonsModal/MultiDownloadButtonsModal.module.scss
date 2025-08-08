@@ -25,8 +25,7 @@
     background: var(--color-background-default);
     border-radius: rem.torem(6px);
     border: rem.torem(1px) solid var(--color-border-subtle);
-    box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px)
-      var(--color-medium-shadow);
+    box-shadow: var(--shadow-overlay);
     display: inline-block;
     overflow: hidden;
     padding: rem.torem(12px) 0;
