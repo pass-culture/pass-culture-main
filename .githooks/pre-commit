@@ -16,7 +16,7 @@ cd $DIR/pro
 #     export DISABLED_PRO_PRE_COMMIT_CHECKS="lint:js,test,tsc"
 #
 
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep '^pro/src/*' | sed 's|^pro\/||g')
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep '^pro/*' | sed 's|^pro\/||g')
 
 if [[ ! -z "$STAGED_FILES" ]]; then
   # run linter on staged files
