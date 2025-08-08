@@ -19,7 +19,7 @@ from pcapi import settings
 from pcapi.core import object_storage
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories.models import EacFormat
-from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.educational import exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.models import offer_mixin
 from pcapi.models.accessibility_mixin import AccessibilityMixin
@@ -1501,7 +1501,7 @@ class CollectiveStock(PcObject, models.Base, models.Model):
     def get_unique_non_cancelled_booking(self) -> "CollectiveBooking | None":
         non_cancelled_bookings = self.get_non_cancelled_bookings()
         if len(non_cancelled_bookings) > 1:
-            raise educational_exceptions.MultipleCollectiveBookingFound()
+            raise exceptions.MultipleCollectiveBookingFound()
         return non_cancelled_bookings[0] if non_cancelled_bookings else None
 
     def is_two_days_past_end(self) -> bool:
@@ -1642,13 +1642,13 @@ class EducationalDeposit(PcObject, models.Base, models.Model):
         """
         if self.isFinal:
             if self.amount < total_amount_after_booking:
-                raise educational_exceptions.InsufficientFund()
+                raise exceptions.InsufficientFund()
         else:
             ratio = decimal.Decimal(self.TEMPORARY_FUND_AVAILABLE_RATIO)
             temporary_fund = round(self.amount * ratio, 2)
 
             if temporary_fund < total_amount_after_booking:
-                raise educational_exceptions.InsufficientTemporaryFund()
+                raise exceptions.InsufficientTemporaryFund()
 
     def check_has_enough_fund_with_ratio(self, total_amount_after_booking: decimal.Decimal) -> None:
         """
@@ -1660,7 +1660,7 @@ class EducationalDeposit(PcObject, models.Base, models.Model):
         available_amount = round(self.amount * self.creditRatio, 2)
 
         if available_amount < total_amount_after_booking:
-            raise educational_exceptions.InsufficientFundFirstPeriod()
+            raise exceptions.InsufficientFundFirstPeriod()
 
 
 class EducationalRedactor(PcObject, models.Base, models.Model):
@@ -1783,11 +1783,11 @@ class CollectiveBooking(PcObject, models.Base, models.Model):
         author_id: int | None = None,
     ) -> None:
         if self.status is CollectiveBookingStatus.CANCELLED:
-            raise educational_exceptions.CollectiveBookingAlreadyCancelled()
+            raise exceptions.CollectiveBookingAlreadyCancelled()
         if self.status is CollectiveBookingStatus.REIMBURSED and not cancel_even_if_reimbursed:
-            raise educational_exceptions.CollectiveBookingIsAlreadyUsed
+            raise exceptions.CollectiveBookingIsAlreadyUsed
         if self.status is CollectiveBookingStatus.USED and not cancel_even_if_used:
-            raise educational_exceptions.CollectiveBookingIsAlreadyUsed
+            raise exceptions.CollectiveBookingIsAlreadyUsed
         self.status = CollectiveBookingStatus.CANCELLED
         self.cancellationDate = datetime.datetime.utcnow()
         self.cancellationReason = reason
@@ -1863,7 +1863,7 @@ class CollectiveBooking(PcObject, models.Base, models.Model):
 
     def mark_as_refused(self) -> None:
         if self.status != CollectiveBookingStatus.PENDING and self.cancellationLimitDate <= datetime.datetime.utcnow():
-            raise educational_exceptions.EducationalBookingNotRefusable()
+            raise exceptions.EducationalBookingNotRefusable()
         cancellation_reason = (
             CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
             if self.status == CollectiveBookingStatus.PENDING
@@ -1871,8 +1871,8 @@ class CollectiveBooking(PcObject, models.Base, models.Model):
         )
         try:
             self.cancel_booking(cancellation_reason)
-        except educational_exceptions.CollectiveBookingIsAlreadyUsed:
-            raise educational_exceptions.EducationalBookingNotRefusable()
+        except exceptions.CollectiveBookingIsAlreadyUsed:
+            raise exceptions.EducationalBookingNotRefusable()
 
         self.status = CollectiveBookingStatus.CANCELLED
 
