@@ -4,11 +4,8 @@ from io import BytesIO
 
 import sqlalchemy.orm as sa_orm
 from flask import flash
-from flask import redirect
 from flask import render_template
-from flask import request
 from flask import send_file
-from flask import url_for
 from flask_login import current_user
 from markupsafe import Markup
 from werkzeug.exceptions import BadRequest
@@ -41,10 +38,8 @@ collective_bookings_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _get_collective_bookings(
-    form: booking_forms.GetCollectiveBookingListForm,
-) -> list[educational_models.CollectiveBooking]:
-    base_query = (
+def _get_collective_bookings_query() -> sa_orm.Query:
+    return (
         db.session.query(educational_models.CollectiveBooking)
         .join(educational_models.CollectiveStock)
         .join(educational_models.CollectiveOffer)
@@ -101,6 +96,12 @@ def _get_collective_bookings(
         )
     )
 
+
+def _get_collective_bookings(
+    form: booking_forms.GetCollectiveBookingListForm,
+) -> list[educational_models.CollectiveBooking]:
+    base_query = _get_collective_bookings_query()
+
     if form.has_incident.data and len(form.has_incident.data) == 1:
         if form.has_incident.data[0] == "true":
             base_query = base_query.filter(educational_models.CollectiveBooking.validated_incident_id != None)
@@ -120,6 +121,31 @@ def _get_collective_bookings(
         name_filters=[
             educational_models.CollectiveOffer.name,
         ],
+    )
+
+
+def _render_collective_bookings(collective_bookings_ids: list[int] | None = None) -> utils.BackofficeResponse:
+    bookings: list[educational_models.CollectiveBooking] = []
+
+    if collective_bookings_ids:
+        query = _get_collective_bookings_query()
+        bookings = query.filter(educational_models.CollectiveBooking.id.in_(collective_bookings_ids)).all()
+
+    connect_as = {}
+    for booking in bookings:
+        offer = booking.collectiveStock.collectiveOffer
+        connect_as[offer.id] = get_connect_as(
+            object_type="collective_offer",
+            object_id=offer.id,
+            pc_pro_path=urls.build_pc_pro_offer_path(offer),
+        )
+
+    return render_template(
+        "collective_bookings/rows.html",
+        rows=bookings,
+        mark_as_used_booking_form=empty_forms.EmptyForm(),
+        cancel_booking_form=booking_forms.CancelCollectiveBookingForm(),
+        connect_as=connect_as,
     )
 
 
@@ -170,13 +196,6 @@ def list_collective_bookings() -> utils.BackofficeResponse:
     )
 
 
-def _redirect_after_collective_booking_action(code: int = 303) -> utils.BackofficeResponse:
-    if request.referrer:
-        return redirect(request.referrer, code)
-
-    return redirect(url_for("backoffice_web.collective_bookings.list_collective_bookings"), code)
-
-
 @collective_bookings_blueprint.route("/download-csv", methods=["GET"])
 def get_collective_booking_csv_download() -> utils.BackofficeResponse:
     form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
@@ -225,7 +244,7 @@ def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse
 
     if collective_booking.status != educational_models.CollectiveBookingStatus.CANCELLED:
         flash("Impossible de valider une réservation qui n'est pas annulée", "warning")
-        return _redirect_after_collective_booking_action()
+        return _render_collective_bookings([collective_booking_id])
 
     try:
         educational_api_booking.uncancel_collective_booking(collective_booking)
@@ -235,7 +254,7 @@ def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse
     else:
         flash(f"La réservation <b>{collective_booking.id}</b> a été validée", "success")
 
-    return _redirect_after_collective_booking_action()
+    return _render_collective_bookings([collective_booking_id])
 
 
 @collective_bookings_blueprint.route("/<int:collective_booking_id>/cancel", methods=["POST"])
@@ -250,7 +269,7 @@ def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeRes
     form = booking_forms.CancelCollectiveBookingForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return _redirect_after_collective_booking_action()
+        return _render_collective_bookings()
 
     try:
         educational_api_booking.cancel_collective_booking(
@@ -271,4 +290,4 @@ def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeRes
     else:
         flash(f"La réservation <b>{collective_booking.id}</b> a été annulée", "success")
 
-    return _redirect_after_collective_booking_action()
+    return _render_collective_bookings([collective_booking_id])

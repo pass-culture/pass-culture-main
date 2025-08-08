@@ -15,6 +15,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 
+from .helpers import flash
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
@@ -574,31 +575,43 @@ class MarkCollectiveBookingAsUsedTest(PostEndpointHelper):
     def test_uncancel_and_mark_as_used(self, authenticated_client, collective_bookings):
         cancelled = collective_bookings[2]
 
-        response = self.post_to_endpoint(authenticated_client, collective_booking_id=cancelled.id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_booking_id=cancelled.id,
+            headers={"hx-request": "true"},
+        )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{cancelled.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[1] == str(cancelled.id)
 
         db.session.refresh(cancelled)
         assert cancelled.status is educational_models.CollectiveBookingStatus.CONFIRMED
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-        assert f"La réservation {cancelled.id} a été validée" in html_parser.extract_alert(redirected_response.data)
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert f"La réservation {cancelled.id} a été validée" in alerts["success"]
 
     def test_uncancel_non_cancelled_booking(self, authenticated_client, collective_bookings):
         non_cancelled = collective_bookings[3]
         old_status = non_cancelled.status
 
-        response = self.post_to_endpoint(authenticated_client, collective_booking_id=non_cancelled.id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_booking_id=non_cancelled.id,
+            headers={"hx-request": "true"},
+        )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{non_cancelled.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[1] == str(non_cancelled.id)
 
         db.session.refresh(non_cancelled)
         assert non_cancelled.status == old_status
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-        assert "Impossible de valider une réservation qui n'est pas annulée" in html_parser.extract_alert(
-            redirected_response.data
-        )
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert "Impossible de valider une réservation qui n'est pas annulée" in alerts["warning"]
 
 
 class CancelCollectiveBookingTest(PostEndpointHelper):
@@ -613,16 +626,20 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
             authenticated_client,
             collective_booking_id=confirmed.id,
             form={"reason": educational_models.CollectiveBookingCancellationReasons.BACKOFFICE.value},
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{confirmed.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[1] == str(confirmed.id)
 
         db.session.refresh(confirmed)
         assert confirmed.status is educational_models.CollectiveBookingStatus.CANCELLED
         assert confirmed.cancellationReason == educational_models.CollectiveBookingCancellationReasons.BACKOFFICE
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-        assert f"La réservation {confirmed.id} a été annulée" in html_parser.extract_alert(redirected_response.data)
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert f"La réservation {confirmed.id} a été annulée" in alerts["success"]
 
     def test_cant_cancel_reimbursed_booking(self, authenticated_client, collective_bookings):
         reimbursed = collective_bookings[4]
@@ -633,18 +650,19 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
             authenticated_client,
             collective_booking_id=booking_id,
             form={"reason": educational_models.CollectiveBookingCancellationReasons.BACKOFFICE.value},
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking_id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[1] == str(booking_id)
 
         booking = db.session.query(educational_models.CollectiveBooking).filter_by(id=booking_id).one()
         assert booking.status == old_status
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-        assert (
-            "Cette réservation est en train d’être remboursée, il est impossible de l’invalider"
-            in html_parser.extract_alert(redirected_response.data)
-        )
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert "Cette réservation est en train d’être remboursée, il est impossible de l’invalider" in alerts["warning"]
 
     def test_cant_cancel_cancelled_booking(self, authenticated_client, collective_bookings):
         cancelled = collective_bookings[2]
@@ -655,36 +673,38 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
             authenticated_client,
             collective_booking_id=booking_id,
             form={"reason": educational_models.CollectiveBookingCancellationReasons.BACKOFFICE.value},
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking_id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[1] == str(booking_id)
 
         booking = db.session.query(educational_models.CollectiveBooking).filter_by(id=booking_id).one()
         assert booking.status == old_status
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-
-        assert "Impossible d'annuler une réservation déjà annulée" in html_parser.extract_alert(
-            redirected_response.data
-        )
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert "Impossible d'annuler une réservation déjà annulée" in alerts["warning"]
 
     def test_cant_cancel_booking_without_reason(self, authenticated_client, collective_bookings):
         confirmed = collective_bookings[1]
 
-        response = self.post_to_endpoint(authenticated_client, collective_booking_id=confirmed.id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_booking_id=confirmed.id,
+            headers={"hx-request": "true"},
+        )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        assert len(response.data) == 0
 
         db.session.refresh(confirmed)
         assert confirmed.status == educational_models.CollectiveBookingStatus.CONFIRMED
         assert confirmed.cancellationReason is None
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-
-        assert (
-            "Les données envoyées comportent des erreurs. Raison : Information obligatoire"
-            in html_parser.extract_alert(redirected_response.data)
-        )
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert "Les données envoyées comportent des erreurs. Raison : Information obligatoire ;" in alerts["warning"]
 
 
 class GetCollectiveBookingCSVDownloadTest(GetEndpointHelper):

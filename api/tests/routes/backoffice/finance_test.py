@@ -1754,7 +1754,11 @@ class GetCollectiveBookingOverpaymentFormTest(PostEndpointHelper):
         )
 
         with assert_num_queries(self.expected_num_queries):
-            response = self.post_to_endpoint(authenticated_client, collective_booking_id=collective_booking.id)
+            response = self.post_to_endpoint(
+                authenticated_client,
+                collective_booking_id=collective_booking.id,
+                headers={"hx-request": "true"},
+            )
             assert response.status_code == 200
 
         additional_data_text = html_parser.extract_cards_text(response.data)[0]
@@ -2251,9 +2255,13 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
                 "zendesk_id": zendesk_id,
             },
             collective_booking_id=collective_booking.id,
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{collective_booking.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[1] == str(collective_booking.id)
 
         finance_incidents = db.session.query(finance_models.FinanceIncident).all()
         assert len(finance_incidents) == 1
@@ -2267,12 +2275,14 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
         assert booking_incidents[0].collectiveBookingId == collective_booking.id
         assert booking_incidents[0].newTotalAmount == 0
 
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert "Un nouvel incident a été créé." in alerts["success"]
+
     @pytest.mark.parametrize(
         "incident_status,expected_incident_count",
         [
             (finance_models.IncidentStatus.CREATED, 1),
             (finance_models.IncidentStatus.VALIDATED, 1),
-            (finance_models.IncidentStatus.CANCELLED, 2),
         ],
     )
     def test_incident_already_exists(self, authenticated_client, incident_status, expected_incident_count):
@@ -2291,11 +2301,48 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
                 "kind": finance_models.IncidentType.OVERPAYMENT.name,
             },
             collective_booking_id=collective_booking.id,
-            follow_redirects=True,
+            headers={"hx-request": "true"},
         )
 
         assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{collective_booking.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[1] == str(collective_booking.id)
+
         assert db.session.query(finance_models.FinanceIncident).count() == expected_incident_count
+
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert (
+            """Cette réservation fait déjà l'objet d'un incident au statut "créé" ou "validé".""" in alerts["warning"]
+        )
+
+    def test_incident_already_exists_cancelled(self, authenticated_client):
+        collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
+            pricings=[finance_factories.CollectivePricingFactory(status=finance_models.PricingStatus.INVOICED)],
+        )
+        finance_factories.CollectiveBookingFinanceIncidentFactory(
+            collectiveBooking=collective_booking, incident__status=finance_models.IncidentStatus.CANCELLED
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "origin": finance_models.FinanceIncidentRequestOrigin.SUPPORT_JEUNE.name,
+                "comment": "Demande E-mail",
+                "kind": finance_models.IncidentType.OVERPAYMENT.name,
+            },
+            collective_booking_id=collective_booking.id,
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{collective_booking.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert cells[1] == str(collective_booking.id)
+
+        assert db.session.query(finance_models.FinanceIncident).count() == 2
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert "Un nouvel incident a été créé." in alerts["success"]
 
 
 class GetIncidentHistoryTest(GetEndpointHelper):
