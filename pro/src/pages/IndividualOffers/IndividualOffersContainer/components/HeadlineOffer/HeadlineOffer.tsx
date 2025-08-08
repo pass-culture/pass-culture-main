@@ -6,8 +6,14 @@ import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
 
 import styles from './HeadlineOffer.module.scss'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 
 export function HeadlineOffer() {
+  const { logEvent } = useAnalytics()
+  const { currentUser } = useCurrentUser()
+
   const { isHeadlineOfferAllowedForOfferer, headlineOffer } =
     useHeadlineOfferContext()
 
@@ -27,6 +33,12 @@ export function HeadlineOffer() {
           to={venuePreviewLink}
           isExternal
           opensInNewTab
+          onClick={() => {
+            logEvent(Events.CLICKED_VIEW_APP_HEADLINE_OFFER, {
+              offerId: headlineOffer.id,
+              userId: currentUser.id,
+            })
+          }}
         >
           Visualiser dans l’application
         </ButtonLink>
