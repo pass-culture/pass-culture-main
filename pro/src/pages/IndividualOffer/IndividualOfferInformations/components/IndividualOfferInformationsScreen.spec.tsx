@@ -5,7 +5,7 @@ import { api } from '@/apiClient/api'
 import { SubcategoryIdEnum } from '@/apiClient/v1'
 import {
   IndividualOfferContext,
-  IndividualOfferContextValues,
+  type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import {
@@ -23,13 +23,13 @@ import {
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
 import {
   IndividualOfferInformationsScreen,
-  IndividualOfferInformationsScreenProps,
+  type IndividualOfferInformationsScreenProps,
 } from './IndividualOfferInformationsScreen'
 
 const renderUsefulInformationScreen = (

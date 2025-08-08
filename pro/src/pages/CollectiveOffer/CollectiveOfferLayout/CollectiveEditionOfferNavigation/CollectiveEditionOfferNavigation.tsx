@@ -9,8 +9,8 @@ import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
+  type GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
@@ -38,7 +38,10 @@ import fullShowIcon from '@/icons/full-show.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { NavLinkItem, NavLinkItems } from '@/ui-kit/NavLinkItems/NavLinkItems'
+import {
+  type NavLinkItem,
+  NavLinkItems,
+} from '@/ui-kit/NavLinkItems/NavLinkItems'
 
 import { CollectiveOfferStep } from '../CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 import styles from './CollectiveEditionOfferNavigation.module.scss'

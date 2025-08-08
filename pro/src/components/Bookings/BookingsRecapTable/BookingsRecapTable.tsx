@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 
-import {
+import type {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from '@/apiClient/v1'
@@ -19,7 +19,7 @@ import {
 import { FilterByOmniSearch } from './Filters/FilterByOmniSearch'
 import styles from './Filters/Filters.module.scss'
 import { Header } from './Header/Header'
-import { BookingsFilters } from './types'
+import type { BookingsFilters } from './types'
 import { filterBookingsRecap } from './utils/filterBookingsRecap'
 
 const areCollectiveBookings = (

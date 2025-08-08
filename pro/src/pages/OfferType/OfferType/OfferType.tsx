@@ -27,7 +27,7 @@ import { ActionsBar } from './ActionsBar/ActionsBar'
 import { CollectiveOfferType } from './CollectiveOfferType/CollectiveOfferType'
 import { IndividualOfferType } from './IndividualOfferType/IndividualOfferType'
 import styles from './OfferType.module.scss'
-import { OfferTypeFormValues } from './types'
+import type { OfferTypeFormValues } from './types'
 
 export const OfferTypeScreen = () => {
   const navigate = useNavigate()

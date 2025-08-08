@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { ForwardedRef, useState } from 'react'
+import React, { type ForwardedRef, useState } from 'react'
 
 import strokeHideIcon from '@/icons/stroke-hide.svg'
 import strokeShowIcon from '@/icons/stroke-show.svg'

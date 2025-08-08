@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { fontPreloads } from '@pass-culture/design-system/lib/global/font-preloads'
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
-import { defineConfig, PluginOption } from 'vite'
+import { defineConfig, type PluginOption } from 'vite'
 import { createHtmlPlugin } from 'vite-plugin-html'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { configDefaults, coverageConfigDefaults } from 'vitest/config'
@@ -81,10 +81,7 @@ const htmlPlugin = () => {
     name: 'html-transform',
     transformIndexHtml(html: string) {
       return html.replace(
-        new RegExp(
-          `<!-- inject:preload-design-system-fonts --><!-- endinject -->`,
-          'g'
-        ),
+        /<!-- inject:preload-design-system-fonts --><!-- endinject -->/g,
         fontPreloads
       )
     },

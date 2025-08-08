@@ -1,4 +1,4 @@
-import {
+import type {
   CollectiveSearchFiltersParams,
   SearchFiltersParams,
 } from '@/commons/core/Offers/types'

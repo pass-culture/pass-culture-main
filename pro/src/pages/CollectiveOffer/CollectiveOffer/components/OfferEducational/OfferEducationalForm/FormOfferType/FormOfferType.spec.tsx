@@ -5,10 +5,10 @@ import { FormProvider, useForm } from 'react-hook-form'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
-import { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
+import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { FormOfferType, FormTypeProps } from './FormOfferType'
+import { FormOfferType, type FormTypeProps } from './FormOfferType'
 
 const mockLogEvent = vi.fn()
 

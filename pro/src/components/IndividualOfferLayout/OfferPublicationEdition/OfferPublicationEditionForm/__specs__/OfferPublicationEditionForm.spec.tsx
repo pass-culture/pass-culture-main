@@ -7,7 +7,7 @@ import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import {
   OfferPublicationEditionForm,
-  OfferPublicationEditionFormProps,
+  type OfferPublicationEditionFormProps,
 } from '../OfferPublicationEditionForm'
 
 function renderOfferPublicationEditionForm(

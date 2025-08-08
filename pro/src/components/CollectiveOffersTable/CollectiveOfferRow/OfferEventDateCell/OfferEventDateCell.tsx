@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 
-import {
+import type {
   CollectiveOfferResponseModel,
   ListOffersVenueResponseModel,
 } from '@/apiClient/v1'

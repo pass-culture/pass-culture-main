@@ -11,7 +11,7 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 
 import {
   OfferFavoriteButton,
-  OfferFavoriteButtonProps,
+  type OfferFavoriteButtonProps,
 } from '../OfferFavoriteButton'
 
 vi.mock('@/apiClient/api', () => ({

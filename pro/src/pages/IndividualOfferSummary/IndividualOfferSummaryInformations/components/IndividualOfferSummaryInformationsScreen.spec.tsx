@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
 import {
-  GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferWithAddressResponseModel,
   SubcategoryIdEnum,
   WithdrawalTypeEnum,
 } from '@/apiClient/v1'
@@ -13,7 +13,7 @@ import {
   individualOfferContextValuesFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 

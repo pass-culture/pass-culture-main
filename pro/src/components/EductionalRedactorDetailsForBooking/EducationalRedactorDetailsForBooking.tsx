@@ -1,4 +1,4 @@
-import { Contact } from '@/components/EductionalRedactorDetails/EducationalRedactorDetails'
+import type { Contact } from '@/components/EductionalRedactorDetails/EducationalRedactorDetails'
 import strokeMailIcon from '@/icons/stroke-mail.svg'
 import strokeUserIcon from '@/icons/stroke-user.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'

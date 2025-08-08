@@ -1,24 +1,24 @@
 import type { ChangeEvent } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import {
+import type {
   CategoryResponseModel,
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { IndividualOfferImage } from '@/commons/core/Offers/types'
+import type { IndividualOfferImage } from '@/commons/core/Offers/types'
 import { useAccessibilityOptions } from '@/commons/hooks/useAccessibilityOptions'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getAccessibilityInfoFromVenue } from '@/commons/utils/getAccessibilityInfoFromVenue'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MarkdownInfoBox } from '@/components/MarkdownInfoBox/MarkdownInfoBox'
-import { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import fullMoreIcon from '@/icons/full-more.svg'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
-import { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
+import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import { isSubCategoryCD } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { CalloutVariant } from '@/ui-kit/Callout/types'

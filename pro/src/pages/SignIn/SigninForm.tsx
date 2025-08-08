@@ -16,7 +16,7 @@ import { ButtonVariant } from '@/ui-kit/Button/types'
 import { PasswordInput } from '@/ui-kit/form/PasswordInput/PasswordInput'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
-import { SigninFormValues } from './SignIn'
+import type { SigninFormValues } from './SignIn'
 import styles from './Signin.module.scss'
 
 type SigninFormProps = {

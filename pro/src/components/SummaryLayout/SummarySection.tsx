@@ -1,5 +1,6 @@
 import cn from 'classnames'
-import React, { ReactNode } from 'react'
+import type React from 'react'
+import type { ReactNode } from 'react'
 
 import fullEditIcon from '@/icons/full-edit.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'

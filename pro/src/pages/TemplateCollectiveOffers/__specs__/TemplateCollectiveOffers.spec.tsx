@@ -8,8 +8,8 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from '@/apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
-  CollectiveOfferResponseModel,
-  CollectiveOffersStockResponseModel,
+  type CollectiveOfferResponseModel,
+  type CollectiveOffersStockResponseModel,
   CollectiveOfferType,
 } from '@/apiClient/v1'
 import {
@@ -17,7 +17,7 @@ import {
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
 } from '@/commons/core/Offers/constants'
-import { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
+import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import {

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { CollectiveBookingResponseModel } from '@/apiClient/v1'
+import type { CollectiveBookingResponseModel } from '@/apiClient/v1'
 import { GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { formatPrice } from '@/commons/utils/formatPrice'
 import { pluralizeString } from '@/commons/utils/pluralize'

@@ -1,10 +1,13 @@
-import { GetIndividualOfferResponseModel, OfferStatus } from '@/apiClient/v1'
+import {
+  type GetIndividualOfferResponseModel,
+  OfferStatus,
+} from '@/apiClient/v1'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 
-import { StockThingFormValues } from '../../types'
+import type { StockThingFormValues } from '../../types'
 import { getFormReadOnlyFields } from '../getFormReadOnlyFields'
 
 describe('StockThingForm::utils::getFormReadOnlyFields', () => {

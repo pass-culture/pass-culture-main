@@ -3,7 +3,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { getErrorCode, isErrorAPIError } from '@/apiClient/helpers'
-import { CollectiveBookingResponseModel } from '@/apiClient/v1'
+import type { CollectiveBookingResponseModel } from '@/apiClient/v1'
 import {
   GET_BOOKINGS_QUERY_KEY,
   GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY,

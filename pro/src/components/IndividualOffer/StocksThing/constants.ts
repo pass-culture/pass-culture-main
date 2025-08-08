@@ -1,4 +1,4 @@
-import { StockThingFormValues } from './types'
+import type { StockThingFormValues } from './types'
 
 export const STOCK_THING_FORM_DEFAULT_VALUES: StockThingFormValues = {
   stockId: undefined,

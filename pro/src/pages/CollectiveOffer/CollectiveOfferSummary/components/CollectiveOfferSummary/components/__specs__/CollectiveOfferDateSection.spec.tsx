@@ -5,7 +5,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   CollectiveOfferDateSection,
-  CollectiveOfferDateSectionProps,
+  type CollectiveOfferDateSectionProps,
 } from '../CollectiveOfferDateSection'
 
 const renderCollectiveOfferDateSection = (

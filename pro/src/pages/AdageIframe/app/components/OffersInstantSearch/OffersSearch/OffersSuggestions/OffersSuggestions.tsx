@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { Configure, Index, useInstantSearch } from 'react-instantsearch'
 
 import { OfferAddressType } from '@/apiClient/adage'
@@ -10,7 +10,7 @@ import { useAdageUser } from '@/pages/AdageIframe/app/hooks/useAdageUser'
 import {
   algoliaSearchDefaultAttributesToRetrieve,
   DEFAULT_GEO_RADIUS,
-  SearchFormValues,
+  type SearchFormValues,
 } from '../../OffersInstantSearch'
 import { adageFiltersToFacetFilters } from '../../utils'
 import { Offers } from '../Offers/Offers'

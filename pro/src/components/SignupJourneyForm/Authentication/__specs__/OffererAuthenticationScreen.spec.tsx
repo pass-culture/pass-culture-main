@@ -6,7 +6,7 @@ import createFetchMock from 'vitest-fetch-mock'
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import {
   SignupJourneyContext,
-  SignupJourneyContextValues,
+  type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'

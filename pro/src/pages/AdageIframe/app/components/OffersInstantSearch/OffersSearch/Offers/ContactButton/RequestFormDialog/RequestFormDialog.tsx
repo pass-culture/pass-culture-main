@@ -21,7 +21,7 @@ import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { createCollectiveRequestPayload } from './createCollectiveRequestPayload'
 import styles from './RequestFormDialog.module.scss'
-import { RequestFormValues } from './type'
+import type { RequestFormValues } from './type'
 import { validationSchema } from './validationSchema'
 
 export interface RequestFormDialogProps {

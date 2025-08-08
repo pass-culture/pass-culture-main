@@ -1,8 +1,8 @@
-import { EditVenueBodyModel, VenueTypeCode } from '@/apiClient/v1'
+import type { EditVenueBodyModel, VenueTypeCode } from '@/apiClient/v1'
 import { unhumanizeSiret } from '@/commons/core/Venue/utils'
 import { removeQuotes } from '@/commons/utils/removeQuotes'
 
-import { VenueSettingsFormValues } from './types'
+import type { VenueSettingsFormValues } from './types'
 
 export const serializeEditVenueBodyModel = (
   formValues: VenueSettingsFormValues,

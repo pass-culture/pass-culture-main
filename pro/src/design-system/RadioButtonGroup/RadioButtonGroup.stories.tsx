@@ -1,4 +1,4 @@
-import { StoryObj } from '@storybook/react'
+import type { StoryObj } from '@storybook/react'
 import { useState } from 'react'
 
 import { RadioButton } from '@/design-system/RadioButton/RadioButton'

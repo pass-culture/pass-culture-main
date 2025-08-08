@@ -1,7 +1,7 @@
 import {
   CollectiveOfferDisplayedStatus,
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
+  type GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { Callout } from '@/ui-kit/Callout/Callout'
 

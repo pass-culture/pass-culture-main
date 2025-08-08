@@ -9,7 +9,7 @@ import {
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
 } from '../constants'
-import { CollectiveSearchFiltersParams } from '../types'
+import type { CollectiveSearchFiltersParams } from '../types'
 
 export type GetCollectiveOffersSwrKeysProps = {
   isNewOffersAndBookingsActive: boolean

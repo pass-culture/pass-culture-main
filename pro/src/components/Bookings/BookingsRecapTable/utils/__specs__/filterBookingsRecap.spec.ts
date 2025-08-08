@@ -1,7 +1,7 @@
 import { bookingRecapFactory } from '@/commons/utils/factories/individualApiFactories'
 
 import { EMPTY_FILTER_VALUE } from '../../Filters/constants'
-import { BookingsFilters } from '../../types'
+import type { BookingsFilters } from '../../types'
 import { filterBookingsRecap } from '../filterBookingsRecap'
 
 const filtersBuilder = ({

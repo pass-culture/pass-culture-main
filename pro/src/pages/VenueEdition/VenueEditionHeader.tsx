@@ -4,7 +4,7 @@ import { postImageToVenue } from 'repository/pcapi/pcapi'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
-import {
+import type {
   BannerMetaModel,
   GetOffererResponseModel,
   GetVenueResponseModel,
@@ -19,11 +19,11 @@ import { WEBAPP_URL } from '@/commons/utils/config'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import {
   UploaderModeEnum,
-  UploadImageValues,
+  type UploadImageValues,
 } from '@/commons/utils/imageUploadTypes'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
 import { ButtonImageEdit } from '@/components/ImageUploader/components/ButtonImageEdit/ButtonImageEdit'
-import { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import fullLinkIcon from '@/icons/full-link.svg'
 import fullParametersIcon from '@/icons/full-parameters.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'

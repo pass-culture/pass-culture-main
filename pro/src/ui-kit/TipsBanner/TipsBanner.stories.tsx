@@ -1,7 +1,7 @@
 import type { StoryObj } from '@storybook/react'
 
 import mockupPng from './mockup.png'
-import { TipsBanner, TipsBannerProps } from './TipsBanner'
+import { TipsBanner, type TipsBannerProps } from './TipsBanner'
 
 export default {
   title: '@/ui-kit/TipsBanner',

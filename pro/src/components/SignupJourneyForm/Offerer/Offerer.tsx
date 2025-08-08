@@ -14,7 +14,7 @@ import {
   GET_DATA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
 import {
-  GetSiretDataResponse,
+  type GetSiretDataResponse,
   getSiretData,
 } from '@/commons/core/Venue/getSiretData'
 import { humanizeSiret, unhumanizeSiret } from '@/commons/core/Venue/utils'

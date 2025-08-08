@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { describe, expect, it } from 'vitest'
 
-import { VenueTypeResponseModel } from '@/apiClient/v1'
+import type { VenueTypeResponseModel } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
@@ -10,11 +10,11 @@ import {
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { VenueSettingsFormValues } from '../types'
+import type { VenueSettingsFormValues } from '../types'
 import { VenueSettingsForm } from '../VenueSettingsForm'
 
 const venueTypes: VenueTypeResponseModel[] = [

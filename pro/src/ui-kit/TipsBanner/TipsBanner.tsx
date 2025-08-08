@@ -2,7 +2,7 @@ import cn from 'classnames'
 
 import fullBulbIcon from '@/icons/full-bulb.svg'
 import fullLinkIcon from '@/icons/full-link.svg'
-import { ButtonLink, ButtonLinkProps } from '@/ui-kit/Button/ButtonLink'
+import { ButtonLink, type ButtonLinkProps } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 

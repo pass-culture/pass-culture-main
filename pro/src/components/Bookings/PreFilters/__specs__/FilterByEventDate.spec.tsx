@@ -3,7 +3,10 @@ import { userEvent } from '@testing-library/user-event'
 
 import { EMPTY_FILTER_VALUE } from '@/commons/core/Bookings/constants'
 
-import { FilterByEventDate, FilterByEventDateProps } from '../FilterByEventDate'
+import {
+  FilterByEventDate,
+  type FilterByEventDateProps,
+} from '../FilterByEventDate'
 
 describe('components | FilterByEventDate', () => {
   let props: FilterByEventDateProps

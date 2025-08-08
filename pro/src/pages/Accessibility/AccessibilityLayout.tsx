@@ -1,7 +1,6 @@
 import { useSelector } from 'react-redux'
 
-import { Layout, LayoutProps } from '@/app/App/layout/Layout'
-import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
+import { Layout, type LayoutProps } from '@/app/App/layout/Layout'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import fullBackIcon from '@/icons/full-back.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'

@@ -3,9 +3,9 @@ import { useSelector } from 'react-redux'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
 import { useSWRConfig } from 'swr'
 
-import {
+import type {
   GetOffererResponseModel,
-  type GetVenueResponseModel,
+  GetVenueResponseModel,
   VenueTypeResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -15,11 +15,11 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import {
   UploaderModeEnum,
-  UploadImageValues,
+  type UploadImageValues,
 } from '@/commons/utils/imageUploadTypes'
 import { Card } from '@/components/Card/Card'
 import { ImageUploader } from '@/components/ImageUploader/ImageUploader'
-import { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import fullParametersIcon from '@/icons/full-parameters.svg'
 import { VenueOfferSteps } from '@/pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
 import { buildInitialValues } from '@/pages/VenueEdition/VenueEditionHeader'

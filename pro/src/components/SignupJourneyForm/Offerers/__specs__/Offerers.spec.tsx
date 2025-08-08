@@ -2,17 +2,20 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
-import { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
+import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
 import { api } from '@/apiClient/api'
-import { ApiError, VenueOfOffererFromSiretResponseModel } from '@/apiClient/v1'
-import { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import {
+  ApiError,
+  type VenueOfOffererFromSiretResponseModel,
+} from '@/apiClient/v1'
+import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import {
   SignupJourneyContext,
-  SignupJourneyContextValues,
+  type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'

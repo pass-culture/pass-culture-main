@@ -6,7 +6,7 @@ import fullValidIcon from '@/icons/full-validate.svg'
 import fullWarningIcon from '@/icons/full-warning.svg'
 import strokeCloseIcon from '@/icons/stroke-close.svg'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
-import { Link, LinkNodes } from '@/ui-kit/LinkNodes/LinkNodes'
+import { type Link, LinkNodes } from '@/ui-kit/LinkNodes/LinkNodes'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Callout.module.scss'

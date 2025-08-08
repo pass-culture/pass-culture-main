@@ -8,7 +8,7 @@ import { Target } from '@/apiClient/v1'
 import { MainHeading } from '@/app/App/layout/Layout'
 import { GET_VENUE_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
-  ActivityContext,
+  type ActivityContext,
   useSignupJourneyContext,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { FORM_ERROR_MESSAGE } from '@/commons/core/shared/constants'
@@ -19,7 +19,7 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './Activity.module.scss'
-import { ActivityForm, ActivityFormValues } from './ActivityForm'
+import { ActivityForm, type ActivityFormValues } from './ActivityForm'
 import { defaultActivityFormValues } from './constants'
 import { validationSchema } from './validationSchema'
 

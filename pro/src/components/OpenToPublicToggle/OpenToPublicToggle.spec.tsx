@@ -4,7 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 
 import {
   OpenToPublicToggle,
-  OpenToPublicToggleProps,
+  type OpenToPublicToggleProps,
 } from './OpenToPublicToggle'
 
 const onChange = vi.fn()

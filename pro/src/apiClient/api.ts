@@ -1,7 +1,7 @@
 import { API_URL } from '@/commons/utils/config'
 
 import { AppClientAdage } from './adage/AppClientAdage'
-import { AppClient, OpenAPIConfig } from './v1'
+import { AppClient, type OpenAPIConfig } from './v1'
 
 const params = new URLSearchParams(window.location.search)
 const token = params.get('token')

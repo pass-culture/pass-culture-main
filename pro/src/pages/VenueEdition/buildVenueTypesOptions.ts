@@ -1,5 +1,5 @@
-import { VenueTypeResponseModel } from '@/apiClient/v1'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { VenueTypeResponseModel } from '@/apiClient/v1'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { sortByLabel } from '@/commons/utils/strings'
 
 export const buildVenueTypesOptions = (

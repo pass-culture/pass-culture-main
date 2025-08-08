@@ -9,18 +9,18 @@ import {
   MAX_PRICE_DETAILS_LENGTH,
   modelTemplate,
 } from '@/commons/core/OfferEducational/constants'
-import { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { useFunctionOnce } from '@/commons/hooks/useFunctionOnce'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MarkdownInfoBox } from '@/components/MarkdownInfoBox/MarkdownInfoBox'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
-import { MultiSelect, Option } from '@/ui-kit/MultiSelect/MultiSelect'
+import { MultiSelect, type Option } from '@/ui-kit/MultiSelect/MultiSelect'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
-import { DomainOption } from '../../useOfferEducationalFormData'
+import type { DomainOption } from '../../useOfferEducationalFormData'
 import styles from '../OfferEducationalForm.module.scss'
 
 export interface FormTypeProps {

@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { IndividualOfferMediaFormValues } from './types'
+import type { IndividualOfferMediaFormValues } from './types'
 
 // This regex is a replicate of what exists backend-side.
 // Mind that frontend / backend controls regarding video url always match.

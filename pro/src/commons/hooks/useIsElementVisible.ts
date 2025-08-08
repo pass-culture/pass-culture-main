@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useState } from 'react'
+import { type RefObject, useEffect, useState } from 'react'
 
 // Hook that return whether an element is visible or not in viewport
 export const useIsElementVisible = (

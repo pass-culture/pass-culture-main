@@ -5,7 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { CollectiveLocationType, OfferAddressType } from '@/apiClient/adage'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { SearchFormValues } from '../../../OffersInstantSearch'
+import type { SearchFormValues } from '../../../OffersInstantSearch'
 import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../../utils'
 import { LocalisationFilterStates } from '../../OffersSearch'
 import { FiltersTags } from '../FiltersTags'

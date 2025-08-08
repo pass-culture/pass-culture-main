@@ -6,7 +6,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   AdageOfferDetailsSection,
-  AdageOfferDetailsSectionProps,
+  type AdageOfferDetailsSectionProps,
 } from '../AdageOfferDetailsSection'
 
 function renderAdageOfferDetailsSection(

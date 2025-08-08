@@ -3,7 +3,7 @@ import { differenceInCalendarDays, format } from 'date-fns'
 
 import {
   CollectiveOfferDisplayedStatus,
-  CollectiveOfferResponseModel,
+  type CollectiveOfferResponseModel,
 } from '@/apiClient/v1'
 import {
   FORMAT_DD_MM_YYYY,

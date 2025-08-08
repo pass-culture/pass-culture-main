@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router'
 
-import {
+import type {
   CollectiveOfferResponseModel,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,

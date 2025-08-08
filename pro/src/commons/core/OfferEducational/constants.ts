@@ -1,7 +1,7 @@
 import { CollectiveLocationType, OfferAddressType } from '@/apiClient/v1'
-import { VisibilityFormValues } from '@/pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
+import type { VisibilityFormValues } from '@/pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
 
-import {
+import type {
   OfferEducationalFormValues,
   OfferEducationalStockFormValues,
 } from './types'

@@ -1,4 +1,4 @@
-import { ChangeEvent, forwardRef } from 'react'
+import { type ChangeEvent, forwardRef } from 'react'
 
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import fullTrashIcon from '@/icons/full-trash.svg'

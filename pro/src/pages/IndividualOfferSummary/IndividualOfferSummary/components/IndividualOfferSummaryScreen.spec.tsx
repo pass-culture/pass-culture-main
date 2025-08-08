@@ -8,17 +8,17 @@ import { api } from '@/apiClient/api'
 import {
   ApiError,
   CancelablePromise,
-  GetIndividualOfferResponseModel,
-  GetMusicTypesResponse,
+  type GetIndividualOfferResponseModel,
+  type GetMusicTypesResponse,
   OfferStatus,
   SubcategoryIdEnum,
 } from '@/apiClient/v1'
-import { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
-  IndividualOfferContextValues,
+  type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   CATEGORY_STATUS,
@@ -43,7 +43,7 @@ import {
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'

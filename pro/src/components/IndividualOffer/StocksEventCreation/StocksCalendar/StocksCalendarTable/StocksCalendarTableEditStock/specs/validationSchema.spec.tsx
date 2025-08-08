@@ -2,7 +2,7 @@ import { addDays, subDays } from 'date-fns'
 
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
-import { EditStockFormValues } from '../StocksCalendarTableEditStock'
+import type { EditStockFormValues } from '../StocksCalendarTableEditStock'
 import { validationSchema } from '../validationSchema'
 
 describe('validationSchema for StocksCalendarTableEditStock', () => {

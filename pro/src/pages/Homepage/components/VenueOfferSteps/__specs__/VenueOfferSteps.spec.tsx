@@ -5,12 +5,12 @@ import {
   defaultGetOffererVenueResponseModel,
 } from '@/commons/utils/factories/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import * as venueUtils from '@/pages/Homepage/components/Offerers/components/VenueList/venueUtils'
 
-import { VenueOfferSteps, VenueOfferStepsProps } from '../VenueOfferSteps'
+import { VenueOfferSteps, type VenueOfferStepsProps } from '../VenueOfferSteps'
 
 const renderVenueOfferSteps = (
   props: VenueOfferStepsProps,

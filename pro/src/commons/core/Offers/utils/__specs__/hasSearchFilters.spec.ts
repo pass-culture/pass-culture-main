@@ -3,7 +3,7 @@ import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 
 import {
   CollectiveOfferTypeEnum,
-  CollectiveSearchFiltersParams,
+  type CollectiveSearchFiltersParams,
 } from '../../types'
 import { hasCollectiveSearchFilters } from '../hasSearchFilters'
 

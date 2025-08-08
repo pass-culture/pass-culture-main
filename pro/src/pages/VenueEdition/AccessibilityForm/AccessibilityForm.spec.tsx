@@ -2,15 +2,18 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { AccessibilityFormValues } from '@/commons/core/shared/types'
+import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import { VenueEditionFormValues } from '@/pages/VenueEdition/types'
+import type { VenueEditionFormValues } from '@/pages/VenueEdition/types'
 import { Button } from '@/ui-kit/Button/Button'
 
-import { AccessibilityForm, AccessiblityFormProps } from './AccessibilityForm'
+import {
+  AccessibilityForm,
+  type AccessiblityFormProps,
+} from './AccessibilityForm'
 
 const onSubmit = vi.fn()
 

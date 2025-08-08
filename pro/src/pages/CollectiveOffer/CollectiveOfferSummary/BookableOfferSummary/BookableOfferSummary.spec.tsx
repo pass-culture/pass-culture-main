@@ -22,13 +22,13 @@ import {
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
 import {
   BookableOfferSummary,
-  BookableOfferSummaryProps,
+  type BookableOfferSummaryProps,
 } from './BookableOfferSummary'
 
 vi.mock('@/apiClient/api', () => ({

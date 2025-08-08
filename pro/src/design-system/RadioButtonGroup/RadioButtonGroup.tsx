@@ -1,11 +1,11 @@
 import cn from 'classnames'
-import { ElementType, useId } from 'react'
+import { type ElementType, useId } from 'react'
 
 import {
   RadioButton,
-  RadioButtonProps,
-  RadioButtonSizing,
-  RadioButtonVariantProps,
+  type RadioButtonProps,
+  type RadioButtonSizing,
+  type RadioButtonVariantProps,
 } from '@/design-system/RadioButton/RadioButton'
 import fullErrorIcon from '@/icons/full-error.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'

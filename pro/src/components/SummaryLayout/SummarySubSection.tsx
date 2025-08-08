@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React from 'react'
+import type React from 'react'
 
 import { Divider } from '@/ui-kit/Divider/Divider'
 

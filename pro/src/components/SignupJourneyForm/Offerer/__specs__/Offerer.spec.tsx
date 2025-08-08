@@ -5,11 +5,11 @@ import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/v1'
-import { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import {
   SignupJourneyContext,
-  SignupJourneyContextValues,
+  type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import * as siretApiValidate from '@/commons/core/Venue/siretApiValidate'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'

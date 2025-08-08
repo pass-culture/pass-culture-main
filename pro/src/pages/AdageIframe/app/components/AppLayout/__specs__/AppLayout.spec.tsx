@@ -5,7 +5,7 @@ import {
   defaultUseInfiniteHitsReturn,
 } from '@/commons/utils/factories/adageFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { MARSEILLE_EN_GRAND } from '@/pages/AdageIframe/app/constants'

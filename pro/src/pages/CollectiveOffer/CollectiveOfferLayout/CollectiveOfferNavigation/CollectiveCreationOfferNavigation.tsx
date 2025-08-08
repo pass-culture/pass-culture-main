@@ -1,9 +1,9 @@
-import {
+import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
-import { Step, Stepper } from '@/components/Stepper/Stepper'
+import { type Step, Stepper } from '@/components/Stepper/Stepper'
 
 export enum CollectiveOfferStep {
   DETAILS = 'details',

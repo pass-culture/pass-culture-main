@@ -7,7 +7,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   ModalImageUpsertOrEdit,
-  ModalImageUpsertOrEditProps,
+  type ModalImageUpsertOrEditProps,
 } from './ModalImageUpsertOrEdit'
 
 const onImageUpload = vi.fn()

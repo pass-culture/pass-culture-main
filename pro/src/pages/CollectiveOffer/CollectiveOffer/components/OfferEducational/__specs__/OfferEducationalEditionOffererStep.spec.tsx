@@ -24,7 +24,10 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { defaultEditionProps } from '../__tests-utils__/defaultProps'
-import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
+import {
+  OfferEducational,
+  type OfferEducationalProps,
+} from '../OfferEducational'
 
 vi.mock('@/apiClient/api', () => ({
   api: {

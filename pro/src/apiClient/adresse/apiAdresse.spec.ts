@@ -1,7 +1,7 @@
 import { type Mock, vi } from 'vitest'
 
 import { getDataFromAddress, getDataFromAddressParts } from './apiAdresse'
-import { AdresseApiJson, FeaturePropertyType } from './types'
+import type { AdresseApiJson, FeaturePropertyType } from './types'
 
 const mockApiResponse: Partial<AdresseApiJson> = {
   type: 'FeatureCollection',

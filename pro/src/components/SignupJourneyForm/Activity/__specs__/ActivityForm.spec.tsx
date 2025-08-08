@@ -4,12 +4,12 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import { VenueTypeResponseModel } from '@/apiClient/v1'
+import type { VenueTypeResponseModel } from '@/apiClient/v1'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
-  ActivityContext,
+  type ActivityContext,
   SignupJourneyContext,
-  SignupJourneyContextValues,
+  type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { defaultActivityFormValues } from '@/components/SignupJourneyForm/Activity/constants'
@@ -17,8 +17,8 @@ import { Button } from '@/ui-kit/Button/Button'
 
 import {
   ActivityForm,
-  ActivityFormProps,
-  ActivityFormValues,
+  type ActivityFormProps,
+  type ActivityFormValues,
 } from '../ActivityForm'
 
 vi.mock('@/apiClient/api', () => ({

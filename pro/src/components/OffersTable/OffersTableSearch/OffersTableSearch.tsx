@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import {
-  FilterConfigType,
+  type FilterConfigType,
   getStoredFilterConfig,
   useStoredFilterConfig,
 } from '@/components/OffersTable/OffersTableSearch/utils'

@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React from 'react'
+import type React from 'react'
 
 import style from './FormLayout.module.scss'
 import { Row } from './FormLayoutRow'

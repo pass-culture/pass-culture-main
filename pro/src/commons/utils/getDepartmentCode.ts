@@ -1,4 +1,4 @@
-import {
+import type {
   GetIndividualOfferWithAddressResponseModel,
   ListOffersOfferResponseModel,
 } from '@/apiClient/v1'

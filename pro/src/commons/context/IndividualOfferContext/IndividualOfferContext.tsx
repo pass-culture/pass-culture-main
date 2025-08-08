@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useState } from 'react'
+import type React from 'react'
+import { createContext, useContext, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
-import {
+import type {
   CategoryResponseModel,
   GetActiveEANOfferResponseModel,
   GetIndividualOfferWithAddressResponseModel,

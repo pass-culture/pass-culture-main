@@ -3,11 +3,11 @@ import { describe } from 'vitest'
 
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { OffererBanners, OffererBannersProps } from './OffererBanners'
+import { OffererBanners, type OffererBannersProps } from './OffererBanners'
 
 const mockNavigate = vi.fn()
 vi.mock('react-router', async () => ({

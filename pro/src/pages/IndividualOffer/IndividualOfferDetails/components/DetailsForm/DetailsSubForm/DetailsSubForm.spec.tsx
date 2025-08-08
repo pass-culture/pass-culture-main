@@ -4,7 +4,7 @@ import { Route, Routes } from 'react-router'
 
 import {
   IndividualOfferContext,
-  IndividualOfferContextValues,
+  type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -17,7 +17,7 @@ import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualO
 import {
   ARTISTIC_INFORMATION_FIELDS,
   DetailsSubForm,
-  DetailsSubFormProps,
+  type DetailsSubFormProps,
 } from './DetailsSubForm'
 
 const contextValue: IndividualOfferContextValues = {

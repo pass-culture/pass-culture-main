@@ -1,7 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 import { useLocation } from 'react-router'
 
-import {
+import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
   VenueProviderResponse,
@@ -25,7 +25,7 @@ import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
 import { SiretOrCommentFields } from './SiretOrCommentFields/SiretOrCommentFields'
-import { VenueSettingsFormValues } from './types'
+import type { VenueSettingsFormValues } from './types'
 import { OffersSynchronization } from './VenueProvidersManager/OffersSynchronization/OffersSynchronization'
 import { WithdrawalDetails } from './WithdrawalDetails/WithdrawalDetails'
 

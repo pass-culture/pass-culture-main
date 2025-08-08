@@ -1,13 +1,13 @@
 import cn from 'classnames'
 import { useEffect } from 'react'
 
-import { BookingRecapResponseModel } from '@/apiClient/v1'
+import type { BookingRecapResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { Audience } from '@/commons/core/shared/types'
 import { SortingMode, useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
-import { BookingsFilters } from '@/components/Bookings/BookingsRecapTable/types'
+import type { BookingsFilters } from '@/components/Bookings/BookingsRecapTable/types'
 import {
   sortByBeneficiaryName,
   sortByBookingDate,

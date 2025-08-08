@@ -1,6 +1,7 @@
-import React, { useRef, useState } from 'react'
+import type React from 'react'
+import { useRef, useState } from 'react'
 
-import { AdageFrontRoles } from '@/apiClient/adage'
+import type { AdageFrontRoles } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import fullMailIcon from '@/icons/full-mail.svg'
 import { Button } from '@/ui-kit/Button/Button'

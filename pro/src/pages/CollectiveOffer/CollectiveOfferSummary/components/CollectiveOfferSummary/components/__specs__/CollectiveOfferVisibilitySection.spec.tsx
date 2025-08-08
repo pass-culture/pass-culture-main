@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import {
+import type {
   EducationalInstitutionResponseModel,
   EducationalRedactorResponseModel,
 } from '@/apiClient/v1'

@@ -1,6 +1,6 @@
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 
-import { RecurrenceFormValues, RecurrenceType } from './types'
+import { type RecurrenceFormValues, RecurrenceType } from './types'
 
 export const computeInitialValues = (
   priceCategoryOptions: SelectOption<number>[]

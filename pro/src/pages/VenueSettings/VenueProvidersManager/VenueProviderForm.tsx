@@ -1,6 +1,6 @@
 import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
-import {
+import type {
   GetVenueResponseModel,
   PostVenueProviderBody,
   ProviderResponse,

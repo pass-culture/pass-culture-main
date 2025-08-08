@@ -1,4 +1,4 @@
-import { ErrorMessage, MESSAGE_VARIANT } from './types'
+import { type ErrorMessage, MESSAGE_VARIANT } from './types'
 
 const TOKEN_MAX_LENGTH = 6
 const VALID_TOKEN_SYNTAX = /[^a-z0-9]/i

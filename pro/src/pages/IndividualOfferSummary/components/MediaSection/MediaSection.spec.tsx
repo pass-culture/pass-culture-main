@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { MediaSection, MediaSectionProps } from './MediaSection'
+import { MediaSection, type MediaSectionProps } from './MediaSection'
 
 const renderMediaSection = (props: Partial<MediaSectionProps> = {}) => {
   const finalProps = {

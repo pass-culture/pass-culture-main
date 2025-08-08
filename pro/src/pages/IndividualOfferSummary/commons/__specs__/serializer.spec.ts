@@ -1,9 +1,9 @@
 import {
-  CategoryResponseModel,
-  GetIndividualOfferWithAddressResponseModel,
+  type CategoryResponseModel,
+  type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
   SubcategoryIdEnum,
-  SubcategoryResponseModel,
+  type SubcategoryResponseModel,
   WithdrawalTypeEnum,
 } from '@/apiClient/v1'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'

@@ -1,6 +1,6 @@
 import merge from 'lodash/merge'
 
-import {
+import type {
   GetEducationalOffererResponseModel,
   GetEducationalOffererVenueResponseModel,
 } from '@/apiClient/v1'

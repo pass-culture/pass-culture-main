@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { format } from 'date-fns-tz'
 
-import {
+import type {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from '@/apiClient/v1'

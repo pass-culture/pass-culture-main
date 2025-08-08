@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { QuantityInput, QuantityInputProps } from './QuantityInput'
+import { QuantityInput, type QuantityInputProps } from './QuantityInput'
 
 const renderQuantityInput = (props: QuantityInputProps) => {
   return render(<QuantityInput {...props} />)
@@ -64,8 +64,8 @@ describe('QuantityInput', () => {
   it('should uncheck the checkbox when the input value is set', async () => {
     renderQuantityInput({ label: LABELS.input, value: 1 })
 
-    let input = screen.getByRole('spinbutton', { name: LABELS.input })
-    let checkbox = screen.getByRole('checkbox', { name: LABELS.checkbox })
+    const input = screen.getByRole('spinbutton', { name: LABELS.input })
+    const checkbox = screen.getByRole('checkbox', { name: LABELS.checkbox })
 
     await userEvent.type(input, '1')
     expect(input).toHaveValue(1)

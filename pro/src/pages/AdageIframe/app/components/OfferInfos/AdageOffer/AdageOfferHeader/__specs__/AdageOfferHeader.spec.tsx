@@ -8,12 +8,15 @@ import {
   defaultCollectiveTemplateOffer,
 } from '@/commons/utils/factories/adageFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
-import { AdageOfferHeader, AdageOfferHeaderProps } from '../AdageOfferHeader'
+import {
+  AdageOfferHeader,
+  type AdageOfferHeaderProps,
+} from '../AdageOfferHeader'
 
 function renderAdageOfferHeader(
   props: AdageOfferHeaderProps = {

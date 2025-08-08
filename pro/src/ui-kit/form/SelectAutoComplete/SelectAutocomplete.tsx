@@ -1,6 +1,6 @@
 import cx from 'classnames'
 import {
-  ForwardedRef,
+  type ForwardedRef,
   forwardRef,
   useEffect,
   useImperativeHandle,
@@ -8,7 +8,7 @@ import {
   useState,
 } from 'react'
 
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { BaseInput } from '@/ui-kit/form/shared/BaseInput/BaseInput'
 import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 

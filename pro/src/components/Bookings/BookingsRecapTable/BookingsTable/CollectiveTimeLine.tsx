@@ -2,8 +2,8 @@ import { addDays, isBefore, max } from 'date-fns'
 
 import {
   CollectiveBookingBankAccountStatus,
-  CollectiveBookingByIdResponseModel,
-  CollectiveBookingResponseModel,
+  type CollectiveBookingByIdResponseModel,
+  type CollectiveBookingResponseModel,
 } from '@/apiClient/v1'
 import { CollectiveBookingCancellationReasons } from '@/apiClient/v1/models/CollectiveBookingCancellationReasons'
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -16,7 +16,7 @@ import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import {
   Timeline,
-  TimelineStep,
+  type TimelineStep,
   TimelineStepType,
 } from '@/ui-kit/Timeline/Timeline'
 

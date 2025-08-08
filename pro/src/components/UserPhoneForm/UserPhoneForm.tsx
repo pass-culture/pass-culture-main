@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import { UserPhoneBodyModel } from '@/apiClient/v1'
+import type { UserPhoneBodyModel } from '@/apiClient/v1'
 import { parseAndValidateFrenchPhoneNumber } from '@/commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useNotification } from '@/commons/hooks/useNotification'

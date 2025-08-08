@@ -12,13 +12,13 @@ import {
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
 import {
   CollectiveOfferSummary,
-  CollectiveOfferSummaryProps,
+  type CollectiveOfferSummaryProps,
 } from './CollectiveOfferSummary'
 
 vi.mock('@/apiClient/api', () => ({

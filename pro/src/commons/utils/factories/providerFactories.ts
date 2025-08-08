@@ -1,4 +1,4 @@
-import { GetOfferLastProviderResponseModel } from '@/apiClient/v1'
+import type { GetOfferLastProviderResponseModel } from '@/apiClient/v1'
 
 export const getOfferLastProvider = (
   customOfferLastProvider: Partial<GetOfferLastProviderResponseModel> = {}

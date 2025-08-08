@@ -4,7 +4,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   OfferInstitutionCell,
-  OfferInstitutionCellProps,
+  type OfferInstitutionCellProps,
 } from './OfferInstitutionCell'
 
 const props = {

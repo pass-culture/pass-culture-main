@@ -14,7 +14,7 @@ import {
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { SAVED_PARTNER_PAGE_VENUE_ID_KEYS } from '@/commons/utils/savedPartnerPageVenueId'

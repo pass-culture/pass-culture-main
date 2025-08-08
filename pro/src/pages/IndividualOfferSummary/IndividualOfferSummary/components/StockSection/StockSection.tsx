@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 
 import { api } from '@/apiClient/api'
-import {
+import type {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
   StockStatsResponseModel,

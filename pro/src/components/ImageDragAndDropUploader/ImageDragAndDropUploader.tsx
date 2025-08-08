@@ -5,12 +5,12 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { usePrevious } from '@/commons/hooks/usePrevious'
 import {
   UploaderModeEnum,
-  UploadImageValues,
+  type UploadImageValues,
 } from '@/commons/utils/imageUploadTypes'
 import { ImageDragAndDrop } from '@/components/ImageDragAndDrop/ImageDragAndDrop'
 import {
   ModalImageUpsertOrEdit,
-  OnImageUploadArgs,
+  type OnImageUploadArgs,
 } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import { ImagePlaceholder } from '@/components/SafeImage/ImagePlaceholder/ImagePlaceholder'
 import { SafeImage } from '@/components/SafeImage/SafeImage'

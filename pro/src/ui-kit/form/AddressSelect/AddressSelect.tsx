@@ -1,9 +1,18 @@
-import { forwardRef, Ref, useImperativeHandle, useRef, useState } from 'react'
+import {
+  forwardRef,
+  type Ref,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react'
 import { useDebouncedCallback } from 'use-debounce'
 
-import { AdresseData, FeaturePropertyType } from '@/apiClient/adresse/types'
+import type {
+  AdresseData,
+  FeaturePropertyType,
+} from '@/apiClient/adresse/types'
 import { getDataFromAddress } from '@/apiClient/api'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { normalizeStrForAdressSearch } from '@/commons/utils/searchPatternInOptions'
 import {
   type CustomEvent,

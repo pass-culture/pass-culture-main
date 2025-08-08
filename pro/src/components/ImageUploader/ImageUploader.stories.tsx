@@ -6,7 +6,7 @@ import { configureTestStore } from '@/commons/store/testUtils'
 
 import sampleImageLandscape from './assets/sample-image-landscape.jpg'
 import sampleImagePortrait from './assets/sample-image-portrait.jpg'
-import { ImageUploader, ImageUploaderProps } from './ImageUploader'
+import { ImageUploader, type ImageUploaderProps } from './ImageUploader'
 
 export default {
   title: '@/components/ImageUploader/ImageUploader',

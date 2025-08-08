@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import { VenueTypeResponseModel } from '@/apiClient/v1'
+import type { VenueTypeResponseModel } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
@@ -11,7 +11,7 @@ import {
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
@@ -236,7 +236,7 @@ describe('VenueSettingsScreen', () => {
     it('toggles manuallySetAddress and resets fields with clearErrors', () => {
       const mockSetValue = vi.fn()
       const mockClearErrors = vi.fn()
-      let manuallySetAddress = false
+      const manuallySetAddress = false
 
       // Function under test (mimicking your implementation)
       const toggleManuallySetAddress = () => {

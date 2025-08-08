@@ -2,7 +2,7 @@ import { subDays } from 'date-fns'
 
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
-import { EventPublicationFormValues } from '../types'
+import type { EventPublicationFormValues } from '../types'
 import { validationSchema } from '../validationSchema'
 
 describe('EventPublicationForm validationSchema', () => {

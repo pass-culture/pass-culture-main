@@ -1,12 +1,17 @@
 import cn from 'classnames'
-import React, { ForwardedRef, forwardRef, MouseEventHandler } from 'react'
+import type React from 'react'
+import { type ForwardedRef, forwardRef, type MouseEventHandler } from 'react'
 import { Link } from 'react-router'
 
 import fullLinkIcon from '@/icons/full-link.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Button.module.scss'
-import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
+import {
+  ButtonVariant,
+  IconPositionEnum,
+  type SharedButtonProps,
+} from './types'
 
 /**
  * Props for the ButtonLink component.

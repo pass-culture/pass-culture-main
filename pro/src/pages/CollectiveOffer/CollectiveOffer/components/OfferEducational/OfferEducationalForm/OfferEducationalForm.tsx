@@ -4,20 +4,20 @@ import { useFormContext } from 'react-hook-form'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferTemplateAllowedAction,
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
-  GetEducationalOffererResponseModel,
-  VenueListItemResponseModel,
+  type GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferTemplateResponseModel,
+  type GetEducationalOffererResponseModel,
+  type VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
   isCollectiveOffer,
   Mode,
-  OfferEducationalFormValues,
+  type OfferEducationalFormValues,
 } from '@/commons/core/OfferEducational/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
@@ -32,14 +32,14 @@ import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Callout } from '@/ui-kit/Callout/Callout'
 
-import { DomainOption } from '../useOfferEducationalFormData'
+import type { DomainOption } from '../useOfferEducationalFormData'
 import { FormAccessibility } from './FormAccessibility/FormAccessibility'
 import { FormContact } from './FormContact/FormContact'
 import { FormContactTemplate } from './FormContactTemplate/FormContactTemplate'
 import { FormDates } from './FormDates/FormDates'
 import {
   FormImageUploader,
-  ImageUploaderOfferProps,
+  type ImageUploaderOfferProps,
 } from './FormImageUploader/FormImageUploader'
 import { FormLocation } from './FormLocation/FormLocation'
 import { FormNotifications } from './FormNotifications/FormNotifications'

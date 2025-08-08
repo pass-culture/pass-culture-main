@@ -25,7 +25,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   OfferEducationalActions,
-  OfferEducationalActionsProps,
+  type OfferEducationalActionsProps,
 } from '../OfferEducationalActions'
 
 vi.mock('@/apiClient/api', () => ({

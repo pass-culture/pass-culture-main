@@ -1,15 +1,15 @@
 import {
-  AutocompleteState,
+  type AutocompleteState,
   createAutocomplete,
 } from '@algolia/autocomplete-core'
 import { createQuerySuggestionsPlugin } from '@algolia/autocomplete-plugin-query-suggestions'
-import { AutocompleteQuerySuggestionsHit } from '@algolia/autocomplete-plugin-query-suggestions/dist/esm/types'
+import type { AutocompleteQuerySuggestionsHit } from '@algolia/autocomplete-plugin-query-suggestions/dist/esm/types'
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches'
 import { liteClient } from 'algoliasearch/lite'
 import {
-  BaseSyntheticEvent,
-  KeyboardEvent,
-  MouseEvent,
+  type BaseSyntheticEvent,
+  type KeyboardEvent,
+  type MouseEvent,
   useEffect,
   useMemo,
   useRef,

@@ -5,7 +5,7 @@ import { searchPatternInOptions } from '@/commons/utils/searchPatternInOptions'
 
 import {
   SelectAutocomplete,
-  SelectAutocompleteProps,
+  type SelectAutocompleteProps,
 } from './SelectAutocomplete'
 
 Element.prototype.scrollIntoView = vi.fn()

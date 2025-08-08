@@ -4,7 +4,10 @@ import { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/t
 import { SortingMode } from '@/commons/hooks/useColumnSorting'
 import { SortArrow } from '@/ui-kit/SortArrow/SortArrow'
 
-import { CellDefinition, getCellsDefinition } from '../utils/cellDefinitions'
+import {
+  type CellDefinition,
+  getCellsDefinition,
+} from '../utils/cellDefinitions'
 import styles from './OffersTableHead.module.scss'
 
 export type Columns = CellDefinition & {

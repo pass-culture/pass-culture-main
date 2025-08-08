@@ -1,6 +1,6 @@
 import {
   CollectiveOfferAllowedAction,
-  CollectiveOffersStockResponseModel,
+  type CollectiveOffersStockResponseModel,
   CollectiveOfferTemplateAllowedAction,
 } from '@/apiClient/v1'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'

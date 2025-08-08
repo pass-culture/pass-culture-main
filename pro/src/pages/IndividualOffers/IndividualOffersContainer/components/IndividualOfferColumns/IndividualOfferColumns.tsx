@@ -1,6 +1,6 @@
 import { computeAddressDisplayName } from 'repository/venuesService'
 
-import {
+import type {
   HeadLineOfferResponseModel,
   ListOffersOfferResponseModel,
 } from '@/apiClient/v1'
@@ -10,7 +10,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { Column } from '@/ui-kit/Table/Table'
+import type { Column } from '@/ui-kit/Table/Table'
 
 import { IndividualActionsCells } from './components/IndividualActionsCells'
 import { OfferBookingCell } from './components/OfferBookingCell/OfferBookingCell'

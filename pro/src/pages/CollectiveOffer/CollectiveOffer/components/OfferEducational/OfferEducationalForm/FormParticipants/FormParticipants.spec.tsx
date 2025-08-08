@@ -5,7 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { StudentLevels } from '@/apiClient/v1'
 import { buildStudentLevelsMapWithDefaultValue } from '@/commons/core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 

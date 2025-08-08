@@ -51,6 +51,7 @@ export const Markdown = ({
     <span
       className={styles['markdown']}
       data-testid="markdown-content"
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: This is sanitized HTML.
       dangerouslySetInnerHTML={{
         __html:
           maxLength === undefined

@@ -18,16 +18,16 @@ import strokeFranceIcon from '@/icons/stroke-france.svg'
 import strokeNearIcon from '@/icons/stroke-near.svg'
 import { departmentOptions } from '@/pages/AdageIframe/app/constants/departmentOptions'
 import { useAdageUser } from '@/pages/AdageIframe/app/hooks/useAdageUser'
-import { Option } from '@/pages/AdageIframe/app/types'
+import type { Option } from '@/pages/AdageIframe/app/types'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import {
   AdageMultiselect,
-  ItemProps,
+  type ItemProps,
 } from '@/ui-kit/form/AdageMultiselect/AdageMultiselect'
 import { Slider } from '@/ui-kit/form/Slider/Slider'
 
-import { SearchFormValues } from '../../OffersInstantSearch'
+import type { SearchFormValues } from '../../OffersInstantSearch'
 import { LocalisationFilterStates } from '../OffersSearch'
 import { AdageButtonFilter } from './AdageButtonFilter/AdageButtonFilter'
 import { ModalFilterLayout } from './ModalFilterLayout/ModalFilterLayout'

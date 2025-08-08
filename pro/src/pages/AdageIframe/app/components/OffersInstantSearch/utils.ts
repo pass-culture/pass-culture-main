@@ -1,8 +1,8 @@
-import { CollectiveLocationType, VenueResponse } from '@/apiClient/adage'
+import { CollectiveLocationType, type VenueResponse } from '@/apiClient/adage'
 import { OfferAddressType } from '@/apiClient/v1'
-import { Facets, Option } from '@/pages/AdageIframe/app/types'
+import type { Facets, Option } from '@/pages/AdageIframe/app/types'
 
-import { SearchFormValues } from './OffersInstantSearch'
+import type { SearchFormValues } from './OffersInstantSearch'
 import { studentsForData } from './OffersSearch/OfferFilters/studentsOptions'
 
 export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
@@ -52,7 +52,7 @@ export const adageFiltersToFacetFilters = (
 
   const filteredFormats: string[] = formats.map((format) => `formats:${format}`)
 
-  let filteredDepartments: string[] = departments.flatMap((department) => [
+  const filteredDepartments: string[] = departments.flatMap((department) => [
     `offer.interventionArea:${department}`,
     `venue.departmentCode:${department}`,
   ])

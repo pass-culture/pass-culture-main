@@ -1,8 +1,8 @@
-import { ChangeEvent, useRef } from 'react'
+import { type ChangeEvent, useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import { StudentLevels } from '@/apiClient/adage'
-import { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
+import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'

@@ -2,11 +2,11 @@ import { screen } from '@testing-library/react'
 
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { OfferNameCell, OfferNameCellProps } from './OfferNameCell'
+import { OfferNameCell, type OfferNameCellProps } from './OfferNameCell'
 
 const renderOfferNameCell = (
   props: OfferNameCellProps,

@@ -5,12 +5,12 @@ import { addYears, format } from 'date-fns'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
-import { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
+import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { getOfferEducationalValidationSchema } from '../../../validationSchema'
-import { FormDates, FormDatesProps } from '../FormDates'
+import { FormDates, type FormDatesProps } from '../FormDates'
 
 function renderFormDates(
   props: FormDatesProps,

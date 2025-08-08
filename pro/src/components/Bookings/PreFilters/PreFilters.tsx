@@ -1,10 +1,10 @@
 import classNames from 'classnames'
-import { FormEvent, useCallback, useEffect, useState } from 'react'
+import { type FormEvent, useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
-import {
+import type {
   CollectivePreFiltersParams,
   PreFiltersParams,
 } from '@/commons/core/Bookings/types'
@@ -12,7 +12,7 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { ALL_OFFERER_ADDRESS_OPTION } from '@/commons/core/Offers/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { Audience } from '@/commons/core/shared/types'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isDateValid } from '@/commons/utils/date'

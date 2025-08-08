@@ -1,6 +1,6 @@
-import { GetVenueResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 
-import { CollectiveDataFormValues } from '../type'
+import type { CollectiveDataFormValues } from '../type'
 
 export const extractInitialValuesFromVenue = (
   venue: GetVenueResponseModel

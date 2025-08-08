@@ -6,7 +6,7 @@ import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
-  IndividualOfferContextValues,
+  type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -24,7 +24,7 @@ import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDetai
 
 import {
   IndividualOfferMediaScreen,
-  IndividualOfferMediaScreenProps,
+  type IndividualOfferMediaScreenProps,
 } from './IndividualOfferMediaScreen'
 
 // This is to avoid "Already caught: Warning:
