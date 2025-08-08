@@ -268,7 +268,12 @@ class DepositAction(AccountAction):
             case _:
                 deposit_type = "crédit d'origine inconnue"
 
-        return f"Attribution d'un {deposit_type} de {_format_amount_for_recredit_action(self._deposit.amount, self._deposit.user)}"
+        initial_recredit = self._deposit.initial_recredit
+        initial_amount = self._deposit.amount - sum(
+            recredit.amount for recredit in self._deposit.recredits if recredit != initial_recredit
+        )
+
+        return f"Attribution d'un {deposit_type} de {_format_amount_for_recredit_action(initial_amount, self._deposit.user)}"
 
 
 class RecreditAction(AccountAction):
