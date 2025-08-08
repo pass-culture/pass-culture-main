@@ -2164,8 +2164,10 @@ def get_public_account_history(
 
     for deposit in user.deposits:
         history.append(serialization.DepositAction(deposit))
+        initial_recredit = deposit.initial_recredit
         for recredit in deposit.recredits:
-            history.append(serialization.RecreditAction(recredit))
+            if recredit != initial_recredit:
+                history.append(serialization.RecreditAction(recredit))
 
     history = sorted(history, key=lambda item: item.actionDate or datetime.datetime.min, reverse=True)
 
