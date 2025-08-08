@@ -1,0 +1,87 @@
+{% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
+{% from "components/bookings/extra_row.html" import build_collective_booking_extra_row with context %}
+{% from "components/connect_as.html" import build_connect_as_link %}
+{% import "components/links.html" as links with context %}
+{% for collective_booking in rows %}
+  {% set collective_offer = collective_booking.collectiveStock.collectiveOffer %}
+  <tr id="booking-row-{{ collective_booking.id }}">
+    <td>
+      <div class="d-flex">
+        {{ build_booking_toggle_extra_row_button(collective_booking) }}
+        <div class="mx-2 dropdown">
+          {% if has_permission("MANAGE_BOOKINGS") %}
+            <button type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    class="btn p-0">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu">
+              {% if collective_booking.isCancelled %}
+                <li class="dropdown-item p-0">
+                  <a class="btn btn-sm d-block w-100 text-start px-3"
+                     data-bs-toggle="modal"
+                     data-use-dynamic-modal="true"
+                     data-bs-target=".pc-validate-booking-modal-{{ collective_booking.id }}">Valider la réservation</a>
+                </li>
+                {% if has_permission("CREATE_INCIDENTS") %}
+                  <li class="dropdown-item p-0">
+                    <a class="btn btn-sm d-block w-100 text-start px-3"
+                       data-bs-toggle="modal"
+                       data-use-dynamic-modal="true"
+                       data-bs-target="#commercial-gesture-creation-modal-{{ collective_booking.id }}">Créer un geste commercial</a>
+                  </li>
+                {% endif %}
+              {% elif not collective_booking.isReimbursed %}
+                <li class="dropdown-item p-0">
+                  <a class="btn btn-sm d-block w-100 text-start px-3"
+                     data-bs-toggle="modal"
+                     data-use-dynamic-modal="true"
+                     data-bs-target=".pc-cancel-booking-modal-{{ collective_booking.id }}">Annuler la réservation</a>
+                </li>
+              {% elif collective_booking.isReimbursed and has_permission("CREATE_INCIDENTS") %}
+                <li class="dropdown-item p-0">
+                  <a class="btn btn-sm d-block w-100 text-start px-3"
+                     data-bs-toggle="modal"
+                     data-use-dynamic-modal="true"
+                     data-bs-target="#overpayment-creation-modal-{{ collective_booking.id }}">Créer un incident</a>
+                </li>
+              {% endif %}
+            </ul>
+          {% endif %}
+        </div>
+      </div>
+    </td>
+    <td>{{ collective_booking.id }}</td>
+    <td>
+      {{ collective_booking.educationalInstitution.name | escape }}
+      ({{ collective_booking.educationalInstitution.id }})
+    </td>
+    <td>{{ collective_booking.educationalRedactor.firstName }} {{ collective_booking.educationalRedactor.lastName }}</td>
+    <td>{{ build_connect_as_link(connect_as[collective_offer.id], collective_offer.name, "link-primary") }}</td>
+    <td>{{ links.build_collective_offer_name_to_details_link(collective_offer, text_attr="id") }}</td>
+    <td>{{ collective_booking.total_amount | format_amount }}</td>
+    <td>{{ collective_booking | format_booking_status(with_badge=True) }}</td>
+    <td class="text-center">
+      {% if collective_booking.validated_incident_id %}
+        <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=collective_booking.validated_incident_id) }}"
+           class=""><i class="bi bi-exclamation-triangle-fill text-danger fs-3"
+   data-bs-toggle="tooltip"
+   data-bs-placement="top"
+   data-bs-title="Visualiser l'incident"></i></a>
+      {% endif %}
+    </td>
+    <td>{{ collective_booking.dateCreated | format_date_time }}</td>
+    <td>
+      {% if collective_booking.collectiveStock %}
+        {% set start_date = collective_booking.collectiveStock.startDatetime | format_date_time %}
+        {% set end_date = collective_booking.collectiveStock.endDatetime | format_date_time %}
+        {{ start_date }}
+        {% if end_date and end_date != start_date %}→ {{ end_date }}{% endif %}
+      {% endif %}
+    </td>
+    <td>{{ links.build_offerer_name_to_details_link(collective_booking.offerer) }}</td>
+    <td>{{ links.build_venue_name_to_details_link(collective_booking.venue) }}</td>
+  </tr>
+  {{ build_collective_booking_extra_row(collective_booking, collective_booking.collectiveStock, collective_offer) }}
+{% endfor %}

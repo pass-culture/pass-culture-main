@@ -32,6 +32,7 @@ from pcapi.models import db
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.bookings.collective_bookings_blueprint import _render_collective_bookings
 from pcapi.routes.backoffice.bookings.individual_bookings_blueprint import _render_individual_bookings
 from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.finance import forms
@@ -540,14 +541,15 @@ def get_collective_booking_overpayment_creation_form(collective_booking_id: int)
     if not (valid := validation.check_incident_collective_booking(collective_booking)):
         mark_transaction_as_invalid()
         return render_template(
-            "components/turbo/modal_empty_form.html",
+            "components/dynamic/modal_empty_form.html",
             form=empty_forms.BatchForm(),
             messages=valid.messages,
             div_id=f"overpayment-creation-modal-{collective_booking_id}",
         )
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id=f"#booking-row-{collective_booking.id}",
         form=form,
         dst=url_for(
             "backoffice_web.finance_incidents.create_collective_booking_overpayment",
@@ -594,14 +596,15 @@ def get_collective_booking_commercial_gesture_creation_form(collective_booking_i
     if not (valid := validation.check_commercial_gesture_collective_booking(collective_booking)):
         mark_transaction_as_invalid()
         return render_template(
-            "components/turbo/modal_empty_form.html",
+            "components/dynamic/modal_empty_form.html",
             form=empty_forms.BatchForm(),
             messages=valid.messages,
             div_id=f"commercial-gesture-creation-modal-{collective_booking_id}",
         )
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id=f"#booking-row-{collective_booking.id}",
         form=form,
         dst=url_for(
             "backoffice_web.finance_incidents.create_collective_booking_commercial_gesture",
@@ -749,19 +752,18 @@ def create_collective_booking_overpayment(collective_booking_id: int) -> utils.B
     if not collective_booking:
         raise NotFound()
 
-    redirect_url = request.referrer or url_for("backoffice_web.collective_bookings.list_collective_bookings")
     form = forms.CollectiveOverPaymentIncidentCreationForm()
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
-        return redirect(redirect_url, 303)
+        return _render_collective_bookings()
 
     if not (valid := validation.check_incident_collective_booking(collective_booking)):
         for message in valid.messages:
             flash(message, "warning")
         mark_transaction_as_invalid()
-        return redirect(redirect_url, 303)
+        return _render_collective_bookings([collective_booking_id])
 
     incident = finance_api.create_overpayment_finance_incident_collective_booking(
         collective_booking,
@@ -776,7 +778,7 @@ def create_collective_booking_overpayment(collective_booking_id: int) -> utils.B
     )
 
     flash(Markup('Un nouvel <a href="{url}">incident</a> a été créé.').format(url=incident_url), "success")
-    return redirect(redirect_url, 303)
+    return _render_collective_bookings([collective_booking_id])
 
 
 @finance_incidents_blueprint.route(
@@ -790,19 +792,18 @@ def create_collective_booking_commercial_gesture(collective_booking_id: int) -> 
     if not collective_booking:
         raise NotFound()
 
-    redirect_url = request.referrer or url_for("backoffice_web.collective_bookings.list_collective_bookings")
     form = forms.CollectiveCommercialGestureCreationForm()
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
-        return redirect(redirect_url, 303)
+        return _render_collective_bookings()
 
     if not (valid := validation.check_commercial_gesture_collective_booking(collective_booking)):
         for message in valid.messages:
             flash(message, "warning")
         mark_transaction_as_invalid()
-        return redirect(redirect_url, 303)
+        return _render_collective_bookings([collective_booking_id])
 
     incident = finance_api.create_finance_commercial_gesture_collective_booking(
         collective_booking,
@@ -817,7 +818,7 @@ def create_collective_booking_commercial_gesture(collective_booking_id: int) -> 
     )
 
     flash(Markup('Un nouveau <a href="{url}">geste commercial</a> a été créé.').format(url=incident_url), "success")
-    return redirect(redirect_url, 303)
+    return _render_collective_bookings([collective_booking_id])
 
 
 def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict:
