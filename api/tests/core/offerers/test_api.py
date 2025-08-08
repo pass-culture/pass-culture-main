@@ -37,6 +37,7 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.opening_hours import schemas as opening_hours_schemas
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_num_queries
@@ -129,6 +130,23 @@ class UpdateVenueTest:
         assert oa_1.label is None
         assert oa_2.label == venue.common_name
         assert venue.offererAddress.address == address_1
+
+    def test_add_new_opening_hours_to_venue(self):
+        venue = offerers_factories.VenueFactory()
+        author = users_factories.UserFactory()
+
+        new_opening_hours = opening_hours_schemas.WeekdayOpeningHoursTimespans(MONDAY=[["10:00", "18:00"]])
+        offerers_api.update_venue(venue, {}, {}, author, opening_hours=new_opening_hours)
+
+        opening_hours = db.session.query(offerers_models.OpeningHours).filter_by(venueId=venue.id).all()
+        assert len(opening_hours) == 1
+
+        opening_hours = opening_hours[0]
+        assert opening_hours.weekday.value == "MONDAY"
+
+        assert len(opening_hours.timespan) == 1
+        assert opening_hours.timespan[0].lower == 10 * 60
+        assert opening_hours.timespan[0].upper == 18 * 60
 
 
 class CreateVenueTest:

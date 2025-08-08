@@ -27,7 +27,7 @@ def get_venue_opening_hours_by_weekday(
     for opening_hours in venue.openingHours:
         if opening_hours.weekday == weekday:
             return opening_hours
-    return offerers_models.OpeningHours(weekday=weekday)
+    return offerers_models.OpeningHours(venue=venue, weekday=weekday)
 
 
 def upsert_venue_opening_hours(venue: offerers_models.Venue, opening_hours: MappedWeekdayOpeningHours) -> None:
