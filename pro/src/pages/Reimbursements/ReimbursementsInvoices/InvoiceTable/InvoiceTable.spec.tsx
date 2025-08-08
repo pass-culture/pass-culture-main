@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 
 import * as apiModule from '@/apiClient/api'
-import { InvoiceResponseV2Model } from '@/apiClient/v1'
+import type { InvoiceResponseV2Model } from '@/apiClient/v1'
 import * as analyticsHook from '@/app/App/analytics/firebase'
 import * as useNotification from '@/commons/hooks/useNotification'
 

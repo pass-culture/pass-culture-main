@@ -2,7 +2,7 @@ import { WithdrawalTypeEnum } from '@/apiClient/v1'
 import { AccessibilityEnum } from '@/commons/core/shared/types'
 import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from '@/pages/IndividualOffer/commons/constants'
 
-import { UsefulInformationFormValues } from './types'
+import type { UsefulInformationFormValues } from './types'
 
 // TODO (igabriele, 2025-07-24): Either remove useless initialized props or make them strict and non-optional once the FF is enabled in production.
 export const DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES: UsefulInformationFormValues =

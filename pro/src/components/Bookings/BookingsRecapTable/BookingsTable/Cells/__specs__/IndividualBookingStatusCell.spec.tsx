@@ -9,7 +9,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   IndividualBookingStatusCell,
-  IndividualBookingStatusCellProps,
+  type IndividualBookingStatusCellProps,
 } from '../IndividualBookingStatusCell'
 
 const renderIndividualBookingStatusCell = (

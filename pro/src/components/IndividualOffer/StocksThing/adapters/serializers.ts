@@ -1,6 +1,6 @@
 import { endOfDay } from 'date-fns'
 
-import { ThingStockCreateBodyModel } from '@/apiClient/v1'
+import type { ThingStockCreateBodyModel } from '@/apiClient/v1'
 import {
   getYearMonthDay,
   isDateValid,
@@ -8,7 +8,7 @@ import {
 } from '@/commons/utils/date'
 import { getUtcDateTimeFromLocalDepartement } from '@/commons/utils/timezone'
 
-import { StockThingFormValues } from '../types'
+import type { StockThingFormValues } from '../types'
 
 export const serializeThingBookingLimitDatetime = (
   bookingLimitDatetime: Date,

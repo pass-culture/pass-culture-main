@@ -1,8 +1,8 @@
 import {
   AdageFrontRoles,
-  AuthenticatedResponse,
-  CollectiveOfferResponseModel,
-  CollectiveOfferTemplateResponseModel,
+  type AuthenticatedResponse,
+  type CollectiveOfferResponseModel,
+  type CollectiveOfferTemplateResponseModel,
   OfferAddressType,
 } from '@/apiClient/adage'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'

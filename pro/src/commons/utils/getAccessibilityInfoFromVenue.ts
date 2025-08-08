@@ -1,8 +1,8 @@
-import {
+import type {
   GetVenueResponseModel,
   VenueListItemResponseModel,
 } from '@/apiClient/v1'
-import { AccessibilityFormValues } from '@/commons/core/shared/types'
+import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 
 export function getAccessibilityInfoFromVenue(
   venue: GetVenueResponseModel | VenueListItemResponseModel | undefined

@@ -14,7 +14,7 @@ import {
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { PartnerPage, PartnerPageProps } from '../PartnerPage'
+import { PartnerPage, type PartnerPageProps } from '../PartnerPage'
 
 const mockLogEvent = vi.fn()
 

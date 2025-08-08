@@ -2,8 +2,8 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
 import {
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
+  type GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferTemplateResponseModel,
   OfferAddressType,
 } from '@/apiClient/v1'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'

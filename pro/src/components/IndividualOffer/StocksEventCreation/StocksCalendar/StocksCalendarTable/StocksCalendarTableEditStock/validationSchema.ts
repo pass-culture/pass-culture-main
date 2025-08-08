@@ -4,7 +4,7 @@ import * as yup from 'yup'
 import { isDateValid, removeTime } from '@/commons/utils/date'
 import { MAX_STOCKS_QUANTITY } from '@/components/IndividualOffer/StocksThing/validationSchema'
 
-import { EditStockFormValues } from './StocksCalendarTableEditStock'
+import type { EditStockFormValues } from './StocksCalendarTableEditStock'
 
 export const validationSchema = yup.object<EditStockFormValues>().shape({
   date: yup

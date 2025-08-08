@@ -1,6 +1,6 @@
-import { EducationalInstitutionResponseModel } from '@/apiClient/v1'
+import type { EducationalInstitutionResponseModel } from '@/apiClient/v1'
 import {
-  Contact,
+  type Contact,
   EducationalRedactorDetails,
 } from '@/components/EductionalRedactorDetails/EducationalRedactorDetails'
 import { EducationalRedactorDetailsForBooking } from '@/components/EductionalRedactorDetailsForBooking/EducationalRedactorDetailsForBooking'

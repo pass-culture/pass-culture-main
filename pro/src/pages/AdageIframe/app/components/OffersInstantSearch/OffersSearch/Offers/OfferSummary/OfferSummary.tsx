@@ -1,6 +1,6 @@
 import {
-  CollectiveOfferResponseModel,
-  CollectiveOfferTemplateResponseModel,
+  type CollectiveOfferResponseModel,
+  type CollectiveOfferTemplateResponseModel,
   OfferAddressType,
 } from '@/apiClient/adage'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'

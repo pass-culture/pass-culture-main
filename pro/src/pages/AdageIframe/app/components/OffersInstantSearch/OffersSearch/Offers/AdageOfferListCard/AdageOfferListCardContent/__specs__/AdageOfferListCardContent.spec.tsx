@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { AuthenticatedResponse, EacFormat } from '@/apiClient/adage'
+import { type AuthenticatedResponse, EacFormat } from '@/apiClient/adage'
 import {
   defaultAdageUser,
   defaultCollectiveTemplateOffer,
@@ -10,7 +10,7 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 
 import {
   AdageOfferListCardContent,
-  AdageOfferListCardContentProps,
+  type AdageOfferListCardContentProps,
 } from '../AdageOfferListCardContent'
 
 const renderAdageOfferListCardContent = (

@@ -3,7 +3,7 @@ import { format } from 'date-fns'
 import { useEffect, useState } from 'react'
 
 import { api } from '@/apiClient/api'
-import {
+import type {
   GetOffererResponseModel,
   GetOffererStatsResponseModel,
 } from '@/apiClient/v1'

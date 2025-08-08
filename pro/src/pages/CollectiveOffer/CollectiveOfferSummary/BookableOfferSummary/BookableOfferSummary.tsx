@@ -8,7 +8,7 @@ import { api } from '@/apiClient/api'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
-  GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Layout } from '@/app/App/layout/Layout'

@@ -3,7 +3,7 @@ import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import {
+import type {
   CollectiveStockResponseModel,
   GetCollectiveOfferResponseModel,
 } from '@/apiClient/v1'
@@ -16,7 +16,7 @@ import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
   Mode,
-  OfferEducationalStockFormValues,
+  type OfferEducationalStockFormValues,
 } from '@/commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { createPatchStockDataPayload } from '@/commons/core/OfferEducational/utils/createPatchStockDataPayload'
@@ -30,7 +30,7 @@ import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 
 import {
-  MandatoryCollectiveOfferFromParamsProps,
+  type MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from '../../CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { OfferEducationalStock } from '../components/OfferEducationalStock/OfferEducationalStock'

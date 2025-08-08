@@ -4,7 +4,7 @@ import * as yup from 'yup'
 import { emailSchema } from '@/commons/utils/isValidEmail'
 import { extractPhoneParts } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 
-import { CollectiveDataFormValues } from './type'
+import type { CollectiveDataFormValues } from './type'
 
 const isPhoneValid = (phone: string | undefined): boolean => {
   if (!phone || !extractPhoneParts(phone).phoneNumber) {

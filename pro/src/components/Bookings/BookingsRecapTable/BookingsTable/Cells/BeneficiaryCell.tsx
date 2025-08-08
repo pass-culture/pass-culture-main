@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-import { BookingRecapResponseBeneficiaryModel } from '@/apiClient/v1'
+import type { BookingRecapResponseBeneficiaryModel } from '@/apiClient/v1'
 
 import styles from './BeneficiaryCell.module.scss'
 

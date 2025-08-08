@@ -1,12 +1,15 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
-import {
+import type {
   RadioButtonSizing,
   RadioButtonVariantProps,
 } from '@/design-system/RadioButton/RadioButton'
 
-import { RadioButtonGroup, RadioButtonGroupProps } from './RadioButtonGroup'
+import {
+  RadioButtonGroup,
+  type RadioButtonGroupProps,
+} from './RadioButtonGroup'
 
 const options: RadioButtonGroupProps<
   string,

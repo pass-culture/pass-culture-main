@@ -7,8 +7,8 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/v1'
-import { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import {
   domtomOptions,
@@ -21,13 +21,13 @@ import {
   defaultGetVenue,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
 import {
   CollectiveDataEdition,
-  CollectiveDataEditionProps,
+  type CollectiveDataEditionProps,
 } from './CollectiveDataEdition'
 
 // RomainC: we need this mock to accelerate this test

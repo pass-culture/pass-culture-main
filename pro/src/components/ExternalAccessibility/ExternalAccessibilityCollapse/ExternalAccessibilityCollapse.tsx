@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { ReactNode, useId } from 'react'
+import React, { type ReactNode, useId } from 'react'
 
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullDownIcon from '@/icons/full-down.svg'

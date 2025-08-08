@@ -1,7 +1,7 @@
 /* No need to test this file */
 /* istanbul ignore file */
 
-import { Navigate, NavigateProps, useLocation } from 'react-router'
+import { Navigate, type NavigateProps, useLocation } from 'react-router'
 
 import { parse } from '@/commons/utils/query-string'
 import { UNAVAILABLE_ERROR_PAGE } from '@/commons/utils/routes'

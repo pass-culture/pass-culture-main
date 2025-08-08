@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import {
+import type {
   BookingRecapResponseModel,
   GetIndividualOfferResponseModel,
 } from '@/apiClient/v1'

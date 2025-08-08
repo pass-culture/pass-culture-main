@@ -5,7 +5,7 @@ import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   SignupJourneyContext,
-  SignupJourneyContextValues,
+  type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'

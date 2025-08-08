@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import { Link } from 'react-router'
 
-import { CollectiveOfferResponseModel } from '@/apiClient/v1'
+import type { CollectiveOfferResponseModel } from '@/apiClient/v1'
 import { getCellsDefinition } from '@/components/OffersTable/utils/cellDefinitions'
 import { Tag } from '@/design-system/Tag/Tag'
 import styles from '@/styles/components/Cells.module.scss'

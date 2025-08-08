@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { IconRadioGroup, IconRadioGroupProps } from './IconRadioGroup'
+import { IconRadioGroup, type IconRadioGroupProps } from './IconRadioGroup'
 
 const defaultProps: IconRadioGroupProps = {
   group: [

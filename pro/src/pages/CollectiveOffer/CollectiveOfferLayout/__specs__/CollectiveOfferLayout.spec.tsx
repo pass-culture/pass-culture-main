@@ -11,7 +11,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   CollectiveOfferLayout,
-  CollectiveOfferLayoutProps,
+  type CollectiveOfferLayoutProps,
 } from '../CollectiveOfferLayout'
 
 const renderCollectiveOfferLayout = (

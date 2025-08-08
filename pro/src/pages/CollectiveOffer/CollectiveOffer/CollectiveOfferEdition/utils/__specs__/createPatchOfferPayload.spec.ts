@@ -2,9 +2,9 @@ import {
   CollectiveLocationType,
   EacFormat,
   OfferAddressType,
-  PatchCollectiveOfferBodyModel,
+  type PatchCollectiveOfferBodyModel,
 } from '@/apiClient/v1'
-import { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
+import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { buildStudentLevelsMapWithDefaultValue } from '@/commons/core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 
 import {

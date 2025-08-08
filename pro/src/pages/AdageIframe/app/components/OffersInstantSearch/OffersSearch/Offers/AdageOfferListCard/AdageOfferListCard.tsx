@@ -4,8 +4,8 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 
 import {
   AdageFrontRoles,
-  CollectiveOfferResponseModel,
-  CollectiveOfferTemplateResponseModel,
+  type CollectiveOfferResponseModel,
+  type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/adage'
 import strokeOfferIcon from '@/icons/stroke-offer.svg'
 import { useAdageUser } from '@/pages/AdageIframe/app/hooks/useAdageUser'

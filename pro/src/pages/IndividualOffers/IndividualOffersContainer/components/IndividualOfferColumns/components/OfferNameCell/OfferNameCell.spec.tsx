@@ -9,12 +9,12 @@ import {
   listOffersStockFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 
-import { OfferNameCell, OfferNameCellProps } from './OfferNameCell'
+import { OfferNameCell, type OfferNameCellProps } from './OfferNameCell'
 
 const renderOfferNameCell = (
   props: OfferNameCellProps,

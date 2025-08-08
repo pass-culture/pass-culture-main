@@ -3,7 +3,7 @@ import * as yup from 'yup'
 import { isPhoneValid } from '@/commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 import { emailSchema } from '@/commons/utils/isValidEmail'
 
-import { Day } from './types'
+import type { Day } from './types'
 
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)

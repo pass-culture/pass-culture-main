@@ -1,10 +1,10 @@
-import {
+import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import {
-  Description,
+  type Description,
   SummaryDescriptionList,
 } from '@/components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'

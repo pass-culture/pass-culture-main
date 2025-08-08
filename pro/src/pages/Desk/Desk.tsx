@@ -1,9 +1,10 @@
-import React, { useEffect, useId, useRef, useState } from 'react'
+import type React from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import { GetBookingResponse } from '@/apiClient/v1'
+import type { GetBookingResponse } from '@/apiClient/v1'
 import { Layout } from '@/app/App/layout/Layout'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { Button } from '@/ui-kit/Button/Button'
@@ -15,7 +16,7 @@ import { ButtonInvalidateToken } from './ButtonInvalidateToken'
 import styles from './Desk.module.scss'
 import { DeskInputMessage } from './DeskInputMessage/DeskInputMessage'
 import { getBookingFailure } from './getBookingFailure'
-import { ErrorMessage, MESSAGE_VARIANT } from './types'
+import { type ErrorMessage, MESSAGE_VARIANT } from './types'
 import { validateToken } from './validation'
 
 interface FormValues {

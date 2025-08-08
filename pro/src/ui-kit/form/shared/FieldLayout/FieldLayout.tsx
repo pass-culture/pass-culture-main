@@ -1,5 +1,6 @@
 import cn from 'classnames'
-import React, { useId } from 'react'
+import type React from 'react'
+import { useId } from 'react'
 
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullCloseIcon from '@/icons/full-close.svg'

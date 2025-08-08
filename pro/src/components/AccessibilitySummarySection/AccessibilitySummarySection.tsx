@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 import { AccessibilityEnum } from '@/commons/core/shared/types'
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'

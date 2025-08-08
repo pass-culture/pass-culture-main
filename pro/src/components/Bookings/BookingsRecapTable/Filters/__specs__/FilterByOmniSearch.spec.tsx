@@ -6,7 +6,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   FilterByOmniSearch,
-  FilterByOmniSearchProps,
+  type FilterByOmniSearchProps,
 } from '../FilterByOmniSearch'
 
 describe('components | FilterByOmniSearch', () => {

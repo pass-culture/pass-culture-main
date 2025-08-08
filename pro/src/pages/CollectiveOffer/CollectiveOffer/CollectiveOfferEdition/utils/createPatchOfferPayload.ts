@@ -1,10 +1,10 @@
 import { OfferContactFormEnum } from '@/apiClient/adage'
 import {
   CollectiveLocationType,
-  PatchCollectiveOfferBodyModel,
-  PatchCollectiveOfferTemplateBodyModel,
+  type PatchCollectiveOfferBodyModel,
+  type PatchCollectiveOfferTemplateBodyModel,
 } from '@/apiClient/v1'
-import { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
+import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { serializeDates } from '@/commons/core/OfferEducational/utils/createOfferPayload'
 import { parseDuration } from '@/commons/core/OfferEducational/utils/parseDuration'
 import { serializeParticipants } from '@/commons/core/OfferEducational/utils/serializeParticipants'

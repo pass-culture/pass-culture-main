@@ -1,10 +1,10 @@
 import classNames from 'classnames'
-import { ForwardedRef, forwardRef, useEffect, useId, useRef } from 'react'
+import { type ForwardedRef, forwardRef, useEffect, useId, useRef } from 'react'
 
 import styles from './Checkbox.module.scss'
 import {
   CheckboxAsset,
-  CheckboxAssetProps,
+  type CheckboxAssetProps,
 } from './CheckboxAsset/CheckboxAsset'
 
 type CheckboxBaseProps = {

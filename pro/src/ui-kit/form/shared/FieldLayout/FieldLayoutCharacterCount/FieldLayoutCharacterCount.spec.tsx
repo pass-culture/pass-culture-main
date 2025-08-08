@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 
 import {
   FieldLayoutCharacterCount,
-  FieldLayoutCharacterCountProps,
+  type FieldLayoutCharacterCountProps,
 } from './FieldLayoutCharacterCount'
 
 describe('FieldLayoutCharacterCount', () => {

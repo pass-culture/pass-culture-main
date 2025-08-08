@@ -1,5 +1,5 @@
-import { PriceCategoryResponseModel } from '@/apiClient/v1'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { PriceCategoryResponseModel } from '@/apiClient/v1'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { formatPrice } from '@/commons/utils/formatPrice'
 
 export const getPriceCategoryOptions = (

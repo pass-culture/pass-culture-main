@@ -1,7 +1,8 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
-import AvatarEditor, { CroppedRect } from 'react-avatar-editor'
+import type AvatarEditor from 'react-avatar-editor'
+import type { CroppedRect } from 'react-avatar-editor'
 
 import { getFileFromURL } from '@/apiClient/helpers'
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -10,7 +11,7 @@ import { useGetImageBitmap } from '@/commons/hooks/useGetBitmap'
 import { useNotification } from '@/commons/hooks/useNotification'
 import {
   UploaderModeEnum,
-  UploadImageValues,
+  type UploadImageValues,
 } from '@/commons/utils/imageUploadTypes'
 import { ImageDragAndDrop } from '@/components/ImageDragAndDrop/ImageDragAndDrop'
 import fullDownloadIcon from '@/icons/full-download.svg'
@@ -21,7 +22,7 @@ import { Callout } from '@/ui-kit/Callout/Callout'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
 import {
   DialogBuilder,
-  DialogBuilderProps,
+  type DialogBuilderProps,
 } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'

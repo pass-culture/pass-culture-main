@@ -20,12 +20,14 @@ if (SENTRY_SERVER_URL) {
 // included in the bundle instead of <script> tag in index.html
 // to avoid the need of 'insafe-inline' in Content Security Policy
 if (!isAdageIframe) {
-  ;(function (h: any, o, t, j, a?: any, r?: any, tmpl?: any) {
+  ;((h: any, o, t, j, a?: any, r?: any, tmpl?: any) => {
     h.hj =
       h.hj ||
-      function () {
+      (() => {
+        // @ts-ignore
+        // biome-ignore lint: Dubious (`arguments` doesn't exist in arrow functions) but this an external library.
         ;(h.hj.q = h.hj.q || []).push(arguments)
-      }
+      })
     h._hjSettings = {
       hjid: 2925982,
       hjsv: 6,

@@ -21,10 +21,10 @@ export const useOrejime = () => {
   function addListener() {
     orejime.manager.on(
       'update',
-      function (
+      (
         updatedConsents: { [key in Consents]: boolean },
         allConsents: { [key in Consents]: boolean }
-      ) {
+      ) => {
         if (Object.keys(updatedConsents).length > 0) {
           setConsentedToFirebase(allConsents[Consents.FIREBASE])
           setConsentedToBeamer(allConsents[Consents.BEAMER])

@@ -1,7 +1,7 @@
-import { ChangeEvent } from 'react'
+import type { ChangeEvent } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import {
+import type {
   OfferDatesType,
   OfferEducationalFormValues,
 } from '@/commons/core/OfferEducational/types'

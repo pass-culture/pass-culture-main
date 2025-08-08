@@ -4,8 +4,8 @@ import { Route, Routes } from 'react-router'
 
 import {
   AdageFrontRoles,
-  AuthenticatedResponse,
-  CollectiveOfferTemplateResponseModel,
+  type AuthenticatedResponse,
+  type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { GET_COLLECTIVE_FAVORITES } from '@/commons/config/swrQueryKeys'

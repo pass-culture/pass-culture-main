@@ -1,6 +1,6 @@
 import { api } from '@/apiClient/api'
-import { BookingRecapResponseModel } from '@/apiClient/v1'
-import { PreFiltersParams } from '@/commons/core/Bookings/types'
+import type { BookingRecapResponseModel } from '@/apiClient/v1'
+import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { buildBookingsRecapQuery } from '@/commons/core/Bookings/utils'
 
 const MAX_LOADED_PAGES = 5

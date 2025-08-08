@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 
 import fullDownloadIcon from '@/icons/full-download.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'

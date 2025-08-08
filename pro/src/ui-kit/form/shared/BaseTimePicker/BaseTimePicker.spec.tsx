@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { BaseTimePicker, SuggestedTimeList } from './BaseTimePicker'
+import { BaseTimePicker, type SuggestedTimeList } from './BaseTimePicker'
 
 const renderBaseTimePicker = ({
   value = '',

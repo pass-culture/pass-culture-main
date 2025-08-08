@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import type { Location } from 'react-router'
 import { useBlocker } from 'react-router'
 

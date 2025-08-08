@@ -5,8 +5,8 @@ import { expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
 import {
-  GetOffererAddressResponseModel,
-  ListOffersOfferResponseModel,
+  type GetOffererAddressResponseModel,
+  type ListOffersOfferResponseModel,
   OfferStatus,
 } from '@/apiClient/v1'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
@@ -14,7 +14,7 @@ import {
   ALL_OFFERER_ADDRESS_OPTION,
   DEFAULT_SEARCH_FILTERS,
 } from '@/commons/core/Offers/constants'
-import { SearchFiltersParams } from '@/commons/core/Offers/types'
+import type { SearchFiltersParams } from '@/commons/core/Offers/types'
 import * as useNotification from '@/commons/hooks/useNotification'
 import {
   listOffersOfferFactory,
@@ -26,13 +26,13 @@ import {
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
 import {
   IndividualOffersContainer,
-  IndividualOffersContainerProps,
+  type IndividualOffersContainerProps,
 } from './IndividualOffersContainer'
 
 const LABELS = {

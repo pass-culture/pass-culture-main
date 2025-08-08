@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from '@/commons/core/Offers/constants'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { ActionBar, ActionBarProps } from './ActionBar'
+import { ActionBar, type ActionBarProps } from './ActionBar'
 
 const renderActionBar = ({
   props,

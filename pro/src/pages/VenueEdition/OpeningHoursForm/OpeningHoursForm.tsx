@@ -4,7 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import { mapDayToFrench } from '@/commons/utils/date'
 import { DayCheckbox } from '@/ui-kit/form/DayCheckbox/DayCheckbox'
 
-import { Day, VenueEditionFormValues } from '../types'
+import type { Day, VenueEditionFormValues } from '../types'
 import { HourLine } from './HourLine'
 import styles from './OpeningHoursForm.module.scss'
 
@@ -44,7 +44,7 @@ export function OpeningHoursForm() {
               checked={days.includes(day)}
               tooltipContent={dayLabel}
               onChange={(e) => {
-                let newDays = new Set(days)
+                const newDays = new Set(days)
                 if (e.target.checked) {
                   newDays.add(day)
                 } else {

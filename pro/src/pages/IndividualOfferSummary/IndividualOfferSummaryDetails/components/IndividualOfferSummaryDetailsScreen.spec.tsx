@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { expect } from 'vitest'
 
 import {
-  GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferWithAddressResponseModel,
   SubcategoryIdEnum,
 } from '@/apiClient/v1'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -16,7 +16,7 @@ import {
   subcategoryFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 

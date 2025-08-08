@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 
-import { ListOffersOfferResponseModel, OfferStatus } from '@/apiClient/v1'
+import { type ListOffersOfferResponseModel, OfferStatus } from '@/apiClient/v1'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   DEFAULT_PAGE,
@@ -9,11 +9,11 @@ import {
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
 } from '@/commons/core/Offers/constants'
-import { SearchFiltersParams } from '@/commons/core/Offers/types'
+import type { SearchFiltersParams } from '@/commons/core/Offers/types'
 import { hasSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
-import { Audience } from '@/commons/core/shared/types'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { Audience } from '@/commons/core/shared/types'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'

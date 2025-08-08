@@ -4,7 +4,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   PartnerPageIndividualSection,
-  PartnerPageIndividualSectionProps,
+  type PartnerPageIndividualSectionProps,
 } from '../PartnerPageIndividualSection'
 
 const renderPartnerPageIndividualSection = (

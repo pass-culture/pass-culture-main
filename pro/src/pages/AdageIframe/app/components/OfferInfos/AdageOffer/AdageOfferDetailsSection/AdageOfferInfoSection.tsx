@@ -1,8 +1,8 @@
 import {
   CollectiveLocationType,
-  CollectiveOfferResponseModel,
-  CollectiveOfferTemplateResponseModel,
-  GetCollectiveOfferLocationModel,
+  type CollectiveOfferResponseModel,
+  type CollectiveOfferTemplateResponseModel,
+  type GetCollectiveOfferLocationModel,
   OfferAddressType,
 } from '@/apiClient/adage'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'

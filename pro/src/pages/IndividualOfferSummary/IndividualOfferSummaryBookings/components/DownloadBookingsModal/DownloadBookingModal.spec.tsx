@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
-import { EventDatesInfos } from '@/apiClient/v1'
+import type { EventDatesInfos } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 

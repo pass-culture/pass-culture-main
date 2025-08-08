@@ -8,7 +8,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   IndividualBookingsTable,
-  IndividualBookingsTableProps,
+  type IndividualBookingsTableProps,
 } from '../IndividualBookingsTable'
 
 const renderIndividualBookingTable = (props: IndividualBookingsTableProps) =>

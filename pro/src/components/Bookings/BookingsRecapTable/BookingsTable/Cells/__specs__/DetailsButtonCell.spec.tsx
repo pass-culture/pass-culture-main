@@ -5,7 +5,10 @@ import * as useAnalytics from '@/app/App/analytics/firebase'
 import { CollectiveBookingsEvents } from '@/commons/core/FirebaseEvents/constants'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { DetailsButtonCell, DetailsButtonCellProps } from '../DetailsButtonCell'
+import {
+  DetailsButtonCell,
+  type DetailsButtonCellProps,
+} from '../DetailsButtonCell'
 
 const renderDetailsButtonCell = (props: DetailsButtonCellProps) => {
   renderWithProviders(<DetailsButtonCell {...props} />)

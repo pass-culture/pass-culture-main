@@ -8,7 +8,7 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from '@/apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
-  CollectiveOfferResponseModel,
+  type CollectiveOfferResponseModel,
 } from '@/apiClient/v1'
 import * as createFromTemplateUtils from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import * as useNotification from '@/commons/hooks/useNotification'

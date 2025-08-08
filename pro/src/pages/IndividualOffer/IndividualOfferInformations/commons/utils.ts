@@ -1,10 +1,10 @@
 import { computeAddressDisplayName } from 'repository/venuesService'
 
 import {
-  GetIndividualOfferResponseModel,
+  type GetIndividualOfferResponseModel,
   type GetIndividualOfferWithAddressResponseModel,
-  SubcategoryResponseModel,
-  VenueListItemResponseModel,
+  type SubcategoryResponseModel,
+  type VenueListItemResponseModel,
   WithdrawalTypeEnum,
 } from '@/apiClient/v1'
 import {
@@ -19,7 +19,7 @@ import {
 import { getAccessibilityFormValuesFromOffer } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 
 import { DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES } from './constants'
-import { UsefulInformationFormValues } from './types'
+import type { UsefulInformationFormValues } from './types'
 
 export function getInitialValuesFromOffer(
   offer: GetIndividualOfferWithAddressResponseModel,

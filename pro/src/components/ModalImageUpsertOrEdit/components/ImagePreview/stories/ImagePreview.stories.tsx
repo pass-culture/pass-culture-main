@@ -1,6 +1,6 @@
 import type { StoryObj } from '@storybook/react'
 
-import { ImagePreview, ImagePreviewScreenProps } from '../ImagePreview'
+import { ImagePreview, type ImagePreviewScreenProps } from '../ImagePreview'
 import { ImagePreviewsWrapper } from '../ImagePreviewsWrapper'
 import style from './ImagePreviewStories.module.scss'
 import offerHomeShell from './offer-home-shell.png'

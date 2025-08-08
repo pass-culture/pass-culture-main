@@ -4,11 +4,11 @@ import * as instantSearch from 'react-instantsearch'
 
 import {
   AdageFrontRoles,
-  AuthenticatedResponse,
+  type AuthenticatedResponse,
   CancelablePromise,
-  CollectiveOfferResponseModel,
+  type CollectiveOfferResponseModel,
   EacFormat,
-  ListCollectiveOfferTemplateResponseModel,
+  type ListCollectiveOfferTemplateResponseModel,
   OfferAddressType,
   StudentLevels,
 } from '@/apiClient/adage'
@@ -20,12 +20,12 @@ import {
   defaultUseStatsReturn,
 } from '@/commons/utils/factories/adageFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
-import { Offers, OffersProps } from './Offers'
+import { Offers, type OffersProps } from './Offers'
 
 vi.mock('react-router', async () => ({
   ...(await vi.importActual('react-router')),

@@ -4,7 +4,7 @@ import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { Step, Stepper, StepperProps } from '../Stepper'
+import { type Step, Stepper, type StepperProps } from '../Stepper'
 
 const renderStepper = (props: StepperProps) => {
   return renderWithProviders(<Stepper {...props} />)

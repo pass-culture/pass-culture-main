@@ -1,10 +1,10 @@
-import {
+import type {
   PatchDraftOfferBodyModel,
   PostDraftOfferBodyModel,
 } from '@/apiClient/v1'
 import { trimStringsInObject } from '@/commons/utils/trimStringsInObject'
 
-import { DetailsFormValues } from './types'
+import type { DetailsFormValues } from './types'
 
 export const serializeDurationMinutes = (
   durationHour: string

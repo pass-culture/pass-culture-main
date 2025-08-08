@@ -14,7 +14,7 @@ import {
 } from '@/commons/utils/factories/userOfferersFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { MandatoryCollectiveOfferFromParamsProps } from '../../components/OfferEducational/useCollectiveOfferFromParams'
+import type { MandatoryCollectiveOfferFromParamsProps } from '../../components/OfferEducational/useCollectiveOfferFromParams'
 import { CollectiveOfferEdition } from '../CollectiveOfferEdition'
 
 vi.mock('@/apiClient/api', () => ({

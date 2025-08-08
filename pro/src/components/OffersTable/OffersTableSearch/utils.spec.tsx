@@ -6,7 +6,7 @@ import { isEqual } from '@/commons/utils/isEqual'
 
 import {
   getStoredFilterConfig,
-  SelectedFilters,
+  type SelectedFilters,
   useStoredFilterConfig,
 } from './utils'
 

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { Button, ButtonProps } from '../Button'
+import { Button, type ButtonProps } from '../Button'
 
 const renderButton = (props: ButtonProps = {}) => {
   return render(<Button {...props}>Enregistrer</Button>)

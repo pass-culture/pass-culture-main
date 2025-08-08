@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
-import { NotificationTypeEnum } from '@/commons/hooks/useNotification'
+import type { NotificationTypeEnum } from '@/commons/hooks/useNotification'
 
 export interface Notification {
   text: string | null

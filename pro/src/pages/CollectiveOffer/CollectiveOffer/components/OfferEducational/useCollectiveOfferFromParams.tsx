@@ -1,9 +1,9 @@
-import { ComponentType } from 'react'
+import type { ComponentType } from 'react'
 import { useLocation, useParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import {
+import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetOffererResponseModel,

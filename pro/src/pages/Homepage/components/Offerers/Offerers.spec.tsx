@@ -2,11 +2,11 @@ import { screen } from '@testing-library/react'
 
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { Offerers, OfferersProps } from './Offerers'
+import { Offerers, type OfferersProps } from './Offerers'
 
 const renderOfferers = (
   props: Partial<OfferersProps> = {},

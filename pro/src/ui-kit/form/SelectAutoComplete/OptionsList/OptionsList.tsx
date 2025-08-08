@@ -1,7 +1,7 @@
 import cx from 'classnames'
-import { Ref } from 'react'
+import type { Ref } from 'react'
 
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 
 import styles from './OptionsList.module.scss'
 

@@ -6,17 +6,17 @@ import { FormProvider, useForm } from 'react-hook-form'
 
 import {
   Mode,
-  OfferEducationalStockFormValues,
+  type OfferEducationalStockFormValues,
 } from '@/commons/core/OfferEducational/types'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { Button } from '@/ui-kit/Button/Button'
 
 import { generateValidationSchema } from '../../validationSchema'
-import { FormStock, FormStockProps } from '../FormStock'
+import { FormStock, type FormStockProps } from '../FormStock'
 
 function renderFormStock({
   initialValues,

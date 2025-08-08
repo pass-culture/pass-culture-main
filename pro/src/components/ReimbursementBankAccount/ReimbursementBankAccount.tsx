@@ -3,8 +3,8 @@ import { useLocation } from 'react-router'
 
 import {
   BankAccountApplicationStatus,
-  BankAccountResponseModel,
-  ManagedVenues,
+  type BankAccountResponseModel,
+  type ManagedVenues,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'

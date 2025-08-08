@@ -14,7 +14,7 @@ import {
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useRedirectLoggedUser } from '@/commons/hooks/useRedirectLoggedUser'
-import { AppDispatch } from '@/commons/store/store'
+import type { AppDispatch } from '@/commons/store/store'
 import { updateUser } from '@/commons/store/user/reducer'
 import { initializeUserThunk } from '@/commons/store/user/thunks'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'

@@ -6,7 +6,10 @@ import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import { listOffersOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { OfferBookingCell, OfferBookingCellProps } from './OfferBookingCell'
+import {
+  OfferBookingCell,
+  type OfferBookingCellProps,
+} from './OfferBookingCell'
 
 function renderOfferBookingCell(props: OfferBookingCellProps) {
   renderWithProviders(<OfferBookingCell {...props} />)

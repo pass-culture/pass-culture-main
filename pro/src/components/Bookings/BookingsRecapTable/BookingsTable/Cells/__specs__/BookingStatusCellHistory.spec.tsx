@@ -4,7 +4,7 @@ import { BookingRecapStatus } from '@/apiClient/v1'
 
 import {
   BookingStatusCellHistory,
-  BookingStatusCellHistoryProps,
+  type BookingStatusCellHistoryProps,
 } from '../BookingStatusCellHistory'
 
 const renderBookingStatusCellHistory = (

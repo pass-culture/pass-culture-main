@@ -18,7 +18,7 @@ import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import {
   IconRadioGroup,
-  IconRadioGroupValues,
+  type IconRadioGroupValues,
 } from '@/ui-kit/form/IconRadioGroup/IconRadioGroup'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'

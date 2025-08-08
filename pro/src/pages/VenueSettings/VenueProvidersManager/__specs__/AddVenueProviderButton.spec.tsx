@@ -8,7 +8,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   AddVenueProviderButton,
-  AddVenueProviderButtonProps,
+  type AddVenueProviderButtonProps,
 } from '../AddVenueProviderButton'
 
 const renderAddVenueProviderButton = async (

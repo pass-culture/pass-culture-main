@@ -7,17 +7,17 @@ import { expect } from 'vitest'
 import { api } from '@/apiClient/api'
 import {
   ApiError,
-  GetIndividualOfferResponseModel,
-  GetIndividualOfferWithAddressResponseModel,
-  GetOfferStockResponseModel,
+  type GetIndividualOfferResponseModel,
+  type GetIndividualOfferWithAddressResponseModel,
+  type GetOfferStockResponseModel,
   SubcategoryIdEnum,
 } from '@/apiClient/v1'
-import { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
-  IndividualOfferContextValues,
+  type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -41,7 +41,7 @@ import { Notification } from '@/components/Notification/Notification'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 
 import { serializeThingBookingLimitDatetime } from '../adapters/serializers'
-import { StocksThing, StocksThingProps } from '../StocksThing'
+import { StocksThing, type StocksThingProps } from '../StocksThing'
 
 vi.mock('@/commons/utils/date', async () => {
   return {
@@ -110,7 +110,7 @@ describe('screens:StocksThing', () => {
   let props: StocksThingProps
   let contextValue: IndividualOfferContextValues
   let offer: GetIndividualOfferWithAddressResponseModel
-  let mockLogEvent = vi.fn()
+  const mockLogEvent = vi.fn()
   const offerId = 1
 
   beforeEach(() => {

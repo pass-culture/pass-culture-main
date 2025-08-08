@@ -4,7 +4,7 @@ import { generatePath } from 'react-router'
 import { expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -21,7 +21,7 @@ import { Notification } from '@/components/Notification/Notification'
 
 import {
   PriceCategoriesScreen,
-  PriceCategoriesScreenProps,
+  type PriceCategoriesScreenProps,
 } from '../PriceCategoriesScreen'
 
 const renderPriceCategories = (
@@ -34,7 +34,7 @@ const renderPriceCategories = (
     { offerId: '12' }
   )
 ) => {
-  let context = {
+  const context = {
     offer: props.offer,
     categories: [],
     subCategories: [],

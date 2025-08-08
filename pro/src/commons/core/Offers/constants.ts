@@ -1,10 +1,10 @@
 import { OfferStatus, WithdrawalTypeEnum } from '@/apiClient/v1'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 
 import {
   CollectiveOfferTypeEnum,
-  CollectiveSearchFiltersParams,
-  SearchFiltersParams,
+  type CollectiveSearchFiltersParams,
+  type SearchFiltersParams,
 } from './types'
 
 export enum OFFER_TYPES {

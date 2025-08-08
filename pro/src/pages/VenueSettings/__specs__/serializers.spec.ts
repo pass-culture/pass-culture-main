@@ -1,7 +1,7 @@
-import { EditVenueBodyModel, VenueTypeCode } from '@/apiClient/v1'
+import type { EditVenueBodyModel, VenueTypeCode } from '@/apiClient/v1'
 
 import { serializeEditVenueBodyModel } from '../serializers'
-import { VenueSettingsFormValues } from '../types'
+import type { VenueSettingsFormValues } from '../types'
 
 describe('serializeEditVenueBodyModel', () => {
   let formValues: VenueSettingsFormValues

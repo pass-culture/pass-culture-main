@@ -1,4 +1,4 @@
-import { PreFiltersParams } from '@/commons/core/Bookings/types'
+import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
 
 import styles from './FilterByBookingStatusPeriod.module.scss'

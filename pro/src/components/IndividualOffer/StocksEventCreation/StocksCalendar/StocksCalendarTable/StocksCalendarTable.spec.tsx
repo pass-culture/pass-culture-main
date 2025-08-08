@@ -12,7 +12,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   StocksCalendarTable,
-  StocksCalendarTableProps,
+  type StocksCalendarTableProps,
 } from './StocksCalendarTable'
 
 vi.mock('@/apiClient/api', () => ({

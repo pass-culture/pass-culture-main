@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
 
-import {
+import type {
   GetCollectiveOfferRequestResponseModel,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -9,7 +9,7 @@ import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
 
 import { DEFAULT_EAC_STOCK_FORM_VALUES } from '../constants'
-import { OfferEducationalStockFormValues } from '../types'
+import type { OfferEducationalStockFormValues } from '../types'
 
 export const extractInitialStockValues = (
   offer: GetCollectiveOfferResponseModel,

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { Slider, SliderProps } from '../Slider'
+import { Slider, type SliderProps } from '../Slider'
 
 const renderSlider = (props: SliderProps) => render(<Slider {...props} />)
 

@@ -208,7 +208,7 @@ describe('HeadlineOfferContext', () => {
 
     describe('about notifications', () => {
       it('should notify success on successful upsert', async () => {
-        let notifySuccess = vi.fn()
+        const notifySuccess = vi.fn()
         vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
           success: notifySuccess,
           error: vi.fn(),
@@ -227,7 +227,7 @@ describe('HeadlineOfferContext', () => {
       })
 
       it('should notify error on failed upsert', async () => {
-        let notifyError = vi.fn()
+        const notifyError = vi.fn()
         vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
           success: vi.fn(),
           error: notifyError,
@@ -250,7 +250,7 @@ describe('HeadlineOfferContext', () => {
     })
 
     it('should log event on successful upsert', async () => {
-      let logEvent = vi.fn()
+      const logEvent = vi.fn()
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent,
       }))
@@ -291,7 +291,7 @@ describe('HeadlineOfferContext', () => {
 
     describe('about notifications', () => {
       it('should notify success on successful removal', async () => {
-        let notifySuccess = vi.fn()
+        const notifySuccess = vi.fn()
         vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
           success: notifySuccess,
           error: vi.fn(),
@@ -310,7 +310,7 @@ describe('HeadlineOfferContext', () => {
       })
 
       it('should notify error on failed removal', async () => {
-        let notifyError = vi.fn()
+        const notifyError = vi.fn()
         vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
           success: vi.fn(),
           error: notifyError,
@@ -333,7 +333,7 @@ describe('HeadlineOfferContext', () => {
     })
 
     it('should log event on successful removal', async () => {
-      let logEvent = vi.fn()
+      const logEvent = vi.fn()
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent,
       }))

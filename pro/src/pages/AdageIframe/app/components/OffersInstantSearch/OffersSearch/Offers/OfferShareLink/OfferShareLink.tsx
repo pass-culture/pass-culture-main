@@ -1,6 +1,6 @@
-import { MouseEvent } from 'react'
+import type { MouseEvent } from 'react'
 
-import {
+import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/adage'

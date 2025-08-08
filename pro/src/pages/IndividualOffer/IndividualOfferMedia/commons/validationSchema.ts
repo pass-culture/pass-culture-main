@@ -1,7 +1,7 @@
 import * as yup from 'yup'
 
 import { isYoutubeValid } from './isYoutubeValid'
-import { IndividualOfferMediaFormValues } from './types'
+import type { IndividualOfferMediaFormValues } from './types'
 
 export const getValidationSchema = () => {
   return yup.object<IndividualOfferMediaFormValues>().shape({

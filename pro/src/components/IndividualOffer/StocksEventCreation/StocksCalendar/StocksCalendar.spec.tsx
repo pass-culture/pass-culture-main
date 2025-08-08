@@ -11,7 +11,7 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 
-import { StocksCalendar, StocksCalendarProps } from './StocksCalendar'
+import { StocksCalendar, type StocksCalendarProps } from './StocksCalendar'
 
 vi.mock('@/apiClient/api', () => ({
   api: {

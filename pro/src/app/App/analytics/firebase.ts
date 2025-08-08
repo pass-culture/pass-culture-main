@@ -13,7 +13,7 @@ import {
   fetchAndActivate,
   getAll,
   getRemoteConfig,
-  RemoteConfig,
+  type RemoteConfig,
 } from '@firebase/remote-config'
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'

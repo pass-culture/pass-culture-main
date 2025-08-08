@@ -4,8 +4,8 @@ import createFetchMock from 'vitest-fetch-mock'
 import { api } from '@/apiClient/api'
 import {
   CollectiveOfferTemplateAllowedAction,
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
+  type GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import {
   getCollectiveOfferFactory,
@@ -17,7 +17,7 @@ import {
   userOffererFactory,
 } from '@/commons/utils/factories/userOfferersFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 

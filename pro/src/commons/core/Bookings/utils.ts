@@ -1,5 +1,8 @@
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
-import { APIFilters, PreFiltersParams } from '@/commons/core/Bookings/types'
+import type {
+  APIFilters,
+  PreFiltersParams,
+} from '@/commons/core/Bookings/types'
 
 export const buildBookingsRecapQuery = ({
   offererId = DEFAULT_PRE_FILTERS.offererId,

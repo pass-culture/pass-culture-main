@@ -1,4 +1,4 @@
-import {
+import type {
   CollectiveOfferResponseModel,
   ListOffersOfferResponseModel,
 } from '@/apiClient/v1'

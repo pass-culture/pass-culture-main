@@ -2,7 +2,7 @@ import { NotificationTypeEnum } from '@/commons/hooks/useNotification'
 
 import {
   closeNotification,
-  NotificationState,
+  type NotificationState,
   initialState as notificationInitialState,
   notificationsReducer,
   showNotification,

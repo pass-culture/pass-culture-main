@@ -7,7 +7,10 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
-import { PrebookingButton, PrebookingButtonProps } from '../PrebookingButton'
+import {
+  PrebookingButton,
+  type PrebookingButtonProps,
+} from '../PrebookingButton'
 
 vi.mock('@/apiClient/api', () => ({
   apiAdage: {

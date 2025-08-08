@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
-import { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
@@ -42,7 +42,7 @@ import { validationSchema } from '../PriceCategoriesScreen/form/validationSchema
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 import { computeInitialValues } from './form/computeInitialValues'
 import { submitToApi } from './form/submitToApi'
-import { PriceCategoriesFormValues, PriceCategoryForm } from './form/types'
+import type { PriceCategoriesFormValues, PriceCategoryForm } from './form/types'
 import styles from './PriceCategoriesScreen.module.scss'
 
 export interface PriceCategoriesScreenProps {

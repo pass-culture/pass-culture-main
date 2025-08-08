@@ -1,8 +1,8 @@
 import {
-  AuthenticatedResponse,
+  type AuthenticatedResponse,
   CollectiveLocationType,
-  CollectiveOfferResponseModel,
-  CollectiveOfferTemplateResponseModel,
+  type CollectiveOfferResponseModel,
+  type CollectiveOfferTemplateResponseModel,
   OfferAddressType,
 } from '@/apiClient/adage'
 import {

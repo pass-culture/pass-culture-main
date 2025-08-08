@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import {
@@ -12,7 +12,7 @@ import {
 
 import {
   ValidationMessageList,
-  ValidationMessageListProps,
+  type ValidationMessageListProps,
 } from './ValidationMessageList'
 
 const defaultProps: ValidationMessageListProps = {

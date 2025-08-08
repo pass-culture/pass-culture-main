@@ -1,6 +1,6 @@
 import { format } from 'date-fns-tz'
 
-import {
+import type {
   CollectiveBookingCollectiveStockResponseModel,
   CollectiveOffersStockResponseModel,
 } from '@/apiClient/v1'

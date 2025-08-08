@@ -3,7 +3,7 @@ import * as router from 'react-router'
 import { Route, Routes } from 'react-router'
 
 import { api } from '@/apiClient/api'
-import { SharedLoginUserResponseModel } from '@/apiClient/v1'
+import type { SharedLoginUserResponseModel } from '@/apiClient/v1'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
@@ -11,7 +11,7 @@ import {
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import * as utils from '@/commons/utils/recaptcha'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'

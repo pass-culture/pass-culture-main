@@ -1,10 +1,10 @@
 import {
   DMSApplicationstatus,
-  GetOffererResponseModel,
-  GetOffererVenueResponseModel,
+  type GetOffererResponseModel,
+  type GetOffererVenueResponseModel,
 } from '@/apiClient/v1'
 import { getLastCollectiveDmsApplication } from '@/commons/utils/getLastCollectiveDmsApplication'
-import { VenueThing } from '@/pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
+import type { VenueThing } from '@/pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
 
 export const getVirtualVenueFromOfferer = (
   offerer?: GetOffererResponseModel | null

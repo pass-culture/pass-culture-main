@@ -4,8 +4,8 @@ import { addDays } from 'date-fns'
 
 import {
   CollectiveBookingBankAccountStatus,
-  CollectiveBookingByIdResponseModel,
-  CollectiveBookingResponseModel,
+  type CollectiveBookingByIdResponseModel,
+  type CollectiveBookingResponseModel,
 } from '@/apiClient/v1'
 import { CollectiveBookingCancellationReasons } from '@/apiClient/v1/models/CollectiveBookingCancellationReasons'
 import * as useAnalytics from '@/app/App/analytics/firebase'
@@ -17,7 +17,7 @@ import {
   collectiveBookingFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 

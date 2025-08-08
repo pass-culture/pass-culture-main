@@ -3,11 +3,11 @@ import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 import { axe } from 'vitest-axe'
 
-import { AdresseData } from '@/apiClient/adresse/types'
-import { VenueListItemResponseModel } from '@/apiClient/v1'
+import type { AdresseData } from '@/apiClient/adresse/types'
+import type { VenueListItemResponseModel } from '@/apiClient/v1'
 import {
   IndividualOfferContext,
-  IndividualOfferContextValues,
+  type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   individualOfferContextValuesFactory,
@@ -15,13 +15,13 @@ import {
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
-import { UsefulInformationFormValues } from '@/pages/IndividualOffer/IndividualOfferInformations/commons/types'
+import type { UsefulInformationFormValues } from '@/pages/IndividualOffer/IndividualOfferInformations/commons/types'
 
-import { OfferLocation, OfferLocationProps } from './OfferLocation'
+import { OfferLocation, type OfferLocationProps } from './OfferLocation'
 
 const LABELS = {
   locationLabel: /Intitulés de la localisation/,

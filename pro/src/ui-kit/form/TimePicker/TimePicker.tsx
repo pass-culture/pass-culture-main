@@ -1,9 +1,9 @@
 import classNames from 'classnames'
-import { ForwardedRef, forwardRef, useId } from 'react'
+import { type ForwardedRef, forwardRef, useId } from 'react'
 
 import {
   BaseTimePicker,
-  SuggestedTimeList,
+  type SuggestedTimeList,
 } from '@/ui-kit/form/shared/BaseTimePicker/BaseTimePicker'
 import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
 

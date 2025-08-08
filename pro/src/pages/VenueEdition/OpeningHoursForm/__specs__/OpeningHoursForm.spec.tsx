@@ -4,7 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { setInitialFormValues } from '@/pages/VenueEdition/setInitialFormValues'
-import { VenueEditionFormValues } from '@/pages/VenueEdition/types'
+import type { VenueEditionFormValues } from '@/pages/VenueEdition/types'
 import { Button } from '@/ui-kit/Button/Button'
 
 import { OpeningHoursForm } from '../OpeningHoursForm'

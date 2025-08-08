@@ -1,7 +1,7 @@
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import {
+import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,

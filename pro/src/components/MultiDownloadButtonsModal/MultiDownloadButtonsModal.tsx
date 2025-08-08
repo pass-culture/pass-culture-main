@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useRef, useState } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import {
+import type {
   CollectivePreFiltersParams,
   PreFiltersParams,
 } from '@/commons/core/Bookings/types'

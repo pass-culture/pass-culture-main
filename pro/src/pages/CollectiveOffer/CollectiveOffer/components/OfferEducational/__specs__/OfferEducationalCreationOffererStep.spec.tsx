@@ -17,7 +17,10 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
-import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
+import {
+  OfferEducational,
+  type OfferEducationalProps,
+} from '../OfferEducational'
 
 function renderOfferEducational(props: OfferEducationalProps) {
   const user = sharedCurrentUserFactory()

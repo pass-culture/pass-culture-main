@@ -3,7 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { useId } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import {
+import type {
   EventStockUpdateBodyModel,
   GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,

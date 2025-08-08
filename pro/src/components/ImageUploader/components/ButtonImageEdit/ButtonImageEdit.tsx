@@ -3,11 +3,11 @@ import { useState } from 'react'
 
 import {
   UploaderModeEnum,
-  UploadImageValues,
+  type UploadImageValues,
 } from '@/commons/utils/imageUploadTypes'
 import {
   ModalImageUpsertOrEdit,
-  OnImageUploadArgs,
+  type OnImageUploadArgs,
 } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullMoreIcon from '@/icons/full-more.svg'

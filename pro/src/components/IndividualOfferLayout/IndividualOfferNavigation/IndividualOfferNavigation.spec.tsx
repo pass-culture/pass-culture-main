@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 
 import {
   IndividualOfferContext,
-  IndividualOfferContextValues,
+  type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -15,14 +15,14 @@ import {
   priceCategoryFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import {
-  RenderComponentFunction,
-  RenderWithProvidersOptions,
+  type RenderComponentFunction,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
 import {
   IndividualOfferNavigation,
-  IndividualOfferNavigationProps,
+  type IndividualOfferNavigationProps,
 } from './IndividualOfferNavigation'
 
 const renderIndividualOfferNavigation: RenderComponentFunction<

@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
 import type { GetOffererNameResponseModel } from '@/apiClient/v1'
 import type { GetOffererResponseModel } from '@/apiClient/v1/models/GetOffererResponseModel'

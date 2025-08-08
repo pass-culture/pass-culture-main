@@ -4,7 +4,7 @@ import { Outlet, Route, Routes } from 'react-router'
 import { expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import { GetOffererResponseModel } from '@/apiClient/v1'
+import type { GetOffererResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES } from '@/commons/config/swrQueryKeys'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -43,7 +43,7 @@ const renderBankInformations = (offerer: GetOffererResponseModel | null) => {
                   ...defaultGetOffererResponseModel,
                   ...offerer,
                 },
-                setSelectedOfferer: function () {},
+                setSelectedOfferer: () => {},
               }}
             />
           }

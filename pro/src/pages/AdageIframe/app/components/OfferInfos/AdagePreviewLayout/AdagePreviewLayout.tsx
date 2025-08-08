@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 
-import {
+import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/adage'
 import { api } from '@/apiClient/api'
 import {
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
-  GetVenueResponseModel,
+  type GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferTemplateResponseModel,
+  type GetVenueResponseModel,
   OfferAddressType,
 } from '@/apiClient/v1'
 import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'

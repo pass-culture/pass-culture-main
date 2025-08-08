@@ -1,5 +1,5 @@
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
-import { PreFiltersParams } from '@/commons/core/Bookings/types'
+import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { isDateValid } from '@/commons/utils/date'
 import { BaseDatePicker } from '@/ui-kit/form/shared/BaseDatePicker/BaseDatePicker'
 import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'

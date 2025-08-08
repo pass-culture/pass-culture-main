@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
-import { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
+import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { mainlandOptions } from '@/commons/core/shared/interventionOptions'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 

@@ -5,7 +5,7 @@ import {
   ALL_OFFERER_ADDRESSES,
   ALL_OFFERERS,
 } from '@/commons/core/Offers/constants'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { FORMAT_ISO_DATE_ONLY, getToday } from '@/commons/utils/date'
 
 export const BOOKING_STATUS = {

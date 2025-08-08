@@ -3,6 +3,12 @@
   // https://biomejs.dev/guides/big-projects/#monorepo
   "root": false,
   "extends": "//",
+  // Ignore .gitignore files
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
   "assist": {
     "enabled": true,
     "actions": {
@@ -30,25 +36,20 @@
   },
   "formatter": {
     "enabled": true,
+    "attributePosition": "auto",
+    "bracketSameLine": false,
+    "bracketSpacing": true,
+    "expand": "auto",
     "formatWithErrors": false,
     "indentStyle": "space",
     "indentWidth": 2,
     "lineEnding": "lf",
     "lineWidth": 80,
-    "attributePosition": "auto",
-    "bracketSameLine": false,
-    "bracketSpacing": true,
-    "expand": "auto",
     "useEditorconfig": true
   },
   "files": {
     "includes": [
       "**",
-      "!build/**",
-      "!coverage/**",
-      "!docs-build/**",
-      "!node_modules/**",
-      "!.vitest_cache/**",
       "!scripts/customRequest.ts",
       "!src/apiClient/adage/**",
       "!src/apiClient/v1/**"
@@ -58,9 +59,24 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": false,
+      // TODO (igabriele, 2025-08-08): Most of the above "error" rules are likely part of the "recommended" set. Check which we can remove from the lists thanks to that.
+      "recommended": true,
+      "a11y": {
+        "noHeaderScope": "warn", // default: "error"
+        "noLabelWithoutControl": "warn", // default: "error"
+        "noNoninteractiveElementToInteractiveRole": "warn", // default: "error"
+        "noNoninteractiveTabindex": "warn", // default: "error"
+        "noRedundantRoles": "warn", // default: "error"
+        "noStaticElementInteractions": "warn", // default: "error"
+        "noSvgWithoutTitle": "warn", // default: "error"
+        "useButtonType": "warn", // default: "error"
+        "useKeyWithClickEvents": "warn", // default: "error"
+        "useKeyWithMouseEvents": "warn", // default: "error"
+        "useSemanticElements": "warn" // default: "error"
+      },
       "complexity": {
         "noAdjacentSpacesInRegex": "error",
+        "noArguments": "error",
         "noExtraBooleanCast": "error",
         "noUselessCatch": "error",
         "noUselessEscapeInRegex": "error",
@@ -85,23 +101,34 @@
         "noUnreachableSuper": "error",
         "noUnsafeFinally": "error",
         "noUnsafeOptionalChaining": "error",
+        "noUnusedImports": "error", // default: "warn"
         "noUnusedLabels": "error",
         "noUnusedPrivateClassMembers": "error",
         "noUnusedVariables": "error",
+        "useExhaustiveDependencies": "info",
+        "useHookAtTopLevel": "error",
         "useIsNan": "error",
         "useJsxKeyInIterable": "error",
         "useValidForDirection": "error",
         "useValidTypeof": "error",
         "useYield": "error"
       },
-      "security": { "noDangerouslySetInnerHtmlWithChildren": "error" },
+      "security": {
+        "noDangerouslySetInnerHtmlWithChildren": "error"
+      },
       "style": {
         "noCommonJs": "error",
+        "noDefaultExport": "error",
         "noNamespace": "error",
+        "noRestrictedTypes": "error",
         "useArrayLiterals": "error",
-        "useAsConstAssertion": "error"
+        "useAsConstAssertion": "error",
+        "useBlockStatements": "error",
+        "useConst": "error"
       },
       "suspicious": {
+        "noAssignInExpressions": "warn", // default: "error"
+        "noArrayIndexKey": "warn", // default: "error"
         "noAsyncPromiseExecutor": "error",
         "noCatchAssign": "error",
         "noClassAssign": "error",
@@ -115,18 +142,19 @@
         },
         "noControlCharactersInRegex": "error",
         "noDebugger": "error",
+        "noDoubleEquals": "error",
         "noDuplicateCase": "error",
         "noDuplicateClassMembers": "error",
         "noDuplicateElseIf": "error",
         "noDuplicateJsxProps": "error",
         "noDuplicateObjectKeys": "error",
         "noDuplicateParameters": "error",
-        "noEmptyBlockStatements": "error",
-        "noExplicitAny": "error",
+        "noEmptyBlockStatements": "warn",
         "noExtraNonNullAssertion": "error",
         "noFallthroughSwitchClause": "error",
         "noFunctionAssign": "error",
         "noGlobalAssign": "error",
+        "noImplicitAnyLet": "warn", // default: "error"
         "noImportAssign": "error",
         "noIrregularWhitespace": "error",
         "noMisleadingCharacterClass": "error",
@@ -135,32 +163,24 @@
         "noRedeclare": "error",
         "noShadowRestrictedNames": "error",
         "noSparseArray": "error",
+        "noThenProperty": "off", // `.then()` is used by Yup
         "noUnsafeDeclarationMerging": "error",
         "noUnsafeNegation": "error",
         "noWith": "error",
+        "useAwait": "error",
         "useGetterReturn": "error",
         "useNamespaceKeyword": "error"
       }
-    },
-    "includes": [
-      "**",
-      "!src/apiClient/*",
-      "!src/api/v1/gen/*",
-      "!src/api/v2/gen/*",
-      "!scripts/*",
-      "!**/*.svg",
-      "!**/*.scss",
-      "!**/*.md",
-      "!**/*.mdx",
-      "!**/*.jpg",
-      "!**/*.png",
-      "!src/index.html",
-      "!**/eslint.config.mjs",
-      "!**/cypress.config.ts",
-      "!**/vite.config.ts",
-      "!.storybook/*",
-      "!src/**/*.gif"
-    ]
+    }
+  },
+
+  // -------------------------------------------------------------------------
+  // Language-specific configurations
+
+  "html": {
+    "formatter": {
+      "selfCloseVoidElements": "always"
+    }
   },
   "javascript": {
     "formatter": {
@@ -173,71 +193,21 @@
       "quoteStyle": "single",
       "attributePosition": "auto",
       "bracketSpacing": true
-    }
+    },
+    "globals": ["assert"]
   },
-  "html": { "formatter": { "selfCloseVoidElements": "always" } },
+
   "overrides": [
-    {
-      "includes": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
-      "linter": {
-        "rules": {
-          "complexity": { "noArguments": "error" },
-          "correctness": {
-            "noConstAssign": "off",
-            "noGlobalObjectCalls": "off",
-            "noInvalidBuiltinInstantiation": "off",
-            "noInvalidConstructorSuper": "off",
-            "noSetterReturn": "off",
-            "noUndeclaredVariables": "off",
-            "noUnreachable": "off",
-            "noUnreachableSuper": "off"
-          },
-          "style": { "useConst": "error" },
-          "suspicious": {
-            "noClassAssign": "off",
-            "noDuplicateClassMembers": "off",
-            "noDuplicateObjectKeys": "off",
-            "noDuplicateParameters": "off",
-            "noFunctionAssign": "off",
-            "noImportAssign": "off",
-            "noRedeclare": "off",
-            "noUnsafeNegation": "off",
-            "noVar": "error",
-            "noWith": "off",
-            "useGetterReturn": "off"
-          }
-        }
-      }
-    },
-    {
-      "includes": ["**/*.tsx", "**/*.ts"],
-      "linter": {
-        "rules": {
-          "complexity": { "noArguments": "off" },
-          "correctness": {
-            "noNodejsModules": "warn",
-            "useExhaustiveDependencies": "warn",
-            "useHookAtTopLevel": "error"
-          },
-          "style": {
-            "noDefaultExport": "error",
-            "noRestrictedTypes": "error",
-            "useBlockStatements": "error",
-            "useConst": "off"
-          },
-          "suspicious": {
-            "noConsole": "error",
-            "noDoubleEquals": "error",
-            "noEmptyBlockStatements": "off",
-            "noExplicitAny": "off",
-            "useAwait": "error"
-          }
-        }
-      }
-    },
+    // -------------------------------------------------------------------------
+    // CSS
+
     {
       "includes": ["**/*.css", "**/*.scss"],
-      "javascript": { "formatter": { "quoteStyle": "double" } }
+      "javascript": {
+        "formatter": {
+          "quoteStyle": "double"
+        }
+      }
     },
 
     // -------------------------------------------------------------------------
@@ -245,7 +215,17 @@
 
     {
       "includes": [
+        ".templatron/**/*.mjs",
         "cypress/**/*.ts",
+        "src/**/__mocks__/*.ts",
+        "src/**/__specs__/*.ts",
+        "src/**/tests/*.ts",
+        "src/**/*.spec.ts",
+        "src/**/*.spec.tsx",
+        // TODO (igabriele, 2025-08-08): We need to move all test-related common files to a dedicated folder.
+        "src/commons/utils/renderWithProviders.tsx",
+        "src/commons/utils/factories/*.ts",
+        "src/vitest.setup.ts",
         "scripts/**/*.ts",
         "vite.config.ts",
         "**/*.d.ts",
@@ -253,12 +233,19 @@
       ],
       "linter": {
         "rules": {
+          "a11y": "off",
           "correctness": {
-            "noNodejsModules": "off"
+            "noNodejsModules": "off",
+            "noUndeclaredVariables": "off"
           },
           "style": {
             "noDefaultExport": "off",
             "noNamespace": "off"
+          },
+          "suspicious": {
+            "noEmptyBlockStatements": "off",
+            "noExportsInTest": "off",
+            "noImplicitAnyLet": "off"
           }
         }
       }

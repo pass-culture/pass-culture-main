@@ -6,7 +6,10 @@ import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactorie
 import { defaultVenueProvider } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { VenueProviderCard, VenueProviderCardProps } from '../VenueProviderCard'
+import {
+  VenueProviderCard,
+  type VenueProviderCardProps,
+} from '../VenueProviderCard'
 
 const renderVenueProviderCard = async (props: VenueProviderCardProps) => {
   renderWithProviders(<VenueProviderCard {...props} />)

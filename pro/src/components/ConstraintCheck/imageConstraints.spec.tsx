@@ -1,6 +1,6 @@
-import { MockInstance } from 'vitest'
+import type { MockInstance } from 'vitest'
 
-import { createImageFile } from '@/commons/utils/testFileHelpers'
+import { createImageFile } from '@/commons/utils/tests/testFileHelpers'
 
 import { getValidatorErrors, imageConstraints } from './imageConstraints'
 

@@ -5,7 +5,7 @@ import * as router from 'react-router'
 import { api } from '@/apiClient/api'
 import {
   CollectiveOfferAllowedAction,
-  GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferResponseModel,
 } from '@/apiClient/v1'
 import * as useOfferer from '@/commons/hooks/swr/useOfferer'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
@@ -17,7 +17,10 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
-import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
+import {
+  OfferEducational,
+  type OfferEducationalProps,
+} from '../OfferEducational'
 
 vi.mock('@/apiClient/api', () => ({
   api: {

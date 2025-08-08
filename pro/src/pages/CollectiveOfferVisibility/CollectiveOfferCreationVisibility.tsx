@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
-import { GetCollectiveOfferResponseModel } from '@/apiClient/v1'
+import type { GetCollectiveOfferResponseModel } from '@/apiClient/v1'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY,
@@ -14,7 +14,7 @@ import { extractInitialVisibilityValues } from '@/commons/core/OfferEducational/
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
 import {
-  MandatoryCollectiveOfferFromParamsProps,
+  type MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'

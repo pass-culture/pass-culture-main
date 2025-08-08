@@ -8,9 +8,9 @@ import { getOfferStockFactory } from '@/commons/utils/factories/individualApiFac
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
-  EditStockFormValues,
+  type EditStockFormValues,
   StocksCalendarTableEditStock,
-  StocksCalendarTableEditStockProps,
+  type StocksCalendarTableEditStockProps,
 } from '../StocksCalendarTableEditStock'
 
 function renderStocksCalendarTableEditStock(

@@ -7,7 +7,7 @@ import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import { BankAccountResponseModel } from '@/apiClient/v1'
+import type { BankAccountResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { defaultBankAccount } from '@/commons/utils/factories/individualApiFactories'
@@ -16,7 +16,7 @@ import {
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 

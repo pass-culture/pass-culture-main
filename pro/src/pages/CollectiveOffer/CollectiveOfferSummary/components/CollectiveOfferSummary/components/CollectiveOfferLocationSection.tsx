@@ -1,10 +1,10 @@
 import {
   CollectiveLocationType,
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
+  type GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import {
-  Description,
+  type Description,
   SummaryDescriptionList,
 } from '@/components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'

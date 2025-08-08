@@ -1,7 +1,8 @@
 import cn from 'classnames'
-import React, { ChangeEvent, useRef, useState } from 'react'
+import type React from 'react'
+import { type ChangeEvent, useRef, useState } from 'react'
 
-import {
+import type {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from '@/apiClient/v1'
@@ -13,7 +14,7 @@ import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import fullSortIcon from '@/icons/full-sort.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import { BookingsFilters } from '../types'
+import type { BookingsFilters } from '../types'
 import {
   COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS,
   INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS,

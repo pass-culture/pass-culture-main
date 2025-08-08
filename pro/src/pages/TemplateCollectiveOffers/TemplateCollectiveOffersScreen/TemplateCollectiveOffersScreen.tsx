@@ -1,19 +1,19 @@
 import { useState } from 'react'
 
-import {
+import type {
   CollectiveOfferResponseModel,
   GetOffererResponseModel,
 } from '@/apiClient/v1'
-import { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
+import type { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
 import {
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   DEFAULT_PAGE,
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
 } from '@/commons/core/Offers/constants'
-import { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
+import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'

@@ -1,6 +1,6 @@
-import { PropsWithChildren, useState } from 'react'
+import { type PropsWithChildren, useState } from 'react'
 
-import { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
@@ -14,7 +14,7 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { onSubmit } from '../../form/onSubmit'
-import { RecurrenceFormValues } from '../../form/types'
+import type { RecurrenceFormValues } from '../../form/types'
 import { RecurrenceForm } from '../../RecurrenceForm'
 import styles from './StocksCalendarLayout.module.scss'
 

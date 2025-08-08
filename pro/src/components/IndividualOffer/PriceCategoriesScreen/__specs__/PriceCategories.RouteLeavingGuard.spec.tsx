@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { generatePath, Route, Routes } from 'react-router'
 
 import { api } from '@/apiClient/api'
-import {
+import type {
   GetIndividualOfferResponseModel,
   GetIndividualOfferWithAddressResponseModel,
 } from '@/apiClient/v1'
@@ -18,7 +18,7 @@ import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 
 import {
   PriceCategoriesScreen,
-  PriceCategoriesScreenProps,
+  type PriceCategoriesScreenProps,
 } from '../PriceCategoriesScreen'
 
 const renderPriceCategories = ({

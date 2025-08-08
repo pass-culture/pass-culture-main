@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 
 import { TextArea } from './TextArea'

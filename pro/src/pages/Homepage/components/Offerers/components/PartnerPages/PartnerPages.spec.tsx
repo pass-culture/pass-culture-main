@@ -13,7 +13,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import * as utils from '@/commons/utils/savedPartnerPageVenueId'
 import { SAVED_HOME_PAGE_VENUE_ID_KEYS } from '@/commons/utils/savedPartnerPageVenueId'
 
-import { PartnerPages, PartnerPagesProps } from './PartnerPages'
+import { PartnerPages, type PartnerPagesProps } from './PartnerPages'
 
 const mockOfferer = defaultGetOffererResponseModel
 

@@ -1,13 +1,13 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { type ChangeEvent, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import {
-  GetIndividualOfferWithAddressResponseModel,
-  GetOfferStockResponseModel,
+  type GetIndividualOfferWithAddressResponseModel,
+  type GetOfferStockResponseModel,
   SubcategoryIdEnum,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -45,7 +45,7 @@ import { ActivationCodeFormDialog } from './ActivationCodeFormDialog/ActivationC
 import { STOCK_THING_FORM_DEFAULT_VALUES } from './constants'
 import styles from './StockThing.module.scss'
 import { submitToApi } from './submitToApi'
-import { StockThingFormValues } from './types'
+import type { StockThingFormValues } from './types'
 import { buildInitialValues } from './utils/buildInitialValues'
 import { getFormReadOnlyFields } from './utils/getFormReadOnlyFields'
 import { getValidationSchema } from './validationSchema'

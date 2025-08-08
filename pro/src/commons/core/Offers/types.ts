@@ -1,11 +1,11 @@
-import {
+import type {
   CollectiveOfferDisplayedStatus,
   EacFormat,
   OfferStatus,
 } from '@/apiClient/v1'
-import { CropParams } from '@/commons/utils/imageUploadTypes'
+import type { CropParams } from '@/commons/utils/imageUploadTypes'
 
-import { ALL_FORMATS, ALL_STATUS } from './constants'
+import type { ALL_FORMATS, ALL_STATUS } from './constants'
 
 export type SearchFiltersParams = {
   nameOrIsbn: string

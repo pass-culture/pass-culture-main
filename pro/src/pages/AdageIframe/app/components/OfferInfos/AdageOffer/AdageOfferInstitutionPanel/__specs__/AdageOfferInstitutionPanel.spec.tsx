@@ -9,7 +9,7 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 
 import {
   AdageOfferInstitutionPanel,
-  AdageOfferInstitutionPanelProps,
+  type AdageOfferInstitutionPanelProps,
 } from '../AdageOfferInstitutionPanel'
 
 function renderAdageOfferInstitutionPanel(

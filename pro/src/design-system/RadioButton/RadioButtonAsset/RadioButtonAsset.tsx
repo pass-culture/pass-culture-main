@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 
-import { Tag, TagProps } from '@/design-system/Tag/Tag'
+import { Tag, type TagProps } from '@/design-system/Tag/Tag'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './RadioButtonAsset.module.scss'

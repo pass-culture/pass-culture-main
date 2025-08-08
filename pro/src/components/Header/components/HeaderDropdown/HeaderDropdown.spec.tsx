@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import {
+import type {
   GetOffererNameResponseModel,
   GetOffererResponseModel,
 } from '@/apiClient/v1'
@@ -14,7 +14,7 @@ import {
 import { currentOffererFactory } from '@/commons/utils/factories/storeFactories'
 import { hardRefresh } from '@/commons/utils/hardRefresh'
 import {
-  RenderWithProvidersOptions,
+  type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { locallyStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'

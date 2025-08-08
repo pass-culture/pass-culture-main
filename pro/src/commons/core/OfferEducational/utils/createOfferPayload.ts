@@ -1,10 +1,10 @@
 import {
   CollectiveLocationType,
-  DateRangeOnCreateModel,
+  type DateRangeOnCreateModel,
   OfferAddressType,
   OfferContactFormEnum,
-  PostCollectiveOfferBodyModel,
-  PostCollectiveOfferTemplateBodyModel,
+  type PostCollectiveOfferBodyModel,
+  type PostCollectiveOfferTemplateBodyModel,
 } from '@/apiClient/v1'
 import {
   formatBrowserTimezonedDateAsUTC,
@@ -12,7 +12,7 @@ import {
 } from '@/commons/utils/date'
 import { buildDateTime } from '@/components/IndividualOffer/StocksEventEdition/serializers'
 
-import { OfferEducationalFormValues } from '../types'
+import type { OfferEducationalFormValues } from '../types'
 import { parseDuration } from './parseDuration'
 import { serializeParticipants } from './serializeParticipants'
 

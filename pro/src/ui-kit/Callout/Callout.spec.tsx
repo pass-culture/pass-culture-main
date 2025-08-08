@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
 
-import { Callout, CalloutProps } from './Callout'
+import { Callout, type CalloutProps } from './Callout'
 
 describe('Callout', () => {
   const props: CalloutProps = {

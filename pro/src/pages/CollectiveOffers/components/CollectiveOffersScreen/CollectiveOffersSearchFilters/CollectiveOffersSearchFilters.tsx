@@ -1,9 +1,9 @@
-import { Dispatch, FormEvent, SetStateAction } from 'react'
+import type { Dispatch, FormEvent, SetStateAction } from 'react'
 
 import {
   CollectiveOfferDisplayedStatus,
   EacFormat,
-  GetOffererResponseModel,
+  type GetOffererResponseModel,
 } from '@/apiClient/v1'
 import {
   ALL_FORMATS_OPTION,
@@ -11,11 +11,11 @@ import {
   COLLECTIVE_OFFER_TYPES_OPTIONS,
 } from '@/commons/core/Offers/constants'
 import { useDefaultCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useDefaultCollectiveSearchFilters'
-import {
+import type {
   CollectiveOfferTypeEnum,
   CollectiveSearchFiltersParams,
 } from '@/commons/core/Offers/types'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OffersTableSearch } from '@/components/OffersTable/OffersTableSearch/OffersTableSearch'

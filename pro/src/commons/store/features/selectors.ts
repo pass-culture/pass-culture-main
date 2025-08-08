@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit'
 
-import { RootState } from '@/commons/store/rootReducer'
+import type { RootState } from '@/commons/store/rootReducer'
 
 export const isFeatureActive = (
   state: RootState,

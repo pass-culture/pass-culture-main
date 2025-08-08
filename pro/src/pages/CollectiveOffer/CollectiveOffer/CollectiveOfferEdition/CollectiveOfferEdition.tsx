@@ -9,7 +9,7 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { OfferEducational } from '../components/OfferEducational/OfferEducational'
 import {
-  MandatoryCollectiveOfferFromParamsProps,
+  type MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from '../components/OfferEducational/useCollectiveOfferFromParams'
 import { useOfferEducationalFormData } from '../components/OfferEducational/useOfferEducationalFormData'

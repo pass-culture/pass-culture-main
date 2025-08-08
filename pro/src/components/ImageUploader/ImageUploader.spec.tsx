@@ -4,7 +4,7 @@ import { forwardRef } from 'react'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { ImageUploader, ImageUploaderProps } from './ImageUploader'
+import { ImageUploader, type ImageUploaderProps } from './ImageUploader'
 
 vi.mock('react-avatar-editor', () => {
   const MockAvatarEditor = forwardRef((props, ref) => {

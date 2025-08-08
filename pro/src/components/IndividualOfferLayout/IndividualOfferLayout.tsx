@@ -3,7 +3,7 @@ import { Navigate, useLocation, useNavigate } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import {
-  GetIndividualOfferWithAddressResponseModel,
+  type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
 } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'

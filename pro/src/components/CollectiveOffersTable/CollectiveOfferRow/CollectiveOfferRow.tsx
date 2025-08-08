@@ -2,10 +2,10 @@ import classNames from 'classnames'
 
 import {
   CollectiveOfferDisplayedStatus,
-  CollectiveOfferResponseModel,
+  type CollectiveOfferResponseModel,
 } from '@/apiClient/v1'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
+import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { CheckboxCell } from '@/components/OffersTable/Cells/CheckboxCell'

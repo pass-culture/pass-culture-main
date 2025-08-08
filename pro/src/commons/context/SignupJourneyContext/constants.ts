@@ -1,4 +1,4 @@
-import { ActivityContext } from './SignupJourneyContext'
+import type { ActivityContext } from './SignupJourneyContext'
 
 export const DEFAULT_ACTIVITY_VALUES: ActivityContext = {
   venueTypeCode: '',

@@ -8,14 +8,14 @@ import { FormProvider, useForm } from 'react-hook-form'
 import {
   CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
+  type GetCollectiveOfferResponseModel,
+  type GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { MAX_PRICE_DETAILS_LENGTH } from '@/commons/core/OfferEducational/constants'
 import {
   isCollectiveOffer,
   Mode,
-  OfferEducationalStockFormValues,
+  type OfferEducationalStockFormValues,
 } from '@/commons/core/OfferEducational/types'
 import { NBSP } from '@/commons/core/shared/constants'
 import { isDateValid } from '@/commons/utils/date'

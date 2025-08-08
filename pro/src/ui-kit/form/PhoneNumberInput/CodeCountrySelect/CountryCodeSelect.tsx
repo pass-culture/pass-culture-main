@@ -1,10 +1,10 @@
 import cn from 'classnames'
-import { ChangeEvent, FocusEvent } from 'react'
+import type { ChangeEvent, FocusEvent } from 'react'
 
 import fullRightIcon from '@/icons/full-right.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import { PhoneCodeSelectOption } from '../constants'
+import type { PhoneCodeSelectOption } from '../constants'
 import styles from './CountryCodeSelect.module.scss'
 
 interface CountryCodeSelectProps {

@@ -1,7 +1,7 @@
-import {
+import type {
   CategoryResponseModel,
   GetIndividualOfferResponseModel,
-  type GetIndividualOfferWithAddressResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
   GetMusicTypesResponse,
   SubcategoryResponseModel,
 } from '@/apiClient/v1'

@@ -1,8 +1,8 @@
 import { useFormContext } from 'react-hook-form'
 
 import {
-  GetActiveEANOfferResponseModel,
-  VenueListItemResponseModel,
+  type GetActiveEANOfferResponseModel,
+  type VenueListItemResponseModel,
   WithdrawalTypeEnum,
 } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -27,7 +27,7 @@ import {
   ticketWithdrawalHourOptions,
   ticketWithdrawalTypeRadios,
 } from '../../commons/constants'
-import { UsefulInformationFormValues } from '../../commons/types'
+import type { UsefulInformationFormValues } from '../../commons/types'
 import { getFormReadOnlyFields } from '../../commons/utils'
 import { OfferLocation } from '../OfferLocation/OfferLocation'
 import { OfferRefundWarning } from './OfferRefundWarning'

@@ -5,13 +5,13 @@ import * as yup from 'yup'
 import {
   CollectiveLocationType,
   OfferAddressType,
-  StudentLevels,
+  type StudentLevels,
 } from '@/apiClient/v1'
 import {
   MAX_DESCRIPTION_LENGTH,
   MAX_PRICE_DETAILS_LENGTH,
 } from '@/commons/core/OfferEducational/constants'
-import {
+import type {
   OfferDatesType,
   OfferEducationalFormValues,
 } from '@/commons/core/OfferEducational/types'

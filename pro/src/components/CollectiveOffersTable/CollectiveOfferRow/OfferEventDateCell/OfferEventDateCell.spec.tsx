@@ -5,7 +5,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   OfferEventDateCell,
-  OfferEventDateCellProps,
+  type OfferEventDateCellProps,
 } from './OfferEventDateCell'
 
 const renderOfferNameCell = (props: OfferEventDateCellProps) =>
