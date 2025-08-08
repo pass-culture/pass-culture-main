@@ -813,6 +813,7 @@ class GetBatchFinanceIncidentValidationFormTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form={"object_ids": "39,40"},
+            headers={"hx-request": "true"},
         )
 
         assert response.status_code == 200
@@ -839,12 +840,13 @@ class GetBatchFinanceIncidentValidationFormTest(PostEndpointHelper):
             form={
                 "object_ids": f"{incident1.id},{incident2.id},{incident3.id}",
             },
+            headers={"hx-request": "true"},
         )
 
         assert response.status_code == 200
         assert (
             """Seuls les incidents au statut "créé" peuvent faire l'objet d'une validation"""
-            in html_parser.extract_alert(response.data)
+            in html_parser.content_as_text(response.data)
         )
 
     def test_validate_finance_incidents_with_different_type(self, authenticated_client):
@@ -860,12 +862,13 @@ class GetBatchFinanceIncidentValidationFormTest(PostEndpointHelper):
             form={
                 "object_ids": f"{incident1.id},{incident2.id}",
             },
+            headers={"hx-request": "true"},
         )
 
         assert response.status_code == 200
         assert (
             "Impossible de valider des trop perçus et des gestes commerciaux dans la même action"
-            in html_parser.extract_alert(response.data)
+            in html_parser.content_as_text(response.data)
         )
 
 
@@ -893,6 +896,7 @@ class GetBatchFinanceIncidentCancellationFormTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form={"object_ids": f"{incident1.id},{incident2.id}"},
+            headers={"hx-request": "true"},
         )
 
         assert response.status_code == 200
@@ -916,12 +920,13 @@ class GetBatchFinanceIncidentCancellationFormTest(PostEndpointHelper):
             form={
                 "object_ids": f"{incident1.id},{incident2.id},{incident3.id}",
             },
+            headers={"hx-request": "true"},
         )
 
         assert response.status_code == 200
         assert (
             """Seuls les incidents au statut "créé" peuvent faire l'objet d'une annulation"""
-            in html_parser.extract_alert(response.data)
+            in html_parser.content_as_text(response.data)
         )
 
     def test_cancel_finance_incidents_with_different_type(self, authenticated_client):
@@ -935,12 +940,13 @@ class GetBatchFinanceIncidentCancellationFormTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form={"object_ids": f"{incident1.id},{incident2.id}"},
+            headers={"hx-request": "true"},
         )
 
         assert response.status_code == 200
         assert (
             "Impossible de rejeter des trop perçus et des gestes commerciaux dans la même action"
-            in html_parser.extract_alert(response.data)
+            in html_parser.content_as_text(response.data)
         )
 
 
