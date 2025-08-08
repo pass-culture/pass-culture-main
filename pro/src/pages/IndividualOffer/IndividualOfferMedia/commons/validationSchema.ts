@@ -1,12 +1,7 @@
 import * as yup from 'yup'
 
+import { isYoutubeValid } from './isYoutubeValid'
 import { IndividualOfferMediaFormValues } from './types'
-
-// This regex is a replicate of what exists backend-side.
-// Mind that frontend / backend controls regarding video url always match.
-const youtubeVideoRegex = new RegExp(
-  /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?([a-zA-Z0-9_-]{11})/
-)
 
 export const getValidationSchema = () => {
   return yup.object<IndividualOfferMediaFormValues>().shape({
@@ -17,8 +12,12 @@ export const getValidationSchema = () => {
         name: 'videoUrl',
         message:
           'Veuillez renseigner une URL provenant de la plateforme Youtube',
-        test: (videoUrl?: string) =>
-          videoUrl ? youtubeVideoRegex.exec(videoUrl) !== null : true,
+        test: (videoUrl?: string) => {
+          if (!videoUrl) {
+            return true
+          }
+          return isYoutubeValid(videoUrl)
+        },
       })
       .nullable(),
   })
