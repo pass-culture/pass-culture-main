@@ -97,3 +97,37 @@ def test_move_batch_offer(_extract_invalid_venues_to_csv_patch):
         .actionType
         == history_models.ActionType.VENUE_REGULARIZATION
     )
+
+
+@pytest.mark.features(VENUE_REGULARIZATION=True)
+@mock.patch("pcapi.scripts.move_offer.move_batch_offer._extract_invalid_venues_to_csv")
+def test_move_batch_offer_destination_venue_already_permanent_no_action_history_created(
+    _extract_invalid_venues_to_csv_patch,
+):
+    _extract_invalid_venues_to_csv_patch.return_value = None
+    origin_venue = offerers_factories.VenueFactory(siret=None, comment="coucou")
+
+    offer = offers_factories.OfferFactory(venue=origin_venue)
+
+    destination_venue = offerers_factories.VenueFactory(managingOfferer=origin_venue.managingOfferer, isPermanent=True)
+
+    origin_venue_id = origin_venue.id
+
+    _move_all_venue_offers(dry_run=False, origin=origin_venue.id, destination=destination_venue.id)
+
+    db.session.refresh(offer)
+    assert offer.venue == destination_venue
+
+    assert db.session.query(history_models.ActionHistory).count() == 2
+    assert (
+        db.session.query(history_models.ActionHistory)
+        .filter(history_models.ActionHistory.venueId == origin_venue_id)[0]
+        .actionType
+        == history_models.ActionType.VENUE_REGULARIZATION
+    )
+    assert (
+        db.session.query(history_models.ActionHistory)
+        .filter(history_models.ActionHistory.venueId == origin_venue_id)[1]
+        .actionType
+        == history_models.ActionType.VENUE_SOFT_DELETED
+    )
