@@ -1,5 +1,4 @@
 import logging
-from datetime import time
 
 import sqlalchemy as sqla
 import sqlalchemy.orm as sa_orm
@@ -20,12 +19,12 @@ from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers import validation
-from pcapi.core.opening_hours import schemas as opening_hours_schemas
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.utils import first_or_404
 from pcapi.models.utils import get_or_404
+from pcapi.routes import utils as shared_utils
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
@@ -698,30 +697,6 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
     return offers_serialize.GetProductInformations.from_orm(product=product)
 
 
-def _format_offer_opening_hours(
-    opening_hours: list[offerers_models.OpeningHours] | None,
-) -> opening_hours_schemas.WeekdayOpeningHoursTimespans:
-    """Format DB data to the expected pydantic model format
-
-    From: [NumericRange(600, 720), NumericRange(780, 1200)]
-    To: [["10:00", "12:00"], ["13:00", "20:00"]]
-    """
-    formatted: dict[str, list[tuple[str, str]] | None] = {weekday.value: None for weekday in offerers_models.Weekday}
-    for oh in opening_hours or []:
-        timespans = []
-        for ts in oh.timespan:
-            lower = int(ts.lower)
-            upper = int(ts.upper)
-
-            start = time(lower // 60, lower % 60).isoformat(timespec="minutes")
-            end = time(upper // 60, upper % 60).isoformat(timespec="minutes")
-
-            timespans.append((start, end))
-        formatted[oh.weekday.value] = timespans
-
-    return opening_hours_schemas.WeekdayOpeningHoursTimespans(**formatted)  # type: ignore[arg-type]
-
-
 @private_api.route("/offers/<int:offer_id>/opening-hours", methods=["PATCH"])
 @login_required
 @spectree_serialize(
@@ -754,7 +729,7 @@ def upsert_offer_opening_hours(
     opening_hours_api.upsert_opening_hours(offer, opening_hours=body.openingHours)
 
     offer = offers_repository.get_offer_by_id(offer.id, load_options={"openingHours"})
-    opening_hours = _format_offer_opening_hours(offer.openingHours)
+    opening_hours = shared_utils.format_offer_opening_hours(offer.openingHours)
     return offers_schemas.OfferOpeningHoursSchema(openingHours=opening_hours)
 
 
@@ -770,5 +745,5 @@ def get_offer_opening_hours(offer_id: int) -> offers_schemas.OfferOpeningHoursSc
     offer = offers_repository.get_offer_by_id(offer_id, load_options={"venue", "openingHours"})
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    opening_hours = _format_offer_opening_hours(offer.openingHours)
+    opening_hours = shared_utils.format_offer_opening_hours(offer.openingHours)
     return offers_schemas.OfferOpeningHoursSchema(openingHours=opening_hours)

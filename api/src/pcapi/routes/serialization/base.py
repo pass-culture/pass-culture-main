@@ -48,7 +48,6 @@ class BaseVenueResponse(BaseModel):
     longitude: float | None
     postalCode: str | None
     publicName: str | None
-    openingHours: dict | None
     withdrawalDetails: str | None
 
     class Config:

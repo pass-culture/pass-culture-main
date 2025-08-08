@@ -67,6 +67,9 @@ class VenueResponse(base.BaseVenueResponse):
     bannerMeta: offerers_schemas.BannerMetaModel | None
     timezone: str
     contact: VenueContactModel | None
+    # TODO(jbaudet): use WeekdayOpeningHoursTimespans model/schema instead
+    # but check that native app is ready for this data model update
+    openingHours: dict | None
 
     class Config:
         getter_dict = VenueResponseGetterDict
