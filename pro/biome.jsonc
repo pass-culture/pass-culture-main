@@ -46,7 +46,9 @@
       "**",
       "!build/**",
       "!coverage/**",
+      "!docs-build/**",
       "!node_modules/**",
+      "!.vitest_cache/**",
       "!scripts/customRequest.ts",
       "!src/apiClient/adage/**",
       "!src/apiClient/v1/**"

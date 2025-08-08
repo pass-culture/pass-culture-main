@@ -1,8 +1,9 @@
+import { isEqual } from 'commons/utils/isEqual'
+
 import {
   ListCollectiveOffersQueryModel,
   ListOffersQueryModel,
 } from '@/apiClient/v1'
-import { isEqual } from 'commons/utils/isEqual'
 
 import { DEFAULT_SEARCH_FILTERS } from '../constants'
 import { CollectiveSearchFiltersParams, SearchFiltersParams } from '../types'
