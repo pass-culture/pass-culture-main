@@ -23,15 +23,10 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'
 
 export const CollectiveOffers = (): JSX.Element => {
-  const isToggleAndMemorizeFiltersEnabled = useActiveFeature(
-    'WIP_COLLAPSED_MEMORIZED_FILTERS'
-  )
   const urlSearchFilters = useQueryCollectiveSearchFilters()
   const { storedFilters } = getStoredFilterConfig('collective')
   const finalSearchFilters = {
-    ...(isToggleAndMemorizeFiltersEnabled
-      ? (storedFilters as Partial<CollectiveSearchFiltersParams>)
-      : {}),
+    ...(storedFilters as Partial<CollectiveSearchFiltersParams>),
     ...urlSearchFilters,
   }
 

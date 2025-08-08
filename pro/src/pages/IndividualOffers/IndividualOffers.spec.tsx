@@ -121,6 +121,10 @@ describe('IndividualOffers', () => {
     vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
   })
 
+  afterEach(() => {
+    window.sessionStorage.clear()
+  })
+
   describe('filters', () => {
     it('should display only selectable categories on filters', async () => {
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
@@ -835,16 +839,18 @@ describe('IndividualOffers', () => {
       )
     })
 
-    it('when clicking on "Réinitialiser les filtres"', async () => {
+    it('when clicking on "Réinitialiser les filtres" - except nameOrIsbn', async () => {
       vi.spyOn(api, 'listOffers')
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
 
       // 3rd call is not made if filters are strictly the same
-      const filters = {
+      const nameOrIsbn = 'Any word'
+
+      await renderIndividualOffers({
+        nameOrIsbn,
         venueId: '666',
-      }
-      await renderIndividualOffers(filters)
+      })
 
       const offererAddressOption = screen.getByLabelText('Localisation')
 
@@ -867,7 +873,7 @@ describe('IndividualOffers', () => {
         expect(api.listOffers).toHaveBeenCalledTimes(2)
       })
       expect(api.listOffers).toHaveBeenCalledWith(
-        undefined,
+        nameOrIsbn,
         '1',
         undefined,
         '666',
@@ -886,7 +892,7 @@ describe('IndividualOffers', () => {
       })
       expect(api.listOffers).toHaveBeenNthCalledWith(
         3,
-        undefined,
+        nameOrIsbn,
         '1',
         undefined,
         undefined,
@@ -897,36 +903,6 @@ describe('IndividualOffers', () => {
         undefined,
         undefined
       )
-    })
-
-    it('when clicking on "Réinitialiser les filtres" & WIP_COLLAPSED_MEMORIZED_FILTERS enabled - except nameOrIsbn', async () => {
-      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
-      const nameOrIsbn = 'Any word'
-
-      await renderIndividualOffers(
-        {
-          nameOrIsbn,
-          venueId: '666',
-        },
-        ['WIP_COLLAPSED_MEMORIZED_FILTERS']
-      )
-
-      await userEvent.click(screen.getByText('Réinitialiser les filtres'))
-
-      await waitFor(() => {
-        expect(api.listOffers).toHaveBeenLastCalledWith(
-          nameOrIsbn,
-          '1',
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined
-        )
-      })
     })
   })
 

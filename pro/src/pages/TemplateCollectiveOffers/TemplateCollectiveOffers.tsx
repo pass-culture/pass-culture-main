@@ -17,23 +17,17 @@ import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeC
 import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializer'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { getStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
 import { TemplateCollectiveOffersScreen } from '@/pages/TemplateCollectiveOffers/TemplateCollectiveOffersScreen/TemplateCollectiveOffersScreen'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 export const TemplateCollectiveOffers = (): JSX.Element => {
-  const isToggleAndMemorizeFiltersEnabled = useActiveFeature(
-    'WIP_COLLAPSED_MEMORIZED_FILTERS'
-  )
   const urlSearchFilters = useQueryCollectiveSearchFilters()
   const { storedFilters } = getStoredFilterConfig('template')
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...(isToggleAndMemorizeFiltersEnabled
-      ? (storedFilters as Partial<CollectiveSearchFiltersParams>)
-      : {}),
+    ...(storedFilters as Partial<CollectiveSearchFiltersParams>),
   }
   const offererId = useSelector(selectCurrentOffererId)?.toString()
 

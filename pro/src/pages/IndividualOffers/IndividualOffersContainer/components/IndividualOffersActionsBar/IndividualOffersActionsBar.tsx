@@ -11,7 +11,6 @@ import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from '@/commons/core/Offers/types'
 import { serializeApiFilters } from '@/commons/core/Offers/utils/serializer'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
@@ -132,16 +131,11 @@ export const IndividualOffersActionsBar = ({
   canDeactivate,
   searchButtonRef,
 }: IndividualOffersActionsBarProps): JSX.Element => {
-  const isToggleAndMemorizeFiltersEnabled = useActiveFeature(
-    'WIP_COLLAPSED_MEMORIZED_FILTERS'
-  )
   const urlSearchFilters = useQuerySearchFilters()
   const { storedFilters } = getStoredFilterConfig('individual')
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...(isToggleAndMemorizeFiltersEnabled
-      ? (storedFilters as Partial<SearchFiltersParams>)
-      : {}),
+    ...(storedFilters as Partial<SearchFiltersParams>),
   }
 
   const { mutate } = useSWRConfig()

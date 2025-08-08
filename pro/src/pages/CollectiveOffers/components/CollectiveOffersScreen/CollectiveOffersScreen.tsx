@@ -64,9 +64,6 @@ export const CollectiveOffersScreen = ({
   const searchButtonRef = useRef<HTMLButtonElement>(null)
 
   const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
-  const isCollapsedMemorizedFiltersEnabled = useActiveFeature(
-    'WIP_COLLAPSED_MEMORIZED_FILTERS'
-  )
 
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -166,7 +163,7 @@ export const CollectiveOffersScreen = ({
         applyFilters={applyFilters}
         disableAllFilters={userHasNoOffers}
         offerer={offerer}
-        resetFilters={() => resetFilters(!isCollapsedMemorizedFiltersEnabled)}
+        resetFilters={() => resetFilters(false)}
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
         venues={venues}

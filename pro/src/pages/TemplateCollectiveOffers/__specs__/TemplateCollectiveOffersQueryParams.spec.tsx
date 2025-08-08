@@ -105,6 +105,10 @@ describe('route TemplateCollectiveOffers', () => {
     })
   })
 
+  afterEach(() => {
+    window.sessionStorage.clear()
+  })
+
   describe('url query params', () => {
     it('should have page value when page value is not first page', async () => {
       const offersRecap = Array.from({ length: 11 }, () =>
