@@ -72,6 +72,15 @@ class BookingOverPaymentIncidentForm(empty_forms.BatchForm, BaseIncidentCreation
         use_locale=True,
         validators=[Optional()],
     )
+    percent = fields.PCDecimalField(
+        "Pourcentage du montant des réservations à récupérer",
+        default=100,
+        validators=[
+            Optional(),
+            NumberRange(min=0, max=100, message="Le pourcentage doit être compris entre 0 %% et 100 %%."),
+        ],
+        use_locale=True,
+    )
 
 
 class IncidentValidationForm(FlaskForm):
