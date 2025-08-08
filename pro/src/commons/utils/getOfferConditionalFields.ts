@@ -1,29 +1,27 @@
 import { SubcategoryResponseModel } from '@/apiClient/v1'
 
-interface GetOfferConditionalFieldsProps {
-  offerSubCategory?: SubcategoryResponseModel | null
-  receiveNotificationEmails?: boolean | null
-}
-
 export const getOfferConditionalFields = ({
-  offerSubCategory = null,
+  offerSubcategory,
   receiveNotificationEmails = null,
-}: GetOfferConditionalFieldsProps): string[] => {
+}: {
+  offerSubcategory: SubcategoryResponseModel
+  receiveNotificationEmails?: boolean | null
+}): string[] => {
   const offerConditionalFields = []
 
-  if (offerSubCategory?.isEvent) {
+  if (offerSubcategory.isEvent) {
     offerConditionalFields.push('durationMinutes')
   }
 
-  if (offerSubCategory?.canBeDuo) {
+  if (offerSubcategory.canBeDuo) {
     offerConditionalFields.push('isDuo')
   }
 
-  if (offerSubCategory?.conditionalFields.includes('musicType')) {
+  if (offerSubcategory.conditionalFields.includes('musicType')) {
     offerConditionalFields.push('musicSubType')
   }
 
-  if (offerSubCategory?.conditionalFields.includes('showType')) {
+  if (offerSubcategory.conditionalFields.includes('showType')) {
     offerConditionalFields.push('showSubType')
   }
 
@@ -31,7 +29,7 @@ export const getOfferConditionalFields = ({
     offerConditionalFields.push('bookingEmail')
   }
 
-  if (offerSubCategory?.canBeWithdrawable) {
+  if (offerSubcategory.canBeWithdrawable) {
     offerConditionalFields.push('withdrawalType')
     offerConditionalFields.push('withdrawalDelay')
     offerConditionalFields.push('bookingContact')

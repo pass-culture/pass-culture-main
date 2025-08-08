@@ -50,9 +50,6 @@ const renderUsefulInformationScreen = (
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getVenues: vi.fn().mockResolvedValue({
-      venues: [],
-    }),
     patchOffer: vi.fn(),
   },
 }))
@@ -85,54 +82,51 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
       onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
     }),
   ]
-  const contextValue = individualOfferContextValuesFactory({
+  const contextValuesBase = individualOfferContextValuesFactory({
     categories,
     subCategories,
   })
 
+  const venues = [
+    {
+      ...venueListItemFactory({
+        id: 1,
+        publicName: 'Lieu Nom Public Pour Test',
+      }),
+      address: {
+        banId: '75101_9575_00003',
+        city: 'Paris',
+        id: 945,
+        id_oa: 1,
+        inseeCode: '75056',
+        isLinkedToVenue: false,
+        isManualEdition: false,
+        label: 'MINISTERE DE LA CULTURE',
+        latitude: 48.87171,
+        longitude: 2.30829,
+        postalCode: '75001',
+        street: '3 Rue de Valois',
+      },
+    },
+  ]
   const offlineOfferProps: IndividualOfferInformationsScreenProps = {
     offer: getIndividualOfferFactory({
       id: 3,
       subcategoryId: 'OFFLINE_SUBCATEGORY' as SubcategoryIdEnum,
       venue: getOfferVenueFactory({ id: 1 }),
     }),
+    venues,
   }
   const onlineOfferProps: IndividualOfferInformationsScreenProps = {
     offer: {
       ...offlineOfferProps.offer,
       subcategoryId: 'ONLINE_SUBCATEGORY' as SubcategoryIdEnum,
     },
+    venues,
   }
 
-  beforeEach(() => {
-    vi.spyOn(api, 'getVenues').mockResolvedValue({
-      venues: [
-        {
-          ...venueListItemFactory({
-            id: 1,
-            publicName: 'Lieu Nom Public Pour Test',
-          }),
-          address: {
-            banId: '75101_9575_00003',
-            city: 'Paris',
-            id: 945,
-            id_oa: 1,
-            inseeCode: '75056',
-            isLinkedToVenue: false,
-            isManualEdition: false,
-            label: 'MINISTERE DE LA CULTURE',
-            latitude: 48.87171,
-            longitude: 2.30829,
-            postalCode: '75001',
-            street: '3 Rue de Valois',
-          },
-        },
-      ],
-    })
-  })
-
   it('should render the component', async () => {
-    renderUsefulInformationScreen(offlineOfferProps, contextValue)
+    renderUsefulInformationScreen(offlineOfferProps, contextValuesBase)
 
     expect(
       await screen.findByRole('heading', { name: 'Retrait de l’offre' })
@@ -159,7 +153,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
   })
 
   it('should display offer location if venue is physical', async () => {
-    renderUsefulInformationScreen(offlineOfferProps, contextValue)
+    renderUsefulInformationScreen(offlineOfferProps, contextValuesBase)
 
     // Block should be visible at this point
     expect(
@@ -205,7 +199,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
         id: 12,
       })
     )
-    renderUsefulInformationScreen(offlineOfferProps, contextValue)
+    renderUsefulInformationScreen(offlineOfferProps, contextValuesBase)
 
     const withdrawalField = await screen.findByLabelText(
       /Informations de retrait/
@@ -238,17 +232,11 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
       audioDisabilityCompliant: true,
       bookingContact: undefined,
       bookingEmail: null,
-      description: undefined,
-      durationMinutes: undefined,
-      extraData: undefined,
-      isDuo: undefined,
       isNational: true,
       mentalDisabilityCompliant: false,
       motorDisabilityCompliant: true,
-      name: undefined,
       shouldSendMail: true,
       externalTicketOfficeUrl: 'https://chuck.no',
-      url: undefined,
       visualDisabilityCompliant: false,
       withdrawalDelay: undefined,
       withdrawalDetails: 'My information',
@@ -257,25 +245,30 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
   })
 
   it('should display not reimbursed banner when subcategory is not reimbursed', async () => {
-    renderUsefulInformationScreen(
-      offlineOfferProps,
-      individualOfferContextValuesFactory({
-        categories: [
-          categoryFactory({
-            id: 'A',
-            isSelectable: true,
-          }),
-        ],
-        subCategories: [
-          subcategoryFactory({
-            categoryId: 'A',
-            // should be same as subcategoryId in offer
-            id: SubcategoryIdEnum.SEANCE_CINE,
-            reimbursementRule: REIMBURSEMENT_RULES.NOT_REIMBURSED,
-          }),
-        ],
-      })
-    )
+    const props: IndividualOfferInformationsScreenProps = {
+      ...offlineOfferProps,
+      offer: {
+        ...offlineOfferProps.offer,
+        subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
+      },
+    }
+    const contextValues = individualOfferContextValuesFactory({
+      categories: [
+        categoryFactory({
+          id: 'A',
+          isSelectable: true,
+        }),
+      ],
+      subCategories: [
+        subcategoryFactory({
+          categoryId: 'A',
+          id: SubcategoryIdEnum.SEANCE_CINE,
+          reimbursementRule: REIMBURSEMENT_RULES.NOT_REIMBURSED,
+        }),
+      ],
+    })
+
+    renderUsefulInformationScreen(props, contextValues)
     expect(
       await screen.findByText('Cette offre numérique ne sera pas remboursée.')
     ).toBeInTheDocument()
@@ -290,12 +283,10 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
   })
 
   it('should disabled all fields if another offer with the same EAN is already published', async () => {
-    renderUsefulInformationScreen(
-      offlineOfferProps,
-      individualOfferContextValuesFactory({
-        publishedOfferWithSameEAN: getIndividualOfferFactory(),
-      })
-    )
+    renderUsefulInformationScreen(offlineOfferProps, {
+      ...contextValuesBase,
+      publishedOfferWithSameEAN: getIndividualOfferFactory(),
+    })
 
     const withdrawalField = await screen.findByRole('textbox', {
       name: 'Informations de retrait',
@@ -321,7 +312,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     })
 
     it('should display the dialog if user updated withdrawal informations', async () => {
-      renderUsefulInformationScreen(onlineOfferProps, contextValue)
+      renderUsefulInformationScreen(onlineOfferProps, contextValuesBase)
 
       const withdrawalInformationsField = await screen.findByRole('textbox', {
         name: /Informations de retrait/,
@@ -356,7 +347,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
           isManualEdition: true,
         })
 
-      renderUsefulInformationScreen(propsWithOfferAddress, contextValue)
+      renderUsefulInformationScreen(propsWithOfferAddress, contextValuesBase)
 
       const cityField = await screen.findByRole('textbox', {
         name: /Ville/,
@@ -391,7 +382,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
           isManualEdition: true,
         })
 
-      renderUsefulInformationScreen(propsWithOfferAddress, contextValue)
+      renderUsefulInformationScreen(propsWithOfferAddress, contextValuesBase)
 
       const withdrawalInformationsField = await screen.findByRole('textbox', {
         name: /Informations de retrait/,
@@ -431,7 +422,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
         })
       )
 
-      renderUsefulInformationScreen(onlineOfferProps, contextValue)
+      renderUsefulInformationScreen(onlineOfferProps, contextValuesBase)
 
       const withdrawalInformationsField = await screen.findByRole('textbox', {
         name: /Informations de retrait/,

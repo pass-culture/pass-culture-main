@@ -2,7 +2,6 @@ import { computeAddressDisplayName } from 'repository/venuesService'
 
 import {
   GetIndividualOfferWithAddressResponseModel,
-  OfferStatus,
   VenueListItemResponseModel,
   WithdrawalTypeEnum,
 } from '@/apiClient/v1'
@@ -10,12 +9,13 @@ import { AccessibilityEnum } from '@/commons/core/shared/types'
 import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
+  subcategoryFactory,
   venueListItemFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
 
 import { DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES } from '../constants'
-import { getFormReadOnlyFields, getInitialValuesFromOffer } from '../utils'
+import { getInitialValuesFromOffer } from '../getInitialValuesFromOffer'
 
 const mockOffer: GetIndividualOfferWithAddressResponseModel =
   getIndividualOfferFactory({
@@ -41,22 +41,28 @@ describe('getInitialValuesFromOffer', () => {
   ])(
     'with isNewOfferCreationFlowFeatureActive = $isNewOfferCreationFlowFeatureActive (both)',
     ({ isNewOfferCreationFlowFeatureActive }) => {
-      it('should return default initial values completed with offer values when provided', () => {
-        const expectedValues = {
-          isEvent: mockOffer.isEvent,
-          isNational: mockOffer.isNational,
-          withdrawalDetails: mockOffer.withdrawalDetails,
-          withdrawalDelay: mockOffer.withdrawalDelay?.toString(),
-          withdrawalType: mockOffer.withdrawalType,
-          bookingEmail: mockOffer.bookingEmail,
-          bookingContact: mockOffer.bookingContact,
-          externalTicketOfficeUrl: mockOffer.externalTicketOfficeUrl,
-        }
-        const result = getInitialValuesFromOffer(mockOffer, {
-          isNewOfferCreationFlowFeatureActive,
-        })
+      const paramsBase = {
+        isNewOfferCreationFlowFeatureActive,
+        isOfferSubcategoryOnline: false,
+        offerSubcategory: subcategoryFactory(),
+        offerVenue: venueListItemFactory(),
+      }
 
-        expect(result).toEqual(expect.objectContaining(expectedValues))
+      it('should return default initial values completed with offer values when provided', () => {
+        const result = getInitialValuesFromOffer(mockOffer, paramsBase)
+
+        expect(result).toEqual(
+          expect.objectContaining({
+            isEvent: mockOffer.isEvent,
+            isNational: mockOffer.isNational,
+            withdrawalDetails: mockOffer.withdrawalDetails,
+            withdrawalDelay: mockOffer.withdrawalDelay?.toString(),
+            withdrawalType: mockOffer.withdrawalType,
+            bookingEmail: mockOffer.bookingEmail,
+            bookingContact: mockOffer.bookingContact,
+            externalTicketOfficeUrl: mockOffer.externalTicketOfficeUrl,
+          })
+        )
       })
 
       it('should handle missing properties when offer is provided', () => {
@@ -71,25 +77,23 @@ describe('getInitialValuesFromOffer', () => {
             externalTicketOfficeUrl: undefined,
           }
 
-        const expectedValues = {
-          withdrawalDetails:
-            DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES.withdrawalDetails,
-          withdrawalDelay: undefined,
-          withdrawalType: undefined,
-          bookingEmail: '',
-          bookingContact: undefined,
-          receiveNotificationEmails: false,
-          externalTicketOfficeUrl: undefined,
-        }
-
         const result = getInitialValuesFromOffer(
           mockOfferWithMissingProperties,
-          {
-            isNewOfferCreationFlowFeatureActive,
-          }
+          paramsBase
         )
 
-        expect(result).toEqual(expect.objectContaining(expectedValues))
+        expect(result).toEqual(
+          expect.objectContaining({
+            withdrawalDetails:
+              DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES.withdrawalDetails,
+            withdrawalDelay: undefined,
+            withdrawalType: undefined,
+            bookingEmail: '',
+            bookingContact: undefined,
+            receiveNotificationEmails: false,
+            externalTicketOfficeUrl: undefined,
+          })
+        )
       })
 
       it('should handle null withdrawalDelay correctly', () => {
@@ -99,18 +103,16 @@ describe('getInitialValuesFromOffer', () => {
             withdrawalDelay: null,
           }
 
-        const expectedValues = {
-          withdrawalDelay: undefined,
-        }
-
         const result = getInitialValuesFromOffer(
           mockOfferWithNullWithdrawalDelay,
-          {
-            isNewOfferCreationFlowFeatureActive,
-          }
+          paramsBase
         )
 
-        expect(result).toEqual(expect.objectContaining(expectedValues))
+        expect(result).toEqual(
+          expect.objectContaining({
+            withdrawalDelay: undefined,
+          })
+        )
       })
 
       describe('when offer has address properties', () => {
@@ -138,27 +140,28 @@ describe('getInitialValuesFromOffer', () => {
             false
           )
 
-          const expectedValues = {
-            offerLocation: OFFER_LOCATION.OTHER_ADDRESS,
-            manuallySetAddress: mockOfferWithAddress.address?.isManualEdition,
-            'search-addressAutocomplete': addressAutocomplete,
-            addressAutocomplete,
-            coords: `${mockOfferWithAddress.address?.latitude}, ${mockOfferWithAddress.address?.longitude}`,
-            banId: mockOfferWithAddress.address?.banId,
-            inseeCode: mockOfferWithAddress.address?.inseeCode,
-            locationLabel: mockOfferWithAddress.address?.label,
-            street: mockOfferWithAddress.address?.street,
-            postalCode: mockOfferWithAddress.address?.postalCode,
-            city: mockOfferWithAddress.address?.city,
-            latitude: String(mockOfferWithAddress.address?.latitude),
-            longitude: String(mockOfferWithAddress.address?.longitude),
-          }
+          const result = getInitialValuesFromOffer(
+            mockOfferWithAddress,
+            paramsBase
+          )
 
-          const result = getInitialValuesFromOffer(mockOfferWithAddress, {
-            isNewOfferCreationFlowFeatureActive,
-          })
-
-          expect(result).toEqual(expect.objectContaining(expectedValues))
+          expect(result).toEqual(
+            expect.objectContaining({
+              offerLocation: OFFER_LOCATION.OTHER_ADDRESS,
+              manuallySetAddress: mockOfferWithAddress.address?.isManualEdition,
+              'search-addressAutocomplete': addressAutocomplete,
+              addressAutocomplete,
+              coords: `${mockOfferWithAddress.address?.latitude}, ${mockOfferWithAddress.address?.longitude}`,
+              banId: mockOfferWithAddress.address?.banId,
+              inseeCode: mockOfferWithAddress.address?.inseeCode,
+              locationLabel: mockOfferWithAddress.address?.label,
+              street: mockOfferWithAddress.address?.street,
+              postalCode: mockOfferWithAddress.address?.postalCode,
+              city: mockOfferWithAddress.address?.city,
+              latitude: String(mockOfferWithAddress.address?.latitude),
+              longitude: String(mockOfferWithAddress.address?.longitude),
+            })
+          )
         })
 
         it('should handle missing address properties', () => {
@@ -180,21 +183,19 @@ describe('getInitialValuesFromOffer', () => {
               },
             }
 
-          const expectedValues = {
-            banId: '',
-            inseeCode: '',
-            locationLabel: '',
-            street: '',
-          }
-
           const result = getInitialValuesFromOffer(
             mockOfferWithPartialAddress,
-            {
-              isNewOfferCreationFlowFeatureActive,
-            }
+            paramsBase
           )
 
-          expect(result).toEqual(expect.objectContaining(expectedValues))
+          expect(result).toEqual(
+            expect.objectContaining({
+              banId: '',
+              inseeCode: '',
+              locationLabel: '',
+              street: '',
+            })
+          )
         })
 
         it('should use OA id from selected venue if available', () => {
@@ -216,20 +217,20 @@ describe('getInitialValuesFromOffer', () => {
               },
             }
 
-          const expectedValues = {
-            offerLocation: String(mockOfferWithVenueAddress.address?.id_oa),
-          }
-
           const result = getInitialValuesFromOffer(mockOfferWithVenueAddress, {
-            isNewOfferCreationFlowFeatureActive,
-            selectedVenue: venueListItemFactory({
+            ...paramsBase,
+            offerVenue: venueListItemFactory({
               address: getAddressResponseIsLinkedToVenueModelFactory({
                 id_oa: mockOfferWithVenueAddress.address?.id_oa,
               }),
             }),
           })
 
-          expect(result).toEqual(expect.objectContaining(expectedValues))
+          expect(result).toEqual(
+            expect.objectContaining({
+              offerLocation: String(mockOfferWithVenueAddress.address?.id_oa),
+            })
+          )
         })
       })
 
@@ -241,29 +242,28 @@ describe('getInitialValuesFromOffer', () => {
               isDigital: false,
               address: undefined,
             }
-          const selectedVenue: VenueListItemResponseModel =
-            venueListItemFactory({
-              address: getAddressResponseIsLinkedToVenueModelFactory(),
-            })
+          const offerVenue: VenueListItemResponseModel = venueListItemFactory({
+            address: getAddressResponseIsLinkedToVenueModelFactory(),
+          })
 
           const expectedValues = {
-            offerLocation: String(selectedVenue.address?.id_oa),
-            coords: `${selectedVenue.address?.latitude}, ${selectedVenue.address?.longitude}`,
-            banId: selectedVenue.address?.banId,
-            inseeCode: selectedVenue.address?.inseeCode,
-            locationLabel: selectedVenue.address?.label,
-            street: selectedVenue.address?.street,
-            postalCode: selectedVenue.address?.postalCode,
-            city: selectedVenue.address?.city,
-            latitude: String(selectedVenue.address?.latitude),
-            longitude: String(selectedVenue.address?.longitude),
+            offerLocation: String(offerVenue.address?.id_oa),
+            coords: `${offerVenue.address?.latitude}, ${offerVenue.address?.longitude}`,
+            banId: offerVenue.address?.banId,
+            inseeCode: offerVenue.address?.inseeCode,
+            locationLabel: offerVenue.address?.label,
+            street: offerVenue.address?.street,
+            postalCode: offerVenue.address?.postalCode,
+            city: offerVenue.address?.city,
+            latitude: String(offerVenue.address?.latitude),
+            longitude: String(offerVenue.address?.longitude),
           }
 
           const result = getInitialValuesFromOffer(
             mockOfferNonDigitalWithoutAddress,
             {
-              isNewOfferCreationFlowFeatureActive,
-              selectedVenue,
+              ...paramsBase,
+              offerVenue: offerVenue,
             }
           )
 
@@ -277,15 +277,14 @@ describe('getInitialValuesFromOffer', () => {
               isDigital: false,
               address: undefined,
             }
-          const selectedVenue: VenueListItemResponseModel =
-            venueListItemFactory({
-              address: getAddressResponseIsLinkedToVenueModelFactory({
-                banId: undefined,
-                inseeCode: undefined,
-                label: undefined,
-                street: undefined,
-              }),
-            })
+          const offerVenue: VenueListItemResponseModel = venueListItemFactory({
+            address: getAddressResponseIsLinkedToVenueModelFactory({
+              banId: undefined,
+              inseeCode: undefined,
+              label: undefined,
+              street: undefined,
+            }),
+          })
 
           const expectedValues = {
             banId: '',
@@ -297,19 +296,91 @@ describe('getInitialValuesFromOffer', () => {
           const result = getInitialValuesFromOffer(
             mockOfferNonDigitalWithoutAddress,
             {
-              isNewOfferCreationFlowFeatureActive,
-              selectedVenue,
+              ...paramsBase,
+              offerVenue: offerVenue,
             }
           )
 
           expect(result).toEqual(expect.objectContaining(expectedValues))
         })
       })
+
+      describe('withdrawalType logic', () => {
+        it('should be set to NO_TICKET if offer withdrawalType is missing and subcategory can be withdrawable', () => {
+          const offerWithoutWithdrawalType = {
+            ...mockOffer,
+            withdrawalType: undefined,
+          }
+
+          const result = getInitialValuesFromOffer(offerWithoutWithdrawalType, {
+            ...paramsBase,
+            offerSubcategory: subcategoryFactory({ canBeWithdrawable: true }),
+          })
+
+          expect(result.withdrawalType).toBe(WithdrawalTypeEnum.NO_TICKET)
+        })
+
+        it('should be undefined if offer withdrawalType is missing and subcategory cannot be withdrawable', () => {
+          const offerWithoutWithdrawalType = {
+            ...mockOffer,
+            withdrawalType: undefined,
+          }
+
+          const result = getInitialValuesFromOffer(offerWithoutWithdrawalType, {
+            ...paramsBase,
+            offerSubcategory: subcategoryFactory({ canBeWithdrawable: false }),
+          })
+
+          expect(result.withdrawalType).toBeUndefined()
+        })
+      })
     }
   )
 
+  describe('with isNewOfferCreationFlowFeatureActive = true', () => {
+    const paramsBase = {
+      isNewOfferCreationFlowFeatureActive: true,
+      offerSubcategory: subcategoryFactory(),
+      offerVenue: venueListItemFactory(),
+    }
+
+    it('should not include address fields if offer subcategory is online', () => {
+      const mockOfferWithAddress: GetIndividualOfferWithAddressResponseModel = {
+        ...mockOffer,
+        address: {
+          id: 1,
+          id_oa: 997,
+          banId: '35288_7283_00001',
+          inseeCode: '89001',
+          label: 'Bureau',
+          city: 'Paris',
+          street: '3 rue de Valois',
+          postalCode: '75001',
+          isManualEdition: true,
+          latitude: 48.85332,
+          longitude: 2.348979,
+        },
+      }
+
+      const result = getInitialValuesFromOffer(mockOfferWithAddress, {
+        ...paramsBase,
+        isOfferSubcategoryOnline: true,
+      })
+
+      expect(result.offerLocation).toBeUndefined()
+      expect(result.addressAutocomplete).toBeUndefined()
+      expect(result.coords).toBeUndefined()
+      expect(result.street).toBeUndefined()
+    })
+  })
+
   describe('with isNewOfferCreationFlowFeatureActive = false', () => {
-    const isNewOfferCreationFlowFeatureActive = false
+    const paramsBase = {
+      isNewOfferCreationFlowFeatureActive: false,
+      isOfferSubcategoryOnline: false,
+      offerSubcategory: subcategoryFactory(),
+      offerVenue: venueListItemFactory(),
+    }
 
     it('should handle accessibility properties all being set to false', () => {
       const mockOfferWithAllAccessibilityFalse: GetIndividualOfferWithAddressResponseModel =
@@ -333,9 +404,7 @@ describe('getInitialValuesFromOffer', () => {
 
       const result = getInitialValuesFromOffer(
         mockOfferWithAllAccessibilityFalse,
-        {
-          isNewOfferCreationFlowFeatureActive,
-        }
+        paramsBase
       )
 
       expect(result).toEqual(expect.objectContaining(expectedValues))
@@ -361,47 +430,12 @@ describe('getInitialValuesFromOffer', () => {
         },
       }
 
-      const result = getInitialValuesFromOffer(mockOfferWithMissingProperties, {
-        isNewOfferCreationFlowFeatureActive,
-      })
+      const result = getInitialValuesFromOffer(
+        mockOfferWithMissingProperties,
+        paramsBase
+      )
 
       expect(result).toEqual(expect.objectContaining(expectedValues))
     })
-  })
-})
-
-describe('getFormReadOnlyFields', () => {
-  it('should return all fields as read only when offer is rejected', () => {
-    const offer = getIndividualOfferFactory({
-      status: OfferStatus.REJECTED,
-    })
-
-    const result = getFormReadOnlyFields(offer)
-
-    expect(result).toEqual(
-      Object.keys(DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES)
-    )
-  })
-
-  it('should return all fields as read only when offer is pending', () => {
-    const offer = getIndividualOfferFactory({
-      status: OfferStatus.PENDING,
-    })
-
-    const result = getFormReadOnlyFields(offer)
-
-    expect(result).toEqual(
-      Object.keys(DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES)
-    )
-  })
-
-  it('should return some fields as not read only when offer is synchronized', () => {
-    const offer = getIndividualOfferFactory({
-      lastProvider: { name: 'Allocine' },
-    })
-
-    const result = getFormReadOnlyFields(offer)
-
-    expect(result).not.toContain(['accessibility'])
   })
 })

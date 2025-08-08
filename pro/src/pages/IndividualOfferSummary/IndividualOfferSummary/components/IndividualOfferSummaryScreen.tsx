@@ -14,6 +14,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -160,19 +161,20 @@ export const IndividualOfferSummaryScreen = () => {
       })
     )
   }
-  const offerSubCategory = subCategories.find(
+  const offerSubcategory = subCategories.find(
     (s) => s.id === offer.subcategoryId
+  )
+  assertOrFrontendError(
+    offerSubcategory,
+    `'offerSubcategory' with id "${offer.subcategoryId}" not found in subCategories.`
   )
 
   const offerConditionalFields = getOfferConditionalFields({
-    offerSubCategory,
+    offerSubcategory,
     receiveNotificationEmails: true,
   })
-  const subCategoryConditionalFields = offerSubCategory
-    ? offerSubCategory.conditionalFields
-    : []
   const conditionalFields = [
-    ...subCategoryConditionalFields,
+    ...offerSubcategory.conditionalFields,
     ...offerConditionalFields,
   ]
 

@@ -17,7 +17,7 @@ import { SynchronizedProviderInformation } from '@/components/SynchronisedProvid
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
-import { LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED } from '@/pages/IndividualOffer/IndividualOfferInformations/components/IndividualOfferInformationsScreen'
+import { LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED } from '@/pages/IndividualOffer/IndividualOfferInformations/commons/constants'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Callout } from '@/ui-kit/Callout/Callout'

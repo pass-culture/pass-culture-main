@@ -14,11 +14,11 @@ const isAnyTrue = (values: Record<string, boolean>): boolean =>
 export const getValidationSchema = ({
   conditionalFields,
   isNewOfferCreationFlowFeatureActive,
-  isOfferOnline,
+  isOfferSubcategoryOnline,
 }: {
   conditionalFields: string[]
   isNewOfferCreationFlowFeatureActive: boolean
-  isOfferOnline: boolean
+  isOfferSubcategoryOnline: boolean
 }) => {
   const accessibility = yup.lazy(() =>
     isNewOfferCreationFlowFeatureActive
@@ -46,7 +46,7 @@ export const getValidationSchema = ({
   const url = yup.lazy(() =>
     isNewOfferCreationFlowFeatureActive
       ? yup.string().when('subcategoryId', {
-          is: () => isOfferOnline,
+          is: () => isOfferSubcategoryOnline,
           then: (schema) =>
             schema
               .matches(offerFormUrlRegex, {
@@ -64,7 +64,9 @@ export const getValidationSchema = ({
           .optional()
   )
 
-  const maybeLocationSchema = isOfferOnline ? {} : { ...locationSchema }
+  const maybeLocationSchema = isOfferSubcategoryOnline
+    ? {}
+    : { ...locationSchema }
 
   return yup.object<UsefulInformationFormValues>().shape({
     accessibility,
