@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { aw } from 'react-router/dist/development/routeModules-qBivMBjd'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
@@ -269,6 +270,31 @@ describe('IndividualOfferMediaScreen', () => {
       await updateVideoUrlAndSubmit({ text: '' })
       expect(api.patchDraftOffer).toHaveBeenCalledWith(knownOffer.id, {
         videoUrl: '',
+      })
+    })
+
+    it('should should log videoUrl when it is not youtube', async () => {
+      const knownOffer = getIndividualOfferFactory({
+        id: 1,
+      })
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
+      Element.prototype.scrollIntoView = vi.fn()
+      await renderIndividualOfferMediaScreen({ props: { offer: knownOffer } })
+
+      await updateVideoUrlAndSubmit({
+        text: 'https://www.dailymotion.com/video/x9negsq',
+      })
+
+      const videoInput = screen.getByRole('textbox', {
+        name: LABELS.videoInput,
+      })
+      expect(videoInput).toBeInvalid()
+
+      expect(mockLogEvent).toHaveBeenCalledWith('videoUrlError', {
+        offerId: 1,
+        userId: undefined,
       })
     })
   })
