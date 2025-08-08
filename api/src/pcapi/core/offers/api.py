@@ -1526,29 +1526,24 @@ def get_shows_remaining_places_from_provider(provider_class: str | None, offer: 
 
 def _should_try_to_update_offer_stock_quantity(offer: models.Offer) -> bool:
     # The offer is to update only if it is a cinema offer, and if the venue has a cinema provider
-    if offer.subcategory.id != subcategories.SEANCE_CINE.id:
+    if offer.subcategoryId != subcategories.SEANCE_CINE.id:
         return False
 
     if not offer.lastProviderId:  # Manual offer
         return False
 
-    offer_venue_providers = offer.venue.venueProviders
-    for venue_provider in offer_venue_providers:
-        if venue_provider.isFromCinemaProvider:
-            return True
-
-    return False
+    return any(venue_provider.isFromCinemaProvider for venue_provider in offer.venue.venueProviders)
 
 
 def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer: models.Offer) -> None:
     if not _should_try_to_update_offer_stock_quantity(offer):
         return
     try:
-        venue_provider = external_bookings_api.get_active_cinema_venue_provider(offer.venueId)
+        venue_provider = external_bookings_api.get_active_cinema_venue_provider(offer.venue)
         validation.check_offer_is_from_current_cinema_provider(offer)
     except (exceptions.UnexpectedCinemaProvider, providers_exceptions.InactiveProvider):
         offer.publicationDatetime = None
-        db.session.add(offer)
+        # db.session.add(offer)
         db.session.flush()
         search.async_index_offer_ids(
             [offer.id],

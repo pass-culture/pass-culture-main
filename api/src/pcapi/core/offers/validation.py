@@ -770,11 +770,7 @@ def _check_ean_field(ean: str) -> None:
 
 
 def check_offer_is_from_current_cinema_provider(offer: models.Offer) -> None:
-    venue_cinema_pivot = (
-        db.session.query(providers_models.CinemaProviderPivot)
-        .filter(providers_models.CinemaProviderPivot.venueId == offer.venueId)
-        .one_or_none()
-    )
+    venue_cinema_pivot = offer.venue.cinemaProviderPivot
     if not venue_cinema_pivot or offer.lastProviderId != venue_cinema_pivot.providerId:
         raise exceptions.UnexpectedCinemaProvider()
 

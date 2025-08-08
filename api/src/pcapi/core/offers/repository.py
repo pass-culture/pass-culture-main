@@ -384,6 +384,60 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query:
     )
 
 
+def get_offer_with_provider_and_stocks(offer_id: int) -> sa_orm.Query:
+    return (
+        db.session.query(models.Offer)
+        .options(
+            sa_orm.load_only(
+                models.Offer.id,
+                models.Offer.idAtProvider,
+                models.Offer.lastProviderId,
+                models.Offer.subcategoryId,
+                models.Offer.venueId,
+            )
+        )
+        .options(
+            sa_orm.selectinload(models.Offer.stocks)
+            .load_only(
+                models.Stock.idAtProviders,
+                models.Stock.beginningDatetime,
+                models.Stock.bookingLimitDatetime,
+                models.Stock.isSoftDeleted,
+                models.Stock.quantity,
+                models.Stock.dnBookedQuantity,
+            )
+            .joinedload(models.Stock.priceCategory)
+            .joinedload(models.PriceCategory.priceCategoryLabel)
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.venue)
+            .load_only()
+            .joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(
+                offerers_models.Offerer.validationStatus,
+                offerers_models.Offerer.isActive,
+            )
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.venue)
+            .joinedload(offerers_models.Venue.venueProviders)
+            .load_only(providers_models.VenueProvider.providerId)
+            .joinedload(providers_models.VenueProvider.provider)
+            .load_only(providers_models.Provider.localClass)
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.venue)
+            .joinedload(offerers_models.Venue.cinemaProviderPivot)
+            .load_only(providers_models.CinemaProviderPivot.providerId)
+        )
+        .filter(
+            models.Offer.id == offer_id,
+            models.Offer.validation == models.OfferValidationStatus.APPROVED,
+            models.Offer.isActive.is_(True),
+        )
+    )
+
+
 def get_offers_by_filters(
     *,
     user_id: int,

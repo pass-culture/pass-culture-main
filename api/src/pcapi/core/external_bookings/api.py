@@ -7,6 +7,7 @@ import sentry_sdk
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.models as external_bookings_models
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
@@ -145,11 +146,9 @@ def _instantiate_cinema_api_client(venue_id: int) -> external_bookings_models.Ex
             raise ValueError(f"Unknown cinema provider: {local_class}")
 
 
-def get_active_cinema_venue_provider(venue_id: int) -> providers_models.VenueProvider:
-    cinema_venue_provider = (
-        providers_repository.get_cinema_venue_provider_query(venue_id)
-        .filter(providers_models.VenueProvider.isActive)
-        .one_or_none()
+def get_active_cinema_venue_provider(venue: offerers_models.Venue) -> providers_models.VenueProvider:
+    cinema_venue_provider = next(
+        (venue_provider for venue_provider in venue.venueProviders if venue_provider.isFromCinemaProvider), None
     )
     if not cinema_venue_provider:
         raise providers_exceptions.InactiveProvider()
