@@ -3,6 +3,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { ImagePlaceholder } from '@/components/SafeImage/ImagePlaceholder/ImagePlaceholder'
 import { SafeImage } from '@/components/SafeImage/SafeImage'
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
@@ -24,13 +25,18 @@ export const MediaSection = ({
   videoUrl,
   shouldImageBeHidden = false,
 }: MediaSectionProps) => {
+  const mode = useOfferWizardMode()
+
   return (
     <SummarySection
       title="Image et vidéo"
       editLink={getIndividualOfferUrl({
         offerId,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
-        mode: OFFER_WIZARD_MODE.EDITION,
+        mode:
+          mode === OFFER_WIZARD_MODE.READ_ONLY
+            ? OFFER_WIZARD_MODE.EDITION
+            : mode,
       })}
       aria-label="Modifier les détails de l’offre"
     >

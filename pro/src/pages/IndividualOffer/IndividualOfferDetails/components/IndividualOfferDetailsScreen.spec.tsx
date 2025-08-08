@@ -39,6 +39,7 @@ import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
+import * as handleLastSubmittedStep from '@/components/IndividualOfferLayout/IndividualOfferNavigation/utils/handleLastSubmittedStep'
 import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 
 import {
@@ -564,6 +565,10 @@ describe('IndividualOfferDetailsScreen', () => {
   })
 
   it('should submit the form with correct payload', async () => {
+    const spyUpdateLocalStorageWithLastSubmittedStep = vi.spyOn(
+      handleLastSubmittedStep,
+      'updateLocalStorageWithLastSubmittedStep'
+    )
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -614,6 +619,12 @@ describe('IndividualOfferDetailsScreen', () => {
         subcategoryId: 'physical',
         venueId: '189',
       }
+    )
+
+    // Submitted step needs to be remembered.
+    expect(spyUpdateLocalStorageWithLastSubmittedStep).toHaveBeenLastCalledWith(
+      12,
+      INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS
     )
   })
 

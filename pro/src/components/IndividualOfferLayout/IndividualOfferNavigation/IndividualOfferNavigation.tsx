@@ -58,10 +58,14 @@ export const IndividualOfferNavigation = () => {
   const stepList = steps.map(
     ({ id, label }: StepPattern, stepIndex: number): Step => {
       const step: Step = { id, label }
+      // In edition or read-only, offer has been published,
+      // so any step can be accessed. In creation, offer can
+      // be left as draft - all steps that have been submitted once,
+      // and the step that follows are accessible via links.
       const canBeClicked =
         offer &&
         (mode !== OFFER_WIZARD_MODE.CREATION ||
-          lastSubmittedStepIndex >= stepIndex)
+          lastSubmittedStepIndex >= stepIndex - 1)
 
       if (canBeClicked) {
         step.url = generatePath(

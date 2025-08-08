@@ -185,7 +185,9 @@ describe('IndividualOfferNavigation', () => {
       )
 
       const links = screen.getAllByRole('link')
-      expect(links.length).toEqual(submittedStepIndex + 1)
+      // +1 since it's an array index from 0 to array.length - 1
+      // +1 since we'd like to access the step following the submitted one
+      expect(links.length).toEqual(submittedStepIndex + 2)
 
       localStorage.clear()
     })

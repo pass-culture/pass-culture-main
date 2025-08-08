@@ -6,7 +6,7 @@ import { storageAvailable } from '@/commons/utils/storageAvailable'
 // USEFUL_INFORMATION_SUBMITTED_${offerId}: 'true' | null
 const LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED =
   'USEFUL_INFORMATION_SUBMITTED'
-const getDeprecatedLocalStorageKeyName = (offerId: number | string) =>
+export const getDeprecatedLocalStorageKeyName = (offerId: number | string) =>
   `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offerId}`
 
 // New - includes all steps.

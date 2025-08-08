@@ -10,8 +10,10 @@ import {
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import {
   CATEGORY_STATUS,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   categoryFactory,
@@ -26,6 +28,7 @@ import {
   RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
+import * as handleLastSubmittedStep from '@/components/IndividualOfferLayout/IndividualOfferNavigation/utils/handleLastSubmittedStep'
 
 import {
   IndividualOfferInformationsScreen,
@@ -200,12 +203,24 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
   })
 
   it('should submit the form with correct payload', async () => {
+    const spyUpdateLocalStorageWithLastSubmittedStep = vi.spyOn(
+      handleLastSubmittedStep,
+      'updateLocalStorageWithLastSubmittedStep'
+    )
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
       getIndividualOfferFactory({
-        id: 12,
+        id: 3,
       })
     )
-    renderUsefulInformationScreen(offlineOfferProps, contextValue)
+    renderUsefulInformationScreen(offlineOfferProps, contextValue, {
+      initialRouterEntries: [
+        getIndividualOfferUrl({
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+          offerId: 3,
+        }),
+      ],
+    })
 
     const withdrawalField = await screen.findByLabelText(
       /Informations de retrait/
@@ -219,7 +234,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     await userEvent.type(withdrawalField, 'My information')
     await userEvent.click(screen.getByLabelText(/Visuel/))
     await userEvent.click(screen.getByLabelText(/Psychique ou cognitif/))
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     expect(api.patchOffer).toHaveBeenCalledOnce()
     expect(api.patchOffer).toHaveBeenCalledWith(3, {
@@ -254,6 +269,12 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
       withdrawalDetails: 'My information',
       withdrawalType: undefined,
     })
+
+    // Submitted step needs to be remembered.
+    expect(spyUpdateLocalStorageWithLastSubmittedStep).toHaveBeenLastCalledWith(
+      3,
+      INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
+    )
   })
 
   it('should display not reimbursed banner when subcategory is not reimbursed', async () => {
@@ -305,23 +326,29 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
   })
 
   describe('ConfirmDialog', () => {
+    const initialRouterEntries = [
+      getIndividualOfferUrl({
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+        mode: OFFER_WIZARD_MODE.EDITION,
+        offerId: offlineOfferProps.offer.id,
+      }),
+    ]
+
     beforeEach(() => {
-      // Should appear only in edition mode, and if offer has pending bookings
-      vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
-        useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.EDITION),
-      }))
+      // Should appear only if offer has pending bookings
       offlineOfferProps.offer.hasPendingBookings = true
       onlineOfferProps.offer.hasPendingBookings = true
     })
 
     afterEach(() => {
-      vi.resetAllMocks()
       offlineOfferProps.offer.hasPendingBookings = false
       onlineOfferProps.offer.hasPendingBookings = false
     })
 
     it('should display the dialog if user updated withdrawal informations', async () => {
-      renderUsefulInformationScreen(onlineOfferProps, contextValue)
+      renderUsefulInformationScreen(onlineOfferProps, contextValue, {
+        initialRouterEntries,
+      })
 
       const withdrawalInformationsField = await screen.findByRole('textbox', {
         name: /Informations de retrait/,
@@ -356,7 +383,9 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
           isManualEdition: true,
         })
 
-      renderUsefulInformationScreen(propsWithOfferAddress, contextValue)
+      renderUsefulInformationScreen(propsWithOfferAddress, contextValue, {
+        initialRouterEntries,
+      })
 
       const cityField = await screen.findByRole('textbox', {
         name: /Ville/,
@@ -391,7 +420,9 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
           isManualEdition: true,
         })
 
-      renderUsefulInformationScreen(propsWithOfferAddress, contextValue)
+      renderUsefulInformationScreen(propsWithOfferAddress, contextValue, {
+        initialRouterEntries,
+      })
 
       const withdrawalInformationsField = await screen.findByRole('textbox', {
         name: /Informations de retrait/,
@@ -431,7 +462,9 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
         })
       )
 
-      renderUsefulInformationScreen(onlineOfferProps, contextValue)
+      renderUsefulInformationScreen(onlineOfferProps, contextValue, {
+        initialRouterEntries,
+      })
 
       const withdrawalInformationsField = await screen.findByRole('textbox', {
         name: /Informations de retrait/,
