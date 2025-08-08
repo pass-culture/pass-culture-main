@@ -11,14 +11,14 @@ from pcapi import settings
 from pcapi.core import search
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
-from pcapi.core.educational import models as educational_models
-from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import models
+from pcapi.core.educational import repository
 from pcapi.core.educational import schemas
-from pcapi.core.educational import utils as educational_utils
+from pcapi.core.educational import utils
 from pcapi.core.educational import validation
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer_request
-from pcapi.core.educational.api import adage as educational_api_adage
+from pcapi.core.educational.api import adage as api_adage
 from pcapi.core.educational.api import shared as api_shared
 from pcapi.core.educational.serialization import collective_booking as collective_booking_serialize
 from pcapi.core.educational.utils import get_image_from_url
@@ -55,7 +55,7 @@ logger = logging.getLogger(__name__)
 OFFERS_RECAP_LIMIT = 101
 
 
-AnyCollectiveOffer = educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate
+AnyCollectiveOffer = models.CollectiveOffer | models.CollectiveOfferTemplate
 
 
 def notify_educational_redactor_on_collective_offer_or_stock_edit(
@@ -65,7 +65,7 @@ def notify_educational_redactor_on_collective_offer_or_stock_edit(
     if len(updated_fields) == 0:
         return
 
-    active_collective_bookings = educational_repository.find_active_collective_booking_by_offer_id(collective_offer_id)
+    active_collective_bookings = repository.find_active_collective_booking_by_offer_id(collective_offer_id)
     if active_collective_bookings is None:
         return
 
@@ -102,17 +102,15 @@ def unindex_expired_or_archived_collective_offers_template(process_all_expired: 
 
 def list_collective_offers_for_pro_user(
     filters: schemas.CollectiveOffersFilter, offer_type: collective_offers_serialize.CollectiveOfferType | None = None
-) -> list[educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate]:
+) -> list[models.CollectiveOffer | models.CollectiveOfferTemplate]:
     offers = []
     if offer_type != collective_offers_serialize.CollectiveOfferType.template:
-        offers = educational_repository.get_collective_offers_for_filters(
-            filters=filters, offers_limit=OFFERS_RECAP_LIMIT
-        )
+        offers = repository.get_collective_offers_for_filters(filters=filters, offers_limit=OFFERS_RECAP_LIMIT)
         if offer_type is not None:
             return offers
     templates = []
     if offer_type != collective_offers_serialize.CollectiveOfferType.offer:
-        templates = educational_repository.get_collective_offers_template_for_filters(
+        templates = repository.get_collective_offers_template_for_filters(
             filters=filters, offers_limit=OFFERS_RECAP_LIMIT
         )
         if offer_type is not None:
@@ -125,14 +123,12 @@ def list_collective_offers_for_pro_user(
     return merged_offers[0:OFFERS_RECAP_LIMIT]
 
 
-def get_educational_domains_from_ids(
-    educational_domain_ids: list[int] | None,
-) -> list[educational_models.EducationalDomain]:
+def get_educational_domains_from_ids(educational_domain_ids: list[int] | None) -> list[models.EducationalDomain]:
     if educational_domain_ids is None:
         return []
 
     unique_educational_domain_ids = set(educational_domain_ids)
-    educational_domains = educational_repository.get_educational_domains_from_ids(unique_educational_domain_ids)
+    educational_domains = repository.get_educational_domains_from_ids(unique_educational_domain_ids)
 
     if len(educational_domains) < len(unique_educational_domain_ids):
         raise exceptions.EducationalDomainsNotFound()
@@ -142,13 +138,13 @@ def get_educational_domains_from_ids(
 
 @dataclasses.dataclass
 class CollectiveOfferLocation:
-    location_type: educational_models.CollectiveLocationType
+    location_type: models.CollectiveLocationType
     location_comment: str | None
     offerer_address: offerers_models.OffererAddress | None
 
 
 def get_location_from_offer_venue(
-    offer_venue: educational_models.OfferVenueDict,
+    offer_venue: models.OfferVenueDict,
     location_venue: offerers_models.Venue | None,
     is_offer_located_at_venue: bool,
 ) -> CollectiveOfferLocation:
@@ -159,7 +155,7 @@ def get_location_from_offer_venue(
     When is_offer_located_at_venue is False (offer located at a different venue), we get or create a dedicated OA
     """
     match offer_venue["addressType"]:
-        case educational_models.OfferAddressType.OFFERER_VENUE:
+        case models.OfferAddressType.OFFERER_VENUE:
             assert location_venue is not None
             assert location_venue.offererAddress is not None
 
@@ -174,21 +170,21 @@ def get_location_from_offer_venue(
                 )
 
             return CollectiveOfferLocation(
-                location_type=educational_models.CollectiveLocationType.ADDRESS,
+                location_type=models.CollectiveLocationType.ADDRESS,
                 location_comment=None,
                 offerer_address=offerer_address,
             )
 
-        case educational_models.OfferAddressType.SCHOOL:
+        case models.OfferAddressType.SCHOOL:
             return CollectiveOfferLocation(
-                location_type=educational_models.CollectiveLocationType.SCHOOL,
+                location_type=models.CollectiveLocationType.SCHOOL,
                 location_comment=None,
                 offerer_address=None,
             )
 
-        case educational_models.OfferAddressType.OTHER:
+        case models.OfferAddressType.OTHER:
             return CollectiveOfferLocation(
-                location_type=educational_models.CollectiveLocationType.TO_BE_DEFINED,
+                location_type=models.CollectiveLocationType.TO_BE_DEFINED,
                 location_comment=offer_venue["otherAddress"],
                 offerer_address=None,
             )
@@ -205,24 +201,24 @@ def check_venue_user_access(venue_id: int, user: User) -> None:
 
 
 def get_offer_venue_from_location(
-    location_type: educational_models.CollectiveLocationType | None,
+    location_type: models.CollectiveLocationType | None,
     location_comment: str | None,
     offerer_address: offerers_models.OffererAddress | None,
     is_venue_address: bool,
     venue_id: int,
-) -> educational_models.OfferVenueDict:
+) -> models.OfferVenueDict:
     match location_type:
-        case educational_models.CollectiveLocationType.SCHOOL:
+        case models.CollectiveLocationType.SCHOOL:
             return {
-                "addressType": educational_models.OfferAddressType.SCHOOL,
+                "addressType": models.OfferAddressType.SCHOOL,
                 "otherAddress": "",
                 "venueId": None,
             }
 
-        case educational_models.CollectiveLocationType.ADDRESS:
+        case models.CollectiveLocationType.ADDRESS:
             if is_venue_address:
                 return {
-                    "addressType": educational_models.OfferAddressType.OFFERER_VENUE,
+                    "addressType": models.OfferAddressType.OFFERER_VENUE,
                     "otherAddress": "",
                     "venueId": venue_id,
                 }
@@ -233,14 +229,14 @@ def get_offer_venue_from_location(
                 other_address = ""
 
             return {
-                "addressType": educational_models.OfferAddressType.OTHER,
+                "addressType": models.OfferAddressType.OTHER,
                 "otherAddress": other_address,
                 "venueId": None,
             }
 
-        case educational_models.CollectiveLocationType.TO_BE_DEFINED:
+        case models.CollectiveLocationType.TO_BE_DEFINED:
             return {
-                "addressType": educational_models.OfferAddressType.OTHER,
+                "addressType": models.OfferAddressType.OTHER,
                 "otherAddress": location_comment or "",
                 "venueId": None,
             }
@@ -253,7 +249,7 @@ def get_location_values(
     offer_data: collective_offers_serialize.PostCollectiveOfferBodyModel,
     user: User,
     venue: offerers_models.Venue,
-) -> tuple[offerers_models.OffererAddress | None, list[str], educational_models.OfferVenueDict]:
+) -> tuple[offerers_models.OffererAddress | None, list[str], models.OfferVenueDict]:
     """
     We can either receive offerVenue or location in offer_data
     When we receive the offerVenue field, in the "offererVenue" case we check venueId and force intervention_area to be empty
@@ -263,10 +259,10 @@ def get_location_values(
     offerer_address = offers_api.get_offerer_address_from_address_body(address_body=address_body, venue=venue)
     intervention_area = offer_data.intervention_area or []
 
-    offer_venue: educational_models.OfferVenueDict
+    offer_venue: models.OfferVenueDict
     if offer_data.offer_venue is not None:
-        offer_venue = typing.cast(educational_models.OfferVenueDict, offer_data.offer_venue.dict())
-        if offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
+        offer_venue = typing.cast(models.OfferVenueDict, offer_data.offer_venue.dict())
+        if offer_venue["addressType"] == models.OfferAddressType.OFFERER_VENUE:
             venue_id = offer_venue["venueId"]
             if venue_id is None:
                 raise exceptions.VenueIdDontExist()
@@ -291,7 +287,7 @@ def get_location_values(
 
 def create_collective_offer_template(
     offer_data: collective_offers_serialize.PostCollectiveOfferTemplateBodyModel, user: User
-) -> educational_models.CollectiveOfferTemplate:
+) -> models.CollectiveOfferTemplate:
     venue = get_venue_and_check_access_for_offer_creation(offer_data, user)
 
     # check domains and national program
@@ -306,7 +302,7 @@ def create_collective_offer_template(
 
     offerer_address, intervention_area, offer_venue = get_location_values(offer_data=offer_data, user=user, venue=venue)
 
-    collective_offer_template = educational_models.CollectiveOfferTemplate(
+    collective_offer_template = models.CollectiveOfferTemplate(
         venueId=venue.id,
         name=offer_data.name,
         description=offer_data.description,
@@ -337,7 +333,7 @@ def create_collective_offer_template(
     if offer_data.dates:
         # this is necessary to pass constraint template_dates_non_empty_daterange
         # currently this only happens when selecting time = 23h59
-        collective_offer_template.dateRange = educational_utils.get_non_empty_date_time_range(
+        collective_offer_template.dateRange = utils.get_non_empty_date_time_range(
             offer_data.dates.start, offer_data.dates.end
         )
 
@@ -354,13 +350,13 @@ def create_collective_offer(
     offer_data: collective_offers_serialize.PostCollectiveOfferBodyModel,
     user: User,
     offer_id: int | None = None,
-) -> educational_models.CollectiveOffer:
+) -> models.CollectiveOffer:
     venue = get_venue_and_check_access_for_offer_creation(offer_data, user)
 
     if offer_data.template_id is not None:
-        template = educational_repository.get_collective_offer_template_by_id(offer_data.template_id)
+        template = repository.get_collective_offer_template_by_id(offer_data.template_id)
         validation.check_collective_offer_template_action_is_allowed(
-            template, educational_models.CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER
+            template, models.CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER
         )
 
     # check domains and national program
@@ -378,7 +374,7 @@ def create_collective_offer(
 
     offerer_address, intervention_area, offer_venue = get_location_values(offer_data=offer_data, user=user, venue=venue)
 
-    collective_offer = educational_models.CollectiveOffer(
+    collective_offer = models.CollectiveOffer(
         isActive=False,  # a DRAFT offer cannot be active
         venueId=venue.id,
         name=offer_data.name,
@@ -424,7 +420,7 @@ def get_venue_and_check_access_for_offer_creation(
     user: User,
 ) -> offerers_models.Venue:
     if offer_data.template_id is not None:
-        template = educational_repository.get_collective_offer_template_by_id(offer_data.template_id)
+        template = repository.get_collective_offer_template_by_id(offer_data.template_id)
         rest.check_user_has_access_to_offerer(user, offerer_id=template.venue.managingOffererId)
     venue: offerers_models.Venue = get_or_404(offerers_models.Venue, offer_data.venue_id)
 
@@ -437,12 +433,10 @@ def get_venue_and_check_access_for_offer_creation(
 
 def update_collective_offer_educational_institution(
     offer_id: int, educational_institution_id: int, teacher_email: str | None
-) -> educational_models.CollectiveOffer:
-    offer = educational_repository.get_collective_offer_by_id(offer_id)
+) -> models.CollectiveOffer:
+    offer = repository.get_collective_offer_by_id(offer_id)
 
-    validation.check_collective_offer_action_is_allowed(
-        offer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION
-    )
+    validation.check_collective_offer_action_is_allowed(offer, models.CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION)
 
     new_institution = validation.check_institution_id_exists(educational_institution_id)
     if not new_institution.isActive:
@@ -452,16 +446,16 @@ def update_collective_offer_educational_institution(
     offer.teacher = None
 
     if teacher_email:
-        possible_teachers = educational_api_adage.autocomplete_educational_redactor_for_uai(
+        possible_teachers = api_adage.autocomplete_educational_redactor_for_uai(
             uai=offer.institution.institutionId,
             candidate=teacher_email,
             use_email=True,
         )
         for teacher in possible_teachers:
             if teacher["mail"] == teacher_email:
-                redactor = educational_repository.find_redactor_by_email(teacher["mail"])
+                redactor = repository.find_redactor_by_email(teacher["mail"])
                 if not redactor:
-                    redactor = educational_models.EducationalRedactor(
+                    redactor = models.EducationalRedactor(
                         email=teacher["mail"],
                         firstName=teacher["prenom"],
                         lastName=teacher["nom"],
@@ -483,20 +477,20 @@ def update_collective_offer_educational_institution(
 def _get_location_and_offer_venue_from_public_model(
     location_body: public_api_collective_offers_serialize.CollectiveOfferLocation,
     venue: offerers_models.Venue,
-) -> tuple[CollectiveOfferLocation, educational_models.OfferVenueDict]:
+) -> tuple[CollectiveOfferLocation, models.OfferVenueDict]:
     is_venue_address = False
 
     match location_body:
         case public_api_collective_offers_serialize.CollectiveOfferLocationSchoolModel():
             location = CollectiveOfferLocation(
-                location_type=educational_models.CollectiveLocationType.SCHOOL,
+                location_type=models.CollectiveLocationType.SCHOOL,
                 location_comment=None,
                 offerer_address=None,
             )
 
         case public_api_collective_offers_serialize.CollectiveOfferLocationToBeDefinedModel():
             location = CollectiveOfferLocation(
-                location_type=educational_models.CollectiveLocationType.TO_BE_DEFINED,
+                location_type=models.CollectiveLocationType.TO_BE_DEFINED,
                 location_comment=location_body.comment,
                 offerer_address=None,
             )
@@ -504,7 +498,7 @@ def _get_location_and_offer_venue_from_public_model(
         case public_api_collective_offers_serialize.CollectiveOfferLocationAddressVenueModel():
             is_venue_address = True
             location = CollectiveOfferLocation(
-                location_type=educational_models.CollectiveLocationType.ADDRESS,
+                location_type=models.CollectiveLocationType.ADDRESS,
                 location_comment=None,
                 offerer_address=venue.offererAddress,
             )
@@ -518,7 +512,7 @@ def _get_location_and_offer_venue_from_public_model(
             )
 
             location = CollectiveOfferLocation(
-                location_type=educational_models.CollectiveLocationType.ADDRESS,
+                location_type=models.CollectiveLocationType.ADDRESS,
                 location_comment=None,
                 offerer_address=offerer_address,
             )
@@ -540,8 +534,8 @@ def _get_location_and_offer_venue_from_public_model(
 def create_collective_offer_public(
     requested_id: int,
     body: public_api_collective_offers_serialize.PostCollectiveOfferBodyModel,
-) -> educational_models.CollectiveOffer:
-    venue = educational_repository.fetch_venue_for_new_offer(body.venue_id, requested_id)
+) -> models.CollectiveOffer:
+    venue = repository.fetch_venue_for_new_offer(body.venue_id, requested_id)
     if not offerers_api.can_offerer_create_educational_offer(venue.managingOffererId):
         raise exceptions.CulturalPartnerNotFoundException("No venue has been found for the selected siren")
 
@@ -551,7 +545,7 @@ def create_collective_offer_public(
     educational_domains = get_educational_domains_from_ids(body.domains)
     validation.validate_national_program(body.national_program_id, educational_domains)
 
-    institution = educational_repository.get_educational_institution_public(
+    institution = repository.get_educational_institution_public(
         institution_id=body.educational_institution_id,
         uai=body.educational_institution,
     )
@@ -564,7 +558,7 @@ def create_collective_offer_public(
     validation.check_start_and_end_dates_in_same_educational_year(body.start_datetime, end_datetime)
 
     location: CollectiveOfferLocation
-    offer_venue: educational_models.OfferVenueDict
+    offer_venue: models.OfferVenueDict
 
     # when we receive offerVenue, we also write to OA fields
     if body.offer_venue is not None:
@@ -575,12 +569,12 @@ def create_collective_offer_public(
         }
 
         location_venue = None
-        if offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
+        if offer_venue["addressType"] == models.OfferAddressType.OFFERER_VENUE:
             venue_id = offer_venue["venueId"]
             if venue_id is None:
                 raise exceptions.VenueIdDontExist()
 
-            location_venue = educational_repository.fetch_venue_for_new_offer(venue_id, requested_id)
+            location_venue = repository.fetch_venue_for_new_offer(venue_id, requested_id)
 
         location = get_location_from_offer_venue(
             offer_venue=offer_venue,
@@ -595,7 +589,7 @@ def create_collective_offer_public(
     else:
         raise ValueError("Location is required")
 
-    collective_offer = educational_models.CollectiveOffer(
+    collective_offer = models.CollectiveOffer(
         venue=venue,
         name=body.name,
         description=body.description,
@@ -604,7 +598,7 @@ def create_collective_offer_public(
         domains=educational_domains,  # type: ignore[arg-type]
         durationMinutes=body.duration_minutes,
         students=typing.cast(  # type transformation done by the validator (and not detected by mypy)
-            list[educational_models.StudentLevels], body.students
+            list[models.StudentLevels], body.students
         ),
         audioDisabilityCompliant=body.audio_disability_compliant,
         mentalDisabilityCompliant=body.mental_disability_compliant,
@@ -622,7 +616,7 @@ def create_collective_offer_public(
         offerVenue={**offer_venue, "addressType": offer_venue["addressType"].value},
     )
 
-    collective_stock = educational_models.CollectiveStock(
+    collective_stock = models.CollectiveStock(
         collectiveOffer=collective_offer,
         startDatetime=body.start_datetime,
         endDatetime=end_datetime,
@@ -646,9 +640,9 @@ def create_collective_offer_public(
 def edit_collective_offer_public(
     provider_id: int,
     new_values: dict,
-    offer: educational_models.CollectiveOffer,
+    offer: models.CollectiveOffer,
     location_body: public_api_collective_offers_serialize.CollectiveOfferLocation | None,
-) -> educational_models.CollectiveOffer:
+) -> models.CollectiveOffer:
     if not feature.FeatureToggle.WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API.is_active():
         is_editable = offer.validation not in [
             offer_mixin.OfferValidationStatus.PENDING,
@@ -665,7 +659,7 @@ def edit_collective_offer_public(
         not feature.FeatureToggle.WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API.is_active()
         and collective_stock_unique_booking is not None
     ):
-        if collective_stock_unique_booking.status == educational_models.CollectiveBookingStatus.CONFIRMED:
+        if collective_stock_unique_booking.status == models.CollectiveBookingStatus.CONFIRMED:
             # if the booking is CONFIRMED, we can only edit the price related fields and the price cannot be increased
             allowed_fields_for_confirmed_booking = {"price", "priceDetail", "numberOfTickets"}
             unallowed_fields = set(new_values) - allowed_fields_for_confirmed_booking
@@ -680,8 +674,8 @@ def edit_collective_offer_public(
             # if the booking is PENDING, we can edit any field
             validation.check_collective_booking_status_pending(collective_stock_unique_booking)
 
-    offer_fields = {field for field in dir(educational_models.CollectiveOffer) if not field.startswith("_")}
-    stock_fields = {field for field in dir(educational_models.CollectiveStock) if not field.startswith("_")}
+    offer_fields = {field for field in dir(models.CollectiveOffer) if not field.startswith("_")}
+    stock_fields = {field for field in dir(models.CollectiveStock) if not field.startswith("_")}
 
     start_datetime = new_values.get("startDatetime")
     end_datetime = new_values.get("endDatetime")
@@ -716,12 +710,12 @@ def edit_collective_offer_public(
 
     if offer_venue is not None:
         location_venue = None
-        if offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
+        if offer_venue["addressType"] == models.OfferAddressType.OFFERER_VENUE:
             venue_id = offer_venue["venueId"]
             if venue_id is None:
                 raise exceptions.VenueIdDontExist()
 
-            location_venue = educational_repository.fetch_venue_for_new_offer(venue_id, provider_id)
+            location_venue = repository.fetch_venue_for_new_offer(venue_id, provider_id)
             new_values["interventionArea"] = []
 
         # we might receive None for otherAddress but we store str
@@ -777,7 +771,7 @@ def edit_collective_offer_public(
             if value is None:
                 continue
 
-            institution = educational_repository.get_educational_institution_public(
+            institution = repository.get_educational_institution_public(
                 institution_id=new_values.get("educationalInstitutionId"),
                 uai=new_values.get("educationalInstitution"),
             )
@@ -841,47 +835,45 @@ PATCH_DETAILS_FIELDS_PUBLIC = tuple(
 
 def _check_allowed_action(
     *,
-    offer: educational_models.CollectiveOffer,
+    offer: models.CollectiveOffer,
     edited_fields: typing.Iterable[str],
     action_fields: typing.Iterable[str],
-    allowed_action: educational_models.CollectiveOfferAllowedAction,
+    allowed_action: models.CollectiveOfferAllowedAction,
 ) -> None:
     is_editing_fields = any(field in edited_fields for field in action_fields)
     if is_editing_fields:
         validation.check_collective_offer_action_is_allowed(offer=offer, action=allowed_action, for_public_api=True)
 
 
-def check_edit_collective_offer_public_allowed_action(
-    offer: educational_models.CollectiveOffer, new_values: dict
-) -> None:
+def check_edit_collective_offer_public_allowed_action(offer: models.CollectiveOffer, new_values: dict) -> None:
     edited_fields = new_values.keys()
 
     _check_allowed_action(
         offer=offer,
         edited_fields=edited_fields,
         action_fields=PATCH_INSTITUTION_FIELDS_PUBLIC,
-        allowed_action=educational_models.CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION,
+        allowed_action=models.CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION,
     )
 
     _check_allowed_action(
         offer=offer,
         edited_fields=edited_fields,
         action_fields=PATCH_DATES_FIELDS_PUBLIC,
-        allowed_action=educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+        allowed_action=models.CollectiveOfferAllowedAction.CAN_EDIT_DATES,
     )
 
     _check_allowed_action(
         offer=offer,
         edited_fields=edited_fields,
         action_fields=PATCH_DISCOUNT_FIELDS_PUBLIC,
-        allowed_action=educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+        allowed_action=models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
     )
 
     _check_allowed_action(
         offer=offer,
         edited_fields=edited_fields,
         action_fields=PATCH_DETAILS_FIELDS_PUBLIC,
-        allowed_action=educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        allowed_action=models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
     )
 
     if "price" in new_values:
@@ -890,20 +882,18 @@ def check_edit_collective_offer_public_allowed_action(
         if price > offer.collectiveStock.price:
             validation.check_collective_offer_action_is_allowed(
                 offer=offer,
-                action=educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+                action=models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
                 for_public_api=True,
             )
         else:
             validation.check_collective_offer_action_is_allowed(
                 offer=offer,
-                action=educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+                action=models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
                 for_public_api=True,
             )
 
 
-def publish_collective_offer(
-    offer: educational_models.CollectiveOffer, user: User
-) -> educational_models.CollectiveOffer:
+def publish_collective_offer(offer: models.CollectiveOffer, user: User) -> models.CollectiveOffer:
     if offer.validation == offer_mixin.OfferValidationStatus.DRAFT:
         offers_api.update_offer_fraud_information(offer, user)
 
@@ -911,8 +901,8 @@ def publish_collective_offer(
 
 
 def publish_collective_offer_template(
-    offer_template: educational_models.CollectiveOfferTemplate, user: User
-) -> educational_models.CollectiveOfferTemplate:
+    offer_template: models.CollectiveOfferTemplate, user: User
+) -> models.CollectiveOfferTemplate:
     if offer_template.validation == offer_mixin.OfferValidationStatus.DRAFT:
         offers_api.update_offer_fraud_information(offer_template, user)
 
@@ -929,13 +919,13 @@ def publish_collective_offer_template(
     return offer_template
 
 
-def delete_image(obj: educational_models.HasImageMixin) -> None:
+def delete_image(obj: models.HasImageMixin) -> None:
     obj.delete_image()
     db.session.flush()
 
 
 def attach_image(
-    obj: educational_models.HasImageMixin,
+    obj: models.HasImageMixin,
     image: bytes,
     crop_params: image_conversion.CropParams,
     credit: str,
@@ -955,16 +945,14 @@ def _get_expired_or_archived_collective_offer_template_ids(
     page: int,
     limit: int,
 ) -> list[int]:
-    collective_offers_template = educational_repository.get_expired_or_archived_collective_offers_template()
+    collective_offers_template = repository.get_expired_or_archived_collective_offers_template()
     collective_offers_template = collective_offers_template.offset(page * limit).limit(limit)
     return [offer_template.id for offer_template in collective_offers_template]
 
 
-def duplicate_offer_and_stock(
-    original_offer: educational_models.CollectiveOffer,
-) -> educational_models.CollectiveOffer:
+def duplicate_offer_and_stock(original_offer: models.CollectiveOffer) -> models.CollectiveOffer:
     validation.check_collective_offer_action_is_allowed(
-        original_offer, educational_models.CollectiveOfferAllowedAction.CAN_DUPLICATE
+        original_offer, models.CollectiveOfferAllowedAction.CAN_DUPLICATE
     )
 
     offerer = original_offer.venue.managingOfferer
@@ -978,7 +966,7 @@ def duplicate_offer_and_stock(
     except (exceptions.MissingDomains, exceptions.InactiveNationalProgram, exceptions.IllegalNationalProgram):
         national_program_id = None
 
-    offer = educational_models.CollectiveOffer(
+    offer = models.CollectiveOffer(
         isActive=False,  # a DRAFT offer cannot be active
         venue=original_offer.venue,
         name=original_offer.name,
@@ -1011,7 +999,7 @@ def duplicate_offer_and_stock(
     )
 
     if original_offer.collectiveStock is not None:
-        educational_models.CollectiveStock(
+        models.CollectiveStock(
             startDatetime=original_offer.collectiveStock.startDatetime,
             endDatetime=original_offer.collectiveStock.endDatetime,
             collectiveOffer=offer,
@@ -1042,11 +1030,11 @@ def duplicate_offer_and_stock(
 
 def create_offer_request(
     body: PostCollectiveRequestBodyModel,
-    offer: educational_models.CollectiveOfferTemplate,
-    institution: educational_models.EducationalInstitution,
-    redactor: educational_models.EducationalRedactor,
-) -> educational_models.CollectiveOfferRequest:
-    request = educational_models.CollectiveOfferRequest(
+    offer: models.CollectiveOfferTemplate,
+    institution: models.EducationalInstitution,
+    redactor: models.EducationalRedactor,
+) -> models.CollectiveOfferRequest:
+    request = models.CollectiveOfferRequest(
         phoneNumber=body.phone_number,  # type: ignore[call-arg]
         requestedDate=body.requested_date,
         totalStudents=body.total_students,
@@ -1078,7 +1066,7 @@ def get_offer_event_venue(offer: AnyCollectiveOffer) -> offerers_models.Venue:
     offerer_venue_id = offer.offerVenue.get("venueId")
 
     # the offer takes place in a specific venue
-    if address_type == educational_models.OfferAddressType.OFFERER_VENUE.value and offerer_venue_id:
+    if address_type == models.OfferAddressType.OFFERER_VENUE.value and offerer_venue_id:
         venue = db.session.get(offerers_models.Venue, offerer_venue_id)
     else:
         venue = None
@@ -1091,13 +1079,11 @@ def get_offer_event_venue(offer: AnyCollectiveOffer) -> offerers_models.Venue:
 
 
 def archive_collective_offers(
-    offers: list[educational_models.CollectiveOffer],
+    offers: list[models.CollectiveOffer],
     date_archived: datetime.datetime,
 ) -> None:
     for offer in offers:
-        validation.check_collective_offer_action_is_allowed(
-            offer, educational_models.CollectiveOfferAllowedAction.CAN_ARCHIVE
-        )
+        validation.check_collective_offer_action_is_allowed(offer, models.CollectiveOfferAllowedAction.CAN_ARCHIVE)
 
         offer.isActive = False
         offer.dateArchived = date_archived
@@ -1106,12 +1092,12 @@ def archive_collective_offers(
 
 
 def archive_collective_offers_template(
-    offers: list[educational_models.CollectiveOfferTemplate],
+    offers: list[models.CollectiveOfferTemplate],
     date_archived: datetime.datetime,
 ) -> None:
     for offer in offers:
         validation.check_collective_offer_template_action_is_allowed(
-            offer, educational_models.CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
+            offer, models.CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
         )
         offer.isActive = False
         offer.dateArchived = date_archived
@@ -1136,8 +1122,8 @@ def batch_update_collective_offers(query: sa_orm.Query, update_fields: dict) -> 
         )
 
     collective_offer_ids_tuples = query.filter(
-        educational_models.CollectiveOffer.validation.in_(allowed_validation_status)
-    ).with_entities(educational_models.CollectiveOffer.id)
+        models.CollectiveOffer.validation.in_(allowed_validation_status)
+    ).with_entities(models.CollectiveOffer.id)
 
     collective_offer_ids = [offer_id for (offer_id,) in collective_offer_ids_tuples]
     number_of_collective_offers_to_update = len(collective_offer_ids)
@@ -1148,8 +1134,8 @@ def batch_update_collective_offers(query: sa_orm.Query, update_fields: dict) -> 
             current_start_index : min(current_start_index + batch_size, number_of_collective_offers_to_update)
         ]
 
-        query_to_update = db.session.query(educational_models.CollectiveOffer).filter(
-            educational_models.CollectiveOffer.id.in_(collective_offer_ids_batch)
+        query_to_update = db.session.query(models.CollectiveOffer).filter(
+            models.CollectiveOffer.id.in_(collective_offer_ids_batch)
         )
         query_to_update.update(update_fields, synchronize_session=False)
 
@@ -1167,8 +1153,8 @@ def batch_update_collective_offers_template(query: sa_orm.Query, update_fields: 
         )
 
     collective_offer_ids_tuples = query.filter(
-        educational_models.CollectiveOfferTemplate.validation.in_(allowed_validation_status)
-    ).with_entities(educational_models.CollectiveOfferTemplate.id)
+        models.CollectiveOfferTemplate.validation.in_(allowed_validation_status)
+    ).with_entities(models.CollectiveOfferTemplate.id)
 
     collective_offer_template_ids = [offer_id for (offer_id,) in collective_offer_ids_tuples]
     number_of_collective_offers_template_to_update = len(collective_offer_template_ids)
@@ -1179,8 +1165,8 @@ def batch_update_collective_offers_template(query: sa_orm.Query, update_fields: 
             current_start_index : min(current_start_index + batch_size, number_of_collective_offers_template_to_update)
         ]
 
-        query_to_update = db.session.query(educational_models.CollectiveOfferTemplate).filter(
-            educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids_batch)
+        query_to_update = db.session.query(models.CollectiveOfferTemplate).filter(
+            models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids_batch)
         )
         query_to_update.update(update_fields, synchronize_session=False)
 
@@ -1200,15 +1186,15 @@ def batch_update_collective_offers_template(query: sa_orm.Query, update_fields: 
 
 
 def check_can_move_collective_offer_venue(
-    collective_offer: educational_models.CollectiveOffer, with_restrictions: bool = True
+    collective_offer: models.CollectiveOffer, with_restrictions: bool = True
 ) -> list[offerers_models.Venue]:
     if with_restrictions:
         count_started_stocks = (
-            db.session.query(educational_models.CollectiveStock)
-            .with_entities(educational_models.CollectiveStock.id)
+            db.session.query(models.CollectiveStock)
+            .with_entities(models.CollectiveStock.id)
             .filter(
-                educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
-                educational_models.CollectiveStock.startDatetime < datetime.datetime.utcnow(),
+                models.CollectiveStock.collectiveOfferId == collective_offer.id,
+                models.CollectiveStock.startDatetime < datetime.datetime.utcnow(),
             )
             .count()
         )
@@ -1216,12 +1202,12 @@ def check_can_move_collective_offer_venue(
             raise offers_exceptions.OfferEventInThePast(count_started_stocks)
 
         count_reimbursed_bookings = (
-            db.session.query(educational_models.CollectiveBooking)
-            .with_entities(educational_models.CollectiveBooking.id)
-            .join(educational_models.CollectiveBooking.collectiveStock)
+            db.session.query(models.CollectiveBooking)
+            .with_entities(models.CollectiveBooking.id)
+            .join(models.CollectiveBooking.collectiveStock)
             .filter(
-                educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
-                educational_models.CollectiveBooking.isReimbursed,
+                models.CollectiveStock.collectiveOfferId == collective_offer.id,
+                models.CollectiveBooking.isReimbursed,
             )
             .count()
         )
@@ -1240,7 +1226,7 @@ def check_can_move_collective_offer_venue(
 
 
 def create_new_location_if_offer_uses_origin_venue_location(
-    collective_offer: educational_models.CollectiveOffer, destination_venue: offerers_models.Venue
+    collective_offer: models.CollectiveOffer, destination_venue: offerers_models.Venue
 ) -> None:
     # Use a different OA if the offer uses the venue's OA
     source_venue = collective_offer.venue
@@ -1253,7 +1239,7 @@ def create_new_location_if_offer_uses_origin_venue_location(
 
 
 def move_collective_offer_for_regularization(
-    collective_offer: educational_models.CollectiveOffer, destination_venue: offerers_models.Venue
+    collective_offer: models.CollectiveOffer, destination_venue: offerers_models.Venue
 ) -> None:
     if not feature.FeatureToggle.VENUE_REGULARIZATION.is_active():
         raise NotImplementedError("Activate VENUE_REGULARIZATION to use this feature")
@@ -1268,14 +1254,12 @@ def move_collective_offer_for_regularization(
     db.session.add(collective_offer)
 
     collective_bookings_subquery = (
-        db.session.query(educational_models.CollectiveBooking)
-        .join(educational_models.CollectiveBooking.collectiveStock)
-        .filter(educational_models.CollectiveStock.collectiveOfferId == collective_offer.id)
+        db.session.query(models.CollectiveBooking)
+        .join(models.CollectiveBooking.collectiveStock)
+        .filter(models.CollectiveStock.collectiveOfferId == collective_offer.id)
     )
-    collective_bookings_to_update = db.session.query(educational_models.CollectiveBooking).filter(
-        educational_models.CollectiveBooking.id.in_(
-            collective_bookings_subquery.with_entities(educational_models.CollectiveBooking.id)
-        )
+    collective_bookings_to_update = db.session.query(models.CollectiveBooking).filter(
+        models.CollectiveBooking.id.in_(collective_bookings_subquery.with_entities(models.CollectiveBooking.id))
     )
 
     collective_bookings_to_update.update({"venueId": destination_venue.id}, synchronize_session=False)
@@ -1283,7 +1267,7 @@ def move_collective_offer_for_regularization(
 
 
 def move_collective_offer_venue(
-    collective_offer: educational_models.CollectiveOffer,
+    collective_offer: models.CollectiveOffer,
     destination_venue: offerers_models.Venue,
 ) -> None:
     venue_choices = check_can_move_collective_offer_venue(collective_offer)
@@ -1296,13 +1280,13 @@ def move_collective_offer_venue(
     destination_pricing_point_id = destination_pricing_point_link.pricingPointId
 
     collective_bookings = (
-        db.session.query(educational_models.CollectiveBooking)
-        .join(educational_models.CollectiveBooking.collectiveStock)
+        db.session.query(models.CollectiveBooking)
+        .join(models.CollectiveBooking.collectiveStock)
         .outerjoin(
             # max 1 row joined thanks to idx_uniq_collective_booking_id
             finance_models.FinanceEvent,
             sa.and_(
-                finance_models.FinanceEvent.collectiveBookingId == educational_models.CollectiveBooking.id,
+                finance_models.FinanceEvent.collectiveBookingId == models.CollectiveBooking.id,
                 finance_models.FinanceEvent.status.in_(
                     [finance_models.FinanceEventStatus.PENDING, finance_models.FinanceEventStatus.READY]
                 ),
@@ -1312,20 +1296,20 @@ def move_collective_offer_venue(
             # max 1 row joined thanks to idx_uniq_booking_id
             finance_models.Pricing,
             sa.and_(
-                finance_models.Pricing.collectiveBookingId == educational_models.CollectiveBooking.id,
+                finance_models.Pricing.collectiveBookingId == models.CollectiveBooking.id,
                 finance_models.Pricing.status != finance_models.PricingStatus.CANCELLED,
             ),
         )
         .options(
-            sa_orm.load_only(educational_models.CollectiveBooking.status),
-            sa_orm.contains_eager(educational_models.CollectiveBooking.finance_events).load_only(
+            sa_orm.load_only(models.CollectiveBooking.status),
+            sa_orm.contains_eager(models.CollectiveBooking.finance_events).load_only(
                 finance_models.FinanceEvent.status
             ),
-            sa_orm.contains_eager(educational_models.CollectiveBooking.pricings).load_only(
+            sa_orm.contains_eager(models.CollectiveBooking.pricings).load_only(
                 finance_models.Pricing.pricingPointId, finance_models.Pricing.status
             ),
         )
-        .filter(educational_models.CollectiveStock.collectiveOfferId == collective_offer.id)
+        .filter(models.CollectiveStock.collectiveOfferId == collective_offer.id)
     )
 
     create_new_location_if_offer_uses_origin_venue_location(collective_offer, destination_venue)
@@ -1358,14 +1342,10 @@ def update_collective_offer(
 ) -> None:
     new_values = body.dict(exclude_unset=True)
 
-    offer_to_update = (
-        db.session.query(educational_models.CollectiveOffer)
-        .filter(educational_models.CollectiveOffer.id == offer_id)
-        .first()
-    )
+    offer_to_update = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer_id).first()
 
     validation.check_collective_offer_action_is_allowed(
-        offer_to_update, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
+        offer_to_update, models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
     )
 
     new_venue = None
@@ -1398,14 +1378,12 @@ def update_collective_offer_template(
 ) -> None:
     new_values = body.dict(exclude_unset=True)
 
-    offer_to_update: educational_models.CollectiveOfferTemplate = (
-        db.session.query(educational_models.CollectiveOfferTemplate)
-        .filter(educational_models.CollectiveOfferTemplate.id == offer_id)
-        .one()
+    offer_to_update: models.CollectiveOfferTemplate = (
+        db.session.query(models.CollectiveOfferTemplate).filter(models.CollectiveOfferTemplate.id == offer_id).one()
     )
 
     validation.check_collective_offer_template_action_is_allowed(
-        offer_to_update, educational_models.CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS
+        offer_to_update, models.CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS
     )
 
     if "venueId" in new_values and new_values["venueId"] != offer_to_update.venueId:
@@ -1429,7 +1407,7 @@ def update_collective_offer_template(
 
             # this is necessary to pass constraint template_dates_non_empty_daterange
             # currently this only happens when selecting time = 23h59
-            offer_to_update.dateRange = educational_utils.get_non_empty_date_time_range(start, end)
+            offer_to_update.dateRange = utils.get_non_empty_date_time_range(start, end)
         else:
             offer_to_update.dateRange = None
 
@@ -1477,7 +1455,7 @@ def _update_collective_offer(
 
     if edit_offer_venue:
         offer_venue = new_values["offerVenue"]
-        if offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
+        if offer_venue["addressType"] == models.OfferAddressType.OFFERER_VENUE:
             check_venue_user_access(offer_venue["venueId"], user)
             new_values["interventionArea"] = []
 
@@ -1515,13 +1493,12 @@ def _update_collective_offer(
 
 
 def toggle_publish_collective_offers_template(
-    collective_offers_templates: list[educational_models.CollectiveOfferTemplate],
-    is_active: bool,
+    collective_offers_templates: list[models.CollectiveOfferTemplate], is_active: bool
 ) -> None:
     action = (
-        educational_models.CollectiveOfferTemplateAllowedAction.CAN_PUBLISH
+        models.CollectiveOfferTemplateAllowedAction.CAN_PUBLISH
         if is_active
-        else educational_models.CollectiveOfferTemplateAllowedAction.CAN_HIDE
+        else models.CollectiveOfferTemplateAllowedAction.CAN_HIDE
     )
     for offer_template in collective_offers_templates:
         validation.check_collective_offer_template_action_is_allowed(offer_template, action)
@@ -1540,8 +1517,7 @@ def toggle_publish_collective_offers_template(
 
 
 def get_collective_offer_venue_by_offer_id(
-    offers: typing.Collection[educational_models.CollectiveOffer]
-    | typing.Collection[educational_models.CollectiveOfferTemplate],
+    offers: typing.Collection[models.CollectiveOffer] | typing.Collection[models.CollectiveOfferTemplate],
 ) -> dict[int, offerers_models.Venue | None]:
     venue_ids = {offer.offerVenue.get("venueId") for offer in offers}
     venues = offerers_repository.get_venues_by_ids([venue_id for venue_id in venue_ids if venue_id is not None])
