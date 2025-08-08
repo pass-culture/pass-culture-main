@@ -5,13 +5,7 @@
   --color-black: #161617;
 
   // SHADOWS COLORS
-  --color-medium-shadow: #67686b29;
   --color-large-shadow: #25026c26;
-
-  // OVERLAY
-  --color-background-overlay: rgb(
-    from var(--color-background-locked) r g b / 48%
-  );
 
   // BRAND COLORS
   --color-primary: #320096;
@@ -29,6 +23,8 @@
     #e1e1e7 50%,
     #f1f1f4 75%
   );
+
+  --shadow-overlay: var(--size-spacing-xxs) var(--size-spacing-m) var(--size-spacing-xxl) var(--color-background-shadow-overlay);
 
   //  BACKGROUND COLORS
   --color-background-accent-light: #e5f0ff;

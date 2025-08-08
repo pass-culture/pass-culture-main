@@ -28,10 +28,6 @@
     border-color: var(--color-border-focused);
   }
 
-  &:hover:not(:focus) {
-    box-shadow: forms.$input-hover-shadow;
-  }
-
   &:disabled {
     cursor: unset;
     background-color: var(--color-background-disabled);

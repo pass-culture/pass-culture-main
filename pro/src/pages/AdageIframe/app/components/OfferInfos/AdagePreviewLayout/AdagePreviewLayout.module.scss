@@ -32,7 +32,7 @@
   &-pass {
     background-color: var(--color-background-default);
     border-radius: rem.torem(16px);
-    box-shadow: 0 0 16px 0 var(--color-medium-shadow);
+    box-shadow: var(--shadow-overlay);
 
     &-header {
       padding: 0 rem.torem(16px);
@@ -40,7 +40,6 @@
       height: rem.torem(48px);
       display: flex;
       align-items: center;
-      box-shadow: 0 0 16px 0 var(--color-medium-shadow);
       border-top-right-radius: rem.torem(16px);
       border-top-left-radius: rem.torem(16px);
       position: relative;
