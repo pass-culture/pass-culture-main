@@ -13,12 +13,11 @@ import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
-import { isOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/utils'
+import { getIsOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/utils'
 import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import {
   DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES,
@@ -36,13 +35,12 @@ import { WithdrawalReminder } from './WithdrawalReminder'
 
 export interface UsefulInformationFormProps {
   conditionalFields: string[]
-  selectedVenue: VenueListItemResponseModel | undefined // It is the selected venue at step 1 (Qui propose l'offre)
+  offerVenue: VenueListItemResponseModel
   publishedOfferWithSameEAN?: GetActiveEANOfferResponseModel
 }
-
 export const UsefulInformationForm = ({
   conditionalFields,
-  selectedVenue,
+  offerVenue,
   publishedOfferWithSameEAN,
 }: UsefulInformationFormProps): JSX.Element => {
   const {
@@ -81,7 +79,7 @@ export const UsefulInformationForm = ({
   const offerSubCategory = subCategories.find(
     (s) => s.id === offer.subcategoryId
   )
-  const isOfferOnline = isOfferSubcategoryOnline(offer, subCategories)
+  const isOfferOnline = getIsOfferSubcategoryOnline(offer, subCategories)
 
   const readOnlyFields = publishedOfferWithSameEAN
     ? Object.keys(DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES)
@@ -104,27 +102,17 @@ export const UsefulInformationForm = ({
     }
   }
 
-  if (!selectedVenue) {
-    return <Spinner />
-  }
-
   return (
     <>
       {!isNewOfferCreationFlowFeatureActive && !isOfferOnline && (
         <FormLayout.Section title="Où profiter de l’offre ?">
-          <OfferLocation
-            venue={selectedVenue}
-            readOnlyFields={readOnlyFields}
-          />
+          <OfferLocation venue={offerVenue} readOnlyFields={readOnlyFields} />
         </FormLayout.Section>
       )}
       {isNewOfferCreationFlowFeatureActive && (
         <FormLayout.Section title="Où profiter de l’offre ?">
           {!isOfferOnline && (
-            <OfferLocation
-              venue={selectedVenue}
-              readOnlyFields={readOnlyFields}
-            />
+            <OfferLocation venue={offerVenue} readOnlyFields={readOnlyFields} />
           )}
           {isOfferOnline && (
             <FormLayout.Row className={styles.row}>

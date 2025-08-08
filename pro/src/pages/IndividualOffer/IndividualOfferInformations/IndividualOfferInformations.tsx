@@ -1,3 +1,7 @@
+import useSWR from 'swr'
+
+import { api } from '@/apiClient/api'
+import { GET_VENUES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
@@ -9,8 +13,13 @@ import { IndividualOfferInformationsScreen } from './components/IndividualOfferI
 const IndividualOfferInformations = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { offer, publishedOfferWithSameEAN } = useIndividualOfferContext()
+  const venuesQuery = useSWR(
+    offer ? [GET_VENUES_QUERY_KEY, offer.venue.managingOfferer.id] : null,
+    ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
+    { fallbackData: { venues: [] } }
+  )
 
-  if (!offer) {
+  if (!offer || venuesQuery.isLoading) {
     return <Spinner />
   }
 
@@ -21,7 +30,10 @@ const IndividualOfferInformations = (): JSX.Element | null => {
       mode={mode}
       venueHasPublishedOfferWithSameEan={Boolean(publishedOfferWithSameEAN)}
     >
-      <IndividualOfferInformationsScreen offer={offer} />
+      <IndividualOfferInformationsScreen
+        offer={offer}
+        venues={venuesQuery.data.venues}
+      />
     </IndividualOfferLayout>
   )
 }

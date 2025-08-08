@@ -11,7 +11,7 @@ describe('getValidationSchema', () => {
     'with isNewOfferCreationFlowFeatureActive = $isNewOfferCreationFlowFeatureActive (both)',
     ({ isNewOfferCreationFlowFeatureActive }) => {
       const baseParams = {
-        isOfferOnline: false,
+        isOfferSubcategoryOnline: false,
         isNewOfferCreationFlowFeatureActive,
       }
 
@@ -176,7 +176,7 @@ describe('getValidationSchema', () => {
           const virtualSchema = getValidationSchema({
             ...baseParams,
             conditionalFields: [],
-            isOfferOnline: true,
+            isOfferSubcategoryOnline: true,
           })
           await expect(
             virtualSchema.validate({
@@ -193,7 +193,7 @@ describe('getValidationSchema', () => {
     const baseParams = {
       conditionalFields: [],
       isNewOfferCreationFlowFeatureActive: false,
-      isOfferOnline: false,
+      isOfferSubcategoryOnline: false,
     }
 
     const validInformationFormValuesBase: UsefulInformationFormValues = {
@@ -249,7 +249,7 @@ describe('getValidationSchema', () => {
     it('should require a valid URL when it is an online offer', async () => {
       const schema = getValidationSchema({
         ...baseParams,
-        isOfferOnline: true,
+        isOfferSubcategoryOnline: true,
       })
 
       await expect(
@@ -274,7 +274,7 @@ describe('getValidationSchema', () => {
     it('should NOT require an URL when it is NOT an online offer', async () => {
       const schema = getValidationSchema({
         ...baseParams,
-        isOfferOnline: false,
+        isOfferSubcategoryOnline: false,
       })
 
       await expect(

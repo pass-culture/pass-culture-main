@@ -2,18 +2,15 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useRef, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
-import useSWR, { useSWRConfig } from 'swr'
+import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import {
-  GetIndividualOfferResponseModel,
   type GetIndividualOfferWithAddressResponseModel,
+  VenueListItemResponseModel,
 } from '@/apiClient/v1'
-import {
-  GET_OFFER_QUERY_KEY,
-  GET_VENUES_QUERY_KEY,
-} from '@/commons/config/swrQueryKeys'
+import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -22,6 +19,7 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -32,30 +30,26 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
-import { isOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/utils'
+import { getIsOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/utils'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { serializePatchOffer } from '@/pages/IndividualOffer/IndividualOfferInformations/commons/serializers'
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
 
+import { getInitialValuesFromOffer } from '../commons/getInitialValuesFromOffer'
 import { UsefulInformationFormValues } from '../commons/types'
-import { getInitialValuesFromOffer } from '../commons/utils'
+import { getLocalStorageKeyName } from '../commons/utils'
 import { getValidationSchema } from '../commons/validationSchema'
 import styles from './IndividualOfferInformationsScreen.module.scss'
 import { UsefulInformationForm } from './UsefulInformationForm/UsefulInformationForm'
 
-export const LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED =
-  'USEFUL_INFORMATION_SUBMITTED'
-
-export type IndividualOfferInformationsScreenProps = {
+export interface IndividualOfferInformationsScreenProps {
   offer: GetIndividualOfferWithAddressResponseModel
+  venues: VenueListItemResponseModel[]
 }
-
-const getLocalStorageKeyName = (offer: GetIndividualOfferResponseModel) =>
-  `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offer.id}`
-
 export const IndividualOfferInformationsScreen = ({
   offer,
+  venues,
 }: IndividualOfferInformationsScreenProps): JSX.Element => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -84,6 +78,10 @@ export const IndividualOfferInformationsScreen = ({
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
+  const isOfferSubcategoryOnline = getIsOfferSubcategoryOnline(
+    offer,
+    subCategories
+  )
 
   const addToLocalStorage = () => {
     const keyName = getLocalStorageKeyName(offer)
@@ -95,36 +93,36 @@ export const IndividualOfferInformationsScreen = ({
     }
   }
 
-  // Getting selected venue at step 1 (details) to infer address fields
-  const venuesQuery = useSWR(
-    [GET_VENUES_QUERY_KEY, offer.venue.managingOfferer.id],
-    ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
-    { fallbackData: { venues: [] } }
-  )
-
-  const selectedVenue = venuesQuery.data.venues.find(
+  const offerVenue = venues.find(
     (v) => v.id.toString() === offer.venue.id.toString()
   )
+  assertOrFrontendError(
+    offerVenue,
+    `'offerVenue' venue with id ${offer.venue.id} not found in venues.`
+  )
 
-  const offerSubCategory = subCategories.find(
+  const offerSubcategory = subCategories.find(
     (s) => s.id === offer.subcategoryId
+  )
+  assertOrFrontendError(
+    offerSubcategory,
+    `'offerSubcategory' with id "${offer.subcategoryId}" not found in subCategories.`
   )
 
   const conditionalFields = getOfferConditionalFields({
-    offerSubCategory,
+    offerSubcategory,
     receiveNotificationEmails: true,
   })
-
   const validationSchema = getValidationSchema({
     conditionalFields,
     isNewOfferCreationFlowFeatureActive,
-    isOfferOnline: isOfferSubcategoryOnline(offer, subCategories),
+    isOfferSubcategoryOnline,
   })
-
   const initialValues = getInitialValuesFromOffer(offer, {
     isNewOfferCreationFlowFeatureActive,
-    selectedVenue,
-    offerSubcategory: offerSubCategory,
+    isOfferSubcategoryOnline,
+    offerVenue,
+    offerSubcategory,
   })
   const form = useForm<UsefulInformationFormValues>({
     defaultValues: initialValues,
@@ -302,7 +300,7 @@ export const IndividualOfferInformationsScreen = ({
           <FormLayout fullWidthActions>
             <FormLayout.MandatoryInfo />
             <UsefulInformationForm
-              selectedVenue={selectedVenue}
+              offerVenue={offerVenue}
               conditionalFields={conditionalFields}
               publishedOfferWithSameEAN={publishedOfferWithSameEAN}
             />

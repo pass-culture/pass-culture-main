@@ -18,8 +18,8 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import {
-  MOCK_SUB_CATEGORIES,
-  MOCK_SUB_CATEGORY,
+  MOCKED_SUBCATEGORIES,
+  MOCKED_SUBCATEGORY,
 } from '@/pages/IndividualOffer/commons/__mocks__/constants'
 import {
   providedTicketWithdrawalTypeRadios,
@@ -86,7 +86,7 @@ const renderUsefulInformationForm = (
 ) => {
   const finalProps: UsefulInformationFormProps = {
     conditionalFields: [],
-    selectedVenue: venueListItemFactory(),
+    offerVenue: venueListItemFactory(),
     ...props,
   }
 
@@ -155,7 +155,7 @@ const renderUsefulInformationForm = (
 
 describe('UsefulInformationForm', () => {
   const contextValueBase: Partial<IndividualOfferContextValues> = {
-    subCategories: MOCK_SUB_CATEGORIES,
+    subCategories: MOCKED_SUBCATEGORIES,
   }
 
   it('should render nothing in absence of offer', () => {
@@ -166,19 +166,6 @@ describe('UsefulInformationForm', () => {
       },
     })
 
-    expect(
-      screen.queryByRole('heading', { name: LABELS.sectionTitles.withdrawal })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should render a spinner in absence of selected venue', () => {
-    renderUsefulInformationForm({
-      props: {
-        selectedVenue: undefined,
-      },
-    })
-
-    expect(screen.getByTestId('spinner')).toBeInTheDocument()
     expect(
       screen.queryByRole('heading', { name: LABELS.sectionTitles.withdrawal })
     ).not.toBeInTheDocument()
@@ -222,7 +209,7 @@ describe('UsefulInformationForm', () => {
         contextValue: {
           ...contextValueBase,
           offer: getIndividualOfferFactory({
-            subcategoryId: MOCK_SUB_CATEGORY.NON_EVENT_ONLINE.id,
+            subcategoryId: MOCKED_SUBCATEGORY.NON_EVENT_ONLINE.id,
           }),
         },
       })
@@ -253,7 +240,7 @@ describe('UsefulInformationForm', () => {
             ...contextValueBase,
             offer: {
               ...getIndividualOfferFactory(),
-              subcategoryId: MOCK_SUB_CATEGORY.NON_REFUNDABLE.id,
+              subcategoryId: MOCKED_SUBCATEGORY.NON_REFUNDABLE.id,
             },
           },
         })
@@ -270,7 +257,7 @@ describe('UsefulInformationForm', () => {
             offer: {
               ...getIndividualOfferFactory(),
               isDigital: true,
-              subcategoryId: MOCK_SUB_CATEGORY.NON_EVENT_ONLINE.id,
+              subcategoryId: MOCKED_SUBCATEGORY.NON_EVENT_ONLINE.id,
             },
           },
         })
@@ -286,7 +273,7 @@ describe('UsefulInformationForm', () => {
             ...contextValueBase,
             offer: {
               ...getIndividualOfferFactory(),
-              subcategoryId: MOCK_SUB_CATEGORY.EVENT_OFFLINE.id,
+              subcategoryId: MOCKED_SUBCATEGORY.EVENT_OFFLINE.id,
             },
           },
         })
@@ -303,7 +290,7 @@ describe('UsefulInformationForm', () => {
             offer: {
               ...getIndividualOfferFactory(),
               isDigital: false,
-              subcategoryId: MOCK_SUB_CATEGORY.NON_EVENT_OFFLINE.id,
+              subcategoryId: MOCKED_SUBCATEGORY.NON_EVENT_OFFLINE.id,
             },
           },
         })
@@ -500,7 +487,7 @@ describe('UsefulInformationForm', () => {
       const contextValue: Partial<IndividualOfferContextValues> = {
         ...contextValueBase,
         offer: getIndividualOfferFactory({
-          subcategoryId: MOCK_SUB_CATEGORY.EVENT_ONLINE.id,
+          subcategoryId: MOCKED_SUBCATEGORY.EVENT_ONLINE.id,
         }),
       }
 
@@ -549,7 +536,7 @@ describe('UsefulInformationForm', () => {
       const contextValue: Partial<IndividualOfferContextValues> = {
         ...contextValueBase,
         offer: getIndividualOfferFactory({
-          subcategoryId: MOCK_SUB_CATEGORY.EVENT_OFFLINE.id,
+          subcategoryId: MOCKED_SUBCATEGORY.EVENT_OFFLINE.id,
         }),
       }
 
@@ -601,7 +588,7 @@ describe('UsefulInformationForm', () => {
         {
           ...contextValueBase,
           offer: getIndividualOfferFactory({
-            subcategoryId: MOCK_SUB_CATEGORY.EVENT_ONLINE.id,
+            subcategoryId: MOCKED_SUBCATEGORY.EVENT_ONLINE.id,
           }),
         }
 
@@ -617,7 +604,7 @@ describe('UsefulInformationForm', () => {
         {
           ...contextValueBase,
           offer: getIndividualOfferFactory({
-            subcategoryId: MOCK_SUB_CATEGORY.EVENT_OFFLINE.id,
+            subcategoryId: MOCKED_SUBCATEGORY.EVENT_OFFLINE.id,
           }),
         }
 
