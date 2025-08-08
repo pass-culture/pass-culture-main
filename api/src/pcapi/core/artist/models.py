@@ -73,3 +73,7 @@ class ArtistAlias(PcObject, Base, Model):
     offer_category_id = sa.Column(sa.Text)
     date_created = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
     date_modified = sa.Column(sa.DateTime, nullable=True, onupdate=sa.func.now())
+
+    sa.Index(
+        "ix_artist_alias_trgm_unaccent_name", sa.func.immutable_unaccent("artist_alias_name"), postgresql_using="gin"
+    )

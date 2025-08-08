@@ -1,0 +1,31 @@
+{% extends "layouts/list.html" %}
+{% from "components/forms.html" import build_advanced_filters_form with context %}
+{% block title %}Artistes{% endblock %}
+{% block search_block %}{{ build_advanced_filters_form(advanced_form, advanced_dst, "advanced-search") }}{% endblock %}
+{% set table_id = "artists-table" %}
+{% set rows_count = rows|length %}
+{% block table_header %}
+  <th scope="col">ID</th>
+  <th scope="col">Image</th>
+  <th scope="col">Nom</th>
+  <th scope="col">Statut</th>
+  <th scope="col"
+      class="text-center">Produits associés</th>
+  <th scope="col"
+      class="text-center">Alias</th>
+  <th scope="col">
+    {% if date_created_sort_url %}
+      <a href="{{ date_created_sort_url }}"
+         class="text-decoration-none"
+         title="Changer pour un tri {{ 'croissant' if request.args.get("sort") == 'date_created' and request.args.get('order') == 'desc' else 'décroissant' }}">
+        Date de création
+        <i class="bi bi-sort-{{ 'down' if request.args.get("sort") == 'date_created' and request.args.get('order') == 'desc' else 'up' }}-alt"></i>
+      </a>
+    {% else %}
+      Date de création
+    {% endif %}
+  </th>
+{% endblock %}
+{% block table_body %}
+  {% include "artists/list_rows.html" %}
+{% endblock %}

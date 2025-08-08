@@ -1,3 +1,4 @@
+import datetime
 from unittest.mock import patch
 
 import pytest
@@ -429,3 +430,218 @@ class PostSplitArtistTest(PostEndpointHelper):
 
         new_artist = db_session.query(artist_models.Artist).filter_by(name="New Split Artist").one()
         assert product_to_move in new_artist.products
+
+
+class ListArtistsTest(GetEndpointHelper):
+    endpoint = "backoffice_web.artist.list_artists"
+    needed_permission = perm_models.Permissions.READ_OFFERS
+
+    # - session
+    # - user
+    # - artists
+    expected_num_queries = 3
+
+    @pytest.fixture
+    def artists(self, db_session):
+        now = datetime.datetime.utcnow()
+        artist1 = artist_factories.ArtistFactory(
+            name="Daniel Balavoine",
+            image="http://example.com/image1.jpg",
+            is_blacklisted=False,
+            date_created=now - datetime.timedelta(days=1),
+        )
+        artist_factories.ArtistAliasFactory(artist=artist1, artist_alias_name="Balavoine Daniel")
+        artist_factories.ArtistAliasFactory(artist=artist1, artist_alias_name="Daniel B.")
+        artist_factories.ArtistAliasFactory(artist=artist1, artist_alias_name="Balavoine D.")
+
+        offers_factories.ProductFactory(artists=[artist1], name="Je ne suis pas un héros")
+
+        artist2 = artist_factories.ArtistFactory(
+            name="Édith Piaf", is_blacklisted=True, date_created=now - datetime.timedelta(days=10)
+        )
+
+        artist3 = artist_factories.ArtistFactory(
+            name="Charles Aznavour", is_blacklisted=False, date_created=now - datetime.timedelta(days=5)
+        )
+        offers_factories.ProductFactory(artists=[artist3], name="La Bohème")
+
+        db_session.flush()
+        return [artist1, artist2, artist3]
+
+    def test_list_artists_without_filter_shows_empty_table(self, authenticated_client):
+        with assert_num_queries(self.expected_num_queries - 1):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        assert html_parser.count_table_rows(response.data) == 0
+
+    def test_list_artists_by_id(self, authenticated_client, artists):
+        artist_to_find = artists[0]
+        query_args = {
+            "search-0-search_field": "ID",
+            "search-0-operator": "EQUALS",
+            "search-0-string": artist_to_find.id,
+        }
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        row = rows[0]
+
+        assert artist_to_find.id in row["ID"]
+        assert row["Nom"] == "Daniel Balavoine"
+        assert row["Statut"] == "Visible"
+        assert row["Produits associés"] == "1"
+        assert row["Alias"] == "3"
+
+        soup = html_parser.get_soup(response.data)
+        img_div = soup.find("div", style=f"background-image: url('{artist_to_find.image}')")
+        assert img_div is not None
+
+    def test_list_artists_by_name(self, authenticated_client, artists):
+        artist_to_find = artists[0]
+        query_args = {
+            "search-0-search_field": "NAME_OR_ALIAS",
+            "search-0-operator": "EQUALS",
+            "search-0-string": artist_to_find.name.lower(),
+        }
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        row = rows[0]
+        assert row["Nom"] == artist_to_find.name
+
+    def test_list_artists_by_alias_name(self, authenticated_client, artists):
+        query_args = {
+            "search-0-search_field": "NAME_OR_ALIAS",
+            "search-0-operator": "EQUALS",
+            "search-0-string": "Balavoine Daniel",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Nom"] == "Daniel Balavoine"
+
+    @pytest.mark.parametrize(
+        "is_visible, expected_names",
+        [
+            ("true", {"Daniel Balavoine", "Charles Aznavour"}),
+            ("false", {"Édith Piaf"}),
+        ],
+    )
+    def test_list_artists_by_visibility(self, authenticated_client, artists, is_visible, expected_names):
+        query_args = {
+            "search-0-search_field": "IS_VISIBLE",
+            "search-0-operator": "EQUALS",
+            "search-0-boolean": is_visible,
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == len(expected_names)
+        found_names = {row["Nom"] for row in rows}
+        assert found_names == expected_names
+
+    def test_list_artists_by_product_name(self, authenticated_client, artists):
+        query_args = {
+            "search-0-search_field": "PRODUCT_NAME",
+            "search-0-operator": "EQUALS",
+            "search-0-string": "La Bohème",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Nom"] == "Charles Aznavour"
+
+    def test_list_artists_by_creation_date(self, authenticated_client, artists):
+        query_args = {
+            "search-0-search_field": "CREATION_DATE",
+            "search-0-operator": "DATE_FROM",
+            "search-0-date": (datetime.datetime.utcnow() - datetime.timedelta(days=7)).strftime("%Y-%m-%d"),
+        }
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert {row["Nom"] for row in rows} == {"Daniel Balavoine", "Charles Aznavour"}
+
+    def test_list_artists_with_multiple_filters(self, authenticated_client, artists):
+        query_args = {
+            "search-0-search_field": "IS_VISIBLE",
+            "search-0-operator": "EQUALS",
+            "search-0-boolean": "true",
+            "search-1-search_field": "NAME_OR_ALIAS",
+            "search-1-operator": "CONTAINS",
+            "search-1-string": "Balavoine",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Nom"] == "Daniel Balavoine"
+
+    def test_list_artists_without_sort_should_not_have_created_date_sort_link(self, authenticated_client, artists):
+        query_args = {
+            "search-0-search_field": "NAME_OR_ALIAS",
+            "search-0-operator": "CONTAINS",
+            "search-0-string": "Balavoine",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        assert "sort=date_created&amp;order=desc" not in str(response.data)
+
+    def test_list_offers_with_sort_should_have_created_date_sort_link(self, authenticated_client, artists):
+        query_args = {
+            "search-0-search_field": "IS_VISIBLE",
+            "search-0-operator": "EQUALS",
+            "search-0-boolean": "false",
+            "sort": "date_created",
+            "order": "asc",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        assert "sort=date_created&amp;order=desc" in str(response.data)
+
+    def test_list_artists_by_invalid_field_returns_400(self, authenticated_client):
+        query_args = {"search-0-search_field": "WRONG_FIELD", "search-0-operator": "EQUALS"}
+        with assert_num_queries(3):  # only session + current user + rollback
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 400
+
+        assert "Le filtre WRONG_FIELD est invalide." in html_parser.extract_alert(response.data)
+
+    def test_list_artists_by_unsupported_operator_returns_400(self, authenticated_client):
+        query_args = {
+            "search-0-search_field": "NAME_OR_ALIAS",
+            "search-0-operator": "GREATER_THAN",
+            "search-0-string": "test",
+        }
+        with assert_num_queries(3):  # only session + current user + rollback
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 400
+
+        assert "n'est pas supporté par le filtre Nom ou alias." in html_parser.extract_alert(response.data)
