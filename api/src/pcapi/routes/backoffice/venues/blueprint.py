@@ -135,6 +135,14 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
     if form.offerer.data:
         base_query = base_query.filter(offerers_models.Venue.managingOffererId.in_(form.offerer.data))
 
+    if form.provider.data:
+        base_query = base_query.join(
+            providers_models.VenueProvider, providers_models.VenueProvider.venueId == offerers_models.Venue.id
+        ).filter(
+            providers_models.VenueProvider.providerId.in_(form.provider.data),
+            providers_models.VenueProvider.isActive.is_(True),
+        )
+
     if form.only_validated_offerers.data:
         base_query = base_query.join(offerers_models.Venue.managingOfferer).filter(offerers_models.Offerer.isValidated)
 
@@ -322,6 +330,7 @@ def list_venues() -> utils.BackofficeResponse:
 
     autocomplete.prefill_criteria_choices(form.criteria)
     autocomplete.prefill_offerers_choices(form.offerer)
+    autocomplete.prefill_providers_choices(form.provider)
 
     form_url = partial(url_for, ".list_venues", **form.raw_data)
     date_created_sort_url = form_url(order="desc" if form.order.data == "asc" else "asc")

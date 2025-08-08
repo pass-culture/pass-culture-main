@@ -208,6 +208,21 @@ class ListVenuesTest(GetEndpointHelper):
         assert len(rows) == 1
         assert int(rows[0]["ID"]) == venues[0].id
 
+    def test_list_venues_by_provider(self, authenticated_client, venues):
+        venue_provider_1 = providers_factories.VenueProviderFactory()
+        provider_id = venue_provider_1.provider.id
+        venue_provider_2 = providers_factories.VenueProviderFactory(provider=venue_provider_1.provider)
+        providers_factories.VenueProviderFactory()
+
+        # 1 more request to prefill form choices with selected provider
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, provider=provider_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert {int(row["ID"]) for row in rows} == {venue_provider_1.venue.id, venue_provider_2.venue.id}
+
     def test_list_venues_by_id(self, authenticated_client, venues):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=42))
