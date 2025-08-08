@@ -1,13 +1,12 @@
+import { fileURLToPath, URL } from 'node:url'
 import { fontPreloads } from '@pass-culture/design-system/lib/global/font-preloads'
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
-import { fileURLToPath, URL } from 'url'
 import { defineConfig, PluginOption } from 'vite'
 import { createHtmlPlugin } from 'vite-plugin-html'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { configDefaults, coverageConfigDefaults } from 'vitest/config'
 
-// biome-ignore lint/style/noDefaultExport: Only way to export a Vite config.
 export default defineConfig(({ mode }) => {
   return {
     root: './src',
