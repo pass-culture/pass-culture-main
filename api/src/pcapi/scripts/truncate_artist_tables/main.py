@@ -9,14 +9,17 @@ https://github.com/pass-culture/pass-culture-main/blob/pc-35905-truncate-artist-
 import logging
 
 from pcapi.app import app
-from pcapi.core.artist.commands import import_all_artist_aliases, import_all_artist_product_links, import_all_artists
+from pcapi.core.artist.commands import import_all_artist_aliases
+from pcapi.core.artist.commands import import_all_artist_product_links
+from pcapi.core.artist.commands import import_all_artists
 from pcapi.models import db
-from pcapi.repository import transaction
+from pcapi.utils.repository import transaction
+
 
 logger = logging.getLogger(__name__)
 
 
-def truncate_artist_tables():
+def truncate_artist_tables() -> None:
     with transaction():
         db.session.execute("TRUNCATE TABLE artist_product_link")
 
@@ -33,7 +36,7 @@ def truncate_artist_tables():
     logger.info("Artist table truncated")
 
 
-def import_all_artists_data():
+def import_all_artists_data() -> None:
     import_all_artists()
     import_all_artist_product_links()
     import_all_artist_aliases()
