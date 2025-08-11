@@ -1,7 +1,8 @@
 import type { EditVenueBodyModel } from '@/apiClient/v1'
+import { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
+import { OPENING_HOURS_DAYS } from '@/commons/utils/date'
 
-import { DEFAULT_INTITIAL_OPENING_HOURS } from './constants'
-import type { Day, VenueEditionFormValues } from './types'
+import type { VenueEditionFormValues } from './types'
 
 export const serializeEditVenueBodyModel = (
   formValues: VenueEditionFormValues,
@@ -39,50 +40,28 @@ function serializeOpeningHours(
   formValues: VenueEditionFormValues,
   alreadyHasOpeningHours: boolean
 ): EditVenueBodyModel['openingHours'] {
-  const returnValue: { [day: string]: Array<Array<string>> } = {}
-  const days: Day[] = [
-    'monday',
-    'tuesday',
-    'wednesday',
-    'thursday',
-    'friday',
-    'saturday',
-    'sunday',
-  ]
-
   if (
     !alreadyHasOpeningHours &&
-    days.filter((d) => formValues[d]?.morningEndingHour).length === 0
+    !OPENING_HOURS_DAYS.some(
+      (d) =>
+        formValues.openingHours &&
+        formValues.openingHours[d] &&
+        formValues.openingHours[d].length > 0
+    )
   ) {
     //  If the opening hours have never been set yet, and if none of the days have a timespan set on the form,
     //  do not set the openingHours in the PATCH on the venue. Otherwise, the venue would appear "closed".
     return null
   }
 
-  for (const day of days) {
-    if (!formValues[day]) {
-      formValues[day] = DEFAULT_INTITIAL_OPENING_HOURS
-    }
-    const dayValues = formValues[day]
-    const timespan = []
-    const morning = []
-    const afternoon = []
-    if (dayValues.morningStartingHour && dayValues.morningEndingHour) {
-      morning.push(dayValues.morningStartingHour, dayValues.morningEndingHour)
-      timespan.push(morning)
-    }
-    if (dayValues.afternoonStartingHour && dayValues.afternoonEndingHour) {
-      afternoon.push(
-        dayValues.afternoonStartingHour,
-        dayValues.afternoonEndingHour
-      )
-      timespan.push(afternoon)
-    }
-
-    if (timespan.length > 0) {
-      returnValue[day.toUpperCase()] = timespan
-    }
-  }
-
-  return returnValue
+  const openingHours: WeekdayOpeningHoursTimespans = {}
+  OPENING_HOURS_DAYS.forEach((day) => {
+    openingHours[day] =
+      !formValues.openingHours ||
+      !formValues.openingHours[day] ||
+      formValues.openingHours[day].length === 0
+        ? null
+        : formValues.openingHours[day]
+  })
+  return openingHours
 }
