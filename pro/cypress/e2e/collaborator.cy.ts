@@ -1,3 +1,4 @@
+import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
 import { logInAndGoToPage } from '../support/helpers.ts'
 
 describe('Collaborator list feature', () => {
@@ -35,6 +36,8 @@ describe('Collaborator list feature', () => {
     cy.findAllByTestId('spinner').should('not.exist')
     cy.contains(login)
 
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
     cy.stepLog({ message: 'add a collaborator in the list' })
     cy.findByText('Ajouter un collaborateur').click()
     cy.findByLabelText('Adresse email').type(randomEmail)
