@@ -746,10 +746,18 @@ class CegidFinanceBackendTest:
             status_code=200,
             headers={"content-type": "application/json"},
         )
+        set_open_request_matcher = requests_mock.register_uri(
+            "POST",
+            f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/Bill/ReleaseBill",
+            json={"Entity": {"value": "7b89c293-62bd-ef11-a82c-000d3ae74153"}},
+            status_code=200,
+            headers={"content-type": "application/json"},
+        )
         with time_machine.travel("2025-01-25", tick=False):
             invoice_data = finance_backend.push_invoice(invoice.id)
 
         assert request_matcher.call_count == 1
+        assert set_open_request_matcher.call_count == 1
         assert invoice_data == response_data
         request_json = request_matcher.request_history[0].json()
         assert request_json["Amount"] == {"value": "1222.80"}
@@ -814,7 +822,7 @@ class CegidFinanceBackendTest:
                 "LocationID": {"value": "PRINCIPAL"},
                 "PostPeriod": {"value": "122019"},
                 "ReferenceNbr": {"value": "000014"},
-                "Status": {"value": "Balanced"},
+                "Status": {"value": "Open"},
                 "TaxTotal": {"value": 0.0},
                 "Terms": {"value": "30J"},
                 "Type": {"value": "Bill"},
@@ -945,10 +953,18 @@ class CegidFinanceBackendTest:
             status_code=200,
             headers={"content-type": "application/json"},
         )
+        set_open_request_matcher = requests_mock.register_uri(
+            "POST",
+            f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/Bill/ReleaseBill",
+            json={"Entity": {"value": "7b89c293-62bd-ef11-a82c-000d3ae74153"}},
+            status_code=200,
+            headers={"content-type": "application/json"},
+        )
         with time_machine.travel(test_date, tick=False):
             invoice_data = finance_backend.push_invoice(invoice.id)
 
         assert request_matcher.call_count == 1
+        assert set_open_request_matcher.call_count == 1
         assert invoice_data == response_data
         request_json = request_matcher.request_history[0].json()
         assert request_json["Amount"] == {"value": "99.60"}
