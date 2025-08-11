@@ -1,4 +1,6 @@
 import {
+  DEFAULT_AXE_CONFIG,
+  DEFAULT_AXE_RULES,
   MOCKED_BACK_ADDRESS_LABEL,
   MOCKED_BACK_ADDRESS_STREET,
 } from '../support/constants.ts'
@@ -61,6 +63,8 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
 
     cy.stepLog({ message: 'I specify a venue with a SIRET' })
     cy.url().should('contain', '/inscription/structure/recherche')
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
     cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
     cy.findByText('Continuer').click()
     cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
@@ -79,12 +83,18 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
 
     cy.stepLog({ message: 'I fill identification form with a public name' })
     cy.url().should('contain', '/inscription/structure/identification')
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
+
     cy.findByLabelText('Nom public').type(newVenueName)
     // Make the venue open to public.
     cy.findByText('Oui').click()
 
     cy.findByText('Étape suivante').click()
     cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
+
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
     cy.stepLog({ message: 'I fill activity form without target audience' })
     cy.url().should('contain', '/inscription/structure/activite')
@@ -98,13 +108,18 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
       .contains('Une ou plusieurs erreurs sont présentes dans le formulaire')
       .should('not.be.visible')
 
-    cy.stepLog({ message: 'I fill in missing target audience' })
     cy.url().should('contain', '/inscription/structure/activite')
     cy.findByText('Au grand public').click()
+    cy.stepLog({ message: 'I fill in missing target audience' })
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
     cy.findByText('Étape suivante').click()
 
     cy.stepLog({ message: 'the next step is displayed' })
     cy.url().should('contain', '/inscription/structure/confirmation')
+
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
     cy.stepLog({ message: 'I validate the registration' })
 

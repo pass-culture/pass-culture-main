@@ -29,8 +29,8 @@ export const OffersTableHead = ({
     <thead role="rowgroup" className={styles['offers-thead']}>
       <tr>
         <th
-          role="columnheader"
-          id="offer-head-checkbox"
+          id={getCellsDefinition().CHECKBOX.id}
+          scope="col"
           className={styles['offers-thead-th']}
         >
           <span className={styles['visually-hidden']}>
@@ -42,7 +42,7 @@ export const OffersTableHead = ({
             <th
               id={id}
               key={index}
-              role="columnheader"
+              scope="col"
               className={styles['offers-thead-th']}
             >
               {isVisuallyHidden ? (
@@ -75,7 +75,7 @@ export const OffersTableHead = ({
         )}
         <th
           id={getCellsDefinition().ACTIONS.id}
-          role="columnheader"
+          scope="col"
           className={classNames(
             styles['offers-thead-th'],
             styles['offers-thead-th-actions']

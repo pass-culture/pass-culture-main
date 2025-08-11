@@ -25,14 +25,14 @@ export const OfferNameCell = ({
   className,
 }: OfferNameCellProps) => {
   return (
-    <td
-      role="cell"
+    <th
       className={classNames(
         styles['offers-table-cell'],
         styles['title-column'],
         className
       )}
-      headers={`${rowId} ${getCellsDefinition().NAME.id}`}
+      scope="row"
+      id={rowId}
     >
       <Link
         className={classNames({
@@ -60,6 +60,6 @@ export const OfferNameCell = ({
           </div>
         </div>
       </Link>
-    </td>
+    </th>
   )
 }

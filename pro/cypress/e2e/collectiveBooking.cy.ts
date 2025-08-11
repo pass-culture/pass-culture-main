@@ -1,5 +1,6 @@
 import { addDays, format } from 'date-fns'
 
+import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
 import {
   expectOffersOrBookingsAreFound,
   logInAndGoToPage,
@@ -24,6 +25,8 @@ describe('Search for collective bookings', { testIsolation: false }, () => {
     cy.stepLog({ message: 'I display bookings' })
     cy.findByText('Afficher').click()
     cy.findByTestId('spinner').should('not.exist')
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
     cy.stepLog({ message: 'I search for "Offre" with text "Mon offre"' })
     cy.findByTestId('select-omnisearch-criteria').select('Offre')
