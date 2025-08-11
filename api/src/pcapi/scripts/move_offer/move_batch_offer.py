@@ -1,3 +1,11 @@
+"""
+If you need to read venue ids from a file, place it in the appropriate bucket like so:
+<bucket>/flask/move_offer/venues_to_move.csv
+
+headers should be :
+origin_venue_id | destination_venue_id
+"""
+
 import csv
 import logging
 import os
@@ -8,17 +16,22 @@ from functools import partial
 import click
 from sqlalchemy import exc as sa_exc
 
+import pcapi.core.providers.constants as providers_constants
 from pcapi import settings
 from pcapi.core import search
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import offer as educational_api
 from pcapi.core.finance import models as finance_models
+from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import api as offer_api
 from pcapi.core.offers import models as offer_models
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.providers import exceptions as providers_exceptions
+from pcapi.core.providers import models as providers_models
+from pcapi.core.providers import repository as providers_repository
 from pcapi.models import db
 from pcapi.utils.blueprint import Blueprint
 from pcapi.utils.transaction_manager import atomic
@@ -101,7 +114,7 @@ def _check_destination_venue_validity(
     return None
 
 
-def check_origin_venue_validity(origin_venue: offerers_models.Venue) -> str | None:
+def _check_origin_venue_validity(origin_venue: offerers_models.Venue) -> str | None:
     if origin_venue.isPermanent or origin_venue.isOpenToPublic or bool(origin_venue.siret):
         logger.info("Origin venue with id %d permanent, open to public or with SIRET.", origin_venue.id)
         return "Origin venue permanent, open to public or with SIRET. "
@@ -119,7 +132,7 @@ def _check_venues_validity(
         logger.info("Origin venue not found. id: %d", origin_venue_id)
         invalidity_reason += "Origin venue not found. "
     else:
-        origin_venue_is_invalid = check_origin_venue_validity(origin_venue)
+        origin_venue_is_invalid = _check_origin_venue_validity(origin_venue)
         if origin_venue_is_invalid:
             invalidity_reason += origin_venue_is_invalid
 
@@ -291,6 +304,168 @@ def _soft_delete_origin_venue(origin_venue: offerers_models.Venue) -> None:
 
 
 @atomic()
+def _connect_venue_to_cinema_provider(
+    venue: offerers_models.Venue,
+    provider: providers_models.Provider,
+    payload: providers_models.VenueProviderCreationPayload,
+) -> providers_models.VenueProvider:
+    # Rewriting those methods as they are still using repository.save() in repo
+    provider_pivot = providers_repository.get_cinema_provider_pivot_for_venue(venue)
+
+    if not provider_pivot:
+        raise providers_exceptions.NoCinemaProviderPivot()
+
+    venue_provider = providers_models.VenueProvider()
+    venue_provider.isActive = False
+    venue_provider.venue = venue
+    venue_provider.provider = provider
+    venue_provider.isDuoOffers = payload.isDuo if payload.isDuo else False
+    venue_provider.venueIdAtOfferProvider = provider_pivot.idAtProvider
+
+    db.session.add(venue_provider)
+    logger.info("Connect cinema provider %s to venue %s", provider, venue)
+    return venue_provider
+
+
+@atomic()
+def _connect_venue_to_provider(
+    venue: offerers_models.Venue,
+    venue_provider: providers_models.VenueProvider,
+) -> providers_models.VenueProvider:
+    # Rewriting those methods as they are still using repository.save() in repo
+    new_venue_provider = providers_models.VenueProvider()
+    new_venue_provider.isActive = False
+    new_venue_provider.venue = venue
+    new_venue_provider.provider = venue_provider.provider
+    new_venue_provider.venueIdAtOfferProvider = venue_provider.venueIdAtOfferProvider
+
+    db.session.add(new_venue_provider)
+    logger.info("Connect provider %s to venue %s", new_venue_provider.provider, venue)
+    return new_venue_provider
+
+
+@atomic()
+def _move_cinema_pivot_to_destination_venue(
+    origin_venue: offerers_models.Venue,
+    destination_venue: offerers_models.Venue,
+    venue_provider: providers_models.VenueProvider,
+) -> None:
+    if venue_provider.provider.localClass in providers_constants.CINEMA_PROVIDER_NAMES:
+        cinema_pivot_source = providers_repository.get_cinema_provider_pivot_for_venue(venue=origin_venue)
+        cinema_pivot_destination = providers_repository.get_cinema_provider_pivot_for_venue(venue=destination_venue)
+        if cinema_pivot_destination:
+            logger.info(
+                "Venue source: %s. Cinema pivot %s already exists on destination venue %s",
+                origin_venue.id,
+                cinema_pivot_destination,
+                destination_venue.id,
+            )
+        elif cinema_pivot_source:
+            cinema_pivot_source.venue = destination_venue
+            db.session.flush()
+            logger.info(
+                "Moving Cinéma pivot from venue %s to venue %s",
+                origin_venue.id,
+                destination_venue.id,
+            )
+
+
+@atomic()
+def _create_destination_venue_provider(
+    origin_venue: offerers_models.Venue,
+    destination_venue: offerers_models.Venue,
+    venue_provider_source: providers_models.VenueProvider,
+) -> providers_models.VenueProvider | None:
+    _move_cinema_pivot_to_destination_venue(origin_venue, destination_venue, venue_provider_source)
+    provider = venue_provider_source.provider
+    if provider.localClass in providers_constants.CINEMA_PROVIDER_NAMES:
+        payload = providers_models.VenueProviderCreationPayload(
+            isDuo=venue_provider_source.isDuoOffers or False,
+        )
+        new_venue_provider = _connect_venue_to_cinema_provider(destination_venue, provider, payload)
+    else:
+        new_venue_provider = _connect_venue_to_provider(destination_venue, venue_provider_source)
+    db.session.add(new_venue_provider)
+
+    history_api.add_action(
+        history_models.ActionType.SYNC_VENUE_TO_PROVIDER,
+        author=None,
+        venue=destination_venue,
+        provider_name=provider.name,
+    )
+    return new_venue_provider
+
+
+def _disable_origin_venue_providers(origin_venue_active_providers: list[providers_models.VenueProvider]) -> None:
+    for venue_provider in origin_venue_active_providers:
+        venue_provider.isActive = False
+        db.session.add(venue_provider)
+        history_api.add_action(
+            history_models.ActionType.LINK_VENUE_PROVIDER_UPDATED,
+            author=None,
+            venue=venue_provider.venue,
+            provider_id=venue_provider.providerId,
+            provider_name=venue_provider.provider.name,
+            modified_info={"isActive": {"old_info": True, "new_info": False}},
+        )
+        db.session.flush()
+        logger.info(
+            "La synchronisation d'offre %d a été désactivée",
+            venue_provider.id,
+            extra={"venue_id": venue_provider.venueId, "provider_id": venue_provider.providerId},
+            technical_message_id="deactivated",
+        )
+
+
+def _enable_destination_venue_provider(
+    destination_venue_providers: list[providers_models.VenueProvider | None],
+) -> None:
+    for venue_provider in destination_venue_providers:
+        assert venue_provider  # helps mypy
+        venue_provider.isActive = True
+        db.session.add(venue_provider)
+        db.session.flush()
+        logger.info(
+            "La synchronisation d'offre a été activée",
+            extra={"venue_id": venue_provider.venueId, "provider_id": venue_provider.providerId},
+            technical_message_id="offer.sync.activated",
+        )
+
+
+def _move_providers(
+    origin_venue: offerers_models.Venue, destination_venue: offerers_models.Venue
+) -> list[providers_models.VenueProvider | None]:
+    if len(origin_venue.venueProviders) == 0:
+        return []
+    destination_venue_providers = []
+    origin_venue_active_providers = (
+        db.session.query(providers_models.VenueProvider)
+        .filter(
+            providers_models.VenueProvider.venueId == origin_venue.id,
+            providers_models.VenueProvider.isActive == True,
+        )
+        .all()
+    )
+    _disable_origin_venue_providers(origin_venue_active_providers)
+
+    for venue_provider in origin_venue_active_providers:
+        provider_already_sync_with_destination = db.session.query(
+            db.session.query(providers_models.VenueProvider)
+            .filter(
+                providers_models.VenueProvider.venueId == destination_venue.id,
+                providers_models.VenueProvider.providerId == venue_provider.providerId,
+            )
+            .exists()
+        ).scalar()
+        if provider_already_sync_with_destination:
+            logger.info("%s is already synchronized with %s", destination_venue, venue_provider.provider)
+            continue
+        destination_venue_provider = _create_destination_venue_provider(origin_venue, destination_venue, venue_provider)
+        destination_venue_providers.append(destination_venue_provider)
+    return destination_venue_providers
+
+
+@atomic()
 def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int | None) -> None:
     invalid_venues = []
     if dry_run:
@@ -325,6 +500,7 @@ def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int |
                 with atomic():
                     offers_repository.lock_stocks_for_venue(origin_venue_id)
                     db.session.flush()
+                    destination_venue_providers = _move_providers(origin_venue, destination_venue)
                     _move_individual_offers(origin_venue, destination_venue)
                     _move_collective_offers(origin_venue, destination_venue)
                     _move_collective_offer_template(origin_venue, destination_venue)
@@ -333,6 +509,8 @@ def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int |
                     _move_finance_incident(origin_venue, destination_venue)
                     destination_venue_updated_to_permanent = _update_destination_venue_to_permanent(destination_venue)
                     _soft_delete_origin_venue(origin_venue)
+                    if destination_venue_providers:
+                        _enable_destination_venue_provider(destination_venue_providers)
                     _create_action_history(
                         origin_venue_id, destination_venue_id, destination_venue_updated_to_permanent
                     )
