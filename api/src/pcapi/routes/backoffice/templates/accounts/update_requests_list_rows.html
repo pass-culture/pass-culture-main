@@ -1,0 +1,163 @@
+{% import "components/links.html" as links %}
+{% import "components/badges.html" as badges %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% macro text_or_question_mark(value) %}
+  {% if value %}
+    {{ value }}
+  {% else %}
+    <i class="bi bi-question-circle-fill"
+       title="Information manquante"></i>
+  {% endif %}
+{% endmacro %}
+{% set procedure_id = get_setting("DS_USER_ACCOUNT_UPDATE_PROCEDURE_ID") %}
+{% for update_request in rows.items %}
+  <tr>
+    {% if is_instructor %}
+      <td class="text-center">
+        {% if update_request.status == update_request.status.draft or update_request.can_be_accepted or update_request.can_be_corrected %}
+          <div class="d-flex">
+            <div class="dropdown">
+              <button type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                      class="btn p-0">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu">
+                {% if update_request.status == update_request.status.draft %}
+                  <li class="dropdown-item p-0">
+                    <form action="{{ url_for('.instruct', ds_application_id=update_request.dsApplicationId) }}"
+                          name="{{ url_for('.instruct', ds_application_id=update_request.dsApplicationId) | action_to_name }}"
+                          method="post">
+                      {{ csrf_token }}
+                      <button type="submit"
+                              class="btn btn-sm d-block w-100 text-start px-3">Passer en instruction</button>
+                    </form>
+                  </li>
+                {% endif %}
+                {% if update_request.can_be_accepted %}
+                  <li class="dropdown-item p-0">
+                    <a class="btn btn-sm d-block w-100 text-start px-3"
+                       data-bs-toggle="modal"
+                       data-bs-target="#accept-{{ update_request.dsApplicationId }}">Accepter le dossier</a>
+                  </li>
+                {% endif %}
+                {% if update_request.can_be_corrected %}
+                  <li class="dropdown-item p-0">
+                    <a class="btn btn-sm d-block w-100 text-start px-3"
+                       data-bs-toggle="modal"
+                       data-bs-target="#ask-for-correction-{{ update_request.dsApplicationId }}">Photo illisible</a>
+                  </li>
+                {% endif %}
+                {% if update_request.can_be_refused %}
+                  <li class="dropdown-item p-0">
+                    <a class="btn btn-sm d-block w-100 text-start px-3"
+                       data-bs-toggle="modal"
+                       data-bs-target="#identity-theft-{{ update_request.dsApplicationId }}">Usurpation d'identité</a>
+                  </li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+          {% if update_request.can_be_accepted %}
+            {{ build_lazy_modal(url_for("backoffice_web.account_update.get_accept_form", ds_application_id=update_request.dsApplicationId) , "accept-" + update_request.dsApplicationId|string, "lazy", "xl") }}
+          {% endif %}
+          {% if update_request.can_be_corrected %}
+            {{ build_lazy_modal(url_for("backoffice_web.account_update.get_ask_for_correction_form", ds_application_id=update_request.dsApplicationId) , "ask-for-correction-" + update_request.dsApplicationId|string, "lazy", "xl") }}
+            {{ build_lazy_modal(url_for("backoffice_web.account_update.get_identity_theft_form", ds_application_id=update_request.dsApplicationId) , "identity-theft-" + update_request.dsApplicationId|string, "lazy", "xl") }}
+          {% endif %}
+        {% endif %}
+      </td>
+    {% endif %}
+    <td>
+      {% set subpath = "/pieces_jointes" if update_request.status in (update_request.status.draft, update_request.status.on_going) else "" %}
+      {{ links.build_ds_application_external_link(update_request.dsApplicationId, procedure_id, "", subpath) }}
+    </td>
+    <td>
+      {% call badges.badges_container() %}
+        {{ update_request.status | format_dms_application_status_badge }}
+        {{ update_request.correction_flags | format_user_account_update_flags }}
+      {% endcall %}
+    </td>
+    <td>{{ update_request.dateLastStatusUpdate | format_date_time }}</td>
+    <td>
+      {% if update_request.dateLastUserMessage %}
+        <span class="fw-bold">Demandeur :</span>
+        <br />
+        {{ update_request.dateLastUserMessage | format_date_time }}
+        <br />
+      {% endif %}
+      {% if update_request.dateLastInstructorMessage %}
+        <span class="fw-bold">Instructeur :</span>
+        <br />
+        {{ update_request.dateLastInstructorMessage | format_date_time }}
+        <br />
+      {% endif %}
+    </td>
+    <td>
+      {{ update_request.firstName | empty_string_if_null }} {{ update_request.lastName | empty_string_if_null }}
+      {% if update_request.birthDate %}
+        <br />
+        né(e) le {{ update_request.birthDate | format_date }} ({{ update_request.applicant_age }} ans)
+      {% endif %}
+      <br />
+      {{ update_request.email }}
+    </td>
+    <td>
+      {% if update_request.user %}
+        {{ links.build_public_user_name_to_details_link(update_request.user, "history") }}
+        {% if update_request.user.birth_date %}
+          <br />
+          {{ "né" | genderize(update_request.user.civility) }} le {{ update_request.user.birth_date | format_date }} ({{ update_request.user.age }} ans)
+        {% endif %}
+        <br />
+        {{ update_request.user.email }}
+        {% if update_request.user.roles %}
+          <br />
+          {% for role in update_request.user.roles %}
+          {{ role | format_role(deposits=update_request.user.deposits) | format_badge("secondary") }}</span>
+        {% endfor %}
+      {% endif %}
+    {% else %}
+      Compte jeune non trouvé
+    {% endif %}
+  </td>
+  <td>
+    {{ update_request.data_check_flags | format_user_account_update_flags }}
+    {% if update_request.has_email_update %}
+      <div>
+        <span class="fw-bold">Email&nbsp;:</span> {{ text_or_question_mark(update_request.oldEmail) }} → {{ text_or_question_mark(update_request.newEmail) }}
+      </div>
+    {% endif %}
+    {% if update_request.has_phone_number_update %}
+      <div>
+        <span class="fw-bold">Téléphone&nbsp;:</span>
+        {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.phoneNumber | empty_string_if_null }} →{% endif %}
+        {{ text_or_question_mark(update_request.newPhoneNumber) }}
+      </div>
+    {% endif %}
+    {% if update_request.has_first_name_update %}
+      <div>
+        <span class="fw-bold">Prénom&nbsp;:</span>
+        {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.firstName | empty_string_if_null }} →{% endif %}
+        {{ text_or_question_mark(update_request.newFirstName) }}
+      </div>
+    {% endif %}
+    {% if update_request.has_last_name_update %}
+      <div>
+        <span class="fw-bold">Nom&nbsp;:</span>
+        {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.lastName | empty_string_if_null }} →{% endif %}
+        {{ text_or_question_mark(update_request.newLastName) }}
+      </div>
+    {% endif %}
+    {% if update_request.has_account_has_same_info_update %}
+      <div>
+        <span class="fw-bold">Un compte a les mêmes informations</span>
+      </div>
+    {% endif %}
+  </td>
+  <td>
+    {% if update_request.lastInstructor %}{{ update_request.lastInstructor.full_name }}{% endif %}
+  </td>
+</tr>
+{% endfor %}
