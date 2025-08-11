@@ -115,49 +115,49 @@
         {% if update_request.user.roles %}
           <br />
           {% for role in update_request.user.roles %}
-          {{ role | format_role(deposits=update_request.user.deposits) | format_badge("secondary") }}</span>
-        {% endfor %}
+            {{ role | format_role(deposits=update_request.user.deposits) | format_badge("secondary") }}
+          {% endfor %}
+        {% endif %}
+      {% else %}
+        Compte jeune non trouvé
       {% endif %}
-    {% else %}
-      Compte jeune non trouvé
-    {% endif %}
-  </td>
-  <td>
-    {{ update_request.data_check_flags | format_user_account_update_flags }}
-    {% if update_request.has_email_update %}
-      <div>
-        <span class="fw-bold">Email&nbsp;:</span> {{ text_or_question_mark(update_request.oldEmail) }} → {{ text_or_question_mark(update_request.newEmail) }}
-      </div>
-    {% endif %}
-    {% if update_request.has_phone_number_update %}
-      <div>
-        <span class="fw-bold">Téléphone&nbsp;:</span>
-        {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.phoneNumber | empty_string_if_null }} →{% endif %}
-        {{ text_or_question_mark(update_request.newPhoneNumber) }}
-      </div>
-    {% endif %}
-    {% if update_request.has_first_name_update %}
-      <div>
-        <span class="fw-bold">Prénom&nbsp;:</span>
-        {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.firstName | empty_string_if_null }} →{% endif %}
-        {{ text_or_question_mark(update_request.newFirstName) }}
-      </div>
-    {% endif %}
-    {% if update_request.has_last_name_update %}
-      <div>
-        <span class="fw-bold">Nom&nbsp;:</span>
-        {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.lastName | empty_string_if_null }} →{% endif %}
-        {{ text_or_question_mark(update_request.newLastName) }}
-      </div>
-    {% endif %}
-    {% if update_request.has_account_has_same_info_update %}
-      <div>
-        <span class="fw-bold">Un compte a les mêmes informations</span>
-      </div>
-    {% endif %}
-  </td>
-  <td>
-    {% if update_request.lastInstructor %}{{ update_request.lastInstructor.full_name }}{% endif %}
-  </td>
-</tr>
+    </td>
+    <td>
+      {{ update_request.data_check_flags | format_user_account_update_flags }}
+      {% if update_request.has_email_update %}
+        <div>
+          <span class="fw-bold">Email&nbsp;:</span> {{ text_or_question_mark(update_request.oldEmail) }} → {{ text_or_question_mark(update_request.newEmail) }}
+        </div>
+      {% endif %}
+      {% if update_request.has_phone_number_update %}
+        <div>
+          <span class="fw-bold">Téléphone&nbsp;:</span>
+          {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.phoneNumber | empty_string_if_null }} →{% endif %}
+          {{ text_or_question_mark(update_request.newPhoneNumber) }}
+        </div>
+      {% endif %}
+      {% if update_request.has_first_name_update %}
+        <div>
+          <span class="fw-bold">Prénom&nbsp;:</span>
+          {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.firstName | empty_string_if_null }} →{% endif %}
+          {{ text_or_question_mark(update_request.newFirstName) }}
+        </div>
+      {% endif %}
+      {% if update_request.has_last_name_update %}
+        <div>
+          <span class="fw-bold">Nom&nbsp;:</span>
+          {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.lastName | empty_string_if_null }} →{% endif %}
+          {{ text_or_question_mark(update_request.newLastName) }}
+        </div>
+      {% endif %}
+      {% if update_request.has_account_has_same_info_update %}
+        <div>
+          <span class="fw-bold">Un compte a les mêmes informations</span>
+        </div>
+      {% endif %}
+    </td>
+    <td>
+      {% if update_request.lastInstructor %}{{ update_request.lastInstructor.full_name }}{% endif %}
+    </td>
+  </tr>
 {% endfor %}
