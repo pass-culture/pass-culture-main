@@ -14,6 +14,7 @@ import { getFormattedAddress } from '@/commons/utils/getFormattedAddress'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
+import { OpeningHours } from '@/components/OpeningHours/OpeningHours'
 import { OpenToPublicToggle } from '@/components/OpenToPublicToggle/OpenToPublicToggle'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Callout } from '@/ui-kit/Callout/Callout'
@@ -22,14 +23,13 @@ import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { AccessibilityForm } from './AccessibilityForm/AccessibilityForm'
-import { OpeningHoursForm } from './OpeningHoursForm/OpeningHoursForm'
 import { RouteLeavingGuardVenueEdition } from './RouteLeavingGuardVenueEdition'
 import { serializeEditVenueBodyModel } from './serializers'
 import { setInitialFormValues } from './setInitialFormValues'
 import type { VenueEditionFormValues } from './types'
 import styles from './VenueEditionForm.module.scss'
 import { VenueFormActionBar } from './VenueFormActionBar/VenueFormActionBar'
-import { getValidationSchema } from './validationSchema'
+import { validationSchema } from './validationSchema'
 
 interface VenueFormProps {
   venue: GetVenueResponseModel
@@ -46,20 +46,12 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
   const methods = useForm<VenueEditionFormValues>({
     defaultValues: initialValues,
-    resolver: yupResolver(getValidationSchema() as any),
+    resolver: yupResolver(validationSchema as any),
     mode: 'onBlur',
   })
 
   const resetOpeningHoursAndAccessibility = () => {
     const fieldsToReset: (keyof VenueEditionFormValues)[] = [
-      'days',
-      'monday',
-      'tuesday',
-      'wednesday',
-      'thursday',
-      'friday',
-      'saturday',
-      'sunday',
       'accessibility',
       'isAccessibilityAppliedOnAllOffers',
     ]
@@ -130,6 +122,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
       })
     }
   }
+
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)}>
@@ -200,7 +193,10 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                       </Callout>
                     </FormLayout.Row>
                     <FormLayout.Row>
-                      <OpeningHoursForm />
+                      <fieldset>
+                        <legend>Horaires d’ouverture</legend>
+                        <OpeningHours />
+                      </fieldset>
                     </FormLayout.Row>
                   </FormLayout.SubSubSection>
                   <AccessibilityForm

@@ -1,8 +1,37 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
+import { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
 import { AccessibilityEnum } from '@/commons/core/shared/types'
-import { DEFAULT_INTITIAL_OPENING_HOURS } from '@/pages/VenueEdition/constants'
+import { OPENING_HOURS_DAYS } from '@/commons/utils/date'
 
-import type { Day, DayValues, VenueEditionFormValues } from './types'
+import { VenueEditionFormValues } from './types'
+
+export function getOpeningHoursFromGetVenueResponseOpeningHours(
+  openingHours: GetVenueResponseModel['openingHours']
+): WeekdayOpeningHoursTimespans | null {
+  //  This function exists because the model for the openingHours on `getVenue`
+  // is not he same as the model used elswhere for opening hours
+  //  TODO : delete this function when `GetVenueResponseModel.openingHours` model is `WeekdayOpeningHoursTimespans`
+  if (!openingHours) {
+    return null
+  }
+
+  const formattedOpeningHours: WeekdayOpeningHoursTimespans = {}
+
+  OPENING_HOURS_DAYS.forEach((day) => {
+    if (openingHours[day] && openingHours[day].length > 0) {
+      formattedOpeningHours[day] = openingHours[day].map(
+        (timespan: { open: string; close: string }) => [
+          timespan.open,
+          timespan.close,
+        ]
+      )
+    } else {
+      formattedOpeningHours[day] = null
+    }
+  })
+
+  return formattedOpeningHours
+}
 
 export const setInitialFormValues = (
   venue: GetVenueResponseModel
@@ -21,7 +50,9 @@ export const setInitialFormValues = (
     phoneNumber: venue.contact?.phoneNumber || '',
     webSite: venue.contact?.website || '',
     isOpenToPublic: venue.isOpenToPublic.toString() || '',
-    ...buildOpeningHoursValues(venue.openingHours),
+    openingHours: getOpeningHoursFromGetVenueResponseOpeningHours(
+      venue.openingHours
+    ),
   }
 }
 
@@ -43,56 +74,4 @@ function setAccessibilityNone(venue: GetVenueResponseModel): boolean {
     venue.audioDisabilityCompliant,
     venue.motorDisabilityCompliant,
   ].every((accessibility) => accessibility === false)
-}
-
-function buildOpeningHoursValues(
-  openingHours: GetVenueResponseModel['openingHours']
-) {
-  const filledDays = Object.entries(openingHours ?? {}).filter((dateAndHour) =>
-    Boolean(dateAndHour[1])
-  )
-
-  if (!openingHours) {
-    return { days: [] }
-  }
-  const days = filledDays.map((dateAndHour) =>
-    dateAndHour[0].toLowerCase()
-  ) as Day[]
-
-  const monday = buildHourOfDay(openingHours.MONDAY)
-  const tuesday = buildHourOfDay(openingHours.TUESDAY)
-  const wednesday = buildHourOfDay(openingHours.WEDNESDAY)
-  const thursday = buildHourOfDay(openingHours.THURSDAY)
-  const friday = buildHourOfDay(openingHours.FRIDAY)
-  const saturday = buildHourOfDay(openingHours.SATURDAY)
-  const sunday = buildHourOfDay(openingHours.SUNDAY)
-
-  return {
-    days,
-    monday,
-    tuesday,
-    wednesday,
-    thursday,
-    friday,
-    saturday,
-    sunday,
-  }
-}
-
-function buildHourOfDay(
-  dayOpeningHour: Record<string, any> | undefined
-): DayValues {
-  return dayOpeningHour
-    ? {
-        morningStartingHour: Object.values(dayOpeningHour)[0].open,
-        morningEndingHour: Object.values(dayOpeningHour)[0].close,
-        afternoonStartingHour: Object.values(dayOpeningHour)[1]
-          ? Object.values(dayOpeningHour)[1].open
-          : '',
-        afternoonEndingHour: Object.values(dayOpeningHour)[1]
-          ? Object.values(dayOpeningHour)[1].close
-          : '',
-        isAfternoonOpen: Object.values(dayOpeningHour)[1] ? true : false,
-      }
-    : { ...DEFAULT_INTITIAL_OPENING_HOURS }
 }

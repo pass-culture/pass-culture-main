@@ -1,5 +1,5 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
-import { DAYS_IN_ORDER, mapDayToFrench } from '@/commons/utils/date'
+import { mapDayToFrench, OPENING_HOURS_DAYS } from '@/commons/utils/date'
 import { getFormattedAddress } from '@/commons/utils/getFormattedAddress'
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSubSection } from '@/components/SummaryLayout/SummarySubSubSection'
@@ -28,7 +28,7 @@ export function OpeningHoursReadOnly({ openingHours, address }: OpeningHours) {
     Boolean(dateAndHour[1])
   )
 
-  const orderedFilledDays = DAYS_IN_ORDER.map((d) => {
+  const orderedFilledDays = OPENING_HOURS_DAYS.map((d) => {
     const index = filledDays.findIndex(([day]) => day === d)
     return index === -1 ? null : filledDays[index]
   }).filter(Boolean) as OpeningHoursEntries
@@ -51,9 +51,9 @@ export function OpeningHoursReadOnly({ openingHours, address }: OpeningHours) {
       </span>
       {orderedFilledDays.length === 0 ? (
         <span>
-          {openingHours === null
-            ? 'Horaires : Non renseigné'
-            : `Horaires : Vous n’avez pas renseigné d’horaire d’ouverture. Votre établissement est indiqué comme fermé sur l’application.`}
+          Horaires : Vos horaires d’ouverture ne sont pas affichées sur
+          l'application car votre établissement est indiqué comme fermé tous les
+          jours.
         </span>
       ) : (
         <OpeningHours />

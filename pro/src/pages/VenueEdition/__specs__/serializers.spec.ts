@@ -36,13 +36,15 @@ describe('Venue edition payload serializer', () => {
     )
   })
 
-  it('should serialize a venue payload with no opening hours and that has never had opening hours before', () => {
+  it('should serialize a venue payload with opening hours closed every day', () => {
     const initialFormValues = setInitialFormValues({
       ...defaultGetVenue,
       openingHours: null,
     })
     expect(serializeEditVenueBodyModel(initialFormValues, true, true)).toEqual(
-      expect.objectContaining({ openingHours: {} })
+      expect.objectContaining({
+        openingHours: expect.objectContaining({ MONDAY: null, THURSDAY: null }),
+      })
     )
   })
 })

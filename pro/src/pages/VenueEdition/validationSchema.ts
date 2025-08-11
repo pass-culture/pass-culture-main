@@ -3,8 +3,6 @@ import * as yup from 'yup'
 import { isPhoneValid } from '@/commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 import { emailSchema } from '@/commons/utils/isValidEmail'
 
-import type { Day } from './types'
-
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
 
@@ -24,120 +22,81 @@ const accessibilityTestAndShape = (schema: any) => {
     })
 }
 
-export const getValidationSchema = () =>
-  yup.object().shape({
-    accessibility: yup.object().when('isOpenToPublic', {
-      is: 'true',
-      then: (schema) => accessibilityTestAndShape(schema),
-      otherwise: (schema) => schema,
-    }),
-    email: yup.string().nullable().test(emailSchema),
-    phoneNumber: yup
-      .string()
-      .nullable()
-      .test({
-        name: 'is-phone-valid',
-        message:
-          'Veuillez entrer un numéro de téléphone valide, exemple : 612345678',
-        test: (phone?: string | null) => {
-          /* istanbul ignore next: DEBT, TO FIX */
-          return phone ? isPhoneValid(phone) : true
-        },
-      }),
-    isOpenToPublic: yup
-      .string()
-      .nullable()
-      .required('Veuillez renseigner ce champ'),
-    webSite: yup
-      .string()
-      .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
-      .nullable(),
-    monday: yup.object().when('days', {
-      is: (days: Day[]) => days.includes('monday'),
-      then: (schema) => schema.shape(openingHoursValidationSchema),
-    }),
-    tuesday: yup.object().when('days', {
-      is: (days: Day[]) => days.includes('tuesday'),
-      then: (schema) => schema.shape(openingHoursValidationSchema),
-    }),
-    wednesday: yup.object().when('days', {
-      is: (days: Day[]) => days.includes('wednesday'),
-      then: (schema) => schema.shape(openingHoursValidationSchema),
-    }),
-    thursday: yup.object().when('days', {
-      is: (days: Day[]) => days.includes('thursday'),
-      then: (schema) => schema.shape(openingHoursValidationSchema),
-    }),
-    friday: yup.object().when('days', {
-      is: (days: Day[]) => days.includes('friday'),
-      then: (schema) => schema.shape(openingHoursValidationSchema),
-    }),
-    saturday: yup.object().when('days', {
-      is: (days: Day[]) => days.includes('saturday'),
-      then: (schema) => schema.shape(openingHoursValidationSchema),
-    }),
-    sunday: yup.object().when('days', {
-      is: (days: Day[]) => days.includes('sunday'),
-      then: (schema) => schema.shape(openingHoursValidationSchema),
-    }),
-  })
+const openingHoursDaySchema = yup
+  .array()
+  .of(
+    yup.array().of(
+      yup
+        .string()
+        //  Custom tests are necessary to get the index of the required field
+        .test('first-time-required', 'Heure obligatoire', function (value) {
+          return Boolean(!this.path.endsWith('[0]') || value)
+        })
+        .test('second-time-required', 'Heure obligatoire', function (value) {
+          return Boolean(!this.path.endsWith('[1]') || value)
+        })
+        .test(
+          'first-time-before',
+          'Plage horaire incohérente',
+          function (value) {
+            return (
+              !value ||
+              !this.parent[1] ||
+              this.path.endsWith('[1]') ||
+              value < this.parent[1]
+            )
+          }
+        )
+    )
+  )
+  .test(
+    'second-span-first-time-after-first-span-second-time',
+    'Plages horaires incompatibles',
+    function (value) {
+      return (
+        !value?.[0]?.[0] ||
+        !value?.[0]?.[1] ||
+        !value?.[1]?.[0] ||
+        !value?.[1]?.[1] ||
+        value[0][1] < value[1][0]
+      )
+    }
+  )
 
-const openingHoursValidationSchema = {
-  morningStartingHour: yup
-    .string()
-    .required('Veuillez renseigner une heure de début'),
-  morningEndingHour: yup
-    .string()
-    .required('Veuillez renseigner une heure de fin')
-    .when('morningStartingHour', (morningStartingHour, schema) => {
-      return morningStartingHour[0]
-        ? schema.test({
-            test: (morningEndingHour: string) => {
-              return compareHours(morningStartingHour[0], morningEndingHour)
-            },
-            message: "L'heure de fin doit être supérieure à l'heure de début",
-          })
-        : schema
-    }),
-  afternoonStartingHour: yup.string().when('isAfternoonOpen', {
-    is: (isAfternoonOpen: boolean) => isAfternoonOpen,
-    then: (schema) => schema.required('Veuillez renseigner une heure de début'),
+export const validationSchema = yup.object().shape({
+  accessibility: yup.object().when('isOpenToPublic', {
+    is: 'true',
+    then: (schema) => accessibilityTestAndShape(schema),
+    otherwise: (schema) => schema,
   }),
-  afternoonEndingHour: yup.string().when('isAfternoonOpen', {
-    is: (isAfternoonOpen: boolean) => isAfternoonOpen,
-    then: (schema) =>
-      schema
-        .required('Veuillez renseigner une heure de fin')
-        .when('afternoonStartingHour', (afternoonStartingHour, schema) => {
-          return afternoonStartingHour.length > 0
-            ? schema.test({
-                test: (afternoonEndingHour: string) => {
-                  return compareHours(
-                    afternoonStartingHour[0],
-                    afternoonEndingHour
-                  )
-                },
-                message:
-                  "L'heure de fin doit être supérieure à l'heure de début",
-              })
-            : schema
-        }),
+  email: yup.string().nullable().test(emailSchema),
+  phoneNumber: yup
+    .string()
+    .nullable()
+    .test({
+      name: 'is-phone-valid',
+      message:
+        'Veuillez entrer un numéro de téléphone valide, exemple : 612345678',
+      test: (phone?: string | null) => {
+        /* istanbul ignore next: DEBT, TO FIX */
+        return phone ? isPhoneValid(phone) : true
+      },
+    }),
+  isOpenToPublic: yup
+    .string()
+    .nullable()
+    .required('Veuillez renseigner ce champ'),
+  webSite: yup
+    .string()
+    .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
+    .nullable(),
+  openingHours: yup.object().nullable().shape({
+    MONDAY: openingHoursDaySchema,
+    TUESDAY: openingHoursDaySchema,
+    WEDNESDAY: openingHoursDaySchema,
+    THURSDAY: openingHoursDaySchema,
+    FRIDAY: openingHoursDaySchema,
+    SATURDAY: openingHoursDaySchema,
+    SUNDAY: openingHoursDaySchema,
   }),
-}
-
-function compareHours(start?: string, end?: string): boolean {
-  if (!start || !end) {
-    return false
-  }
-
-  const [startHours, startMinutes] = start.split(':').map(Number)
-  const [endHours, endMinutes] = end.split(':').map(Number)
-
-  const startDate = new Date()
-  startDate.setHours(startHours, startMinutes)
-
-  const endDate = new Date()
-  endDate.setHours(endHours, endMinutes)
-
-  return endDate > startDate
-}
+})

@@ -18,7 +18,6 @@ import { pluralize } from '@/commons/utils/pluralize'
 import { RadioButton } from '@/design-system/RadioButton/RadioButton'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import strokeDeskIcon from '@/icons/stroke-desk.svg'
-import { daysOfWeek } from '@/pages/VenueEdition/OpeningHoursForm/OpeningHoursForm'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
@@ -30,6 +29,16 @@ interface DownloadBookingsModalProps {
   priceCategoryAndScheduleCountByDate: EventDatesInfos
   onCloseDialog: () => void
 }
+
+const daysOfWeek: string[] = [
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+  'sunday',
+]
 
 export const DownloadBookingsModal = ({
   offerId,

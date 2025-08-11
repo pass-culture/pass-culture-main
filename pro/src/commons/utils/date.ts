@@ -2,6 +2,8 @@ import { isValid } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { format } from 'date-fns-tz'
 
+import { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
+
 const FORMAT_ISO = "yyyy-MM-dd'T'HH:mm:ssX"
 export const FORMAT_ISO_DATE_ONLY = 'yyyy-MM-dd'
 export const FORMAT_DD_MM_YYYY_HH_mm = 'dd/MM/yyyy HH:mm'
@@ -175,7 +177,7 @@ export function mapDayToFrench(
   }
 }
 
-export const DAYS_IN_ORDER = [
+export const OPENING_HOURS_DAYS: (keyof WeekdayOpeningHoursTimespans)[] = [
   'MONDAY',
   'TUESDAY',
   'WEDNESDAY',

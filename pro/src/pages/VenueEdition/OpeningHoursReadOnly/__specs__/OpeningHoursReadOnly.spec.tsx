@@ -54,7 +54,7 @@ describe('OpeningHoursReadOnly', () => {
 
     expect(
       screen.getByText(
-        /Vous n’avez pas renseigné d’horaire d’ouverture. Votre établissement est indiqué comme fermé sur l’application./
+        "Horaires : Vos horaires d’ouverture ne sont pas affichées sur l'application car votre établissement est indiqué comme fermé tous les jours."
       )
     ).toBeInTheDocument()
   })
@@ -85,7 +85,7 @@ describe('OpeningHoursReadOnly', () => {
     expect(screen.getByText(firstDay[0].close)).toBeInTheDocument()
   })
 
-  it('should display an empty state message when opening hours are not set', () => {
+  it('should display an default message when opening hours are not set', () => {
     render(
       <OpeningHoursReadOnly
         openingHours={null}
@@ -93,10 +93,14 @@ describe('OpeningHoursReadOnly', () => {
       />
     )
 
-    expect(screen.getByText(/Horaires : Non renseigné/)).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        "Horaires : Vos horaires d’ouverture ne sont pas affichées sur l'application car votre établissement est indiqué comme fermé tous les jours."
+      )
+    ).toBeInTheDocument()
   })
 
-  it('should display a closed state message when opening hours are set but empty', () => {
+  it('should display a default message when opening hours are set but empty', () => {
     render(
       <OpeningHoursReadOnly
         openingHours={{}}
@@ -106,7 +110,7 @@ describe('OpeningHoursReadOnly', () => {
 
     expect(
       screen.getByText(
-        /Horaires : Vous n’avez pas renseigné d’horaire d’ouverture. Votre établissement est indiqué comme fermé sur l’application./
+        "Horaires : Vos horaires d’ouverture ne sont pas affichées sur l'application car votre établissement est indiqué comme fermé tous les jours."
       )
     ).toBeInTheDocument()
   })
