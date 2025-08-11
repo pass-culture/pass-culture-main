@@ -250,7 +250,16 @@ class CegidFinanceBackend(BaseFinanceBackend):
         if response.status_code != 200:
             raise exceptions.FinanceBackendBadRequest(response, "Error in invoice creation payload")
 
-        return response.json()
+        response_json = response.json()
+
+        # Set invoice to Open in Cegid
+        set_open_url = f"{self.base_url}/{self._interface}/Bill/ReleaseBill"
+        set_open_response = self._request("POST", set_open_url, json={"Entity": {"value": response_json["id"]}})
+
+        if set_open_response.status_code != 200:
+            raise exceptions.FinanceBackendBadRequest(set_open_response, "Error in setting invoice to Open")
+
+        return response_json
 
     def format_datetime(self, source_datetime: datetime.datetime) -> str:
         utc_source_datetime = date_utils.make_timezone_aware_utc(source_datetime)
