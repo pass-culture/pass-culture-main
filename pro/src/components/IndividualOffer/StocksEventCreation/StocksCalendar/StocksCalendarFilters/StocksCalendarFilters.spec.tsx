@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 
@@ -8,11 +8,12 @@ import {
   StocksCalendarFilters,
   type StocksCalendarFiltersProps,
 } from './StocksCalendarFilters'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 function renderStocksCalendarFilters(
   props?: Partial<StocksCalendarFiltersProps>
 ) {
-  render(
+  renderWithProviders(
     <StocksCalendarFilters
       filters={{}}
       onUpdateFilters={vi.fn()}
