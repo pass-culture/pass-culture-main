@@ -390,7 +390,7 @@ class OffererBookingRecapTest:
         with assert_num_queries(3):
             email_data = get_new_booking_to_pro_email_data(booking)
 
-        assert email_data.params["FORMATTED_PRICE"] == "1193 F"
+        assert email_data.params["FORMATTED_PRICE"] == "1195 F"
 
 
 class SendNewBookingEmailToProTest:

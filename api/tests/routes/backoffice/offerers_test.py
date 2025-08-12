@@ -921,7 +921,7 @@ class GetOffererStatsTest(GetEndpointHelper):
         "venue_factory,expected_revenue_text",
         [
             (offerers_factories.VenueFactory, "10,00 € de CA"),
-            (offerers_factories.CaledonianVenueFactory, "10,00 € (1193 CFP) de CA"),
+            (offerers_factories.CaledonianVenueFactory, "10,00 € (1195 CFP) de CA"),
         ],
     )
     def test_get_stats(self, authenticated_client, venue_factory, expected_revenue_text):

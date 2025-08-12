@@ -309,7 +309,7 @@ class GetBankAccountInvoicesTest(GetEndpointHelper):
         "factory,expected_invoice1_amount,expected_invoice2_amount",
         [
             (finance_factories.BankAccountFactory, "10,00 €", "12,50 €"),
-            (finance_factories.CaledonianBankAccountFactory, "10,00 € (1193 CFP)", "12,50 € (1492 CFP)"),
+            (finance_factories.CaledonianBankAccountFactory, "10,00 € (1195 CFP)", "12,50 € (1490 CFP)"),
         ],
     )
     def test_bank_account_has_invoices(

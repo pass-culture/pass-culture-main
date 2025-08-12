@@ -40,6 +40,16 @@ def test_to_euros():
     assert utils.cents_to_full_unit(1234) == decimal.Decimal("12.34")
 
 
+def test_euros_to_xpf():
+    assert utils.euros_to_xpf(decimal.Decimal("1")) == 120
+    assert utils.euros_to_xpf(decimal.Decimal("9.99")) == 1190
+    assert utils.euros_to_xpf(decimal.Decimal("10")) == 1195
+    assert utils.euros_to_xpf(decimal.Decimal("10.03")) == 1195
+    assert utils.euros_to_xpf(decimal.Decimal("10.04")) == 1200
+    assert utils.euros_to_xpf(decimal.Decimal("167.58")) == 20000
+    assert utils.euros_to_xpf(decimal.Decimal("167.6")) == 20000
+
+
 def test_fr_percentage_filter():
     assert utils.fr_percentage_filter(decimal.Decimal("1.0000")) == "100 %"
     assert utils.fr_percentage_filter(decimal.Decimal("0.0000")) == "0 %"

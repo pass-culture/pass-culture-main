@@ -1669,7 +1669,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         assert f"Bénéficiaire : {booking.user.full_name}" in additional_data_text
         if show_xfp_amount:
             assert "Montant de la réservation : 10,10 € (1205 CFP)" in additional_data_text
-            assert "Montant remboursé à l'acteur : 10,00 € (1193 CFP)" in additional_data_text
+            assert "Montant remboursé à l'acteur : 10,00 € (1195 CFP)" in additional_data_text
         else:
             assert "Montant de la réservation : 10,10 €" in additional_data_text
             assert "Montant remboursé à l'acteur : 10,00 €" in additional_data_text
@@ -2054,8 +2054,8 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
         assert "Nom de l'offre : Offre ++" in additional_data_text
         assert "Bénéficiaire : John Doe" in additional_data_text
         if show_xfp_amount:
-            assert "Montant de la réservation : 200,00 € (23866 CFP)" in additional_data_text
-            assert "Montant remboursé à l'acteur : 10,00 € (1193 CFP)" in additional_data_text
+            assert "Montant de la réservation : 200,00 € (23865 CFP)" in additional_data_text
+            assert "Montant remboursé à l'acteur : 10,00 € (1195 CFP)" in additional_data_text
         else:
             assert "Montant de la réservation : 200,00 €" in additional_data_text
             assert "Montant remboursé à l'acteur : 10,00 €" in additional_data_text

@@ -15,6 +15,8 @@ ROUNDING = decimal.ROUND_HALF_UP
 # 1000 CFP = 8.38 €
 EUR_TO_XPF_RATE = 1000 / 8.38
 XPR_TO_EUR_RATE = 1 / EUR_TO_XPF_RATE
+# Every amount is rounded to the nearest 5 XPF
+XPF_PRECISION = 5
 
 
 def to_cents(amount_in_euros: decimal.Decimal | float) -> int:
@@ -29,7 +31,12 @@ def cents_to_full_unit(amount_in_cents: int, exponent: decimal.Decimal = decimal
 
 
 def euros_to_xpf(amount_in_euros: decimal.Decimal | float) -> int:
-    return round_to_integer(decimal.Decimal(amount_in_euros) * decimal.Decimal(EUR_TO_XPF_RATE))
+    return (
+        round_to_integer(
+            decimal.Decimal(amount_in_euros) * decimal.Decimal(EUR_TO_XPF_RATE) / decimal.Decimal(XPF_PRECISION)
+        )
+        * XPF_PRECISION
+    )
 
 
 def xpf_to_euros(amount_in_xpf: int) -> decimal.Decimal:
