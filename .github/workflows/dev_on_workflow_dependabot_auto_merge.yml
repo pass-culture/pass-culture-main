@@ -1,5 +1,9 @@
 name: "3 [on_workflow] Dependabot auto-merge"
 
+permissions:
+  contents: write
+  pull-requests: write
+
 on:
   workflow_call:
     secrets:
@@ -26,6 +30,7 @@ jobs:
           repositories: |
             pass-culture-main
           permission-contents: write
+          permission-pull-requests: write
       - name: "Dependabot metadata"
         id: "metadata"
         uses: dependabot/fetch-metadata@v2
