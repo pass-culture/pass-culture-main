@@ -21,6 +21,7 @@ from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_date_time
 from pcapi.utils import requests
 
+from .helpers import flash
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
 from .helpers.post import PostEndpointHelper
@@ -577,8 +578,17 @@ class InstructTest(PostEndpointHelper):
             "dateDerniereModificationChamps": "2024-12-02T18:16:49+01:00",
         }
 
-        response = self.post_to_endpoint(authenticated_client, ds_application_id=update_request.dsApplicationId)
-        assert response.status_code == 303
+        response = self.post_to_endpoint(
+            authenticated_client,
+            ds_application_id=update_request.dsApplicationId,
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
+        row = html_parser.get_tag(
+            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
+        )
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert str(update_request.dsApplicationId) in cells[1]
 
         mock_make_on_going.assert_called_once()
 
@@ -595,13 +605,20 @@ class InstructTest(PostEndpointHelper):
 
         mock_make_on_going.side_effect = dms_exceptions.DmsGraphQLApiError([{"message": "Test!"}])
 
-        response = self.post_to_endpoint(authenticated_client, ds_application_id=update_request.dsApplicationId)
-        assert response.status_code == 303
-
-        assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Le dossier 1234567 ne peut pas passer en instruction : Test!"
+        response = self.post_to_endpoint(
+            authenticated_client,
+            ds_application_id=update_request.dsApplicationId,
+            headers={"hx-request": "true"},
         )
+        assert response.status_code == 200
+        row = html_parser.get_tag(
+            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
+        )
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert str(update_request.dsApplicationId) in cells[1]
+
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert "Le dossier 1234567 ne peut pas passer en instruction : Test!" in alerts["warning"]
 
         db.session.refresh(update_request)
         assert update_request.status == dms_models.GraphQLApplicationStates.draft
@@ -620,12 +637,22 @@ class InstructTest(PostEndpointHelper):
         )
         mock_make_on_going.side_effect = dms_exceptions.DmsGraphQLAPIConnectError(message)
 
-        response = self.post_to_endpoint(authenticated_client, ds_application_id=update_request.dsApplicationId)
-        assert response.status_code == 303
+        response = self.post_to_endpoint(
+            authenticated_client,
+            ds_application_id=update_request.dsApplicationId,
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
+        row = html_parser.get_tag(
+            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
+        )
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert str(update_request.dsApplicationId) in cells[1]
 
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == f"Le dossier 1234567 ne peut pas passer en instruction : La connexion à Démarches-Simplifiées a échoué : {message}"
+            f"Le dossier 1234567 ne peut pas passer en instruction : La connexion à Démarches-Simplifiées a échoué : {message}"
+            in alerts["warning"]
         )
 
         db.session.refresh(update_request)
@@ -640,13 +667,21 @@ class InstructTest(PostEndpointHelper):
         )
 
         client = client.with_bo_session_auth(not_instructor)
-        response = self.post_to_endpoint(client, ds_application_id=update_request.dsApplicationId)
+        response = self.post_to_endpoint(
+            client,
+            ds_application_id=update_request.dsApplicationId,
+            headers={"hx-request": "true"},
+        )
         assert response.status_code == 403
 
         mock_make_on_going.assert_not_called()
 
     def test_instruct_not_found(self, authenticated_client):
-        response = self.post_to_endpoint(authenticated_client, ds_application_id=1)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            ds_application_id=1,
+            headers={"hx-request": "true"},
+        )
         assert response.status_code == 404
 
 
@@ -874,10 +909,18 @@ class AcceptTest(PostEndpointHelper):
         }
 
         response = self.post_to_endpoint(
-            authenticated_client, ds_application_id=update_request.dsApplicationId, form={"motivation": motivation}
+            authenticated_client,
+            ds_application_id=update_request.dsApplicationId,
+            form={"motivation": motivation},
+            headers={"hx-request": "true"},
         )
-        assert response.status_code == 303
+        assert response.status_code == 200
         mock_make_accepted.assert_called_once()
+        row = html_parser.get_tag(
+            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
+        )
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert str(update_request.dsApplicationId) in cells[1]
 
         db.session.refresh(update_request)
         assert update_request.status == dms_models.GraphQLApplicationStates.accepted
@@ -1016,9 +1059,17 @@ class AcceptTest(PostEndpointHelper):
         )
 
         response = self.post_to_endpoint(
-            authenticated_client, ds_application_id=update_request.dsApplicationId, form={"motivation": "Test"}
+            authenticated_client,
+            ds_application_id=update_request.dsApplicationId,
+            form={"motivation": "Test"},
+            headers={"hx-request": "true"},
         )
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(
+            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
+        )
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert str(update_request.dsApplicationId) in cells[1]
         mock_make_accepted.assert_called_once()
 
         db.session.refresh(update_request)
@@ -1029,9 +1080,10 @@ class AcceptTest(PostEndpointHelper):
         assert len(update_request.user.email_history) == 0
         assert len(mails_testing.outbox) == 0
 
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == f"Le dossier {update_request.dsApplicationId} ne peut pas être accepté : dossier non trouvé"
+            f"Le dossier {update_request.dsApplicationId} ne peut pas être accepté : dossier non trouvé"
+            in alerts["warning"]
         )
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_accepted")
@@ -1043,9 +1095,17 @@ class AcceptTest(PostEndpointHelper):
         )
 
         response = self.post_to_endpoint(
-            authenticated_client, ds_application_id=update_request.dsApplicationId, form={"motivation": "Test"}
+            authenticated_client,
+            ds_application_id=update_request.dsApplicationId,
+            form={"motivation": "Test"},
+            headers={"hx-request": "true"},
         )
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(
+            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
+        )
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert str(update_request.dsApplicationId) in cells[1]
         mock_make_accepted.assert_called_once()
 
         db.session.refresh(update_request)
@@ -1056,9 +1116,10 @@ class AcceptTest(PostEndpointHelper):
         assert len(update_request.user.email_history) == 0
         assert len(mails_testing.outbox) == 0
 
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == f"Le dossier {update_request.dsApplicationId} ne peut pas être accepté : Le dossier est déjà en construction"
+            f"Le dossier {update_request.dsApplicationId} ne peut pas être accepté : Le dossier est déjà en construction"
+            in alerts["warning"]
         )
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_accepted")
@@ -1122,9 +1183,17 @@ class AcceptTest(PostEndpointHelper):
         )
 
         response = self.post_to_endpoint(
-            authenticated_client, ds_application_id=update_request.dsApplicationId, form={"motivation": "Test"}
+            authenticated_client,
+            ds_application_id=update_request.dsApplicationId,
+            form={"motivation": "Test"},
+            headers={"hx-request": "true"},
         )
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(
+            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
+        )
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert str(update_request.dsApplicationId) in cells[1]
         mock_make_accepted.assert_not_called()
 
         db.session.refresh(update_request)
@@ -1139,9 +1208,10 @@ class AcceptTest(PostEndpointHelper):
         assert duplicate_user.isActive
         assert duplicate_user.email == update_request.newEmail
 
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == f"Le dossier {update_request.dsApplicationId} ne peut pas être accepté : l'email nouvel_email@example.com est déjà associé à un compte bénéficiaire ou ex-bénéficiaire, pro ou admin."
+            f"Le dossier {update_request.dsApplicationId} ne peut pas être accepté : l'email nouvel_email@example.com est déjà associé à un compte bénéficiaire ou ex-bénéficiaire, pro ou admin."
+            in alerts["warning"]
         )
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_accepted")
@@ -1153,14 +1223,22 @@ class AcceptTest(PostEndpointHelper):
 
         client = client.with_bo_session_auth(not_instructor)
         response = self.post_to_endpoint(
-            client, ds_application_id=update_request.dsApplicationId, form={"motivation": "Test"}
+            client,
+            ds_application_id=update_request.dsApplicationId,
+            form={"motivation": "Test"},
+            headers={"hx-request": "true"},
         )
         assert response.status_code == 403
 
         mock_make_accepted.assert_not_called()
 
     def test_not_found(self, authenticated_client):
-        response = self.post_to_endpoint(authenticated_client, ds_application_id=1, form={"motivation": "Test"})
+        response = self.post_to_endpoint(
+            authenticated_client,
+            ds_application_id=1,
+            form={"motivation": "Test"},
+            headers={"hx-request": "true"},
+        )
         assert response.status_code == 404
 
 
@@ -1215,9 +1293,15 @@ class AskForCorrectionTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             ds_application_id=update_request.dsApplicationId,
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(
+            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
+        )
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert str(update_request.dsApplicationId) in cells[1]
         mock_send_user_message.assert_called_once()
 
         db.session.refresh(update_request)
@@ -1248,8 +1332,17 @@ class AskForCorrectionTest(PostEndpointHelper):
             ]
         )
 
-        response = self.post_to_endpoint(authenticated_client, ds_application_id=update_request.dsApplicationId)
-        assert response.status_code == 303
+        response = self.post_to_endpoint(
+            authenticated_client,
+            ds_application_id=update_request.dsApplicationId,
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
+        row = html_parser.get_tag(
+            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
+        )
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert str(update_request.dsApplicationId) in cells[1]
         mock_send_user_message.assert_called_once()
 
         db.session.refresh(update_request)
@@ -1260,9 +1353,10 @@ class AskForCorrectionTest(PostEndpointHelper):
         assert len(update_request.user.email_history) == 0
         assert len(mails_testing.outbox) == 0
 
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == f"Le dossier {update_request.dsApplicationId} ne peut pas recevoir de demande de correction : dossier non trouvé"
+            f"Le dossier {update_request.dsApplicationId} ne peut pas recevoir de demande de correction : dossier non trouvé"
+            in alerts["warning"]
         )
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.execute_query")
@@ -1271,17 +1365,27 @@ class AskForCorrectionTest(PostEndpointHelper):
 
         mock_execute_query.side_effect = requests.exceptions.HTTPError()
 
-        response = self.post_to_endpoint(authenticated_client, ds_application_id=update_request.dsApplicationId)
-        assert response.status_code == 303
+        response = self.post_to_endpoint(
+            authenticated_client,
+            ds_application_id=update_request.dsApplicationId,
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
+        row = html_parser.get_tag(
+            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
+        )
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert str(update_request.dsApplicationId) in cells[1]
         mock_execute_query.assert_called_once()
 
         db.session.refresh(update_request)
         assert update_request.status == dms_models.GraphQLApplicationStates.on_going
         assert len(mails_testing.outbox) == 0
 
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == f"Le dossier {update_request.dsApplicationId} ne peut pas recevoir de demande de correction : La connexion à Démarches-Simplifiées a échoué :"
+            f"Le dossier {update_request.dsApplicationId} ne peut pas recevoir de demande de correction : La connexion à Démarches-Simplifiées a échoué :"
+            in alerts["warning"]
         )
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.send_user_message")
@@ -1292,13 +1396,21 @@ class AskForCorrectionTest(PostEndpointHelper):
         )
 
         client = client.with_bo_session_auth(not_instructor)
-        response = self.post_to_endpoint(client, ds_application_id=update_request.dsApplicationId)
+        response = self.post_to_endpoint(
+            client,
+            ds_application_id=update_request.dsApplicationId,
+            headers={"hx-request": "true"},
+        )
         assert response.status_code == 403
 
         mock_send_user_message.assert_not_called()
 
     def test_not_found(self, authenticated_client):
-        response = self.post_to_endpoint(authenticated_client, ds_application_id=1)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            ds_application_id=1,
+            headers={"hx-request": "true"},
+        )
         assert response.status_code == 404
 
 
@@ -1330,9 +1442,15 @@ class IdentityTheftTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             ds_application_id=update_request.dsApplicationId,
+            headers={"hx-request": "true"},
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
+        row = html_parser.get_tag(
+            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
+        )
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert str(update_request.dsApplicationId) in cells[1]
         mock_make_refused.assert_called_once()
 
         db.session.refresh(update_request)
@@ -1362,8 +1480,17 @@ class IdentityTheftTest(PostEndpointHelper):
             ]
         )
 
-        response = self.post_to_endpoint(authenticated_client, ds_application_id=update_request.dsApplicationId)
-        assert response.status_code == 303
+        response = self.post_to_endpoint(
+            authenticated_client,
+            ds_application_id=update_request.dsApplicationId,
+            headers={"hx-request": "true"},
+        )
+        assert response.status_code == 200
+        row = html_parser.get_tag(
+            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
+        )
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert str(update_request.dsApplicationId) in cells[1]
         mock_make_refused.assert_called_once()
 
         db.session.refresh(update_request)
@@ -1374,9 +1501,10 @@ class IdentityTheftTest(PostEndpointHelper):
         assert len(update_request.user.email_history) == 0
         assert len(mails_testing.outbox) == 0
 
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == f"Le dossier {update_request.dsApplicationId} ne peut pas être rejeté : dossier non trouvé"
+            f"Le dossier {update_request.dsApplicationId} ne peut pas être rejeté : dossier non trouvé"
+            in alerts["warning"]
         )
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_refused")
@@ -1387,7 +1515,11 @@ class IdentityTheftTest(PostEndpointHelper):
         )
 
         client = client.with_bo_session_auth(not_instructor)
-        response = self.post_to_endpoint(client, ds_application_id=update_request.dsApplicationId)
+        response = self.post_to_endpoint(
+            client,
+            ds_application_id=update_request.dsApplicationId,
+            headers={"hx-request": "true"},
+        )
         assert response.status_code == 403
 
         mock_make_refused.assert_not_called()

@@ -1,5 +1,6 @@
 {% extends "layouts/list.html" %}
 {% from "components/forms.html" import build_filters_form_ng with context %}
+{% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
 {% set procedure_id = get_setting("DS_USER_ACCOUNT_UPDATE_PROCEDURE_ID") %}
 {% set link = "https://www.demarches-simplifiees.fr/procedures/" + procedure_id|string %}
 {% set pagination = True %}
@@ -14,8 +15,10 @@
   <i class="bi bi-box-arrow-up-right">
   </i>
 </a>
-{% endblock %}
-{% block search_block %}{{ build_filters_form_ng(form, dst) }}{% endblock %}
+{% endblock title %}
+{% block search_block %}
+  {{ build_filters_form_ng(form, dst) }}
+{% endblock search_block %}
 {% block table_header %}
   {% if is_instructor %}<th>Actions</th>{% endif %}
   <th>Dossier</th>
@@ -37,7 +40,16 @@
   <th>Jeune</th>
   <th>Modification</th>
   <th>Instructeur</th>
-{% endblock %}
+{% endblock table_header %}
 {% block table_body %}
-  {% include "accounts/update_requests_list_rows.html" %}
-{% endblock %}
+  {% with update_requests = rows.items %}
+    {% include "accounts/update_requests_list_rows.html" %}
+  {% endwith %}
+{% endblock table_body %}
+{% block after_table %}
+  {% for update_request in rows.items %}
+    {{ build_dynamic_modal(url_for("backoffice_web.account_update.get_accept_form", ds_application_id=update_request.dsApplicationId) , "accept-" + update_request.dsApplicationId|string, "xl") }}
+    {{ build_dynamic_modal(url_for("backoffice_web.account_update.get_ask_for_correction_form", ds_application_id=update_request.dsApplicationId) , "ask-for-correction-" + update_request.dsApplicationId|string, "xl") }}
+    {{ build_dynamic_modal(url_for("backoffice_web.account_update.get_identity_theft_form", ds_application_id=update_request.dsApplicationId) , "identity-theft-" + update_request.dsApplicationId|string, "xl") }}
+  {% endfor %}
+{% endblock after_table %}
