@@ -59,10 +59,9 @@ account_update_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _get_filtered_account_update_requests(form: account_forms.AccountUpdateRequestSearchForm) -> sa_orm.Query:
+def _get_account_update_requests_query() -> sa_orm.Query:
     aliased_instructor = sa_orm.aliased(users_models.User)
-
-    query = (
+    return (
         db.session.query(users_models.UserAccountUpdateRequest)
         .outerjoin(users_models.User, users_models.UserAccountUpdateRequest.userId == users_models.User.id)
         .outerjoin(
@@ -99,6 +98,10 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
             ),
         )
     )
+
+
+def _get_filtered_account_update_requests(form: account_forms.AccountUpdateRequestSearchForm) -> sa_orm.Query:
+    query = _get_account_update_requests_query()
 
     filters = []
 
@@ -214,6 +217,20 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
     return query
 
 
+def _render_account_update_requests(account_update_requests_ids: list[int] | None = None) -> utils.BackofficeResponse:
+    account_update_requests = []
+    if account_update_requests_ids:
+        query = _get_account_update_requests_query()
+        account_update_requests = query.filter(
+            users_models.UserAccountUpdateRequest.dsApplicationId.in_(account_update_requests_ids)
+        ).all()
+    return render_template(
+        "accounts/update_requests_list_rows.html",
+        update_requests=account_update_requests,
+        is_instructor=(current_user.backoffice_profile.dsInstructorId is not None),
+    )
+
+
 @account_update_blueprint.route("", methods=["GET"])
 def list_account_update_requests() -> utils.BackofficeResponse:
     form = account_forms.AccountUpdateRequestSearchForm(formdata=utils.get_query_params())
@@ -282,8 +299,7 @@ def instruct(ds_application_id: int) -> utils.BackofficeResponse:
         )
     except dms_exceptions.DmsGraphQLApiException as exc:
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
-
-    return _refresh_list()
+    return _render_account_update_requests([ds_application_id])
 
 
 def _find_duplicate(update_request: users_models.UserAccountUpdateRequest) -> users_models.User | None:
@@ -339,13 +355,15 @@ def get_accept_form(ds_application_id: int) -> utils.BackofficeResponse:
 
     return render_template(
         "accounts/modal/accept_update_request.html",
+        target_id=f"#request-row-{ds_application_id}",
+        div_id=f"accept-{update_request.dsApplicationId}",
         ds_application_id=ds_application_id,
         update_request=update_request,
         duplicate_user=duplicate_user,
         can_be_accepted=can_be_accepted,
         alert=alert,
         form=account_forms.AccountUpdateRequestAcceptForm(),
-        dst=url_for(".accept", ds_application_id=ds_application_id),
+        dst=url_for("backoffice_web.account_update.accept", ds_application_id=ds_application_id),
     )
 
 
@@ -357,7 +375,7 @@ def accept(ds_application_id: int) -> utils.BackofficeResponse:
     form = account_forms.AccountUpdateRequestAcceptForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-        return _refresh_list()
+        return _render_account_update_requests()
 
     update_request: users_models.UserAccountUpdateRequest = (
         db.session.query(users_models.UserAccountUpdateRequest)
@@ -395,7 +413,7 @@ def accept(ds_application_id: int) -> utils.BackofficeResponse:
     except sa.exc.IntegrityError as exc:
         mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
-        return _refresh_list()
+        return _render_account_update_requests([ds_application_id])
 
     if update_request.has_email_update:
         duplicate_user = _find_duplicate(update_request)
@@ -409,7 +427,7 @@ def accept(ds_application_id: int) -> utils.BackofficeResponse:
                     ).format(ds_application_id=ds_application_id, email=update_request.newEmail),
                     "warning",
                 )
-                return _refresh_list()
+                return _render_account_update_requests([ds_application_id])
 
             users_api.suspend_account(
                 duplicate_user,
@@ -467,7 +485,7 @@ def accept(ds_application_id: int) -> utils.BackofficeResponse:
         )
         db.session.flush()
 
-    return _refresh_list()
+    return _render_account_update_requests([ds_application_id])
 
 
 @account_update_blueprint.route("<int:ds_application_id>/ask-for-correction", methods=["GET"])
@@ -486,9 +504,10 @@ def get_ask_for_correction_form(ds_application_id: int) -> utils.BackofficeRespo
     form = empty_forms.EmptyForm()
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id=f"#request-row-{ds_application_id}",
         form=form,
-        dst=url_for(".ask_for_correction", ds_application_id=ds_application_id),
+        dst=url_for("backoffice_web.account_update.ask_for_correction", ds_application_id=ds_application_id),
         div_id=f"ask-for-correction-{ds_application_id}",
         title="Demander une correction",
         information="Ce message sera envoyé au jeune: <br>" + users_ds.CORRECTION_MESSAGE,
@@ -529,9 +548,9 @@ def ask_for_correction(ds_application_id: int) -> utils.BackofficeResponse:
     except sa.exc.IntegrityError as exc:
         mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
-        return _refresh_list()
+        return _render_account_update_requests([ds_application_id])
 
-    return _refresh_list()
+    return _render_account_update_requests([ds_application_id])
 
 
 @account_update_blueprint.route("<int:ds_application_id>/identity-theft", methods=["GET"])
@@ -550,7 +569,8 @@ def get_identity_theft_form(ds_application_id: int) -> utils.BackofficeResponse:
     form = empty_forms.EmptyForm()
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
+        target_id=f"#request-row-{ds_application_id}",
         form=form,
         dst=url_for(".identity_theft", ds_application_id=ds_application_id),
         div_id=f"identity-theft-{ds_application_id}",
@@ -596,6 +616,6 @@ def identity_theft(ds_application_id: int) -> utils.BackofficeResponse:
     except sa.exc.IntegrityError as exc:
         mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
-        return _refresh_list()
+        return _render_account_update_requests([ds_application_id])
 
-    return _refresh_list()
+    return _render_account_update_requests([ds_application_id])
