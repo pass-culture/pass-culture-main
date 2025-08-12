@@ -1,6 +1,5 @@
 import * as yup from 'yup'
 
-import { siretApiValidate } from '@/commons/core/Venue/siretApiValidate'
 import { unhumanizeSiret } from '@/commons/core/Venue/utils'
 
 import type { VenueSettingsFormValues } from '../types'
@@ -37,17 +36,6 @@ export const generateSiretValidationSchema = (
             'correspondingToSiren',
             'Le code SIRET doit correspondre à un établissement de votre structure',
             (siret) => Boolean(siret) && isSiretStartingWithSiren(siret, siren)
-          )
-          .test(
-            'apiSiretValid',
-            'Le code SIRET saisi n’est pas valide',
-            async (siret) => {
-              if (siret === initialSiret) {
-                return true
-              }
-              const response = await siretApiValidate(siret || '')
-              return !response
-            }
           ),
   }
 

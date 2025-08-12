@@ -93,6 +93,7 @@ describe('test SignupJourneyStepper', () => {
       name: 'test name',
       siret: '1234567893333',
       hasVenueWithSiret: false,
+      isDiffusible: true,
       ...DEFAULT_ADDRESS_FORM_VALUES,
     }
     const { tabAuthentication, tabValidation } = renderSignupStepper(
@@ -118,6 +119,7 @@ describe('test SignupJourneyStepper', () => {
       name: 'test name',
       siret: '1234567893333',
       hasVenueWithSiret: false,
+      isDiffusible: true,
       ...DEFAULT_ADDRESS_FORM_VALUES,
     }
     contextValue.activity = {

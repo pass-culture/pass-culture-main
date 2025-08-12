@@ -17,6 +17,7 @@ export const DEFAULT_OFFERER_FORM_VALUES = {
   name: '',
   publicName: '',
   hasVenueWithSiret: false,
+  isDiffusible: true,
   ...DEFAULT_ADDRESS_FORM_VALUES,
   isOpenToPublic: '',
 }
