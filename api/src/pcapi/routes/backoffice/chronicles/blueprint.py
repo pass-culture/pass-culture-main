@@ -85,7 +85,7 @@ def list_chronicles() -> utils.BackofficeResponse:
         if form.search_type.data in (forms.SearchType.ALL.name, forms.SearchType.CHRONICLE_CONTENT.name):
             q_filters.append(
                 sa.and_(
-                    chronicles_models.Chronicle.__content_ts_vector__.op("@@")(sa.func.plainto_tsquery("french", w))
+                    chronicles_models.Chronicle._content_ts_vector.op("@@")(sa.func.plainto_tsquery("french", w))
                     for w in form.q.data.split(" ")
                     if len(w) > 1
                 )

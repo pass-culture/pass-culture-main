@@ -1713,7 +1713,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         # don't query the number of BookingFinanceIncident with FinanceIncident's status in
         # (CREATED, VALIDATED)
         # but adds 1 query for the rollback
-        with assert_num_queries(self.expected_num_queries - 1):
+        with assert_num_queries(self.expected_num_queries):
             response = self.post_to_endpoint(
                 authenticated_client,
                 form={"object_ids": object_ids},
@@ -1733,7 +1733,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
         # don't query the number of BookingFinanceIncident with FinanceIncident's status in
         # (CREATED, VALIDATED)
         # but adds 1 query for rollback
-        with assert_num_queries(self.expected_num_queries - 1):
+        with assert_num_queries(self.expected_num_queries):
             response = self.post_to_endpoint(
                 authenticated_client,
                 form={"object_ids": object_ids},
