@@ -412,4 +412,60 @@ describe('CollectiveEditionOfferNavigation', () => {
       }
     )
   })
+
+  it('should not show action buttons when WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE is active and offer is bookable', () => {
+    renderCollectiveEditingOfferNavigation(
+      {
+        ...props,
+        isTemplate: false,
+        offer: getCollectiveOfferFactory({
+          allowedActions: [
+            CollectiveOfferAllowedAction.CAN_ARCHIVE,
+            CollectiveOfferAllowedAction.CAN_DUPLICATE,
+          ],
+        }),
+      },
+      { features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'] }
+    )
+
+    const archiveButton = screen.queryByRole('button', {
+      name: 'Archiver',
+    })
+    const duplicateOfferButton = screen.queryByRole('button', {
+      name: 'Dupliquer',
+    })
+    const previewButton = screen.queryByText('Aperçu dans ADAGE')
+
+    expect(archiveButton).not.toBeInTheDocument()
+    expect(duplicateOfferButton).not.toBeInTheDocument()
+    expect(previewButton).not.toBeInTheDocument()
+  })
+
+  it('should show action buttons when WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE is inactive and offer is bookable', () => {
+    renderCollectiveEditingOfferNavigation(
+      {
+        ...props,
+        isTemplate: false,
+        offer: getCollectiveOfferFactory({
+          allowedActions: [
+            CollectiveOfferAllowedAction.CAN_ARCHIVE,
+            CollectiveOfferAllowedAction.CAN_DUPLICATE,
+          ],
+        }),
+      },
+      { features: [] }
+    )
+
+    const archiveButton = screen.getByRole('button', {
+      name: 'Archiver',
+    })
+    const duplicateOfferButton = screen.getByRole('button', {
+      name: 'Dupliquer',
+    })
+    const previewButton = screen.getByText('Aperçu dans ADAGE')
+
+    expect(archiveButton).toBeInTheDocument()
+    expect(duplicateOfferButton).toBeInTheDocument()
+    expect(previewButton).toBeInTheDocument()
+  })
 })
