@@ -61,7 +61,7 @@ describe('Account creation', () => {
       message: 'check that we are redirected to connexion',
     })
     cy.url().should('contain', '/connexion')
-
+    cy.contains('Connectez-vous')
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
     logInAndGoToPage(randomEmail, '/inscription/structure/recherche')
