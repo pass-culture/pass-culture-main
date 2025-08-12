@@ -265,7 +265,6 @@ export const PreFilters = ({
               isDownloading={isDownloadingCSV}
               isFiltersDisabled={isFiltersDisabled}
               isLocalLoading={isLocalLoading}
-              className={styles['download-button']}
             />
             <Button
               className={styles['show-button']}
