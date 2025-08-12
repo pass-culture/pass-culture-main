@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
-
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { describe, expect, it } from 'vitest'
 
 import { ReimbursementWaitingBanner } from './ReimbursementWaitingBanner'
 

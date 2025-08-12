@@ -15,8 +15,8 @@ import { BookedBanner } from './banners/BookedBanner'
 import { BookingWaitingBanner } from './banners/BookingWaitingBanner'
 import { CancelledBanner } from './banners/CancelledBanner'
 import { DraftBanner } from './banners/DraftBanner'
-import { ExpiredBanner } from './banners/ExpiredBanner'
 import { EndBanner } from './banners/EndBanner'
+import { ExpiredBanner } from './banners/ExpiredBanner'
 import { ReimbursedBanner } from './banners/ReimbursedBanner'
 import { ReimbursementWaitingBanner } from './banners/ReimbursementWaitingBanner'
 import { RejectedBanner } from './banners/RejectedBanner'
@@ -158,15 +158,17 @@ export const BookableOfferTimeline = ({
                   : undefined
               }
             />
-             {isCurrentStep && <BookedBanner
-              offerId={offer.id}
-              cancellationLimitDate={offer.booking?.cancellationLimitDate}
-              departmentCode={offer.venue.departementCode}
-              canEditDiscount={isActionAllowedOnCollectiveOffer(
-                offer,
-                CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
-              )}
-            />}
+            {isCurrentStep && (
+              <BookedBanner
+                offerId={offer.id}
+                cancellationLimitDate={offer.booking?.cancellationLimitDate}
+                departmentCode={offer.venue.departementCode}
+                canEditDiscount={isActionAllowedOnCollectiveOffer(
+                  offer,
+                  CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
+                )}
+              />
+            )}
           </>
         ),
       }
@@ -190,20 +192,24 @@ export const BookableOfferTimeline = ({
                   : undefined
               }
             />
-             {isCurrentStep && <ExpiredBanner
-              stepBeforeExpiredStatus={stepBeforeExpiredStatus}
-              offerId={offer.id}
-              bookingLimitDatetime={offer.collectiveStock.bookingLimitDatetime}
-              departmentCode={offer.venue.departementCode}
-              canEditDates={isActionAllowedOnCollectiveOffer(
-                offer,
-                CollectiveOfferAllowedAction.CAN_EDIT_DATES
-              )}
-              contactEmail={
-                offer.booking?.educationalRedactor?.email ??
-                offer.teacher?.email
-              }
-            /> }
+            {isCurrentStep && (
+              <ExpiredBanner
+                stepBeforeExpiredStatus={stepBeforeExpiredStatus}
+                offerId={offer.id}
+                bookingLimitDatetime={
+                  offer.collectiveStock.bookingLimitDatetime
+                }
+                departmentCode={offer.venue.departementCode}
+                canEditDates={isActionAllowedOnCollectiveOffer(
+                  offer,
+                  CollectiveOfferAllowedAction.CAN_EDIT_DATES
+                )}
+                contactEmail={
+                  offer.booking?.educationalRedactor?.email ??
+                  offer.teacher?.email
+                }
+              />
+            )}
           </>
         ),
       }
@@ -244,13 +250,13 @@ export const BookableOfferTimeline = ({
         content: (
           <>
             <StatusWithDate
-            status={statusLabel}
-            date={
-              datetime
-                ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
-                : undefined
-            }
-          />
+              status={statusLabel}
+              date={
+                datetime
+                  ? `Le ${formatDateTime(datetime, FORMAT_DD_MMMM_YYYY, venueDepartmentCode)}`
+                  : undefined
+              }
+            />
             {isCurrentStep && !endedMoreThan48hAgo ? (
               <EndBanner
                 offerId={offer.id}

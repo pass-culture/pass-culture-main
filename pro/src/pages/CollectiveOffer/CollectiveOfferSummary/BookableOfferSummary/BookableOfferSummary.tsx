@@ -22,7 +22,10 @@ import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { selectCurrentOfferer, selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import {
+  selectCurrentOfferer,
+  selectCurrentOffererId,
+} from '@/commons/store/offerer/selectors'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import {
   isActionAllowedOnCollectiveOffer,
