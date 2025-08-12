@@ -66,6 +66,9 @@ export const CollectiveEditionOfferNavigation = ({
   const isCollectiveOaActive = useActiveFeature(
     'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
   )
+  const isNewCollectiveOfferDetailPageActive = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'
+  )
 
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
@@ -107,26 +110,48 @@ export const CollectiveEditionOfferNavigation = ({
     offer?.displayedStatus !== CollectiveOfferDisplayedStatus.ARCHIVED &&
     location.pathname.includes('edition')
 
-  const canPreviewOffer =
-    (isCollectiveOffer(offer) &&
-      offer.displayedStatus !== CollectiveOfferDisplayedStatus.ARCHIVED) ||
-    !isCollectiveOffer(offer)
+  const canPreviewOffer = () => {
+    if (isTemplate) {
+      return true
+    }
 
-  const canArchiveOffer =
-    offer &&
-    isActionAllowedOnCollectiveOffer(
-      offer,
-      isTemplate
-        ? CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
-        : CollectiveOfferAllowedAction.CAN_ARCHIVE
-    )
+    if (isNewCollectiveOfferDetailPageActive) {
+      return false
+    }
+    return offer?.displayedStatus !== CollectiveOfferDisplayedStatus.ARCHIVED
+  }
 
-  const canDuplicateOffer =
-    offer &&
-    isActionAllowedOnCollectiveOffer(
-      offer,
-      CollectiveOfferAllowedAction.CAN_DUPLICATE
-    )
+  const canArchiveOffer = () => {
+    if (!offer) return false
+
+    const archiveAction = isTemplate
+      ? CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
+      : CollectiveOfferAllowedAction.CAN_ARCHIVE
+
+    if (isNewCollectiveOfferDetailPageActive) {
+      return (
+        isTemplate && isActionAllowedOnCollectiveOffer(offer, archiveAction)
+      )
+    }
+
+    return isActionAllowedOnCollectiveOffer(offer, archiveAction)
+  }
+
+  const canDuplicateOffer = () => {
+    if (!offer) return false
+
+    const duplicateAction = isTemplate
+      ? CollectiveOfferTemplateAllowedAction.CAN_DUPLICATE
+      : CollectiveOfferAllowedAction.CAN_DUPLICATE
+
+    if (isNewCollectiveOfferDetailPageActive) {
+      return (
+        isTemplate && isActionAllowedOnCollectiveOffer(offer, duplicateAction)
+      )
+    }
+
+    return isActionAllowedOnCollectiveOffer(offer, duplicateAction)
+  }
 
   const canCreateBookableOffer =
     offer &&
@@ -156,7 +181,7 @@ export const CollectiveEditionOfferNavigation = ({
   return (
     <>
       <div className={styles['actions-container']}>
-        {canPreviewOffer && (
+        {canPreviewOffer() && (
           <ButtonLink
             to={`/offre/${id}/collectif${isTemplate ? '/vitrine' : ''}/apercu`}
             icon={fullShowIcon}
@@ -166,7 +191,7 @@ export const CollectiveEditionOfferNavigation = ({
           </ButtonLink>
         )}
 
-        {canArchiveOffer && (
+        {canArchiveOffer() && (
           <Button
             onClick={() => setIsArchiveModalOpen(true)}
             icon={fullArchiveIcon}
@@ -177,7 +202,7 @@ export const CollectiveEditionOfferNavigation = ({
           </Button>
         )}
 
-        {canDuplicateOffer && (
+        {canDuplicateOffer() && (
           <Button
             variant={ButtonVariant.TERNARY}
             icon={fullCopyIcon}
@@ -186,7 +211,7 @@ export const CollectiveEditionOfferNavigation = ({
                 from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFER_RECAP,
                 offererId: selectedOffererId?.toString(),
                 offerId,
-                offerStatus: offer.displayedStatus,
+                offerStatus: offer?.displayedStatus,
                 offerType: 'collective',
               })
               await duplicateBookableOffer(navigate, notify, offerId)
