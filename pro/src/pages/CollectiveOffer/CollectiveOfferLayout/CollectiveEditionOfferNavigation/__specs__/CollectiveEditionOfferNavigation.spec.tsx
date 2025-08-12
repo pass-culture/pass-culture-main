@@ -42,6 +42,30 @@ import {
   CollectiveEditionOfferNavigationProps,
 } from '../CollectiveEditionOfferNavigation'
 
+const offer:
+  | GetCollectiveOfferTemplateResponseModel
+  | GetCollectiveOfferResponseModel = getCollectiveOfferTemplateFactory({
+  isTemplate: true,
+})
+const offerId = 1
+const props: CollectiveEditionOfferNavigationProps = {
+  activeStep: CollectiveOfferStep.DETAILS,
+  offerId,
+  isTemplate: false,
+  offer: getCollectiveOfferFactory(),
+}
+
+const mockLogEvent = vi.fn()
+const notifyError = vi.fn()
+const notifySuccess = vi.fn()
+const defaultUseLocationValue = {
+  state: {},
+  hash: '',
+  key: '',
+  pathname: '',
+  search: '',
+}
+
 const renderCollectiveEditingOfferNavigation = (
   props: CollectiveEditionOfferNavigationProps,
   options?: RenderWithProvidersOptions
@@ -60,26 +84,7 @@ vi.mock('react-router', async () => ({
 }))
 
 describe('CollectiveEditionOfferNavigation', () => {
-  let offer:
-    | GetCollectiveOfferTemplateResponseModel
-    | GetCollectiveOfferResponseModel
-  let props: CollectiveEditionOfferNavigationProps
-  const offerId = 1
-  const mockLogEvent = vi.fn()
-  const notifyError = vi.fn()
-  const notifySuccess = vi.fn()
-  const defaultUseLocationValue = {
-    state: {},
-    hash: '',
-    key: '',
-    pathname: '',
-    search: '',
-  }
-
   beforeEach(async () => {
-    offer = getCollectiveOfferTemplateFactory({
-      isTemplate: true,
-    })
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
@@ -113,13 +118,6 @@ describe('CollectiveEditionOfferNavigation', () => {
     }))
 
     vi.spyOn(router, 'useLocation').mockReturnValue(defaultUseLocationValue)
-
-    props = {
-      activeStep: CollectiveOfferStep.DETAILS,
-      offerId,
-      isTemplate: false,
-      offer: getCollectiveOfferFactory(),
-    }
   })
 
   it('should log event when clicking "Dupliquer" button', async () => {
@@ -148,25 +146,6 @@ describe('CollectiveEditionOfferNavigation', () => {
     )
   })
 
-  it('should show create bookable offer if offer is template in edition', () => {
-    renderCollectiveEditingOfferNavigation({
-      ...props,
-      isTemplate: true,
-      offer: {
-        ...offer,
-        allowedActions: [
-          CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
-        ],
-      },
-    })
-
-    const duplicateOfferButton = screen.getByRole('button', {
-      name: 'Créer une offre réservable',
-    })
-
-    expect(duplicateOfferButton).toBeInTheDocument()
-  })
-
   it('should show create bookable offer when CAN_CREATE_BOOKABLE_OFFER is allowed', () => {
     renderCollectiveEditingOfferNavigation({
       ...props,
@@ -186,6 +165,23 @@ describe('CollectiveEditionOfferNavigation', () => {
     expect(duplicateOffer).toBeInTheDocument()
   })
 
+  it('should not show create bookable offer when CAN_CREATE_BOOKABLE_OFFER is not allowed', () => {
+    renderCollectiveEditingOfferNavigation({
+      ...props,
+      isTemplate: true,
+      offer: {
+        ...offer,
+        allowedActions: [],
+      },
+    })
+
+    const duplicateOfferButton = screen.queryByRole('button', {
+      name: 'Créer une offre réservable',
+    })
+
+    expect(duplicateOfferButton).not.toBeInTheDocument()
+  })
+
   it('should show duplicate button when CAN_DUPLICATE is allowed', () => {
     renderCollectiveEditingOfferNavigation({
       ...props,
@@ -202,8 +198,24 @@ describe('CollectiveEditionOfferNavigation', () => {
     expect(duplicateOffer).toBeInTheDocument()
   })
 
+  it('should not show duplicate button when CAN_DUPLICATE is not allowed', () => {
+    renderCollectiveEditingOfferNavigation({
+      ...props,
+      isTemplate: false,
+      offer: getCollectiveOfferFactory({
+        allowedActions: [],
+      }),
+    })
+
+    const duplicateOfferButton = screen.queryByRole('button', {
+      name: 'Dupliquer',
+    })
+
+    expect(duplicateOfferButton).not.toBeInTheDocument()
+  })
+
   it('should return an error when the collective offer could not be retrieved', async () => {
-    vi.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce('')
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce('error')
 
     renderCollectiveEditingOfferNavigation({
       ...props,
@@ -216,10 +228,10 @@ describe('CollectiveEditionOfferNavigation', () => {
       },
     })
 
-    const duplicateOffer = screen.getByRole('button', {
+    const duplicateOfferButton = screen.getByRole('button', {
       name: 'Créer une offre réservable',
     })
-    await userEvent.click(duplicateOffer)
+    await userEvent.click(duplicateOfferButton)
 
     expect(notifyError).toHaveBeenCalledWith(
       'Une erreur est survenue lors de la récupération de votre offre'
@@ -245,11 +257,11 @@ describe('CollectiveEditionOfferNavigation', () => {
       },
     })
 
-    const duplicateOffer = screen.getByRole('button', {
+    const duplicateOfferButton = screen.getByRole('button', {
       name: 'Créer une offre réservable',
     })
 
-    await userEvent.click(duplicateOffer)
+    await userEvent.click(duplicateOfferButton)
 
     expect(notifyError).toHaveBeenCalledWith(SENT_DATA_ERROR_MESSAGE)
   })
@@ -269,11 +281,11 @@ describe('CollectiveEditionOfferNavigation', () => {
       },
     })
 
-    const duplicateOffer = screen.getByRole('button', {
+    const duplicateOfferButton = screen.getByRole('button', {
       name: 'Créer une offre réservable',
     })
 
-    await userEvent.click(duplicateOffer)
+    await userEvent.click(duplicateOfferButton)
 
     expect(notifyError).toHaveBeenCalledWith('Impossible de dupliquer l’image')
   })
