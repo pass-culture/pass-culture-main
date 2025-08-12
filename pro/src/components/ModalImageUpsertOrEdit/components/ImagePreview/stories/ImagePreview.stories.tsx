@@ -2,7 +2,7 @@ import type { StoryObj } from '@storybook/react'
 
 import { ImagePreview, ImagePreviewScreenProps } from '../ImagePreview'
 import { ImagePreviewsWrapper } from '../ImagePreviewsWrapper'
-import style from './HomeScreenShell.module.scss'
+import style from './ImagePreviewStories.module.scss'
 import offerHomeShell from './offer-home-shell.png'
 import offerPreview from './offer-preview.jpg'
 import offerShell from './offer-shell.png'
