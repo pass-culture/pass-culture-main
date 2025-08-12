@@ -53,15 +53,6 @@ describe('VenueOfferSteps', () => {
     expect(screen.queryByText('Créer un lieu')).not.toBeInTheDocument()
   })
 
-  it('should display offer creation link if user has no offer on venue', () => {
-    props.venue = {
-      ...defaultGetOffererVenueResponseModel,
-      hasCreatedOffer: false,
-    }
-    renderVenueOfferSteps(props)
-    expect(screen.getByText('Créer une offre')).toBeInTheDocument()
-  })
-
   it('should display bank account link on first venue if user has no bank account and no offer on offerer', () => {
     props.offerer = offererWithoutBankAccount
     props.offerer.managedVenues = [

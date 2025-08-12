@@ -69,12 +69,6 @@ describe('VenueOfferSteps', () => {
     )
   })
 
-  it('should track creation offer', async () => {
-    renderVenueOfferSteps({ venue, hasVenue: true })
-
-    await userEvent.click(screen.getByText(/Créer une offre/))
-  })
-
   it('should track ReimbursementPoint', async () => {
     renderVenueOfferSteps({
       venue: { ...venue },
