@@ -23,6 +23,8 @@ import {
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import * as convertEuroToPacificFranc from '@/commons/utils/convertEuroToPacificFranc'
+import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
 
 import { PRICE_CATEGORY_MAX_LENGTH } from './form/constants'
 import { PriceCategoriesScreen } from './PriceCategoriesScreen'
@@ -249,5 +251,43 @@ describe('PriceCategoriesScreen', () => {
     expect(
       screen.getByText(/vous allez aussi supprimer l’ensemble des dates/i)
     ).toBeInTheDocument()
+  })
+
+  it('should convert pacific franc price to euro before submit when isCaledonian is true', async () => {
+    vi.spyOn(useIsCaledonian, 'useIsCaledonian').mockReturnValue(true)
+    vi.spyOn(
+      convertEuroToPacificFranc,
+      'convertPacificFrancToEuro'
+    ).mockImplementation(() => 42)
+
+    const offerWithId = {
+      ...apiOffer,
+      priceCategories: [{ id: 1, label: 'Tarif CFP', price: 1000 }],
+    }
+
+    const spySubmit = vi
+      .spyOn(api, 'postPriceCategories')
+      .mockResolvedValue(offerWithId)
+
+    await renderPriceCategoriesScreen(offerWithId)
+
+    const priceInput = screen.getAllByLabelText('Prix par personne')
+    await userEvent.clear(priceInput[0])
+    await userEvent.type(priceInput[0], '1000')
+
+    await userEvent.click(
+      screen.getByRole('button', { name: /Enregistrer et continuer/i })
+    )
+
+    await userEvent.click(screen.getByText('Confirmer la modification'))
+
+    await waitFor(() => {
+      expect(spySubmit).toHaveBeenCalledWith(
+        apiOffer.id,
+        expect.objectContaining({
+          priceCategories: [expect.objectContaining({ price: 42 })],
+        })
+      )
+    })
   })
 })

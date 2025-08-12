@@ -7,6 +7,7 @@ import {
   bookingRecapStockFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import * as convertEuroToPacificFranc from '@/commons/utils/convertEuroToPacificFranc'
 
 import {
   BookingOfferCell,
@@ -136,5 +137,31 @@ describe('bookings offer cell', () => {
     renderOfferCell({ booking })
 
     expect(screen.getByText('Plein tarif - 12,00 €')).toBeInTheDocument()
+  })
+
+  it('should display price in CFP when isCaledonian is true and no label', () => {
+    vi.spyOn(
+      convertEuroToPacificFranc,
+      'convertEuroToPacificFranc'
+    ).mockImplementation(() => 1234)
+    const booking = bookingRecapFactory({
+      bookingAmount: 10,
+      bookingPriceCategoryLabel: undefined,
+    })
+    renderOfferCell({ booking, isCaledonian: true })
+    expect(screen.getByText('1234 F')).toBeInTheDocument()
+  })
+
+  it('should display price in CFP with label when isCaledonian is true', () => {
+    vi.spyOn(
+      convertEuroToPacificFranc,
+      'convertEuroToPacificFranc'
+    ).mockImplementation(() => 5678)
+    const booking = bookingRecapFactory({
+      bookingAmount: 20,
+      bookingPriceCategoryLabel: 'Réduit',
+    })
+    renderOfferCell({ booking, isCaledonian: true })
+    expect(screen.getByText('Réduit - 5678 F')).toBeInTheDocument()
   })
 })

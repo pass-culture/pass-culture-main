@@ -12,6 +12,7 @@ describe('validationSchema', () => {
     formValues: Partial<StockThingFormValues>
     expectedErrors: string[]
     bookingsQuantity: number
+    isCaledonian?: boolean
   }[] = [
     {
       description: 'valid form',
@@ -25,12 +26,18 @@ describe('validationSchema', () => {
       expectedErrors: ['Veuillez renseigner un prix'],
       bookingsQuantity: 0,
     },
-
     {
       description: 'price above 300',
       formValues: { price: 300.01 },
       expectedErrors: ['Veuillez renseigner un prix inférieur à 300€'],
       bookingsQuantity: 0,
+    },
+    {
+      description: 'price above 20000 in Caledonian',
+      formValues: { price: 20001 },
+      expectedErrors: ['Veuillez renseigner un prix inférieur à 20000F'],
+      bookingsQuantity: 0,
+      isCaledonian: true,
     },
     {
       mode: OFFER_WIZARD_MODE.CREATION,
@@ -64,10 +71,16 @@ describe('validationSchema', () => {
       formValues,
       expectedErrors,
       bookingsQuantity,
+      isCaledonian = false,
     }) => {
       it(`should validate the form for case: ${description}`, async () => {
         const errors = await getYupValidationSchemaErrors(
-          getValidationSchema(mode, bookingsQuantity, formValues.stockId),
+          getValidationSchema(
+            mode,
+            bookingsQuantity,
+            formValues.stockId,
+            isCaledonian
+          ),
           formValues
         )
         expect(errors).toEqual(expectedErrors)

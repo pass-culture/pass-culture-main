@@ -29,7 +29,9 @@ import {
   getIndividualOfferUrl,
 } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
+import * as hooks from '@/commons/hooks/swr/useOfferer'
 import {
+  defaultGetOffererResponseModel,
   getIndividualOfferFactory,
   getOfferStockFactory,
   getOfferVenueFactory,
@@ -619,5 +621,33 @@ describe('screens:StocksThing', () => {
     await userEvent.type(input, '2020-12-15')
     await userEvent.click(screen.getByLabelText('Prix *'))
     expect(mockLogEvent).not.toHaveBeenCalled()
+  })
+
+  it('should display the price in F CFP when offerer is Caledonian', async () => {
+    vi.spyOn(hooks, 'useOfferer').mockReturnValue({
+      data: {
+        ...defaultGetOffererResponseModel,
+        isCaledonian: true,
+      },
+      isLoading: false,
+      error: undefined,
+      mutate: vi.fn(),
+      isValidating: false,
+    })
+
+    props.offer = {
+      ...offer,
+      isDigital: false,
+    }
+
+    const stocks = [
+      getOfferStockFactory({
+        price: 20,
+      }),
+    ]
+
+    await renderStockThingScreen(stocks, props, contextValue)
+
+    expect(screen.getByDisplayValue('2385')).toBeInTheDocument()
   })
 })
