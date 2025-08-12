@@ -40,9 +40,9 @@ class FormatPriceTest:
         "price,expected",
         [
             (decimal.Decimal(8.38), "1000 F"),
-            (decimal.Decimal(99.5), "11874 F"),
+            (decimal.Decimal(99.5), "11875 F"),
             (150, "17900 F"),
-            (100.0 / 3.0, "3978 F"),
+            (100.0 / 3.0, "3980 F"),
         ],
     )
     def test_format_price_in_xpf(self, price, expected, factory):

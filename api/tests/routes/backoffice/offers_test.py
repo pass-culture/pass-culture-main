@@ -1211,8 +1211,8 @@ class ListOffersTest(GetEndpointHelper):
             (offerers_factories.VenueFactory, "10,00 €", "10,00 € - 15,00 €"),
             (
                 offerers_factories.CaledonianVenueFactory,
-                "10,00 € (1193 CFP)",
-                "10,00 € (1193 CFP) - 15,00 € (1790 CFP)",
+                "10,00 € (1195 CFP)",
+                "10,00 € (1195 CFP) - 15,00 € (1790 CFP)",
             ),
         ],
     )
@@ -3914,9 +3914,9 @@ class GetOfferDetailsTest(GetEndpointHelper):
             (
                 offerers_factories.CaledonianVenueFactory,
                 "0,00 € (0 CFP)",
-                "13,00 € (1551 CFP)",
-                "42,00 € (5012 CFP)",
-                "66,60 € (7947 CFP)",
+                "13,00 € (1550 CFP)",
+                "42,00 € (5010 CFP)",
+                "66,60 € (7945 CFP)",
             ),
         ],
     )

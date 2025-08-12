@@ -46,7 +46,7 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
         "venue_factory, event_hour, formatted_price",
         [
             (offerers_factories.VenueFactory, "12h20", "10 €"),
-            (offerers_factories.CaledonianVenueFactory, "21h20", "1193 F"),
+            (offerers_factories.CaledonianVenueFactory, "21h20", "1195 F"),
         ],
     )
     def test_should_send_one_side_booking_cancellation_email(self, venue_factory, event_hour, formatted_price):
