@@ -35,4 +35,18 @@ describe('OfferType', () => {
     renderOfferTypes('/onboarding')
     expect(screen.queryByTestId('lateral-panel')).not.toBeInTheDocument()
   })
+
+  it('should show a generic title if the url does not contain the collective type', () => {
+    renderOfferTypes('/')
+    expect(
+      screen.getByRole('heading', { name: 'Créer une offre' })
+    ).toBeInTheDocument()
+  })
+
+  it('should show a collective specific title if the url contains the collective type', () => {
+    renderOfferTypes('/?type=collective')
+    expect(
+      screen.getByRole('heading', { name: 'Créer une offre collective' })
+    ).toBeInTheDocument()
+  })
 })

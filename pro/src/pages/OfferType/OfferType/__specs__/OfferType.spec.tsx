@@ -44,7 +44,10 @@ vi.mock('@/apiClient/api', () => ({
 const renderOfferTypes = (structureId?: string, venueId?: string) => {
   renderWithProviders(
     <Routes>
-      <Route path="/creation" element={<OfferTypeScreen />} />
+      <Route
+        path="/creation"
+        element={<OfferTypeScreen collectiveOnly={false} />}
+      />
       <Route
         path="/offre/creation/collectif"
         element={<div>Création collectif</div>}

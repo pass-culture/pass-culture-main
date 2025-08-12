@@ -10,6 +10,10 @@ import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformatio
 import { OfferTypeScreen } from './OfferType/OfferType'
 
 export const OfferType = (): JSX.Element => {
+  const location = useLocation()
+  const queryParams = new URLSearchParams(location.search)
+  const collectiveOnly = queryParams.get('type') === 'collective'
+
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
@@ -24,7 +28,7 @@ export const OfferType = (): JSX.Element => {
 
   return (
     <Layout
-      mainHeading="Créer une offre"
+      mainHeading={`Créer une offre${collectiveOnly ? ' collective' : ''}`}
       mainTopElement={
         !isOnboarding &&
         offerer?.allowedOnAdage && (
@@ -33,7 +37,7 @@ export const OfferType = (): JSX.Element => {
       }
       layout={isOnboarding ? 'sticky-onboarding' : 'sticky-actions'}
     >
-      <OfferTypeScreen />
+      <OfferTypeScreen collectiveOnly={collectiveOnly} />
     </Layout>
   )
 }

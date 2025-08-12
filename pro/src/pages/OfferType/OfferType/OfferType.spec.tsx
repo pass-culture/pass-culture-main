@@ -2,34 +2,37 @@ import { screen } from '@testing-library/react'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { OfferTypeScreen } from './OfferType'
+import { OfferTypeScreen, OfferTypeScreenProps } from './OfferType'
 
-const renderOfferTypeScreen = ({
-  isNewOfferCreationFlowFeatureActive,
-}: {
-  isNewOfferCreationFlowFeatureActive?: boolean
-} = {}) => {
-  renderWithProviders(<OfferTypeScreen />, {
-    features: isNewOfferCreationFlowFeatureActive
-      ? ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW']
-      : [],
+const defaultProps: OfferTypeScreenProps = { collectiveOnly: false }
+
+const renderOfferTypeScreen = (
+  props: Partial<OfferTypeScreenProps>,
+  features: string[]
+) => {
+  renderWithProviders(<OfferTypeScreen {...defaultProps} {...props} />, {
+    features: features,
   })
 }
 
 describe('OfferType', () => {
-  it('should display the offer subtype options', () => {
-    renderOfferTypeScreen()
+  it('should show the individual option if the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled and the form is not collective only', () => {
+    renderOfferTypeScreen({}, ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'])
 
     expect(
-      screen.getByTestId('wrapper-individualOfferSubtype')
+      screen.getByRole('heading', { name: 'À qui destinez-vous cette offre ?' })
     ).toBeInTheDocument()
   })
 
-  it('should NOT display the offer subtype options', () => {
-    renderOfferTypeScreen({ isNewOfferCreationFlowFeatureActive: true })
+  it('should not show the individual option if the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled and the query params contain the type "collective"', () => {
+    renderOfferTypeScreen({ collectiveOnly: true }, [
+      'WIP_ENABLE_NEW_OFFER_CREATION_FLOW',
+    ])
 
     expect(
-      screen.queryByTestId('wrapper-individualOfferSubtype')
+      screen.queryByRole('heading', {
+        name: 'À qui destinez-vous cette offre ?',
+      })
     ).not.toBeInTheDocument()
   })
 })
