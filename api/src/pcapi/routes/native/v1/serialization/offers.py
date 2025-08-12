@@ -361,7 +361,15 @@ class BaseOfferResponseGetterDict(GetterDict):
                 return None
 
             video_id = extract_youtube_video_id(offer.metaData.videoUrl)
-            return OfferVideo(id=video_id, thumbUrl=offer.metaData.videoUrl)
+            if not video_id:
+                return None
+
+            return OfferVideo(
+                id=video_id,
+                title=offer.metaData.videoTitle,
+                thumbnailUrl=offer.metaData.videoThumbnailUrl,
+                durationSeconds=offer.metaData.videoDuration,
+            )
 
         return super().get(key, default)
 
@@ -429,8 +437,10 @@ class OfferArtist(ConfiguredBaseModel):
 
 
 class OfferVideo(ConfiguredBaseModel):
-    id: str | None
-    thumbUrl: str | None
+    id: str
+    title: str | None
+    thumbnailUrl: str | None
+    durationSeconds: int | None
 
 
 class BaseOfferResponse(ConfiguredBaseModel):
