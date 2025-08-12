@@ -25,11 +25,11 @@
     margin-bottom: rem.torem(16px);
   }
 
-  &:not(.refresh-required) ~ .no-bookings-for-pre-filters {
+  &:not(.refresh-required)~.no-bookings-for-pre-filters {
     padding-top: rem.torem(16px);
   }
 
-  &.refresh-required ~ .no-bookings-for-pre-filters {
+  &.refresh-required~.no-bookings-for-pre-filters {
     padding-top: 0;
   }
 
@@ -95,24 +95,12 @@
   }
 }
 
-.download-button {
-  flex: 1;
-
-  button {
-    width: 100%;
-  }
-}
-
 .show-button {
   z-index: 0;
   width: 100%;
 }
 
 @media screen and (min-width: size.$tablet) {
-  .download-button {
-    flex: initial;
-  }
-
   .show-button {
     margin: 0 rem.torem(8px);
     width: rem.torem(148px);

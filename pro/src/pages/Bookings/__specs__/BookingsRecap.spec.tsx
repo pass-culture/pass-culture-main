@@ -312,7 +312,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // submit utils method wait for button to become disabled then enabled.
     await userEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
-    const downloadSubButton = await screen.findByRole('button', {
+    const downloadSubButton = await screen.findByRole('menuitem', {
       name: 'Fichier CSV (.csv)',
     })
     await userEvent.click(downloadSubButton)
@@ -339,7 +339,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await waitForCompleteLoading()
 
     await userEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
-    const downloadSubButton = await screen.findByRole('button', {
+    const downloadSubButton = await screen.findByRole('menuitem', {
       name: 'Fichier CSV (.csv)',
     })
     await userEvent.click(downloadSubButton)
@@ -700,7 +700,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // submit utils method wait for button to become disabled then enabled.
     await userEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
-    const downloadSubButton = await screen.findByRole('button', {
+    const downloadSubButton = await screen.findByRole('menuitem', {
       name: 'Fichier CSV (.csv)',
     })
     await userEvent.click(downloadSubButton)
