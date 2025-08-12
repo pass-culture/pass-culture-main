@@ -23,6 +23,7 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { RecurrenceSection } from './RecurrenceSection/RecurrenceSection'
 import styles from './StockSection.module.scss'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 
 export interface StockSectionProps {
   offer: GetIndividualOfferWithAddressResponseModel
@@ -44,6 +45,8 @@ export const StockSection = ({
   const notification = useNotification()
 
   const departmentCode = getDepartmentCode(offer)
+
+  const isCaledonian = useIsCaledonian()
 
   useEffect(() => {
     async function getStockThing() {
