@@ -68,8 +68,9 @@
 
   &-create-offer-wrapper {
     display: flex;
+    z-index: 1;
 
-    a {
+    &-trigger {
       flex-grow: 1;
       margin: 0 size.$header-nav-item-padding size.$header-nav-item-padding;
     }

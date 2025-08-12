@@ -282,4 +282,29 @@ describe('SideNavLinks', () => {
       ).not.toBeInTheDocument()
     })
   })
+
+  it('should show a create offer dropdown button with individual and collective choices if the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled', async () => {
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      isValidated: true,
+    })
+
+    renderSideNavLinks({
+      storeOverrides: {
+        offerer: currentOffererFactory(),
+      },
+      features: ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'],
+    })
+
+    await waitFor(() => {
+      expect(api.getOfferer).toHaveBeenCalled()
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Créer une offre' })
+    )
+
+    expect(screen.getByRole('menuitem', { name: 'Pour le grand public' }))
+    expect(screen.getByRole('menuitem', { name: 'Pour les groupes scolaires' }))
+  })
 })

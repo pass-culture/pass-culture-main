@@ -30,7 +30,7 @@ const renderOfferTypes = (
   venueId?: string,
   options: RenderWithProvidersOptions = {}
 ) => {
-  renderWithProviders(<OfferTypeScreen />, {
+  renderWithProviders(<OfferTypeScreen collectiveOnly={false} />, {
     user: sharedCurrentUserFactory(),
     initialRouterEntries: [`/creation${venueId ? `?lieu=${venueId}` : ''}`],
     ...options,

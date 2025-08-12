@@ -1,6 +1,6 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import classNames from 'classnames'
-import { MouseEventHandler, useState } from 'react'
+import { useState } from 'react'
 
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'

@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router'
@@ -29,7 +30,25 @@ import { IndividualOfferType } from './IndividualOfferType/IndividualOfferType'
 import styles from './OfferType.module.scss'
 import type { OfferTypeFormValues } from './types'
 
-export const OfferTypeScreen = () => {
+export type OfferTypeScreenProps = {
+  collectiveOnly: boolean
+}
+
+function getInitialValues(collectiveOnly: boolean) {
+  return {
+    offer: {
+      offerType: collectiveOnly
+        ? OFFER_TYPES.EDUCATIONAL
+        : OFFER_TYPES.INDIVIDUAL_OR_DUO,
+      collectiveOfferSubtype: COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE,
+      collectiveOfferSubtypeDuplicate:
+        COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER,
+      individualOfferSubtype: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
+    },
+  }
+}
+
+export const OfferTypeScreen = ({ collectiveOnly }: OfferTypeScreenProps) => {
   const navigate = useNavigate()
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
@@ -41,19 +60,15 @@ export const OfferTypeScreen = () => {
 
   const notify = useNotification()
 
-  const initialValues: OfferTypeFormValues = {
-    offer: {
-      offerType: OFFER_TYPES.INDIVIDUAL_OR_DUO,
-      collectiveOfferSubtype: COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE,
-      collectiveOfferSubtypeDuplicate:
-        COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER,
-      individualOfferSubtype: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
-    },
-  }
-
   const methods = useForm<OfferTypeFormValues>({
-    defaultValues: initialValues,
+    defaultValues: getInitialValues(collectiveOnly),
   })
+
+  useEffect(() => {
+    //  When going from the original carrefour (/offer/creation) to the collective carrefour (/offer/creation?type=collective)
+    //  we need to reset the form manually, otherwise the offerType is "INDIVIDUAL" while the collectiveOnly is `true`
+    methods.reset(getInitialValues(collectiveOnly))
+  }, [methods.reset, collectiveOnly])
 
   const { handleSubmit, setValue, getValues, watch } = methods
 
@@ -151,7 +166,7 @@ export const OfferTypeScreen = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <FormLayout>
               {/* If we're on boarding process, we don't need to ask for offer type (we already chose individual at previous step) */}
-              {!isOnboarding && (
+              {!isOnboarding && !collectiveOnly && (
                 <RadioButtonGroup
                   variant="detailed"
                   name="offerType"
@@ -175,10 +190,9 @@ export const OfferTypeScreen = () => {
                 />
               )}
 
-              {!isNewOfferCreationFlowFeatureActive &&
-                offer.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
-                  <IndividualOfferType />
-                )}
+              {offer.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
+                <IndividualOfferType />
+              )}
 
               {offer.offerType === OFFER_TYPES.EDUCATIONAL &&
                 (isOffererLoading ? (
