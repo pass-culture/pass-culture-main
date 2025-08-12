@@ -5,6 +5,7 @@ import { getNthParentFormValues } from '@/commons/utils/yupValidationTestHelpers
 import {
   PRICE_CATEGORY_LABEL_MAX_LENGTH,
   PRICE_CATEGORY_PRICE_MAX,
+  PRICE_MAX_PACIFIC_FRANC,
 } from './constants'
 import { isPriceCategoriesForm, isPriceCategoriesFormValues } from './types'
 
@@ -15,55 +16,61 @@ const labelDuplicateMsg =
 
 const priceRequiredMsg = 'Veuillez renseigner un tarif'
 const priceTooLowMsg = 'Le prix ne peut pas être inferieur à 0€'
-const priceTooHighMsg = `Veuillez renseigner un tarif inférieur à ${PRICE_CATEGORY_PRICE_MAX}€`
 
-const priceCategoryValidationSchema = yup.object({
-  label: yup
-    .string()
-    .required(labelRequiredMsg)
-    .max(PRICE_CATEGORY_LABEL_MAX_LENGTH, labelTooLongMsg)
-    .test('no-duplicate', labelDuplicateMsg, function () {
-      const allValues = getNthParentFormValues(this, 1)
-      const current = getNthParentFormValues(this, 0)
+export const getValidationSchema = (isCaledonian: boolean = false) => {
+  const maxPrice = isCaledonian ? PRICE_MAX_PACIFIC_FRANC : PRICE_CATEGORY_PRICE_MAX
+  const priceTooHighMsg = isCaledonian
+    ? `Veuillez renseigner un tarif inférieur à ${PRICE_MAX_PACIFIC_FRANC}F`
+    : `Veuillez renseigner un tarif inférieur à ${PRICE_CATEGORY_PRICE_MAX}€`
 
-      if (
-        !isPriceCategoriesFormValues(allValues) ||
-        !isPriceCategoriesForm(current)
-      ) {
-        throw new yup.ValidationError('Le formulaire n’est pas complet')
-      }
+  const priceCategoryValidationSchema = yup.object({
+    label: yup
+      .string()
+      .required(labelRequiredMsg)
+      .max(PRICE_CATEGORY_LABEL_MAX_LENGTH, labelTooLongMsg)
+      .test('no-duplicate', labelDuplicateMsg, function () {
+        const allValues = getNthParentFormValues(this, 1)
+        const current = getNthParentFormValues(this, 0)
 
-      if (!current.label || (!current.price && current.price !== 0)) {
-        return true
-      }
+        if (
+          !isPriceCategoriesFormValues(allValues) ||
+          !isPriceCategoriesForm(current)
+        ) {
+          throw new yup.ValidationError('Le formulaire n’est pas complet')
+        }
 
-      const duplicates = allValues.priceCategories.filter((p) => {
-        return p.label === current.label && p.price === current.price
-      })
+        if (!current.label || (!current.price && current.price !== 0)) {
+          return true
+        }
 
-      return duplicates.length === 1
-    }),
+        const duplicates = allValues.priceCategories.filter((p) => {
+          return p.label === current.label && p.price === current.price
+        })
 
-  price: yup
-    .mixed<number | ''>()
-    .test('is-valid-price', 'Le prix doit être un nombre', (value) =>
-      value === '' ? true : typeof value === 'number'
-    )
-    .test('min', priceTooLowMsg, (value) =>
-      typeof value === 'number' ? value >= 0 : false
-    )
-    .test('max', priceTooHighMsg, (value) =>
-      typeof value === 'number' ? value <= PRICE_CATEGORY_PRICE_MAX : false
-    )
-    .transform((value) => (value === '' ? undefined : value))
-    .required(priceRequiredMsg),
-})
+        return duplicates.length === 1
+      }),
 
-export const validationSchema = yup.object({
-  priceCategories: yup
-    .array()
-    .of(priceCategoryValidationSchema)
-    .required()
-    .min(1),
-  isDuo: yup.boolean(),
-})
+    price: yup
+      .mixed<number | ''>()
+      .test('is-valid-price', 'Le prix doit être un nombre', (value) =>
+        value === '' ? true : typeof value === 'number'
+      )
+      .test('min', priceTooLowMsg, (value) =>
+        typeof value === 'number' ? value >= 0 : false
+      )
+      .test('max', priceTooHighMsg, (value) =>
+        typeof value === 'number' ? value <= maxPrice : false
+      )
+      .transform((value) => (value === '' ? undefined : value))
+      .required(priceRequiredMsg),
+  })
+
+  return yup.object({
+    priceCategories: yup
+      .array()
+      .of(priceCategoryValidationSchema)
+      .required()
+      .min(1),
+    isDuo: yup.boolean(),
+  })
+}

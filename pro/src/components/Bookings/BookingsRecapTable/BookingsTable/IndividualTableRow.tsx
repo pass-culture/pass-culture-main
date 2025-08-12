@@ -13,6 +13,11 @@ import { BookingOfferCell } from './Cells/BookingOfferCell'
 import { BookingStatusCellHistory } from './Cells/BookingStatusCellHistory'
 import { DetailsButtonCell } from './Cells/DetailsButtonCell'
 import { IndividualBookingStatusCell } from './Cells/IndividualBookingStatusCell'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
+import {
+  convertEuroToPacificFranc,
+  formatPacificFranc,
+} from '@/commons/utils/convertEuroToPacificFranc'
 
 export interface IndividualTableRowProps {
   booking: BookingRecapResponseModel
@@ -28,6 +33,8 @@ export const IndividualTableRow = ({
 }: IndividualTableRowProps) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
+  const isCaledonian = useIsCaledonian()
+
   return (
     <>
       <tr className={styles['table-row']}>
@@ -41,7 +48,7 @@ export const IndividualTableRow = ({
               styles['offer-details-wrapper']
             )}
           >
-            <BookingOfferCell booking={booking} />
+            <BookingOfferCell booking={booking} isCaledonian={isCaledonian} />
 
             {booking.bookingIsDuo && (
               <SvgIcon
@@ -108,9 +115,13 @@ export const IndividualTableRow = ({
           <td className={styles['details-cell']} colSpan={6}>
             <div>
               <span className={styles['details-title']}>Prix : </span>
-              <span
-                className={styles['details-content']}
-              >{`${computeBookingAmount(booking.bookingAmount)}`}</span>
+              <span className={styles['details-content']}>
+                {isCaledonian
+                  ? formatPacificFranc(
+                      convertEuroToPacificFranc(booking.bookingAmount)
+                    )
+                  : computeBookingAmount(booking.bookingAmount)}
+              </span>
             </div>
             <BookingStatusCellHistory
               index={index}

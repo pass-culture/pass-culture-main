@@ -30,6 +30,7 @@ import fullUpIcon from '@/icons/full-up.svg'
 import strokeBagIcon from '@/icons/stroke-bag.svg'
 import strokeCollaboratorIcon from '@/icons/stroke-collaborator.svg'
 import strokeEuroIcon from '@/icons/stroke-euro.svg'
+import strokeFrancIcon from '@/icons/stroke-franc.svg'
 import strokeHomeIcon from '@/icons/stroke-home.svg'
 import strokePhoneIcon from '@/icons/stroke-phone.svg'
 import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
@@ -39,6 +40,7 @@ import { DropdownButton } from '@/ui-kit/DropdownButton/DropdownButton'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SideNavLinks.module.scss'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 
 const NAV_ITEM_ICON_SIZE = '20'
 
@@ -66,6 +68,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const sideNavCollapseSize = useMediaQuery(
     SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY
   )
+  const isCaledonian = useIsCaledonian()
 
   const { data: selectedOfferer, error: offererApiError } = useOfferer(
     selectedOffererId,
@@ -407,7 +410,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             }
           >
             <SvgIcon
-              src={strokeEuroIcon}
+              src={isCaledonian ? strokeFrancIcon : strokeEuroIcon}
               alt=""
               width={NAV_ITEM_ICON_SIZE}
               className={styles['icon']}

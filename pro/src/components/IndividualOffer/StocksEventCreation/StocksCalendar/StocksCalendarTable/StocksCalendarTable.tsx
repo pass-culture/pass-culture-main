@@ -24,6 +24,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './StocksCalendarTable.module.scss'
 import { StocksCalendarTableEditStock } from './StocksCalendarTableEditStock/StocksCalendarTableEditStock'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 
 export type StocksCalendarTableProps = {
   stocks: GetOfferStockResponseModel[]
@@ -51,6 +52,8 @@ export function StocksCalendarTable({
     useState<GetOfferStockResponseModel | null>(null)
   const [stockBeingDeleted, setStockBeingDeleted] =
     useState<GetOfferStockResponseModel | null>(null)
+
+  const isCaledonian = useIsCaledonian()
 
   const openedStockTriggerRef = useRef<HTMLButtonElement | null>(null)
 
@@ -162,7 +165,7 @@ export function StocksCalendarTable({
         </thead>
         <tbody className={styles['tbody']}>
           {stocks.map((stock) => {
-            const priceCaregory = offer.priceCategories?.find(
+            const priceCategory = offer.priceCategories?.find(
               (p) => p.id === stock.priceCategoryId
             )
 
@@ -209,8 +212,8 @@ export function StocksCalendarTable({
                     : 'Horaire invalide'}
                 </td>
                 <td className={styles['tbody-td']}>
-                  {priceCaregory
-                    ? getPriceCategoryName(priceCaregory)
+                  {priceCategory
+                    ? getPriceCategoryName(priceCategory, isCaledonian)
                     : 'Tarif invalide'}
                 </td>
                 <td className={styles['tbody-td']}>

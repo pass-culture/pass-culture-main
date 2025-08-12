@@ -6,6 +6,12 @@ import strokeDuoIcon from '@/icons/stroke-duo.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BookingDetails.module.scss'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
+import {
+  convertEuroToPacificFranc,
+  formatPacificFranc,
+} from '@/commons/utils/convertEuroToPacificFranc'
+import { formatPrice } from '@/commons/utils/formatPrice'
 
 interface BookingProps {
   label: string
@@ -19,7 +25,7 @@ const BookingDetailsLine = ({ label, value }: BookingProps) => (
   </div>
 )
 
-interface BookingDetailsProps {
+export interface BookingDetailsProps {
   booking: GetBookingResponse
 }
 
@@ -34,6 +40,8 @@ const formattedBookingDate = (booking: GetBookingResponse): string => {
 }
 
 export const BookingDetails = ({ booking }: BookingDetailsProps) => {
+  const isCaledonian = useIsCaledonian()
+
   return (
     <div className={styles['booking-summary']}>
       <BookingDetailsLine label="Utilisateur : " value={booking.userName} />
@@ -47,12 +55,21 @@ export const BookingDetails = ({ booking }: BookingDetailsProps) => {
         <div>
           <div className={styles['desk-label']}>{'Prix : '}</div>
           <div className={cx(styles['desk-value'], styles['duo-price'])}>
-            {`${booking.price * 2} €`}
+            {isCaledonian
+              ? formatPacificFranc(convertEuroToPacificFranc(booking.price * 2))
+              : formatPrice(booking.price * 2)}
             <SvgIcon src={strokeDuoIcon} alt="Réservation DUO" />
           </div>
         </div>
       ) : (
-        <BookingDetailsLine label="Prix : " value={`${booking.price} €`} />
+        <BookingDetailsLine
+          label="Prix : "
+          value={
+            isCaledonian
+              ? formatPacificFranc(convertEuroToPacificFranc(booking.price))
+              : formatPrice(booking.price)
+          }
+        />
       )}
       {booking.priceCategoryLabel && (
         <BookingDetailsLine

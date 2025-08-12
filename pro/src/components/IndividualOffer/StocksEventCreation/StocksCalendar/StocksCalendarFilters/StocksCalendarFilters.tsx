@@ -11,6 +11,7 @@ import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 
 import type { StocksTableFilters, StocksTableSort } from '../../form/types'
 import styles from './StocksCalendarFilters.module.scss'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 
 export type StocksCalendarFiltersProps = {
   priceCategories?: Array<PriceCategoryResponseModel> | null
@@ -67,6 +68,8 @@ export const StocksCalendarFilters = ({
   onUpdateSort,
   mode,
 }: StocksCalendarFiltersProps) => {
+  const isCaledonian = useIsCaledonian()
+
   const hasFiltersApplied = Object.values(filters).some(Boolean)
   return (
     <div className={styles['container']}>
@@ -103,7 +106,7 @@ export const StocksCalendarFilters = ({
         label="Tarif"
         className={styles['place-category-select']}
         name="price-category"
-        options={getPriceCategoryOptions(priceCategories)}
+        options={getPriceCategoryOptions(priceCategories, isCaledonian)}
         defaultOption={{ label: 'Tous les tarifs', value: '' }}
         value={filters.priceCategoryId || ''}
         onChange={(e) =>

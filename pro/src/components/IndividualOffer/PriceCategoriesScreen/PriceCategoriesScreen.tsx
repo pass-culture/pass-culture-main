@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
@@ -32,18 +32,21 @@ import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuard
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import strokeEuroIcon from '@/icons/stroke-euro.svg'
+import strokeFrancIcon from '@/icons/stroke-franc.svg'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { PriceInput } from '@/ui-kit/form/PriceInput/PriceInput'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
-import { validationSchema } from '../PriceCategoriesScreen/form/validationSchema'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 import { computeInitialValues } from './form/computeInitialValues'
 import { submitToApi } from './form/submitToApi'
 import type { PriceCategoriesFormValues, PriceCategoryForm } from './form/types'
+import { getValidationSchema } from './form/validationSchema'
 import styles from './PriceCategoriesScreen.module.scss'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
+import { convertPacificFrancToEuro } from '@/commons/utils/convertEuroToPacificFranc'
 
 export interface PriceCategoriesScreenProps {
   offer: GetIndividualOfferWithAddressResponseModel
@@ -120,6 +123,8 @@ export const PriceCategoriesScreen = ({
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] =
     useState<boolean>(false)
 
+  const isCaledonian = useIsCaledonian()
+
   const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
 
   const isDisabledBySynchronization =
@@ -130,10 +135,10 @@ export const PriceCategoriesScreen = ({
     (subCategory) => subCategory.id === offer.subcategoryId
   )?.canBeDuo
 
-  const defaultValues = computeInitialValues(offer)
+  const defaultValues = computeInitialValues(offer, isCaledonian)
   const hookForm = useForm({
     defaultValues,
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(getValidationSchema(isCaledonian)),
     mode: 'onBlur',
   })
 
@@ -147,6 +152,11 @@ export const PriceCategoriesScreen = ({
     formState: { errors, isDirty, isSubmitting },
   } = hookForm
 
+  useEffect(() => {
+    const newValues = computeInitialValues(offer, isCaledonian)
+    hookForm.reset(newValues)
+  }, [isCaledonian, offer])
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'priceCategories',
@@ -155,7 +165,18 @@ export const PriceCategoriesScreen = ({
   const priceCategories = watch('priceCategories')
 
   const onSubmit = async () => {
-    const values = { ...getValues(), isDuo: getValues().isDuo }
+    let values = { ...getValues(), isDuo: getValues().isDuo }
+
+    if (isCaledonian) {
+      values = {
+        ...values,
+        priceCategories: values.priceCategories.map((cat) => ({
+          ...cat,
+          price: convertPacificFrancToEuro(Number(cat.price)),
+        })),
+      }
+    }
+
     const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
       step:
@@ -364,7 +385,9 @@ export const PriceCategoriesScreen = ({
                       className={styles['price-input']}
                       name={`priceCategories.${index}.price`}
                       label="Prix par personne"
-                      rightIcon={strokeEuroIcon}
+                      rightIcon={
+                        isCaledonian ? strokeFrancIcon : strokeEuroIcon
+                      }
                       disabled={isDisabled}
                       showFreeCheckbox
                       hideAsterisk={true}
@@ -372,7 +395,7 @@ export const PriceCategoriesScreen = ({
                       updatePriceValue={(value) =>
                         setValue(
                           `priceCategories.${index}.price`,
-                          parseFloat(value),
+                          isCaledonian ? Number(value) : parseFloat(value),
                           { shouldValidate: true }
                         )
                       }

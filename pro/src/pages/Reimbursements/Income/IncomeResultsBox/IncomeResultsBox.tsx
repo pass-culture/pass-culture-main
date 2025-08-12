@@ -11,10 +11,15 @@ import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 
 import { isCollectiveAndIndividualRevenue, isCollectiveRevenue } from '../utils'
 import styles from './IncomeResultsBox.module.scss'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
+import {
+  convertEuroToPacificFranc,
+  formatPacificFranc,
+} from '@/commons/utils/convertEuroToPacificFranc'
 
 type IncomeSubBoxProps = {
   title: string
-  number: number
+  number: number | string
   help?: string
 }
 
@@ -56,6 +61,8 @@ type IncomeResultsBoxProps = {
 }
 
 export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
+  const isCaledonian = useIsCaledonian()
+
   const totalLabel =
     type === 'revenue'
       ? 'Chiffre d’affaires total réalisé'
@@ -76,7 +83,11 @@ export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
       <div className={styles['income-results-box']}>
         <IncomeResultsSubBox
           title={totalLabel}
-          number={total}
+          number={
+            isCaledonian
+              ? formatPacificFranc(convertEuroToPacificFranc(total))
+              : total
+          }
           help={totalHelp}
         />
         {shouldDisplayIncomeDetails && (
