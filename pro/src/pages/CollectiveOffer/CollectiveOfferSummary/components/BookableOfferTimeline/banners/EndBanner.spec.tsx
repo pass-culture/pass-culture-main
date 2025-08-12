@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react'
-
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { EndBanner } from './EndBanner'
