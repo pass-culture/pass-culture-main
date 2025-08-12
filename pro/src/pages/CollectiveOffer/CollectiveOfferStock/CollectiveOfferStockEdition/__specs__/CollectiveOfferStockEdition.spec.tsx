@@ -53,7 +53,7 @@ describe('CollectiveOfferStockEdition', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: /Éditer une offre collective/,
+        name: /Modifier l’offre/,
       })
     ).toBeInTheDocument()
   })

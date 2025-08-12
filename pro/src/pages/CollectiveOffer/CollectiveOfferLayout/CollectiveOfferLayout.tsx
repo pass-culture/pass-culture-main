@@ -61,7 +61,7 @@ export const CollectiveOfferLayout = ({
       : 'Créer une offre réservable'
     : isSummaryPage
       ? 'Récapitulatif'
-      : 'Éditer une offre collective'
+      : 'Modifier l’offre'
 
   const navigationProps = {
     activeStep: getActiveStep(location.pathname),

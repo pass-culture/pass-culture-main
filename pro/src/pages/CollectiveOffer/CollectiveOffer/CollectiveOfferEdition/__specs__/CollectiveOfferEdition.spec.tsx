@@ -75,7 +75,7 @@ describe('CollectiveOfferEdition', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: /Éditer une offre collective/,
+        name: /Modifier l’offre/,
       })
     ).toBeInTheDocument()
 
@@ -95,7 +95,7 @@ describe('CollectiveOfferEdition', () => {
     })
     expect(
       await screen.findByRole('heading', {
-        name: /Éditer une offre collective/,
+        name: /Modifier l’offre/,
       })
     ).toBeInTheDocument()
     expect(screen.getByText('Offre vitrine')).toBeInTheDocument()
