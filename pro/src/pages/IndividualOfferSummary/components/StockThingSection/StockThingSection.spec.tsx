@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 
 import { getOfferStockFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
 
 import { StockThingSection } from './StockThingSection'
 
@@ -37,5 +38,16 @@ describe('StockThingSection', () => {
       screen.getByText('Accepter les réservations "Duo" :')
     ).toBeInTheDocument()
     expect(screen.getByText('Oui')).toBeInTheDocument()
+  })
+
+  it('should display the price in F CFP when isCaledonian is true', () => {
+    vi.spyOn(useIsCaledonian, 'useIsCaledonian').mockReturnValue(true)
+    const stock = getOfferStockFactory({ price: 20 })
+
+    renderWithProviders(
+      <StockThingSection stock={stock} canBeDuo={false} isDuo={false} />
+    )
+
+    expect(screen.getByText(/2385 F/)).toBeInTheDocument()
   })
 })
