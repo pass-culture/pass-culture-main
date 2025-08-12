@@ -5,7 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { expect, vi } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import * as siretApiValidate from '@/commons/core/Venue/siretApiValidate'
+import { structureDataBodyModelFactory } from '@/commons/utils/factories/userOfferersFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -22,7 +22,7 @@ vi.mock('@/commons/core/Venue/siretApiValidate')
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getSiretInfo: vi.fn(),
+    getStructureData: vi.fn(),
     getDataFromAddress: vi.fn(),
   },
 }))
@@ -101,18 +101,9 @@ describe('SiretOrCommentFields', () => {
 
   describe('should validate SIRET on submit', () => {
     it('handles onSiretChange and calls APIs and form methods', async () => {
-      vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
-        active: false,
-        address: {
-          city: '',
-          postalCode: '',
-          street: '',
-        },
-        ape_code: '',
-        legal_category_code: '',
-        name: '',
-        siret: '',
-      })
+      vi.spyOn(api, 'getStructureData').mockResolvedValue(
+        structureDataBodyModelFactory()
+      )
 
       renderSiretOrComment({ ...props })
 
@@ -123,7 +114,7 @@ describe('SiretOrCommentFields', () => {
       await userEvent.type(siretInput, '12345678901234')
 
       await waitFor(() => {
-        expect(api.getSiretInfo).toHaveBeenCalledWith('12345678901234')
+        expect(api.getStructureData).toHaveBeenCalledWith('12345678901234')
       })
     })
 
@@ -243,30 +234,6 @@ describe('SiretOrCommentFields', () => {
 
       const errorMessage = await screen.findByText(
         'Le code SIRET doit correspondre à un établissement de votre structure'
-      )
-      expect(errorMessage).toBeInTheDocument()
-    })
-
-    it('should call api validation and display error message if siret is not valid if venue is non virtual', async () => {
-      vi.spyOn(siretApiValidate, 'siretApiValidate').mockResolvedValue(
-        'Le code siret est invalide'
-      )
-
-      renderSiretOrComment(props)
-
-      const siretInput = screen.getByLabelText('SIRET de la structure', {
-        exact: false,
-      })
-      await userEvent.click(siretInput)
-      await userEvent.type(siretInput, '01234567800000')
-      await userEvent.click(
-        screen.getByRole('button', {
-          name: 'Enregistrer',
-        })
-      )
-
-      const errorMessage = await screen.findByText(
-        'Le code SIRET saisi n’est pas valide'
       )
       expect(errorMessage).toBeInTheDocument()
     })

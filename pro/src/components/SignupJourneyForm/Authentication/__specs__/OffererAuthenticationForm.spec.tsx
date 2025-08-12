@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
+import { expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
@@ -224,5 +225,26 @@ describe('OffererAuthenticationForm', () => {
 
     expect(yesRadio).toBeInTheDocument()
     expect(noRadio).toBeInTheDocument()
+  })
+
+  describe('With WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE FF', () => {
+    it('should render form without address when not dissufible', () => {
+      renderOffererAuthenticationForm(
+        {
+          initialValues: initialValues,
+          contextValue: {
+            ...contextValue,
+            offerer: {
+              ...offererAuthenticationFormValues,
+              isDiffusible: false,
+            },
+          },
+        },
+        { features: ['WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE'] }
+      )
+
+      const addressField = screen.queryByLabelText('Adresse postale *')
+      expect(addressField).not.toBeInTheDocument()
+    })
   })
 })

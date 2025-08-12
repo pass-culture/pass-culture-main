@@ -1,13 +1,9 @@
-import {
-  MOCKED_BACK_ADDRESS_LABEL,
-  MOCKED_BACK_ADDRESS_STREET,
-} from '../support/constants.ts'
+import { MOCKED_BACK_ADDRESS_LABEL } from '../support/constants.ts'
 import {
   interceptSearch5Adresses,
   logInAndGoToPage,
 } from '../support/helpers.ts'
 
-const venueName = 'MINISTERE DE LA CULTURE'
 const newVenueName = 'First Venue'
 
 describe('Signup journey with unknown offerer and unknown venue', () => {
@@ -23,25 +19,10 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
         login = response.body.user.email
       }
     )
-    cy.intercept('GET', `/sirene/siret/**`, (req) =>
-      req.reply({
-        statusCode: 200,
-        body: siretInterceptionPayload(mySiret, venueName),
-      })
-    ).as('getSiret')
     cy.intercept({
       method: 'GET',
       url: `/venues/siret/**`,
     }).as('venuesSiret')
-    cy.intercept(
-      'GET',
-      'https://api-adresse.data.gouv.fr/search/?limit=1&q=*',
-      (req) =>
-        req.reply({
-          statusCode: 200,
-          body: addressInterceptionPayload,
-        })
-    ).as('search1Address')
     cy.intercept({
       method: 'GET',
       url: '/venue-types',
@@ -53,6 +34,7 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.setFeatureFlags([
       { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
       { name: 'WIP_2025_AUTOLOGIN', isActive: true },
+      { name: 'WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE', isActive: false },
     ])
   })
 
@@ -63,19 +45,7 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.url().should('contain', '/inscription/structure/recherche')
     cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
     cy.findByText('Continuer').click()
-    cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
-      (interception) => {
-        if (interception[0].response) {
-          expect(interception[0].response.statusCode).to.equal(200)
-        }
-        if (interception[1].response) {
-          expect(interception[1].response.statusCode).to.equal(200)
-        }
-        if (interception[2].response) {
-          expect(interception[2].response.statusCode).to.equal(200)
-        }
-      }
-    )
+    cy.wait('@venuesSiret').its('response.statusCode').should('eq', 200)
 
     cy.stepLog({ message: 'I fill identification form with a public name' })
     cy.url().should('contain', '/inscription/structure/identification')
@@ -138,15 +108,6 @@ describe('Signup journey with known offerer...', () => {
       url: '/venue-types',
       times: 1,
     }).as('venue-types')
-    cy.intercept(
-      'GET',
-      'https://api-adresse.data.gouv.fr/search/?limit=1&q=*',
-      (req) =>
-        req.reply({
-          statusCode: 200,
-          body: addressInterceptionPayload,
-        })
-    ).as('search1Address')
     interceptSearch5Adresses()
     cy.intercept({
       method: 'GET',
@@ -155,6 +116,7 @@ describe('Signup journey with known offerer...', () => {
     cy.setFeatureFlags([
       { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
       { name: 'WIP_2025_AUTOLOGIN', isActive: true },
+      { name: 'WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE', isActive: false },
     ])
   })
 
@@ -170,17 +132,12 @@ describe('Signup journey with known offerer...', () => {
           login = response.body.user.email
           siren = response.body.siren
           mySiret = siren + endSiret
-          cy.intercept('GET', `/sirene/siret/**`, (req) =>
-            req.reply({
-              statusCode: 200,
-              body: siretInterceptionPayload(mySiret, venueName),
-            })
-          ).as('getSiret')
         }
       )
       cy.setFeatureFlags([
         { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
         { name: 'WIP_2025_AUTOLOGIN', isActive: true },
+        { name: 'WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE', isActive: false },
       ])
     })
 
@@ -191,19 +148,7 @@ describe('Signup journey with known offerer...', () => {
       cy.url().should('contain', '/inscription/structure/recherche')
       cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
       cy.findByText('Continuer').click()
-      cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
-        (interception) => {
-          if (interception[0].response) {
-            expect(interception[0].response.statusCode).to.equal(200)
-          }
-          if (interception[1].response) {
-            expect(interception[1].response.statusCode).to.equal(200)
-          }
-          if (interception[2].response) {
-            expect(interception[2].response.statusCode).to.equal(200)
-          }
-        }
-      )
+      cy.wait('@venuesSiret').its('response.statusCode').should('eq', 200)
 
       cy.stepLog({ message: 'I fill identification form with a public name' })
       cy.url().should('contain', '/inscription/structure/identification')
@@ -248,12 +193,6 @@ describe('Signup journey with known offerer...', () => {
         (response) => {
           login = response.body.user.email
           mySiret = response.body.siret
-          cy.intercept('GET', `/sirene/siret/**`, (req) =>
-            req.reply({
-              statusCode: 200,
-              body: siretInterceptionPayload(mySiret, venueName, '84.11Z'),
-            })
-          ).as('getSiret')
         }
       )
       interceptSearch5Adresses()
@@ -261,6 +200,7 @@ describe('Signup journey with known offerer...', () => {
       cy.setFeatureFlags([
         { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
         { name: 'WIP_2025_AUTOLOGIN', isActive: true },
+        { name: 'WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE', isActive: false },
       ])
     })
 
@@ -271,19 +211,7 @@ describe('Signup journey with known offerer...', () => {
       cy.url().should('contain', '/inscription/structure/recherche')
       cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
       cy.findByText('Continuer').click()
-      cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
-        (interception) => {
-          if (interception[0].response) {
-            expect(interception[0].response.statusCode).to.equal(200)
-          }
-          if (interception[1].response) {
-            expect(interception[1].response.statusCode).to.equal(200)
-          }
-          if (interception[2].response) {
-            expect(interception[2].response.statusCode).to.equal(200)
-          }
-        }
-      )
+      cy.wait('@venuesSiret').its('response.statusCode').should('eq', 200)
 
       cy.stepLog({ message: 'I add a new offerer' })
       cy.url().should('contain', '/inscription/structure/rattachement')
@@ -354,19 +282,7 @@ describe('Signup journey with known offerer...', () => {
       cy.url().should('contain', '/inscription/structure/recherche')
       cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
       cy.findByText('Continuer').click()
-      cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
-        (interception) => {
-          if (interception[0].response) {
-            expect(interception[0].response.statusCode).to.equal(200)
-          }
-          if (interception[1].response) {
-            expect(interception[1].response.statusCode).to.equal(200)
-          }
-          if (interception[2].response) {
-            expect(interception[2].response.statusCode).to.equal(200)
-          }
-        }
-      )
+      cy.wait('@venuesSiret').its('response.statusCode').should('eq', 200)
 
       cy.stepLog({ message: 'I chose to join the space' })
       cy.contains('Rejoindre cet espace').click()
@@ -395,57 +311,6 @@ function goToOffererCreation(login: string) {
   logInAndGoToPage(login, '/')
 
   cy.stepLog({ message: 'I start offerer creation' })
-}
-
-function siretInterceptionPayload(
-  mySiret: string,
-  venueName: string,
-  apeCode?: string
-) {
-  return {
-    siret: mySiret,
-    name: venueName,
-    active: true,
-    address: {
-      street: MOCKED_BACK_ADDRESS_STREET,
-      postalCode: '75001',
-      city: 'Paris',
-    },
-    ape_code: apeCode ? apeCode : '90.03A',
-    legal_category_code: '1000',
-  }
-}
-
-const addressInterceptionPayload = {
-  type: 'FeatureCollection',
-  version: 'draft',
-  features: [
-    {
-      type: 'Feature',
-      geometry: { type: 'Point', coordinates: [2.337933, 48.863666] },
-      properties: {
-        label: MOCKED_BACK_ADDRESS_LABEL,
-        score: 0.8136893939393939,
-        housenumber: '3',
-        id: '75101_9575_00003',
-        name: MOCKED_BACK_ADDRESS_STREET,
-        postcode: '75001',
-        citycode: '75101',
-        x: 651428.82,
-        y: 6862829.62,
-        city: 'Paris',
-        district: 'Paris 1er Arrondissement',
-        context: '75, Paris, Île-de-France',
-        type: 'housenumber',
-        importance: 0.61725,
-        street: 'Rue de Valois',
-      },
-    },
-  ],
-  attribution: 'BAN',
-  licence: 'ETALAB-2.0',
-  query: MOCKED_BACK_ADDRESS_LABEL,
-  limit: 1,
 }
 
 function fromOnBoardingPublishMyFirstOffer() {

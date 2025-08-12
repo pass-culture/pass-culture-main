@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router'
 
 import { MainHeading } from '@/app/App/layout/Layout'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { removeQuotes } from '@/commons/utils/removeQuotes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
@@ -42,11 +43,13 @@ export const OffererAuthentication = (): JSX.Element => {
   }, [setOfferer, navigate])
 
   const onSubmit = (formValues: OffererAuthenticationFormValues) => {
+    assertOrFrontendError(offerer, 'offerer is null')
     setOfferer({
       ...formValues,
       city: removeQuotes(formValues.city),
       street: removeQuotes(formValues.street),
       hasVenueWithSiret: false,
+      isDiffusible: offerer.isDiffusible,
     })
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/inscription/structure/activite')

@@ -1,5 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 
+import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import type { Address } from '@/commons/core/shared/types'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
@@ -32,6 +33,7 @@ export const OffererAuthenticationForm = (): JSX.Element => {
   const isPartiallyDiffusableSignupEnabled = useActiveFeature(
     'WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE'
   )
+  const { offerer } = useSignupJourneyContext()
 
   const { watch, setValue, register, getFieldState } =
     useFormContext<OffererAuthenticationFormValues>()
@@ -46,9 +48,10 @@ export const OffererAuthenticationForm = (): JSX.Element => {
     )
   }
 
-  // TODO: change this condition in the right jira story
   const shouldDisplayAddress =
-    !isPartiallyDiffusableSignupEnabled || watch('isOpenToPublic') === 'true'
+    !isPartiallyDiffusableSignupEnabled ||
+    watch('isOpenToPublic') === 'true' ||
+    offerer?.isDiffusible
 
   return (
     <FormLayout.Section>

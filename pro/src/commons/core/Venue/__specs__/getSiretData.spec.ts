@@ -11,18 +11,12 @@ describe('getsiretData', () => {
 
     expect(api.getSiretInfo).not.toHaveBeenCalled()
     expect(response).toStrictEqual({
-      values: {
-        address: '',
-        city: '',
-        latitude: null,
-        longitude: null,
-        name: '',
-        postalCode: '',
-        inseeCode: '',
-        siret: '',
-        apeCode: '',
-        banId: '',
-      },
+      address: null,
+      apeCode: null,
+      isDiffusible: false,
+      name: null,
+      siren: null,
+      siret: '',
     })
   })
 
