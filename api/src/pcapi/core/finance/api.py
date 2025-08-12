@@ -1233,6 +1233,19 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
     logger.info("Generating bank accounts file")
     file_paths["bank_accounts"] = _generate_bank_accounts_file(batch.cutoff)
 
+    previous_batch = (
+        db.session.query(models.CashflowBatch)
+        .filter(models.CashflowBatch.cutoff < batch.cutoff)
+        .order_by(models.CashflowBatch.cutoff.desc())
+        .limit(1)
+        .one_or_none()
+    )
+    if previous_batch:
+        logger.info("Generating changing bank accounts file")
+        file_paths["changing_bank_accounts"] = _generate_changing_bank_accounts_file(
+            previous_batch.cutoff, batch.cutoff
+        )
+
     logger.info("Generating payments file")
     file_paths["payments"] = _generate_payments_file(batch)
 
@@ -1450,6 +1463,71 @@ def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
     )
 
     return _write_csv("bank_accounts", header, rows=query, row_formatter=_row_formatter)
+
+
+def _changing_bank_accounts_row_formatter(row: typing.Any) -> tuple:
+    return (
+        str(row.venue_id),
+        _clean_for_accounting(row.venue_name),
+        str(row.old_bank_account_id),
+        _clean_for_accounting(row.old_bank_account_label),
+        _clean_for_accounting(row.old_bank_account_iban),
+        str(row.new_bank_account_id),
+        _clean_for_accounting(row.new_bank_account_label),
+        _clean_for_accounting(row.new_bank_account_iban),
+    )
+
+
+def _generate_changing_bank_accounts_file(
+    previous_cutoff: datetime.datetime, cutoff: datetime.datetime
+) -> pathlib.Path:
+    header = (
+        "ID de structure",
+        "Nom de la structure",
+        "Ancien ID de CB",
+        "Ancien nom de CB",
+        "Ancien IBAN de CB",
+        "Nouvel ID de CB",
+        "Nouveau nom de CB",
+        "Nouvel IBAN de CB",
+    )
+
+    previous_link = sa_orm.aliased(offerers_models.VenueBankAccountLink)
+    previous_bank_account = sa_orm.aliased(models.BankAccount)
+
+    query = (
+        db.session.query(offerers_models.Venue)
+        .join(
+            offerers_models.VenueBankAccountLink,
+            sa.and_(
+                offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId,
+                sa.func.lower(offerers_models.VenueBankAccountLink.timespan) > previous_cutoff,
+                offerers_models.VenueBankAccountLink.timespan.contains(cutoff),
+            ),
+        )
+        .join(models.BankAccount, models.BankAccount.id == offerers_models.VenueBankAccountLink.bankAccountId)
+        .join(
+            previous_link,
+            sa.and_(
+                offerers_models.Venue.id == previous_link.venueId,
+                previous_link.timespan.contains(previous_cutoff),
+            ),
+        )
+        .join(previous_bank_account, previous_bank_account.id == previous_link.bankAccountId)
+        .filter(previous_bank_account.id != models.BankAccount.id)
+        .with_entities(
+            offerers_models.Venue.id.label("venue_id"),
+            offerers_models.Venue.name.label("venue_name"),
+            previous_bank_account.id.label("old_bank_account_id"),
+            previous_bank_account.label.label("old_bank_account_label"),
+            previous_bank_account.iban.label("old_bank_account_iban"),
+            models.BankAccount.id.label("new_bank_account_id"),
+            models.BankAccount.label.label("new_bank_account_label"),
+            models.BankAccount.iban.label("new_bank_account_iban"),
+        )
+    )
+
+    return _write_csv("changing_bank_accounts", header, rows=query, row_formatter=_changing_bank_accounts_row_formatter)
 
 
 def _clean_for_accounting(value: str) -> str:

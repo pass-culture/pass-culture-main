@@ -1993,6 +1993,7 @@ def test_generate_payment_files(mocked_gdrive_create_file, clean_temp_files):
         booking__stock__offer__venue=venue,
         valueDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=1),
     )
+    factories.CashflowBatchFactory(cutoff=datetime.datetime.utcnow() - datetime.timedelta(days=15))
     cutoff = datetime.datetime.utcnow()
     api.generate_cashflows_and_payment_files(cutoff)
 
@@ -2006,6 +2007,7 @@ def test_generate_payment_files(mocked_gdrive_create_file, clean_temp_files):
     gdrive_file_names = {call.args[1] for call in mocked_gdrive_create_file.call_args_list}
     assert gdrive_file_names == {
         f"bank_accounts_{current_year}0201_1334.csv",
+        f"changing_bank_accounts_{current_year}0201_1334.csv",
         f"down_payment_{cashflow.batch.label}_{current_year}0201_1334.csv",
     }
 
@@ -2104,6 +2106,113 @@ def test_generate_bank_accounts_file(clean_temp_files):
             "Numéro de TVA Intracom": "",
             "Zone de taxes": "EXO",
         }
+
+
+def test_generate_changing_bank_accounts_file(clean_temp_files):
+    now = datetime.datetime.utcnow()
+    batch = factories.CashflowBatchFactory(cutoff=now)
+    previous_batch = factories.CashflowBatchFactory(cutoff=now - datetime.timedelta(days=15))
+
+    classic_venue = offerers_factories.VenueFactory()
+    old_link = offerers_factories.VenueBankAccountLinkFactory(
+        venue=classic_venue,
+        bankAccount__label="Ancien",
+        timespan=[now - datetime.timedelta(days=300), now - datetime.timedelta(days=10)],
+    )
+    new_link = offerers_factories.VenueBankAccountLinkFactory(
+        venue=classic_venue,
+        bankAccount__label="Nouveau",
+        timespan=[now - datetime.timedelta(days=10)],
+    )
+
+    venue_with_many_bank_accounts = offerers_factories.VenueFactory()
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_with_many_bank_accounts,
+        bankAccount__label="Très vieux",
+        timespan=[now - datetime.timedelta(days=300), now - datetime.timedelta(days=28)],
+    )
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_with_many_bank_accounts,
+        bankAccount__label="Vieux",
+        timespan=[now - datetime.timedelta(days=28), now - datetime.timedelta(days=17)],
+    )
+    previous_old_link = offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_with_many_bank_accounts,
+        bankAccount__label="Dernier vieux",
+        timespan=[now - datetime.timedelta(days=17), now - datetime.timedelta(days=13)],
+    )
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_with_many_bank_accounts,
+        bankAccount__label="Moins récent",
+        timespan=[now - datetime.timedelta(days=13), now - datetime.timedelta(days=2)],
+    )
+    recent_link = offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_with_many_bank_accounts,
+        bankAccount__label="Récent",
+        timespan=[now - datetime.timedelta(days=2)],
+    )
+
+    venue_with_very_old_bank_account = offerers_factories.VenueFactory()
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_with_very_old_bank_account,
+        timespan=[now - datetime.timedelta(days=300)],
+    )
+
+    venue_with_very_recent_bank_account = offerers_factories.VenueFactory()
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_with_very_recent_bank_account,
+        timespan=[now - datetime.timedelta(days=12)],
+    )
+
+    venue_with_swinging_bank_account = offerers_factories.VenueFactory()
+    swinging_bank_account = factories.BankAccountFactory()
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_with_swinging_bank_account,
+        bankAccount=swinging_bank_account,
+        timespan=[now - datetime.timedelta(days=17), now - datetime.timedelta(days=13)],
+    )
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_with_swinging_bank_account,
+        timespan=[now - datetime.timedelta(days=13), now - datetime.timedelta(days=2)],
+    )
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue_with_swinging_bank_account,
+        bankAccount=swinging_bank_account,
+        timespan=[now - datetime.timedelta(days=2)],
+    )
+
+    # Venue with no bank account
+    offerers_factories.VenueFactory()
+
+    previous_cutoff = previous_batch.cutoff
+    cutoff = batch.cutoff
+    with assert_num_queries(1):  # select bank account data
+        path = api._generate_changing_bank_accounts_file(previous_cutoff, cutoff)
+
+    with path.open(encoding="utf-8") as fp:
+        reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
+        rows = list(reader)
+    assert len(rows) == 2
+    assert {
+        "ID de structure": str(classic_venue.id),
+        "Nom de la structure": classic_venue.name,
+        "Ancien ID de CB": str(old_link.bankAccount.id),
+        "Ancien nom de CB": old_link.bankAccount.label,
+        "Ancien IBAN de CB": old_link.bankAccount.iban,
+        "Nouvel ID de CB": str(new_link.bankAccount.id),
+        "Nouveau nom de CB": new_link.bankAccount.label,
+        "Nouvel IBAN de CB": new_link.bankAccount.iban,
+    } in rows
+    assert {
+        "ID de structure": str(venue_with_many_bank_accounts.id),
+        "Nom de la structure": venue_with_many_bank_accounts.name,
+        "Ancien ID de CB": str(previous_old_link.bankAccount.id),
+        "Ancien nom de CB": previous_old_link.bankAccount.label,
+        "Ancien IBAN de CB": previous_old_link.bankAccount.iban,
+        "Nouvel ID de CB": str(recent_link.bankAccount.id),
+        "Nouveau nom de CB": recent_link.bankAccount.label,
+        "Nouvel IBAN de CB": recent_link.bankAccount.iban,
+    } in rows
 
 
 def test_generate_payments_file(clean_temp_files):
