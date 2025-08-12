@@ -103,6 +103,7 @@ export const CollectiveEditionOfferNavigation = ({
   }
 
   const canEditOffer =
+    !isTemplate &&
     offer?.displayedStatus !== CollectiveOfferDisplayedStatus.ARCHIVED &&
     location.pathname.includes('edition')
 
@@ -154,7 +155,7 @@ export const CollectiveEditionOfferNavigation = ({
 
   return (
     <>
-      <div className={styles['duplicate-offer']}>
+      <div className={styles['actions-container']}>
         {canPreviewOffer && (
           <ButtonLink
             to={`/offre/${id}/collectif${isTemplate ? '/vitrine' : ''}/apercu`}
@@ -224,7 +225,7 @@ export const CollectiveEditionOfferNavigation = ({
           </Button>
         )}
       </div>
-      {!isTemplate && canEditOffer && (
+      {canEditOffer && (
         <NavLinkItems
           links={tabs}
           selectedKey={activeStep}
