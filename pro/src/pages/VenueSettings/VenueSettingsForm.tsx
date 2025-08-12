@@ -48,7 +48,7 @@ export const VenueSettingsForm = ({
     setValue,
     watch,
     clearErrors,
-    formState: { isDirty, isSubmitting, errors },
+    formState: { isDirty, isSubmitting, errors, defaultValues },
   } = methods
 
   const location = useLocation()
@@ -77,7 +77,7 @@ export const VenueSettingsForm = ({
           {!venue.isVirtual && (
             <FormLayout.Row>
               <SiretOrCommentFields
-                initialSiret={watch('siret')}
+                initialSiret={defaultValues?.siret}
                 siren={offerer.siren}
               />
             </FormLayout.Row>
