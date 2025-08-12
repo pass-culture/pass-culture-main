@@ -2,6 +2,7 @@ import { isValid } from 'date-fns'
 import * as yup from 'yup'
 
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { PRICE_CATEGORY_PRICE_MAX, PRICE_MAX_PACIFIC_FRANC } from '../PriceCategoriesScreen/form/constants'
 
 export const MAX_STOCKS_QUANTITY = 1000000
 
@@ -9,7 +10,8 @@ export const getValidationSchema = (
   mode: OFFER_WIZARD_MODE,
   /* istanbul ignore next: DEBT, TO FIX */
   bookingsQuantity: number,
-  stockId?: number
+  stockId?: number,
+  isCaledonian = false
 ) => {
   // Do not validate if there is no stock in edition
   // (so you can delete the last stock of a published offer)
@@ -19,14 +21,19 @@ export const getValidationSchema = (
   return yup.object().shape({
     price: yup.number().when([], (_, schema) => {
       if (shouldApplyValidationSchema) {
-        return schema
-          .typeError('Veuillez renseigner un prix')
-          .min(0, 'Le prix ne peut pas être inferieur à 0€')
-          .max(300, 'Veuillez renseigner un prix inférieur à 300€')
-          .required('Veuillez renseigner un prix')
-      } else {
-        return schema.optional()
-      }
+      return schema
+        .typeError('Veuillez renseigner un prix')
+        .min(0, isCaledonian ? 'Le prix ne peut pas être inférieur à 0F' : 'Le prix ne peut pas être inferieur à 0€')
+        .max(
+          isCaledonian ? PRICE_MAX_PACIFIC_FRANC : PRICE_CATEGORY_PRICE_MAX,
+          isCaledonian
+            ? `Veuillez renseigner un prix inférieur à ${PRICE_MAX_PACIFIC_FRANC}F`
+            : `Veuillez renseigner un prix inférieur à ${PRICE_CATEGORY_PRICE_MAX}€`
+        )
+        .required('Veuillez renseigner un prix')
+    } else {
+      return schema.optional()
+    }
     }),
     bookingLimitDatetime: yup
       .string()

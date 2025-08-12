@@ -84,6 +84,7 @@ import strokeDuoIcon from '@/icons/stroke-duo.svg'
 import strokeDuplicateOfferIcon from '@/icons/stroke-duplicate-offer.svg'
 import strokeErrorIcon from '@/icons/stroke-error.svg'
 import strokeEuroIcon from '@/icons/stroke-euro.svg'
+import strokeFrancIcon from '@/icons/stroke-franc.svg'
 import strokeEventsIcon from '@/icons/stroke-events.svg'
 import strokeFranceIcon from '@/icons/stroke-france.svg'
 import strokeFraudIcon from '@/icons/stroke-fraud.svg'
@@ -210,6 +211,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeOfferIcon },
   { src: strokeRepaymentIcon },
   { src: strokeEuroIcon },
+  { src: strokeFrancIcon },
   { src: strokePriceIcon },
   { src: strokeEventsIcon },
   { src: strokeThingIcon },

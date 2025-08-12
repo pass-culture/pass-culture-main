@@ -44,6 +44,7 @@ import {
 } from './form/types'
 import { getValidationSchema } from './form/validationSchema'
 import styles from './RecurrenceForm.module.scss'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 
 const INITIAL_QUANTITY_PER_PRICE_CATEGORY: QuantityPerPriceCategoryForm = {
   priceCategory: '',
@@ -278,8 +279,12 @@ export const RecurrenceForm = ({
   handleSubmit,
 }: RecurrenceFormProps): JSX.Element => {
   const { logEvent } = useAnalytics()
+  const isCaledonian = useIsCaledonian()
 
-  const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
+  const priceCategoryOptions = getPriceCategoryOptions(
+    priceCategories,
+    isCaledonian
+  )
 
   const methods = useForm<RecurrenceFormValues>({
     defaultValues: computeInitialValues(priceCategoryOptions),

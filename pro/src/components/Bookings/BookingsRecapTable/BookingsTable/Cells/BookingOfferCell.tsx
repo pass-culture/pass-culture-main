@@ -26,10 +26,15 @@ import fullErrorIcon from '@/icons/full-error.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BookingOfferCell.module.scss'
+import {
+  convertEuroToPacificFranc,
+  formatPacificFranc,
+} from '@/commons/utils/convertEuroToPacificFranc'
 
 export interface BookingOfferCellProps {
   booking: BookingRecapResponseModel | CollectiveBookingResponseModel
   className?: string
+  isCaledonian?: boolean
 }
 
 export const isCollectiveBooking = (
@@ -39,6 +44,7 @@ export const isCollectiveBooking = (
 export const BookingOfferCell = ({
   booking,
   className,
+  isCaledonian = false,
 }: BookingOfferCellProps) => {
   const offerUrl = booking.stock.offerIsEducational
     ? `/offre/${booking.stock.offerId}/collectif/recapitulatif`
@@ -63,6 +69,11 @@ export const BookingOfferCell = ({
     isCollectiveBooking(booking) &&
     booking.bookingStatus.toUpperCase() === OFFER_STATUS_PENDING &&
     shouldDisplayWarning(booking.stock)
+
+  const formattedPacificFrancPrice = formatPacificFranc(
+    convertEuroToPacificFranc(booking.bookingAmount)
+  )
+
   return (
     <div className={cn(className)}>
       <a
@@ -104,14 +115,18 @@ export const BookingOfferCell = ({
       {!isCollectiveBooking(booking) && (
         <div className={styles['tarif']}>
           {booking.bookingPriceCategoryLabel
-            ? `${booking.bookingPriceCategoryLabel} - ${formatPrice(
-                booking.bookingAmount
-              )}`
-            : formatPrice(booking.bookingAmount, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-                trailingZeroDisplay: 'stripIfInteger',
-              })}
+            ? `${booking.bookingPriceCategoryLabel} - ${
+                isCaledonian
+                  ? formattedPacificFrancPrice
+                  : formatPrice(booking.bookingAmount)
+              }`
+            : isCaledonian
+              ? formattedPacificFrancPrice
+              : formatPrice(booking.bookingAmount, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                  trailingZeroDisplay: 'stripIfInteger',
+                })}
         </div>
       )}
     </div>
