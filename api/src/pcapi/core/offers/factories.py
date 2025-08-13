@@ -1,6 +1,7 @@
 import datetime
 import decimal
 import random
+import time
 import typing
 import uuid
 
@@ -214,10 +215,12 @@ class OfferFactory(BaseFactory):
             and kwargs.get("validation") != models.OfferValidationStatus.DRAFT
             and "publicationDatetime" not in kwargs
         ):
-            kwargs["publicationDatetime"] = datetime.datetime.now() - datetime.timedelta(minutes=5)
+            utc_offset = time.localtime().tm_gmtoff // 3600
+            kwargs["publicationDatetime"] = datetime.datetime.now() - datetime.timedelta(minutes=5, hours=utc_offset)
 
         if kwargs.get("validation") != models.OfferValidationStatus.DRAFT and "finalizationDatetime" not in kwargs:
-            kwargs["finalizationDatetime"] = datetime.datetime.now()
+            utc_offset = time.localtime().tm_gmtoff // 3600
+            kwargs["finalizationDatetime"] = datetime.datetime.now() - datetime.timedelta(hours=utc_offset)
 
         product = kwargs.get("product")
         if product:
@@ -277,6 +280,20 @@ class EventOfferFactory(OfferFactory):
     subcategoryId = factory.LazyAttribute(
         lambda o: (o.product.subcategoryId if hasattr(o, "product") else subcategories.SEANCE_CINE.id)
     )
+
+    @classmethod
+    def _create(
+        cls,
+        model_class: type[models.Offer],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.Offer:
+        offer = super()._create(model_class, *args, **kwargs)
+
+        if "openingHours" not in kwargs:
+            offerers_factories.OfferOpeningHoursFactory(offer=offer)
+
+        return offer
 
 
 class ThingOfferFactory(OfferFactory):
@@ -372,14 +389,14 @@ class StockFactory(BaseFactory):
     quantity = 1000
 
     beginningDatetime: factory.declarations.BaseDeclaration | None = factory.Maybe(
-        "offer.isEvent",
+        "offer.isTimestamped",
         factory.LazyFunction(
             lambda: datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
         ),
         None,
     )
     bookingLimitDatetime: factory.declarations.BaseDeclaration | None = factory.Maybe(
-        "stock.beginningDatetime and offer.isEvent",
+        "stock.beginningDatetime and offer.isTimestamped",
         factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60)),
         None,
     )

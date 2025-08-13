@@ -66,7 +66,7 @@ class OffersTest:
             "releaseDate": "2020-01-01",
             "certificate": "Interdit au moins de 18 ans",
         }
-        offer = offers_factories.OfferFactory(
+        offer = offers_factories.EventOfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             isDuo=True,
             description="desk cryption",
@@ -128,6 +128,7 @@ class OffersTest:
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
         nb_queries += 1  # select chronicles
+        nb_queries += 1  # select opening hours
         with assert_num_queries(nb_queries):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
@@ -280,10 +281,11 @@ class OffersTest:
         offer_id = offer.id
         # 1. select offer
         # 2. select stocks
-        # 3. select mediations
-        # 4. select chronicles
-        # 5. select artists
-        with assert_num_queries(5):
+        # 3. select opening hours
+        # 4. select mediations
+        # 5. select chronicles
+        # 6. select artists
+        with assert_num_queries(6):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
@@ -299,6 +301,7 @@ class OffersTest:
         offer_id = offer.id
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
+        nb_queries += 1  # select opening hours
         nb_queries += 1  # select mediations
         nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
@@ -313,6 +316,7 @@ class OffersTest:
         offer_id = offer.id
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
+        nb_queries += 1  # select opening hours
         nb_queries += 1  # select mediations
         nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
@@ -349,7 +353,7 @@ class OffersTest:
     ):
         provider = get_provider_by_local_class(provider_class)
         product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.SEANCE_CINE.id)
-        offer = offers_factories.OfferFactory(
+        offer = offers_factories.EventOfferFactory(
             product=product,
             venue__isPermanent=True,
             subcategoryId=subcategories.SEANCE_CINE.id,
@@ -361,17 +365,18 @@ class OffersTest:
         setattr(features, ff_name, ff_value)
 
         # 1. select offer
-        # 2. select product with artists
-        # 3. select stocks
-        # 4. select mediations
-        # 5. check cinema venue_provider exists
-        # 6. check offer is from current cinema provider
-        # 7. select active cinema provider
-        # 8. update offer
-        # 9. select chronicles
-        # 10. selecte features
-        # 11. reload offer
-        with assert_num_queries(11):
+        # 1. select offer's opening hours
+        # 3. select product with artists
+        # 4. select stocks
+        # 5. select mediations
+        # 6. check cinema venue_provider exists
+        # 7. check offer is from current cinema provider
+        # 8. select active cinema provider
+        # 9. update offer
+        # 10. select chronicles
+        # 11. selecte features
+        # 12. reload offer
+        with assert_num_queries(12):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
@@ -384,6 +389,7 @@ class OffersTest:
 
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
+        nb_queries += 1  # select opening hours
         nb_queries += 1  # select mediations
         nb_queries += 1  # select activation_code
         nb_queries += 1  # select chronicles
@@ -400,6 +406,7 @@ class OffersTest:
 
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
+        nb_queries += 1  # select opening hours
         nb_queries += 1  # select mediations
         nb_queries += 1  # select activation_code
         nb_queries += 1  # select chronicles
@@ -416,6 +423,7 @@ class OffersTest:
 
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
+        nb_queries += 1  # select opening hours
         nb_queries += 1  # select mediations
         nb_queries += 1  # select activation_code
         nb_queries += 1  # select chronicles
@@ -434,6 +442,7 @@ class OffersTest:
 
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
+        nb_queries += 1  # select opening hours
         nb_queries += 1  # select mediations
         nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
@@ -480,7 +489,7 @@ class OffersTest:
         providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
 
         offer_id_at_provider = f"{movie_id}%{venue_provider.venue.siret}"
-        offer = offers_factories.OfferFactory(
+        offer = offers_factories.EventOfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             idAtProvider=offer_id_at_provider,
             lastProviderId=venue_provider.providerId,
@@ -493,6 +502,7 @@ class OffersTest:
         offer_id = offer.id
 
         nb_queries = 1  # select offer
+        nb_queries += 1  # select opening hours
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
         nb_queries += 1  # check cinema venue_provider exists
@@ -548,6 +558,7 @@ class OffersTest:
 
         offer_id = offer.id
         nb_queries = 1  # select offer
+        nb_queries += 1  # select opening hours
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
         nb_queries += 1  # select EXISTS venue_provider
@@ -588,7 +599,7 @@ class OffersTest:
             cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
         )
         offer_id_at_provider = f"{allocine_movie_id}%{venue_provider.venueId}%CGR"
-        offer = offers_factories.OfferFactory(
+        offer = offers_factories.EventOfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             idAtProvider=offer_id_at_provider,
             lastProviderId=venue_provider.providerId,
@@ -603,6 +614,7 @@ class OffersTest:
 
         offer_id = offer.id
         nb_queries = 1  # select offer
+        nb_queries += 1  # select opening hours
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
         nb_queries += 1  # select EXISTS venue_provider
@@ -630,7 +642,7 @@ class OffersTest:
             idAtProvider=venue_provider.venueIdAtOfferProvider,
         )
         providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-        offer = offers_factories.OfferFactory(
+        offer = offers_factories.EventOfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             idAtProvider="toto",
             lastProviderId=venue_provider.providerId,
@@ -640,6 +652,7 @@ class OffersTest:
 
         offer_id = offer.id
         nb_query = 1  # select offer
+        nb_query += 1  # select opening hours
         nb_query += 1  # select stocks
         nb_query += 1  # select mediations
         nb_query += 1  # check cinema venue_provider exists
@@ -660,6 +673,7 @@ class OffersTest:
         offer_id = offer.id
         nb_query = 1  # select offer
         nb_query += 1  # select stocks
+        nb_query += 1  # select opening hours
         nb_query += 1  # select mediations
         nb_query += 1  # select chronicles
         with assert_num_queries(nb_query):
@@ -677,6 +691,7 @@ class OffersTest:
         offer_id = offer.id
         nb_query = 1  # select offer
         nb_query += 1  # select stocks
+        nb_query += 1  # select opening hours
         nb_query += 1  # select mediations
         nb_query += 1  # select chronicles
         with assert_num_queries(nb_query):
@@ -695,6 +710,7 @@ class OffersTest:
         offer_id = offer.id
         nb_query = 1  # select offer
         nb_query += 1  # select stocks
+        nb_query += 1  # select opening hours
         nb_query += 1  # select mediations
         nb_query += 1  # select chronicles
         with assert_num_queries(nb_query):
@@ -718,10 +734,11 @@ class OffersTest:
         offer_id = offer.id
         # 1. select offer
         # 2. select stocks
-        # 3. select mediations
-        # 4. select chronicles
-        # 5. select products and artists
-        with assert_num_queries(5):
+        # 3. select opening hours
+        # 4. select mediations
+        # 5. select chronicles
+        # 6. select products and artists
+        with assert_num_queries(6):
             response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -745,10 +762,11 @@ class OffersTest:
         offer_id = offer.id
         # 1. select offer
         # 2. select stocks
-        # 3. select mediations
-        # 4. select chronicles
-        # 5. select artists
-        with assert_num_queries(5):
+        # 3. select opening hours
+        # 4. select mediations
+        # 5. select chronicles
+        # 6. select artists
+        with assert_num_queries(6):
             response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -767,10 +785,11 @@ class OffersTest:
         offer_id = offer.id
         # 1. select offer
         # 2. select stocks
-        # 3. select mediations
-        # 4. select chronicles
-        # 5. select artists
-        with assert_num_queries(5):
+        # 3. select opening hours
+        # 4. select mediations
+        # 5. select chronicles
+        # 6. select artists
+        with assert_num_queries(6):
             response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -791,10 +810,11 @@ class OffersTest:
         offer_id = offer.id
         # 1. select offer
         # 2. select stocks
-        # 3. select mediations
-        # 4. select chronicles
-        # 5. select artists
-        with assert_num_queries(5):
+        # 3. select opening hours
+        # 4. select mediations
+        # 5. select chronicles
+        # 6. select artists
+        with assert_num_queries(6):
             response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -806,6 +826,7 @@ class OffersTest:
 
 class OffersV2Test:
     base_num_queries = 1  # select offer with joins
+    base_num_queries += 1  # select opening hours
     base_num_queries += 1  # select mediations (selectinload)
     base_num_queries += 1  # select stocks (selectinload)
     base_num_queries += 1  # select chronicles (selectinload)
@@ -839,7 +860,7 @@ class OffersV2Test:
             "releaseDate": "2020-01-01",
             "certificate": "Interdit aux moins de 18 ans",
         }
-        offer = offers_factories.OfferFactory(
+        offer = offers_factories.EventOfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             isDuo=True,
             description="desk cryption",
@@ -2017,7 +2038,7 @@ class OffersStocksV2Test:
             "releaseDate": "2020-01-01",
             "certificate": "Déconseillé -12 ans",
         }
-        offer = offers_factories.OfferFactory(
+        offer = offers_factories.EventOfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             name="l'offre du siècle",
             ean=ean,
@@ -2072,6 +2093,7 @@ class OffersStocksV2Test:
 
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
+        nb_queries += 1  # select opening hours
         nb_queries += 1  # select mediations
         nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):

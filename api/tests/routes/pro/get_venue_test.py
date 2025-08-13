@@ -604,7 +604,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(
             name="L'encre et la plume", managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.LIBRARY
         )
-        offerers_factories.OpeningHoursFactory(
+        offerers_factories.VenueOpeningHoursFactory(
             venue=venue,
             weekday=Weekday.SATURDAY,
             timespan=timespan_str_to_numrange([("14:00", "19:00"), ("10:00", "13:00")]),

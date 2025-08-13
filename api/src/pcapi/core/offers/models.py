@@ -922,6 +922,11 @@ class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
     def isPermanent(cls) -> BinaryExpression:
         return cls.subcategoryId.in_(subcategories.PERMANENT_SUBCATEGORIES)
 
+    @property
+    def isTimestamped(self) -> bool:
+        """A timestamped offer is an event with opening hours"""
+        return self.subcategory.is_event and self.openingHours is not None and len(self.openingHours) > 0
+
     @hybrid_property
     def isEvent(self) -> bool:
         return self.subcategory.is_event

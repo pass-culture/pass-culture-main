@@ -72,9 +72,9 @@ class UpsertOpeningHoursTest:
 
     def test_create_one_weekday_with_opening_hours_erases_all_existing_ones(self, offer):
         # should all be deleted
-        offerers_factories.OpeningHoursFactory(venue=None, offer=offer, weekday=offerers_models.Weekday.MONDAY)
-        offerers_factories.OpeningHoursFactory(venue=None, offer=offer, weekday=offerers_models.Weekday.SATURDAY)
-        offerers_factories.OpeningHoursFactory(venue=None, offer=offer, weekday=offerers_models.Weekday.SUNDAY)
+        offerers_factories.OfferOpeningHoursFactory(offer=offer, weekday=offerers_models.Weekday.MONDAY)
+        offerers_factories.OfferOpeningHoursFactory(offer=offer, weekday=offerers_models.Weekday.SATURDAY)
+        offerers_factories.OfferOpeningHoursFactory(offer=offer, weekday=offerers_models.Weekday.SUNDAY)
 
         opening_hours = schemas.WeekdayOpeningHoursTimespans(MONDAY=[["10:00", "18:00"]])
         api.upsert_opening_hours(offer, opening_hours=opening_hours)

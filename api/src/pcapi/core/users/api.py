@@ -25,6 +25,7 @@ import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
+import pcapi.core.offers.repository as offers_repository
 import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.repository as users_repository
@@ -518,7 +519,7 @@ def _cancel_bookings_of_user_on_requested_account_suspension(
         bookings_query = (
             bookings_query.join(bookings_models.Booking.stock)
             .join(offers_models.Stock.offer)
-            .filter(sa.func.not_(offers_models.Offer.isEvent))
+            .filter(sa.func.not_(offers_repository.has_event_subcategory_filter()))
         )
     else:
         return 0

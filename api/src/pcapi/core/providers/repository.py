@@ -8,6 +8,7 @@ from sqlalchemy import or_
 
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
+import pcapi.core.offers.repository as offers_repository
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
 from pcapi.models import db
@@ -213,20 +214,24 @@ def get_providers_venues(provider_id: int) -> sa_orm.Query:
 def _get_future_provider_events_requiring_a_ticketing_system_query(
     provider: models.Provider,
 ) -> sa_orm.Query:
+    has_opening_hours_subquery = offers_repository.has_opening_hours_subquery()
+
     # base query
     events_query = (
         db.session.query(offers_models.Offer)
-        .join(offers_models.Stock, offers_models.Offer.stocks)
+        .join(offers_models.Offer.stocks)
         .join(Venue, offers_models.Offer.venue)
         .join(models.VenueProvider, Venue.venueProviders)
         .outerjoin(models.VenueProviderExternalUrls, models.VenueProvider.externalUrls)
+        .join(has_opening_hours_subquery, has_opening_hours_subquery.c.offerId == offers_models.Offer.id)
     )
 
     # Events linked to the provider & requiring a ticketing system
     events_query = events_query.filter(
         offers_models.Offer.lastProvider == provider,
-        offers_models.Offer.isEvent,
         offers_models.Offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP,
+        offers_repository.has_event_subcategory_filter(),
+        has_opening_hours_subquery.c.offerId != None,
     )
 
     # Events with future stocks

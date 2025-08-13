@@ -689,7 +689,7 @@ class Returns200Test:
             managingOfferer=user_offerer.offerer,
             contact=None,
         )
-        offerers_factories.OpeningHoursFactory(
+        offerers_factories.VenueOpeningHoursFactory(
             venue=venue,
             weekday=offerers_models.Weekday("TUESDAY"),
             timespan=timespan_str_to_numrange([("10:00", "13:00")]),

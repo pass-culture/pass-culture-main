@@ -8,6 +8,7 @@ from pcapi.core.bookings import models as booking_models
 from pcapi.core.mails import transactional as mails_transactional
 from pcapi.core.mails.models import TransactionalEmailData
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.models import db
@@ -74,6 +75,8 @@ def _get_online_bookings_happening_soon() -> sa_orm.query.Query:
     normalized_minute = 0 if now.minute < 30 else 30
     normalized_now = now.replace(minute=normalized_minute, second=0, microsecond=0)
 
+    has_opening_hours_subquery = offers_repository.has_opening_hours_subquery()
+
     in_30_minutes = normalized_now + datetime.timedelta(minutes=30)
     in_1_hour = normalized_now + datetime.timedelta(hours=1)
     bookings_query = (
@@ -81,6 +84,7 @@ def _get_online_bookings_happening_soon() -> sa_orm.query.Query:
         .join(Stock)
         .join(Offer)
         .join(Venue)
+        .join(has_opening_hours_subquery, has_opening_hours_subquery.c.offerId == Offer.id)
         .options(
             sa_orm.joinedload(booking_models.Booking.user, innerjoin=True),
             sa_orm.contains_eager(booking_models.Booking.stock).contains_eager(Stock.offer).contains_eager(Offer.venue),
@@ -89,9 +93,9 @@ def _get_online_bookings_happening_soon() -> sa_orm.query.Query:
             booking_models.Booking.status == booking_models.BookingStatus.CONFIRMED,
             Stock.beginningDatetime >= in_30_minutes,
             Stock.beginningDatetime < in_1_hour,
-            Offer.isEvent,
             Offer.isDigital,
         )
+        .filter(offers_repository.has_event_subcategory_filter(), has_opening_hours_subquery.c.offerId != None)
     )
 
     return bookings_query
