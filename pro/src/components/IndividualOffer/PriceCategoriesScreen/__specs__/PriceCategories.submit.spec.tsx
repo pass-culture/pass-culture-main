@@ -40,6 +40,8 @@ const renderPriceCategories = (
     subCategories: [],
     isEvent: null,
     setIsEvent: () => {},
+    isAccessibilityFilled: false,
+    setIsAccessibilityFilled: () => {},
   }
 
   return renderWithProviders(

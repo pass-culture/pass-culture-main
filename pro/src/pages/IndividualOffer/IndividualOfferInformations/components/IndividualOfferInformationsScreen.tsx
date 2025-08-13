@@ -6,10 +6,7 @@ import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type {
-  GetIndividualOfferResponseModel,
-  GetIndividualOfferWithAddressResponseModel,
-} from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import {
   GET_OFFER_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
@@ -26,7 +23,6 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { getOfferConditionalFields } from '@/commons/utils/getOfferConditionalFields'
-import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
@@ -44,15 +40,9 @@ import { getValidationSchema } from '../commons/validationSchema'
 import styles from './IndividualOfferInformationsScreen.module.scss'
 import { UsefulInformationForm } from './UsefulInformationForm/UsefulInformationForm'
 
-export const LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED =
-  'USEFUL_INFORMATION_SUBMITTED'
-
 export type IndividualOfferInformationsScreenProps = {
   offer: GetIndividualOfferWithAddressResponseModel
 }
-
-const getLocalStorageKeyName = (offer: GetIndividualOfferResponseModel) =>
-  `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offer.id}`
 
 export const IndividualOfferInformationsScreen = ({
   offer,
@@ -63,7 +53,7 @@ export const IndividualOfferInformationsScreen = ({
   const notify = useNotification()
   const mode = useOfferWizardMode()
   const { mutate } = useSWRConfig()
-  const { subCategories, publishedOfferWithSameEAN } =
+  const { subCategories, publishedOfferWithSameEAN, setIsAccessibilityFilled } =
     useIndividualOfferContext()
 
   const saveEditionChangesButtonRef = useRef<HTMLButtonElement>(null)
@@ -84,16 +74,6 @@ export const IndividualOfferInformationsScreen = ({
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
-
-  const addToLocalStorage = () => {
-    const keyName = getLocalStorageKeyName(offer)
-    if (
-      storageAvailable('localStorage') &&
-      localStorage.getItem(keyName) === null
-    ) {
-      localStorage.setItem(keyName, true.toString())
-    }
-  }
 
   // Getting selected venue at step 1 (details) to infer address fields
   const venuesQuery = useSWR(
@@ -119,6 +99,7 @@ export const IndividualOfferInformationsScreen = ({
     conditionalFields,
     isNewOfferCreationFlowFeatureActive,
     isOfferOnline: isOfferSubcategoryOnline(offer, subCategories),
+    setIsAccessibilityFilled,
   })
 
   const initialValues = getInitialValuesFromOffer(offer, {
@@ -191,8 +172,6 @@ export const IndividualOfferInformationsScreen = ({
         mode === OFFER_WIZARD_MODE.EDITION
           ? nextStepForEdition
           : nextStepForCreation
-
-      addToLocalStorage()
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(

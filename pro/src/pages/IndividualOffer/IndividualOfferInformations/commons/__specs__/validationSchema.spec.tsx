@@ -13,6 +13,7 @@ describe('getValidationSchema', () => {
       const baseParams = {
         isOfferOnline: false,
         isNewOfferCreationFlowFeatureActive,
+        setIsAccessibilityFilled: () => {},
       }
 
       const validInformationFormValuesBase: UsefulInformationFormValues =
@@ -194,6 +195,7 @@ describe('getValidationSchema', () => {
       conditionalFields: [],
       isNewOfferCreationFlowFeatureActive: false,
       isOfferOnline: false,
+      setIsAccessibilityFilled: () => {},
     }
 
     const validInformationFormValuesBase: UsefulInformationFormValues = {
@@ -242,6 +244,7 @@ describe('getValidationSchema', () => {
     const baseParams = {
       conditionalFields: [],
       isNewOfferCreationFlowFeatureActive: true,
+      setIsAccessibilityFilled: () => {},
     }
 
     const validInformationFormValuesBase: UsefulInformationFormValues = {}
