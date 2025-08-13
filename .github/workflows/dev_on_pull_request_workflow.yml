@@ -21,6 +21,7 @@ jobs:
     outputs:
       api-changed: ${{ steps.check-api-changes.outputs.any_modified }}
       api-documentation-changed: ${{ steps.check-api-documentation-changes.outputs.any_modified }}
+      api-script-test-changed: ${{ steps.check-api-script-test-changes.outputs.any_modified }}
       pro-changed: ${{ steps.check-pro-changes.outputs.any_modified }}
       dependencies-changed: ${{ steps.check-dependencies-changes.outputs.any_modified }}
       push-tags: ${{ steps.pcapi-tags.outputs.push-tags }}
@@ -39,12 +40,19 @@ jobs:
             !api/documentation/**
             !api/src/pcapi/scripts/**/main.py
             !api/src/pcapi/scripts/**/test_script.py
+            !api/tests/scripts/**/test_main.py
             !api/src/pcapi/scripts/**/main.sql
       - name: "Check api documentation folder changes"
         id: check-api-documentation-changes
         uses: tj-actions/changed-files@v46
         with:
           files: api/documentation/**
+      - name: "Check api script test folder changes"
+        id: check-api-script-test-changes
+        uses: tj-actions/changed-files@v46
+        with:
+          files: |
+            api/tests/scripts/**/test_main.py
       - name: "Check pro folder changes"
         id: check-pro-changes
         uses: tj-actions/changed-files@v46
@@ -90,7 +98,10 @@ jobs:
   build-pcapi-tests:
     name: "[pcapi-tests] build docker image."
     needs: [pcapi-init-job]
-    if: needs.pcapi-init-job.outputs.api-changed == 'true' || needs.pcapi-init-job.outputs.pro-changed == 'true'
+    if: |
+      needs.pcapi-init-job.outputs.api-changed == 'true' ||
+      needs.pcapi-init-job.outputs.api-script-test-changed == 'true' ||
+      needs.pcapi-init-job.outputs.pro-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
       ref: ${{ github.event.pull_request.head.sha }}
@@ -136,6 +147,18 @@ jobs:
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+
+  test-api-script:
+    name: "Tests api scripts"
+    needs: [pcapi-init-job, build-pcapi-tests]
+    if: needs.pcapi-init-job.outputs.api-script-test-changed == 'true'
+    uses: ./.github/workflows/dev_on_workflow_tests_api_scripts.yml
+    with:
+      tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+    secrets:
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+
 
   test-api-documentation:
     name: "Tests API documentation"
