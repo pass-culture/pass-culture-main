@@ -33,7 +33,7 @@ export const WithinForm = {
     name: 'group',
     legend: 'Choisir une option',
   },
-  render: (args: any) => {
+  render: (args: CheckboxGroupProps) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const hookForm = useForm<{ checkbox1: boolean; checkbox2: boolean }>({
       defaultValues: { checkbox1: true, checkbox2: false },
@@ -47,11 +47,17 @@ export const WithinForm = {
             group={[
               {
                 label: 'checkbox 1',
-                ...hookForm.register('checkbox1'),
+                checked: hookForm.watch('checkbox1'),
+                onChange: (e) => {
+                  hookForm.setValue('checkbox1', e.target.checked)
+                },
               },
               {
                 label: 'checkbox 2',
-                ...hookForm.register('checkbox2'),
+                checked: hookForm.watch('checkbox2'),
+                onChange: (e) => {
+                  hookForm.setValue('checkbox2', e.target.checked)
+                },
               },
             ]}
           ></CheckboxGroup>
