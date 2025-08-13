@@ -256,7 +256,7 @@ class AccountTest:
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         client.with_token(user.email)
 
-        expected_num_queries = 8  # user + beneficiary_fraud_review + beneficiary_fraud_check + feature + deposit + booking + achievement + action_history
+        expected_num_queries = 9  # user + beneficiary_fraud_review + beneficiary_fraud_check + user_profile_refresh_campaign + feature + deposit + booking + achievement + action_history
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
         assert response.status_code == 200
@@ -286,7 +286,7 @@ class AccountTest:
         )
 
         client.with_token(user.email)
-        expected_num_queries = 8  # user + beneficiary_fraud_review + beneficiary_fraud_check + feature + deposit + booking + achievement + action_history
+        expected_num_queries = 9  # user + beneficiary_fraud_review + beneficiary_fraud_check + user_profile_refresh_campaign + feature + deposit + booking + achievement + action_history
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
             assert response.status_code == 200
@@ -373,6 +373,7 @@ class AccountTest:
         n_queries = 1  # get user
         n_queries += 1  # get all feature flages
         n_queries += 1  # get bookings
+        n_queries += 1  # get user_profile_refresh_campaign
 
         with assert_num_queries(n_queries):
             response = client.get("/native/v1/me")
@@ -463,7 +464,9 @@ class AccountTest:
         ]
 
     def test_user_profile_has_expired(self, client):
-        before_profile_expiry_date = settings.PROFILE_EXPIRY_DATETIME - relativedelta(days=1)
+        campaign_date = datetime.utcnow() + relativedelta(days=30)
+        users_factories.UserProfileRefreshCampaignFactory(campaignDate=campaign_date)
+        before_profile_expiry_date = campaign_date - relativedelta(days=1)
         user = users_factories.BeneficiaryFactory(beneficiaryFraudChecks__dateCreated=before_profile_expiry_date)
 
         response = client.with_token(user.email).get("/native/v1/me")
@@ -472,18 +475,33 @@ class AccountTest:
         assert response.json["hasProfileExpired"]
 
     def test_user_profile_is_up_to_date(self, client):
-        before_profile_expiry_date = settings.PROFILE_EXPIRY_DATETIME - relativedelta(days=1)
-        user = users_factories.BeneficiaryFactory(dateCreated=before_profile_expiry_date)
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user, dateCreated=settings.PROFILE_EXPIRY_DATETIME)
+        campaign_date = datetime.utcnow() + relativedelta(days=30)
+        before_profile_expiry_date = campaign_date - relativedelta(days=1)
+        users_factories.UserProfileRefreshCampaignFactory(campaignDate=campaign_date)
+        user = users_factories.PhoneValidatedUserFactory(dateCreated=before_profile_expiry_date)
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user, dateCreated=campaign_date + relativedelta(days=1))
 
         response = client.with_token(user.email).get("/native/v1/me")
 
         assert response.status_code == 200
         assert not response.json["hasProfileExpired"]
 
+    def test_user_profile_has_expired_past_campaign(self, client):
+        campaign_date = datetime.utcnow() - relativedelta(days=1)
+        before_campaign_date = campaign_date - relativedelta(days=1)
+        users_factories.UserProfileRefreshCampaignFactory(campaignDate=campaign_date, isActive=True)
+        user = users_factories.PhoneValidatedUserFactory()
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user, dateCreated=before_campaign_date)
+
+        response = client.with_token(user.email).get("/native/v1/me")
+        assert response.status_code == 200
+        assert response.json["hasProfileExpired"] is True
+
     def test_user_profile_is_up_to_date_through_action_history(self, client):
-        before_profile_expiry_date = settings.PROFILE_EXPIRY_DATETIME - relativedelta(days=1)
-        user = users_factories.BeneficiaryFactory(dateCreated=before_profile_expiry_date)
+        campaign_date = datetime.utcnow() + relativedelta(days=30)
+        users_factories.UserProfileRefreshCampaignFactory(campaignDate=campaign_date)
+        before_profile_expiry_date = campaign_date - relativedelta(days=1)
+        user = users_factories.PhoneValidatedUserFactory(dateCreated=before_profile_expiry_date)
         history_factories.ActionHistoryFactory(
             user=user,
             actionType=history_models.ActionType.INFO_MODIFIED,
@@ -494,13 +512,23 @@ class AccountTest:
                     "postalCode": {"new_info": "75007", "old_info": None},
                 }
             },
-            actionDate=settings.PROFILE_EXPIRY_DATETIME,
+            actionDate=campaign_date + relativedelta(days=1),
         )
 
         response = client.with_token(user.email).get("/native/v1/me")
 
         assert response.status_code == 200
         assert not response.json["hasProfileExpired"]
+
+    def test_user_profile_has_not_expired_because_never_been_completed(self, client):
+        campaign_date = datetime.utcnow() + relativedelta(days=30)
+        users_factories.UserProfileRefreshCampaignFactory(campaignDate=campaign_date)
+        user = users_factories.PhoneValidatedUserFactory()
+
+        response = client.with_token(user.email).get("/native/v1/me")
+
+        assert response.status_code == 200
+        assert response.json["hasProfileExpired"] is False
 
 
 class AccountCreationTest:

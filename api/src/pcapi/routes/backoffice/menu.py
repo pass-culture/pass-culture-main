@@ -264,6 +264,11 @@ MENU_SECTIONS = [
                 label="Liste des sous-catégories",
                 url_name="backoffice_web.get_subcategories",
             ),
+            MenuItem(
+                label="Campagnes de mise à jour de données",
+                url_name="backoffice_web.user_profile_refresh_campaigns.list_campaigns",
+                permissions=["READ_USER_PROFILE_REFRESH_CAMPAIGN"],
+            ),
         ],
     ),
     MenuSection(

@@ -1272,3 +1272,18 @@ class UserTagCategory(PcObject, Base, Model):
 
     def __str__(self) -> str:
         return self.label or self.name
+
+
+class UserProfileRefreshCampaign(PcObject, Base, Model):
+    """
+    Profile refresh campaign. Used to determine if the user's profile is expired or not:
+    If last time the user updated his profile (or it was updated for him through a support operator) is before
+    `campaignDate`'s value then his profile will be considered as expired.
+    """
+
+    __tablename__ = "user_profile_refresh_campaign"
+
+    campaignDate: datetime = sa.Column(sa.DateTime, nullable=False)
+    creationDate: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    updateDate: datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now(), onupdate=sa.func.now())
+    isActive: bool = sa.Column(sa.Boolean, nullable=False, server_default=expression.true(), default=True)

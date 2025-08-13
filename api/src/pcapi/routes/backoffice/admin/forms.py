@@ -1,3 +1,4 @@
+import wtforms
 from flask_wtf import FlaskForm
 
 from pcapi import settings
@@ -41,3 +42,14 @@ class EditBOUserForm(utils.PCForm):
     first_name = fields.PCOptStringField("Prénom")
     last_name = fields.PCOptStringField("Nom")
     email = fields.PCEmailField("Email")
+
+
+class UserProfileRefreshCampaignForm(utils.PCForm):
+    campaign_date = fields.PCDateTimeField(
+        "Date de début de la campagne",
+        format="%Y-%m-%dT%H:%M",
+        validators=[
+            wtforms.validators.InputRequired("Information obligatoire"),
+        ],
+    )
+    is_active = fields.PCCheckboxField("Active")

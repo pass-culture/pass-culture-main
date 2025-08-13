@@ -1272,3 +1272,8 @@ class UserTagCategoryFactory(BaseFactory):
 class UserTagCategoryMappingFactory(BaseFactory):
     class Meta:
         model = models.UserTagCategoryMapping
+
+
+class UserProfileRefreshCampaignFactory(BaseFactory):
+    class Meta:
+        model = models.UserProfileRefreshCampaign
