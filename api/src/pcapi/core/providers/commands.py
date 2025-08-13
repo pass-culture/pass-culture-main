@@ -36,6 +36,7 @@ def _set_debug_level(target_logger: logging.Logger, level: int) -> Generator[Non
 
 
 @blueprint.cli.command("synchronize_allocine_products")
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def synchronize_allocine_products() -> None:
     allocine.synchronize_products()
 
@@ -109,6 +110,7 @@ def update_providables_by_provider_id(provider_id: int, limit: int | None) -> No
 
 @blueprint.cli.command("synchronize_allocine_stocks")
 @cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 @cron_decorators.cron_require_feature(FeatureToggle.SYNCHRONIZE_ALLOCINE)
 def synchronize_allocine_stocks() -> None:
     """Launch AlloCine synchronization."""
@@ -119,6 +121,7 @@ def synchronize_allocine_stocks() -> None:
 
 @blueprint.cli.command("synchronize_cine_office_stocks")
 @cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_CDS_IMPLEMENTATION)
 def synchronize_cine_office_stocks() -> None:
     """Launch Cine Office synchronization."""
@@ -129,6 +132,7 @@ def synchronize_cine_office_stocks() -> None:
 
 @blueprint.cli.command("synchronize_boost_stocks")
 @cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_BOOST_API_INTEGRATION)
 def synchronize_boost_stocks() -> None:
     """Launch Boost synchronization."""
@@ -139,6 +143,7 @@ def synchronize_boost_stocks() -> None:
 
 @blueprint.cli.command("synchronize_cgr_stocks")
 @cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_CGR_INTEGRATION)
 def synchronize_cgr_stocks() -> None:
     """Launch CGR synchronization."""
@@ -149,6 +154,7 @@ def synchronize_cgr_stocks() -> None:
 
 @blueprint.cli.command("synchronize_ems_stocks")
 @cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_EMS_INTEGRATION)
 def synchronize_ems_stocks_on_schedule() -> None:
     """Launch EMS synchronization"""

@@ -22,12 +22,14 @@ blueprint = Blueprint(__name__, __name__)
 # Deprecated. Remove when we have a new cron job calling `reindex_recently_published_offers`
 @blueprint.cli.command("activate_future_offers")
 @cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def activate_future_offers() -> None:
     offers_api.reindex_recently_published_offers()
 
 
 @blueprint.cli.command("reindex_recently_published_offers")
 @cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def reindex_recently_published_offers() -> None:
     offers_api.reindex_recently_published_offers()
 
