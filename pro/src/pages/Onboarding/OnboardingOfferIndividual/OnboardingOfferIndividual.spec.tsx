@@ -149,4 +149,28 @@ describe('<OnboardingOfferIndividual />', () => {
     )
     expect(cardLinks).toHaveLength(MAX_DRAFT_TO_DISPLAY)
   })
+
+  it('should have a manyally create offer button that skips the offer type selection when the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled', async () => {
+    renderOnboardingOfferIndividual({
+      features: ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'],
+    })
+
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    expect(screen.getByRole('link', { name: 'Manuellement' })).toHaveAttribute(
+      'href',
+      '/onboarding/offre/individuelle/creation/details'
+    )
+  })
+
+  it('should have a manyally create offer button that redirects to the offer type selection when the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is disabled', async () => {
+    renderOnboardingOfferIndividual()
+
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    expect(screen.getByRole('link', { name: 'Manuellement' })).toHaveAttribute(
+      'href',
+      '/onboarding/offre/creation'
+    )
+  })
 })

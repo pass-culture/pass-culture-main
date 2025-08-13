@@ -5,7 +5,13 @@ import { api } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1/models/OfferStatus'
 import { MainHeading } from '@/app/App/layout/Layout'
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import {
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import editFullIcon from '@/icons/full-edit.svg'
@@ -21,6 +27,10 @@ export const MAX_DRAFT_TO_DISPLAY = 50
 
 export const OnboardingOfferIndividual = (): JSX.Element => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
+
+  const isNewOfferCreationFlowFFEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
 
   const { data: offerer, isLoading: isOffererLoading } =
     useOfferer(selectedOffererId)
@@ -65,7 +75,15 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
         <FormLayout.Section className={styles['form-section']}>
           <div className={styles['offer-choices']}>
             <CardLink
-              to="/onboarding/offre/creation"
+              to={
+                isNewOfferCreationFlowFFEnabled
+                  ? getIndividualOfferUrl({
+                      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+                      mode: OFFER_WIZARD_MODE.CREATION,
+                      isOnboarding: true,
+                    })
+                  : '/onboarding/offre/creation'
+              }
               icon={editFullIcon}
               label="Manuellement"
               direction="vertical"
