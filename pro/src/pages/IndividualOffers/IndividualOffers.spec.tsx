@@ -951,4 +951,23 @@ describe('IndividualOffers', () => {
     )
     expect(bannerTitle).toBeInTheDocument()
   })
+
+  it('should have a create offer button that skips the offer type selection when the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled', async () => {
+    await renderIndividualOffers(DEFAULT_SEARCH_FILTERS, [
+      'WIP_ADD_VIDEO',
+      'WIP_ENABLE_NEW_OFFER_CREATION_FLOW',
+    ])
+
+    expect(
+      screen.getByRole('link', { name: 'Créer une offre' })
+    ).toHaveAttribute('href', '/offre/individuelle/creation/details')
+  })
+
+  it('should have a create offer button that redirects to the offer type selection when the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is disabled', async () => {
+    await renderIndividualOffers(DEFAULT_SEARCH_FILTERS, ['WIP_ADD_VIDEO'])
+
+    expect(
+      screen.getByRole('link', { name: 'Créer une offre' })
+    ).toHaveAttribute('href', '/offre/creation')
+  })
 })
