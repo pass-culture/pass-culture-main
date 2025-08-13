@@ -38,6 +38,7 @@ def _get_venue_rows(origin: int | None, destination: int | None) -> typing.Itera
     if origin and destination:
         yield from [{ORIGIN_VENUE_ID_HEADER: origin, DESTINATION_VENUE_ID_HEADER: destination}]
     else:
+        list_files_recursive(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         namespace_dir = os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             "flask",
@@ -46,6 +47,15 @@ def _get_venue_rows(origin: int | None, destination: int | None) -> typing.Itera
         with open(f"{namespace_dir}/venues_to_move.csv", "r", encoding="utf-8") as csv_file:
             csv_rows = csv.DictReader(csv_file, delimiter=",")
             yield from csv_rows
+
+
+def list_files_recursive(path: str) -> None:
+    for entry in os.listdir(path):
+        full_path = os.path.join(path, entry)
+        if os.path.isdir(full_path):
+            list_files_recursive(full_path)
+        else:
+            print(full_path)
 
 
 def _extract_invalid_venues_to_csv(invalid_venues: list[tuple[int, int, str]]) -> None:
