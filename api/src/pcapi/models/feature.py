@@ -144,7 +144,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API = (
         "Activer les autorisations liées au nouveau statut des offres collectives sur l'api publique."
     )
-    WIP_ENABLE_PRO_ANONYMIZATION = "Activer l'anonymisaton automatique des comptes pro"
     WIP_ENABLE_PRO_DIDACTIC_ONBOARDING = "Activer le parcours d'onboarding didactique des acteurs culturels"
     WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST = "Activer l'A/B test du parcours d'onboarding didactique"
     WIP_FREE_ELIGIBILITY = (
@@ -231,7 +230,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API,
     FeatureToggle.WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST,
-    FeatureToggle.WIP_ENABLE_PRO_ANONYMIZATION,
     FeatureToggle.WIP_REFACTO_FUTURE_OFFER,
     FeatureToggle.WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY,
     FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY,
