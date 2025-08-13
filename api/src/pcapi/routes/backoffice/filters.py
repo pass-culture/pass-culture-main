@@ -16,6 +16,7 @@ from markupsafe import Markup
 from markupsafe import escape
 
 import pcapi.core.categories.genres.music
+import pcapi.routes.backoffice.forms.utils as forms_utils
 from pcapi import settings
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.bookings import models as bookings_models
@@ -698,9 +699,9 @@ def format_offer_status(status: offer_mixin.OfferStatus) -> str:
         case offer_mixin.OfferStatus.PUBLISHED:
             return "Publiée non réservable"
         case offer_mixin.OfferStatus.ACTIVE:
-            if FeatureToggle.WIP_REFACTO_FUTURE_OFFER.is_active():
-                return "Publiée réservable"
-            return "Publiée"
+            return typing.cast(
+                str, forms_utils.LazyFFString(FeatureToggle.WIP_REFACTO_FUTURE_OFFER, "Publiée réservable", "Publiée")
+            )
         case offer_mixin.OfferStatus.PENDING:
             return "En instruction"
         case offer_mixin.OfferStatus.EXPIRED:
