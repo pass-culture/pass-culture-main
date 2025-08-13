@@ -2105,38 +2105,6 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
     }
 
 
-def get_venue_total_revenue(venue_id: int) -> float:
-    individual_revenue_query = sa.select(
-        sa.func.coalesce(
-            sa.func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity),
-            0.0,
-        )
-    ).filter(
-        bookings_models.Booking.venueId == venue_id,
-        bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED.value,
-    )
-    collective_revenue_query = (
-        sa.select(
-            sa.func.coalesce(
-                sa.func.sum(educational_models.CollectiveStock.price),
-                0.0,
-            )
-        )
-        .select_from(educational_models.CollectiveBooking)
-        .join(educational_models.CollectiveBooking.collectiveStock)
-        .filter(
-            educational_models.CollectiveBooking.venueId == venue_id,
-            educational_models.CollectiveBooking.status != bookings_models.BookingStatus.CANCELLED.value,
-        )
-    )
-
-    total_revenue_query = sa.select(
-        individual_revenue_query.scalar_subquery() + collective_revenue_query.scalar_subquery()
-    )
-
-    return db.session.execute(total_revenue_query).scalar() or 0.0
-
-
 def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
     def _get_query(offer_class: type[offers_api.AnyOffer]) -> sa.sql.Select:
         return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(

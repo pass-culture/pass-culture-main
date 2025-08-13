@@ -910,12 +910,8 @@ class GetOffererStatsTest(GetEndpointHelper):
     # get session (1 query)
     # get user with profile and permissions (1 query)
     # get offerer (1 query)
-    # get total revenue (1 query)
     # get offerers offers stats (6 query: 3 to check the quantity and 3 to get the data)
-    # check feature flag: WIP_ENABLE_CLICKHOUSE_IN_BO
-    expected_num_queries = 11
-    # -1 sql query replaced with clickhouse query
-    expected_num_queries_when_clickhouse_enabled = expected_num_queries - 1
+    expected_num_queries = 9
 
     @pytest.mark.parametrize(
         "venue_factory,expected_revenue_text",
@@ -924,7 +920,11 @@ class GetOffererStatsTest(GetEndpointHelper):
             (offerers_factories.CaledonianVenueFactory, "10,00 € (1193 CFP) de CA"),
         ],
     )
-    def test_get_stats(self, authenticated_client, venue_factory, expected_revenue_text):
+    @patch(
+        "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
+        return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=10.00)],
+    )
+    def test_get_stats(self, mock_run_query, authenticated_client, venue_factory, expected_revenue_text):
         venue = venue_factory()
         offer = offers_factories.OfferFactory(
             venue=venue,
@@ -954,7 +954,6 @@ class GetOffererStatsTest(GetEndpointHelper):
         assert expected_revenue_text in cards_text[0]
         assert "3 offres actives ( 1 IND / 2 EAC ) 0 offres inactives ( 0 IND / 0 EAC )" in cards_text
 
-    @pytest.mark.features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
         return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=70.48)],
@@ -962,20 +961,19 @@ class GetOffererStatsTest(GetEndpointHelper):
     def test_offerer_total_revenue_from_clickhouse(self, mock_run_query, authenticated_client):
         offerer_id = offerers_factories.VenueFactory().managingOffererId
 
-        with assert_num_queries(self.expected_num_queries_when_clickhouse_enabled):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
             assert response.status_code == 200
 
         mock_run_query.assert_called_once()
         assert "70,48 € de CA" in html_parser.extract_cards_text(response.data)[0]
 
-    @pytest.mark.features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
     @pytest.mark.settings(CLICKHOUSE_BACKEND="pcapi.connectors.clickhouse.backend.ClickhouseBackend")
     @patch("pcapi.connectors.clickhouse.backend.BaseBackend.run_query")
     def test_offerer_total_revenue_from_when_no_venue(self, mock_run_query, authenticated_client):
         offerer_id = offerers_factories.OffererFactory().id
 
-        with assert_num_queries(self.expected_num_queries_when_clickhouse_enabled):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
             assert response.status_code == 200
 
@@ -984,13 +982,17 @@ class GetOffererStatsTest(GetEndpointHelper):
 
 
 class GetOffererStatsDataTest:
+    # get offerer and venues (1 query)
     # get active/inactive stats (6 query)
-    # get total revenue (1 query)
-    # check feature flag: WIP_ENABLE_CLICKHOUSE_IN_BO (1 query)
-    expected_num_queries = 8
+    expected_num_queries = 7
 
+    @patch(
+        "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
+        return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=1694)],
+    )
     def test_get_data(
         self,
+        mock_run_query,
         offerer,
         offerer_active_individual_offers,
         offerer_inactive_individual_offers,
@@ -1005,22 +1007,22 @@ class GetOffererStatsDataTest:
     ):
         db.session.refresh(offerer)
 
-        with assert_num_queries(
-            self.expected_num_queries - 1
-        ):  # ff already cached by BeneficiaryGrant18Factory.beneficiaryImports
+        with assert_num_queries(self.expected_num_queries):
             stats = offerer_blueprint.get_stats_data(offerer)
 
         assert stats["active"]["individual"] == 2
         assert stats["active"]["collective"] == 5
         assert stats["inactive"]["individual"] == 9
         assert stats["inactive"]["collective"] == 15
+        assert stats["total_revenue"] == 1694.0
 
-        total_revenue = stats["total_revenue"]
-
-        assert total_revenue == 1694.0
-
+    @patch(
+        "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
+        return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=30)],
+    )
     def test_individual_offers_only(
         self,
+        mock_run_query,
         offerer,
         offerer_active_individual_offers,
         offerer_inactive_individual_offers,
@@ -1028,22 +1030,22 @@ class GetOffererStatsDataTest:
     ):
         db.session.refresh(offerer)
 
-        with assert_num_queries(
-            self.expected_num_queries - 1
-        ):  # ff already cached by BeneficiaryGrant18Factory.beneficiaryImports
+        with assert_num_queries(self.expected_num_queries):
             stats = offerer_blueprint.get_stats_data(offerer)
 
         assert stats["active"]["individual"] == 2
         assert stats["active"]["collective"] == 0
         assert stats["inactive"]["individual"] == 5
         assert stats["inactive"]["collective"] == 0
+        assert stats["total_revenue"] == 30.0
 
-        total_revenue = stats["total_revenue"]
-
-        assert total_revenue == 30.0
-
+    @patch(
+        "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
+        return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=1664)],
+    )
     def test_collective_offers_only(
         self,
+        mock_run_query,
         offerer,
         offerer_active_collective_offers,
         offerer_inactive_collective_offers,
@@ -1058,13 +1060,15 @@ class GetOffererStatsDataTest:
         assert stats["active"]["collective"] == 4
         assert stats["inactive"]["individual"] == 0
         assert stats["inactive"]["collective"] == 7
+        assert stats["total_revenue"] == 1664.0
 
-        total_revenue = stats["total_revenue"]
-
-        assert total_revenue == 1664.0
-
+    @patch(
+        "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
+        return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=0)],
+    )
     def test_active_offers_only(
         self,
+        mock_run_query,
         offerer,
         offerer_active_individual_offers,
         offerer_active_collective_offers,
@@ -1078,13 +1082,15 @@ class GetOffererStatsDataTest:
         assert stats["active"]["collective"] == 4
         assert stats["inactive"]["individual"] == 0
         assert stats["inactive"]["collective"] == 0
+        assert stats["total_revenue"] == 0.0
 
-        total_revenue = stats["total_revenue"]
-
-        assert total_revenue == 0.0
-
+    @patch(
+        "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
+        return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=0)],
+    )
     def test_inactive_offers_only(
         self,
+        mock_run_query,
         offerer,
         offerer_inactive_individual_offers,
         offerer_inactive_collective_offers,
@@ -1099,11 +1105,13 @@ class GetOffererStatsDataTest:
         assert stats["inactive"]["individual"] == 5
         assert stats["inactive"]["collective"] == 7
 
-        total_revenue = stats["total_revenue"]
+        stats["total_revenue"] == 0.0
 
-        assert total_revenue == 0.0
-
-    def test_no_bookings(self, offerer):
+    @patch(
+        "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
+        return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=0)],
+    )
+    def test_no_bookings(self, mock_run_query, offerer):
         offerers_factories.VenueFactory(managingOfferer=offerer)
         db.session.refresh(offerer)
 
@@ -1128,10 +1136,8 @@ class GetOffererRevenueDetailsTest(GetEndpointHelper):
     # session
     # user
     # offerer
-    # check feature flag: WIP_ENABLE_CLICKHOUSE_IN_BO
-    expected_num_queries_when_clickhouse_enabled = 4
+    expected_num_queries = 3
 
-    @pytest.mark.features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
         return_value=[
@@ -1156,7 +1162,7 @@ class GetOffererRevenueDetailsTest(GetEndpointHelper):
         offerers_factories.VenueFactory.create_batch(2, managingOfferer=offerer)
         offerer_id = offerer.id
 
-        with assert_num_queries(self.expected_num_queries_when_clickhouse_enabled):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
             assert response.status_code == 200
 
@@ -1174,13 +1180,12 @@ class GetOffererRevenueDetailsTest(GetEndpointHelper):
         assert rows[2]["CA offres IND"] == "123,40 €"
         assert rows[2]["CA offres EAC"] == "1 500,00 €"
 
-    @pytest.mark.features(WIP_ENABLE_CLICKHOUSE_IN_BO=True)
     @pytest.mark.settings(CLICKHOUSE_BACKEND="pcapi.connectors.clickhouse.backend.ClickhouseBackend")
     @patch("pcapi.connectors.clickhouse.backend.BaseBackend.run_query")
     def test_offerer_revenue_details_when_no_venue(self, mock_run_query, authenticated_client):
         offerer_id = offerers_factories.OffererFactory().id
 
-        with assert_num_queries(self.expected_num_queries_when_clickhouse_enabled):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer_id))
             assert response.status_code == 200
 
