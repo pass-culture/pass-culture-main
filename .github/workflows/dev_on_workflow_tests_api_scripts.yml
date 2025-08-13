@@ -1,0 +1,140 @@
+name: "3 [on_workflow/API] Script tests"
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        type: string
+        required: false
+        default: pcapi-tests
+      tag:
+        type: string
+        required: true
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+      GCP_EHP_SERVICE_ACCOUNT:
+        required: true
+
+env:
+  registry: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry
+
+defaults:
+  run:
+    working-directory: api
+
+jobs:
+  pytest:
+    name: "Pytest script tests"
+    env:
+      RUN_ENV: tests
+      DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
+      REDIS_URL: redis://redis:6379
+      # Remove this environment variable when SQLAlchemy 2.0
+      # is successfully bump
+      SQLALCHEMY_WARN_20: 1
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      postgres:
+        image: postgis/postgis:15-3.4-alpine
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          POSTGRES_USER: pytest
+          POSTGRES_PASSWORD: pytest
+          POSTGRES_DB: pass_culture
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Compute docker image name:tag"
+        id: compute-image-name
+        run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
+      - name: "Download artifact"
+        if: ${{ inputs.tag != 'latest' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.image }}-${{ inputs.tag }}.tar
+          path: ${{ runner.temp }}
+      - name: "Docker load artifact."
+        if: ${{ inputs.tag != 'latest' }}
+        run: |
+          docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
+      - name: "Authentification to Google"
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Secret"
+        id: secrets
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
+        with:
+          secrets: |-
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      - name: "OpenID Connect Authentication"
+        id: openid-auth
+        uses: "google-github-actions/auth@v2"
+        with:
+          create_credentials_file: false
+          token_format: "access_token"
+          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER  }}
+          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - name: "Docker login"
+        id: docker-login
+        uses: "docker/login-action@v3"
+        with:
+          registry: "europe-west1-docker.pkg.dev"
+          username: "oauth2accesstoken"
+          password: "${{ steps.openid-auth.outputs.access_token }}"
+      - name: "Setup database"
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ steps.compute-image-name.outputs.image_name }}
+          shell: bash
+          options: -e RUN_ENV -e DATABASE_URL_TEST
+          run: |
+            set -e
+            flask install_postgres_extensions
+            alembic upgrade pre@head
+            alembic upgrade post@head
+            flask install_data
+      - name: "Mount a Volume with pcapi rights"
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ steps.compute-image-name.outputs.image_name }}
+          shell: bash
+          options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests -u 0
+          run: |
+            echo "Changing owner and group fort directory test"
+            chown -R pcapi:pcapi /tests
+
+      - name: "Run pytest"
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ steps.compute-image-name.outputs.image_name }}
+          shell: bash
+          options: -e RUN_ENV -e DATABASE_URL_TEST -e REDIS_URL -e SQLALCHEMY_WARN_20 -v ${{ runner.workspace }}/pass-culture-main/api/tests/:/tests
+          run: |
+            pytest tests/scripts/**/test_main.py --junitxml='/tests/junit.xml' --quiet --color=yes
+
+      - name: "Publish Test Report"
+        uses: mikepenz/action-junit-report@v5
+        if: always() # always run even if the previous step fails
+        with:
+          report_paths: "${{ runner.workspace }}/pass-culture-main/api/tests/junit.xml"
+          check_name: "Pytest Report"
+          fail_on_failure: false
+          skip_success_summary: true
