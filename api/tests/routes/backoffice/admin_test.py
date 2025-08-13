@@ -1,16 +1,19 @@
 import datetime
 
 import pytest
+import sqlalchemy.orm as sa_orm
 from flask import url_for
 
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
+from pcapi.core.permissions import api as perm_api
 from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
 from pcapi.models import feature as feature_models
 
@@ -716,3 +719,176 @@ class GetSubcategoriesTest(GetEndpointWithoutPermissionHelper):
         assert rows[0]["Réservable par les 15-17 si gratuite"] == "Oui"
         assert rows[0]["Réservable par les 15-17 si payante"] == "Non"
         assert rows[0]["can_be_withdrawable"] == "Non"
+
+
+class ListUserProfileRefreshCampaignTest(GetEndpointWithoutPermissionHelper):
+    needed_permission = perm_models.Permissions.READ_USER_PROFILE_REFRESH_CAMPAIGN
+    endpoint = "backoffice_web.user_profile_refresh_campaigns.list_campaigns"
+
+    def test_get_campaigns(self, authenticated_client):
+        campaign1 = users_factories.UserProfileRefreshCampaignFactory(
+            campaignDate=datetime.datetime.strptime("2026-01-01 01:01", "%Y-%m-%d %H:%M"),
+            isActive=True,
+        )
+        campaign2 = users_factories.UserProfileRefreshCampaignFactory(
+            campaignDate=datetime.datetime.strptime("2027-01-01 01:01", "%Y-%m-%d %H:%M"),
+            isActive=False,
+        )
+
+        response = authenticated_client.get(url_for(self.endpoint))
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert {r["Id"] for r in rows} == {str(campaign1.id), str(campaign2.id)}
+
+        row1 = [r for r in rows if r["Id"] == str(campaign1.id)][0]
+        assert row1["Date de début"] == "2026-01-01 01:01:00"
+        assert row1["Active"] == "Oui"
+
+        row2 = [r for r in rows if r["Id"] == str(campaign2.id)][0]
+        assert row2["Date de début"] == "2027-01-01 01:01:00"
+        assert row2["Active"] == "Non"
+
+
+class CreateUserProfileRefreshCampaignButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN
+    button_label = "Créer une nouvelle campagne"
+
+    @property
+    def path(self):
+        return url_for("backoffice_web.user_profile_refresh_campaigns.list_campaigns")
+
+    @property
+    def unauthorized_user(self) -> users_models.User:
+        user = users_factories.UserFactory()
+        perm_api.create_backoffice_profile(user)
+
+        query = db.session.query(perm_models.Role).options(sa_orm.joinedload(perm_models.Role.permissions))
+        roles_without_needed_permission = [
+            perm_models.Roles(role.name)
+            for role in query
+            if (
+                not role.has_permission(self.needed_permission)
+                and role.has_permission(perm_models.Permissions.READ_USER_PROFILE_REFRESH_CAMPAIGN)
+            )
+        ]
+
+        backoffice_api.upsert_roles(user, roles_without_needed_permission)
+
+        return user
+
+
+class CreateUserProfileRefreshCampaignTest(PostEndpointHelper):
+    endpoint = "backoffice_web.user_profile_refresh_campaigns.create_campaign"
+    needed_permission = perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN
+
+    def test_create_campaign_regular(self, authenticated_client):
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "campaign_date": "2027-01-01T01:01",
+                "is_active": False,
+            },
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        campaigns = db.session.query(users_models.UserProfileRefreshCampaign).all()
+        assert len(campaigns) == 1
+        campaign = campaigns[0]
+        assert campaign.isActive is False
+        assert campaign.campaignDate == datetime.datetime.strptime("2027-01-01 01:01", "%Y-%m-%d %H:%M")
+        assert html_parser.extract_alert(response.data) == "Campagne de mise à jour de données créée avec succès."
+
+    def test_create_campaign_missing_is_active_field(self, authenticated_client):
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"campaign_date": "2027-01-01T01:01"},
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        campaigns = db.session.query(users_models.UserProfileRefreshCampaign).all()
+        assert len(campaigns) == 1
+        campaign = campaigns[0]
+        assert campaign.isActive is False
+        assert campaign.campaignDate == datetime.datetime.strptime("2027-01-01 01:01", "%Y-%m-%d %H:%M")
+        assert html_parser.extract_alert(response.data) == "Campagne de mise à jour de données créée avec succès."
+
+    def test_create_campaign_missing_campaign_date_field(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, form={"is_active": False}, follow_redirects=True)
+        assert response.status_code == 200
+        campaigns = db.session.query(users_models.UserProfileRefreshCampaign).all()
+        assert len(campaigns) == 0
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Les données envoyées comportent des erreurs. Date de début de la campagne : Information obligatoire ;"
+        )
+
+    def test_create_campaign_missing_all_fields(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, form={}, follow_redirects=True)
+        assert response.status_code == 200
+        campaigns = db.session.query(users_models.UserProfileRefreshCampaign).all()
+        assert len(campaigns) == 0
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Les données envoyées comportent des erreurs. Date de début de la campagne : Information obligatoire ;"
+        )
+
+
+class EditUserProfileRefreshCampaignTest(PostEndpointHelper):
+    needed_permission = perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN
+    endpoint = "backoffice_web.user_profile_refresh_campaigns.edit_campaign"
+    endpoint_kwargs = {"campaign_id": 1}
+
+    def test_edit_campaign_date(self, authenticated_client):
+        campaign = users_factories.UserProfileRefreshCampaignFactory(
+            campaignDate=datetime.datetime.strptime("2026-01-01 01:01", "%Y-%m-%d %H:%M"),
+            isActive=True,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            campaign_id=campaign.id,
+            form={
+                "campaign_date": "2027-01-01T01:01",
+                "is_active": True,
+            },
+        )
+        assert response.status_code == 200
+        # ensure that the row is rendered
+        row = html_parser.get_tag(response.data, tag="tr", id=f"campaign-row-{campaign.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert len(cells) == 6
+        assert cells[0] == "Modifier"
+        assert cells[1] == str(campaign.id)
+        assert cells[2] == "Oui"
+        assert cells[3] == "2027-01-01 01:01:00"
+
+        assert campaign.campaignDate == datetime.datetime.strptime("2027-01-01 01:01", "%Y-%m-%d %H:%M")
+        assert campaign.isActive is True
+
+    def test_edit_campaign_is_active(self, authenticated_client):
+        campaign = users_factories.UserProfileRefreshCampaignFactory(
+            campaignDate=datetime.datetime.strptime("2026-01-01 01:01", "%Y-%m-%d %H:%M"),
+            isActive=True,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            campaign_id=campaign.id,
+            form={
+                "campaign_date": "2026-01-01T01:01",
+                "is_active": False,
+            },
+        )
+        assert response.status_code == 200
+        # ensure that the row is rendered
+        row = html_parser.get_tag(response.data, tag="tr", id=f"campaign-row-{campaign.id}", is_xml=True)
+        cells = html_parser.extract(row, "td", is_xml=True)
+        assert len(cells) == 6
+        assert cells[0] == "Modifier"
+        assert cells[1] == str(campaign.id)
+        assert cells[2] == "Non"
+        assert cells[3] == "2026-01-01 01:01:00"
+
+        assert campaign.campaignDate == datetime.datetime.strptime("2026-01-01 01:01", "%Y-%m-%d %H:%M")
+        assert campaign.isActive is False

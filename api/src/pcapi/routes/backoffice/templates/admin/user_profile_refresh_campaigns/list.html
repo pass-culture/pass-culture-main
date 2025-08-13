@@ -1,0 +1,49 @@
+{% extends "layouts/list.html" %}
+{% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
+{% from "components/dynamic/modal.html" import build_static_htmx_modal with context %}
+{% set table_id = "campaign-table" %}
+{% set rows_count = rows|length %}
+{% set hide_search_block = True %}
+{% block title %}
+  Liste des campagnes
+{% endblock title %}
+{% block before_table %}
+  {% if has_permission("MANAGE_USER_PROFILE_REFRESH_CAMPAIGN") %}
+    <div class="d-flex flex-row justify-content-end">
+      <button class="btn btn-outline-primary lead fw-bold mt-2"
+              data-bs-toggle="modal"
+              data-bs-target="#create-campaign-modal"
+              type="button">Créer une nouvelle campagne</button>
+    </div>
+  {% endif %}
+{% endblock before_table %}
+{% block table_header %}
+  {% if has_permission("MANAGE_USER_PROFILE_REFRESH_CAMPAIGN") %}<th scope="col"></th>{% endif %}
+  <th scope="col">Id</th>
+  <th scope="col">Active</th>
+  <th scope="col">Date de début</th>
+  <th scope="col">Date de création</th>
+  <th scope="col">Date de mise à jour</th>
+{% endblock table_header %}
+{% block table_body %}
+  {% include "admin/user_profile_refresh_campaigns/list_rows.html" %}
+{% endblock table_body %}
+{% block after_table %}
+  {% set ajax_submit = False %}
+  {% set div_id = "create-campaign" %}
+  {% set form = creation_form %}
+  {% set title = "Création d'une nouvelle campagne" %}
+  {% set button_text = "Créer" %}
+  {% set dst = url_for("backoffice_web.user_profile_refresh_campaigns.create_campaign") %}
+  {% set ajax_submit = False %}
+  <div class="modal fade modal-{{ modal_size }}"
+       id="create-campaign-modal"
+       tabindex="-1"
+       aria-labelledby="create-campaign-label"
+       aria-hidden="false">
+    <div class="modal-dialog modal-dialog-centered">{% include "components/dynamic/modal_form.html" %}</div>
+  </div>
+  {% for campaign in rows %}
+    {{ build_dynamic_modal(url_for('backoffice_web.user_profile_refresh_campaigns.get_campaign_edit_form', campaign_id=campaign.id) , "edit-campaign-modal-" + campaign.id|string) }}
+  {% endfor %}
+{% endblock after_table %}

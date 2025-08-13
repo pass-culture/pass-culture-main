@@ -44,6 +44,8 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
         perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS,
         perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,
+        perm_models.Permissions.READ_USER_PROFILE_REFRESH_CAMPAIGN,
+        perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN,
     ],
     "support_n1": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
@@ -184,6 +186,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_SPECIAL_EVENTS,
         perm_models.Permissions.READ_TAGS,
         perm_models.Permissions.READ_TECH_PARTNERS,
+        perm_models.Permissions.READ_USER_PROFILE_REFRESH_CAMPAIGN,
     ],
     "qa": [],
     "global_access": [
@@ -231,6 +234,8 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.CLOSE_OFFERER,
         perm_models.Permissions.READ_NON_PAYMENT_NOTICES,
         perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES,
+        perm_models.Permissions.READ_USER_PROFILE_REFRESH_CAMPAIGN,
+        perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN,
     ],
     "dpo": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,

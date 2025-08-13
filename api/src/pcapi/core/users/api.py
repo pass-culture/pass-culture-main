@@ -1407,26 +1407,28 @@ def apply_filter_on_beneficiary_tag(query: sa_orm.Query, tag_ids: list[int]) -> 
 
 
 def has_profile_expired(user: models.User) -> bool:
-    if not settings.PROFILE_EXPIRY_DATETIME:
+    campaign_date = _get_current_profile_refresh_campaign_date()
+
+    if not campaign_date:
         return False
 
     latest_profile_completion = fraud_repository.get_latest_completed_profile_check(user)
-    if latest_profile_completion and latest_profile_completion.dateCreated >= settings.PROFILE_EXPIRY_DATETIME:
-        return False
+    has_completed_profile_after_campaign_start = (
+        latest_profile_completion and latest_profile_completion.dateCreated >= campaign_date
+    )
 
     latest_profile_modification = _get_latest_profile_modification(user)
-    has_completed_profile = bool(latest_profile_completion or latest_profile_modification)
-    if not has_completed_profile:
-        return False
-
-    if (
+    has_modified_profile_after_campaign_start = (
         latest_profile_modification
         and latest_profile_modification.actionDate
-        and latest_profile_modification.actionDate >= settings.PROFILE_EXPIRY_DATETIME
-    ):
+        and latest_profile_modification.actionDate >= campaign_date
+    )
+
+    # The profile has never been completed → it's not expired
+    if latest_profile_completion is None and latest_profile_modification is None:
         return False
 
-    return True
+    return not (has_completed_profile_after_campaign_start or has_modified_profile_after_campaign_start)
 
 
 def _get_latest_profile_modification(user: models.User) -> history_models.ActionHistory | None:
@@ -1446,4 +1448,18 @@ def _has_modified_user_profile(action: history_models.ActionHistory) -> bool:
         and action.extraData
         and "modified_info" in action.extraData
         and any(action.extraData["modified_info"].get(field) is not None for field in profile_fields)
+    )
+
+
+def _get_current_profile_refresh_campaign_date() -> datetime.datetime | None:
+    """
+    Fetch the first campaign starting from the current date
+    """
+    return (
+        db.session.query(models.UserProfileRefreshCampaign)
+        .with_entities(models.UserProfileRefreshCampaign.campaignDate)
+        .filter(models.UserProfileRefreshCampaign.isActive.is_(True))
+        .order_by(models.UserProfileRefreshCampaign.campaignDate.desc())
+        .limit(1)
+        .scalar()
     )
