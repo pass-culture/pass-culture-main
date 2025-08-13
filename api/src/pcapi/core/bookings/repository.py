@@ -1057,6 +1057,8 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[models.Boo
     tomorrow_min = datetime.combine(tomorrow, time.min)
     tomorrow_max = datetime.combine(tomorrow, time.max)
 
+    has_opening_hours_subquery = offers_repository.has_opening_hours_subquery()
+
     return (
         db.session.query(models.Booking)
         .join(
@@ -1065,14 +1067,13 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[models.Boo
         .join(models.Booking.stock)
         .join(offers_models.Stock.offer)
         .join(offers_models.Offer.venue)
-        .join(offers_models.Offer.openingHours)
+        .join(has_opening_hours_subquery, has_opening_hours_subquery.c.offerId == offers_models.Offer.id)
         .outerjoin(models.Booking.activationCode)
         .outerjoin(offers_models.Offer.criteria)
         .filter(
             offers_models.Stock.beginningDatetime >= tomorrow_min, offers_models.Stock.beginningDatetime <= tomorrow_max
         )
-        .filter(offers_repository.has_event_subcategory_filter())
-        .filter(offerers_models.OpeningHours.id != None)
+        .filter(offers_repository.has_event_subcategory_filter(), has_opening_hours_subquery.c.offerId != None)
         .filter(sa.not_(offers_models.Offer.isDigital))
         .filter(models.Booking.status != models.BookingStatus.CANCELLED)
         .options(sa_orm.contains_eager(models.Booking.user))

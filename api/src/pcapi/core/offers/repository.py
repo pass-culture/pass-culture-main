@@ -1405,3 +1405,9 @@ def get_unbookable_unbooked_old_offer_ids(
 
 def has_event_subcategory_filter() -> ColumnElement:
     return models.Offer.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
+
+
+def has_opening_hours_subquery() -> sa.sql.expression.Subquery:
+    return (
+        db.session.query(offerers_models.OpeningHours.offerId).group_by(offerers_models.OpeningHours.offerId).subquery()
+    )
