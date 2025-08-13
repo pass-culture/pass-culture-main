@@ -15,6 +15,7 @@ import sentry_sdk
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
+from flask import current_app
 from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
 from sqlalchemy import func
@@ -2475,10 +2476,14 @@ def delete_offers_and_all_related_objects(offer_ids: typing.Collection[int], off
         log_extra = {"round": idx, "offers_count": len(chunk), "time_spent": str(time.time() - start)}
         logger.info("delete offers and related objects: round %d, end", idx, extra=log_extra)
 
+    redis_client = current_app.redis_client
     for idx, chunk in enumerate(get_chunks(offer_ids, chunk_size=offer_chunk_size)):
         try:
             with atomic():
                 delete_offers_related_objects_round(idx, chunk)
+
+            max_deleted_id = max(chunk)
+            redis_client.set("DELETE_UNBOOKABLE_UNBOOKED_OLD_OFFERS_START_ID", max_deleted_id)
         except sa.exc.IntegrityError as err:
             extra = _format_db_error_extra(err, chunk)
             logger.error("delete_offers_and_all_related_objects: error", extra=extra)
@@ -2490,7 +2495,7 @@ def delete_offers_and_all_related_objects(offer_ids: typing.Collection[int], off
 
 
 def delete_unbookable_unbooked_old_offers(
-    min_id: int = 0,
+    min_id: int | None = None,
     max_id: int | None = None,
     query_batch_size: int = 5_000,
     filter_batch_size: int = 2_500,
@@ -2518,6 +2523,17 @@ def delete_unbookable_unbooked_old_offers(
 
     count = 0
 
+    redis_client = current_app.redis_client
+    max_offer_id = db.session.query(sa.func.max(models.Offer.id)).scalar()
+
+    if min_id is None:
+        min_id = redis_client.get("DELETE_UNBOOKABLE_UNBOOKED_OLD_OFFERS_START_ID")
+        min_id = int(min_id) if min_id is not None else 0
+
+    if max_id is None:
+        # 10% of offers by run at most, no need to run for days
+        max_id = min_id + (max_offer_id // 10)
+
     query = offers_repository.get_unbookable_unbooked_old_offer_ids(min_id, max_id, batch_size=query_batch_size)
     for idx, chunk in enumerate(get_chunks(query, chunk_size=filter_batch_size)):
         inner_start = time.time()
@@ -2539,6 +2555,10 @@ def delete_unbookable_unbooked_old_offers(
             log_msg = "deleted unbookable unbooked offers ids"
             technical_id = "unbookable_unbooked_offers_deleted"
             logger.info(log_msg, technical_message_id=technical_id, extra={"offer_id": offer_id})
+
+    if max_id >= max_offer_id:
+        # all offers have been scaned -> restart
+        redis_client.set("DELETE_UNBOOKABLE_UNBOOKED_OLD_OFFERS_START_ID", 0)
 
     log_extra["time_spent"] = time.time() - start  # type: ignore[assignment]
     log_extra["deleted_offers_count"] = count

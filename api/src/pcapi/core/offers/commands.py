@@ -39,7 +39,7 @@ def set_upper_timespan_of_inactive_headline_offers() -> None:
 
 
 @blueprint.cli.command("delete_unbookable_unbooked_old_offers")
-@click.argument("min_offer_id", required=False, type=int, default=0)
+@click.argument("min_offer_id", required=False, type=int, default=None)
 @click.argument("max_offer_id", required=False, type=int, default=None)
 @click.argument("query_batch_size", required=False, type=int, default=5_000)
 @click.argument("filter_batch_size", required=False, type=int, default=2_500)
