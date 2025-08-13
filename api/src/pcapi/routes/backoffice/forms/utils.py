@@ -4,6 +4,7 @@ import typing
 
 from flask_wtf import FlaskForm
 
+from pcapi.models import feature
 from pcapi.utils import email as email_utils
 
 
@@ -29,3 +30,18 @@ def choices_from_enum(
 def is_slug(string: str) -> bool:
     pattern = r"^[a-z0-9\-]+$"
     return bool(re.match(pattern, string))
+
+
+class LazyFFString:
+    def __init__(self, feature_flag: feature.FeatureToggle, value_on: str, value_off: str) -> None:
+        self.feature_flag = feature_flag
+        self.value_off = value_off
+        self.value_on = value_on
+
+    def __str__(self) -> str:
+        if self.feature_flag.is_active():
+            return str(self.value_on)
+        return str(self.value_off)
+
+    def __repr__(self) -> str:
+        return self.__str__()
