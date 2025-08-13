@@ -56,7 +56,7 @@ export const OnboardingOffersChoice = () => {
       >
         Vos offres seront visibles par{' '}
         <strong className={styles['card-description-highlight']}>
-          + de 4 millions de jeunes
+          + de 4 millions de jeunes{' '}
         </strong>
         inscrits sur l’application mobile pass Culture.
       </Card>
