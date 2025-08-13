@@ -42,7 +42,6 @@ from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users import models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
 from pcapi.routes.serialization import users as users_serialization
@@ -363,9 +362,6 @@ def anonymize_pro_users() -> None:
     """
     Anonymize pro accounts
     """
-    if not FeatureToggle.WIP_ENABLE_PRO_ANONYMIZATION.is_active():
-        return
-
     three_years_ago = datetime.datetime.utcnow() - relativedelta(years=3)
 
     users = _get_anonymize_pro_query(
