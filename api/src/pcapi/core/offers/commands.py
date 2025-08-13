@@ -4,6 +4,7 @@ import click
 
 import pcapi.core.offers.api as offers_api
 from pcapi.models.feature import FeatureToggle
+from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils.blueprint import Blueprint
 
@@ -16,12 +17,14 @@ blueprint = Blueprint(__name__, __name__)
 # Deprecated. Remove when we have a new cron job calling `reindex_recently_published_offers`
 @blueprint.cli.command("activate_future_offers")
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def activate_future_offers() -> None:
     offers_api.reindex_recently_published_offers()
 
 
 @blueprint.cli.command("reindex_recently_published_offers")
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def reindex_recently_published_offers() -> None:
     offers_api.reindex_recently_published_offers()
 

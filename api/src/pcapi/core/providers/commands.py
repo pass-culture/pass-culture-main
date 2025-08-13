@@ -10,6 +10,8 @@ import pcapi.core.providers.repository as providers_repository
 from pcapi.core.providers import allocine
 from pcapi.local_providers import provider_manager
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
+from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.utils.blueprint import Blueprint
 
 from .titelive_utils import generate_titelive_gtl_from_file
@@ -31,6 +33,7 @@ def _set_debug_level(target_logger: logging.Logger, level: int) -> Generator[Non
 
 
 @blueprint.cli.command("synchronize_allocine_products")
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def synchronize_allocine_products() -> None:
     allocine.synchronize_products()
 

@@ -12,6 +12,8 @@ from pcapi.core import search
 from pcapi.core.educational.api.offer import unindex_expired_or_archived_collective_offers_template
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.search import staging_indexation
+from pcapi.models.feature import FeatureToggle
+from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils.blueprint import Blueprint
 from pcapi.utils.chunks import get_chunks
@@ -23,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 @blueprint.cli.command("index_offers_in_algolia_by_offer")
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def index_offers_in_algolia_by_offer() -> None:
     """Pop offers from indexation queue and reindex them."""
     search.index_offers_in_queue()
@@ -30,6 +33,7 @@ def index_offers_in_algolia_by_offer() -> None:
 
 @blueprint.cli.command("index_offers_in_algolia_by_venue")
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def index_offers_in_algolia_by_venue() -> None:
     """Pop venues from indexation queue and reindex their offers."""
     search.index_offers_of_venues_in_queue()
@@ -37,6 +41,7 @@ def index_offers_in_algolia_by_venue() -> None:
 
 @blueprint.cli.command("index_collective_offer_templates")
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def index_collective_offer_templates() -> None:
     """Pop collective offers template from indexation queue and reindex them."""
     search.index_collective_offers_templates_in_queue()
@@ -44,6 +49,7 @@ def index_collective_offer_templates() -> None:
 
 @blueprint.cli.command("delete_expired_offers_in_algolia")
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def delete_expired_offers_in_algolia() -> None:
     """Unindex offers that have expired.
 
@@ -56,6 +62,7 @@ def delete_expired_offers_in_algolia() -> None:
 
 @blueprint.cli.command("delete_expired_collective_offers_template_in_algolia")
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def delete_expired_collective_offers_template_in_algolia() -> None:
     """Unindex collective offers template that have expired or are archived."""
     unindex_expired_or_archived_collective_offers_template()
@@ -63,6 +70,7 @@ def delete_expired_collective_offers_template_in_algolia() -> None:
 
 @blueprint.cli.command("index_offers_in_error_in_algolia_by_offer")
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def index_offers_in_error_in_algolia_by_offer() -> None:
     """Pop offers from the error queue and reindex them."""
     search.index_offers_in_queue(from_error_queue=True)
@@ -70,6 +78,7 @@ def index_offers_in_error_in_algolia_by_offer() -> None:
 
 @blueprint.cli.command("index_collective_offers_templates_in_error")
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def index_collective_offers_templates_in_error() -> None:
     """Pop collective offers template from the error queue and reindex them."""
     search.index_collective_offers_templates_in_queue(from_error_queue=True)
@@ -77,6 +86,7 @@ def index_collective_offers_templates_in_error() -> None:
 
 @blueprint.cli.command("index_venues")
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def index_venues() -> None:
     """Pop venues from indexation queue and reindex them."""
     search.index_venues_in_queue()
@@ -84,6 +94,7 @@ def index_venues() -> None:
 
 @blueprint.cli.command("index_venues_in_error")
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def index_venues_in_error() -> None:
     """Pop venues from the error queue and reindex them."""
     search.index_venues_in_queue(from_error_queue=True)
