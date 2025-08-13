@@ -22,8 +22,13 @@ from pcapi.models import db
 logger = logging.getLogger(__name__)
 
 
-def migrate_product_images_to_product_mediations() -> None:
-    products_with_thumbs = db.session.query(Product).filter(Product.thumbCount > 0).order_by(Product.id).yield_per(1000)
+def migrate_product_images_to_product_mediations(batch_size: int, start_with_id: int = 0) -> None:
+    products_with_thumbs = (
+        db.session.query(Product)
+        .filter(Product.thumbCount > 0, Product.id >= start_with_id)
+        .order_by(Product.id)
+        .yield_per(1000)
+    )
 
     migrated_count = 0
     skipped_existing_mediation = 0
@@ -103,6 +108,9 @@ def migrate_product_images_to_product_mediations() -> None:
             product.id,
             new_mediation_internal_uuid,
         )
+        if migrated_count % batch_size == 0:
+            logger.info("Committing batch of %d ProductMediations", batch_size)
+            db.session.commit()
 
     if migrated_count > 0:
         logger.info("Migration finished. %d ProductMediations created and stored.", migrated_count)
@@ -120,14 +128,9 @@ def migrate_product_images_to_product_mediations() -> None:
 if __name__ == "__main__":
     app.app_context().push()
     parser = argparse.ArgumentParser()
-    parser.add_argument("--not-dry", action="store_true")
+    parser.add_argument("--batch-size", type=int, default=500, help="Number of products to process in each batch")
+    parser.add_argument("--start-with-id", type=int, default=0, help="Start processing from this Product ID")
     args = parser.parse_args()
 
-    migrate_product_images_to_product_mediations()
-
-    if args.not_dry:
-        logger.info("Finished")
-        db.session.commit()
-    else:
-        logger.info("Finished dry run, rollback")
-        db.session.rollback()
+    migrate_product_images_to_product_mediations(batch_size=args.batch_size, start_with_id=args.start_with_id)
+    db.session.commit()
