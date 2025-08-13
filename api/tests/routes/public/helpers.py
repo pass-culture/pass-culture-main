@@ -87,7 +87,7 @@ class PublicAPIEndpointBaseHelper:
         Default test ensuring the API call is authenticated before proceeding
         """
         with testing.assert_num_queries(0):
-            response = self.make_request()
+            response = self.make_request(json_body={})
             assert response.status_code == 401
 
         assert response.json == {"auth": "API key required"}
@@ -99,7 +99,7 @@ class PublicAPIEndpointBaseHelper:
         Default test ensuring the API call is authenticated and that the API key authenticates a provider
         """
         # TODO: (tcoudray-pass, 23/06/25) Restore `testing.assert_num_queries` when all public API endpoints use `@atomic`
-        response = self.make_request(plain_api_key=self.setup_old_api_key())
+        response = self.make_request(plain_api_key=self.setup_old_api_key(), json_body={})
 
         assert response.status_code == 401
         assert response.json == {"auth": "Deprecated API key. Please contact provider support to get a new API key"}

@@ -151,12 +151,12 @@ def _get_collective_offer_export_data(
 def _get_query_with_loading_for_export(
     collective_offers_query: "sa_orm.Query[models.CollectiveOffer]",
 ) -> "typing.Iterator[models.CollectiveOffer]":
-    CHRUNK_SIZE = 1000
+    CHUNK_SIZE = 1000
     all_ids = [c.id for c in collective_offers_query.with_entities(models.CollectiveOffer.id).all()]
 
     start = 0
-    while ids := all_ids[start : start + CHRUNK_SIZE]:
-        start += CHRUNK_SIZE
+    while ids := all_ids[start : start + CHUNK_SIZE]:
+        start += CHUNK_SIZE
         yield from (
             collective_offers_query.filter(
                 models.CollectiveOffer.id.in_(ids),
