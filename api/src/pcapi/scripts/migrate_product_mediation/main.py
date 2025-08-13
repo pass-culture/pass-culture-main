@@ -23,94 +23,107 @@ logger = logging.getLogger(__name__)
 
 
 def migrate_product_images_to_product_mediations(batch_size: int, start_with_id: int = 0) -> None:
-    products_with_thumbs = (
-        db.session.query(Product)
-        .filter(Product.thumbCount > 0, Product.id >= start_with_id)
-        .order_by(Product.id)
-        .yield_per(1000)
-    )
-
     migrated_count = 0
     skipped_existing_mediation = 0
     skipped_fetch_error = 0
     skipped_store_error = 0
 
-    for product in products_with_thumbs:
-        logger.info(
-            "Processing Product ID: %s (thumbCount: %s, subcategoryId: %s)",
-            product.id,
-            product.thumbCount,
-            product.subcategoryId,
+    last_id = start_with_id
+    while True:
+        products_with_thumbs = (
+            db.session.query(Product)
+            .filter(Product.thumbCount > 0, Product.id >= last_id)
+            .order_by(Product.id)
+            .limit(batch_size)
+            .all()
         )
-        target_image_type = ImageType.POSTER if product.subcategoryId == "SEANCE_CINE" else ImageType.RECTO
-        logger.info("Target imageType for Product ID %s is %s", product.id, target_image_type.value)
 
-        if db.session.query(ProductMediation).filter_by(productId=product.id, imageType=target_image_type).first():
-            logger.info(
-                "Product ID %s already has a %s ProductMediation. Skipping.", product.id, target_image_type.value
-            )
-            skipped_existing_mediation += 1
-            continue
+        if not products_with_thumbs:
+            break
 
-        image_bytes = None
-        try:
-            old_thumb_object_id = product.get_thumb_storage_id()
+        for product in products_with_thumbs:
             logger.info(
-                "Fetching old image for Product ID %s from: folder='%s', object_id='%s'",
+                "Processing Product ID: %s (thumbCount: %s, subcategoryId: %s)",
                 product.id,
-                settings.THUMBS_FOLDER_NAME,
-                old_thumb_object_id,
+                product.thumbCount,
+                product.subcategoryId,
             )
-            image_bytes_list = object_storage.get_public_object(
-                folder=settings.THUMBS_FOLDER_NAME, object_id=old_thumb_object_id
-            )
-            if not image_bytes_list:
-                logger.warning("No image data found for Product ID %s. Skipping.", product.id)
+            target_image_type = ImageType.POSTER if product.subcategoryId == "SEANCE_CINE" else ImageType.RECTO
+            logger.info("Target imageType for Product ID %s is %s", product.id, target_image_type.value)
+
+            if db.session.query(ProductMediation).filter_by(productId=product.id, imageType=target_image_type).first():
+                logger.info(
+                    "Product ID %s already has a %s ProductMediation. Skipping.", product.id, target_image_type.value
+                )
+                skipped_existing_mediation += 1
+                continue
+
+            image_bytes = None
+            try:
+                old_thumb_object_id = product.get_thumb_storage_id()
+                logger.info(
+                    "Fetching old image for Product ID %s from: folder='%s', object_id='%s'",
+                    product.id,
+                    settings.THUMBS_FOLDER_NAME,
+                    old_thumb_object_id,
+                )
+                image_bytes_list = object_storage.get_public_object(
+                    folder=settings.THUMBS_FOLDER_NAME, object_id=old_thumb_object_id
+                )
+                if not image_bytes_list:
+                    logger.warning("No image data found for Product ID %s. Skipping.", product.id)
+                    skipped_fetch_error += 1
+                    continue
+                image_bytes = image_bytes_list[0]
+            except Exception as err:
+                logger.error(
+                    "Error fetching old image for Product ID %s: %s. Skipping.", product.id, err, exc_info=True
+                )
                 skipped_fetch_error += 1
                 continue
-            image_bytes = image_bytes_list[0]
-        except Exception as err:
-            logger.error("Error fetching old image for Product ID %s: %s. Skipping.", product.id, err, exc_info=True)
-            skipped_fetch_error += 1
-            continue
 
-        new_mediation_internal_uuid = str(uuid.uuid4())
-        try:
+            new_mediation_internal_uuid = str(uuid.uuid4())
+            try:
+                logger.info(
+                    "Storing new image for Product ID %s using create_thumb with new UUID: %s",
+                    product.id,
+                    new_mediation_internal_uuid,
+                )
+                thumb_storage.create_thumb(
+                    model_with_thumb=product,
+                    image_as_bytes=image_bytes,
+                    object_id=new_mediation_internal_uuid,
+                    keep_ratio=True,
+                )
+            except Exception as err:
+                logger.error(
+                    "Unexpected error using create_thumb for Product ID %s: %s. Skipping.",
+                    product.id,
+                    err,
+                    exc_info=True,
+                )
+                skipped_store_error += 1
+                continue
+
+            new_mediation = ProductMediation(
+                productId=product.id,
+                imageType=target_image_type,
+                uuid=new_mediation_internal_uuid,
+                lastProviderId=product.lastProviderId,
+            )
+            db.session.add(new_mediation)
+            migrated_count += 1
             logger.info(
-                "Storing new image for Product ID %s using create_thumb with new UUID: %s",
+                "ProductMediation (%s) created for Product ID %s with new UUID: %s",
+                target_image_type.value,
                 product.id,
                 new_mediation_internal_uuid,
             )
-            thumb_storage.create_thumb(
-                model_with_thumb=product,
-                image_as_bytes=image_bytes,
-                object_id=new_mediation_internal_uuid,
-                keep_ratio=True,
-            )
-        except Exception as err:
-            logger.error(
-                "Unexpected error using create_thumb for Product ID %s: %s. Skipping.", product.id, err, exc_info=True
-            )
-            skipped_store_error += 1
-            continue
 
-        new_mediation = ProductMediation(
-            productId=product.id,
-            imageType=target_image_type,
-            uuid=new_mediation_internal_uuid,
-            lastProviderId=product.lastProviderId,
-        )
-        db.session.add(new_mediation)
-        migrated_count += 1
-        logger.info(
-            "ProductMediation (%s) created for Product ID %s with new UUID: %s",
-            target_image_type.value,
-            product.id,
-            new_mediation_internal_uuid,
-        )
-        if migrated_count % batch_size == 0:
-            logger.info("Committing batch of %d ProductMediations", batch_size)
-            db.session.commit()
+            last_id = product.id + 1
+
+        logger.info("Committing batch of %d ProductMediations", batch_size)
+        db.session.commit()
 
     if migrated_count > 0:
         logger.info("Migration finished. %d ProductMediations created and stored.", migrated_count)
@@ -133,4 +146,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     migrate_product_images_to_product_mediations(batch_size=args.batch_size, start_with_id=args.start_with_id)
-    db.session.commit()
