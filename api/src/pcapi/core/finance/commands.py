@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 
 @blueprint.cli.command("price_finance_events")
 @cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 @cron_decorators.cron_require_feature(FeatureToggle.PRICE_FINANCE_EVENTS)
 def price_finance_events() -> None:
     """Price finance events that have recently been created."""
