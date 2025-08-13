@@ -17,12 +17,6 @@
   margin-top: rem.torem(32px);
 }
 
-.mandatory {
-  @include fonts.body-accent-xs;
-
-  color: var(--color-text-subtle);
-}
-
 .button-actions {
   display: flex;
   gap: rem.torem(16px);
