@@ -375,9 +375,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       <form onSubmit={handleSubmit(onSubmit)} data-testid="stock-thing-form">
         <FormLayout>
           <div aria-current="page">
-            <div className={styles['mandatory']}>
-              Tous les champs suivis d’un * sont obligatoires.
-            </div>
+            <FormLayout.MandatoryInfo />
             <FormLayoutDescription
               description={description}
               links={links}
