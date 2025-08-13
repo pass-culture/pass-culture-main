@@ -2217,7 +2217,7 @@ class GetUnbookableUnbookedOldOfferIdsTest:
     def test_get_unbookable_unbooked_old_offer_id(self):
         offer = factories.OfferFactory(dateCreated=self.a_year_ago, dateUpdated=self.a_year_ago)
 
-        ids = list(repository.get_unbookable_unbooked_old_offer_ids())
+        ids = list(repository.get_unbookable_unbooked_old_offer_ids(0, offer.id + 1))
         assert ids == [offer.id]
 
     def test_get_old_offer_with_an_expired_stock_with_quantity_is_matched(self):
@@ -2228,7 +2228,7 @@ class GetUnbookableUnbookedOldOfferIdsTest:
             offer__dateUpdated=self.a_year_ago,
         ).offer
 
-        ids = list(repository.get_unbookable_unbooked_old_offer_ids())
+        ids = list(repository.get_unbookable_unbooked_old_offer_ids(0, offer.id + 1))
         assert ids == [offer.id]
 
     def test_get_old_offer_with_an_ongoing_stock_without_any_quantity_is_matched(self):
@@ -2238,7 +2238,7 @@ class GetUnbookableUnbookedOldOfferIdsTest:
             offer__dateUpdated=self.a_year_ago,
         ).offer
 
-        ids = list(repository.get_unbookable_unbooked_old_offer_ids())
+        ids = list(repository.get_unbookable_unbooked_old_offer_ids(0, offer.id + 1))
         assert ids == [offer.id]
 
     def test_get_old_offer_with_a_soft_deleted_stock_is_matched(self):
@@ -2249,12 +2249,12 @@ class GetUnbookableUnbookedOldOfferIdsTest:
             offer__dateUpdated=self.a_year_ago,
         ).offer
 
-        ids = list(repository.get_unbookable_unbooked_old_offer_ids())
+        ids = list(repository.get_unbookable_unbooked_old_offer_ids(0, offer.id + 1))
         assert ids == [offer.id]
 
     def test_get_old_offer_with_an_ongoing_stock_is_ignored(self):
-        factories.StockFactory(offer__dateCreated=self.a_year_ago, offer__dateUpdated=self.a_year_ago)
-        assert not list(repository.get_unbookable_unbooked_old_offer_ids())
+        offer = factories.StockFactory(offer__dateCreated=self.a_year_ago, offer__dateUpdated=self.a_year_ago).offer
+        assert not list(repository.get_unbookable_unbooked_old_offer_ids(0, offer.id + 1))
 
     def test_get_old_offer_with_ongoing_and_unbookable_stocks_is_ignored(self):
         offer = factories.OfferFactory(dateCreated=self.a_year_ago, dateUpdated=self.a_year_ago)
@@ -2262,7 +2262,7 @@ class GetUnbookableUnbookedOldOfferIdsTest:
         factories.StockFactory(offer=offer)
         factories.StockFactory(offer=offer, isSoftDeleted=True)
 
-        assert not list(repository.get_unbookable_unbooked_old_offer_ids())
+        assert not list(repository.get_unbookable_unbooked_old_offer_ids(0, offer.id + 1))
 
     def test_get_old_offer_with_unbookable_and_bookable_stocks_and_a_booking_is_ignored(
         self,
@@ -2275,38 +2275,38 @@ class GetUnbookableUnbookedOldOfferIdsTest:
         # bookable stock
         factories.StockFactory(offer=offer)
 
-        assert not list(repository.get_unbookable_unbooked_old_offer_ids())
+        assert not list(repository.get_unbookable_unbooked_old_offer_ids(0, offer.id + 1))
 
     def test_get_old_offer_with_a_booking_is_ignored(self):
-        bookings_factories.BookingFactory(
+        offer = bookings_factories.BookingFactory(
             stock__offer__dateCreated=self.a_year_ago,
             stock__offer__dateUpdated=self.a_year_ago,
-        )
+        ).stock.offer
 
-        assert not list(repository.get_unbookable_unbooked_old_offer_ids())
+        assert not list(repository.get_unbookable_unbooked_old_offer_ids(0, offer.id + 1))
 
     def test_get_old_offer_with_a_cancelled_booking_is_ignored(self):
-        bookings_factories.CancelledBookingFactory(
+        offer = bookings_factories.CancelledBookingFactory(
             stock__offer__dateCreated=self.a_year_ago,
             stock__offer__dateUpdated=self.a_year_ago,
-        )
+        ).stock.offer
 
-        assert not list(repository.get_unbookable_unbooked_old_offer_ids())
+        assert not list(repository.get_unbookable_unbooked_old_offer_ids(0, offer.id + 1))
 
     def test_get_recent_offer_without_stocks_nor_bookings_is_ignored(self):
-        factories.OfferFactory()
-        assert not list(repository.get_unbookable_unbooked_old_offer_ids())
+        offer = factories.OfferFactory()
+        assert not list(repository.get_unbookable_unbooked_old_offer_ids(0, offer.id + 1))
 
     def test_recent_or_booked_offers_are_filtered(self):
         offer = factories.OfferFactory(dateCreated=self.a_year_ago, dateUpdated=self.a_year_ago)
 
         factories.OfferFactory()
-        bookings_factories.BookingFactory(
+        other_offer = bookings_factories.BookingFactory(
             stock__offer__dateCreated=self.a_year_ago,
             stock__offer__dateUpdated=self.a_year_ago,
-        )
+        ).stock.offer
 
-        ids = list(repository.get_unbookable_unbooked_old_offer_ids())
+        ids = list(repository.get_unbookable_unbooked_old_offer_ids(0, max(offer.id, other_offer.id) + 1))
         assert ids == [offer.id]
 
     def test_legit_offer_with_id_outside_of_asked_range_is_ignored(self):
