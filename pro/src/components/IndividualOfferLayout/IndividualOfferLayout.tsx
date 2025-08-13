@@ -11,13 +11,11 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { formatDateTimeParts, isDateValid } from '@/commons/utils/date'
-import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { BackToNavLink } from '@/components/BackToNavLink/BackToNavLink'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
-import { LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED } from '@/pages/IndividualOffer/IndividualOfferInformations/components/IndividualOfferInformationsScreen'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Callout } from '@/ui-kit/Callout/Callout'
@@ -80,14 +78,6 @@ export const IndividualOfferLayout = ({
   )
   const notify = useNotification()
   const navigate = useNavigate()
-
-  // This is used to not be able to go to next step in creation mode
-  const isUsefulInformationSubmitted =
-    (storageAvailable('localStorage') &&
-      !!localStorage.getItem(
-        `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offer?.id}`
-      )) ||
-    mode !== OFFER_WIZARD_MODE.CREATION
 
   if (isOnboarding && isDidacticOnboardingEnabled === false) {
     return <Navigate to="/accueil" />
@@ -197,11 +187,7 @@ export const IndividualOfferLayout = ({
         </div>
       )}
 
-      {withStepper && (
-        <IndividualOfferNavigation
-          isUsefulInformationSubmitted={isUsefulInformationSubmitted}
-        />
-      )}
+      {withStepper && <IndividualOfferNavigation />}
 
       <div className={styles['content']}>{children}</div>
     </>

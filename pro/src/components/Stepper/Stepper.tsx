@@ -15,13 +15,6 @@ export type Step = {
   hash?: string
 }
 
-export interface StepPattern {
-  id: string
-  label: string | React.ReactNode
-  path?: string
-  isActive: boolean
-}
-
 export interface StepperProps {
   activeStep: string
   steps: Step[]

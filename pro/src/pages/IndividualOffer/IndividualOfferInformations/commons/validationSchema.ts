@@ -15,10 +15,12 @@ export const getValidationSchema = ({
   conditionalFields,
   isNewOfferCreationFlowFeatureActive,
   isOfferOnline,
+  setIsAccessibilityFilled,
 }: {
   conditionalFields: string[]
   isNewOfferCreationFlowFeatureActive: boolean
   isOfferOnline: boolean
+  setIsAccessibilityFilled: (isAccessibilityFilled: boolean) => void
 }) => {
   const accessibility = yup.lazy(() =>
     isNewOfferCreationFlowFeatureActive
@@ -31,7 +33,11 @@ export const getValidationSchema = ({
             name: 'is-any-true',
             message:
               'Veuillez sélectionner au moins un critère d’accessibilité',
-            test: isAnyTrue,
+            test: (values) => {
+              const isAccessibilityFilled = isAnyTrue(values)
+              setIsAccessibilityFilled(isAccessibilityFilled)
+              return isAccessibilityFilled
+            },
           })
           .shape({
             mental: yup.boolean().required(),
