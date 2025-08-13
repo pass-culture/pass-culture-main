@@ -1,4 +1,5 @@
 import logging
+import typing
 from datetime import time
 
 import sqlalchemy as sqla
@@ -461,20 +462,20 @@ def patch_offer(
             updates["ean"] = body_extra_data.pop("ean")
         updates["extraData"] = body_extra_data
 
-        offer = offers_api.update_offer(offer, offers_schemas.UpdateOffer(**updates), is_from_private_api=True)
-        db.session.flush()
-        offer = offers_repository.get_offer_by_id(
-            offer_id,
-            load_options=[
-                "stock",
-                "venue",
-                "offerer_address",
-                "product",
-                "bookings_count",
-                "is_non_free_offer",
-                "event_opening_hours",
-            ],
-        )
+    offer = offers_api.update_offer(offer, offers_schemas.UpdateOffer(**updates), is_from_private_api=True)
+    db.session.flush()
+    offer = offers_repository.get_offer_by_id(
+        offer_id,
+        load_options=[
+            "stock",
+            "venue",
+            "offerer_address",
+            "product",
+            "bookings_count",
+            "is_non_free_offer",
+            "meta_data",
+        ],
+    )
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
@@ -708,7 +709,7 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
         .one_or_none()
     )
     validation.check_product_cgu_and_offerer(product, ean, offerer)
-    return offers_serialize.GetProductInformations.from_orm(product=product)
+    return offers_serialize.GetProductInformations.from_orm(product=typing.cast(models.Product, product))
 
 
 def _format_offer_opening_hours(
