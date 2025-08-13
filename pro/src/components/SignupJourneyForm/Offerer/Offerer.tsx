@@ -28,7 +28,7 @@ import { DEFAULT_OFFERER_FORM_VALUES } from './constants'
 import styles from './Offerer.module.scss'
 import { validationSchema } from './validationSchema'
 
-export interface OffererFormValues {
+interface OffererFormValues {
   siret: string
 }
 

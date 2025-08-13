@@ -14,14 +14,12 @@ import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
-import type { OffererFormValues } from '../Offerer/Offerer'
 import styles from './OffererAuthenticationForm.module.scss'
 
-export interface OffererAuthenticationFormValues
-  extends OffererFormValues,
-    Address {
+export interface OffererAuthenticationFormValues extends Address {
+  siret: string
   name: string
-  publicName: string
+  publicName?: string
   addressAutocomplete: string
   'search-addressAutocomplete': string
   coords?: string

@@ -11,24 +11,21 @@ import type { VenueSettingsFormValues } from '../types'
 import { isSiretStartingWithSiren, valideSiretLength } from './validationSchema'
 
 export type SiretOrCommentFieldsProps = {
-  initialSiret?: string
   setIsFieldNameFrozen?: (isNameFrozen: boolean) => void
   siren?: string | null
 }
 
 export const SiretOrCommentFields = ({
-  initialSiret = '',
   setIsFieldNameFrozen,
   siren,
 }: SiretOrCommentFieldsProps): JSX.Element => {
-  const hasSiret = initialSiret.length > 0
   const {
     setValue,
     setError,
     register,
-    formState: { errors },
+    formState: { errors, defaultValues },
   } = useFormContext<VenueSettingsFormValues>()
-
+  const hasSiret = (defaultValues?.siret ?? '').length > 0
   const formatSiret = (siret: string) => {
     // remove character when it's not a number
     // this way we're sure that this field only accept number
