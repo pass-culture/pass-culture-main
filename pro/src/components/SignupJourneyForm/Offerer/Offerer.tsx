@@ -10,7 +10,10 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { MainHeading } from '@/app/App/layout/Layout'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { FORM_ERROR_MESSAGE, GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import {
+  FORM_ERROR_MESSAGE,
+  GET_DATA_ERROR_MESSAGE,
+} from '@/commons/core/shared/constants'
 import { getSiretData } from '@/commons/core/Venue/getSiretData'
 import { humanizeSiret, unhumanizeSiret } from '@/commons/core/Venue/utils'
 import { useNotification } from '@/commons/hooks/useNotification'
@@ -89,19 +92,11 @@ export const Offerer = (): JSX.Element => {
       }
     } catch (error) {
       if (error instanceof Error) {
-        const isGlobalErrorMessage =
+        setShowInvisibleBanner(
           error.message ===
-          'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.'
-
-        const message = isGlobalErrorMessage
-          ? "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public"
-          : "Le SIRET n'existe pas"
-        if (isGlobalErrorMessage) {
-          setShowInvisibleBanner(true)
-          setError('siret', { message })
-        } else {
-          setError('siret', { message })
-        }
+            "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public"
+        )
+        setError('siret', { message: error.message })
       }
       return
     }

@@ -56,6 +56,10 @@ def get_structure_data(search_input: str) -> sirene_serializers.StructureDataBod
         address = offerers_api.find_ban_address_from_insee_address(data.diffusible, data.address)
     except offerers_exceptions.InactiveSirenException:
         raise ApiErrors(errors={"global": ["Ce SIRET n'est pas actif."]})
+    except sirene_exceptions.NonPublicDataException:
+        raise ApiErrors(
+            errors={"global": ["Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public."]}
+        )
 
     logger.info(
         "Searching for structure",
