@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { isError } from '@/apiClient/helpers'
+import { StructureDataBodyModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { MainHeading } from '@/app/App/layout/Layout'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
@@ -13,10 +14,7 @@ import {
   FORM_ERROR_MESSAGE,
   GET_DATA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
-import {
-  GetSiretDataResponse,
-  getSiretData,
-} from '@/commons/core/Venue/getSiretData'
+import { getSiretData } from '@/commons/core/Venue/getSiretData'
 import { humanizeSiret, unhumanizeSiret } from '@/commons/core/Venue/utils'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -33,7 +31,7 @@ import { DEFAULT_OFFERER_FORM_VALUES } from './constants'
 import styles from './Offerer.module.scss'
 import { validationSchema } from './validationSchema'
 
-export interface OffererFormValues {
+interface OffererFormValues {
   siret: string
 }
 
@@ -73,14 +71,14 @@ export const Offerer = (): JSX.Element => {
   const onSubmit = async (formValues: OffererFormValues): Promise<void> => {
     const formattedSiret = unhumanizeSiret(formValues.siret)
 
-    let offererSiretData: GetSiretDataResponse = {}
+    let offererSiretData: StructureDataBodyModel
 
     try {
       offererSiretData = await getSiretData(formattedSiret)
       if (
         !showIsAppUserDialog &&
-        offererSiretData.values?.apeCode &&
-        MAYBE_APP_USER_APE_CODE.includes(offererSiretData.values.apeCode)
+        offererSiretData?.apeCode &&
+        MAYBE_APP_USER_APE_CODE.includes(offererSiretData.apeCode)
       ) {
         setShowIsAppUserDialog(true)
         return
@@ -88,25 +86,17 @@ export const Offerer = (): JSX.Element => {
       if (showIsAppUserDialog) {
         setShowIsAppUserDialog(false)
       }
-      if (!offererSiretData.values) {
+      if (!offererSiretData) {
         notify.error('Une erreur est survenue')
         return
       }
     } catch (error) {
       if (error instanceof Error) {
-        const isGlobalErrorMessage =
+        setShowInvisibleBanner(
           error.message ===
-          'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.'
-
-        const message = isGlobalErrorMessage
-          ? "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public"
-          : "Le SIRET n'existe pas"
-        if (isGlobalErrorMessage) {
-          setShowInvisibleBanner(true)
-          setError('siret', { message })
-        } else {
-          setError('siret', { message })
-        }
+            "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public"
+        )
+        setError('siret', { message: error.message })
       }
       return
     }
@@ -116,20 +106,25 @@ export const Offerer = (): JSX.Element => {
 
       setOfferer({
         ...formValues,
-        name: offererSiretData.values.name,
-        street: offererSiretData.values.address,
-        city: offererSiretData.values.city,
-        latitude: offererSiretData.values.latitude,
-        longitude: offererSiretData.values.longitude,
-        postalCode: offererSiretData.values.postalCode,
-        inseeCode: offererSiretData.values.inseeCode,
-        banId: offererSiretData.values.banId,
+        name: offererSiretData.name ?? '',
+        street: offererSiretData.address?.street ?? '',
+        city: offererSiretData.address?.city ?? '',
+        latitude: offererSiretData.address
+          ? parseFloat(String(offererSiretData.address.latitude))
+          : null,
+        longitude: offererSiretData.address
+          ? parseFloat(String(offererSiretData.address.longitude))
+          : null,
+        postalCode: offererSiretData.address?.postalCode ?? '',
+        inseeCode: offererSiretData.address?.inseeCode ?? null,
+        banId: offererSiretData.address?.banId ?? null,
         hasVenueWithSiret:
           venueOfOffererProvidersResponse.venues.find(
             (venue) => venue.siret === formattedSiret
           ) !== undefined,
-        apeCode: offererSiretData.values.apeCode,
+        apeCode: offererSiretData.apeCode ?? undefined,
         siren: venueOfOffererProvidersResponse.offererSiren,
+        isDiffusible: offererSiretData.isDiffusible,
       })
     } catch (error) {
       notify.error(

@@ -76,10 +76,7 @@ export const VenueSettingsForm = ({
         <FormLayout.Section title="Informations administratives">
           {!venue.isVirtual && (
             <FormLayout.Row>
-              <SiretOrCommentFields
-                initialSiret={watch('siret')}
-                siren={offerer.siren}
-              />
+              <SiretOrCommentFields siren={offerer.siren} />
             </FormLayout.Row>
           )}
 

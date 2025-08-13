@@ -1,5 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 
+import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Address } from '@/commons/core/shared/types'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
@@ -13,14 +14,12 @@ import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
-import { OffererFormValues } from '../Offerer/Offerer'
 import styles from './OffererAuthenticationForm.module.scss'
 
-export interface OffererAuthenticationFormValues
-  extends OffererFormValues,
-    Address {
+export interface OffererAuthenticationFormValues extends Address {
+  siret: string
   name: string
-  publicName: string
+  publicName?: string
   addressAutocomplete: string
   'search-addressAutocomplete': string
   coords?: string
@@ -32,6 +31,7 @@ export const OffererAuthenticationForm = (): JSX.Element => {
   const isPartiallyDiffusableSignupEnabled = useActiveFeature(
     'WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE'
   )
+  const { offerer } = useSignupJourneyContext()
 
   const { watch, setValue, register, getFieldState } =
     useFormContext<OffererAuthenticationFormValues>()
@@ -46,9 +46,10 @@ export const OffererAuthenticationForm = (): JSX.Element => {
     )
   }
 
-  // TODO: change this condition in the right jira story
   const shouldDisplayAddress =
-    !isPartiallyDiffusableSignupEnabled || watch('isOpenToPublic') === 'true'
+    !isPartiallyDiffusableSignupEnabled ||
+    watch('isOpenToPublic') === 'true' ||
+    offerer?.isDiffusible
 
   return (
     <FormLayout.Section>

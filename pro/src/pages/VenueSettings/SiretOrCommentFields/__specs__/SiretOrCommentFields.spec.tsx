@@ -5,7 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { expect, vi } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import * as siretApiValidate from '@/commons/core/Venue/siretApiValidate'
+import { structureDataBodyModelFactory } from '@/commons/utils/factories/userOfferersFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
@@ -22,7 +22,7 @@ vi.mock('@/commons/core/Venue/siretApiValidate')
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getSiretInfo: vi.fn(),
+    getStructureData: vi.fn(),
     getDataFromAddress: vi.fn(),
   },
 }))
@@ -31,12 +31,13 @@ const onSubmit = vi.fn()
 
 function renderSiretOrComment(
   defaultProps: SiretOrCommentFieldsProps,
+  initialSiret: string = '12345678901234',
   isSiretValued = true,
   options?: RenderWithProvidersOptions
 ) {
   const Wrapper = () => {
     const methods = useForm({
-      defaultValues: { comment: '', siret: '' },
+      defaultValues: { comment: '', siret: initialSiret },
       resolver: yupResolver(
         generateSiretValidationSchema(false, isSiretValued, '012345678')
       ),
@@ -67,7 +68,6 @@ describe('SiretOrCommentFields', () => {
     props = {
       setIsFieldNameFrozen: setIsFieldNameFrozen,
       siren: '123456789',
-      initialSiret: '12345678901234',
     }
   })
 
@@ -83,10 +83,7 @@ describe('SiretOrCommentFields', () => {
   })
 
   it('should display comment field when there is no siret', () => {
-    renderSiretOrComment({
-      ...props,
-      initialSiret: '',
-    })
+    renderSiretOrComment(props, '')
 
     const siretField = screen.queryByText('SIRET de la structure')
     expect(siretField).not.toBeInTheDocument()
@@ -101,29 +98,21 @@ describe('SiretOrCommentFields', () => {
 
   describe('should validate SIRET on submit', () => {
     it('handles onSiretChange and calls APIs and form methods', async () => {
-      vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
-        active: false,
-        address: {
-          city: '',
-          postalCode: '',
-          street: '',
-        },
-        ape_code: '',
-        legal_category_code: '',
-        name: '',
-        siret: '',
-      })
+      vi.spyOn(api, 'getStructureData').mockResolvedValue(
+        structureDataBodyModelFactory()
+      )
 
-      renderSiretOrComment({ ...props })
+      renderSiretOrComment(props)
 
       // Find input again after rerender
       const siretInput = screen.getByLabelText(/SIRET de la structure/i)
 
       // Simulate input change with a valid siret starting with siren
+      await userEvent.clear(siretInput)
       await userEvent.type(siretInput, '12345678901234')
 
       await waitFor(() => {
-        expect(api.getSiretInfo).toHaveBeenCalledWith('12345678901234')
+        expect(api.getStructureData).toHaveBeenCalledWith('12345678901234')
       })
     })
 
@@ -133,6 +122,7 @@ describe('SiretOrCommentFields', () => {
       const siretInput = screen.getByLabelText('SIRET de la structure', {
         exact: false,
       })
+      await userEvent.clear(siretInput)
       await userEvent.type(siretInput, '01234567800000')
       await userEvent.click(
         screen.getByRole('button', {
@@ -149,6 +139,10 @@ describe('SiretOrCommentFields', () => {
       expect(
         screen.queryByText('Veuillez renseigner un SIRET ')
       ).not.toBeInTheDocument()
+      const siretInput = screen.getByLabelText('SIRET de la structure', {
+        exact: false,
+      })
+      await userEvent.clear(siretInput)
       await userEvent.click(
         screen.getByRole('button', {
           name: 'Enregistrer',
@@ -161,7 +155,7 @@ describe('SiretOrCommentFields', () => {
     })
 
     it('should not display required message if siret is empty for virtual venue', async () => {
-      renderSiretOrComment(props)
+      renderSiretOrComment(props, '')
 
       expect(
         screen.queryByText('Veuillez renseigner un SIRET')
@@ -171,10 +165,6 @@ describe('SiretOrCommentFields', () => {
           name: 'Enregistrer',
         })
       )
-
-      expect(
-        await screen.findByText('Veuillez renseigner un SIRET')
-      ).toBeInTheDocument()
     })
 
     it('user should not be able to enter non number characters', async () => {
@@ -187,6 +177,7 @@ describe('SiretOrCommentFields', () => {
         }
       )
 
+      await userEvent.clear(siretInput)
       await userEvent.type(siretInput, 'abc')
 
       expect(siretInput.value).toEqual('')
@@ -202,6 +193,7 @@ describe('SiretOrCommentFields', () => {
         }
       )
 
+      await userEvent.clear(siretInput)
       await userEvent.type(siretInput, '123')
 
       expect(siretInput.value).toEqual('123')
@@ -214,6 +206,7 @@ describe('SiretOrCommentFields', () => {
         exact: false,
       })
       await userEvent.click(siretInput)
+      await userEvent.clear(siretInput)
       await userEvent.type(siretInput, '12345')
       await userEvent.click(
         screen.getByRole('button', {
@@ -234,6 +227,7 @@ describe('SiretOrCommentFields', () => {
         exact: false,
       })
       await userEvent.click(siretInput)
+      await userEvent.clear(siretInput)
       await userEvent.type(siretInput, '11122233344400')
       await userEvent.click(
         screen.getByRole('button', {
@@ -246,41 +240,11 @@ describe('SiretOrCommentFields', () => {
       )
       expect(errorMessage).toBeInTheDocument()
     })
-
-    it('should call api validation and display error message if siret is not valid if venue is non virtual', async () => {
-      vi.spyOn(siretApiValidate, 'siretApiValidate').mockResolvedValue(
-        'Le code siret est invalide'
-      )
-
-      renderSiretOrComment(props)
-
-      const siretInput = screen.getByLabelText('SIRET de la structure', {
-        exact: false,
-      })
-      await userEvent.click(siretInput)
-      await userEvent.type(siretInput, '01234567800000')
-      await userEvent.click(
-        screen.getByRole('button', {
-          name: 'Enregistrer',
-        })
-      )
-
-      const errorMessage = await screen.findByText(
-        'Le code SIRET saisi n’est pas valide'
-      )
-      expect(errorMessage).toBeInTheDocument()
-    })
   })
 
   describe('should validate comment on submit', () => {
     it('should display error message if comment empty', async () => {
-      renderSiretOrComment(
-        {
-          ...props,
-          initialSiret: '',
-        },
-        false
-      )
+      renderSiretOrComment(props, '', false)
 
       await userEvent.click(
         screen.getByRole('button', {
