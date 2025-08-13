@@ -1,0 +1,36 @@
+<div class="mt-2 d-flex gap-3 align-items-start">
+  {% if found_product.images.recto %}
+    <img src="{{ found_product.images.recto }}"
+         class="img-thumbnail"
+         style="max-height: 120px"
+         alt="Image du produit">
+  {% endif %}
+  <div>
+    <h5 class="mb-1">{{ found_product.name }}</h5>
+    <p class="mb-1 text-muted">ID : {{ found_product.id }}</p>
+    <p class="mb-1">
+      <strong>Catégorie :</strong> {{ found_product.subcategoryId | format_offer_category }}
+      <br>
+      <strong>Sous-catégorie :</strong> {{ found_product.subcategoryId | format_offer_subcategory }}
+    </p>
+    <p class="mb-0">
+      {% if found_product.extraData.author %}
+        <strong>Auteur :</strong> {{ found_product.extraData.author }}
+        <br>
+      {% endif %}
+      {% if found_product.extraData.editeur %}
+        <strong>Éditeur :</strong> {{ found_product.extraData.editeur }}
+        <br>
+      {% endif %}
+      {% if found_product.extraData.performer %}
+        <strong>Interprète :</strong> {{ found_product.extraData.performer }}
+        <br>
+      {% endif %}
+      {% if found_product.durationMinutes %}
+        <strong>Durée :</strong> {{ found_product.durationMinutes }} minutes
+        <br>
+      {% endif %}
+      {% if found_product.extraData.diffusionVersion %}<strong>Langue :</strong> {{ found_product.extraData.diffusionVersion }}{% endif %}
+    </p>
+  </div>
+</div>

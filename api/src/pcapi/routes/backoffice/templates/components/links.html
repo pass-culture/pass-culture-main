@@ -55,6 +55,11 @@
      target="_blank"
      title="{{ hint }} associées au partenaire culturel">Voir toutes les offres</a>
 {% endmacro %}
+{% macro build_product_details_link(product) %}
+  <a href="{{ url_for('backoffice_web.product.get_product_details', product_id=product.id) }}"
+     class="link-primary"
+     title="Page du produit">{{ product.id }}</a>
+{% endmacro %}
 {% macro build_offer_details_link(offer) %}
   <a href="{{ url_for('backoffice_web.offer.get_offer_details', offer_id=offer.id) }}"
      class="link-primary"
@@ -177,4 +182,14 @@
      rel="noreferrer noopener"
      title="Visualiser le ticket Zendesk de la demande"
      class="link-primary">{{ zendesk_id }} <i class="bi bi-box-arrow-up-right"></i></a>
+{% endmacro %}
+{% macro build_artist_details_link(artist) %}
+  <a href="{{ url_for('backoffice_web.artist.get_artist_details', artist_id=artist.id) }}"
+     class="link-primary"
+     title="Page de l'artiste">{{ artist.id }}</a>
+{% endmacro %}
+{% macro build_artist_name_to_details_link(artist, text_attr="name") %}
+  <a href="{{ url_for('backoffice_web.artist.get_artist_details', artist_id=artist.id) }}"
+     class="link-primary"
+     target="_top">{{ artist[text_attr] }}</a>
 {% endmacro %}
