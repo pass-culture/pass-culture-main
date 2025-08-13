@@ -1,6 +1,7 @@
 import logging
 import sys
 import time
+import typing
 
 import sqlalchemy.exc
 from alembic import context
@@ -64,6 +65,11 @@ def run_online_migrations() -> None:
 
     attempt = 1
     success = False
+
+    def reset_attempt(*args: typing.Any, **kwargs: typing.Any) -> None:
+        nonlocal attempt
+        attempt = 0
+
     while True:
         logger.warning(
             "Running migrations: attempt %d/%d",
@@ -81,6 +87,7 @@ def run_online_migrations() -> None:
                     include_schemas=True,
                     transaction_per_migration=True,
                     compare_server_default=True,
+                    on_version_apply=reset_attempt,
                 )
                 with context.begin_transaction():
                     context.run_migrations()
@@ -103,11 +110,7 @@ def run_online_migrations() -> None:
             time.sleep(settings.DB_MIGRATION_RETRY_DELAY)
 
     if success:
-        logger.warning(
-            "SUCCESS: Migrations were run in %d attempt(s).",
-            attempt,
-            extra={"attempt": attempt, "max_attempts": settings.DB_MIGRATION_MAX_ATTEMPTS},
-        )
+        logger.warning("SUCCESS: Migrations successfully run")
 
 
 def run_offline_migrations() -> None:
