@@ -92,19 +92,11 @@ export const Offerer = (): JSX.Element => {
       }
     } catch (error) {
       if (error instanceof Error) {
-        const isGlobalErrorMessage =
+        setShowInvisibleBanner(
           error.message ===
-          'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.'
-
-        const message = isGlobalErrorMessage
-          ? "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public"
-          : "Le SIRET n'existe pas"
-        if (isGlobalErrorMessage) {
-          setShowInvisibleBanner(true)
-          setError('siret', { message })
-        } else {
-          setError('siret', { message })
-        }
+            "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public"
+        )
+        setError('siret', { message: error.message })
       }
       return
     }
