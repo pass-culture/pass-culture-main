@@ -2,16 +2,23 @@ import type React from 'react'
 import { createContext, useContext, useState } from 'react'
 
 import type { Target } from '@/apiClient/v1'
-import type { Address } from '@/commons/core/shared/types'
+import { Target } from '@/apiClient/v1'
 import type { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
+import { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 import type { OffererFormValues } from '@/components/SignupJourneyForm/Offerer/Offerer'
+import {
+  OffererAuthenticationFormValues
+} from '@/components/SignupJourneyForm/Authentication/OffererAuthenticationForm'
 
 import { DEFAULT_ACTIVITY_VALUES } from './constants'
+import { DEFAULT_ACTIVITY_VALUES } from './constants'
 
-export interface Offerer extends OffererFormValues, Address {
-  name: string
-  publicName?: string
+export interface Offerer
+  extends Omit<
+    OffererAuthenticationFormValues,
+    'addressAutocomplete' | 'search-addressAutocomplete'
+  > {
   createVenueWithoutSiret?: boolean
   hasVenueWithSiret: boolean
   isOpenToPublic?: string
