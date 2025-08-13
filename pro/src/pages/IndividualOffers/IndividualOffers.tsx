@@ -10,10 +10,15 @@ import {
   GET_OFFERS_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
-import { DEFAULT_PAGE } from '@/commons/core/Offers/constants'
+import {
+  DEFAULT_PAGE,
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
+} from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import type { SearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { serializeApiFilters } from '@/commons/core/Offers/utils/serializer'
 import type { Audience } from '@/commons/core/shared/types'
 import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
@@ -32,6 +37,9 @@ import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters
 
 export const IndividualOffers = (): JSX.Element => {
   const isVideoFeatureEnabled = useActiveFeature('WIP_ADD_VIDEO')
+  const isNewOfferCreationFlowFFEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
   const urlSearchFilters = useQuerySearchFilters()
   const { storedFilters } = getStoredFilterConfig('individual')
   const finalSearchFilters = {
@@ -131,7 +139,15 @@ export const IndividualOffers = (): JSX.Element => {
                     <ButtonLink
                       className={styles['banner-cta']}
                       icon={fullNextIcon}
-                      to="/offre/creation"
+                      to={
+                        isNewOfferCreationFlowFFEnabled
+                          ? getIndividualOfferUrl({
+                              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+                              mode: OFFER_WIZARD_MODE.CREATION,
+                              isOnboarding: false,
+                            })
+                          : '/offre/creation'
+                      }
                     >
                       Créer une offre
                     </ButtonLink>
