@@ -86,7 +86,7 @@ class Returns400Test:
         response = client.get(f"{GET_STRUCTURE_DATA_URL}{PARTIALLY_DIFFUSIBLE_SIRET}")
 
         assert response.status_code == 400
-        message = "Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles."
+        message = "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public."
         assert response.json == {"global": [message]}
 
     def test_search_structure_by_invalid_siret(self, client):

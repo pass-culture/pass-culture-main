@@ -43,6 +43,7 @@ export const OffererAuthentication = (): JSX.Element => {
   }, [setOfferer, navigate])
 
   const onSubmit = (formValues: OffererAuthenticationFormValues) => {
+    // Should never happen, so we use assertOrFrontendError to
     assertOrFrontendError(offerer, 'offerer is null')
     setOfferer({
       ...formValues,

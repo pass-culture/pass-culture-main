@@ -2,7 +2,7 @@ import type {
   GetOffererResponseModel,
   VenueTypeResponseModel,
 } from '@/apiClient/v1'
-import { SelectOption } from '@/commons/custom_types/form'
+import type { SelectOption } from '@/commons/custom_types/form'
 import { Card } from '@/components/Card/Card'
 import { SoftDeletedOffererWarning } from '@/components/SoftDeletedOffererWarning/SoftDeletedOffererWarning'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'

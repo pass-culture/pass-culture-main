@@ -145,8 +145,10 @@ describe('Offerer', () => {
       new ApiError(
         {} as ApiRequestOptions,
         {
-          status: 422,
-          body: [{ error: ['No SIRET'] }],
+          status: 400,
+          body: {
+            global: ["Le SIRET n'existe pas"],
+          },
         } as ApiResult,
         ''
       )
@@ -284,7 +286,7 @@ describe('Offerer', () => {
           status: 400,
           body: {
             global: [
-              'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.',
+              "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public",
             ],
           },
         } as ApiResult,
@@ -405,8 +407,10 @@ describe('Offerer', () => {
       new ApiError(
         {} as ApiRequestOptions,
         {
-          status: 422,
-          body: [{ error: ['No SIRET'] }],
+          status: 400,
+          body: {
+            global: ["Le SIRET n'existe pas"],
+          },
         } as ApiResult,
         ''
       )
@@ -430,7 +434,7 @@ describe('Offerer', () => {
           status: 400,
           body: {
             global: [
-              'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.',
+              "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public",
             ],
           },
         } as ApiResult,
