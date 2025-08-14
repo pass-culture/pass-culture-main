@@ -124,6 +124,7 @@ export const OfferLocation = ({
         checkedOption={offerLocation}
         onChange={onChangeOfferLocation}
         disabled={readOnlyFields.includes('offerLocation')}
+        required
       />
       {showOtherAddress && (
         <div className={styles['other-address-wrapper']}>
@@ -164,11 +165,9 @@ export const OfferLocation = ({
               onClick={toggleManuallySetAddress}
               disabled={readOnlyFields.includes('manuallySetAddress')}
             >
-              {manuallySetAddress ? (
-                <>Revenir à la sélection automatique</>
-              ) : (
-                <>Vous ne trouvez pas votre adresse ?</>
-              )}
+              {manuallySetAddress
+                ? 'Revenir à la sélection automatique'
+                : 'Vous ne trouvez pas votre adresse ?'}
             </Button>
           </FormLayout.Row>
           {manuallySetAddress && (
