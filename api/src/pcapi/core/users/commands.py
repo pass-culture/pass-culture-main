@@ -1,18 +1,26 @@
+import datetime
 import logging
 
 import click
 
+import pcapi.connectors.big_query.queries as big_query_queries
 import pcapi.core.chronicles.api as chronicles_api
 import pcapi.core.users.api as users_api
 import pcapi.core.users.constants as users_constants
-import pcapi.scheduled_tasks.decorators as cron_decorators
+import pcapi.core.users.repository as users_repository
+import pcapi.utils.cron as cron_decorators
 from pcapi import settings
 from pcapi.connectors.dms.utils import import_ds_applications
+from pcapi.core.external.automations import pro_user as pro_user_automations
+from pcapi.core.external.automations import user as user_automations
+from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.mails.transactional.users import online_event_reminder
 from pcapi.core.users import ds as users_ds
 from pcapi.core.users import gdpr_api
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.notifications import push
+from pcapi.notifications.push import transactional_notifications
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -30,6 +38,75 @@ def notify_users_before_deletion_of_suspended_account() -> None:
 @cron_decorators.log_cron_with_transaction
 def notify_users_before_online_event() -> None:
     online_event_reminder.send_online_event_event_reminder()
+
+
+@blueprint.cli.command("notify_newly_eligible_age_18_users")
+@cron_decorators.log_cron_with_transaction
+def notify_newly_eligible_users() -> None:
+    if not settings.NOTIFY_NEWLY_ELIGIBLE_USERS:
+        return
+
+    # TODO: (tconte-pass, 2025-02-20) https://passculture.atlassian.net/browse/PC-34732
+    # Make `get_users_that_had_birthday_since` return a query
+    # and join here necessary tables to compute remaining credit later.
+    yesterday = datetime.date.today() - datetime.timedelta(days=1)
+    for user in users_repository.get_users_that_had_birthday_since(yesterday, age=17):
+        transactional_mails.send_birthday_age_17_email_to_newly_eligible_user(user)
+    for user in users_repository.get_users_that_had_birthday_since(yesterday, age=18):
+        transactional_mails.send_birthday_age_18_email_to_newly_eligible_user_v3(user)
+
+
+@blueprint.cli.command("users_ex_beneficiary_automation")
+@cron_decorators.log_cron_with_transaction
+def users_ex_beneficiary_automation() -> None:
+    """Includes all young users whose credit is expired in "jeunes-ex-benefs" list.
+    This command is meant to be called every day."""
+    user_automations.users_ex_beneficiary_automation()
+
+
+@blueprint.cli.command("users_one_year_with_pass_automation")
+@cron_decorators.log_cron_with_transaction
+def users_one_year_with_pass_automation() -> None:
+    """Includes young users who created their PassCulture account in the same month
+    (from first to last day) one year earlier in "jeunes-un-an-sur-le-pass" list.
+            This command is meant to be called every month."""
+    user_automations.users_one_year_with_pass_automation()
+
+
+@blueprint.cli.command("users_whose_credit_expired_today_automation")
+@cron_decorators.log_cron_with_transaction
+def users_whose_credit_expired_today_automation() -> None:
+    """Updates external attributes for young users whose credit just expired.
+    This command is meant to be called every day."""
+    user_automations.users_whose_credit_expired_today_automation()
+
+
+@blueprint.cli.command("pro_no_active_offers_since_40_days_automation")
+@cron_decorators.log_cron_with_transaction
+def pro_no_active_offers_since_40_days_automation() -> None:
+    """Updates the list of pros whose offers are inactive since exactly 40 days ago ("pros-pas-offre-active-40-j" list).
+    This command is meant to be called every day."""
+    pro_user_automations.pro_no_active_offers_since_40_days_automation()
+
+
+@blueprint.cli.command("pro_no_bookings_since_40_days_automation")
+@cron_decorators.log_cron_with_transaction
+def pro_no_bookings_since_40_days_automation() -> None:
+    """Updates the list of pros whose offers haven't been booked since exactly 40 days ago ("pros-pas-de-resa-40-j" list).
+    This command is meant to be called every day."""
+    pro_user_automations.pro_no_bookings_since_40_days_automation()
+
+
+@blueprint.cli.command("pro_marketing_live_show_email_churned_40_days_ago")
+@cron_decorators.log_cron_with_transaction
+def pro_marketing_live_show_email_churned_40_days_ago() -> None:
+    pro_user_automations.update_pro_contacts_list_for_live_show_churned_40_days_ago()
+
+
+@blueprint.cli.command("pro_marketing_live_show_email_last_booking_40_days_ago")
+@cron_decorators.log_cron_with_transaction
+def pro_marketing_live_show_email_last_booking_40_days_ago() -> None:
+    pro_user_automations.update_pro_contacts_list_for_live_show_last_booking_40_days_ago()
 
 
 @blueprint.cli.command("delete_suspended_accounts_after_withdrawal_period")
@@ -89,6 +166,18 @@ def clean_gdpr_extracts() -> None:
     db.session.commit()
 
 
+@blueprint.cli.command("delete_old_trusted_devices")
+@cron_decorators.log_cron_with_transaction
+def delete_old_trusted_devices() -> None:
+    users_api.delete_old_trusted_devices()
+
+
+@blueprint.cli.command("delete_old_login_device_history")
+@cron_decorators.log_cron_with_transaction
+def delete_old_login_device_history() -> None:
+    users_api.delete_old_login_device_history()
+
+
 @blueprint.cli.command("sync_ds_instructor_ids")
 @cron_decorators.log_cron_with_transaction
 def sync_ds_instructor_ids() -> None:
@@ -144,3 +233,35 @@ def sync_ds_deleted_user_account_update_requests() -> None:
     for procedure_id in procedure_ids:
         users_ds.sync_deleted_user_account_update_requests(int(procedure_id))
         db.session.commit()
+
+
+@blueprint.cli.command("send_notification_favorites_not_booked")
+@cron_decorators.log_cron_with_transaction
+def send_notification_favorites_not_booked() -> None:
+    _send_notification_favorites_not_booked()  # useful for tests
+
+
+def _send_notification_favorites_not_booked() -> None:
+    """
+    Find favorites without a booking and send one notification at most
+    per user in order to encourage him to book it.
+
+    To narrow the number of calls to the Batch api, group by offer.
+    """
+    if FeatureToggle.WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED.is_active():
+        return
+
+    max_length = settings.BATCH_MAX_USERS_PER_TRANSACTIONAL_NOTIFICATION
+    rows = big_query_queries.FavoritesNotBooked().execute(max_length)
+
+    for row in rows:
+        try:
+            notification_data = transactional_notifications.get_favorites_not_booked_notification_data(
+                row.offer_id, row.offer_name, row.user_ids
+            )
+
+            if notification_data:
+                push.send_transactional_notification(notification_data)
+        except Exception:
+            log_extra = {"offer": row.offer_id, "users": row.user_ids, "count": len(row.user_ids)}
+            logger.error("Favorites not booked: failed to send notification", extra=log_extra)

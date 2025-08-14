@@ -1,6 +1,6 @@
 import logging
 
-import pcapi.scheduled_tasks.decorators as cron_decorators
+import pcapi.utils.cron as cron_decorators
 from pcapi.core.permissions import models as perm_models
 from pcapi.db_utils import install_database_extensions
 from pcapi.models import db

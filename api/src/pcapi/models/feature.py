@@ -107,7 +107,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_BOOST_API_INTEGRATION = "Active la réservation de places de cinéma via l'API Boost"
     ENABLE_EMS_INTEGRATION = "Active la synchronisation de stocks et la réservation via EMS"
     ENABLE_CGR_INTEGRATION = "Active la synchonisation de stocks et la réservation via CGR"
-    ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC = "Activer le passage automatique des synchronisations Allociné à EMS"
     LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC = "Stocker dans Google Drive les cinémas EMS activables"
     ENABLE_PRO_FEEDBACK = "Activer l'envoi des commentaires du portail pro vers Harvestr"
     ENABLE_MOVIE_FESTIVAL_RATE = "Activer les tarifs spéciaux pour un festival cinéma"
@@ -205,7 +204,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_OFFERS_AUTO_CLEANUP,
     FeatureToggle.ENABLE_PHONE_VALIDATION,
     FeatureToggle.ENABLE_PRO_FEEDBACK,
-    FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
     FeatureToggle.ENABLE_VIRUSTOTAL,
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,

@@ -1,23 +1,11 @@
 import logging
-from csv import DictWriter
-from datetime import datetime
-from pathlib import Path
-from typing import TYPE_CHECKING
 from typing import Type
 
-import sqlalchemy as sa
-import sqlalchemy.orm as sa_orm
 from urllib3 import exceptions as urllib3_exceptions
 
 import pcapi.connectors.ems as ems_connectors
-from pcapi import settings
-from pcapi.connectors.googledrive import get_backend
-from pcapi.core.history import api as history_api
-from pcapi.core.history import models as history_models
-from pcapi.core.offerers.models import Venue
 from pcapi.core.providers import models as provider_models
 from pcapi.core.providers import repository as providers_repository
-from pcapi.core.providers.api import update_venue_synchronized_offers_active_status_job
 from pcapi.local_providers.allocine.allocine_stocks import AllocineStocks
 from pcapi.local_providers.cinema_providers.boost.boost_stocks import BoostStocks
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
@@ -25,16 +13,11 @@ from pcapi.local_providers.cinema_providers.cgr.cgr_stocks import CGRStocks
 from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
-from pcapi.scheduled_tasks.logger import CronStatus
-from pcapi.scheduled_tasks.logger import build_cron_log_message
-from pcapi.utils import repository
+from pcapi.utils import cron
 from pcapi.utils import requests
 from pcapi.utils.repository import transaction
 
 
-if TYPE_CHECKING:
-    from pcapi.connectors.serialization.ems_serializers import Site
 logger = logging.getLogger(__name__)
 
 _NAME_TO_LOCAL_PROVIDER_CLASS: dict[str, Type[LocalProvider]] = {
@@ -52,7 +35,7 @@ def synchronize_data_for_provider(provider_name: str, limit: int | None = None) 
         provider.updateObjects(limit)
         provider.postTreatment()
     except Exception:
-        logger.exception(build_cron_log_message(name=provider_name, status=CronStatus.FAILED))
+        logger.exception(cron.build_cron_log_message(name=provider_name, status=cron.CronStatus.FAILED))
 
 
 def synchronize_venue_providers(venue_providers: list[provider_models.VenueProvider], limit: int | None = None) -> None:
@@ -149,186 +132,3 @@ def synchronize_ems_venue_provider(
         ems_stocks.synchronize()
         providers_repository.bump_ems_sync_version(new_version, [venue_provider.id])
         db.session.commit()
-
-
-def collect_elligible_venues_and_activate_ems_sync() -> None:
-    """
-    Switch Allocine synchronization to EMS synchronization
-
-    Also write into a file all cinemas available for synchronization
-    that don't have one yet.
-    """
-    should_log_available_cinemas_for_sync = FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC.is_active()
-
-    with transaction():
-        connector = ems_connectors.EMSSitesConnector()
-
-        venues_successfully_activated: set[str] = set()
-
-        venue_providers_to_activate: list[dict] = []
-        pivot_to_create: list[dict] = []
-        venue_providers_to_deactivate: list[dict] = []
-        allocine_pivot_to_delete: list[int] = []
-
-        ems_provider_id = providers_repository.get_provider_by_local_class("EMSStocks").id
-        available_sites_by_allocine_id: dict[str, Site] = {}
-        available_sites_by_cinema_id: dict[str, Site] = {}
-
-        for site in connector.get_available_sites():
-            available_sites_by_allocine_id[site.allocine_id] = site
-            available_sites_by_cinema_id[site.id] = site
-
-        allocine_venue_provider_aliased = sa_orm.aliased(provider_models.AllocineVenueProvider, flat=True)
-
-        venues_to_activate = (
-            db.session.query(Venue)
-            .join(Venue.venueProviders)
-            .join(
-                allocine_venue_provider_aliased,
-                sa.and_(
-                    allocine_venue_provider_aliased.id == provider_models.VenueProvider.id,
-                    allocine_venue_provider_aliased.internalId.in_(available_sites_by_allocine_id),
-                ),
-            )
-            .outerjoin(Venue.allocinePivot)
-            .options(sa_orm.joinedload(Venue.venueProviders.of_type(provider_models.AllocineVenueProvider)))
-            .options(sa_orm.joinedload(Venue.allocinePivot))
-            .all()
-        )
-
-        cinemas_aldready_activated = {
-            cinema_id
-            for (cinema_id,) in (
-                db.session.query(provider_models.CinemaProviderPivot)
-                .join(
-                    provider_models.EMSCinemaDetails,
-                    provider_models.CinemaProviderPivot.id == provider_models.EMSCinemaDetails.cinemaProviderPivotId,
-                )
-                .with_entities(provider_models.CinemaProviderPivot.idAtProvider)
-                .all()
-            )
-        }
-
-        for venue_to_activate in venues_to_activate:
-            allocine_venue_provider = venue_to_activate.venueProviders[0]
-            available_venue = available_sites_by_allocine_id[allocine_venue_provider.internalId]
-            venue_providers_to_deactivate.append(
-                {
-                    "id": allocine_venue_provider.id,
-                    "venue_id": allocine_venue_provider.venueId,
-                    "provider_id": allocine_venue_provider.providerId,
-                    "is_active": False,
-                }
-            )
-            logger.info(
-                "Deactivating Allocine sync for a venue",
-                extra={
-                    "venue_id": venue_to_activate.id,
-                    "venue_siret": venue_to_activate.siret,
-                    "venue_name": venue_to_activate.name,
-                    "venue_provider_id": allocine_venue_provider.id,
-                },
-            )
-            history_api.add_action(
-                history_models.ActionType.LINK_VENUE_PROVIDER_DELETED,
-                author=None,
-                venue=venue_to_activate,
-                provider_id=allocine_venue_provider.providerId,
-                provider_name="Allociné",
-            )
-
-            venue_providers_to_activate.append(
-                {
-                    "venueId": venue_to_activate.id,
-                    "providerId": ems_provider_id,
-                    "venueIdAtOfferProvider": available_venue.id,
-                }
-            )
-            logger.info(
-                "Creating EMS sync for a venue",
-                extra={
-                    "venue_id": venue_to_activate.id,
-                    "venue_siret": venue_to_activate.siret,
-                    "venue_name": venue_to_activate.name,
-                },
-            )
-
-            pivot = {
-                "venueId": venue_to_activate.id,
-                "providerId": ems_provider_id,
-                "idAtProvider": available_venue.id,
-            }
-            pivot_to_create.append(pivot)
-
-            allocine_pivot_to_delete.extend([allocine_pivot.id for allocine_pivot in venue_to_activate.allocinePivot])
-
-            venues_successfully_activated.add(allocine_venue_provider.internalId)
-
-        # Removing no longer up to date allocine sync
-        # As AllocineVenueProvider inherit from VenueProvider, we need to delete rows in both tables
-        db.session.query(provider_models.AllocineVenueProvider).filter(
-            provider_models.AllocineVenueProvider.id.in_(
-                venue_provider["id"] for venue_provider in venue_providers_to_deactivate
-            )
-        ).delete()
-        db.session.query(provider_models.VenueProvider).filter(
-            provider_models.VenueProvider.id.in_(
-                venue_provider["id"] for venue_provider in venue_providers_to_deactivate
-            )
-        ).delete()
-        db.session.query(provider_models.AllocinePivot).filter(
-            provider_models.AllocinePivot.id.in_(allocine_pivot_to_delete)
-        ).delete()
-
-        # Deactivate and deindex offers related to Allocine venue providers
-        for venue_provider in venue_providers_to_deactivate:
-            update_venue_synchronized_offers_active_status_job.delay(
-                venue_provider["venue_id"], venue_provider["provider_id"], False
-            )
-
-        # Then creating EMS sync
-        db.session.bulk_insert_mappings(provider_models.VenueProvider, venue_providers_to_activate)
-
-        # And finally creating pivots and EMSCinemaDetails
-        for mapping in pivot_to_create:
-            pivot = provider_models.CinemaProviderPivot(**mapping)
-            cinema_details = provider_models.EMSCinemaDetails(cinemaProviderPivot=pivot)
-            repository.save(pivot, cinema_details, commit=False)
-
-        if venues_left_to_be_activated := set(available_sites_by_allocine_id).difference(venues_successfully_activated):
-            for allocine_id in venues_left_to_be_activated:
-                venue = available_sites_by_allocine_id[allocine_id]
-                logger.warning(
-                    "Fail to find this venue available for EMS sync",
-                    extra={
-                        "venue_name": venue.name,
-                        "venue_allocine_id": venue.allocine_id,
-                        "venue_siret": venue.siret,
-                    },
-                )
-
-        if should_log_available_cinemas_for_sync:
-            if venues_left_to_be_activated := set(available_sites_by_cinema_id).difference(cinemas_aldready_activated):
-                file_name = f"{datetime.today().date().isoformat()}.csv"
-                path = Path(f"/tmp/{file_name}")
-                with open(path, "w", encoding="utf-8") as f:
-                    header = ["cinema", "siret", "ems_id", "allocine_id", "address", "zip_code", "city"]
-                    writer = DictWriter(f, fieldnames=header)
-                    writer.writeheader()
-
-                    for cinema_id in venues_left_to_be_activated:
-                        cinema = available_sites_by_cinema_id[cinema_id]
-                        row = {
-                            "cinema": cinema.name,
-                            "siret": cinema.siret,
-                            "ems_id": cinema.id,
-                            "allocine_id": cinema.allocine_id,
-                            "address": cinema.address,
-                            "zip_code": cinema.zip_code,
-                            "city": cinema.city,
-                        }
-                        writer.writerow(row)
-
-                gdrive_backend = get_backend()
-                file_id = gdrive_backend.create_file(settings.EMS_GOOGLE_DRIVE_FOLDER, file_name, path)
-                logger.info("Successfully export cinemas available for sync under file %s", file_id)

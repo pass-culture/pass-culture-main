@@ -2,9 +2,11 @@ from unittest.mock import patch
 
 import pytest
 
+import pcapi.notifications.push.testing as notifications_testing
 from pcapi import settings
 from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import factories as dms_factories
+from pcapi.core.users import commands as users_commands
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -101,3 +103,52 @@ def test_sync_ds_deleted_user_account_update_requests(mocked_get_applications, a
     assert mocked_get_applications.call_args.kwargs["variables"] == {
         "demarcheNumber": int(settings.DS_USER_ACCOUNT_UPDATE_PROCEDURE_ID)
     }
+
+
+class SendNotificationFavoritesNotBookedTest:
+    @pytest.mark.features(WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED=False)
+    def test_send(self):
+        rows = [
+            {"offer_id": 1, "offer_name": "my offer", "user_ids": [1, 2], "count": 2},
+            {"offer_id": 2, "offer_name": "another offer", "user_ids": [3], "count": 1},
+        ]
+
+        with patch("pcapi.connectors.big_query.TestingBackend.run_query") as mock_run_query:
+            mock_run_query.return_value = rows
+            users_commands._send_notification_favorites_not_booked()
+
+        requests = notifications_testing.requests
+        assert len(requests) == 2
+
+        user_ids = {*requests[0]["user_ids"], *requests[1]["user_ids"]}
+        assert user_ids == {1, 2, 3}
+
+    @pytest.mark.settings(BATCH_MAX_USERS_PER_TRANSACTIONAL_NOTIFICATION=2)
+    @pytest.mark.features(WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED=False)
+    def test_send_with_split_because_too_many_users(self):
+        rows = [
+            {"offer_id": 1, "offer_name": "my offer", "user_ids": [1, 2, 3, 4, 5], "count": 5},
+        ]
+
+        with patch("pcapi.connectors.big_query.TestingBackend.run_query") as mock_run_query:
+            mock_run_query.return_value = rows
+            users_commands._send_notification_favorites_not_booked()
+
+        # one request with users 1 and 2
+        # another one with users 3 and 4
+        # and a final one with user 5
+        assert len(notifications_testing.requests) == 3
+
+    @pytest.mark.features(WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED=True)
+    def test_send_with_FF(self):
+        rows = [
+            {"offer_id": 1, "offer_name": "my offer", "user_ids": [1, 2], "count": 2},
+            {"offer_id": 2, "offer_name": "another offer", "user_ids": [3], "count": 1},
+        ]
+
+        with patch("pcapi.connectors.big_query.TestingBackend.run_query") as mock_run_query:
+            mock_run_query.return_value = rows
+            users_commands._send_notification_favorites_not_booked()
+
+        requests = notifications_testing.requests
+        assert len(requests) == 0

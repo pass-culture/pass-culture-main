@@ -14,7 +14,7 @@ import sqlalchemy.dialects.postgresql as sa_postgresql
 import sqlalchemy.engine as sa_engine
 import sqlalchemy.types as sa_types
 
-import pcapi.scheduled_tasks.decorators as cron_decorators
+import pcapi.utils.cron as cron_decorators
 from pcapi import settings
 from pcapi.connectors import googledrive
 from pcapi.core.logging import log_elapsed

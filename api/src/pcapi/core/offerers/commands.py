@@ -5,15 +5,17 @@ import click
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
+import pcapi.utils.cron as cron_decorators
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
 from pcapi.connectors.entreprise import sirene
+from pcapi.core.external.automations import venue as venue_automations
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import synchronize_venues_banners_with_google_places as banner_url_synchronizations
 from pcapi.core.offerers import tasks as offerers_tasks
+from pcapi.core.offerers import update_offerer_stats as offerers_stats
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.blueprint import Blueprint
 
@@ -129,11 +131,29 @@ def delete_user_offerers_on_closed_offerers(dry_run: bool = False) -> None:
         db.session.rollback()
 
 
-@log_cron_with_transaction
+@cron_decorators.log_cron_with_transaction
 @blueprint.cli.command("send_reminder_email_to_individual_offerers")
 def send_reminder_email_to_individual_offerers() -> None:
     # This command is called from a cron running every day.
     offerers_api.send_reminder_email_to_individual_offerers()
+
+
+@blueprint.cli.command("pro_inactive_venues_automation")
+@cron_decorators.log_cron_with_transaction
+def pro_inactive_venues_automation() -> None:
+    """Updates the list of venues which are inactive since 90 days or more ("pros-inactivité-90j" list).
+    This command is meant to be called every day."""
+    venue_automations.pro_inactive_venues_automation()
+
+
+@blueprint.cli.command("update_offerer_stats")
+@cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_CRON_TO_UPDATE_OFFERER_STATS)
+def update_offerer_stats() -> None:
+    """Updated the offrer stats in the database from big query"""
+    offerers_stats.update_offerer_daily_views_stats()
+    offerers_stats.update_offerer_top_views_stats()
+    offerers_stats.delete_offerer_old_stats()
 
 
 @blueprint.cli.command("synchronize_venues_banners_with_google_places")
