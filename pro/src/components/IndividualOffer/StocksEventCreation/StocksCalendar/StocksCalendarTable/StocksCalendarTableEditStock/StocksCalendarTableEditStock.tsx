@@ -24,6 +24,7 @@ import {
   serializeStockFormValuesForUpdate,
 } from './serializers'
 import { validationSchema } from './validationSchema'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 
 export type EditStockFormValues = {
   date: string
@@ -46,6 +47,8 @@ export function StocksCalendarTableEditStock({
   priceCategories,
   onUpdateStock,
 }: StocksCalendarTableEditStockProps) {
+  const isCaledonian = useIsCaledonian()
+
   const form = useForm<EditStockFormValues>({
     defaultValues: getStockFormDefaultValues(stock, departmentCode),
     resolver: yupResolver(validationSchema),
@@ -109,7 +112,7 @@ export function StocksCalendarTableEditStock({
             <Select
               label="Tarif"
               {...form.register('priceCategory')}
-              options={getPriceCategoryOptions(priceCategories)}
+              options={getPriceCategoryOptions(priceCategories, isCaledonian)}
               required
               className={styles['price-category']}
             />

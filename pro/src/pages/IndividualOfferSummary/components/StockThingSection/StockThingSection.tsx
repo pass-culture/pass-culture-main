@@ -7,6 +7,11 @@ import {
 } from '@/commons/utils/date'
 import { formatPrice } from '@/commons/utils/formatPrice'
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
+import {
+  convertEuroToPacificFranc,
+  formatPacificFranc,
+} from '@/commons/utils/convertEuroToPacificFranc'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 
 interface StockThingSectionProps {
   stock?: GetOfferStockResponseModel
@@ -19,12 +24,19 @@ export const StockThingSection = ({
   canBeDuo,
   isDuo,
 }: StockThingSectionProps) => {
+  const isCaledonian = useIsCaledonian()
+
   if (!stock) {
     return null
   }
 
   const descriptions = []
-  descriptions.push({ title: 'Prix', text: formatPrice(stock.price) })
+  descriptions.push({
+    title: 'Prix',
+    text: isCaledonian
+      ? formatPacificFranc(convertEuroToPacificFranc(stock.price))
+      : formatPrice(stock.price),
+  })
   if (stock.bookingLimitDatetime) {
     descriptions.push({
       title: 'Date limite de réservation',

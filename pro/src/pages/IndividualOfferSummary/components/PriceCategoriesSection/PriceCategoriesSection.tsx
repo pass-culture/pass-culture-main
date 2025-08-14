@@ -12,6 +12,11 @@ import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescri
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 
 import styles from './PriceCategoriesSection.module.scss'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
+import {
+  convertEuroToPacificFranc,
+  formatPacificFranc,
+} from '@/commons/utils/convertEuroToPacificFranc'
 
 interface Props {
   offer: GetIndividualOfferResponseModel
@@ -22,6 +27,8 @@ export const PriceCategoriesSection = ({ offer, canBeDuo }: Props) => {
   const mode = useOfferWizardMode()
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
+
+  const isCaledonian = useIsCaledonian()
 
   const editLink = getIndividualOfferUrl({
     offerId: offer.id,
@@ -39,7 +46,10 @@ export const PriceCategoriesSection = ({ offer, canBeDuo }: Props) => {
     >
       {offer.priceCategories?.map((priceCategory) => (
         <div key={priceCategory.id} className={styles['price-category']}>
-          {formatPrice(priceCategory.price)} - {priceCategory.label}
+          {isCaledonian
+            ? formatPacificFranc(convertEuroToPacificFranc(priceCategory.price))
+            : formatPrice(priceCategory.price)}{' '}
+          - {priceCategory.label}
         </div>
       ))}
       {canBeDuo && (

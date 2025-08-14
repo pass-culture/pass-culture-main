@@ -9,7 +9,7 @@ import {
   PRICE_CATEGORY_PRICE_MAX,
 } from '../constants'
 import type { PriceCategoriesFormValues } from '../types'
-import { validationSchema } from '../validationSchema'
+import { getValidationSchema } from '../validationSchema'
 
 describe('validationSchema', () => {
   const cases: {
@@ -100,7 +100,7 @@ describe('validationSchema', () => {
   cases.forEach(({ description, formValues, expectedErrors }) => {
     it(`should validate the form for case: ${description}`, async () => {
       const errors = await getYupValidationSchemaErrors(
-        validationSchema,
+        getValidationSchema(),
         formValues
       )
       expect(errors).toEqual(expectedErrors)

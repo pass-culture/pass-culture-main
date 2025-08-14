@@ -49,6 +49,11 @@ import type { StockThingFormValues } from './types'
 import { buildInitialValues } from './utils/buildInitialValues'
 import { getFormReadOnlyFields } from './utils/getFormReadOnlyFields'
 import { getValidationSchema } from './validationSchema'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
+import {
+  convertEuroToPacificFranc,
+  convertPacificFrancToEuro,
+} from '@/commons/utils/convertEuroToPacificFranc'
 
 export interface StocksThingProps {
   offer: GetIndividualOfferWithAddressResponseModel
@@ -65,6 +70,8 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const { mutate } = useSWRConfig()
   const { logEvent } = useAnalytics()
   const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
+
+  const isCaledonian = useIsCaledonian()
 
   const activationCodeButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -105,6 +112,10 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   )?.canBeDuo
 
   const onSubmit = async (values: StockThingFormValues): Promise<void> => {
+    if (isCaledonian && values.price) {
+      values.price = convertPacificFrancToEuro(Number(values.price))
+    }
+
     const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
       step:
@@ -156,7 +167,9 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const stockId = stocks.length > 0 ? stocks[0].id : undefined
 
   const hookForm = useForm({
-    resolver: yupResolver(getValidationSchema(mode, bookingsQuantity, stockId)),
+    resolver: yupResolver(
+      getValidationSchema(mode, bookingsQuantity, stockId, isCaledonian)
+    ),
     defaultValues: buildInitialValues(offer, stocks),
     mode: 'onBlur',
   })
@@ -354,6 +367,10 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     ? new Date(maxDateTimeYear, maxDateTimeMonth, maxDateTimeDay)
     : undefined
 
+  const [isPriceTouched, setIsPriceTouched] = useState(false)
+
+  const euroPrice = getValues('price')
+
   return (
     <>
       <DialogStockThingDeleteConfirm
@@ -386,17 +403,30 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
             />
             <div className={styles['row']}>
               <TextInput
-                {...register('price')}
+                name="price"
                 error={errors.price?.message}
                 required
-                label="Prix"
+                label={'Prix'}
                 disabled={readOnlyFields.includes('price')}
                 type="number"
                 data-testid="input-price"
-                rightIcon={strokeEuroIcon}
+                rightIcon={isCaledonian ? '' : strokeEuroIcon}
                 step="0.01"
                 min={0}
                 className={styles['field-layout-xsmall']}
+                value={
+                  isCaledonian
+                    ? isPriceTouched
+                      ? (watch('price') ?? '')
+                      : convertEuroToPacificFranc(Number(euroPrice ?? 0)) || ''
+                    : (watch('price') ?? '')
+                }
+                onChange={(e) => {
+                  setIsPriceTouched(true)
+                  setValue('price', Number(e.target.value), {
+                    shouldDirty: true,
+                  })
+                }}
               />
               <DatePicker
                 {...register('bookingLimitDatetime')}
