@@ -33,9 +33,10 @@ export const MediaSection = ({
         mode: OFFER_WIZARD_MODE.EDITION,
       })}
       aria-label="Modifier les détails de l’offre"
+      shouldShowDivider
     >
       {!shouldImageBeHidden && (
-        <SummarySubSection title="Ajoutez une image">
+        <SummarySubSection title="Ajoutez une image" shouldShowDivider={false}>
           {imageUrl ? (
             <SafeImage
               className={styles['image-preview']}
@@ -49,7 +50,7 @@ export const MediaSection = ({
           )}
         </SummarySubSection>
       )}
-      <SummarySubSection title="Ajoutez une vidéo">
+      <SummarySubSection title="Ajoutez une vidéo" shouldShowDivider={false}>
         <SummaryDescriptionList
           descriptions={[
             {

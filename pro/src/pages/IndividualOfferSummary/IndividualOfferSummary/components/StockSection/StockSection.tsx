@@ -100,6 +100,7 @@ export const StockSection = ({
       title={offer.isEvent ? 'Dates et capacités' : 'Stocks et prix'}
       editLink={editLink}
       aria-label="Modifier les stocks et prix"
+      shouldShowDivider
     >
       {stockWarningText && (
         <SummaryDescriptionList

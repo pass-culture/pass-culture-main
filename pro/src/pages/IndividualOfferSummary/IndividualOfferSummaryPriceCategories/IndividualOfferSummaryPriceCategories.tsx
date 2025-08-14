@@ -21,7 +21,11 @@ const IndividualOfferSummaryPriceCategories = (): JSX.Element | null => {
 
   return (
     <IndividualOfferLayout title="Récapitulatif" offer={offer} mode={mode}>
-      <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
+      <PriceCategoriesSection
+        offer={offer}
+        canBeDuo={canBeDuo}
+        shouldShowDivider={false}
+      />
     </IndividualOfferLayout>
   )
 }

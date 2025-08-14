@@ -27,6 +27,10 @@
     margin-top: rem.torem(8px);
     margin-bottom: rem.torem(40px);
 
+    &-with-divider {
+      margin: 0;
+    }
+
     &-header {
       display: flex;
       flex-direction: row;

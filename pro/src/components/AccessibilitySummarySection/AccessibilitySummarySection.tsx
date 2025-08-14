@@ -20,7 +20,7 @@ interface AccessibilitySummarySectionProps {
   accessibleItem: AccessibleItem
   accessibleWording: string
   callout?: ReactNode
-  shouldShowDivider?: boolean
+  shouldShowDivider: boolean
   isSubSubSection?: boolean
 }
 
@@ -28,7 +28,7 @@ export const AccessibilitySummarySection = ({
   accessibleItem,
   accessibleWording,
   callout,
-  shouldShowDivider = true,
+  shouldShowDivider,
   isSubSubSection = false,
 }: AccessibilitySummarySectionProps) => {
   const {
@@ -45,7 +45,7 @@ export const AccessibilitySummarySection = ({
 
   const sectionContent = (
     <>
-      {callout && <div className={styles['callout']}>{callout}</div>}
+      {callout && <div className={styles.callout}>{callout}</div>}
       <SummaryDescriptionList
         descriptions={[
           { text: !isAccessible ? 'Non accessible' : accessibleWording },
