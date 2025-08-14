@@ -937,10 +937,10 @@
   resolved "https://registry.yarnpkg.com/@esbuild/win32-x64/-/win32-x64-0.25.4.tgz#0b17ec8a70b2385827d52314c1253160a0b9bacc"
   integrity sha512-nOT2vZNw6hJ+z43oP1SPea/G/6AbN6X+bGNhNuq8NtRHy4wsMhw765IKLNmnjek7GvjWBYQ8Q5VBoYTFg9y1UQ==
 
-"@eslint/compat@^1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@eslint/compat/-/compat-1.3.1.tgz#19f62ee48896d38f8eab591bee2a25dd69abc273"
-  integrity sha512-k8MHony59I5EPic6EQTCNOuPoVBnoYXkP+20xvwFjN7t0qI3ImyvyBgg+hIVPwC8JaxVjjUZld+cLfBLFDLucg==
+"@eslint/compat@^1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@eslint/compat/-/compat-1.3.2.tgz#1a8766e447fad3d091b1a88b9f78f867832285b7"
+  integrity sha512-jRNwzTbd6p2Rw4sZ1CgWRS8YMtqG15YyZf7zvb6gY2rB2u6n+2Z+ELW0GtL0fQgyl0pr4Y/BzBfng/BdsereRA==
 
 "@firebase/analytics@^0.10.18":
   version "0.10.18"
