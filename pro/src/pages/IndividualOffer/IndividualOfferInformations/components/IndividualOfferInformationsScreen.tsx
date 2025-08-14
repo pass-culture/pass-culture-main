@@ -38,6 +38,7 @@ import { serializePatchOffer } from '@/pages/IndividualOffer/IndividualOfferInfo
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
 
+import { ActionBarEdition } from '../../components/ActionBarEdition/ActionBarEdition'
 import type { UsefulInformationFormValues } from '../commons/types'
 import { getInitialValuesFromOffer } from '../commons/utils'
 import { getValidationSchema } from '../commons/validationSchema'
@@ -198,7 +199,10 @@ export const IndividualOfferInformationsScreen = ({
       navigate(
         getIndividualOfferUrl({
           offerId: receivedOfferId,
-          step: nextStep,
+          step:
+            mode === OFFER_WIZARD_MODE.CREATION
+              ? nextStep
+              : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode:
             mode === OFFER_WIZARD_MODE.EDITION
               ? OFFER_WIZARD_MODE.READ_ONLY
@@ -249,7 +253,7 @@ export const IndividualOfferInformationsScreen = ({
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })
@@ -307,17 +311,21 @@ export const IndividualOfferInformationsScreen = ({
               publishedOfferWithSameEAN={publishedOfferWithSameEAN}
             />
           </FormLayout>
-          <ActionBar
-            onClickPrevious={handlePreviousStepOrBackToReadOnly}
-            step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS}
-            isDisabled={
-              form.formState.isSubmitting ||
-              isOfferDisabled(offer.status) ||
-              Boolean(publishedOfferWithSameEAN)
-            }
-            dirtyForm={form.formState.isDirty}
-            saveEditionChangesButtonRef={saveEditionChangesButtonRef}
-          />
+          {mode === OFFER_WIZARD_MODE.EDITION ? (
+            <ActionBarEdition onCancel={handlePreviousStepOrBackToReadOnly} />
+          ) : (
+            <ActionBar
+              onClickPrevious={handlePreviousStepOrBackToReadOnly}
+              step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS}
+              isDisabled={
+                form.formState.isSubmitting ||
+                isOfferDisabled(offer.status) ||
+                Boolean(publishedOfferWithSameEAN)
+              }
+              dirtyForm={form.formState.isDirty}
+              saveEditionChangesButtonRef={saveEditionChangesButtonRef}
+            />
+          )}
         </form>
       </FormProvider>
 

@@ -33,6 +33,7 @@ import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import strokeEuroIcon from '@/icons/stroke-euro.svg'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
+import { ActionBarEdition } from '@/pages/IndividualOffer/components/ActionBarEdition/ActionBarEdition'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { PriceInput } from '@/ui-kit/form/PriceInput/PriceInput'
@@ -160,7 +161,7 @@ export const PriceCategoriesScreen = ({
       offerId: offer.id,
       step:
         mode === OFFER_WIZARD_MODE.EDITION
-          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
+          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY
           : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
       mode:
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
@@ -210,7 +211,7 @@ export const PriceCategoriesScreen = ({
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })
@@ -439,13 +440,17 @@ export const PriceCategoriesScreen = ({
           )}
         </>
 
-        <ActionBar
-          onClickPrevious={handlePreviousStepOrBackToReadOnly}
-          step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS}
-          isDisabled={isSubmitting}
-          dirtyForm={isDirty}
-          isEvent={offer.isEvent}
-        />
+        {mode === OFFER_WIZARD_MODE.EDITION ? (
+          <ActionBarEdition onCancel={handlePreviousStepOrBackToReadOnly} />
+        ) : (
+          <ActionBar
+            onClickPrevious={handlePreviousStepOrBackToReadOnly}
+            step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS}
+            isDisabled={isSubmitting}
+            dirtyForm={isDirty}
+            isEvent={offer.isEvent}
+          />
+        )}
       </form>
 
       <RouteLeavingGuardIndividualOffer when={isDirty && !isSubmitting} />

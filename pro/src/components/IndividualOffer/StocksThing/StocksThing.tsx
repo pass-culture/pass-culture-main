@@ -34,6 +34,7 @@ import fullCodeIcon from '@/icons/full-code.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import strokeEuroIcon from '@/icons/stroke-euro.svg'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
+import { ActionBarEdition } from '@/pages/IndividualOffer/components/ActionBarEdition/ActionBarEdition'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
@@ -107,10 +108,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const onSubmit = async (values: StockThingFormValues): Promise<void> => {
     const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
-      step:
-        mode === OFFER_WIZARD_MODE.EDITION
-          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
-          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
+      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
       mode:
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
       isOnboarding,
@@ -179,7 +177,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })
@@ -502,15 +500,19 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
             </FormLayout.Section>
           </FormLayout>
         )}
-        <ActionBar
-          onClickPrevious={handlePreviousStepOrBackToReadOnly}
-          step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS}
-          isDisabled={
-            isSubmitting || isDisabled || Boolean(publishedOfferWithSameEAN)
-          }
-          dirtyForm={isDirty}
-          isEvent={false}
-        />
+        {mode === OFFER_WIZARD_MODE.EDITION ? (
+          <ActionBarEdition onCancel={handlePreviousStepOrBackToReadOnly} />
+        ) : (
+          <ActionBar
+            onClickPrevious={handlePreviousStepOrBackToReadOnly}
+            step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS}
+            isDisabled={
+              isSubmitting || isDisabled || Boolean(publishedOfferWithSameEAN)
+            }
+            dirtyForm={isDirty}
+            isEvent={false}
+          />
+        )}
       </form>
       <RouteLeavingGuardIndividualOffer when={isDirty && !isSubmitting} />
     </>

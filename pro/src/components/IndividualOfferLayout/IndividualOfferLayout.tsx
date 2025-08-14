@@ -26,6 +26,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './IndividualOfferLayout.module.scss'
 import { IndividualOfferNavigation } from './IndividualOfferNavigation/IndividualOfferNavigation'
+import { IndividualOfferSummaryNavigation } from './IndividualOfferSummaryNavigation/IndividualOfferSummaryNavigation'
 import { OfferPublicationEdition } from './OfferPublicationEdition/OfferPublicationEdition'
 import { OfferStatusBanner } from './OfferStatusBanner/OfferStatusBanner'
 import { Status } from './Status/Status'
@@ -143,7 +144,6 @@ export const IndividualOfferLayout = ({
 
         {offer && (
           <p className={styles['offer-title']}>
-            {offer.name}
             {offer.isHeadlineOffer && (
               <Tag label="Offre à la une" variant={TagVariant.HEADLINE} />
             )}
@@ -197,10 +197,14 @@ export const IndividualOfferLayout = ({
         </div>
       )}
 
-      {withStepper && (
+      {mode !== OFFER_WIZARD_MODE.READ_ONLY && withStepper && (
         <IndividualOfferNavigation
           isUsefulInformationSubmitted={isUsefulInformationSubmitted}
         />
+      )}
+
+      {offer && mode === OFFER_WIZARD_MODE.READ_ONLY && (
+        <IndividualOfferSummaryNavigation offer={offer} />
       )}
 
       <div className={styles['content']}>{children}</div>

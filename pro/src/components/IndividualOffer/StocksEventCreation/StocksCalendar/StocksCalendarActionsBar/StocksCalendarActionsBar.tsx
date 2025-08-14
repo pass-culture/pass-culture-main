@@ -11,6 +11,7 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { pluralize } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
+import { ActionBarEdition } from '@/pages/IndividualOffer/components/ActionBarEdition/ActionBarEdition'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
@@ -45,7 +46,7 @@ export function StocksCalendarActionsBar({
       navigate(
         getIndividualOfferUrl({
           offerId: offerId,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })

@@ -33,6 +33,7 @@ import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/Individua
 import { Divider } from '@/ui-kit/Divider/Divider'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
+import { ActionBarEdition } from '../../components/ActionBarEdition/ActionBarEdition'
 import { buildInitialValues } from '../commons/buildInitialValues'
 import { isYoutubeValid } from '../commons/isYoutubeValid'
 import type { IndividualOfferMediaFormValues } from '../commons/types'
@@ -90,7 +91,7 @@ export const IndividualOfferMediaScreen = ({
       await navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })
@@ -155,7 +156,10 @@ export const IndividualOfferMediaScreen = ({
       await navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: nextStep,
+          step:
+            mode === OFFER_WIZARD_MODE.CREATION
+              ? nextStep
+              : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode:
             mode === OFFER_WIZARD_MODE.EDITION
               ? OFFER_WIZARD_MODE.READ_ONLY
@@ -236,13 +240,17 @@ export const IndividualOfferMediaScreen = ({
             </FormLayout.Row>
           </FormLayout.Section>
         </FormLayout>
-        <ActionBar
-          onClickPrevious={handlePreviousStep}
-          step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA}
-          isDisabled={
-            form.formState.isSubmitting || isOfferDisabled(offer.status)
-          }
-        />
+        {mode === OFFER_WIZARD_MODE.EDITION ? (
+          <ActionBarEdition onCancel={handlePreviousStep} />
+        ) : (
+          <ActionBar
+            onClickPrevious={handlePreviousStep}
+            step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA}
+            isDisabled={
+              form.formState.isSubmitting || isOfferDisabled(offer.status)
+            }
+          />
+        )}
         <RouteLeavingGuardIndividualOffer
           when={isFormDirty && !form.formState.isSubmitting}
         />

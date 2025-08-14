@@ -192,10 +192,7 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
     })
   }
 
-  if (
-    mode === OFFER_WIZARD_MODE.READ_ONLY ||
-    mode === OFFER_WIZARD_MODE.EDITION
-  ) {
+  if (mode === OFFER_WIZARD_MODE.READ_ONLY) {
     steps.push({
       id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.BOOKINGS,
       label: <LabelBooking bookingsCount={offer?.bookingsCount || 0} />,
@@ -223,7 +220,7 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
 
   return (
     <>
-      {mode === OFFER_WIZARD_MODE.CREATION ? (
+      {mode !== OFFER_WIZARD_MODE.READ_ONLY ? (
         <Stepper
           activeStep={activeStep}
           steps={stepList}

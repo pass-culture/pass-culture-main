@@ -45,6 +45,7 @@ import {
 } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { getValidationSchemaForNewOfferCreationFlow } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
 
+import { ActionBarEdition } from '../../components/ActionBarEdition/ActionBarEdition'
 import {
   serializeDetailsPatchData,
   serializeDetailsPostData,
@@ -187,7 +188,10 @@ export const IndividualOfferDetailsScreenNext = ({
       navigate(
         getIndividualOfferUrl({
           offerId,
-          step: nextStep,
+          step:
+            mode === OFFER_WIZARD_MODE.CREATION
+              ? nextStep
+              : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode:
             mode === OFFER_WIZARD_MODE.EDITION
               ? OFFER_WIZARD_MODE.READ_ONLY
@@ -216,7 +220,7 @@ export const IndividualOfferDetailsScreenNext = ({
       navigate(
         getIndividualOfferUrl({
           offerId: initialOffer?.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })
@@ -310,17 +314,20 @@ export const IndividualOfferDetailsScreenNext = ({
               venuesOptions={availableVenuesAsOptions}
             />
           </FormLayout>
-
-          <ActionBar
-            dirtyForm={form.formState.isDirty || isNewOfferDraft}
-            isDisabled={
-              form.formState.isSubmitting ||
-              Boolean(initialOffer && isOfferDisabled(initialOffer.status)) ||
-              Boolean(publishedOfferWithSameEAN)
-            }
-            onClickPrevious={handlePreviousStepOrBackToReadOnly}
-            step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS}
-          />
+          {mode === OFFER_WIZARD_MODE.EDITION ? (
+            <ActionBarEdition onCancel={handlePreviousStepOrBackToReadOnly} />
+          ) : (
+            <ActionBar
+              dirtyForm={form.formState.isDirty || isNewOfferDraft}
+              isDisabled={
+                form.formState.isSubmitting ||
+                Boolean(initialOffer && isOfferDisabled(initialOffer.status)) ||
+                Boolean(publishedOfferWithSameEAN)
+              }
+              onClickPrevious={handlePreviousStepOrBackToReadOnly}
+              step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS}
+            />
+          )}
         </form>
       </FormProvider>
 
