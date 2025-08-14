@@ -1,17 +1,20 @@
 import type { SubcategoryIdEnum } from '@/apiClient/v1'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
-import { MOCK_SUB_CATEGORIES, MOCK_SUB_CATEGORY } from '../__mocks__/constants'
-import { isOfferSubcategoryOnline } from '../utils'
+import {
+  MOCKED_SUBCATEGORIES,
+  MOCKED_SUBCATEGORY,
+} from '../__mocks__/constants'
+import { getIsOfferSubcategoryOnline } from '../getIsOfferSubcategoryOnline'
 
-describe('isOfferSubcategoryOnline', () => {
+describe('getIsOfferSubcategoryOnline', () => {
   // --- Test Group 1: Offer has a URL ---
   // The function should prioritize the `url` property over the subcategory status.
   describe('when the offer has a URL', () => {
     it('should return true if the offer has a valid, non-empty URL', () => {
       const offer = getIndividualOfferFactory({ url: 'https://example.com' })
 
-      const result = isOfferSubcategoryOnline(offer, MOCK_SUB_CATEGORIES)
+      const result = getIsOfferSubcategoryOnline(offer, MOCKED_SUBCATEGORIES)
 
       expect(result).toBe(true)
     })
@@ -21,7 +24,7 @@ describe('isOfferSubcategoryOnline', () => {
         url: '  https://example.com  ',
       })
 
-      const result = isOfferSubcategoryOnline(offer, MOCK_SUB_CATEGORIES)
+      const result = getIsOfferSubcategoryOnline(offer, MOCKED_SUBCATEGORIES)
 
       expect(result).toBe(true)
     })
@@ -32,33 +35,33 @@ describe('isOfferSubcategoryOnline', () => {
   describe('when the offer does not have a URL', () => {
     it('should return true if the corresponding subcategory is ONLINE', () => {
       const offer = getIndividualOfferFactory({
-        subcategoryId: MOCK_SUB_CATEGORY.EVENT_ONLINE.id,
+        subcategoryId: MOCKED_SUBCATEGORY.EVENT_ONLINE.id,
         url: null,
       })
 
-      const result = isOfferSubcategoryOnline(offer, MOCK_SUB_CATEGORIES)
+      const result = getIsOfferSubcategoryOnline(offer, MOCKED_SUBCATEGORIES)
 
       expect(result).toBe(true)
     })
 
     it('should return false if the corresponding subcategory is OFFLINE', () => {
       const offer = getIndividualOfferFactory({
-        subcategoryId: MOCK_SUB_CATEGORY.EVENT_OFFLINE.id,
+        subcategoryId: MOCKED_SUBCATEGORY.EVENT_OFFLINE.id,
         url: '',
       }) // Test with empty string
 
-      const result = isOfferSubcategoryOnline(offer, MOCK_SUB_CATEGORIES)
+      const result = getIsOfferSubcategoryOnline(offer, MOCKED_SUBCATEGORIES)
 
       expect(result).toBe(false)
     })
 
     it('should return false if the corresponding subcategory is not explicitly ONLINE', () => {
       const offer = getIndividualOfferFactory({
-        subcategoryId: MOCK_SUB_CATEGORY.EVENT_ONLINE_AND_OFFLINE.id,
+        subcategoryId: MOCKED_SUBCATEGORY.EVENT_ONLINE_AND_OFFLINE.id,
         url: null,
       })
 
-      const result = isOfferSubcategoryOnline(offer, MOCK_SUB_CATEGORIES)
+      const result = getIsOfferSubcategoryOnline(offer, MOCKED_SUBCATEGORIES)
 
       expect(result).toBe(false)
     })
@@ -66,11 +69,11 @@ describe('isOfferSubcategoryOnline', () => {
     it('should return false if the URL contains only whitespace', () => {
       // A URL with only spaces becomes an empty string after trim(), so `hasUrl` is false.
       const offer = getIndividualOfferFactory({
-        subcategoryId: MOCK_SUB_CATEGORY.EVENT_OFFLINE.id,
+        subcategoryId: MOCKED_SUBCATEGORY.EVENT_OFFLINE.id,
         url: '   ',
       })
 
-      const result = isOfferSubcategoryOnline(offer, MOCK_SUB_CATEGORIES)
+      const result = getIsOfferSubcategoryOnline(offer, MOCKED_SUBCATEGORIES)
 
       expect(result).toBe(false)
     })
@@ -81,7 +84,7 @@ describe('isOfferSubcategoryOnline', () => {
         url: null,
       })
 
-      const result = isOfferSubcategoryOnline(offer, MOCK_SUB_CATEGORIES)
+      const result = getIsOfferSubcategoryOnline(offer, MOCKED_SUBCATEGORIES)
 
       expect(result).toBe(false)
     })
@@ -92,7 +95,7 @@ describe('isOfferSubcategoryOnline', () => {
         url: null,
       })
 
-      const result = isOfferSubcategoryOnline(offer, [])
+      const result = getIsOfferSubcategoryOnline(offer, [])
 
       expect(result).toBe(false)
     })

@@ -4,7 +4,7 @@ import type {
 } from '@/apiClient/v1'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 
-export const isOfferSubcategoryOnline = (
+export const getIsOfferSubcategoryOnline = (
   offer: GetIndividualOfferResponseModel,
   subcategories: SubcategoryResponseModel[]
 ): boolean => {
