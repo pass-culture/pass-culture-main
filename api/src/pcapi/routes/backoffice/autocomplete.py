@@ -6,6 +6,7 @@ from flask import request
 from flask_login import login_required
 
 from pcapi.connectors import api_adresse
+from pcapi.core.artist import models as artist_models
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
@@ -27,13 +28,18 @@ from .forms import fields
 NUM_RESULTS = 20
 
 
+class AutocompleteStrIdItem(BaseModel):
+    id: str
+    text: str
+
+
 class AutocompleteItem(BaseModel):
     id: int
     text: str
 
 
 class AutocompleteResponse(BaseModel):
-    items: list[AutocompleteItem]
+    items: list[AutocompleteItem | AutocompleteStrIdItem]
 
 
 def _get_offerer_choice_label(offerer: offerers_models.Offerer) -> str:
@@ -451,4 +457,27 @@ def autocomplete_addresses() -> AutocompleteResponse:
 
     return AutocompleteResponse(
         items=[AutocompleteItem(id=address.id, text=_get_address_choice_label(address)) for address in addresses]
+    )
+
+
+@blueprint.backoffice_web.route("/autocomplete/artists", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
+def autocomplete_artists() -> AutocompleteResponse:
+    query_string = request.args.get("q", "").strip()
+    source_artist_id = request.args.get("source_artist_id")
+
+    if not string_utils.is_numeric(query_string) and len(query_string) < 2:
+        return AutocompleteResponse(items=[])
+
+    filters = sa.func.immutable_unaccent(artist_models.Artist.name).ilike(f"%{clean_accents(query_string)}%")
+    artist_query = db.session.query(artist_models.Artist).filter(filters)
+
+    if source_artist_id:
+        artist_query = artist_query.filter(artist_models.Artist.id != source_artist_id)
+
+    results = artist_query.limit(20).all()
+
+    return AutocompleteResponse(
+        items=[AutocompleteStrIdItem(id=artist.id, text=f"{artist.name} (ID: {artist.id})") for artist in results]
     )
