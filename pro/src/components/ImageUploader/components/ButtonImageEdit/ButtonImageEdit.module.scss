@@ -10,8 +10,7 @@
   border: none;
   background-color: var(--color-background-subtle);
   color: var(--color-text-default);
-  box-shadow: 0 rem.torem(1px) rem.torem(8px)
-    rgb(from var(--color-large-shadow) r g b / 15%);
+  box-shadow: var(--shadow-overlay);
   border-radius: var(--size-border-radius-m);
   cursor: pointer;
 
@@ -31,9 +30,6 @@
   }
 
   &:hover {
-    box-shadow: 0 rem.torem(1px) rem.torem(8px)
-      rgb(from var(--color-large-shadow) r g b / 30%);
-
     .image-upload-button-label {
       text-decoration: underline;
     }

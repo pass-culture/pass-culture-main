@@ -30,7 +30,7 @@
   }
 
   &:hover {
-    box-shadow: 0 3px 4px 0 rgb(from var(--color-medium-shadow) r g b / 16%);
+    box-shadow: var(--shadow-overlay);
   }
 
   &:focus {

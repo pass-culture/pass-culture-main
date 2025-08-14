@@ -92,6 +92,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   background-color: var(--color-background-default);
   margin-top: calc((100vh - var(--radix-popper-available-height)) * -1);
   overflow-y: scroll;
+  box-shadow: var(--shadow-overlay);
 
   &[data-state="open"] {
     animation: fade-in 150ms ease-out;
@@ -139,6 +140,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   height: 100%;
   background-color: var(--color-background-default);
   z-index: 15;
+  box-shadow: var(--shadow-overlay);
 
   @media screen and (min-width: size.$tablet) {
     border-radius: var(--size-border-radius-m);

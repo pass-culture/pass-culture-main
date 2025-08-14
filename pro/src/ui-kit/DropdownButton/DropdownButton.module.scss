@@ -22,7 +22,7 @@
     background: var(--color-background-default);
     border-radius: var(--size-border-radius-m);
     border: rem.torem(1px) solid var(--color-border-subtle);
-    box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px) var(--color-medium-shadow);
+    box-shadow: var(--shadow-overlay);
     display: inline-block;
     padding: rem.torem(12px) 0;
     width: rem.torem(297px);

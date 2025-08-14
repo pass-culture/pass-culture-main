@@ -50,7 +50,7 @@
 
   &-children {
     border-radius: var(--size-border-radius-m);
-    box-shadow: 0 rem.torem(2px) rem.torem(16px) 0 var(--color-large-shadow);
+    box-shadow: var(--shadow-overlay);
     border: none;
     z-index: zIndex.$modal-z-index;
     background-color: var(--color-background-default);
