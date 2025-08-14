@@ -45,12 +45,10 @@ const renderPriceCategories = (
   }
 
   return renderWithProviders(
-    <>
-      <IndividualOfferContext.Provider value={context}>
-        <PriceCategoriesScreen {...props} />
-        <Notification />
-      </IndividualOfferContext.Provider>
-    </>,
+    <IndividualOfferContext.Provider value={context}>
+      <PriceCategoriesScreen {...props} />
+      <Notification />
+    </IndividualOfferContext.Provider>,
     { initialRouterEntries: [url] }
   )
 }

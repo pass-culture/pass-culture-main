@@ -93,10 +93,10 @@ export const IndividualOfferNavigation = () => {
         <Stepper
           activeStep={activeStep}
           steps={stepList}
-          className={styles['stepper']}
+          className={styles.stepper}
         />
       ) : (
-        <div className={styles['tabs']}>
+        <div className={styles.tabs}>
           <NavLinkItems
             navLabel="Sous menu - offre individuelle"
             links={stepList.map(({ id, label, url }) => ({

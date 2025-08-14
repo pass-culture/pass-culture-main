@@ -73,18 +73,16 @@ const renderDetailsSubForm = ({
   }
 
   return renderWithProviders(
-    <>
-      <Routes>
-        <Route
-          path={path}
-          element={
-            <IndividualOfferContext.Provider value={contextValue}>
-              <DetailsSubFormWrappedWithFormik {...props} />
-            </IndividualOfferContext.Provider>
-          }
-        />
-      </Routes>
-    </>,
+    <Routes>
+      <Route
+        path={path}
+        element={
+          <IndividualOfferContext.Provider value={contextValue}>
+            <DetailsSubFormWrappedWithFormik {...props} />
+          </IndividualOfferContext.Provider>
+        }
+      />
+    </Routes>,
     options
   )
 }

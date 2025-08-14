@@ -109,13 +109,13 @@ export const IndividualOfferLayout = ({
       >
         <div className={styles['title-container']}>
           <div className={styles['title-and-back-to-nav-link']}>
-            <h1 className={styles['title']}>{title}</h1>
+            <h1 className={styles.title}>{title}</h1>
             <BackToNavLink className={styles['back-to-nav-link']} />
           </div>
           {offer && mode !== OFFER_WIZARD_MODE.CREATION && (
             <>
               {shouldDisplayActionOnStatus && (
-                <span className={styles['status']}>
+                <span className={styles.status}>
                   {
                     <Status
                       offer={offer}
@@ -189,7 +189,7 @@ export const IndividualOfferLayout = ({
 
       {withStepper && <IndividualOfferNavigation />}
 
-      <div className={styles['content']}>{children}</div>
+      <div className={styles.content}>{children}</div>
     </>
   )
 }

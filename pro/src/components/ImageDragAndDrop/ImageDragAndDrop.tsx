@@ -273,7 +273,7 @@ export const ImageDragAndDrop = forwardRef(
           )}
           <div className={styles['image-drag-and-drop-text']}>
             {isDraggedOver ? (
-              <>Déposez votre image ici</>
+              'Déposez votre image ici'
             ) : (
               <>
                 <span>Glissez et déposez votre image</span>
