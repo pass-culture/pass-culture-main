@@ -294,6 +294,7 @@ describe('IndividualOfferMediaScreen', () => {
       expect(mockLogEvent).toHaveBeenCalledWith('videoUrlError', {
         offerId: 1,
         userId: undefined,
+        videoUrl: 'https://www.dailymotion.com/video/x9negsq',
       })
     })
   })
