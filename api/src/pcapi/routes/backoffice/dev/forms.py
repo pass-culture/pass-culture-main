@@ -64,6 +64,7 @@ class UserGeneratorForm(utils.PCForm):
         default=GeneratedSubscriptionStep.EMAIL_VALIDATION.name,
     )
     date_created = fields.PCDateField("Date de dépôt du dossier", default=datetime.date.today())
+    postal_code = fields.PCOptPostalCodeField("Code postal")
     transition_17_18 = fields.PCCheckboxField("Transition 17-18")
 
 

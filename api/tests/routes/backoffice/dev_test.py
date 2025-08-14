@@ -155,6 +155,24 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         )
         assert number_of_users_before == number_of_users_after
 
+    def test_user_set_postal_code(self, authenticated_client):
+        form = {"age": 18, "id_provider": "UBBLE", "step": "BENEFICIARY", "postal_code": "63170"}
+        response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
+        assert response.status_code == 200
+        query_args = response.request.args.to_dict()
+        user_id = query_args["userId"]
+        user = db.session.query(users_models.User).get(user_id)
+        assert user.postalCode == "63170"
+
+    def test_user_postal_code_ignored_before_profile_completion(self, authenticated_client):
+        form = {"age": 18, "id_provider": "UBBLE", "step": "EMAIL_VALIDATION", "postal_code": "63170"}
+        response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
+        assert response.status_code == 200
+        query_args = response.request.args.to_dict()
+        user_id = query_args["userId"]
+        user = db.session.query(users_models.User).get(user_id)
+        assert user.postalCode is None
+
 
 class UserDeletionPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissionHelper):
     endpoint = "backoffice_web.dev.delete_user"
