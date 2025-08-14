@@ -1,8 +1,8 @@
-query getApplication($demarcheNumber: Int!, $after: String) {
+query getApplication($demarcheNumber: Int!, $deletedSince: ISO8601DateTime, $after: String) {
   demarche(number: $demarcheNumber) {
     id
     number
-    deletedDossiers(first: 100, after: $after) {
+    deletedDossiers(first: 100, deletedSince: $deletedSince, after: $after) {
       pageInfo {
         endCursor
         hasNextPage
