@@ -80,6 +80,7 @@
         "noExtraBooleanCast": "error",
         "noUselessCatch": "error",
         "noUselessEscapeInRegex": "error",
+        "noUselessFragments": "warn", // default: "info"
         "noUselessTypeConstraint": "error"
       },
       "correctness": {
