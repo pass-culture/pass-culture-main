@@ -59,6 +59,7 @@ def update_booking_used() -> None:
 
 @blueprint.cli.command("synchronize_allocine_stocks")
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_ALLOCINE)
 def synchronize_allocine_stocks() -> None:
     """Launch AlloCine synchronization."""
@@ -69,6 +70,7 @@ def synchronize_allocine_stocks() -> None:
 
 @blueprint.cli.command("synchronize_cine_office_stocks")
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 @cron_require_feature(FeatureToggle.ENABLE_CDS_IMPLEMENTATION)
 def synchronize_cine_office_stocks() -> None:
     """Launch Cine Office synchronization."""
@@ -79,6 +81,7 @@ def synchronize_cine_office_stocks() -> None:
 
 @blueprint.cli.command("synchronize_boost_stocks")
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 @cron_require_feature(FeatureToggle.ENABLE_BOOST_API_INTEGRATION)
 def synchronize_boost_stocks() -> None:
     """Launch Boost synchronization."""
@@ -89,6 +92,7 @@ def synchronize_boost_stocks() -> None:
 
 @blueprint.cli.command("synchronize_cgr_stocks")
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 @cron_require_feature(FeatureToggle.ENABLE_CGR_INTEGRATION)
 def synchronize_cgr_stocks() -> None:
     """Launch CGR synchronization."""
@@ -99,6 +103,7 @@ def synchronize_cgr_stocks() -> None:
 
 @blueprint.cli.command("synchronize_ems_stocks")
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 @cron_require_feature(FeatureToggle.ENABLE_EMS_INTEGRATION)
 def synchronize_ems_stocks_on_schedule() -> None:
     """Launch EMS synchronization"""
@@ -107,6 +112,7 @@ def synchronize_ems_stocks_on_schedule() -> None:
 
 @blueprint.cli.command("switch_allocine_sync_to_ems_sync")
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 @cron_require_feature(FeatureToggle.ENABLE_EMS_INTEGRATION)
 @cron_require_feature(FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC)
 def switch_allocine_sync_to_ems_sync() -> None:
@@ -121,6 +127,7 @@ def cancel_unstored_external_bookings() -> None:
 
 @blueprint.cli.command("cancel_ems_external_bookings")
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 @cron_require_feature(FeatureToggle.EMS_CANCEL_PENDING_EXTERNAL_BOOKING)
 def cancel_ems_external_bookings() -> None:
     bookings_api.cancel_ems_external_bookings()
