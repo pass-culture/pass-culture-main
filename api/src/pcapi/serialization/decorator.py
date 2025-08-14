@@ -11,7 +11,6 @@ from werkzeug.exceptions import BadRequest
 
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.routes.apis import api as default_api
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 
@@ -82,7 +81,7 @@ def spectree_serialize(
     on_success_status: int = 200,
     on_empty_status: int | None = None,
     on_error_statuses: list[int] | None = None,
-    api: spectree.SpecTree = default_api,
+    api: spectree.SpecTree,
     json_format: bool = True,
     raw_response: bool = False,
     response_headers: dict[str, str] | None = None,
