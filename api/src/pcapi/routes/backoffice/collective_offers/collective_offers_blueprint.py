@@ -24,6 +24,7 @@ from pcapi.core.educational.api import offer as collective_offer_api
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import models as geography_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
@@ -91,13 +92,13 @@ SEARCH_FIELD_TO_PYTHON = {
     },
     "DEPARTMENT": {
         "field": "department",
-        "column": offerers_models.Venue.departementCode,
-        "inner_join": "venue",
+        "column": geography_models.Address.departmentCode,
+        "inner_join": "address",
     },
     "REGION": {
         "field": "region",
-        "column": offerers_models.Venue.departementCode,
-        "inner_join": "venue",
+        "column": geography_models.Address.departmentCode,
+        "inner_join": "address",
         "special": regions_utils.get_department_codes_for_regions,
     },
     "EVENT_DATE": {
@@ -214,6 +215,16 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
                 aliased_stock,
                 educational_models.CollectiveOffer.collectiveStock,
             ),
+        },
+    ],
+    "address": [
+        {
+            "name": "offerer_address",
+            "args": (offerers_models.OffererAddress, educational_models.CollectiveOffer.offererAddress),
+        },
+        {
+            "name": "address",
+            "args": (geography_models.Address, offerers_models.OffererAddress.address),
         },
     ],
     "venue": [
