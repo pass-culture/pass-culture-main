@@ -6403,10 +6403,10 @@ vitest-canvas-mock@^0.3.3:
   dependencies:
     jest-canvas-mock "~2.5.2"
 
-vitest-fail-on-console@0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/vitest-fail-on-console/-/vitest-fail-on-console-0.8.0.tgz#632a973c2deadef47cdb0fd36f67975b75b640ef"
-  integrity sha512-RvUaTyX/0/CYq+US/6UzXOWtKZF8ewrYEnobEZFh2FW9OCuw9dZzecKlskKS0dDpaMuPfBP9xqJ2rp5XxpJeMQ==
+vitest-fail-on-console@0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/vitest-fail-on-console/-/vitest-fail-on-console-0.9.0.tgz#59277c5a1dcf1a4690ab8c4a77a19bee034d460f"
+  integrity sha512-GgoS9gSy3ctwGVgFhY6NaAaRE5ve9EmgN9iDpqtEG1Z7Z9Y8x/4GzDrhky5+050Hy0FnndoM/mpmqsmGWywFZw==
   dependencies:
     chalk "^5.4.1"
 
