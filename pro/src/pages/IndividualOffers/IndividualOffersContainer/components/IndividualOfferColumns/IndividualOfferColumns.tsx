@@ -33,7 +33,10 @@ export function getIndividualOfferColumns(
             offer.status === OFFER_STATUS_DRAFT
               ? OFFER_WIZARD_MODE.CREATION
               : OFFER_WIZARD_MODE.READ_ONLY,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step:
+            offer.status === OFFER_STATUS_DRAFT
+              ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS
+              : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
         })
 
         return <OfferNameCell offer={offer} offerLink={offerLink} />

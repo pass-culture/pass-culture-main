@@ -45,7 +45,7 @@ export const BookingOfferCell = ({
     : getIndividualOfferUrl({
         offerId: booking.stock.offerId,
         mode: OFFER_WIZARD_MODE.READ_ONLY,
-        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
       })
 
   const eventBeginningDatetime = isCollectiveBooking(booking)

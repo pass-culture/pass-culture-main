@@ -15,14 +15,15 @@ const IndividualOfferSummary = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
 
   let title: string | undefined
-  if (
-    mode === OFFER_WIZARD_MODE.READ_ONLY ||
-    mode === OFFER_WIZARD_MODE.EDITION
-  ) {
+
+  if (offer && mode === OFFER_WIZARD_MODE.READ_ONLY) {
+    title = offer.name
+  } else if (mode === OFFER_WIZARD_MODE.EDITION) {
     title = 'Récapitulatif'
   } else {
     title = getTitle(mode)
   }
+
   if (offer === null) {
     return <Spinner />
   }

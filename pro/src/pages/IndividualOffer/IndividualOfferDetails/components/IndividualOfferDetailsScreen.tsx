@@ -53,6 +53,7 @@ import {
 } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { getValidationSchema } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
 
+import { ActionBarEdition } from '../../components/ActionBarEdition/ActionBarEdition'
 import {
   serializeDetailsPatchData,
   serializeDetailsPostData,
@@ -196,7 +197,10 @@ export const IndividualOfferDetailsScreen = ({
       navigate(
         getIndividualOfferUrl({
           offerId,
-          step: nextStep,
+          step:
+            mode === OFFER_WIZARD_MODE.CREATION
+              ? nextStep
+              : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode:
             mode === OFFER_WIZARD_MODE.EDITION
               ? OFFER_WIZARD_MODE.READ_ONLY
@@ -225,7 +229,7 @@ export const IndividualOfferDetailsScreen = ({
       navigate(
         getIndividualOfferUrl({
           offerId: offer?.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })
@@ -341,16 +345,20 @@ export const IndividualOfferDetailsScreen = ({
               withUrlInput={isOfferVirtual}
             />
           </FormLayout>
-          <ActionBar
-            onClickPrevious={handlePreviousStepOrBackToReadOnly}
-            step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS}
-            isDisabled={
-              form.formState.isSubmitting ||
-              Boolean(offer && isOfferDisabled(offer.status)) ||
-              Boolean(publishedOfferWithSameEAN)
-            }
-            dirtyForm={form.formState.isDirty || offer === null}
-          />
+          {mode === OFFER_WIZARD_MODE.EDITION ? (
+            <ActionBarEdition onCancel={handlePreviousStepOrBackToReadOnly} />
+          ) : (
+            <ActionBar
+              onClickPrevious={handlePreviousStepOrBackToReadOnly}
+              step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS}
+              isDisabled={
+                form.formState.isSubmitting ||
+                Boolean(offer && isOfferDisabled(offer.status)) ||
+                Boolean(publishedOfferWithSameEAN)
+              }
+              dirtyForm={form.formState.isDirty || offer === null}
+            />
+          )}
         </form>
         <RouteLeavingGuardIndividualOffer
           when={

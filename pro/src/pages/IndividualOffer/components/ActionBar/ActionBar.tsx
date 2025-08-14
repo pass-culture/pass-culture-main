@@ -66,7 +66,7 @@ export const ActionBar = ({
     ) {
       return (
         <Button onClick={onClickPrevious} variant={ButtonVariant.SECONDARY}>
-          Quitter le mode édition
+          Retour au récapitulatif
         </Button>
       )
     }

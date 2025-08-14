@@ -194,12 +194,9 @@ export const IndividualOfferSummaryScreen = () => {
           <SummaryContent>
             <OfferSection conditionalFields={conditionalFields} offer={offer} />
 
-            {mode === OFFER_WIZARD_MODE.CREATION && (
+            {(mode === OFFER_WIZARD_MODE.CREATION ||
+              mode === OFFER_WIZARD_MODE.READ_ONLY) && (
               <>
-                {offer.isEvent && (
-                  <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
-                )}
-                <StockSection offer={offer} canBeDuo={canBeDuo} />
                 {isMediaPageEnabled && (
                   <MediaSection
                     offerId={offer.id}
@@ -207,6 +204,10 @@ export const IndividualOfferSummaryScreen = () => {
                     shouldImageBeHidden
                   />
                 )}
+                {offer.isEvent && (
+                  <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
+                )}
+                <StockSection offer={offer} canBeDuo={canBeDuo} />
               </>
             )}
           </SummaryContent>
