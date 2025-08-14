@@ -57,8 +57,9 @@ def criteria_fixture() -> list:
 def offers_fixture(criteria) -> tuple:
     offer_with_unlimited_stock = offers_factories.OfferFactory(
         criteria=[criteria[0]],
-        venue__postalCode="47000",
-        venue__departementCode="47",
+        offererAddress=offerers_factories.OffererAddressFactory(
+            address__postalCode="47000", address__departmentCode="47"
+        ),
         subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
         author=users_factories.ProFactory(),
         extraData={"musicType": 501, "musicSubType": 510, "gtl_id": "02050000"},
@@ -67,8 +68,9 @@ def offers_fixture(criteria) -> tuple:
     offer_with_limited_stock = offers_factories.EventOfferFactory(
         name="A Very Specific Name",
         lastValidationDate=datetime.date(2022, 2, 22),
-        venue__postalCode="97400",
-        venue__departementCode="974",
+        offererAddress=offerers_factories.OffererAddressFactory(
+            address__postalCode="97400", address__departmentCode="974"
+        ),
         subcategoryId=subcategories.FESTIVAL_LIVRE.id,
         validation=offers_models.OfferValidationStatus.APPROVED,
         extraData={"visa": "2023123456", "showType": 100, "showSubType": 104},
@@ -78,15 +80,17 @@ def offers_fixture(criteria) -> tuple:
         criteria=[criteria[0], criteria[1]],
         dateCreated=datetime.date.today() - datetime.timedelta(days=2),
         validation=offers_models.OfferValidationStatus.REJECTED,
-        venue__postalCode="74000",
-        venue__departementCode="74",
+        offererAddress=offerers_factories.OffererAddressFactory(
+            address__postalCode="74000", address__departmentCode="74"
+        ),
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         ean="9781234567890",
     )
     offer_with_a_lot_of_types = offers_factories.OfferFactory(
         criteria=[criteria[3]],
-        venue__postalCode="10000",
-        venue__departementCode="10",
+        offererAddress=offerers_factories.OffererAddressFactory(
+            address__postalCode="10000", address__departmentCode="10"
+        ),
         subcategoryId=subcategories.JEU_EN_LIGNE.id,
         author=users_factories.ProFactory(),
         extraData={"musicType": 870, "musicSubType": 871, "gtl_id": "14000000", "showType": 1510, "showSubType": 1511},
