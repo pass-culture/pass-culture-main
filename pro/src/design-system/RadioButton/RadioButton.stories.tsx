@@ -28,6 +28,14 @@ export const Default: StoryObj<typeof RadioButton> = {
   },
 }
 
+export const DefaultSelected: StoryObj<typeof RadioButton> = {
+  args: {
+    name: 'default',
+    label: 'Label',
+    checked: true,
+  },
+}
+
 export const DefaultDisabled: StoryObj<typeof RadioButton> = {
   args: {
     name: 'disabled',
@@ -40,6 +48,24 @@ export const Detailed: StoryObj<typeof RadioButton> = {
   args: {
     name: 'detailed',
     label: 'Détaillé',
+    variant: 'detailed',
+  },
+}
+
+export const DetailedSelected: StoryObj<typeof RadioButton> = {
+  args: {
+    name: 'detailed',
+    label: 'Détaillé',
+    variant: 'detailed',
+    checked: true,
+  },
+}
+
+export const DetailedDisabled: StoryObj<typeof RadioButton> = {
+  args: {
+    name: 'disabled',
+    disabled: true,
+    label: 'Désactivé',
     variant: 'detailed',
   },
 }
@@ -105,15 +131,41 @@ export const DetailedWithText: StoryObj<typeof RadioButton> = {
   },
 }
 
-export const DetailedWithImage: StoryObj<typeof RadioButton> = {
+export const DetailedWithSmallImage: StoryObj<typeof RadioButton> = {
   args: {
     name: 'detailed-with-image',
-    label: 'Avec image',
+    label: 'Avec petite image',
     variant: 'detailed',
     asset: {
       variant: 'image',
       src: imageDemo,
       size: 's',
+    },
+  },
+}
+
+export const DetailedWithMediumImage: StoryObj<typeof RadioButton> = {
+  args: {
+    name: 'detailed-with-image',
+    label: 'Avec image moyenne',
+    variant: 'detailed',
+    asset: {
+      variant: 'image',
+      src: imageDemo,
+      size: 'm',
+    },
+  },
+}
+
+export const DetailedWithLargeImage: StoryObj<typeof RadioButton> = {
+  args: {
+    name: 'detailed-with-image',
+    label: 'Avec grande image',
+    variant: 'detailed',
+    asset: {
+      variant: 'image',
+      src: imageDemo,
+      size: 'l',
     },
   },
 }
