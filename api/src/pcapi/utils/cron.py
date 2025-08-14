@@ -1,15 +1,32 @@
 import logging
 import time
 import typing
+from enum import Enum
 from functools import wraps
 
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.scheduled_tasks.logger import CronStatus
-from pcapi.scheduled_tasks.logger import build_cron_log_message
 
 
 logger = logging.getLogger(__name__)
+
+
+class CronStatus(Enum):
+    STARTED = "started"
+    ENDED = "ended"
+    FAILED = "failed"
+
+    def __str__(self) -> str:
+        return self.value
+
+
+def build_cron_log_message(name: str, status: CronStatus | None, duration: int | float | None = None) -> str:
+    log_message = f"type=cron name={name} status={status}"
+
+    if duration:
+        log_message += f" duration={duration}"
+
+    return log_message
 
 
 def cron_require_feature(feature_toggle: FeatureToggle) -> typing.Callable:

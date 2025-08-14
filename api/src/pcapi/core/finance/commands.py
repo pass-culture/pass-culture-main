@@ -10,7 +10,7 @@ import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.utils as finance_utils
 import pcapi.core.offers.models as offers_models
-import pcapi.scheduled_tasks.decorators as cron_decorators
+import pcapi.utils.cron as cron_decorators
 import pcapi.utils.date as date_utils
 from pcapi import settings
 from pcapi.connectors.dms.utils import import_ds_applications
@@ -229,6 +229,11 @@ def import_ds_bank_information_applications(ignore_previous: bool = False, since
             ignore_previous=ignore_previous,
             forced_since=forced_since,
         )
+
+
+@blueprint.cli.command("mark_without_continuation_applications")
+def mark_without_continuation_applications() -> None:
+    ds.mark_without_continuation_applications()
 
 
 @blueprint.cli.command("push_bank_accounts")

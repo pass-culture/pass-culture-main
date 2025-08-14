@@ -4,10 +4,10 @@ from unittest import mock
 
 import pytest
 
+from pcapi.core.bookings.commands import notify_soon_to_be_expired_individual_bookings
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import ProductFactory
-from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon_to_be_expired_individual_bookings
 from pcapi.utils import repository
 
 
