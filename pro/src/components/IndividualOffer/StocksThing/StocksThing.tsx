@@ -37,6 +37,7 @@ import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBa
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
+import type { Link } from '@/ui-kit/LinkNodes/LinkNodes'
 import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
 
 import { DialogStockThingDeleteConfirm } from '../DialogStockDeleteConfirm/DialogStockThingDeleteConfirm'
@@ -244,6 +245,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   }
 
   const actions: {
+    id: string
     callback: () => void
     label: string
     icon: string
@@ -252,6 +254,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     ? []
     : [
         {
+          id: 'delete',
           callback: async () => {
             if (
               // tested but coverage don't see it.
@@ -272,7 +275,8 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       ]
 
   let description: string | JSX.Element
-  let links
+  let links: Link[] = []
+
   if (!offer.isDigital) {
     description = `Les bénéficiaires ont ${
       offer.subcategoryId === SubcategoryIdEnum.LIVRE_PAPIER ? '10' : '30'
@@ -304,6 +308,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     }
 
     actions.push({
+      id: 'addActivationCode',
       callback: () => setIsActivationCodeFormVisible(true),
       label: "Ajouter des codes d'activation",
       disabled: isDisabled,
@@ -382,7 +387,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               isBanner
               className={styles['callout-area-margin']}
             />
-            <div className={styles['row']}>
+            <div className={styles.row}>
               <TextInput
                 {...register('price')}
                 error={errors.price?.message}
@@ -468,9 +473,9 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               )}
               {!publishedOfferWithSameEAN && (
                 <div className={styles['button-actions']}>
-                  {actions.map((action, i) => (
+                  {actions.map((action) => (
                     <ListIconButton
-                      key={`action-${i}`}
+                      key={`action-${action.id}`}
                       icon={action.icon}
                       onClick={action.callback}
                       tooltipContent={action.label}

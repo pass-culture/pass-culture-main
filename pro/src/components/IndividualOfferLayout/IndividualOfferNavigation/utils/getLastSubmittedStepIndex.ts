@@ -1,9 +1,9 @@
-import { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
 
 import {
   RECALCULATED_PROPERTIES,
-  RecalculatedProperty,
-  StepPattern,
+  type RecalculatedProperty,
+  type StepPattern,
 } from './getSteps'
 
 export const getLastSubmittedStepIndex = ({
@@ -30,7 +30,12 @@ export const getLastSubmittedStepIndex = ({
 
     if (significativeProperty === null) {
       stepIndex++
-    } else if (RECALCULATED_PROPERTIES.includes(significativeProperty as any)) {
+    } else if (
+      RECALCULATED_PROPERTIES.includes(
+        // @ts-expect-error: this is inherently a type guard for the significativeProperty.
+        significativeProperty
+      )
+    ) {
       if (externalConditions[significativeProperty as RecalculatedProperty]) {
         stepIndex++
       } else {
