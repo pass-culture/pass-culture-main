@@ -127,7 +127,6 @@ export const Checkbox = forwardRef(
         <label
           className={classNames(styles['checkbox-label'], className)}
           htmlFor={inputId}
-          aria-invalid={Boolean(hasError)}
         >
           <input
             className={styles['checkbox-input']}
@@ -149,6 +148,7 @@ export const Checkbox = forwardRef(
             onBlur={onBlur}
             name={name}
             aria-required={required}
+            aria-invalid={hasError}
           />
           <div className={styles['checkbox-label-row']}>
             <div className={styles['checkbox-label-row-left']}>
