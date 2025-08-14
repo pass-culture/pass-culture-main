@@ -8,13 +8,13 @@ import pcapi.core.educational.api.adage as adage_api
 import pcapi.core.educational.api.institution as institution_api
 import pcapi.core.educational.api.playlists as playlists_api
 import pcapi.core.educational.models as educational_models
+import pcapi.utils.cron as cron_decorators
 from pcapi.core import search
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api.dms import import_dms_applications_for_all_eac_procedures
 from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
 from pcapi.models import db
-from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils.blueprint import Blueprint
 from pcapi.utils.repository import transaction
 
@@ -88,7 +88,7 @@ def import_deposit_csv(
     help="Activate debugging (add logs)",
 )
 @click.option("--with-timestamp", is_flag=True, help="Add timestamp (couple days ago)")
-@log_cron_with_transaction
+@cron_decorators.log_cron_with_transaction
 def synchronize_venues_from_adage_cultural_partners(debug: bool = False, with_timestamp: bool = False) -> None:
     # Change to use datetime arithmetic
     since_date = datetime.datetime.utcnow() - datetime.timedelta(days=2) if with_timestamp else None
@@ -103,7 +103,7 @@ def synchronize_venues_from_adage_cultural_partners(debug: bool = False, with_ti
 
 @blueprint.cli.command("synchronize_offerers_from_adage_cultural_partners")
 @click.option("--with-timestamp", is_flag=True, help="Add timestamp (couple days ago)")
-@log_cron_with_transaction
+@cron_decorators.log_cron_with_transaction
 def synchronize_offerers_from_adage_cultural_partners(with_timestamp: bool = False) -> None:
     # Change to use datetime arithmetic
     since_date = datetime.datetime.utcnow() - datetime.timedelta(days=2) if with_timestamp else None
@@ -113,21 +113,21 @@ def synchronize_offerers_from_adage_cultural_partners(with_timestamp: bool = Fal
 
 
 @blueprint.cli.command("eac_notify_pro_one_day_before")
-@log_cron_with_transaction
+@cron_decorators.log_cron_with_transaction
 def notify_pro_users_one_day_before() -> None:
     """Notify pro users 1 day before EAC event."""
     educational_api_booking.notify_pro_users_one_day_before()
 
 
 @blueprint.cli.command("eac_notify_pro_one_day_after")
-@log_cron_with_transaction
+@cron_decorators.log_cron_with_transaction
 def notify_pro_users_one_day_after() -> None:
     """Notify pro users 1 day after EAC event."""
     educational_api_booking.notify_pro_users_one_day_after()
 
 
 @blueprint.cli.command("eac_handle_pending_collective_booking_j3")
-@log_cron_with_transaction
+@cron_decorators.log_cron_with_transaction
 def handle_pending_collective_booking_j3() -> None:
     """Triggers email to be sent for events with pending booking and booking limit date in 3 days"""
     educational_api_booking.notify_pro_pending_booking_confirmation_limit_in_3_days()
@@ -139,7 +139,7 @@ def handle_pending_collective_booking_j3() -> None:
     is_flag=True,
     help="Import all application ignoring previous import date",
 )
-@log_cron_with_transaction
+@cron_decorators.log_cron_with_transaction
 def import_eac_dms_application(ignore_previous: bool = False) -> None:
     """Import procedures from dms."""
     import_dms_applications_for_all_eac_procedures(ignore_previous=ignore_previous)
@@ -197,30 +197,30 @@ def synchronise_institutions_geolocation(adage_year_id: str | None, not_dry: boo
 
 
 @blueprint.cli.command("synchronise_rurality_level")
-@log_cron_with_transaction
+@cron_decorators.log_cron_with_transaction
 def synchronise_rurality_level() -> None:
     institution_api.synchronise_rurality_level()
 
 
 @blueprint.cli.command("synchronise_collective_classroom_playlist")
-@log_cron_with_transaction
+@cron_decorators.log_cron_with_transaction
 def synchronise_collective_playlist() -> None:
     playlists_api.synchronize_collective_playlist(educational_models.PlaylistType.CLASSROOM)
 
 
 @blueprint.cli.command("synchronise_collective_new_offer_playlist")
-@log_cron_with_transaction
+@cron_decorators.log_cron_with_transaction
 def synchronise_collective_new_offer_playlist() -> None:
     playlists_api.synchronize_collective_playlist(educational_models.PlaylistType.NEW_OFFER)
 
 
 @blueprint.cli.command("synchronise_collective_local_offerers_playlist")
-@log_cron_with_transaction
+@cron_decorators.log_cron_with_transaction
 def synchronise_collective_local_offerer_playlist() -> None:
     playlists_api.synchronize_collective_playlist(educational_models.PlaylistType.LOCAL_OFFERER)
 
 
 @blueprint.cli.command("synchronise_collective_new_offerers_playlist")
-@log_cron_with_transaction
+@cron_decorators.log_cron_with_transaction
 def synchronise_collective_new_offerers_playlist() -> None:
     playlists_api.synchronize_collective_playlist(educational_models.PlaylistType.NEW_OFFERER)

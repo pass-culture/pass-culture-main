@@ -1,7 +1,5 @@
 import datetime
-import logging
 from base64 import b64decode
-from csv import DictReader
 from decimal import Decimal
 from pathlib import Path
 from unittest import mock
@@ -12,7 +10,6 @@ import time_machine
 from pcapi import settings
 from pcapi.connectors.ems import EMSScheduleConnector
 from pcapi.core.categories import subcategories
-from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories as offers_factories
@@ -21,7 +18,6 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
-from pcapi.local_providers.provider_manager import collect_elligible_venues_and_activate_ems_sync
 from pcapi.local_providers.provider_manager import synchronize_ems_venue_providers
 from pcapi.models import db
 
@@ -645,209 +641,3 @@ class EMSStocksTest:
 
         assert ems_provider.isCinemaProvider is True
         assert venue_provider.isFromCinemaProvider is True
-
-
-class EMSSyncSitesTest:
-    @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
-    def test_existing_up_to_date_sync_does_nothing(self, job_mocked, requests_mock, db_session):
-        requests_mock.get("https://fake_url.com?version=0", json=fixtures.SITES_DATA_VERSION_0)
-        ems_provider = get_provider_by_local_class("EMSStocks")
-
-        oceanic = offerers_factories.VenueFactory(
-            bookingEmail="oceanic-booking@example.com", withdrawalDetails="Modalité de retrait", siret="33069874700160"
-        )
-        providers_factories.VenueProviderFactory(venue=oceanic, provider=ems_provider, venueIdAtOfferProvider="0661")
-        oceanic_cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=oceanic, provider=ems_provider, idAtProvider="0661"
-        )
-        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=oceanic_cinema_provider_pivot)
-
-        pavillon_bleu = offerers_factories.VenueFactory(
-            bookingEmail="pavillon-bleu-booking@example.com",
-            withdrawalDetails="Modalité de retrait",
-            siret="21060105000011",
-        )
-        providers_factories.VenueProviderFactory(
-            venue=pavillon_bleu, provider=ems_provider, venueIdAtOfferProvider="1048"
-        )
-        pavillon_bleu_cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=pavillon_bleu, provider=ems_provider, idAtProvider="1048"
-        )
-        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=pavillon_bleu_cinema_provider_pivot)
-
-        ems_cine = offerers_factories.VenueFactory(
-            bookingEmail="ems-cine-booking@example.com", withdrawalDetails="Modalité de retrait", siret="775670664"
-        )
-        providers_factories.VenueProviderFactory(venue=ems_cine, provider=ems_provider, venueIdAtOfferProvider="9997")
-        ems_cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=ems_cine, provider=ems_provider, idAtProvider="9997"
-        )
-        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=ems_cinema_provider_pivot)
-
-        palace = offerers_factories.VenueFactory(
-            bookingEmail="palace-booking@example.com", withdrawalDetails="Modalité de retrait", siret="42465026500012"
-        )
-        providers_factories.VenueProviderFactory(venue=palace, provider=ems_provider, venueIdAtOfferProvider="1290")
-        palace_cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=palace, provider=ems_provider, idAtProvider="1290"
-        )
-        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=palace_cinema_provider_pivot)
-
-        collect_elligible_venues_and_activate_ems_sync()
-
-        venues = db.session.query(Venue).all()
-        assert len(venues) == 4
-
-        for venue in venues:
-            assert len(venue.venueProviders) == 1
-            assert len(venue.cinemaProviderPivot) == 1
-            assert venue.venueProviders[0].providerId == ems_provider.id
-
-        assert db.session.query(providers_models.EMSCinemaDetails).count() == 4
-        job_mocked.assert_not_called()
-        assert not db.session.query(history_models.ActionHistory).count()
-
-    @pytest.mark.usefixtures("db_session")
-    @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
-    def test_existing_allocine_sync_is_set_to_ems(self, job_mocked, requests_mock):
-        requests_mock.get("https://fake_url.com?version=0", json=fixtures.SITES_DATA_VERSION_0)
-        ems_provider = get_provider_by_local_class("EMSStocks")
-        allocine_provider = get_provider_by_local_class("AllocineStocks")
-
-        oceanic = offerers_factories.VenueFactory(
-            bookingEmail="oceanic-booking@example.com", withdrawalDetails="Modalité de retrait", siret="33069874700160"
-        )
-        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(
-            venue=oceanic, provider=allocine_provider, venueIdAtOfferProvider="1111", internalId="P1025"
-        )
-        providers_factories.AllocinePivotFactory(venue=oceanic)
-
-        collect_elligible_venues_and_activate_ems_sync()
-
-        assert not db.session.query(providers_models.AllocinePivot).all()
-        assert not db.session.query(providers_models.AllocineVenueProvider).all()
-
-        venues = db.session.query(Venue).all()
-        assert len(venues) == 1
-        venue = venues[0]
-
-        assert len(venue.venueProviders) == 1
-        assert len(venue.cinemaProviderPivot) == 1
-        venue_provider = venue.venueProviders[0]
-        pivot = venue.cinemaProviderPivot[0]
-        assert venue_provider.providerId == ems_provider.id
-        assert venue_provider.isActive == True
-        assert venue_provider.venueId == venue.id
-        assert venue_provider.venueIdAtOfferProvider == "0661"
-        assert pivot.idAtProvider == "0661"
-        assert db.session.query(providers_models.EMSCinemaDetails).count() == 1
-
-        job_mocked.assert_called_once_with(allocine_venue_provider.venueId, allocine_venue_provider.providerId, False)
-        assert db.session.query(history_models.ActionHistory).count()
-
-    @pytest.mark.usefixtures("db_session")
-    @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
-    def test_we_have_knowledge_of_available_venue_that_doesnt_exists_on_our_side(
-        self, job_mocked, requests_mock, caplog
-    ):
-        requests_mock.get("https://fake_url.com?version=0", json=fixtures.SITES_DATA_VERSION_0)
-
-        with caplog.at_level(logging.WARNING):
-            collect_elligible_venues_and_activate_ems_sync()
-
-        assert len(caplog.records) == 4
-
-        for log in caplog.records:
-            assert "Fail to find this venue" in log.msg
-            assert log.extra["venue_siret"] in ["775670664", "42465026500012", "33069874700160", "21060105000011"]
-            assert log.extra["venue_name"] in ["Océanic", "Le Pavillon Bleu", "Ems Cine", "Palace"]
-
-        assert db.session.query(Venue).count() == 0
-        job_mocked.assert_not_called()
-        assert not db.session.query(history_models.ActionHistory).count()
-
-    @pytest.mark.usefixtures("db_session")
-    @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
-    def test_we_dont_reactivate_ems_sync_that_was_deactivate_on_purpose(self, job_mocked, requests_mock):
-        requests_mock.get("https://fake_url.com?version=0", json=fixtures.SITES_DATA_VERSION_0)
-        ems_provider = get_provider_by_local_class("EMSStocks")
-
-        # EMS sync deactivate on purpose by a pro
-        oceanic = offerers_factories.VenueFactory(
-            bookingEmail="oceanic-booking@example.com", withdrawalDetails="Modalité de retrait", siret="11111111111"
-        )
-        providers_factories.VenueProviderFactory(
-            venue=oceanic, provider=ems_provider, venueIdAtOfferProvider="1111", isActive=False
-        )
-        providers_factories.CinemaProviderPivotFactory(venue=oceanic, provider=ems_provider, idAtProvider="1111")
-
-        collect_elligible_venues_and_activate_ems_sync()
-
-        venues = db.session.query(Venue).all()
-        assert len(venues) == 1
-        venue = venues[0]
-
-        assert len(venue.venueProviders) == 1
-        deactivated_venue_provider = venue.venueProviders[0]
-
-        assert deactivated_venue_provider.providerId == ems_provider.id
-        assert deactivated_venue_provider.isActive == False
-        job_mocked.assert_not_called()
-        assert not db.session.query(history_models.ActionHistory).count()
-
-    @pytest.mark.usefixtures("db_session")
-    @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
-    def test_sync_is_not_activated_on_venue_without_existing_allocine_sync(self, job_mocked, requests_mock):
-        requests_mock.get("https://fake_url.com?version=0", json=fixtures.SITES_DATA_VERSION_0)
-
-        # Available venue for sync but without existing allocine sync and therefor without allocine_id (we can’t match the venue on our side)
-        offerers_factories.VenueFactory(
-            bookingEmail="oceanic-booking@example.com", withdrawalDetails="Modalité de retrait", siret="33069874700160"
-        )
-
-        collect_elligible_venues_and_activate_ems_sync()
-
-        venues = db.session.query(Venue).all()
-        assert len(venues) == 1
-        venue = venues[0]
-
-        assert len(venue.venueProviders) == 0
-        assert len(venue.cinemaProviderPivot) == 0
-        job_mocked.assert_not_called()
-        assert not db.session.query(history_models.ActionHistory).count()
-
-    @pytest.mark.features(LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC=True)
-    @pytest.mark.usefixtures("db_session")
-    @mock.patch("pcapi.connectors.googledrive.TestingBackend.create_file")
-    @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
-    def test_that_we_successfully_log_available_cinemas_that_dont_have_sync_yet(
-        self, job_mocked, mock_gdrive_create_file, requests_mock
-    ):
-        requests_mock.get("https://fake_url.com?version=0", json=fixtures.SITES_DATA_VERSION_0)
-
-        collect_elligible_venues_and_activate_ems_sync()
-
-        assert db.session.query(providers_models.EMSCinemaDetails).count() == 0
-        job_mocked.assert_not_called()
-        assert not db.session.query(history_models.ActionHistory).count()
-        file_name = f"{datetime.datetime.today().date().isoformat()}.csv"
-        with open(f"/tmp/{file_name}", "r", encoding="utf-8") as f:
-            reader = DictReader(f)
-
-            for line, cinema in zip(
-                sorted(reader, key=lambda row: row["ems_id"]),
-                sorted(fixtures.SITES_DATA_VERSION_0["sites"], key=lambda site: site["id"]),
-            ):
-                assert line == {
-                    "siret": cinema["siret"],
-                    "ems_id": cinema["id"],
-                    "allocine_id": cinema["allocine_id"],
-                    "cinema": cinema["name"],
-                    "address": cinema["address"],
-                    "zip_code": cinema["zip_code"],
-                    "city": cinema["city"],
-                }
-
-        mock_gdrive_create_file.assert_called_once_with(
-            settings.EMS_GOOGLE_DRIVE_FOLDER, file_name, Path(f"/tmp/{file_name}")
-        )

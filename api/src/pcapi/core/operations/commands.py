@@ -1,7 +1,7 @@
 import logging
 
+import pcapi.utils.cron as cron_decorators
 from pcapi.models.feature import FeatureToggle
-from pcapi.scheduled_tasks import decorators as cron_decorators
 from pcapi.utils.blueprint import Blueprint
 
 from . import api
