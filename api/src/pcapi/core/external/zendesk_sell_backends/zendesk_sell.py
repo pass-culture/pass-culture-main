@@ -363,6 +363,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
             pc_pro_status = "Acteur en cours d'inscription"
 
         social_medias = getattr(venue.contact, "social_medias", {})
+        department_code = venue.offererAddress.address.departmentCode if venue.offererAddress else None
         params: dict = {
             "data": {
                 "is_organization": True,
@@ -381,7 +382,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                     "postal_code": venue.postalCode,
                 },
                 "custom_fields": {
-                    ZendeskCustomFieldsNames.DEPARTEMENT.value: venue.departementCode,
+                    ZendeskCustomFieldsNames.DEPARTEMENT.value: department_code,
                     ZendeskCustomFieldsNames.INTERNAL_COMMENT.value: "Mis à jour par le produit le %s"
                     % (datetime.date.today().strftime("%d/%m/%Y")),
                     ZendeskCustomFieldsNames.HAS_PUBLISHED_COLLECTIVE_OFFERS.value: has_collective_offers,
@@ -389,9 +390,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                     ZendeskCustomFieldsNames.PC_PRO_STATUS.value: pc_pro_status,
                     ZendeskCustomFieldsNames.PRODUCT_VENUE_ID.value: venue.id,
                     ZendeskCustomFieldsNames.SIRET.value: venue.siret,
-                    ZendeskCustomFieldsNames.REGION.value: get_region_name_from_department(
-                        venue.departementCode
-                    ).upper(),
+                    ZendeskCustomFieldsNames.REGION.value: get_region_name_from_department(department_code).upper(),
                     ZendeskCustomFieldsNames.TYPAGE.value: ["Lieu"],
                     ZendeskCustomFieldsNames.BACKOFFICE_LINK.value: urls.build_backoffice_venue_link(venue.id),
                     ZendeskCustomFieldsNames.UPDATED_IN_PRODUCT.value: datetime.datetime.utcnow().isoformat(),
