@@ -862,7 +862,7 @@ class OpeningHours(PcObject, Model):
     weekday: sa_orm.Mapped[Weekday] = sa.orm.mapped_column(
         db_utils.MagicEnum(Weekday), nullable=False, default=Weekday.MONDAY
     )
-    timespan: sa_orm.Mapped[list[psycopg2.extras.NumericRange]] = sa.orm.mapped_column(
+    timespan: sa_orm.Mapped[list[psycopg2.extras.NumericRange] | None] = sa.orm.mapped_column(
         sa_psql.ARRAY(sa_psql.ranges.NUMRANGE), nullable=True
     )
 

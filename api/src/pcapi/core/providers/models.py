@@ -139,7 +139,7 @@ class VenueProvider(PcObject, Model, DeactivableMixin):
     # describe if synchronised offers are available for duo booking or not
     isDuoOffers = sa.orm.mapped_column(sa.Boolean, nullable=True)
 
-    isFromAllocineProvider = sa_orm.column_property(  # type: ignore[misc]
+    isFromAllocineProvider = sa_orm.column_property(
         sa.exists(
             sa.select(Provider.id)
             .where(sa.and_(Provider.id == providerId, Provider.localClass == "AllocineStocks"))
@@ -147,7 +147,7 @@ class VenueProvider(PcObject, Model, DeactivableMixin):
         )
     )
 
-    isFromCinemaProvider = sa_orm.column_property(  # type: ignore[misc]
+    isFromCinemaProvider = sa_orm.column_property(
         sa.exists(sa.select(Provider.id))
         .where(
             sa.and_(

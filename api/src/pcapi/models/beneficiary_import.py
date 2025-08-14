@@ -96,7 +96,7 @@ class BeneficiaryImport(PcObject, Model):
         return f"dossier {self.source} [{self.applicationId}]"
 
     @classmethod
-    def _query_last_status(cls, column: sa.orm.mapped_column) -> typing.Any:
+    def _query_last_status(cls, column: sa.Column) -> typing.Any:
         return (
             db.session.query(column)
             .filter(BeneficiaryImportStatus.beneficiaryImportId == cls.id)
