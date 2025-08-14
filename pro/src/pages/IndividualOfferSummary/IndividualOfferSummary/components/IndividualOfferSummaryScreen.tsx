@@ -14,12 +14,12 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
-import { getOfferConditionalFields } from '@/commons/utils/getOfferConditionalFields'
 import { getOffererData } from '@/commons/utils/offererStoreHelper'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { OfferAppPreview } from '@/components/OfferAppPreview/OfferAppPreview'
@@ -28,6 +28,7 @@ import { SummaryAside } from '@/components/SummaryLayout/SummaryAside'
 import { SummaryContent } from '@/components/SummaryLayout/SummaryContent'
 import { SummaryLayout } from '@/components/SummaryLayout/SummaryLayout'
 import phoneStrokeIcon from '@/icons/stroke-phone.svg'
+import { getOfferConditionalFields } from '@/pages/IndividualOffer/commons/getOfferConditionalFields'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { MediaSection } from '@/pages/IndividualOfferSummary/components/MediaSection/MediaSection'
 import { PriceCategoriesSection } from '@/pages/IndividualOfferSummary/components/PriceCategoriesSection/PriceCategoriesSection'
@@ -163,16 +164,17 @@ export const IndividualOfferSummaryScreen = () => {
   const offerSubCategory = subCategories.find(
     (s) => s.id === offer.subcategoryId
   )
+  assertOrFrontendError(
+    offerSubCategory,
+    `'offerSubCategory' with id "${offer.subcategoryId}" not found in subCategories.`
+  )
 
   const offerConditionalFields = getOfferConditionalFields({
     offerSubCategory,
     receiveNotificationEmails: true,
   })
-  const subCategoryConditionalFields = offerSubCategory
-    ? offerSubCategory.conditionalFields
-    : []
   const conditionalFields = [
-    ...subCategoryConditionalFields,
+    ...offerSubCategory.conditionalFields,
     ...offerConditionalFields,
   ]
 
