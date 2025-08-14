@@ -15,13 +15,6 @@ export type Step = {
   hash?: string
 }
 
-export interface StepPattern {
-  id: string
-  label: string | React.ReactNode
-  path?: string
-  isActive: boolean
-}
-
 export interface StepperProps {
   activeStep: string
   steps: Step[]
@@ -48,51 +41,49 @@ export const Stepper = ({
   }, [])
 
   return (
-    <>
-      <ol
-        className={cn(styles[`stepper`], className)}
-        data-testid="stepper"
-        ref={listRef}
-      >
-        {steps.map((step, stepIndex) => {
-          const isActive = activeStep === step.id
-          const isLastStep = lastStepIndex === stepIndex
-          const isSelectionnable = !!step.url
+    <ol
+      className={cn(styles.stepper, className)}
+      data-testid="stepper"
+      ref={listRef}
+    >
+      {steps.map((step, stepIndex) => {
+        const isActive = activeStep === step.id
+        const isLastStep = lastStepIndex === stepIndex
+        const isSelectionnable = !!step.url
 
-          return (
-            <li
-              className={cn(
-                styles['step-container'],
-                isSelectionnable && styles['selectionnable'],
-                isActive && styles['active']
-              )}
-              key={`step-${step.id}`}
-              data-testid={`step-${step.id}`}
-            >
-              <StepContent
-                step={step}
-                stepIndex={stepIndex}
-                stepsCount={steps.length}
-                stepperWidth={stepperWidth}
+        return (
+          <li
+            className={cn(
+              styles['step-container'],
+              isSelectionnable && styles.selectionnable,
+              isActive && styles.active
+            )}
+            key={`step-${step.id}`}
+            data-testid={`step-${step.id}`}
+          >
+            <StepContent
+              step={step}
+              stepIndex={stepIndex}
+              stepsCount={steps.length}
+              stepperWidth={stepperWidth}
+            />
+            {isActive && (
+              <span className={styles['visually-hidden']}>
+                {' '}
+                (étape en cours)
+              </span>
+            )}
+            {!isLastStep && (
+              <div
+                className={cn(
+                  styles.separator,
+                  stepIndex < lastLineToActivate && styles.active
+                )}
               />
-              {isActive && (
-                <span className={styles['visually-hidden']}>
-                  {' '}
-                  (étape en cours)
-                </span>
-              )}
-              {!isLastStep && (
-                <div
-                  className={cn(
-                    styles['separator'],
-                    stepIndex < lastLineToActivate && styles['active']
-                  )}
-                />
-              )}
-            </li>
-          )
-        })}
-      </ol>
-    </>
+            )}
+          </li>
+        )
+      })}
+    </ol>
   )
 }

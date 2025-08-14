@@ -32,6 +32,8 @@ const contextValue: IndividualOfferContextValues = {
   offer: null,
   isEvent: null,
   setIsEvent: vi.fn(),
+  isAccessibilityFilled: false,
+  setIsAccessibilityFilled: vi.fn(),
 }
 
 const LABELS = {

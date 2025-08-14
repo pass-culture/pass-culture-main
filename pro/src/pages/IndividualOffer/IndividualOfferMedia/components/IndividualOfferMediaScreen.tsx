@@ -187,7 +187,6 @@ export const IndividualOfferMediaScreen = ({
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <ScrollToFirstHookFormErrorAfterSubmit />
         <FormLayout>
-          <FormLayout.MandatoryInfo />
           <FormLayout.Section title="Illustrez votre offre">
             <FormLayout.Row inline className={styles['media-row']}>
               <FormLayout.SubSection

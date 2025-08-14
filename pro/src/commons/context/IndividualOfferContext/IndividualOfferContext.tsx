@@ -24,6 +24,11 @@ export interface IndividualOfferContextValues {
   subCategories: SubcategoryResponseModel[]
   isEvent: boolean | null
   setIsEvent: (isEvent: boolean | null) => void
+  // Both isAccessibilityFilled and setIsAccessibilityFilled are
+  // used as a workaround to make the form context sync with the offer context
+  // so the stepper can be updated depending on form changes.
+  isAccessibilityFilled: boolean
+  setIsAccessibilityFilled: (isAccessibilityFilled: boolean) => void
   publishedOfferWithSameEAN?: GetActiveEANOfferResponseModel
 }
 
@@ -34,6 +39,8 @@ export const IndividualOfferContext =
     subCategories: [],
     isEvent: null,
     setIsEvent: () => {},
+    isAccessibilityFilled: true,
+    setIsAccessibilityFilled: () => {},
   })
 
 export const useIndividualOfferContext = () => {
@@ -48,6 +55,7 @@ export const IndividualOfferContextProvider = ({
   children,
 }: IndividualOfferContextProviderProps) => {
   const [isEvent, setIsEvent] = useState<boolean | null>(null)
+  const [isAccessibilityFilled, setIsAccessibilityFilled] = useState(true)
   const { offerId } = useParams<{
     offerId: string
   }>()
@@ -117,10 +125,12 @@ export const IndividualOfferContextProvider = ({
     <IndividualOfferContext.Provider
       value={{
         offer: offer ?? null,
-        isEvent,
         categories: categoriesQuery.data.categories,
         subCategories: categoriesQuery.data.subcategories,
+        isEvent,
         setIsEvent,
+        isAccessibilityFilled,
+        setIsAccessibilityFilled,
         publishedOfferWithSameEAN,
       }}
     >

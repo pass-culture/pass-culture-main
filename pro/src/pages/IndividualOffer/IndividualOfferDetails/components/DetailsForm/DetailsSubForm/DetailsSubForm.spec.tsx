@@ -26,6 +26,8 @@ const contextValue: IndividualOfferContextValues = {
   offer: null,
   isEvent: null,
   setIsEvent: vi.fn(),
+  isAccessibilityFilled: false,
+  setIsAccessibilityFilled: vi.fn(),
 }
 
 type RequiredProps = 'isEanSearchDisplayed' | 'isProductBased' | 'isOfferCD'
@@ -71,18 +73,16 @@ const renderDetailsSubForm = ({
   }
 
   return renderWithProviders(
-    <>
-      <Routes>
-        <Route
-          path={path}
-          element={
-            <IndividualOfferContext.Provider value={contextValue}>
-              <DetailsSubFormWrappedWithFormik {...props} />
-            </IndividualOfferContext.Provider>
-          }
-        />
-      </Routes>
-    </>,
+    <Routes>
+      <Route
+        path={path}
+        element={
+          <IndividualOfferContext.Provider value={contextValue}>
+            <DetailsSubFormWrappedWithFormik {...props} />
+          </IndividualOfferContext.Provider>
+        }
+      />
+    </Routes>,
     options
   )
 }

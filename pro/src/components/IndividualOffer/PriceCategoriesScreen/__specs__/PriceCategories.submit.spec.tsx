@@ -40,15 +40,15 @@ const renderPriceCategories = (
     subCategories: [],
     isEvent: null,
     setIsEvent: () => {},
+    isAccessibilityFilled: false,
+    setIsAccessibilityFilled: () => {},
   }
 
   return renderWithProviders(
-    <>
-      <IndividualOfferContext.Provider value={context}>
-        <PriceCategoriesScreen {...props} />
-        <Notification />
-      </IndividualOfferContext.Provider>
-    </>,
+    <IndividualOfferContext.Provider value={context}>
+      <PriceCategoriesScreen {...props} />
+      <Notification />
+    </IndividualOfferContext.Provider>,
     { initialRouterEntries: [url] }
   )
 }

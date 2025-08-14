@@ -187,6 +187,8 @@ export const individualOfferContextValuesFactory = (
     subCategories: [],
     isEvent: null,
     setIsEvent: () => {},
+    isAccessibilityFilled: true,
+    setIsAccessibilityFilled: () => {},
     ...customIndividualOfferContextValues,
   }
 }
