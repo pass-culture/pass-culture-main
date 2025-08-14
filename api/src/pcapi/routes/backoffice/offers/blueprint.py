@@ -32,6 +32,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import models as geography_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
@@ -96,15 +97,15 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     },
     "DEPARTMENT": {
         "field": "department",
-        "column": offerers_models.Venue.departementCode,
-        "facet": "venue.departmentCode",
-        "inner_join": "venue",
+        "column": geography_models.Address.departmentCode,
+        "facet": "venue.departmentCode",  # FIXME (prouzet, 2025-08-14): user offer address when it is sent to Algolia
+        "inner_join": "address",
     },
     "REGION": {
         "field": "region",
-        "column": offerers_models.Venue.departementCode,
-        "facet": "venue.departmentCode",
-        "inner_join": "venue",
+        "column": geography_models.Address.departmentCode,
+        "facet": "venue.departmentCode",  # FIXME (prouzet, 2025-08-14): user offer address when it is sent to Algolia
+        "inner_join": "address",
         "special": regions_utils.get_department_codes_for_regions,
         "algolia_special": regions_utils.get_department_codes_for_regions,
     },
@@ -254,6 +255,16 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
         {
             "name": "offerer_address",
             "args": (offerers_models.OffererAddress, offers_models.Offer.offererAddress),
+        },
+    ],
+    "address": [
+        {
+            "name": "offerer_address",
+            "args": (offerers_models.OffererAddress, offers_models.Offer.offererAddress),
+        },
+        {
+            "name": "address",
+            "args": (geography_models.Address, offerers_models.OffererAddress.address),
         },
     ],
     "venue": [
