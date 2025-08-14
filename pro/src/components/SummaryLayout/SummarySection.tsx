@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 
 import fullEditIcon from '@/icons/full-edit.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { Divider } from '@/ui-kit/Divider/Divider'
 
 import style from './SummaryLayout.module.scss'
 
@@ -13,6 +14,7 @@ interface SummaryLayoutSectionProps {
   className?: string
   editLink?: string | ReactNode
   'aria-label'?: string
+  shouldShowDivider?: boolean
 }
 
 export const SummarySection = ({
@@ -20,9 +22,18 @@ export const SummarySection = ({
   children,
   className,
   editLink,
+  shouldShowDivider = false,
   ...props
 }: SummaryLayoutSectionProps): JSX.Element => (
-  <div className={cn(style['summary-layout-section'], className)}>
+  <div
+    className={cn(
+      style['summary-layout-section'],
+      {
+        [style['summary-layout-section-with-divider']]: shouldShowDivider,
+      },
+      className
+    )}
+  >
     <div className={style['summary-layout-section-header']}>
       <h2
         className={cn(style['section-title'], {
@@ -46,5 +57,6 @@ export const SummarySection = ({
       )}
     </div>
     {children}
+    {shouldShowDivider && <Divider size="large" />}
   </div>
 )

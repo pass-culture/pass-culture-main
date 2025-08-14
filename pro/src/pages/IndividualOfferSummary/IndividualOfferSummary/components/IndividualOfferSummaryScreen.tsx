@@ -196,10 +196,6 @@ export const IndividualOfferSummaryScreen = () => {
 
             {mode === OFFER_WIZARD_MODE.CREATION && (
               <>
-                {offer.isEvent && (
-                  <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
-                )}
-                <StockSection offer={offer} canBeDuo={canBeDuo} />
                 {isMediaPageEnabled && (
                   <MediaSection
                     offerId={offer.id}
@@ -207,6 +203,14 @@ export const IndividualOfferSummaryScreen = () => {
                     shouldImageBeHidden
                   />
                 )}
+                {offer.isEvent && (
+                  <PriceCategoriesSection
+                    offer={offer}
+                    canBeDuo={canBeDuo}
+                    shouldShowDivider
+                  />
+                )}
+                <StockSection offer={offer} canBeDuo={canBeDuo} />
               </>
             )}
           </SummaryContent>
@@ -218,7 +222,7 @@ export const IndividualOfferSummaryScreen = () => {
                 alt=""
                 className={styles['icon-info-phone']}
               />
-              <h2 className={styles['title']}>Aperçu dans l’app</h2>
+              <h2 className={styles.title}>Aperçu dans l’app</h2>
             </div>
 
             <OfferAppPreview offer={offer} />
