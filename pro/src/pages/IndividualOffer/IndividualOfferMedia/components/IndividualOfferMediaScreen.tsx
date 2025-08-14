@@ -227,6 +227,7 @@ export const IndividualOfferMediaScreen = ({
                       logEvent(Events.OFFER_FORM_VIDEO_URL_ERROR, {
                         offerId: offer.id,
                         userId: currentUser?.id,
+                        videoUrl: value,
                       })
                     }
                   }}
