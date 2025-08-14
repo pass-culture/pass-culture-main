@@ -3,6 +3,7 @@ import logging
 import typing
 from typing import TYPE_CHECKING
 
+import flask_sqlalchemy
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
@@ -106,7 +107,10 @@ class Permissions(enum.Enum):
 
 
 def sync_enum_with_db_field(
-    session: sa_orm.Session, py_enum: type[enum.Enum], py_attr: str, db_class: type[Model]
+    session: sa_orm.scoped_session[flask_sqlalchemy.session.Session],
+    py_enum: type[enum.Enum],
+    py_attr: str,
+    db_class: type[Model],
 ) -> None:
     db_values = set(p.name for p in session.query(db_class.name).all())
     py_values = set(getattr(e, py_attr) for e in py_enum)
@@ -131,7 +135,7 @@ def sync_enum_with_db_field(
         )
 
 
-def sync_db_permissions(session: sa_orm.Session) -> None:
+def sync_db_permissions(session: sa_orm.scoped_session[flask_sqlalchemy.session.Session]) -> None:
     """
     Automatically synchronize `permission` table in database from the
     `Permissions` Python Enum.
@@ -199,7 +203,7 @@ class Roles(enum.Enum):
     SUPPORT_PARTENAIRES_TECHNIQUES = "support_partenaires_techniques"
 
 
-def sync_db_roles(session: sa_orm.Session) -> None:
+def sync_db_roles(session: sa_orm.scoped_session[flask_sqlalchemy.session.Session]) -> None:
     """
     Automatically synchronize `role` table in database from the
     `Roles` Python Enum.

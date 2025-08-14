@@ -29,7 +29,6 @@ import pcapi.core.finance.models as finance_models
 import pcapi.utils.db as db_utils
 import pcapi.utils.postal_code as postal_code_utils
 from pcapi import settings
-from pcapi.connectors.acceslibre import AccessibilityInfo
 from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsModel
 from pcapi.connectors.big_query.queries.offerer_stats import TopOffersData
 from pcapi.core.criteria.models import VenueCriterion
@@ -373,7 +372,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         "OpeningHours", back_populates="venue", passive_deletes=True
     )
 
-    offererAddressId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+    offererAddressId: sa_orm.Mapped[int | None] = sa.orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True
     )
     offererAddress: sa_orm.Mapped["OffererAddress | None"] = sa_orm.relationship(
@@ -834,7 +833,7 @@ class AccessibilityProvider(PcObject, Model):
     )
     externalAccessibilityId: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=False)
     externalAccessibilityUrl: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=False)
-    externalAccessibilityData: sa_orm.Mapped[AccessibilityInfo | None] = sa.orm.mapped_column(
+    externalAccessibilityData: sa_orm.Mapped[dict | None] = sa.orm.mapped_column(
         MutableDict.as_mutable(JSONB), nullable=True
     )
     lastUpdateAtProvider: sa_orm.Mapped[datetime] = sa.orm.mapped_column(
@@ -862,7 +861,7 @@ class OpeningHours(PcObject, Model):
     weekday: sa_orm.Mapped[Weekday] = sa.orm.mapped_column(
         db_utils.MagicEnum(Weekday), nullable=False, default=Weekday.MONDAY
     )
-    timespan: sa_orm.Mapped[list[psycopg2.extras.NumericRange]] = sa.orm.mapped_column(
+    timespan: sa_orm.Mapped[list[psycopg2.extras.NumericRange] | None] = sa.orm.mapped_column(
         sa_psql.ARRAY(sa_psql.ranges.NUMRANGE), nullable=True
     )
 

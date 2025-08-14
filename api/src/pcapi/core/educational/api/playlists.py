@@ -84,7 +84,7 @@ def synchronize_institution_playlist(
         getattr(row, ctx.local_attr_name): row
         for row in db.session.query(educational_models.CollectivePlaylist).filter(
             educational_models.CollectivePlaylist.type == playlist_type,
-            educational_models.CollectivePlaylist.institution == institution,
+            educational_models.CollectivePlaylist.institutionId == institution.id,
         )
     }
 
@@ -128,9 +128,9 @@ def synchronize_institution_playlist(
             lambda item: item[ctx.local_attr_name] in existing_foreign_ids,
             playlist_items_to_add,
         )
-        db.session.bulk_insert_mappings(educational_models.CollectivePlaylist, playlist_items_to_really_add)
+        db.session.bulk_insert_mappings(educational_models.CollectivePlaylist, playlist_items_to_really_add)  # type: ignore [arg-type]
     if playlist_items_to_update:
-        db.session.bulk_update_mappings(educational_models.CollectivePlaylist, playlist_items_to_update)
+        db.session.bulk_update_mappings(educational_models.CollectivePlaylist, playlist_items_to_update)  # type: ignore [arg-type]
 
 
 def synchronize_collective_playlist(playlist_type: educational_models.PlaylistType) -> None:
@@ -141,6 +141,7 @@ def synchronize_collective_playlist(playlist_type: educational_models.PlaylistTy
         current_institution_id = int(getattr(row, "institution_id"))
         if institution is None:
             institution = db.session.get(educational_models.EducationalInstitution, current_institution_id)
+        assert institution  # helps mypy
         if institution.id != current_institution_id:
             try:
                 with transaction():

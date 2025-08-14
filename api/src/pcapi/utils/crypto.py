@@ -60,7 +60,9 @@ def hash_public_api_key(clear_text: str) -> bytes:
     return _hash_password_with_sha3_512(clear_text)
 
 
-def check_password(clear_text: str, hashed: bytes) -> bool:
+def check_password(clear_text: str, hashed: bytes | None) -> bool:
+    if not hashed:
+        return False
     if settings.USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM:
         checker = _check_password_with_md5
     else:

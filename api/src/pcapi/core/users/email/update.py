@@ -263,7 +263,9 @@ def validate_email_update_request(
     if recent_password_reset_token:
         recent_password_reset_token.expire()
 
-    return db.session.get(models.User, user.id)
+    user = db.session.get(models.User, user.id)
+    assert user  # helps mypy
+    return user
 
 
 def request_email_update_from_pro(user: models.User, email: str, password: str) -> None:

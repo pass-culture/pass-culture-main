@@ -85,9 +85,11 @@ def list_chronicles() -> utils.BackofficeResponse:
         if form.search_type.data in (forms.SearchType.ALL.name, forms.SearchType.CHRONICLE_CONTENT.name):
             q_filters.append(
                 sa.and_(
-                    chronicles_models.Chronicle._content_ts_vector.op("@@")(sa.func.plainto_tsquery("french", w))
-                    for w in form.q.data.split(" ")
-                    if len(w) > 1
+                    *[
+                        chronicles_models.Chronicle._content_ts_vector.op("@@")(sa.func.plainto_tsquery("french", w))
+                        for w in form.q.data.split(" ")
+                        if len(w) > 1
+                    ]
                 )
             )
         if form.search_type.data in (forms.SearchType.ALL.name, forms.SearchType.PRODUCT_NAME.name):
@@ -96,7 +98,7 @@ def list_chronicles() -> utils.BackofficeResponse:
             else:
                 query = query.join(chronicles_models.Chronicle.products)
             split_product_name = "%".join(form.q.data.split(" "))
-            q_filters.append(offers_models.Product.name.ilike(f"%{split_product_name}%"))  # type: ignore[arg-type]
+            q_filters.append(offers_models.Product.name.ilike(f"%{split_product_name}%"))
     if q_filters:
         query = query.filter(sa.or_(*q_filters))
 

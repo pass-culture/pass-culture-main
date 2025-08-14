@@ -5,6 +5,7 @@ import pathlib
 import re
 import shutil
 import tempfile
+import typing
 
 import flask
 from pydantic.v1.networks import HttpUrl
@@ -233,7 +234,7 @@ def _create_ubble_identification(
 def _update_identity_fraud_check(
     fraud_check: fraud_models.BeneficiaryFraudCheck, content: fraud_models.UbbleContent
 ) -> None:
-    fraud_check.thirdPartyId = content.identification_id
+    fraud_check.thirdPartyId = typing.cast(str, content.identification_id)
 
     if is_v2_identification(content.identification_id):
         if not fraud_check.resultContent:

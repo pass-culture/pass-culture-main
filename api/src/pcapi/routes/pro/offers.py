@@ -661,7 +661,7 @@ def delete_price_category(offer_id: int, price_category_id: int) -> None:
 @atomic()
 def get_active_venue_offer_by_ean(venue_id: int, ean: str) -> offers_serialize.GetActiveEANOfferResponseModel:
     try:
-        venue = offerers_repository.get_venue_by_id(venue_id)
+        venue = get_or_404(offerers_models.Venue, venue_id)
         rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
         offer = offers_repository.get_active_offer_by_venue_id_and_ean(venue_id, ean)
     except exceptions.OfferNotFound:
@@ -723,7 +723,7 @@ def _format_offer_opening_hours(
     formatted: dict[str, list[tuple[str, str]] | None] = {weekday.value: None for weekday in offerers_models.Weekday}
     for oh in opening_hours or []:
         timespans = []
-        for ts in oh.timespan:
+        for ts in oh.timespan or []:
             lower = int(ts.lower)
             upper = int(ts.upper)
 

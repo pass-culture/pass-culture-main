@@ -814,7 +814,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     withdrawalDelay = sa_orm.mapped_column(sa.BigInteger, nullable=True)
     withdrawalDetails = sa_orm.mapped_column(sa.Text, nullable=True)
     withdrawalType = sa_orm.mapped_column(sa.Enum(WithdrawalTypeEnum), nullable=True)
-    offererAddressId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+    offererAddressId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True
     )
     offererAddress: sa_orm.Mapped["OffererAddress | None"] = sa_orm.relationship(

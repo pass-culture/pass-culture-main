@@ -36,11 +36,11 @@ class Provider(PcObject, Model, DeactivableMixin):
         sa.Boolean, nullable=False, default=False, server_default=sa_sql.expression.false()
     )
 
-    logoUrl: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text(), nullable=True)
-    bookingExternalUrl: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text(), nullable=True)
-    cancelExternalUrl: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text(), nullable=True)
-    notificationExternalUrl: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.VARCHAR(length=255), nullable=True)
-    hmacKey: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text(), nullable=True)
+    logoUrl: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.Text(), nullable=True)
+    bookingExternalUrl: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.Text(), nullable=True)
+    cancelExternalUrl: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.Text(), nullable=True)
+    notificationExternalUrl: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.VARCHAR(length=255), nullable=True)
+    hmacKey: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.Text(), nullable=True)
     pricesInCents: sa_orm.Mapped[bool] = sa.orm.mapped_column(
         sa.Boolean, nullable=False, default=False, server_default=sa_sql.expression.false()
     )
@@ -89,10 +89,10 @@ class VenueProviderExternalUrls(PcObject, Model, DeactivableMixin):
     )
 
     # Ticketing urls
-    bookingExternalUrl: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text(), nullable=True)
-    cancelExternalUrl: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text(), nullable=True)
+    bookingExternalUrl: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.Text(), nullable=True)
+    cancelExternalUrl: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.Text(), nullable=True)
     # Notification url
-    notificationExternalUrl: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text(), nullable=True)
+    notificationExternalUrl: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.Text(), nullable=True)
 
     __table_args__ = (
         sa.CheckConstraint(
@@ -139,7 +139,7 @@ class VenueProvider(PcObject, Model, DeactivableMixin):
     # describe if synchronised offers are available for duo booking or not
     isDuoOffers = sa.orm.mapped_column(sa.Boolean, nullable=True)
 
-    isFromAllocineProvider = sa_orm.column_property(  # type: ignore[misc]
+    isFromAllocineProvider = sa_orm.column_property(
         sa.exists(
             sa.select(Provider.id)
             .where(sa.and_(Provider.id == providerId, Provider.localClass == "AllocineStocks"))
@@ -147,7 +147,7 @@ class VenueProvider(PcObject, Model, DeactivableMixin):
         )
     )
 
-    isFromCinemaProvider = sa_orm.column_property(  # type: ignore[misc]
+    isFromCinemaProvider = sa_orm.column_property(
         sa.exists(sa.select(Provider.id))
         .where(
             sa.and_(

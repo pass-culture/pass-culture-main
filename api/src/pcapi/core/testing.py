@@ -38,9 +38,9 @@ def assert_no_duplicated_queries() -> collections.abc.Generator[None, None, None
                 function_under_test()
     """
     # We record queries with _record_end_of_query and register_event_for_query_logger
-    flask.g._query_logger = []  # type: ignore[attr-defined]
+    flask.g._query_logger = []
     yield
-    queries = flask.g._query_logger.copy()  # type: ignore[attr-defined]
+    queries = flask.g._query_logger.copy()
 
     statements = [query["statement"] for query in queries if "from feature" not in query["statement"].lower()]
 
@@ -73,16 +73,16 @@ def assert_num_queries(expected_n_queries: int) -> collections.abc.Generator[Non
     """
     # Flask gracefully provides a global. Flask-SQLAlchemy uses it for
     # the same purpose. Let's do the same.
-    flask.g._query_logger = []  # type: ignore[attr-defined]
+    flask.g._query_logger = []
     yield
-    queries = flask.g._query_logger.copy()  # type: ignore[attr-defined]
+    queries = flask.g._query_logger.copy()
 
     if len(queries) != expected_n_queries:
         details = "\n".join(_format_sql_query(query, i, len(queries)) for i, query in enumerate(queries, start=1))
         pytest.fail(
             f"{len(queries)} queries executed, {expected_n_queries} expected\nCaptured queries were:\n{details}"
         )
-    del flask.g._query_logger  # type: ignore[attr-defined]
+    del flask.g._query_logger
 
 
 def _format_sql_query(query: dict, i: int, total: int) -> str:

@@ -650,7 +650,7 @@ class CollectiveOffer(
         index=True,
     )
 
-    teacher: sa_orm.Mapped["EducationalRedactor"] = sa_orm.relationship(
+    teacher: sa_orm.Mapped["EducationalRedactor | None"] = sa_orm.relationship(
         "EducationalRedactor",
         back_populates="collectiveOffers",
         uselist=False,

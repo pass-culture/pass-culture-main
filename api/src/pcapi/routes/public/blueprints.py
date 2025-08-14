@@ -12,7 +12,7 @@ from . import spectree_schemas
 
 
 def _is_route_reading_json() -> bool:
-    endpoint_name = request.url_rule.endpoint
+    endpoint_name = request.url_rule.endpoint if request.url_rule else None
     endpoint_function = current_app.view_functions.get(endpoint_name)
     return endpoint_function and "body" in endpoint_function.__annotations__
 

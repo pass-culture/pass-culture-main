@@ -523,7 +523,7 @@ def complete_profile(
     if postal_code in postal_code_utils.INELIGIBLE_POSTAL_CODES:
         raise exceptions.IneligiblePostalCodeException()
 
-    update_payload = {
+    update_payload: dict = {
         "address": address,
         "city": city,
         "postalCode": postal_code,
@@ -669,7 +669,7 @@ def handle_eligibility_difference_between_declaration_and_identity_provider(
     profile_completion_fraud_check = (
         db.session.query(fraud_models.BeneficiaryFraudCheck)
         .filter(
-            fraud_models.BeneficiaryFraudCheck.user == user,
+            fraud_models.BeneficiaryFraudCheck.userId == user.id,
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.PROFILE_COMPLETION,
             fraud_models.BeneficiaryFraudCheck.eligibilityType == declared_eligibility,
         )
@@ -682,7 +682,7 @@ def handle_eligibility_difference_between_declaration_and_identity_provider(
     honor_statement_fraud_check = (
         db.session.query(fraud_models.BeneficiaryFraudCheck)
         .filter(
-            fraud_models.BeneficiaryFraudCheck.user == user,
+            fraud_models.BeneficiaryFraudCheck.userId == user.id,
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.HONOR_STATEMENT,
             fraud_models.BeneficiaryFraudCheck.eligibilityType == declared_eligibility,
         )

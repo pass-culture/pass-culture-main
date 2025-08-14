@@ -156,10 +156,10 @@ class AccountState(enum.Enum):
 class UserTagMapping(PcObject, Model):
     __tablename__ = "user_tag_mapping"
 
-    userId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False
     )
-    tagId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+    tagId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user_tag.id", ondelete="CASCADE"), index=True, nullable=False
     )
 
@@ -169,61 +169,61 @@ class UserTagMapping(PcObject, Model):
 class User(PcObject, Model, DeactivableMixin):
     __tablename__ = "user"
 
-    activity = sa.orm.mapped_column(sa.String(128), nullable=True)
-    address = sa.orm.mapped_column(sa.Text, nullable=True)
-    birthPlace = sa.orm.mapped_column(sa.Text, nullable=True)
-    city = sa.orm.mapped_column(sa.String(100), nullable=True)
-    civility = sa.orm.mapped_column(sa.VARCHAR(length=20), nullable=True)
-    comment = sa.orm.mapped_column(sa.Text(), nullable=True)
-    culturalSurveyFilledDate = sa.orm.mapped_column(sa.DateTime, nullable=True)
+    activity = sa_orm.mapped_column(sa.String(128), nullable=True)
+    address = sa_orm.mapped_column(sa.Text, nullable=True)
+    birthPlace = sa_orm.mapped_column(sa.Text, nullable=True)
+    city = sa_orm.mapped_column(sa.String(100), nullable=True)
+    civility = sa_orm.mapped_column(sa.VARCHAR(length=20), nullable=True)
+    comment = sa_orm.mapped_column(sa.Text(), nullable=True)
+    culturalSurveyFilledDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
     # culturalSurveyId is obsolete. the column is kept for backward compatibility with the existing data
-    culturalSurveyId = sa.orm.mapped_column(postgresql.UUID(as_uuid=True), nullable=True)
-    dateCreated: sa_orm.Mapped[datetime] = sa.orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
-    dateOfBirth = sa.orm.mapped_column(sa.DateTime, nullable=True)  # declared at signup
-    departementCode = sa.orm.mapped_column(sa.String(3), nullable=True)
-    email: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.String(120), nullable=False, unique=True)
-    externalIds: sa_orm.Mapped[dict] = sa.orm.mapped_column(
+    culturalSurveyId = sa_orm.mapped_column(postgresql.UUID(as_uuid=True), nullable=True)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateOfBirth = sa_orm.mapped_column(sa.DateTime, nullable=True)  # declared at signup
+    departementCode = sa_orm.mapped_column(sa.String(3), nullable=True)
+    email: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(120), nullable=False, unique=True)
+    externalIds: sa_orm.Mapped[dict] = sa_orm.mapped_column(
         postgresql.json.JSONB, nullable=True, default={}, server_default="{}"
     )
-    extraData: sa_orm.Mapped[dict] = sa.orm.mapped_column(
+    extraData: sa_orm.Mapped[dict] = sa_orm.mapped_column(
         MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}"
     )
-    firstName = sa.orm.mapped_column(sa.String(128), nullable=True)
-    hasSeenProTutorials: sa_orm.Mapped[bool] = sa.orm.mapped_column(
+    firstName = sa_orm.mapped_column(sa.String(128), nullable=True)
+    hasSeenProTutorials: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, nullable=False, server_default=expression.false()
     )
-    hasSeenProRgs: sa_orm.Mapped[bool] = sa.orm.mapped_column(
+    hasSeenProRgs: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, nullable=False, server_default=expression.false()
     )
-    idPieceNumber = sa.orm.mapped_column(sa.String, nullable=True, unique=True)
-    ineHash = sa.orm.mapped_column(sa.Text(), nullable=True, unique=True)
-    irisFranceId = sa.orm.mapped_column(sa.BigInteger, sa.ForeignKey("iris_france.id"), nullable=True)
+    idPieceNumber = sa_orm.mapped_column(sa.String, nullable=True, unique=True)
+    ineHash = sa_orm.mapped_column(sa.Text(), nullable=True, unique=True)
+    irisFranceId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("iris_france.id"), nullable=True)
     irisFrance: sa_orm.Mapped[IrisFrance] = sa_orm.relationship(IrisFrance, foreign_keys=[irisFranceId])
-    isEmailValidated = sa.orm.mapped_column(sa.Boolean, nullable=True, server_default=expression.false())
-    lastConnectionDate = sa.orm.mapped_column(sa.DateTime, nullable=True)
-    lastName = sa.orm.mapped_column(sa.String(128), nullable=True)
-    married_name = sa.orm.mapped_column(sa.String(128), nullable=True)
-    needsToFillCulturalSurvey = sa.orm.mapped_column(sa.Boolean, server_default=expression.true(), default=True)
-    notificationSubscriptions: sa_orm.Mapped[dict] = sa.orm.mapped_column(
+    isEmailValidated = sa_orm.mapped_column(sa.Boolean, nullable=True, server_default=expression.false())
+    lastConnectionDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    lastName = sa_orm.mapped_column(sa.String(128), nullable=True)
+    married_name = sa_orm.mapped_column(sa.String(128), nullable=True)
+    needsToFillCulturalSurvey = sa_orm.mapped_column(sa.Boolean, server_default=expression.true(), default=True)
+    notificationSubscriptions: sa_orm.Mapped[dict] = sa_orm.mapped_column(
         MutableDict.as_mutable(postgresql.json.JSONB),
         nullable=True,
         default=asdict(NotificationSubscriptions()),
         server_default="""{"marketing_push": true, "marketing_email": true, "subscribed_themes": []}""",
     )
-    password: sa_orm.Mapped[bytes] = sa.orm.mapped_column(sa.LargeBinary(60), nullable=True)
-    _phoneNumber = sa.orm.mapped_column(sa.String(20), nullable=True, index=True, name="phoneNumber")
-    phoneValidationStatus = sa.orm.mapped_column(
+    password: sa_orm.Mapped[bytes | None] = sa_orm.mapped_column(sa.LargeBinary(60), nullable=True)
+    _phoneNumber = sa_orm.mapped_column(sa.String(20), nullable=True, index=True, name="phoneNumber")
+    phoneValidationStatus = sa_orm.mapped_column(
         sa.Enum(PhoneValidationStatusType, create_constraint=False), nullable=True
     )
-    postalCode = sa.orm.mapped_column(sa.String(5), nullable=True)
-    recreditAmountToShow = sa.orm.mapped_column(sa.Numeric(10, 2), nullable=True)
-    roles: sa_orm.Mapped[list[UserRole]] = sa.orm.mapped_column(
+    postalCode = sa_orm.mapped_column(sa.String(5), nullable=True)
+    recreditAmountToShow = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=True)
+    roles: sa_orm.Mapped[list[UserRole]] = sa_orm.mapped_column(
         MutableList.as_mutable(postgresql.ARRAY(sa.Enum(UserRole, native_enum=False, create_constraint=False))),
         nullable=False,
         server_default="{}",
     )
-    schoolType = sa.orm.mapped_column(sa.Enum(SchoolTypeEnum, create_constraint=False), nullable=True)
-    validatedBirthDate = sa.orm.mapped_column(sa.Date, nullable=True)  # validated by an Identity Provider
+    schoolType = sa_orm.mapped_column(sa.Enum(SchoolTypeEnum, create_constraint=False), nullable=True)
+    validatedBirthDate = sa_orm.mapped_column(sa.Date, nullable=True)  # validated by an Identity Provider
 
     UserOfferers: sa_orm.Mapped[list["UserOfferer"]] = sa_orm.relationship("UserOfferer", back_populates="user")
     discordUser: sa_orm.Mapped[DiscordUser] = sa_orm.relationship(
@@ -804,12 +804,12 @@ class User(PcObject, Model, DeactivableMixin):
 class DiscordUser(PcObject, Model):
     __tablename__ = "discord_user"
 
-    userId = sa.orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), primary_key=True)
+    userId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), primary_key=True)
     user: sa_orm.Mapped["User"] = sa_orm.relationship("User", back_populates="discordUser")
-    discordId = sa.orm.mapped_column(sa.Text, nullable=True, unique=True)
-    hasAccess = sa.orm.mapped_column(sa.Boolean, nullable=False, server_default=expression.true())
-    isBanned = sa.orm.mapped_column(sa.Boolean, nullable=False, server_default=expression.false(), default=False)
-    lastUpdated = sa.orm.mapped_column(
+    discordId = sa_orm.mapped_column(sa.Text, nullable=True, unique=True)
+    hasAccess = sa_orm.mapped_column(sa.Boolean, nullable=False, server_default=expression.true())
+    isBanned = sa_orm.mapped_column(sa.Boolean, nullable=False, server_default=expression.false(), default=False)
+    lastUpdated = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now(), onupdate=sa.func.now()
     )
 
@@ -874,19 +874,19 @@ class DomainsCredit:
 class Favorite(PcObject, Model):
     __tablename__ = "favorite"
 
-    userId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False
     )
 
     user: sa_orm.Mapped["User"] = sa_orm.relationship("User", foreign_keys=[userId], backref="favorites")
 
-    offerId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False
     )
 
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", foreign_keys=[offerId], backref="favorites")
 
-    dateCreated = sa.orm.mapped_column(sa.DateTime, nullable=True, default=datetime.utcnow)
+    dateCreated = sa_orm.mapped_column(sa.DateTime, nullable=True, default=datetime.utcnow)
 
     __table_args__ = (
         sa.UniqueConstraint(
@@ -916,24 +916,24 @@ class EmailHistoryEventTypeEnum(enum.Enum):
 class UserEmailHistory(PcObject, Model):
     __tablename__ = "user_email_history"
 
-    userId = sa.orm.mapped_column(
+    userId = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), index=True, nullable=True
     )
     user: sa_orm.Mapped["User"] = sa_orm.relationship(
         "User", foreign_keys=[userId], backref=sa_orm.backref("email_history", passive_deletes=True)
     )
 
-    oldUserEmail: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.String(120), nullable=False, unique=False)
-    oldDomainEmail: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.String(120), nullable=False, unique=False)
+    oldUserEmail: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(120), nullable=False, unique=False)
+    oldDomainEmail: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(120), nullable=False, unique=False)
 
-    newUserEmail: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.String(120), nullable=True, unique=False)
-    newDomainEmail: sa_orm.Mapped[str | None] = sa.orm.mapped_column(sa.String(120), nullable=True, unique=False)
+    newUserEmail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(120), nullable=True, unique=False)
+    newDomainEmail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(120), nullable=True, unique=False)
 
-    creationDate: sa_orm.Mapped[datetime] = sa.orm.mapped_column(
+    creationDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now()
     )
 
-    eventType: sa_orm.Mapped[EmailHistoryEventTypeEnum] = sa.orm.mapped_column(
+    eventType: sa_orm.Mapped[EmailHistoryEventTypeEnum] = sa_orm.mapped_column(
         sa.Enum(EmailHistoryEventTypeEnum), nullable=False
     )
 
@@ -1035,46 +1035,46 @@ class UserAccountUpdateFlag(enum.Enum):
 
 class UserAccountUpdateRequest(PcObject, Model):
     __tablename__ = "user_account_update_request"
-    dsApplicationId: sa_orm.Mapped[int] = sa.orm.mapped_column(sa.BigInteger, nullable=False, index=True, unique=True)
-    dsTechnicalId: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=False)
-    status: sa_orm.Mapped[dms_models.GraphQLApplicationStates] = sa.orm.mapped_column(
+    dsApplicationId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, nullable=False, index=True, unique=True)
+    dsTechnicalId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    status: sa_orm.Mapped[dms_models.GraphQLApplicationStates] = sa_orm.mapped_column(
         MagicEnum(dms_models.GraphQLApplicationStates), nullable=False
     )
-    dateCreated: sa_orm.Mapped[datetime] = sa.orm.mapped_column(
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
     )
-    dateLastStatusUpdate: sa_orm.Mapped[datetime] = sa.orm.mapped_column(
+    dateLastStatusUpdate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=True, default=datetime.utcnow, server_default=sa.func.now()
     )
     # Information about applicant, used to match with a single user
-    firstName: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=True)
-    lastName: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=True)
-    email: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=False)
-    birthDate = sa.orm.mapped_column(sa.Date, nullable=True)
+    firstName: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=True)
+    lastName: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=True)
+    email: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    birthDate = sa_orm.mapped_column(sa.Date, nullable=True)
     # User found from his/her email - may be null in case of wrong email
-    userId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), index=True, nullable=True
     )
     user: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[userId], backref="accountUpdateRequests")
     # One or several changes may be requested
-    updateTypes: sa_orm.Mapped[list[UserAccountUpdateType]] = sa.orm.mapped_column(
+    updateTypes: sa_orm.Mapped[list[UserAccountUpdateType]] = sa_orm.mapped_column(
         postgresql.ARRAY(MagicEnum(UserAccountUpdateType)), nullable=False, server_default="{}"
     )
-    oldEmail: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=True)
-    newEmail: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=True)
-    newPhoneNumber: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=True)
-    newFirstName: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=True)
-    newLastName: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=True)
+    oldEmail: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=True)
+    newEmail: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=True)
+    newPhoneNumber: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=True)
+    newFirstName: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=True)
+    newLastName: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=True)
     # Ensures that all checkboxes are checked (GCU, sworn statement)
-    allConditionsChecked: sa_orm.Mapped[bool] = sa.orm.mapped_column(sa.Boolean, nullable=False, default=False)
-    lastInstructorId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+    allConditionsChecked: sa_orm.Mapped[bool] = sa_orm.mapped_column(sa.Boolean, nullable=False, default=False)
+    lastInstructorId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True
     )
     lastInstructor: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[lastInstructorId])
-    dateLastUserMessage: sa_orm.Mapped[datetime] = sa.orm.mapped_column(sa.DateTime, nullable=True)
-    dateLastInstructorMessage: sa_orm.Mapped[datetime] = sa.orm.mapped_column(sa.DateTime, nullable=True)
+    dateLastUserMessage: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    dateLastInstructorMessage: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=True)
     # Additional information to filter and/or show icons, badges...
-    flags: sa_orm.Mapped[list[UserAccountUpdateFlag]] = sa.orm.mapped_column(
+    flags: sa_orm.Mapped[list[UserAccountUpdateFlag]] = sa_orm.mapped_column(
         postgresql.ARRAY(MagicEnum(UserAccountUpdateFlag)), nullable=False, server_default="{}"
     )
 
@@ -1173,51 +1173,51 @@ class UserAccountUpdateRequest(PcObject, Model):
 
 class UserSession(PcObject, Model):
     __tablename__ = "user_session"
-    userId: sa_orm.Mapped[int] = sa.orm.mapped_column(sa.BigInteger, nullable=False)
-    uuid: sa_orm.Mapped[UUID] = sa.orm.mapped_column(postgresql.UUID(as_uuid=True), unique=True, nullable=False)
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, nullable=False)
+    uuid: sa_orm.Mapped[UUID] = sa_orm.mapped_column(postgresql.UUID(as_uuid=True), unique=True, nullable=False)
 
 
 class TrustedDevice(PcObject, Model):
     __tablename__ = "trusted_device"
 
-    userId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True
     )
     user: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[userId], back_populates="trusted_devices")
 
-    deviceId: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=False, index=True)
+    deviceId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
 
-    source = sa.orm.mapped_column(sa.Text, nullable=True)
-    os = sa.orm.mapped_column(sa.Text, nullable=True)
-    dateCreated: sa_orm.Mapped[datetime] = sa.orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    source = sa_orm.mapped_column(sa.Text, nullable=True)
+    os = sa_orm.mapped_column(sa.Text, nullable=True)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
 
 class LoginDeviceHistory(PcObject, Model):
     __tablename__ = "login_device_history"
 
-    userId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True
     )
     user: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[userId], back_populates="login_device_history")
 
-    deviceId: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=False, index=True)
+    deviceId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
 
-    source = sa.orm.mapped_column(sa.Text, nullable=True)
-    os = sa.orm.mapped_column(sa.Text, nullable=True)
-    location = sa.orm.mapped_column(sa.Text, nullable=True)
-    dateCreated: sa_orm.Mapped[datetime] = sa.orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    source = sa_orm.mapped_column(sa.Text, nullable=True)
+    os = sa_orm.mapped_column(sa.Text, nullable=True)
+    location = sa_orm.mapped_column(sa.Text, nullable=True)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
 
 class SingleSignOn(PcObject, Model):
     __tablename__ = "single_sign_on"
 
-    userId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True
     )
     user: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[userId], back_populates="single_sign_ons")
 
-    ssoProvider: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=False)
-    ssoUserId: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=False)
+    ssoProvider: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    ssoUserId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
 
     __table_args__ = (
         sa.UniqueConstraint(
@@ -1236,15 +1236,15 @@ class SingleSignOn(PcObject, Model):
 class GdprUserDataExtract(PcObject, Model):
     __tablename__ = "gdpr_user_data_extract"
 
-    dateCreated: sa_orm.Mapped[datetime] = sa.orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
-    dateProcessed: sa_orm.Mapped[datetime] = sa.orm.mapped_column(sa.DateTime, nullable=True)
+    dateProcessed: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
-    userId: sa_orm.Mapped[int] = sa.orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
     user: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[userId])
 
-    authorUserId: sa_orm.Mapped[int] = sa.orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
-    authorUser: sa_orm.Mapped[sa_orm.Mapped[User]] = sa_orm.relationship(User, foreign_keys=[authorUserId])
+    authorUserId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
+    authorUser: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[authorUserId])
 
     @hybrid_property
     def expirationDate(self) -> datetime:
@@ -1262,20 +1262,20 @@ class GdprUserDataExtract(PcObject, Model):
 class GdprUserAnonymization(PcObject, Model):
     __tablename__ = "gdpr_user_anonymization"
 
-    dateCreated: sa_orm.Mapped[datetime] = sa.orm.mapped_column(
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=datetime.utcnow, server_default=func.now()
     )
-    userId: sa_orm.Mapped[int] = sa.orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
     user: sa_orm.Mapped[sa_orm.Mapped[User]] = sa_orm.relationship(User, foreign_keys=[userId])
 
 
 class UserTagCategoryMapping(PcObject, Model):
     __tablename__ = "user_tag_category_mapping"
 
-    tagId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+    tagId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user_tag.id", ondelete="CASCADE"), index=True, nullable=False
     )
-    categoryId: sa_orm.Mapped[int] = sa.orm.mapped_column(
+    categoryId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user_tag_category.id", ondelete="CASCADE"), index=True, nullable=False
     )
 
@@ -1290,9 +1290,9 @@ class UserTag(PcObject, Model):
 
     __tablename__ = "user_tag"
 
-    name: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=False, unique=True)
-    label: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=True)
-    description: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=True)
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
+    label: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    description: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
     categories: sa_orm.Mapped[list["UserTagCategory"]] = sa_orm.relationship(
         "UserTagCategory", secondary=UserTagCategoryMapping.__table__
@@ -1310,14 +1310,14 @@ class UserTagCategory(PcObject, Model):
 
     __tablename__ = "user_tag_category"
 
-    name: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=False, unique=True)
-    label: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.Text, nullable=True)
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
+    label: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=True)
 
     def __str__(self) -> str:
         return self.label or self.name
 
 
-class UserProfileRefreshCampaign(PcObject, Base, Model):
+class UserProfileRefreshCampaign(PcObject, Model):
     """
     Profile refresh campaign. Used to determine if the user's profile is expired or not:
     If last time the user updated his profile (or it was updated for him through a support operator) is before
@@ -1326,7 +1326,11 @@ class UserProfileRefreshCampaign(PcObject, Base, Model):
 
     __tablename__ = "user_profile_refresh_campaign"
 
-    campaignDate: datetime = sa.Column(sa.DateTime, nullable=False)
-    creationDate: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
-    updateDate: datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now(), onupdate=sa.func.now())
-    isActive: bool = sa.Column(sa.Boolean, nullable=False, server_default=expression.true(), default=True)
+    campaignDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
+    creationDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    updateDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now(), onupdate=sa.func.now()
+    )
+    isActive: sa_orm.Mapped[bool] = sa_orm.mapped_column(
+        sa.Boolean, nullable=False, server_default=expression.true(), default=True
+    )
