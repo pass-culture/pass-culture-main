@@ -15,10 +15,17 @@ $action-gap: rem.torem(12px);
     padding: 0;
   }
 
+  .orejime-ModalOverlay {
+    background-color: var(--color-background-overlay);
+  }
+
+  .orejime-ModalWrapper {
+    box-shadow: none;
+  }
+
   .orejime-Banner-body,
   .orejime-Modal {
     background: var(--color-background-default);
-    box-shadow: 0 2px 16px var(--color-medium-shadow);
     color: var(--color-text-default);
   }
 

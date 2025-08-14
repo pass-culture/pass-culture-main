@@ -5,7 +5,7 @@
   min-height: 100vh;
 
   &-header {
-    box-shadow: 0 rem.torem(2px) rem.torem(4px) 0 var(--color-large-shadow);
+    box-shadow: var(--shadow-overlay);
 
     &-brand {
       width: rem.torem(120px);
