@@ -85,6 +85,7 @@ export function IndividualOfferSummaryInformationsScreen({
           <AccessibilitySummarySection
             accessibleItem={offer}
             accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
+            shouldShowDivider
           />
           <SummarySubSection title="Lien de réservation externe en l’absence de crédit">
             <SummaryDescriptionList

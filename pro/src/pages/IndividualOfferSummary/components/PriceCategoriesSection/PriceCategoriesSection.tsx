@@ -16,9 +16,14 @@ import styles from './PriceCategoriesSection.module.scss'
 interface Props {
   offer: GetIndividualOfferResponseModel
   canBeDuo?: boolean
+  shouldShowDivider: boolean
 }
 
-export const PriceCategoriesSection = ({ offer, canBeDuo }: Props) => {
+export const PriceCategoriesSection = ({
+  offer,
+  canBeDuo,
+  shouldShowDivider,
+}: Props) => {
   const mode = useOfferWizardMode()
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
@@ -36,6 +41,7 @@ export const PriceCategoriesSection = ({ offer, canBeDuo }: Props) => {
       title="Tarifs"
       editLink={editLink}
       aria-label="Modifier les tarifs de l’offre"
+      shouldShowDivider={shouldShowDivider}
     >
       {offer.priceCategories?.map((priceCategory) => (
         <div key={priceCategory.id} className={styles['price-category']}>

@@ -189,31 +189,40 @@ export const OfferSection = ({
   )
 
   return (
-    <SummarySection
-      title="Détails de l’offre"
-      editLink={getIndividualOfferUrl({
-        offerId: offer.id,
-        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
-        mode:
-          mode === OFFER_WIZARD_MODE.READ_ONLY
-            ? OFFER_WIZARD_MODE.EDITION
-            : mode,
-        isOnboarding,
-      })}
-      aria-label="Modifier les détails de l’offre"
-      className={styles['cancel-title-margin']}
-    >
-      <SummarySubSection title="À propos de votre offre">
-        <SummaryDescriptionList descriptions={aboutDescriptions} />
-      </SummarySubSection>
-      <SummarySubSection title="Type d’offre">
-        <SummaryDescriptionList descriptions={offerTypeDescriptions} />
-      </SummarySubSection>
-      {displayArtisticInformations && (
-        <SummarySubSection title="Informations artistiques">
-          <SummaryDescriptionList descriptions={artisticInfoDescriptions} />
+    <>
+      <SummarySection
+        title="Détails de l’offre"
+        editLink={getIndividualOfferUrl({
+          offerId: offer.id,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          mode:
+            mode === OFFER_WIZARD_MODE.READ_ONLY
+              ? OFFER_WIZARD_MODE.EDITION
+              : mode,
+          isOnboarding,
+        })}
+        aria-label="Modifier les détails de l’offre"
+        className={styles['cancel-title-margin']}
+        shouldShowDivider
+      >
+        <SummarySubSection
+          title="À propos de votre offre"
+          shouldShowDivider={false}
+        >
+          <SummaryDescriptionList descriptions={aboutDescriptions} />
         </SummarySubSection>
-      )}
+        <SummarySubSection title="Type d’offre" shouldShowDivider={false}>
+          <SummaryDescriptionList descriptions={offerTypeDescriptions} />
+        </SummarySubSection>
+        {displayArtisticInformations && (
+          <SummarySubSection
+            title="Informations artistiques"
+            shouldShowDivider={false}
+          >
+            <SummaryDescriptionList descriptions={artisticInfoDescriptions} />
+          </SummarySubSection>
+        )}
+      </SummarySection>
       <SummarySection
         title="Informations pratiques"
         editLink={getIndividualOfferUrl({
@@ -226,9 +235,13 @@ export const OfferSection = ({
           isOnboarding,
         })}
         aria-label="Modifier les informations pratiques de l’offre"
+        shouldShowDivider
       >
         {!offer.isDigital && (
-          <SummarySubSection title="Localisation de l’offre">
+          <SummarySubSection
+            title="Localisation de l’offre"
+            shouldShowDivider={false}
+          >
             <SummaryDescriptionList
               listDataTestId="localisation-offer-details"
               descriptions={[
@@ -246,14 +259,18 @@ export const OfferSection = ({
             />
           </SummarySubSection>
         )}
-        <SummarySubSection title="Retrait de l’offre">
+        <SummarySubSection title="Retrait de l’offre" shouldShowDivider={false}>
           <SummaryDescriptionList descriptions={practicalInfoDescriptions} />
         </SummarySubSection>
         <AccessibilitySummarySection
           accessibleItem={offer}
           accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
+          shouldShowDivider={false}
         />
-        <SummarySubSection title="Notifications des réservations">
+        <SummarySubSection
+          title="Notifications des réservations"
+          shouldShowDivider={false}
+        >
           <SummaryDescriptionList
             descriptions={[
               {
@@ -265,6 +282,6 @@ export const OfferSection = ({
           />
         </SummarySubSection>
       </SummarySection>
-    </SummarySection>
+    </>
   )
 }

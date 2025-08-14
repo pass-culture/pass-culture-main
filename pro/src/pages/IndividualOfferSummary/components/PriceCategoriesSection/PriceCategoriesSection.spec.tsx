@@ -9,7 +9,9 @@ describe('IndividualOfferSummary:PriceCategoriesSection', () => {
   it('should render correctly', () => {
     const offer = getIndividualOfferFactory()
 
-    renderWithProviders(<PriceCategoriesSection offer={offer} canBeDuo />)
+    renderWithProviders(
+      <PriceCategoriesSection offer={offer} canBeDuo shouldShowDivider />
+    )
 
     expect(screen.getByText(/Tarifs/)).toBeInTheDocument()
     expect(
@@ -21,7 +23,11 @@ describe('IndividualOfferSummary:PriceCategoriesSection', () => {
     const offer = getIndividualOfferFactory()
 
     renderWithProviders(
-      <PriceCategoriesSection offer={offer} canBeDuo={false} />
+      <PriceCategoriesSection
+        offer={offer}
+        canBeDuo={false}
+        shouldShowDivider
+      />
     )
 
     expect(screen.getByText(/Tarifs/)).toBeInTheDocument()
