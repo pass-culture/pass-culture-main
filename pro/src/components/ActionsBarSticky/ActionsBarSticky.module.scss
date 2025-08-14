@@ -31,7 +31,7 @@
       width: 100%;
       flex-direction: column-reverse;
 
-      > * {
+      >* {
         width: 100%;
       }
     }
@@ -44,7 +44,7 @@
       gap: rem.torem(16px);
       width: 100%;
 
-      > * {
+      >* {
         width: 100%;
       }
     }
@@ -71,7 +71,7 @@
 @media (min-width: size.$tablet) {
   .actions-bar {
     position: fixed;
-    box-shadow: 0 rem.torem(-2px) rem.torem(16px) var(--color-large-shadow);
+    box-shadow: var(--shadow-overlay);
     border-top: unset;
 
     &-new-interface {
@@ -95,7 +95,7 @@
         width: unset;
         flex-direction: row;
 
-        > * {
+        >* {
           width: unset;
         }
       }
@@ -105,7 +105,7 @@
         width: unset;
         flex-direction: row;
 
-        > * {
+        >* {
           width: unset;
         }
       }

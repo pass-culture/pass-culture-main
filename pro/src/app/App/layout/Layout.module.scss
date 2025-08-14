@@ -65,8 +65,6 @@ $connect-as-header-height: rem.torem(52px);
         min-width: rem.torem(202px);
         width: size.$side-logo-width;
         min-height: 100vh;
-        box-shadow: inset rem.torem(-10px) 0 rem.torem(20px) 0
-          var(--color-large-shadow);
         max-width: size.$logo-side-width;
         position: sticky;
         height: 100vh;
@@ -285,12 +283,7 @@ $connect-as-header-height: rem.torem(52px);
     max-width: size.$full-content-max-width;
 
     &-with-heading {
-      min-height: calc(
-        100vh -
-          #{size.$footer-height} - rem.torem(32px) - var(
-            --typography-title1-line-height
-          )
-      );
+      min-height: calc(100vh - #{size.$footer-height} - rem.torem(32px) - var(--typography-title1-line-height));
     }
   }
 

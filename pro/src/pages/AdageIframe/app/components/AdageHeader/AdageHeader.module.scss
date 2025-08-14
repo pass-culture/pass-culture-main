@@ -14,8 +14,6 @@
   &-help {
     display: flex;
     flex-wrap: wrap;
-    box-shadow: inset 0 rem.torem(5px) rem.torem(3px) rem.torem(-3px)
-      var(--color-large-shadow);
     background-color: var(--color-background-subtle);
     justify-content: center;
     padding: rem.torem(16px);
@@ -28,7 +26,7 @@
     align-items: flex-start;
     background: var(--color-background-default);
     padding: 0;
-    box-shadow: 0 rem.torem(2px) rem.torem(4px) 0 var(--color-large-shadow);
+    box-shadow: var(--shadow-overlay);
     overflow-x: auto;
 
     &-brand {

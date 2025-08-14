@@ -37,13 +37,14 @@
   &-nav {
     padding: 0 rem.torem(16px);
     height: rem.torem(50px);
-    box-shadow: 0 3px 4px 0 var(--color-medium-shadow);
+    border-bottom: rem.torem(1px) solid var(--color-border-subtle);
     display: flex;
     justify-content: space-between;
     align-items: center;
 
     &-open {
       padding: 0 rem.torem(16px) 0 0;
+      border-right: rem.torem(1px) solid var(--color-border-subtle);
     }
 
     &-button {

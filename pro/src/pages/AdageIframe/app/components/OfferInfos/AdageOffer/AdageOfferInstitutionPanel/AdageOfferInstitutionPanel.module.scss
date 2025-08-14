@@ -4,7 +4,7 @@
 .institution-panel {
   width: 100%;
   border-radius: var(--size-border-radius-l);
-  box-shadow: 0 rem.torem(2px) rem.torem(16px) 0 var(--color-large-shadow);
+  box-shadow: var(--shadow-overlay);
   padding: rem.torem(24px);
 
   &-header {
@@ -45,8 +45,8 @@
 }
 
 @media (min-height: rem.torem(500px)) {
-  //  Make sure the pannel is only sticky when the screen has a big enough height. Otherwise it might not be fully visible.
   .institution-panel {
+    //  Make sure the pannel is only sticky when the screen has a big enough height. Otherwise it might not be fully visible.
     position: sticky;
     top: rem.torem(24px);
   }
