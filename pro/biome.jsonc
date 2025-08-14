@@ -80,7 +80,9 @@
         "noExtraBooleanCast": "error",
         "noUselessCatch": "error",
         "noUselessEscapeInRegex": "error",
-        "noUselessTypeConstraint": "error"
+        "noUselessFragments": "warn", // default: "info"
+        "noUselessTypeConstraint": "error",
+        "useLiteralKeys": "off" // default: "info" (because we use that everywhere for `className={styles['...']}`)
       },
       "correctness": {
         "noChildrenProp": "error",
