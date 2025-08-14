@@ -3,12 +3,12 @@ import type { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducatio
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import type { SortingMode } from '@/commons/hooks/useColumnSorting'
 import { isSameOffer } from '@/commons/utils/isSameOffer'
-import { OffersTable } from '@/components/OffersTable/OffersTable'
+import { OffersTable } from '@/components/CollectiveOffersTable/OffersTable/OffersTable'
 import {
   type Columns,
   OffersTableHead,
-} from '@/components/OffersTable/OffersTableHead/OffersTableHead'
-import { getCellsDefinition } from '@/components/OffersTable/utils/cellDefinitions'
+} from '@/components/CollectiveOffersTable/OffersTableHead/OffersTableHead'
+import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cellDefinitions'
 
 import { CollectiveOfferRow } from './CollectiveOfferRow/CollectiveOfferRow'
 import styles from './CollectiveOffersTable.module.scss'

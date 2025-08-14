@@ -41,7 +41,7 @@ import {
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
-import { getCellsDefinition } from '@/components/OffersTable/utils/cellDefinitions'
+import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cellDefinitions'
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullCopyIcon from '@/icons/full-duplicate.svg'
 import fullPenIcon from '@/icons/full-edit.svg'

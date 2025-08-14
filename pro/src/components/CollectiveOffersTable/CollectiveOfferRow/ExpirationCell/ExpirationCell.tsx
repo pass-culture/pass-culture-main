@@ -10,7 +10,7 @@ import {
   toDateStrippedOfTimezone,
 } from '@/commons/utils/date'
 import { pluralize } from '@/commons/utils/pluralize'
-import { getCellsDefinition } from '@/components/OffersTable/utils/cellDefinitions'
+import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cellDefinitions'
 import fullInfoIcon from '@/icons/full-info.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'

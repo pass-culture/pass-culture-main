@@ -17,7 +17,6 @@ import { getSavedOffererId } from '@/commons/utils/getSavedOffererId'
 import { hardRefresh } from '@/commons/utils/hardRefresh'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { sortByLabel } from '@/commons/utils/strings'
-import { resetAllStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
 import fulBackIcon from '@/icons/full-back.svg'
 import fullCloseIcon from '@/icons/full-close.svg'
 import fullLogoutIcon from '@/icons/full-logout.svg'
@@ -34,6 +33,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import { HelpDropdownMenu } from '../HeaderHelpDropdown/HelpDropdownMenu'
 import { UserReviewDialog } from '../UserReviewDialog/UserReviewDialog'
 import styles from './HeaderDropdown.module.scss'
+import { resetAllStoredFilterConfig } from './utils/resetAllStoredFilterConfig'
 
 export const HeaderDropdown = () => {
   const { logEvent } = useAnalytics()
