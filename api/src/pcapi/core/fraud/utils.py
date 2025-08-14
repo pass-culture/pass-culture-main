@@ -56,7 +56,7 @@ def validate_city(city: str) -> None:
         raise ValueError("Le champ city doit contenir des caractères latins")
 
 
-def matching(column: str, search_value: str) -> ColumnElement[sa.Boolean]:
+def matching(column: str, search_value: str) -> ColumnElement[bool]:
     return _sanitized_string(column) == _sanitized_string(search_value)
 
 

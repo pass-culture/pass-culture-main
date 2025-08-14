@@ -18,7 +18,7 @@ class ValidationStatus(enum.Enum):
 
 @declarative_mixin
 class ValidationStatusMixin:
-    validationStatus: sa_orm.Mapped[ValidationStatus] = sa.Column(
+    validationStatus: sa_orm.Mapped[ValidationStatus] = sa.orm.mapped_column(
         sa.Enum(ValidationStatus, create_constraint=False), nullable=False
     )
 

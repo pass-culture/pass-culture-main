@@ -118,6 +118,7 @@ class LocalProvider(Iterator):
         self.fill_object_attributes(pc_object)
         pc_object.dateModifiedAtLastProvider = providable_info.date_modified_at_provider
 
+        db.session.add(pc_object)
         errors = entity_validator.validate(pc_object)
         if errors and len(errors.errors) > 0:
             self.log_provider_event(providers_models.LocalProviderEventType.SyncError, "ApiErrors")

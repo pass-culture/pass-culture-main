@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 class AtomicContext:
     autoflush: bool
     invalid_transaction: bool
+    transaction: sa.orm.session.SessionTransaction
 
 
 @dataclass
@@ -75,13 +76,13 @@ class atomic:
             g._atomic_contexts = getattr(g, "_atomic_contexts", [])
             g._atomic_contexts.append(
                 AtomicContext(
-                    autoflush=db.session.autoflush,
-                    invalid_transaction=False,
+                    autoflush=db.session.autoflush, invalid_transaction=False, transaction=db.session.begin_nested()
                 )
             )
-            db.session.begin_nested()
+
         else:
             _mark_session_as_managed()
+            db.session.begin_nested()
         db.session.autoflush = False
         return self
 
@@ -98,9 +99,9 @@ class atomic:
             db.session.autoflush = context.autoflush
 
             if context.invalid_transaction or exc_value is not None:
-                db.session.rollback()
+                context.transaction.rollback()
             else:
-                db.session.commit()
+                context.transaction.commit()
 
         else:
             db.session.autoflush = True

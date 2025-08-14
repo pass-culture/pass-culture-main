@@ -1415,7 +1415,7 @@ def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferVal
 
     offer_validation_rules = (
         db.session.query(models.OfferValidationRule)
-        .options(sa_orm.joinedload(models.OfferValidationSubRule, models.OfferValidationRule.subRules))
+        .options(sa_orm.joinedload(models.OfferValidationRule.subRules))
         .filter(models.OfferValidationRule.isActive.is_(True))
         .all()
     )

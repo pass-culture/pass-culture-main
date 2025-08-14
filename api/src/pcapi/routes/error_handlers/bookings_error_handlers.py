@@ -10,8 +10,7 @@ from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 JsonResponse = tuple[Response, int]
 
 
-# mypy does not like us using `@app.errorhandler` more than once.
-@app.errorhandler(exceptions.OfferIsAlreadyBooked)  # type: ignore[arg-type]
+@app.errorhandler(exceptions.OfferIsAlreadyBooked)
 @app.errorhandler(exceptions.QuantityIsInvalid)
 @app.errorhandler(exceptions.StockIsNotBookable)
 @app.errorhandler(exceptions.CannotBookFreeOffers)

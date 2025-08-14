@@ -4,10 +4,10 @@ from sqlalchemy.orm import declarative_mixin
 
 @declarative_mixin
 class AccessibilityMixin:
-    audioDisabilityCompliant = sa.Column(sa.Boolean, nullable=True)
+    audioDisabilityCompliant = sa.orm.mapped_column(sa.Boolean, nullable=True)
 
-    mentalDisabilityCompliant = sa.Column(sa.Boolean, nullable=True)
+    mentalDisabilityCompliant = sa.orm.mapped_column(sa.Boolean, nullable=True)
 
-    motorDisabilityCompliant = sa.Column(sa.Boolean, nullable=True)
+    motorDisabilityCompliant = sa.orm.mapped_column(sa.Boolean, nullable=True)
 
-    visualDisabilityCompliant = sa.Column(sa.Boolean, nullable=True)
+    visualDisabilityCompliant = sa.orm.mapped_column(sa.Boolean, nullable=True)
