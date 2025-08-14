@@ -13,29 +13,11 @@ type StoredFilterConfig = {
 }
 
 export type FilterConfigType = 'individual' | 'collective' | 'template'
+
 export const locallyStoredFilterConfig: Record<FilterConfigType, string> = {
   individual: 'INDIVIDUAL_OFFERS_FILTER_CONFIG',
   collective: 'COLLECTIVE_OFFERS_FILTER_CONFIG',
   template: 'TEMPLATE_OFFERS_FILTER_CONFIG',
-}
-
-export function resetAllStoredFilterConfig() {
-  const isSessionStorageAvailable = storageAvailable('sessionStorage')
-  if (isSessionStorageAvailable) {
-    Object.values(locallyStoredFilterConfig).forEach((key) => {
-      const previousFiltersVisibility = JSON.parse(
-        sessionStorage.getItem(key) || '{}'
-      ).filtersVisibility
-
-      sessionStorage.setItem(
-        key,
-        JSON.stringify({
-          filtersVisibility: previousFiltersVisibility || false,
-          storedFilters: {},
-        })
-      )
-    })
-  }
 }
 
 export function getStoredFilterConfig(
