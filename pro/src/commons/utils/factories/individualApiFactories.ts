@@ -166,7 +166,7 @@ export const getOfferVenueFactory = (
 export const getOfferManagingOffererFactory = (
   customGetOfferManagingOfferer: Partial<GetOfferManagingOffererResponseModel> = {}
 ): GetOfferManagingOffererResponseModel => {
-  const currentOffererId = offererId++
+  const currentOffererId = customGetOfferManagingOfferer.id ?? offererId++
 
   return {
     id: 3,

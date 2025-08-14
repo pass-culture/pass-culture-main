@@ -13,7 +13,7 @@ import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
-import { isOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/utils'
+import { getIsOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/getIsOfferSubcategoryOnline'
 import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
@@ -81,7 +81,10 @@ export const UsefulInformationForm = ({
   const offerSubCategory = subCategories.find(
     (s) => s.id === offer.subcategoryId
   )
-  const isOfferOnline = isOfferSubcategoryOnline(offer, subCategories)
+  const isOfferSubcategoryOnline = getIsOfferSubcategoryOnline(
+    offer,
+    subCategories
+  )
 
   const readOnlyFields = publishedOfferWithSameEAN
     ? Object.keys(DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES)
@@ -89,7 +92,8 @@ export const UsefulInformationForm = ({
 
   const displayNoRefundWarning =
     offerSubCategory?.reimbursementRule === REIMBURSEMENT_RULES.NOT_REIMBURSED
-  const displayWithdrawalReminder = !offerSubCategory?.isEvent && !isOfferOnline
+  const displayWithdrawalReminder =
+    !offerSubCategory?.isEvent && !isOfferSubcategoryOnline
 
   const getFirstWithdrawalTypeEnumValue = (value: string) => {
     switch (value) {
@@ -110,7 +114,7 @@ export const UsefulInformationForm = ({
 
   return (
     <>
-      {!isNewOfferCreationFlowFeatureActive && !isOfferOnline && (
+      {!isNewOfferCreationFlowFeatureActive && !isOfferSubcategoryOnline && (
         <FormLayout.Section title="Où profiter de l’offre ?">
           <OfferLocation
             venue={selectedVenue}
@@ -120,13 +124,13 @@ export const UsefulInformationForm = ({
       )}
       {isNewOfferCreationFlowFeatureActive && (
         <FormLayout.Section title="Où profiter de l’offre ?">
-          {!isOfferOnline && (
+          {!isOfferSubcategoryOnline && (
             <OfferLocation
               venue={selectedVenue}
               readOnlyFields={readOnlyFields}
             />
           )}
-          {isOfferOnline && (
+          {isOfferSubcategoryOnline && (
             <FormLayout.Row className={styles.row}>
               <TextInput
                 label="URL d’accès à l’offre"
@@ -225,7 +229,7 @@ export const UsefulInformationForm = ({
                 maxLength={500}
                 disabled={readOnlyFields.includes('withdrawalDetails')}
                 description={
-                  isOfferOnline
+                  isOfferSubcategoryOnline
                     ? 'Exemples : une création de compte, un code d’accès spécifique, une communication par email...'
                     : 'Exemples : une autre adresse, un horaire d’accès, un délai de retrait, un guichet spécifique, un code d’accès, une communication par email...'
                 }
