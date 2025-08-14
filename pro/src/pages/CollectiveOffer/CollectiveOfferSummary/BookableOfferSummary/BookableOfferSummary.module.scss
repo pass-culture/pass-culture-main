@@ -88,7 +88,7 @@
   height: rem.torem(192px);
   aspect-ratio: 2 / 3;
   border-radius: var(--size-border-radius-m);
-  box-shadow: 0 1px 8px 0 var(--color-large-shadow);
+  box-shadow: var(--shadow-overlay);
   margin-right: rem.torem(24px);
 }
 

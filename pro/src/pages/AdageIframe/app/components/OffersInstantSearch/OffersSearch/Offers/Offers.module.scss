@@ -70,7 +70,7 @@
   background-color: var(--color-background-subtle);
   padding: rem.torem(16px);
   border-radius: var(--size-border-radius-xl);
-  box-shadow: 0 3px 4px 0 var(--color-medium-shadow);
+  box-shadow: var(--shadow-overlay);
   cursor: pointer;
 
   &-icon {
@@ -80,13 +80,11 @@
 
   &:hover {
     text-decoration: underline;
-    box-shadow: 0 3px 4px 0 var(--color-medium-shadow);
   }
 
   &:active {
     color: var(--color-text-subtle);
     text-decoration: none;
-    box-shadow: 0 3px 4px 0 var(--color-medium-shadow);
   }
 
   &:focus-visible {

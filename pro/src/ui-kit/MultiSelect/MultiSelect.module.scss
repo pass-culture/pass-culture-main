@@ -149,7 +149,7 @@
   left: 0;
   right: 0;
   top: rem.torem(42px);
-  box-shadow: 0 rem.torem(3px) rem.torem(4px) var(--color-medium-shadow);
+  box-shadow: var(--shadow-overlay);
   padding-top: rem.torem(16px);
   border-radius: var(--size-border-radius-m);
 }

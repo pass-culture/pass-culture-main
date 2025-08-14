@@ -16,7 +16,6 @@
   background-color: var(--color-background-default);
   padding: 0 rem.torem(16px);
   color: var(--color-text-default);
-  box-shadow: 0 0 0 0 var(--color-black);
   transition:
     background 150ms ease,
     box-shadow 150ms ease;
@@ -26,10 +25,6 @@
   &:focus {
     outline: solid size.$input-border-width var(--color-border-focused);
     border-color: var(--color-border-focused);
-  }
-
-  &:hover:not(:focus) {
-    box-shadow: forms.$input-hover-shadow;
   }
 
   &:disabled {
@@ -63,10 +58,8 @@
   outline-color: var(--color-border-error);
 }
 
-@mixin input-icon-wrapper(
-  $icon-width: rem.torem(16px),
-  $input-icon-margin: rem.torem(16px)
-) {
+@mixin input-icon-wrapper($icon-width: rem.torem(16px),
+  $input-icon-margin: rem.torem(16px)) {
   position: absolute;
   right: 0;
   top: 0;
@@ -83,7 +76,7 @@
     height: auto;
   }
 
-  :disabled + & {
+  :disabled+& {
     color: var(--color-text-disabled);
   }
 }
