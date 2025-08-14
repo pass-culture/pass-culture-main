@@ -1,5 +1,6 @@
 import { addWeeks, format } from 'date-fns'
 
+import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
 import {
   expectOffersOrBookingsAreFound,
   logInAndGoToPage,
@@ -45,6 +46,9 @@ describe('Search collective offers', () => {
     cy.stepLog({
       message: 'I search with the name "' + offerPublished.name + '"',
     })
+
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
     cy.findByLabelText(/Nom de l’offre/).type(offerPublished.name)
     cy.stepLog({ message: 'I validate my filters' })

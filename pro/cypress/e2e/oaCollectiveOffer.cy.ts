@@ -1,5 +1,6 @@
 import { addDays, format } from 'date-fns'
 
+import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
 import {
   expectOffersOrBookingsAreFound,
   logInAndGoToPage,
@@ -151,8 +152,25 @@ describe('Create collective offers with OA', () => {
     cy.findByText('À un groupe scolaire').click()
     fillBasicOfferForm()
     fillOfferDetails()
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    // label of image is not seen
+    cy.checkA11y(
+      undefined,
+      {
+        ...DEFAULT_AXE_RULES,
+        rules: {
+          ...DEFAULT_AXE_RULES?.rules,
+          'label-title-only': { enabled: false },
+        },
+      },
+      cy.a11yLog
+    )
     fillDatesAndPrice()
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
     fillInstitution()
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
     cy.contains(`Adresse : ${venueFullAddress}`)
     verifyAndPublishOffer()
   })

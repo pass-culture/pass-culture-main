@@ -1,5 +1,6 @@
 import { addDays, format } from 'date-fns'
 
+import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
 import { logInAndGoToPage } from '../support/helpers.ts'
 
 describe('Edit digital individual offers', () => {
@@ -21,6 +22,8 @@ describe('Edit digital individual offers', () => {
       logInAndGoToPage(login1, '/offre/individuelle/1/recapitulatif/details')
 
       cy.contains('Récapitulatif')
+      cy.injectAxe(DEFAULT_AXE_CONFIG)
+      cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
       cy.stepLog({ message: 'I check that the 4 links are displayed' })
       cy.findByRole('link', { name: 'Lien actif Détails de l’offre' }).should(
