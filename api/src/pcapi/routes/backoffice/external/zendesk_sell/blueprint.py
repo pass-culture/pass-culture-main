@@ -128,7 +128,15 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
 @zendesk_sell_blueprint.route("/venue/<int:venue_id>/update", methods=["POST"])
 def update_venue(venue_id: int) -> utils.BackofficeResponse:
-    venue = db.session.query(offerers_models.Venue).filter_by(id=venue_id).one_or_none()
+    venue = (
+        db.session.query(offerers_models.Venue)
+        .options(
+            sa_orm.joinedload(offerers_models.Venue.contact),
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
+        )
+        .filter_by(id=venue_id)
+        .one_or_none()
+    )
     if not venue:
         raise NotFound()
 
