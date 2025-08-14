@@ -81,7 +81,8 @@
         "noUselessCatch": "error",
         "noUselessEscapeInRegex": "error",
         "noUselessFragments": "warn", // default: "info"
-        "noUselessTypeConstraint": "error"
+        "noUselessTypeConstraint": "error",
+        "useLiteralKeys": "off" // default: "info" (because we use that everywhere for `className={styles['...']}`)
       },
       "correctness": {
         "noChildrenProp": "error",
