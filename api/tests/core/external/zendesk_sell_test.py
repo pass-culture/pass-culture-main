@@ -77,7 +77,9 @@ def test_update_offerer():
 @patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
 def test_create_venue():
     zendesk_parent_id = 123
-    venue = offerers_factories.VenueFactory(postalCode="97600")
+    venue = offerers_factories.VenueFactory(
+        offererAddress__address__departmentCode="976", offererAddress__address__postalCode="97600"
+    )
     offers_factories.ThingOfferFactory(venue=venue, isActive=False)
 
     with requests_mock.Mocker() as mock:
@@ -122,7 +124,10 @@ def test_update_venue():
     zendesk_parent_id = 100
     zendesk_id = 200
 
-    venue = offerers_factories.VenueFactory(postalCode="98600", contact=None)  # Wallis-et-Futuna
+    # Wallis-et-Futuna
+    venue = offerers_factories.VenueFactory(
+        offererAddress__address__departmentCode="986", offererAddress__address__postalCode="98600", contact=None
+    )
 
     with requests_mock.Mocker() as mock:
         searched = mock.post(
@@ -169,7 +174,11 @@ def test_create_venue_without_parent_offerer():
     # Offerer is not found in Zendesk, but feature flag prevents from creating it
     ret_id = 10
     offerer = offerers_factories.OffererFactory(postalCode="97100")
-    venue = offerers_factories.VenueFactory(postalCode="97200", managingOfferer=offerer)
+    venue = offerers_factories.VenueFactory(
+        offererAddress__address__departmentCode="972",
+        offererAddress__address__postalCode="97200",
+        managingOfferer=offerer,
+    )
     offers_factories.ThingOfferFactory(venue=venue, isActive=False)
 
     with requests_mock.Mocker() as mock:
@@ -216,7 +225,11 @@ def test_create_venue_and_parent_offerer():
     # Offerer is not found in Zendesk, create it before the venue
     ret_id = 10
     offerer = offerers_factories.OffererFactory(postalCode="97100")
-    venue = offerers_factories.VenueFactory(postalCode="97200", managingOfferer=offerer)
+    venue = offerers_factories.VenueFactory(
+        offererAddress__address__departmentCode="972",
+        offererAddress__address__postalCode="97200",
+        managingOfferer=offerer,
+    )
     offers_factories.ThingOfferFactory(venue=venue, isActive=False)
 
     with requests_mock.Mocker() as mock:
