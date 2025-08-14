@@ -1698,7 +1698,7 @@
     "@sentry-internal/browser-utils" "9.46.0"
     "@sentry/core" "9.46.0"
 
-"@sentry/browser@9.46.0", "@sentry/browser@^9.35.0":
+"@sentry/browser@9.46.0", "@sentry/browser@^9.46.0":
   version "9.46.0"
   resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-9.46.0.tgz#9fcc136cc0a076f3e897fde09cf2740cdcacc5ab"
   integrity sha512-NOnCTQCM0NFuwbyt4DYWDNO2zOTj1mCf43hJqGDFb1XM9F++7zAmSNnCx4UrEoBTiFOy40McJwBBk9D1blSktA==
