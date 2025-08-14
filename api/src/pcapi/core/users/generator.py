@@ -34,6 +34,7 @@ class GenerateUserData:
     step: GeneratedSubscriptionStep = GeneratedSubscriptionStep.EMAIL_VALIDATION
     transition_17_18: bool = False
     date_created: datetime.datetime = datetime.datetime.utcnow()
+    postal_code: str | None = None
 
 
 def generate_user(user_data: GenerateUserData) -> users_models.User:
@@ -49,11 +50,14 @@ def generate_user(user_data: GenerateUserData) -> users_models.User:
         user_data.age = 18
 
     Factory = _get_user_factory(user_data)
+    # ensure that postal code is set only for ProfileCompletedUserFactory or a factory that is a descendant of it
+    factory_has_postal_code = users_factories.ProfileCompletedUserFactory in Factory.mro()
     return Factory.create(
         age=user_data.age,
         beneficiaryFraudChecks__type=user_data.id_provider.value,
         beneficiaryFraudChecks__dateCreated=user_data.date_created,
         dateCreated=user_data.date_created,
+        **({"postalCode": user_data.postal_code} if (user_data.postal_code and factory_has_postal_code) else {}),
     )
 
 

@@ -149,6 +149,7 @@ def generate_user() -> utils.BackofficeResponse:
             step=users_generator.GeneratedSubscriptionStep[form.step.data],
             transition_17_18=form.transition_17_18.data,
             date_created=datetime.datetime(raw_date_created.year, raw_date_created.month, raw_date_created.day),
+            postal_code=form.postal_code.data,
         )
         user = users_generator.generate_user(user_data=user_data)
     except users_exceptions.UserGenerationForbiddenException:
