@@ -5,6 +5,7 @@ import type { ReactNode } from 'react'
 import { Provider } from 'react-redux'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { SWRConfig } from 'swr'
+import type { AnyObject } from 'yup'
 
 import type {
   FeatureResponseModel,
@@ -15,8 +16,8 @@ import type { RootState } from '@/commons/store/rootReducer'
 import { configureTestStore } from '@/commons/store/testUtils'
 
 interface RenderComponentFunctionParams<
-  ComponentProps extends Record<string, any> | void = void,
-  ContextValues extends Record<string, any> | void = void,
+  ComponentProps extends AnyObject | unknown = unknown,
+  ContextValues extends AnyObject | unknown = unknown,
 > {
   contextValues?: Partial<ContextValues>
   options?: RenderWithProvidersOptions
@@ -27,14 +28,13 @@ interface RenderComponentFunctionParams<
  * Common Template-Type for integration tests render functions utilizing `renderWithProviders()`.
  */
 export type RenderComponentFunction<
-  ComponentProps extends Record<string, any> | void = void,
-  ContextValues extends Record<string, any> | void = void,
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  ExtraParams extends Record<string, any> = {},
+  ComponentProps extends AnyObject | unknown = unknown,
+  ContextValues extends AnyObject | unknown = unknown,
+  ExtraParams extends AnyObject | unknown = unknown,
 > = (
   params: RenderComponentFunctionParams<ComponentProps, ContextValues> &
     ExtraParams
-) => void
+) => ReturnType<typeof renderWithProviders>
 
 export type RenderWithProvidersOptions = {
   storeOverrides?: DeepPartial<RootState>
