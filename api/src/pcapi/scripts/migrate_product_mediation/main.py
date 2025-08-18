@@ -9,6 +9,11 @@ import argparse
 import logging
 import uuid
 
+from sqlalchemy import and_
+from sqlalchemy import null
+from sqlalchemy import or_
+from sqlalchemy.orm import aliased
+
 from pcapi import settings
 from pcapi.app import app
 from pcapi.connectors import thumb_storage
@@ -24,24 +29,35 @@ logger = logging.getLogger(__name__)
 
 def migrate_product_images_to_product_mediations(batch_size: int, start_with_id: int = 0) -> None:
     migrated_count = 0
-    skipped_existing_mediation = 0
     skipped_fetch_error = 0
     skipped_store_error = 0
 
     last_id = start_with_id
     while True:
-        products_with_thumbs = (
+        PM = aliased(ProductMediation)
+
+        products_to_migrate = (
             db.session.query(Product)
-            .filter(Product.thumbCount > 0, Product.id >= last_id)
+            .outerjoin(
+                PM,
+                and_(
+                    Product.id == PM.productId,
+                    or_(
+                        and_(Product.subcategoryId == "SEANCE_CINE", PM.imageType == ImageType.POSTER),
+                        and_(Product.subcategoryId != "SEANCE_CINE", PM.imageType == ImageType.RECTO),
+                    ),
+                ),
+            )
+            .filter(Product.thumbCount > 0, Product.id >= last_id, PM.id == null())
             .order_by(Product.id)
             .limit(batch_size)
             .all()
         )
 
-        if not products_with_thumbs:
+        if not products_to_migrate:
             break
 
-        for product in products_with_thumbs:
+        for product in products_to_migrate:
             logger.info(
                 "Processing Product ID: %s (thumbCount: %s, subcategoryId: %s)",
                 product.id,
@@ -50,13 +66,6 @@ def migrate_product_images_to_product_mediations(batch_size: int, start_with_id:
             )
             target_image_type = ImageType.POSTER if product.subcategoryId == "SEANCE_CINE" else ImageType.RECTO
             logger.info("Target imageType for Product ID %s is %s", product.id, target_image_type.value)
-
-            if db.session.query(ProductMediation).filter_by(productId=product.id, imageType=target_image_type).first():
-                logger.info(
-                    "Product ID %s already has a %s ProductMediation. Skipping.", product.id, target_image_type.value
-                )
-                skipped_existing_mediation += 1
-                continue
 
             image_bytes = None
             try:
@@ -120,9 +129,8 @@ def migrate_product_images_to_product_mediations(batch_size: int, start_with_id:
                 new_mediation_internal_uuid,
             )
 
-            last_id = product.id + 1
-
-        logger.info("Committing batch of %d ProductMediations", batch_size)
+        last_id = products_to_migrate[-1].id + 1
+        logger.info("Committing results for a batch of %d products", len(products_to_migrate))
         db.session.commit()
 
     if migrated_count > 0:
@@ -130,8 +138,6 @@ def migrate_product_images_to_product_mediations(batch_size: int, start_with_id:
     else:
         logger.info("Migration finished. No new ProductMediations were created.")
 
-    if skipped_existing_mediation > 0:
-        logger.info("%d products skipped (mediation already existed).", skipped_existing_mediation)
     if skipped_fetch_error > 0:
         logger.info("%d products skipped (error fetching old image).", skipped_fetch_error)
     if skipped_store_error > 0:
