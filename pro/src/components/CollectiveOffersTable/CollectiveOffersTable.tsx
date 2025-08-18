@@ -32,6 +32,7 @@ type CollectiveOffersTableProps = {
   currentSortingColumn: CollectiveOffersSortingColumn | null
   currentSortingMode: SortingMode
   currentPageItems: CollectiveOfferResponseModel[]
+  isTemplateTable?: boolean
 }
 
 export const CollectiveOffersTable = ({
@@ -50,6 +51,7 @@ export const CollectiveOffersTable = ({
   currentSortingColumn,
   currentSortingMode,
   currentPageItems,
+  isTemplateTable,
 }: CollectiveOffersTableProps) => {
   const isNewCollectiveOffersStructureActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
@@ -68,7 +70,7 @@ export const CollectiveOffersTable = ({
     ...(isNewCollectiveOffersStructureActive
       ? []
       : [getCellsDefinition().STRUCTURE]),
-    getCellsDefinition().INSTITUTION,
+    ...(isTemplateTable ? [] : [getCellsDefinition().INSTITUTION]),
     getCellsDefinition().COLLECTIVE_STATUS,
   ]
 
@@ -99,6 +101,7 @@ export const CollectiveOffersTable = ({
               selectOffer={setSelectedOffer}
               urlSearchFilters={urlSearchFilters}
               isFirstRow={index === 0}
+              isTemplateTable={isTemplateTable}
             />
           )
         })}

@@ -183,6 +183,7 @@ export const TemplateCollectiveOffersScreen = ({
             currentSortingColumn={currentSortingColumn}
             currentSortingMode={currentSortingMode}
             currentPageItems={currentPageItems}
+            isTemplateTable={true}
           />
           {hasOffers && (
             <div className={styles['offers-pagination']}>
