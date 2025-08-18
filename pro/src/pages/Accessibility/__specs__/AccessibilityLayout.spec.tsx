@@ -16,12 +16,11 @@ import {
 
 const renderAccessibilityLayout: RenderComponentFunction<
   AccessibilityLayoutProps
-> = ({ options = {}, props = {} }) => {
+> = ({ options = {}, props = {} }) =>
   renderWithProviders(
     <AccessibilityLayout {...props}>Children</AccessibilityLayout>,
     options
   )
-}
 
 describe('Accessibility layout', () => {
   it('should handle connected users', () => {
