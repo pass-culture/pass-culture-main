@@ -98,9 +98,23 @@ describe('BookableOfferSummary', () => {
     expect(screen.getByText('Test Offer')).toBeInTheDocument()
   })
 
-  it('should render the venue name', () => {
+  it('should render the venue public name', () => {
     renderBookableOfferSummary(props)
     expect(screen.getByText('Proposé par Test Venue')).toBeInTheDocument()
+  })
+
+  it('should render the venue default name when venue has no public name', () => {
+    const testProps = {
+      offer: getCollectiveOfferFactory({
+        venue: getCollectiveOfferVenueFactory({
+          publicName: null,
+          name: 'Venue 1',
+          departementCode: '75',
+        }),
+      }),
+    }
+    renderBookableOfferSummary(testProps)
+    expect(screen.getByText('Proposé par Venue 1')).toBeInTheDocument()
   })
 
   it('should render the number of participants', () => {
@@ -129,6 +143,24 @@ describe('BookableOfferSummary', () => {
   it('should render the price', () => {
     renderBookableOfferSummary(props)
     expect(screen.getByText('1000 euros')).toBeInTheDocument()
+  })
+
+  it('should render "0 euro" price when offer is free', () => {
+    const testProps = {
+      offer: getCollectiveOfferFactory({
+        collectiveStock: {
+          id: 1,
+          isBooked: false,
+          isCancellable: true,
+          numberOfTickets: 50,
+          price: 0,
+          bookingLimitDatetime: null,
+        },
+      }),
+    }
+
+    renderBookableOfferSummary(testProps)
+    expect(screen.getByText('0 euro')).toBeInTheDocument()
   })
 
   it('should render the booking limit date', () => {
@@ -217,6 +249,18 @@ describe('BookableOfferSummary', () => {
     renderBookableOfferSummary(testProps)
     const previewButton = screen.getByText('Aperçu')
     expect(previewButton).toBeInTheDocument()
+  })
+
+  it('should not render the "Aperçu" action for a draft offer', () => {
+    const testProps = {
+      offer: getCollectiveOfferFactory({
+        displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
+      }),
+    }
+
+    renderBookableOfferSummary(testProps)
+    const previewButton = screen.queryByText('Aperçu')
+    expect(previewButton).not.toBeInTheDocument()
   })
 
   it('should render the "Dupliquer" action if duplication is allowed', () => {

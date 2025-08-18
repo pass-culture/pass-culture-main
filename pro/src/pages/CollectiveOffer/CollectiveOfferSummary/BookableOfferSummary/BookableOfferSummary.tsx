@@ -235,7 +235,10 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
           <dl className={styles['detail-list']}>
             <DetailItem>n°{offer.id}</DetailItem>
             <DetailItem alt={offer.venue.publicName ?? ''} src={strokeHomeIcon}>
-              Proposé par {offer.venue.publicName}
+              Proposé par{' '}
+              {offer.venue.publicName
+                ? offer.venue.publicName
+                : offer.venue.name}
             </DetailItem>
             <DetailItem alt={'Date de l’offre'} src={strokeCalendarIcon}>
               {formatDateRangeWithTime()}
@@ -254,8 +257,9 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                 : DEFAULT_RECAP_VALUE}
             </DetailItem>
             <DetailItem alt="Prix de l’offre" src={strokeEuroIcon}>
-              {offer.collectiveStock?.price
-                ? `${offer.collectiveStock.price} euros`
+              {offer.collectiveStock?.price ||
+              offer.collectiveStock?.price === 0
+                ? `${offer.collectiveStock.price} ${pluralizeString('euro', offer.collectiveStock.price)}`
                 : DEFAULT_RECAP_VALUE}
             </DetailItem>
             <DetailItem alt="Adresse de l’offre" src={strokeLocationIcon}>
@@ -287,15 +291,18 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                 </li>
               )}
 
-              <li>
-                <ButtonLink
-                  to={`/offre/${offer.id}/collectif/apercu`}
-                  icon={fullShowIcon}
-                  ref={adagePreviewButtonRef}
-                >
-                  Aperçu
-                </ButtonLink>
-              </li>
+              {offer.displayedStatus !==
+                CollectiveOfferDisplayedStatus.DRAFT && (
+                <li>
+                  <ButtonLink
+                    to={`/offre/${offer.id}/collectif/apercu`}
+                    icon={fullShowIcon}
+                    ref={adagePreviewButtonRef}
+                  >
+                    Aperçu
+                  </ButtonLink>
+                </li>
+              )}
 
               {canDuplicateOffer && (
                 <li>
