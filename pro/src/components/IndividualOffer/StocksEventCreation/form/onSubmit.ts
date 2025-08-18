@@ -8,7 +8,7 @@ import {
   isDateValid,
   toISOStringWithoutMilliseconds,
 } from '@/commons/utils/date'
-import { serializeDateTimeToUTCFromLocalDepartment } from '@/components/IndividualOffer/StocksEventEdition/serializers'
+import { serializeDateTimeToUTCFromLocalDepartment } from '@/commons/utils/timezone'
 
 import {
   getDatesInInterval,
@@ -60,8 +60,8 @@ export const onSubmit = async (
       notify.success(
         stocks_count > 1
           ? `${new Intl.NumberFormat('fr-FR').format(
-              stocks_count
-            )} nouvelles dates ont été ajoutées`
+            stocks_count
+          )} nouvelles dates ont été ajoutées`
           : `${stocks_count} nouvelle date a été ajoutée`
       )
     } catch (error) {

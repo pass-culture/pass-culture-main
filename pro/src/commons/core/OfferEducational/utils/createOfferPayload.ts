@@ -10,7 +10,7 @@ import {
   formatBrowserTimezonedDateAsUTC,
   toISOStringWithoutMilliseconds,
 } from '@/commons/utils/date'
-import { buildDateTime } from '@/components/IndividualOffer/StocksEventEdition/serializers'
+import { buildDateTime } from '@/commons/utils/timezone'
 
 import type { OfferEducationalFormValues } from '../types'
 import { parseDuration } from './parseDuration'
@@ -143,8 +143,8 @@ export const createCollectiveOfferTemplatePayload = (
     ...getCommonOfferPayload(offer, isCollectiveOaActive),
     dates:
       offer.datesType === 'specific_dates' &&
-      offer.beginningDate &&
-      offer.endingDate
+        offer.beginningDate &&
+        offer.endingDate
         ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
         : undefined,
     priceDetail: offer.priceDetail,

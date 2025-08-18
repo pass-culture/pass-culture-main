@@ -4,8 +4,7 @@ import {
   isDateValid,
   toISOStringWithoutMilliseconds,
 } from '@/commons/utils/date'
-import { getUtcDateTimeFromLocalDepartement } from '@/commons/utils/timezone'
-import { buildDateTime } from '@/components/IndividualOffer/StocksEventEdition/serializers'
+import { buildDateTime, getUtcDateTimeFromLocalDepartement } from '@/commons/utils/timezone'
 
 const getBookingLimitDatetime = (
   bookingLimitDatetime: string,
