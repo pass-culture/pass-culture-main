@@ -25,6 +25,7 @@ export type CollectiveOfferRowProps = {
   selectOffer: (offer: CollectiveOfferResponseModel) => void
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   isFirstRow: boolean
+  isTemplateTable?: boolean
 }
 
 function isCollectiveOfferPublishedOrPreBooked(
@@ -42,6 +43,7 @@ export const CollectiveOfferRow = ({
   selectOffer,
   urlSearchFilters,
   isFirstRow,
+  isTemplateTable,
 }: CollectiveOfferRowProps) => {
   const id = computeURLCollectiveOfferId(offer.id, Boolean(offer.isShowcase))
   const isNewCollectiveOfferDetailPageActive = useActiveFeature(
@@ -110,11 +112,13 @@ export const CollectiveOfferRow = ({
             className={styles['collective-cell-venue']}
           />
         )}
-        <OfferInstitutionCell
-          rowId={rowId}
-          educationalInstitution={offer.educationalInstitution}
-          className={styles['collective-cell-institution']}
-        />
+        {!isTemplateTable && (
+          <OfferInstitutionCell
+            rowId={rowId}
+            educationalInstitution={offer.educationalInstitution}
+            className={styles['collective-cell-institution']}
+          />
+        )}
         <CollectiveOfferStatusCell
           rowId={rowId}
           offer={offer}
