@@ -1,5 +1,7 @@
-import type { EditVenueBodyModel } from '@/apiClient/v1'
-import { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
+import type {
+  EditVenueBodyModel,
+  WeekdayOpeningHoursTimespans,
+} from '@/apiClient/v1'
 import { OPENING_HOURS_DAYS } from '@/commons/utils/date'
 
 import type { VenueEditionFormValues } from './types'

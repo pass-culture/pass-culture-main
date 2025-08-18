@@ -1,17 +1,17 @@
 import { format } from 'date-fns-tz'
 
 import type { GetOfferStockResponseModel } from '@/apiClient/v1'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
+import {
+  convertEuroToPacificFranc,
+  formatPacificFranc,
+} from '@/commons/utils/convertEuroToPacificFranc'
 import {
   FORMAT_DD_MM_YYYY,
   toDateStrippedOfTimezone,
 } from '@/commons/utils/date'
 import { formatPrice } from '@/commons/utils/formatPrice'
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
-import {
-  convertEuroToPacificFranc,
-  formatPacificFranc,
-} from '@/commons/utils/convertEuroToPacificFranc'
-import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 
 interface StockThingSectionProps {
   stock?: GetOfferStockResponseModel

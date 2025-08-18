@@ -1,9 +1,11 @@
-import type { GetVenueResponseModel } from '@/apiClient/v1'
-import { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
+import type {
+  GetVenueResponseModel,
+  WeekdayOpeningHoursTimespans,
+} from '@/apiClient/v1'
 import { AccessibilityEnum } from '@/commons/core/shared/types'
 import { OPENING_HOURS_DAYS } from '@/commons/utils/date'
 
-import { VenueEditionFormValues } from './types'
+import type { VenueEditionFormValues } from './types'
 
 export function getOpeningHoursFromGetVenueResponseOpeningHours(
   openingHours: GetVenueResponseModel['openingHours']

@@ -4,6 +4,11 @@ import type {
   IndividualRevenue,
   TotalRevenue,
 } from '@/apiClient/v1'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
+import {
+  convertEuroToPacificFranc,
+  formatPacificFranc,
+} from '@/commons/utils/convertEuroToPacificFranc'
 import fullHelpIcon from '@/icons/full-help.svg'
 import { BoxRounded } from '@/ui-kit/BoxRounded/BoxRounded'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -11,11 +16,6 @@ import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 
 import { isCollectiveAndIndividualRevenue, isCollectiveRevenue } from '../utils'
 import styles from './IncomeResultsBox.module.scss'
-import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
-import {
-  convertEuroToPacificFranc,
-  formatPacificFranc,
-} from '@/commons/utils/convertEuroToPacificFranc'
 
 type IncomeSubBoxProps = {
   title: string

@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import { useFormContext } from 'react-hook-form'
 
-import { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
+import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
 import { mapDayToFrench, OPENING_HOURS_DAYS } from '@/commons/utils/date'
 
 import styles from './OpeningHours.module.scss'

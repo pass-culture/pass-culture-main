@@ -16,8 +16,10 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferAllocineSynchronized } from '@/commons/core/Offers/utils/typology'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { convertPacificFrancToEuro } from '@/commons/utils/convertEuroToPacificFranc'
 import { isEqual } from '@/commons/utils/isEqual'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
@@ -45,8 +47,6 @@ import { submitToApi } from './form/submitToApi'
 import type { PriceCategoriesFormValues, PriceCategoryForm } from './form/types'
 import { getValidationSchema } from './form/validationSchema'
 import styles from './PriceCategoriesScreen.module.scss'
-import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
-import { convertPacificFrancToEuro } from '@/commons/utils/convertEuroToPacificFranc'
 
 export interface PriceCategoriesScreenProps {
   offer: GetIndividualOfferWithAddressResponseModel

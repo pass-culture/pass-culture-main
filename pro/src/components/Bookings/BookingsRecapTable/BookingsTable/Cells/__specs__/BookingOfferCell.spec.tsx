@@ -1,13 +1,13 @@
 import { screen } from '@testing-library/react'
 import { add } from 'date-fns'
 
+import * as convertEuroToPacificFranc from '@/commons/utils/convertEuroToPacificFranc'
 import { collectiveBookingFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   bookingRecapFactory,
   bookingRecapStockFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import * as convertEuroToPacificFranc from '@/commons/utils/convertEuroToPacificFranc'
 
 import {
   BookingOfferCell,

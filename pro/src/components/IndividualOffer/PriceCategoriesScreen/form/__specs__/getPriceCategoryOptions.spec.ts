@@ -1,9 +1,10 @@
-import {
-  getPriceCategoryOptions,
-  getPriceCategoryName,
-} from '../getPriceCategoryOptions'
-import * as formatPrice from '@/commons/utils/formatPrice'
 import * as convertEuroToPacificFranc from '@/commons/utils/convertEuroToPacificFranc'
+import * as formatPrice from '@/commons/utils/formatPrice'
+
+import {
+  getPriceCategoryName,
+  getPriceCategoryOptions,
+} from '../getPriceCategoryOptions'
 
 describe('getPriceCategoryOptions', () => {
   it('should return options sorted by price then label', () => {

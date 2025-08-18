@@ -2,7 +2,7 @@ import { isValid } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { format } from 'date-fns-tz'
 
-import { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
+import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
 
 const FORMAT_ISO = "yyyy-MM-dd'T'HH:mm:ssX"
 export const FORMAT_ISO_DATE_ONLY = 'yyyy-MM-dd'

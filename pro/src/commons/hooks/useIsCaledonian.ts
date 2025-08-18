@@ -1,7 +1,5 @@
-
-import { useSelector } from 'react-redux'
-
 import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { useSelector } from 'react-redux'
 
 import { useOfferer } from './swr/useOfferer'
 

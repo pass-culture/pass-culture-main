@@ -3,12 +3,12 @@ import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   StocksCalendarFilters,
   type StocksCalendarFiltersProps,
 } from './StocksCalendarFilters'
-import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 function renderStocksCalendarFilters(
   props?: Partial<StocksCalendarFiltersProps>

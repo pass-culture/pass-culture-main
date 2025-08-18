@@ -11,6 +11,7 @@ import type { PriceCategoryResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { isDateValid, mapDayToFrench } from '@/commons/utils/date'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -44,7 +45,6 @@ import {
 } from './form/types'
 import { getValidationSchema } from './form/validationSchema'
 import styles from './RecurrenceForm.module.scss'
-import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 
 const INITIAL_QUANTITY_PER_PRICE_CATEGORY: QuantityPerPriceCategoryForm = {
   priceCategory: '',

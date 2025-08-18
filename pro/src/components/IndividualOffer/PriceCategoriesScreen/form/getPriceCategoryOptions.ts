@@ -1,6 +1,9 @@
 import type { PriceCategoryResponseModel } from '@/apiClient/v1'
 import type { SelectOption } from '@/commons/custom_types/form'
-import { convertEuroToPacificFranc, formatPacificFranc } from '@/commons/utils/convertEuroToPacificFranc'
+import {
+  convertEuroToPacificFranc,
+  formatPacificFranc,
+} from '@/commons/utils/convertEuroToPacificFranc'
 import { formatPrice } from '@/commons/utils/formatPrice'
 
 export const getPriceCategoryOptions = (

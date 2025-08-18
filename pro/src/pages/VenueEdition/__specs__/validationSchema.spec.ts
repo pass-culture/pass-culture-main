@@ -1,6 +1,6 @@
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
-import { VenueEditionFormValues } from '../types'
+import type { VenueEditionFormValues } from '../types'
 import { validationSchema } from '../validationSchema'
 
 describe('VenueEditionForm validationSchema', () => {

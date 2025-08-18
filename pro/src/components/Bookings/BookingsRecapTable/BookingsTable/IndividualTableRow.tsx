@@ -2,6 +2,11 @@ import cn from 'classnames'
 import { useState } from 'react'
 
 import type { BookingRecapResponseModel } from '@/apiClient/v1'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
+import {
+  convertEuroToPacificFranc,
+  formatPacificFranc,
+} from '@/commons/utils/convertEuroToPacificFranc'
 import { formatPrice } from '@/commons/utils/formatPrice'
 import strokeDuoIcon from '@/icons/stroke-duo.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -13,11 +18,6 @@ import { BookingOfferCell } from './Cells/BookingOfferCell'
 import { BookingStatusCellHistory } from './Cells/BookingStatusCellHistory'
 import { DetailsButtonCell } from './Cells/DetailsButtonCell'
 import { IndividualBookingStatusCell } from './Cells/IndividualBookingStatusCell'
-import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
-import {
-  convertEuroToPacificFranc,
-  formatPacificFranc,
-} from '@/commons/utils/convertEuroToPacificFranc'
 
 export interface IndividualTableRowProps {
   booking: BookingRecapResponseModel

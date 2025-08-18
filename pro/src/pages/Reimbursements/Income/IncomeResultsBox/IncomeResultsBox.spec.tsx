@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react'
+
 import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
 import * as convertEuroToPacificFranc from '@/commons/utils/convertEuroToPacificFranc'
+
 import { IncomeResultsBox } from './IncomeResultsBox'
 
 describe('IncomeResultsBox', () => {

@@ -8,6 +8,7 @@ import type {
   GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
 } from '@/apiClient/v1'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { getPriceCategoryOptions } from '@/components/IndividualOffer/PriceCategoriesScreen/form/getPriceCategoryOptions'
 import { Button } from '@/ui-kit/Button/Button'
@@ -24,7 +25,6 @@ import {
   serializeStockFormValuesForUpdate,
 } from './serializers'
 import { validationSchema } from './validationSchema'
-import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 
 export type EditStockFormValues = {
   date: string

@@ -2,15 +2,14 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { BookingRecapStatus } from '@/apiClient/v1'
-import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
 import * as convertEuroToPacificFranc from '@/commons/utils/convertEuroToPacificFranc'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
   IndividualTableRow,
   type IndividualTableRowProps,
 } from '../IndividualTableRow'
-import { bookingRecapFactory } from '@/commons/utils/factories/individualApiFactories'
 
 const MOCK_DATA = {
   booking: {

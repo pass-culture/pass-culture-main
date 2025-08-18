@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { OfferTypeScreen, OfferTypeScreenProps } from './OfferType'
+import { OfferTypeScreen, type OfferTypeScreenProps } from './OfferType'
 
 const defaultProps: OfferTypeScreenProps = { collectiveOnly: false }
 
