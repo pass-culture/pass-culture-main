@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import { Button } from '../Button/Button'
-import { DropdownButton, DropdownButtonProps } from './DropdownButton'
+import { DropdownButton, type DropdownButtonProps } from './DropdownButton'
 
 const defaultProps: DropdownButtonProps = {
   name: 'Trigger',

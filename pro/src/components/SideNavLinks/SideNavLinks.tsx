@@ -10,6 +10,7 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import {
   SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY,
   useMediaQuery,
@@ -40,7 +41,6 @@ import { DropdownButton } from '@/ui-kit/DropdownButton/DropdownButton'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SideNavLinks.module.scss'
-import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 
 const NAV_ITEM_ICON_SIZE = '20'
 

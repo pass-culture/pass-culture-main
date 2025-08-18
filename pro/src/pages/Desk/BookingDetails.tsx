@@ -1,17 +1,17 @@
 import cx from 'classnames'
 
 import type { GetBookingResponse } from '@/apiClient/v1'
-import { formatLocalTimeDateString } from '@/commons/utils/timezone'
-import strokeDuoIcon from '@/icons/stroke-duo.svg'
-import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
-
-import styles from './BookingDetails.module.scss'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import {
   convertEuroToPacificFranc,
   formatPacificFranc,
 } from '@/commons/utils/convertEuroToPacificFranc'
 import { formatPrice } from '@/commons/utils/formatPrice'
+import { formatLocalTimeDateString } from '@/commons/utils/timezone'
+import strokeDuoIcon from '@/icons/stroke-duo.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
+
+import styles from './BookingDetails.module.scss'
 
 interface BookingProps {
   label: string

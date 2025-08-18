@@ -1,4 +1,4 @@
-import { GetVenueResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 
 import { getOpeningHoursFromGetVenueResponseOpeningHours } from '../setInitialFormValues'
 

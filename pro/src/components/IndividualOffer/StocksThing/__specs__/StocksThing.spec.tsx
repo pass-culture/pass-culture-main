@@ -28,8 +28,8 @@ import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
 } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import * as hooks from '@/commons/hooks/swr/useOfferer'
+import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import {
   defaultGetOffererResponseModel,
   getIndividualOfferFactory,

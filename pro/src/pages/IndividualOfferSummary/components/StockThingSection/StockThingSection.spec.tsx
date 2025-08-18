@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 
+import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
 import { getOfferStockFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
 
 import { StockThingSection } from './StockThingSection'
 

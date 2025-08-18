@@ -12,6 +12,10 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import {
+  convertEuroToPacificFranc,
+  formatPacificFranc,
+} from '@/commons/utils/convertEuroToPacificFranc'
+import {
   FORMAT_DD_MM_YYYY_HH_mm,
   toDateStrippedOfTimezone,
 } from '@/commons/utils/date'
@@ -26,10 +30,6 @@ import fullErrorIcon from '@/icons/full-error.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BookingOfferCell.module.scss'
-import {
-  convertEuroToPacificFranc,
-  formatPacificFranc,
-} from '@/commons/utils/convertEuroToPacificFranc'
 
 export interface BookingOfferCellProps {
   booking: BookingRecapResponseModel | CollectiveBookingResponseModel

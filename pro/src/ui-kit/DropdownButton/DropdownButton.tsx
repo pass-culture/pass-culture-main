@@ -5,7 +5,7 @@ import { useState } from 'react'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 
-import { Button, ButtonProps } from '../Button/Button'
+import { Button, type ButtonProps } from '../Button/Button'
 import { SvgIcon } from '../SvgIcon/SvgIcon'
 import styles from './DropdownButton.module.scss'
 

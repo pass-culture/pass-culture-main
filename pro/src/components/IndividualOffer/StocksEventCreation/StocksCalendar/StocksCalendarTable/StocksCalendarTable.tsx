@@ -8,6 +8,7 @@ import type {
 } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from '@/commons/utils/date'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
@@ -24,7 +25,6 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './StocksCalendarTable.module.scss'
 import { StocksCalendarTableEditStock } from './StocksCalendarTableEditStock/StocksCalendarTableEditStock'
-import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 
 export type StocksCalendarTableProps = {
   stocks: GetOfferStockResponseModel[]

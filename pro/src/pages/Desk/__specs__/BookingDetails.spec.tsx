@@ -1,11 +1,11 @@
 import { screen } from '@testing-library/react'
 
-import { defaultGetBookingResponse } from '@/commons/utils/factories/individualApiFactories'
 import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
 import * as convertEuroToPacificFranc from '@/commons/utils/convertEuroToPacificFranc'
-
-import { BookingDetails, BookingDetailsProps } from '../BookingDetails'
+import { defaultGetBookingResponse } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+
+import { BookingDetails, type BookingDetailsProps } from '../BookingDetails'
 
 function renderBookingDetails({ booking }: BookingDetailsProps) {
   renderWithProviders(<BookingDetails booking={booking} />)

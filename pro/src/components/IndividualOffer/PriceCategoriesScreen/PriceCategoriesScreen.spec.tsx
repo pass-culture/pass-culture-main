@@ -17,14 +17,14 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
+import * as convertEuroToPacificFranc from '@/commons/utils/convertEuroToPacificFranc'
 import {
   getIndividualOfferFactory,
   listOffersOfferFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import * as convertEuroToPacificFranc from '@/commons/utils/convertEuroToPacificFranc'
-import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
 
 import { PRICE_CATEGORY_MAX_LENGTH } from './form/constants'
 import { PriceCategoriesScreen } from './PriceCategoriesScreen'

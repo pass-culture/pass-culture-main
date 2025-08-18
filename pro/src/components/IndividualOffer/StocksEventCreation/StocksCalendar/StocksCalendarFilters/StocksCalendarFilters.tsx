@@ -1,6 +1,7 @@
 import { StocksOrderedBy } from '@/apiClient/v1'
 import type { PriceCategoryResponseModel } from '@/apiClient/v1/models/PriceCategoryResponseModel'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { getPriceCategoryOptions } from '@/components/IndividualOffer/PriceCategoriesScreen/form/getPriceCategoryOptions'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -11,7 +12,6 @@ import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 
 import type { StocksTableFilters, StocksTableSort } from '../../form/types'
 import styles from './StocksCalendarFilters.module.scss'
-import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 
 export type StocksCalendarFiltersProps = {
   priceCategories?: Array<PriceCategoryResponseModel> | null

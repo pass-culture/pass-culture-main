@@ -52,15 +52,12 @@ const openingHoursDaySchema = yup
   .test(
     'second-span-first-time-after-first-span-second-time',
     'Plages horaires incompatibles',
-    function (value) {
-      return (
-        !value?.[0]?.[0] ||
-        !value?.[0]?.[1] ||
-        !value?.[1]?.[0] ||
-        !value?.[1]?.[1] ||
-        value[0][1] < value[1][0]
-      )
-    }
+    (value) =>
+      !value?.[0]?.[0] ||
+      !value?.[0]?.[1] ||
+      !value?.[1]?.[0] ||
+      !value?.[1]?.[1] ||
+      value[0][1] < value[1][0]
   )
 
 export const validationSchema = yup.object().shape({

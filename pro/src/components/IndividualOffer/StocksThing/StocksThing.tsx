@@ -21,8 +21,13 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import {
+  convertEuroToPacificFranc,
+  convertPacificFrancToEuro,
+} from '@/commons/utils/convertEuroToPacificFranc'
 import { getToday, getYearMonthDay, isDateValid } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
@@ -51,11 +56,6 @@ import type { StockThingFormValues } from './types'
 import { buildInitialValues } from './utils/buildInitialValues'
 import { getFormReadOnlyFields } from './utils/getFormReadOnlyFields'
 import { getValidationSchema } from './validationSchema'
-import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
-import {
-  convertEuroToPacificFranc,
-  convertPacificFrancToEuro,
-} from '@/commons/utils/convertEuroToPacificFranc'
 
 export interface StocksThingProps {
   offer: GetIndividualOfferWithAddressResponseModel

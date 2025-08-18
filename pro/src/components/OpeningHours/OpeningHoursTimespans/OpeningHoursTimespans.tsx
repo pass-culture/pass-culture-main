@@ -3,7 +3,7 @@ import fullLessIcon from 'icons/full-less.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
-import { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
+import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
 import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
 

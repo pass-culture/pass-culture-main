@@ -1,8 +1,8 @@
 import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import { convertEuroToPacificFranc } from '@/commons/utils/convertEuroToPacificFranc'
 
 import { FIRST_INITIAL_PRICE_CATEGORY } from './constants'
 import type { PriceCategoriesFormValues, PriceCategoryForm } from './types'
-import { convertEuroToPacificFranc } from '@/commons/utils/convertEuroToPacificFranc'
 
 const sortPriceCategories = (a: PriceCategoryForm, b: PriceCategoryForm) => {
   if (a.price === '' || b.price === '') {
