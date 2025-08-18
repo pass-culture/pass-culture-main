@@ -45,7 +45,7 @@ const renderIndividualOfferNavigation: RenderComponentFunction<
     ...params.options,
   }
 
-  renderWithProviders(
+  return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValues}>
       <IndividualOfferNavigation />
     </IndividualOfferContext.Provider>,
