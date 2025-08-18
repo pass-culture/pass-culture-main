@@ -1212,12 +1212,11 @@ def add_criteria_to_offers(
     elif visa:
         product_query = product_query.filter(models.Product.extraData["visa"].astext == visa)
 
-    products = product_query.all()
+    product = product_query.one_or_none()
 
-    if products:
-        product_ids = [p.id for p in products]
+    if product:
         linked_offer_ids_query = db.session.query(models.Offer.id).filter(
-            models.Offer.productId.in_(product_ids), models.Offer.isActive
+            models.Offer.productId == product.id, models.Offer.isActive
         )
         offer_ids_to_tag.update(offer_id for (offer_id,) in linked_offer_ids_query.all())
 
@@ -1230,7 +1229,7 @@ def add_criteria_to_offers(
             unlinked_offer_query = unlinked_offer_query.filter(models.Offer.ean == ean)
             offer_ids_to_tag.update(offer_id for (offer_id,) in unlinked_offer_query.all())
         # The allocineId data exists only for products. We need to find offers that have the visa of this product.
-        elif (allocineId and products.extraData.get("visa")) or visa:
+        elif (allocineId and product.extraData.get("visa")) or visa:
             unlinked_offer_query = unlinked_offer_query.filter(models.Offer._extraData["visa"].astext == visa)
             offer_ids_to_tag.update(offer_id for (offer_id,) in unlinked_offer_query.all())
 
