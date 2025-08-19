@@ -6,12 +6,15 @@ import { useNavigate } from 'react-router'
 import { MainHeading } from '@/app/App/layout/Layout'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { removeQuotes } from '@/commons/utils/removeQuotes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { CalloutVariant } from '@/ui-kit/Callout/types'
 
 import { ActionBar } from '../ActionBar/ActionBar'
-import { DEFAULT_OFFERER_FORM_VALUES } from '../Offerer/constants'
 import styles from './OffererAuthentication.module.scss'
 import {
   OffererAuthenticationForm,
@@ -20,6 +23,9 @@ import {
 import { validationSchema } from './validationSchema'
 
 export const OffererAuthentication = (): JSX.Element => {
+  const isPartiallyDiffusableSignupEnabled = useActiveFeature(
+    'WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE'
+  )
   const navigate = useNavigate()
 
   const { offerer, setOfferer } = useSignupJourneyContext()
@@ -27,7 +33,11 @@ export const OffererAuthentication = (): JSX.Element => {
   const initialValues: OffererAuthenticationFormValues = {
     ...DEFAULT_OFFERER_FORM_VALUES,
     ...offerer,
-    isOpenToPublic: offerer?.isOpenToPublic || 'true',
+    isOpenToPublic:
+      offerer?.isOpenToPublic ||
+      (isPartiallyDiffusableSignupEnabled && !offerer?.isDiffusible
+        ? 'false'
+        : 'true'),
     addressAutocomplete: `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`,
     'search-addressAutocomplete': `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`,
     latitude: offerer?.latitude || 0,
@@ -59,15 +69,17 @@ export const OffererAuthentication = (): JSX.Element => {
   const methods = useForm<OffererAuthenticationFormValues>({
     defaultValues: initialValues,
     resolver: yupResolver(
-      validationSchema()
+      validationSchema(
+        isPartiallyDiffusableSignupEnabled && !offerer?.isDiffusible
+      )
     ) as unknown as Resolver<OffererAuthenticationFormValues>,
   })
 
   useEffect(() => {
-    if (offerer?.siret === '' || offerer?.name === '') {
+    if (offerer?.siret === '' || offerer?.siren === '') {
       handlePreviousStep()
     }
-  }, [handlePreviousStep, offerer?.name, offerer?.siret])
+  }, [handlePreviousStep, offerer?.siren, offerer?.siret])
 
   return (
     <FormLayout>
@@ -86,6 +98,26 @@ export const OffererAuthentication = (): JSX.Element => {
             Complétez les informations de votre structure
           </h2>
           <FormLayout.MandatoryInfo />
+          {isPartiallyDiffusableSignupEnabled && !offerer?.isDiffusible && (
+            <Callout
+              className={styles['warning-callout']}
+              variant={CalloutVariant.WARNING}
+              title="Certaines informations de votre structure ne sont pas diffusibles."
+              links={[
+                {
+                  href: 'https://aide.passculture.app/hc/fr/articles/4633420022300--Acteurs-Culturels-Collectivit%C3%A9-Lieu-rattach%C3%A9-%C3%A0-une-collectivit%C3%A9-S-inscrire-et-param%C3%A9trer-son-compte-pass-Culture-',
+                  label: 'En savoir plus',
+                  isExternal: true,
+                },
+              ]}
+            >
+              <p className={styles['warning-callout-text']}>
+                Pour créer votre structure au sein du Pass Culture, vous devez
+                communiquer un nom public. Aucune information protégée ne sera
+                diffusée.
+              </p>
+            </Callout>
+          )}
           <OffererAuthenticationForm />
           <ActionBar
             onClickPrevious={handlePreviousStep}

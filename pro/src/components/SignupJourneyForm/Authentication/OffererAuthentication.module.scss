@@ -14,3 +14,11 @@
 .signup-offerer-authentication-form {
   margin-bottom: rem.torem(16px);
 }
+
+.warning-callout {
+  margin-bottom: rem.torem(32px);
+
+  &-text {
+    @include fonts.body;
+  }
+}
