@@ -25,8 +25,6 @@ import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
 import { serializeOfferSectionData } from '@/pages/IndividualOfferSummary/commons/serializer'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
-import styles from './OfferSection.module.scss'
-
 interface OfferSummaryProps {
   offer: GetIndividualOfferWithAddressResponseModel
   conditionalFields: string[]
@@ -202,7 +200,6 @@ export const OfferSection = ({
           isOnboarding,
         })}
         aria-label="Modifier les détails de l’offre"
-        className={styles['cancel-title-margin']}
         shouldShowDivider
       >
         <SummarySubSection

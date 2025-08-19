@@ -35,7 +35,7 @@
       display: flex;
       flex-direction: row;
       align-items: top;
-      margin: rem.torem(24px) 0;
+      margin-bottom: rem.torem(24px);
 
       &-edit-link {
         height: unset;
@@ -54,7 +54,7 @@
     &-title {
       @include fonts.title3;
 
-      margin-bottom: rem.torem(24px);
+      margin-bottom: rem.torem(8px);
     }
   }
 
@@ -69,7 +69,7 @@
   }
 
   &-row {
-    margin-bottom: rem.torem(16px);
+    margin-bottom: rem.torem(8px);
     max-width: 100%;
 
     &-title {
