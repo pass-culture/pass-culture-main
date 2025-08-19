@@ -39,7 +39,7 @@ export function DropdownButton({
       }}
     >
       <DropdownMenu.Trigger
-        className={classNames(styles['trigger'])}
+        className={classNames(styles.trigger)}
         data-testid="dropdown-menu-trigger"
         asChild
       >
@@ -55,12 +55,12 @@ export function DropdownButton({
         </Button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
-        <DropdownMenu.Content align="start" className={styles['panel']}>
+        <DropdownMenu.Content align="start" className={styles.panel}>
           {options.map((option) => (
             <DropdownMenu.Item
               asChild
               key={option.id}
-              className={styles['option']}
+              className={styles.option}
             >
               {option.element}
             </DropdownMenu.Item>

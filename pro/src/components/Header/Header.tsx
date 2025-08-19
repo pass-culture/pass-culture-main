@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/correctness/useUniqueElementIds: Header is used once per page. There cannot be id duplications. */
 import cn from 'classnames'
 import { type ForwardedRef, forwardRef } from 'react'
 import { NavLink, useLocation } from 'react-router'
@@ -39,7 +40,7 @@ export const Header = forwardRef(
     const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
 
     return (
-      <header className={styles['top-menu']} id="top-navigation">
+      <header className={styles['top-menu']}>
         <div className={styles['top-menu-content']}>
           {!disableHomeLink && (
             <Button
@@ -52,15 +53,14 @@ export const Header = forwardRef(
                 setLateralPanelOpen(!lateralPanelOpen)
                 focusCloseButton()
               }}
-              aria-label="Menu"
               aria-controls="lateral-panel"
             >
-              <SvgIcon src={fullBurgerIcon} alt="" width="24" />
+              <SvgIcon src={fullBurgerIcon} alt="Menu" width="24" />
             </Button>
           )}
           <div className={styles['nav-brand']}>
             {disableHomeLink ? (
-              <div className={cn(styles['logo'], styles['logo-link-disabled'])}>
+              <div className={cn(styles.logo, styles['logo-link-disabled'])}>
                 <SvgIcon
                   alt="Pass Culture pro, l’espace des acteurs culturels"
                   src={logoPassCultureProIcon}
@@ -70,7 +70,7 @@ export const Header = forwardRef(
               </div>
             ) : (
               <NavLink
-                className={styles['logo']}
+                className={styles.logo}
                 to="/accueil"
                 onClick={() => {
                   logEvent(Events.CLICKED_PRO, { from: location.pathname })
