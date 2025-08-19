@@ -86,7 +86,9 @@ jobs:
         with:
           timeout_minutes: 2
           max_attempts: 3
-          command: yarn install --immutable
+          command: |
+            cd pro
+            yarn install --immutable
       - run: yarn build:${{ inputs.ENV }}
         env:
           # By default NodeJS processes are limited to 512MB of memory

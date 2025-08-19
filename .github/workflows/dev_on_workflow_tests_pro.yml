@@ -41,7 +41,9 @@ jobs:
         with:
           timeout_minutes: 2
           max_attempts: 3
-          command: yarn install --immutable
+          command: |
+            cd pro
+            yarn install --immutable
 
       - run: yarn tsc -b
       - run: yarn lint:dead-code
@@ -85,7 +87,9 @@ jobs:
         with:
           timeout_minutes: 2
           max_attempts: 3
-          command: yarn install --immutable
+          command: |
+            cd pro
+            yarn install --immutable
 
       - name: Run tests with coverage
         run: yarn test:unit:ci --reporter=blob --reporter=allure-vitest/reporter --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
@@ -187,7 +191,9 @@ jobs:
         with:
           timeout_minutes: 2
           max_attempts: 3
-          command: yarn install --immutable
+          command: |
+            cd pro
+            yarn install --immutable
 
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
