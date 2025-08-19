@@ -170,8 +170,8 @@ export const IndividualOfferSummaryScreen = () => {
   )
 
   const offerConditionalFields = getOfferConditionalFields({
-    offerSubCategory,
-    receiveNotificationEmails: true,
+    offerSubcategory: offerSubCategory,
+    shouldReceiveEmailNotifications: true,
   })
   const conditionalFields = [
     ...offerSubCategory.conditionalFields,

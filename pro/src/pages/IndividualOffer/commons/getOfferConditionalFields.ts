@@ -1,14 +1,12 @@
 import type { SubcategoryResponseModel } from '@/apiClient/v1'
 
-interface GetOfferConditionalFieldsProps {
-  offerSubCategory?: SubcategoryResponseModel | null
-  receiveNotificationEmails?: boolean | null
-}
-
 export const getOfferConditionalFields = ({
-  offerSubCategory = null,
-  receiveNotificationEmails = null,
-}: GetOfferConditionalFieldsProps): string[] => {
+  offerSubcategory: offerSubCategory,
+  shouldReceiveEmailNotifications = false,
+}: {
+  offerSubcategory: SubcategoryResponseModel
+  shouldReceiveEmailNotifications?: boolean
+}): string[] => {
   const offerConditionalFields = []
 
   if (offerSubCategory?.isEvent) {
@@ -27,7 +25,7 @@ export const getOfferConditionalFields = ({
     offerConditionalFields.push('showSubType')
   }
 
-  if (receiveNotificationEmails) {
+  if (shouldReceiveEmailNotifications) {
     offerConditionalFields.push('bookingEmail')
   }
 
