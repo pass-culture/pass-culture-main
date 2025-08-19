@@ -1,3 +1,9 @@
+import type { AnyObject } from 'yup'
+
+export type Undefinedable<T extends AnyObject> = {
+  [K in keyof T]: T[K] | undefined
+}
+
 export const hasProperty = <T extends string>(
   element: unknown,
   property: T
