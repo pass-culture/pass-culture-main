@@ -46,7 +46,7 @@ class Artist(PcObject, Base, Model):
     image_license_url = sa.Column(sa.Text)
     date_created = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
     date_modified = sa.Column(sa.DateTime, nullable=True, onupdate=sa.func.now())
-    is_blacklisted = sa.Column(sa.Boolean, nullable=True, server_default=sa.false(), default=False)
+    is_blacklisted = sa.Column(sa.Boolean, nullable=False, server_default=sa.false(), default=False)
 
     products: sa_orm.Mapped[list["Product"]] = sa_orm.relationship(
         "Product", backref="artists", secondary=ArtistProductLink.__table__
