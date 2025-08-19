@@ -1,5 +1,6 @@
 import { addDays, format } from 'date-fns'
 
+import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
 import { sessionLogInAndGoToPage } from '../support/helpers.ts'
 
 describe('Desk (Guichet) feature', { testIsolation: false }, () => {
@@ -86,6 +87,8 @@ describe('Desk (Guichet) feature', { testIsolation: false }, () => {
 
   it('I should be able to validate a valid countermark', () => {
     cy.visit('/guichet')
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+
     cy.stepLog({ message: `I add a valid countermark ${tokenConfirmed}` })
     cy.findByLabelText('Contremarque').type(tokenConfirmed)
 
@@ -95,6 +98,7 @@ describe('Desk (Guichet) feature', { testIsolation: false }, () => {
 
     cy.stepLog({ message: 'the booking is done' })
     cy.findByText('Contremarque validée !')
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
   })
 
   it('It should decline a non-valid countermark', () => {

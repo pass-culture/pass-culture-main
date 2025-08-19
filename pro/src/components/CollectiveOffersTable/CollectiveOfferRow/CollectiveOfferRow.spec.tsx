@@ -55,7 +55,7 @@ const renderOfferItem = (
     options
   )
 
-describe('ollectiveOfferRow', () => {
+describe('collectiveOfferRow', () => {
   let props: CollectiveOfferRowProps
   let offer: CollectiveOfferResponseModel
   const offerId = 12
@@ -228,9 +228,8 @@ describe('ollectiveOfferRow', () => {
     props.offer = collectiveOfferFactory({ isShowcase: true, stocks })
     renderOfferItem(props)
 
-    expect(
-      within(screen.getAllByRole('cell')[2]).getByText('Offre vitrine')
-    ).toBeInTheDocument()
+    const rowHeader = screen.getAllByRole('rowheader')[0]
+    expect(within(rowHeader).getByText(/Offre vitrine/i)).toBeInTheDocument()
   })
 
   it('should not display a tag when offer is not template', () => {
