@@ -130,12 +130,8 @@ jobs:
       - name: "Install dependencies PRO"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         working-directory: pro
-      - name: "Install dependencies (3 attempts)"
-        uses: nick-fields/retry@v3
-        with:
-          timeout_minutes: 2
-          max_attempts: 3
-          command: yarn install --immutable
+        # we cannot use an action like nick-fields/retry@v3 along with `working-directory`
+        run: yarn install --immutable
       - name: "Update api client"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         uses: nick-fields/retry@v3
