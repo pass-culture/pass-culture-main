@@ -36,8 +36,8 @@ export const getValidationSchema = (
           .max(
             isCaledonian ? PRICE_MAX_PACIFIC_FRANC : PRICE_CATEGORY_PRICE_MAX,
             isCaledonian
-              ? `Veuillez renseigner un prix inférieur à ${PRICE_MAX_PACIFIC_FRANC}F`
-              : `Veuillez renseigner un prix inférieur à ${PRICE_CATEGORY_PRICE_MAX}€`
+              ? `Veuillez renseigner un prix inférieur à ${PRICE_MAX_PACIFIC_FRANC} F`
+              : `Veuillez renseigner un prix inférieur à ${PRICE_CATEGORY_PRICE_MAX} €`
           )
           .required('Veuillez renseigner un prix')
       } else {
