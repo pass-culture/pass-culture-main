@@ -1,0 +1,49 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/variables/_z-index.scss" as zIndex;
+@use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_outline.scss" as outline;
+
+
+@media screen and (min-width: size.$tablet) {
+  .actions-column {
+    &-container {
+      justify-content: flex-end;
+    }
+  }
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: flex-start;
+
+  &-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: rem.torem(8px);
+
+    &:focus-visible {
+      @include outline.focus-outline;
+
+      border-radius: var(--size-border-radius-s);
+    }
+
+    &[data-highlighted] {
+      outline: none;
+      background: var(--color-background-subtle);
+      cursor: pointer;
+    }
+  }
+}
+
+.separator {
+  height: rem.torem(1px);
+  width: rem.torem(20px);
+  background-color: var(--color-black);
+  margin: rem.torem(4px) 0;
+}

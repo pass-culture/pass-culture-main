@@ -2,8 +2,8 @@ import { Link } from 'react-router'
 
 import type { CollectiveOfferResponseModel } from '@/apiClient/v1'
 import { Tag } from '@/design-system/Tag/Tag'
-import styles from '@/styles/components/Cells.module.scss'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
+import styles from './OfferNameCell.module.scss'
 
 export interface OfferNameCellProps {
   offer: CollectiveOfferResponseModel

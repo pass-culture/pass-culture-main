@@ -7,7 +7,7 @@ import {
   toDateStrippedOfTimezone,
 } from '@/commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
-import styles from '@/styles/components/Cells.module.scss'
+import styles from './OfferEventDateCell.module.scss'
 
 export interface OfferEventDateCellProps {
   offer: CollectiveOfferResponseModel
