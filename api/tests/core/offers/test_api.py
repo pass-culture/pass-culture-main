@@ -4473,7 +4473,7 @@ class UpdateUsedStockPriceTest:
             api.update_used_stock_price(booking.stock, new_price=booking.stock.price - 1)
 
     def test_update_used_stock_price_should_delete_pricings_on_used_event(self):
-        offer = factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        offer = factories.EventOfferFactory(subcategoryId=subcategories.CONFERENCE.id)
         venue = offer.venue
         stock_to_edit = factories.StockFactory(
             offer=offer,
@@ -4535,7 +4535,7 @@ class UpdateUsedStockPriceTest:
         assert db.session.query(finance_models.Pricing).filter_by(id=later_pricing_id).count() == 0
 
     def test_update_used_stock_price_should_update_confirmed_events(self):
-        stock_to_edit = factories.StockFactory(
+        stock_to_edit = factories.EventStockFactory(
             offer__subcategoryId=subcategories.CONFERENCE.id,
             price=decimal.Decimal("123.45"),
         )

@@ -47,7 +47,8 @@ class GetCappedOffersForFiltersTest:
         # 1 to get user
         # 1 to get user_offerer
         # 1 to get offers
-        with assert_num_queries(3):
+        # 1 to get offers' opening hours
+        with assert_num_queries(4):
             offers = repository.get_capped_offers_for_filters(
                 user_id=user_offerer.user.id,
                 user_is_admin=user_offerer.user.has_admin_role,

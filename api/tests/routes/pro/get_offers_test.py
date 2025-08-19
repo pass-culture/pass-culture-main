@@ -20,6 +20,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Returns200Test:
     number_of_queries = testing.AUTHENTICATION_QUERIES
     number_of_queries += 1  # search offers
+    number_of_queries += 1  # fetch their opening hours (if any) to figure out if they are events
     number_of_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
 
     def should_filter_by_venue_when_user_is_not_admin_and_request_specific_venue_with_rights_on_it(self, client):
@@ -49,8 +50,8 @@ class Returns200Test:
 
         venue_id = venue.id
         authenticated_client = client.with_session_auth(email=pro.email)
-        # -2 due to mocking
-        with testing.assert_num_queries(self.number_of_queries - 2):
+        # -3 due to mocking
+        with testing.assert_num_queries(self.number_of_queries - 3):
             response = authenticated_client.get(f"/offers?venueId={venue_id}")
             assert response.status_code == 200
         mocked_get_capped_offers.assert_called_once_with(
@@ -75,8 +76,8 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         authenticated_client = client.with_session_auth(email=pro.email)
-        # -2 due to mocking
-        with testing.assert_num_queries(self.number_of_queries - 2):
+        # -3 due to mocking
+        with testing.assert_num_queries(self.number_of_queries - 3):
             response = authenticated_client.get("/offers?status=ACTIVE")
             assert response.status_code == 200
 
@@ -104,8 +105,8 @@ class Returns200Test:
 
         offerer_id = offerer.id
         authenticated_client = client.with_session_auth(email=pro.email)
-        # -2 due to mocking
-        with testing.assert_num_queries(self.number_of_queries - 2):
+        # -3 due to mocking
+        with testing.assert_num_queries(self.number_of_queries - 3):
             response = authenticated_client.get(f"/offers?offererId={offerer_id}")
             assert response.status_code == 200
 
@@ -131,8 +132,8 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         authenticated_client = client.with_session_auth(email=pro.email)
-        # -2 due to mocking
-        with testing.assert_num_queries(self.number_of_queries - 2):
+        # -3 due to mocking
+        with testing.assert_num_queries(self.number_of_queries - 3):
             response = authenticated_client.get("/offers?creationMode=imported")
             assert response.status_code == 200
 
@@ -158,8 +159,8 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         authenticated_client = client.with_session_auth(email=pro.email)
-        # -2 due to mocking
-        with testing.assert_num_queries(self.number_of_queries - 2):
+        # -3 due to mocking
+        with testing.assert_num_queries(self.number_of_queries - 3):
             response = authenticated_client.get("/offers?periodBeginningDate=2020-10-11")
             assert response.status_code == 200
 
@@ -231,8 +232,8 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         authenticated_client = client.with_session_auth(email=pro.email)
-        # -2 due to mocking
-        with testing.assert_num_queries(self.number_of_queries - 2):
+        # -3 due to mocking
+        with testing.assert_num_queries(self.number_of_queries - 3):
             response = authenticated_client.get("/offers?periodEndingDate=2020-10-11")
             assert response.status_code == 200
 
@@ -258,8 +259,8 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         authenticated_client = client.with_session_auth(email=pro.email)
-        # -2 due to mocking
-        with testing.assert_num_queries(self.number_of_queries - 2):
+        # -3 due to mocking
+        with testing.assert_num_queries(self.number_of_queries - 3):
             response = authenticated_client.get("/offers?categoryId=LIVRE")
             assert response.status_code == 200
 
@@ -825,7 +826,10 @@ class Returns200Test:
 
         venue_id = venue.id
         authenticated_client = client.with_session_auth(email=pro.email)
-        with testing.assert_num_queries(self.number_of_queries - 1):  # -1 sur FF WIP_REFACTO_FUTURE_OFFER
+
+        # -1 because of WIP_REFACTO_FUTURE_OFFER (?)
+        # -1 because opening hours are not loaded since there are no offers to load
+        with testing.assert_num_queries(self.number_of_queries - 2):
             response = authenticated_client.get(f"/offers?venueId={venue_id}")
             assert response.status_code == 200
 
@@ -840,7 +844,10 @@ class Returns200Test:
 
         venue_id = offerer.id
         authenticated_client = client.with_session_auth(email=pro.email)
-        with testing.assert_num_queries(self.number_of_queries - 1):  # -1 sur FF WIP_REFACTO_FUTURE_OFFER
+
+        # -1 because of WIP_REFACTO_FUTURE_OFFER (?)
+        # -1 because opening hours are not loaded since there are no offers to load
+        with testing.assert_num_queries(self.number_of_queries - 2):
             response = authenticated_client.get(f"/offers?venueId={venue_id}")
             assert response.status_code == 200
 

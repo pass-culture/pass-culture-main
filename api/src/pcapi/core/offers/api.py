@@ -696,7 +696,7 @@ def remove_headline_offer(headline_offer: offers_models.HeadlineOffer) -> None:
 
 
 def _notify_pro_upon_stock_edit_for_event_offer(stock: models.Stock, bookings: list[bookings_models.Booking]) -> None:
-    if stock.offer.isEvent:
+    if stock.offer.isTimestamped:
         transactional_mails.send_event_offer_postponement_confirmation_email_to_pro(stock, len(bookings))
 
 
@@ -1912,7 +1912,7 @@ def get_stocks_stats(offer_id: int) -> StocksStats:
 
 
 def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venue]:
-    if not offer.isEvent:
+    if not offer.isTimestamped:
         raise exceptions.OfferIsNotEvent()
 
     count_past_stocks = (
@@ -2148,7 +2148,7 @@ def move_event_offer(
 def update_used_stock_price(
     stock: models.Stock, new_price: float | None = None, price_percent: decimal.Decimal | None = None
 ) -> None:
-    if not stock.offer.isEvent:
+    if not stock.offer.isTimestamped:
         raise ValueError("Only stocks associated with an event offer can be edited with used bookings")
     if (new_price is None) == (price_percent is None):
         raise ValueError("One of [new_price, price_percent] is mandatory")
