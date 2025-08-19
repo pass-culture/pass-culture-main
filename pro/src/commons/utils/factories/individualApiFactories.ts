@@ -82,7 +82,7 @@ export const listOffersStockFactory = (
   }
 }
 
-// TODO (igabriele, 2025-08-05): Factories shouldn't set boolean values to true by default or build children that are not guaranteed to be present.
+// TODO (igabriele, 2025-08-05): Factories shouldn't set sensitive domain boolean values to true by default or build children that are not guaranteed to be present.
 // This makes writing tests more difficult and increases the risk of false positives.
 export const getIndividualOfferFactory = (
   customGetIndividualOffer: Partial<GetIndividualOfferWithAddressResponseModel> = {},
@@ -232,6 +232,7 @@ export const bookingRecapFactory = (
   }
 }
 
+/** @deprecated Use `makeVenueListItem()` for better type inference and safety. */
 export const venueListItemFactory = (
   customVenueListItem: Partial<VenueListItemResponseModel> = {}
 ): VenueListItemResponseModel => {
@@ -254,6 +255,32 @@ export const venueListItemFactory = (
     isCaledonian: false,
     ...customVenueListItem,
   }
+}
+export const makeVenueListItem = <
+  T extends Partial<VenueListItemResponseModel>,
+>(
+  customVenueListItem: T
+): Omit<VenueListItemResponseModel, keyof T> & T => {
+  const id = customVenueListItem.id ?? venueId++
+
+  return {
+    id,
+    isVirtual: false,
+    name: `Le nom du lieu ${id}`,
+    publicName: undefined,
+    venueTypeCode: VenueTypeCode.AUTRE,
+    hasCreatedOffer: true,
+    managingOffererId: 1,
+    offererName: 'la structure de Michel',
+    visualDisabilityCompliant: true,
+    mentalDisabilityCompliant: true,
+    motorDisabilityCompliant: true,
+    audioDisabilityCompliant: true,
+    isPermanent: true,
+    isCaledonian: false,
+
+    ...customVenueListItem,
+  } as Omit<VenueListItemResponseModel, keyof T> & T
 }
 
 export const categoryFactory = (
