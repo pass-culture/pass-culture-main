@@ -1,3 +1,11 @@
+"""Feature flip related models and tools
+
+To create a feature flag, simply add it to the FeatureToggle
+enumeration and to the FEATURES_DISABLED_BY_DEFAULT list if its default
+value is False.
+To remove one, delete all references to this feature flag, the removal
+will be automatic."""
+
 import enum
 import logging
 
