@@ -29,6 +29,7 @@ type ThingStockUpdateBody = {
 
 export const serializeUpdateThingStock = (
   formValues: StockThingFormValues,
+  readOnlyFields: string[],
   departementCode?: string | null
 ): ThingStockUpdateBody => {
   const [
@@ -50,15 +51,28 @@ export const serializeUpdateThingStock = (
   const price = formValues.price ? formValues.price : 0
   const quantity = formValues.quantity ?? null
 
-  return { price, bookingLimitDatetime, quantity }
+  const body = { price, bookingLimitDatetime, quantity }
+
+  if (readOnlyFields.includes('bookingLimitDatetime')) {
+    //  The computed bookingLimitDatetime here might be different from the existing bookingLimitDatetime when the offer was synchronized
+    //  Since we are not alowed to update its value, we remove it from the body
+    delete body['bookingLimitDatetime' as keyof ThingStockUpdateBody]
+  }
+
+  return body
 }
 
 export const serializeCreateThingStock = (
   formValues: StockThingFormValues,
   offerId: number,
+  readOnlyFields: string[],
   departementCode?: string | null
 ): ThingStockCreateBodyModel => {
-  const baseStock = serializeUpdateThingStock(formValues, departementCode)
+  const baseStock = serializeUpdateThingStock(
+    formValues,
+    readOnlyFields,
+    departementCode
+  )
 
   const apiStock: ThingStockCreateBodyModel = { ...baseStock, offerId }
 
