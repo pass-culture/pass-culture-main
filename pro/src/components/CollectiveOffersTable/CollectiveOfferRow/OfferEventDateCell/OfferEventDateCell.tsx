@@ -39,16 +39,6 @@ export const OfferEventDateCell = ({
     }
     const offerStartDatetime = getOfferDate(hour, offer.isShowcase, offer.venue)
 
-    if (
-      offer.isShowcase &&
-      offerStartDatetime.getHours() === 0 &&
-      offerStartDatetime.getMinutes() === 0
-    ) {
-      //  Template offers may not have a specific hour set. In that case the api created the dates at midnight UTC.
-      //  Therefore, template start dates at midnight UTC should not have a time displayed
-      return
-    }
-
     const timeFormatter = new Intl.DateTimeFormat('fr-FR', {
       hour: '2-digit',
       minute: '2-digit',
@@ -83,7 +73,7 @@ export const OfferEventDateCell = ({
     }
 
     return [
-      `du ${getDateTimeToFrenchText(getOfferDate(offerDates.start, offer.isShowcase, offer.venue), options)}`,
+      `Du ${getDateTimeToFrenchText(getOfferDate(offerDates.start, offer.isShowcase, offer.venue), options)}`,
       `au ${getDateTimeToFrenchText(getOfferDate(offerDates.end, offer.isShowcase, offer.venue), options)}`,
     ]
   }
@@ -104,9 +94,11 @@ export const OfferEventDateCell = ({
             {date}
           </span>
         ))}
-        <span className={styles['offer-event-hours']}>
-          {formattedTime(offer.dates?.start)}
-        </span>
+        {!offer.isShowcase && (
+          <span className={styles['offer-event-hours']}>
+            {formattedTime(offer.dates?.start)}
+          </span>
+        )}
       </div>
     </td>
   )
