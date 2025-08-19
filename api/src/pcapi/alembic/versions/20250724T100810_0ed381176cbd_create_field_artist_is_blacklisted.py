@@ -15,7 +15,7 @@ depends_on: list[str] | None = None
 def upgrade() -> None:
     op.add_column(
         "artist",
-        sa.Column("is_blacklisted", sa.Boolean(), nullable=True, server_default=sa.false()),
+        sa.Column("is_blacklisted", sa.Boolean(), nullable=True),
     )
 
 
