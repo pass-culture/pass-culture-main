@@ -17,7 +17,11 @@ describe('StockThingForm::utils::getFormReadOnlyFields', () => {
     offer = getIndividualOfferFactory()
     currentStock = {} as StockThingFormValues
   })
-  const disabledStatus = [OfferStatus.REJECTED, OfferStatus.PENDING]
+  const disabledStatus = [
+    OfferStatus.REJECTED,
+    OfferStatus.PENDING,
+    OfferStatus.EXPIRED,
+  ]
   it.each(disabledStatus)(
     'should disabled field for disable statuts "%s"',
     (status: OfferStatus) => {
@@ -62,7 +66,7 @@ describe('StockThingForm::utils::getFormReadOnlyFields', () => {
     ])
   })
 
-  it('should not disabled field for allociné synchronized offer', () => {
+  it('should not disable field for allociné synchronized offer', () => {
     offer.lastProvider = { name: 'allociné' }
     currentStock = {
       activationCodes: [] as string[],
