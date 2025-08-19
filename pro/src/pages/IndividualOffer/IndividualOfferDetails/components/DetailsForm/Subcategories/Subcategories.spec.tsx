@@ -1,6 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { FormProvider, useForm } from 'react-hook-form'
+import { useEffect } from 'react'
+import { FormProvider, type UseFormReturn, useForm } from 'react-hook-form'
 
 import {
   categoryFactory,
@@ -23,22 +24,29 @@ const subcategories = [
     conditionalFields: ['ean'],
   }),
   subcategoryFactory({
-    id: 'sub-B',
-    categoryId: 'B',
-    proLabel: 'Sous-catégorie B1',
+    id: 'sub-A2',
+    categoryId: 'A',
+    proLabel: 'Sous-catégorie A2',
   }),
 ]
 
 const SubcategoriesForm = ({
   readOnlyFields = [],
+  onReady,
 }: {
   readOnlyFields?: string[]
+  onReady?: (methods: UseFormReturn<DetailsFormValues>) => void
 }) => {
   const methods = useForm<DetailsFormValues>({
     defaultValues: {
       ...DEFAULT_DETAILS_FORM_VALUES,
     },
   })
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: This is a test.
+  useEffect(() => {
+    onReady?.(methods)
+  }, [])
 
   return (
     <FormProvider {...methods}>
@@ -51,7 +59,10 @@ const SubcategoriesForm = ({
   )
 }
 
-const renderSubCategories = (options?: { readOnlyFields?: string[] }) => {
+const renderSubCategories = (options?: {
+  readOnlyFields?: string[]
+  onReady?: (actions: UseFormReturn<DetailsFormValues>) => void
+}) => {
   return render(<SubcategoriesForm {...options} />)
 }
 
@@ -75,5 +86,59 @@ describe('<Subcategories />', () => {
   it('disables selects when readOnlyFields is set', () => {
     renderSubCategories({ readOnlyFields: ['categoryId', 'subcategoryId'] })
     expect(screen.getByLabelText('Catégorie *')).toBeDisabled()
+  })
+
+  // NRT https://passculture.atlassian.net/browse/PC-37537
+  it('resets correctly when selecting default category and default subcategory after prior selections', async () => {
+    let formActions: UseFormReturn<DetailsFormValues>
+    renderSubCategories({
+      onReady: (actions) => {
+        formActions = actions
+      },
+    })
+
+    const categorySelect = screen.getByLabelText('Catégorie *')
+
+    await userEvent.selectOptions(categorySelect, 'A')
+    await screen.findByLabelText('Sous-catégorie *')
+
+    // -------------------------------------------------------------------------
+    // Case 1: Select default category after having selected a non-default category
+
+    await userEvent.selectOptions(
+      categorySelect,
+      DEFAULT_DETAILS_FORM_VALUES.categoryId
+    )
+
+    expect(screen.queryByLabelText('Sous-catégorie *')).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(formActions.getValues('categoryId')).toBe('')
+      expect(formActions.getValues('subcategoryId')).toBe('')
+      expect(formActions.getValues('subcategoryConditionalFields')).toEqual([])
+    })
+
+    // -------------------------------------------------------------------------
+    // Case 2: Select default subcategory after having selected a non-default subcategory
+
+    await userEvent.selectOptions(categorySelect, 'A')
+    const subcategorySelect2 = await screen.findByLabelText('Sous-catégorie *')
+    await userEvent.selectOptions(subcategorySelect2, 'sub-A')
+
+    await waitFor(() => {
+      expect(formActions.getValues('subcategoryId')).toBe('sub-A')
+      expect(formActions.getValues('subcategoryConditionalFields')).toEqual([
+        'ean',
+      ])
+    })
+
+    await userEvent.selectOptions(
+      subcategorySelect2,
+      DEFAULT_DETAILS_FORM_VALUES.subcategoryId
+    )
+
+    await waitFor(() => {
+      expect(formActions.getValues('subcategoryId')).toBe('')
+      expect(formActions.getValues('subcategoryConditionalFields')).toEqual([])
+    })
   })
 })
