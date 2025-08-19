@@ -71,6 +71,16 @@ export function Subcategories({
     clearErrors(['categoryId', 'subcategoryId'])
 
     const nextCategoryId = event.target.value
+    if (nextCategoryId === DEFAULT_DETAILS_FORM_VALUES.categoryId) {
+      resetField('subcategoryId')
+      setValue(
+        'subcategoryConditionalFields',
+        DEFAULT_DETAILS_FORM_VALUES.subcategoryConditionalFields
+      )
+
+      return
+    }
+
     const options = buildSubcategoryOptions(
       filteredSubcategories,
       nextCategoryId
@@ -91,6 +101,14 @@ export function Subcategories({
 
   const handleSubcategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const nextSubcategoryId = event.target.value
+    if (nextSubcategoryId === DEFAULT_DETAILS_FORM_VALUES.subcategoryId) {
+      setValue(
+        'subcategoryConditionalFields',
+        DEFAULT_DETAILS_FORM_VALUES.subcategoryConditionalFields
+      )
+
+      return
+    }
 
     handleSubcategoryUpdate(nextSubcategoryId)
   }
