@@ -17,6 +17,7 @@ jobs:
           node-version-file: "pro/.nvmrc"
       - name: "Install dependencies"
         working-directory: pro
+        # we cannot use an action like nick-fields/retry@v3 along with `working-directory`
         run: yarn install --immutable
       - name: "Build Storybook 🔧"
         working-directory: pro

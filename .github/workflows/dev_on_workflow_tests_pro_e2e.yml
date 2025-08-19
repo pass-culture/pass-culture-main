@@ -56,8 +56,12 @@ jobs:
           restore-keys: |
             v1-yarn-pro-cypress-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - name: install
-        run: yarn install --immutable
+      - name: "Install dependencies (3 attempts)"
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 2
+          max_attempts: 3
+          command: yarn install --immutable
 
       - name: "Build vite application"
         run: yarn build:${{ inputs.ENV }}
@@ -142,7 +146,12 @@ jobs:
           PCAPI_UID: 1000
           PCAPI_GID: 1000
 
-      - run: yarn install --immutable
+      - name: "Install dependencies (3 attempts)"
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 2
+          max_attempts: 3
+          command: yarn install --immutable
 
       - name: "OpenID Connect Authentication"
         id: openid-auth
