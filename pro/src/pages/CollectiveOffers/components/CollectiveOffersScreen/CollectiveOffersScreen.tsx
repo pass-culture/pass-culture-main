@@ -7,6 +7,7 @@ import type {
 import type { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
 import {
   DEFAULT_PAGE,
+  MAX_OFFERS_TO_DISPLAY,
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
 } from '@/commons/core/Offers/constants'
@@ -16,15 +17,18 @@ import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearc
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
+import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
-import { isSameOffer } from '@/commons/utils/isSameOffer'
 import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
 import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformation/CollectiveBudgetCallout'
+import { getCollectiveOfferColumns } from '@/components/CollectiveOffersTable/CollectiveOfferRow/CollectiveOfferColumns'
+import { ExpirationCell } from '@/components/CollectiveOffersTable/CollectiveOfferRow/ExpirationCell/ExpirationCell'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
-import { CollectiveOffersTable } from '@/components/CollectiveOffersTable/CollectiveOffersTable'
-import { NoData } from '@/components/NoData/NoData'
 import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import strokeNoBooking from '@/icons/stroke-no-booking.svg'
+import { Callout } from '@/ui-kit/Callout/Callout'
 import { Pagination } from '@/ui-kit/Pagination/Pagination'
+import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import styles from './CollectiveOffersScreen.module.scss'
 import { CollectiveOffersSearchFilters } from './CollectiveOffersSearchFilters/CollectiveOffersSearchFilters'
@@ -58,6 +62,9 @@ export const CollectiveOffersScreen = ({
   const [selectedOffers, setSelectedOffers] = useState<
     CollectiveOfferResponseModel[]
   >([])
+  const [selectedOfferIds, setSelectedOfferIds] = useState<
+    Set<string | number>
+  >(new Set())
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
 
   const searchButtonRef = useRef<HTMLButtonElement>(null)
@@ -80,26 +87,18 @@ export const CollectiveOffersScreen = ({
   const userHasNoOffers = !isLoading && !hasOffers && !hasFiltersOrNameSearch
 
   const areAllOffersSelected =
-    selectedOffers.length > 0 &&
-    selectedOffers.length ===
+    selectedOfferIds.size > 0 &&
+    selectedOfferIds.size ===
       offers.filter((offer) => isCollectiveOfferSelectable(offer)).length
 
-  function clearSelectedOfferIds() {
-    setSelectedOffers([])
-  }
-
-  function toggleSelectAllCheckboxes() {
-    setSelectedOffers(
-      areAllOffersSelected
-        ? []
-        : offers.filter((offer) => isCollectiveOfferSelectable(offer))
-    )
+  function clearSelectedOffers() {
+    setSelectedOfferIds(new Set())
   }
 
   const numberOfPages = Math.ceil(offers.length / NUMBER_OF_OFFERS_PER_PAGE)
   const pageCount = Math.min(numberOfPages, MAX_TOTAL_PAGES)
 
-  const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
+  const { currentSortingColumn, currentSortingMode } =
     useColumnSorting<CollectiveOffersSortingColumn>()
 
   const sortedOffers = sortCollectiveOffers(
@@ -136,21 +135,7 @@ export const CollectiveOffersScreen = ({
     setSelectedFilters(newFilters)
   }
 
-  function onSetSelectedOffer(offer: CollectiveOfferResponseModel) {
-    const matchingOffer = selectedOffers.find((selectedOffer) =>
-      isSameOffer(offer, selectedOffer)
-    )
-
-    if (matchingOffer) {
-      setSelectedOffers((offers) =>
-        offers.filter((collectiveOffer) => collectiveOffer !== matchingOffer)
-      )
-    } else {
-      setSelectedOffers((selectedOffers) => {
-        return [...selectedOffers, offer]
-      })
-    }
-  }
+  const columns = getCollectiveOfferColumns(urlSearchFilters)
 
   return (
     <div>
@@ -168,60 +153,93 @@ export const CollectiveOffersScreen = ({
         venues={venues}
         searchButtonRef={searchButtonRef}
       />
-      {userHasNoOffers ? (
-        <NoData page="offers" />
-      ) : (
-        <>
-          <CollectiveOffersTable
-            hasFiltersOrNameSearch={hasFiltersOrNameSearch}
-            areAllOffersSelected={areAllOffersSelected}
-            hasOffers={hasOffers}
-            isLoading={isLoading}
-            resetFilters={resetFilters}
-            selectedOffers={selectedOffers}
-            setSelectedOffer={onSetSelectedOffer}
-            toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
-            urlSearchFilters={urlSearchFilters}
-            isAtLeastOneOfferChecked={selectedOffers.length >= 1}
-            offers={sortedOffers}
-            onColumnHeaderClick={onColumnHeaderClick}
-            currentSortingColumn={currentSortingColumn}
-            currentSortingMode={currentSortingMode}
-            currentPageItems={currentPageItems}
-          />
-          {hasOffers && (
-            <div className={styles['offers-pagination']}>
-              <Pagination
-                currentPage={page}
-                pageCount={pageCount}
-                onPreviousPageClick={() => {
-                  applyUrlFiltersAndRedirect({
-                    ...urlSearchFilters,
-                    page: page - 1,
-                  })
-                }}
-                onNextPageClick={() => {
-                  applyUrlFiltersAndRedirect({
-                    ...urlSearchFilters,
-                    page: page + 1,
-                  })
-                }}
-              />
+
+      <div role="status">
+        {offers.length > MAX_OFFERS_TO_DISPLAY && (
+          <Callout className={styles['offers-table-callout']}>
+            L’affichage est limité à {MAX_OFFERS_TO_DISPLAY} offres. Modifiez
+            les filtres pour affiner votre recherche.
+          </Callout>
+        )}
+        {hasOffers && (
+          <div className={styles['offers-table-title']}>
+            <h2
+              id="offers-table-title"
+              className={styles['offers-table-title-heading']}
+            >
+              Liste des offres
+            </h2>
+            <div>
+              {`${getOffersCountToDisplay(offers.length)} ${
+                offers.length <= 1 ? 'offre' : 'offres'
+              }`}
             </div>
-          )}
-          <div role="status">
-            {selectedOffers.length > 0 && (
-              <CollectiveOffersActionsBar
-                areTemplateOffers={false}
-                areAllOffersSelected={areAllOffersSelected}
-                clearSelectedOfferIds={clearSelectedOfferIds}
-                selectedOffers={selectedOffers}
-                searchButtonRef={searchButtonRef}
-              />
-            )}
           </div>
-        </>
+        )}
+      </div>
+
+      <Table
+        columns={columns}
+        data={currentPageItems}
+        isLoading={isLoading}
+        variant={TableVariant.COLLAPSE}
+        selectable={true}
+        selectedIds={selectedOfferIds}
+        onSelectionChange={(rows) => {
+          setSelectedOffers(rows)
+          setSelectedOfferIds(new Set(rows.map((r) => r.id)))
+        }}
+        isRowSelectable={(row: CollectiveOfferResponseModel) =>
+          isCollectiveOfferSelectable(row)
+        }
+        getFullRowContent={(offer: CollectiveOfferResponseModel) => (
+          <ExpirationCell offer={offer} />
+        )}
+        noResult={{
+          message: 'Aucune offre trouvée pour votre recherche',
+          resetMessage: 'Afficher toutes les offres',
+          onFilterReset: () => resetFilters(false),
+        }}
+        noData={{
+          hasNoData: userHasNoOffers,
+          message: {
+            icon: strokeNoBooking,
+            title: 'Vous n’avez pas encore créé d’offre',
+            subtitle: '',
+          },
+        }}
+      />
+      {hasOffers && (
+        <div className={styles['offers-pagination']}>
+          <Pagination
+            currentPage={page}
+            pageCount={pageCount}
+            onPreviousPageClick={() => {
+              applyUrlFiltersAndRedirect({
+                ...urlSearchFilters,
+                page: page - 1,
+              })
+            }}
+            onNextPageClick={() => {
+              applyUrlFiltersAndRedirect({
+                ...urlSearchFilters,
+                page: page + 1,
+              })
+            }}
+          />
+        </div>
       )}
+      <div role="status">
+        {selectedOfferIds.size > 0 && (
+          <CollectiveOffersActionsBar
+            areTemplateOffers={false}
+            areAllOffersSelected={areAllOffersSelected}
+            clearSelectedOfferIds={clearSelectedOffers}
+            selectedOffers={selectedOffers}
+            searchButtonRef={searchButtonRef}
+          />
+        )}
+      </div>
     </div>
   )
 }
