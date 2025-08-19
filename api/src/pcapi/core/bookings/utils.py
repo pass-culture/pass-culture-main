@@ -114,3 +114,16 @@ def convert_date_period_to_utc_datetime_period(
     end_datetime = datetime.combine(end_date, time(hour=23, minute=59, second=59), tzinfo=ZoneInfo(timezone))
 
     return (start_datetime.astimezone(pytz.utc), end_datetime.astimezone(pytz.utc))
+
+
+DEFAULT_PACIFIC_FRANC_TO_EURO_RATE = 0.00838
+
+
+def convert_euro_to_pacific_franc(price_in_euro: float | int) -> int:
+    """
+    Convertit un montant en euros en francs pacifiques (CFP) avec arrondi par tranche de 5 CFP.
+    """
+    result = float(price_in_euro) / DEFAULT_PACIFIC_FRANC_TO_EURO_RATE
+    result = round(result * 100) / 100
+    result = round(result / 5) * 5
+    return int(result)
