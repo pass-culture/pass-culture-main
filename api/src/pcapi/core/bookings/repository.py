@@ -315,6 +315,7 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> sa_orm.Qu
         models.Booking.cancellationDate.label("cancelledAt"),
         models.Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
         models.Booking.isConfirmed,
+        offerers_models.Offerer.is_caledonian,
         # `get_batch` function needs a field called exactly `id` to work,
         # the label prevents SA from using a bad (prefixed) label for this field
         models.Booking.userId,
@@ -686,6 +687,7 @@ def _get_filtered_booking_report(
         models.Booking.cancellationDate.label("cancelledAt"),
         models.Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
         models.Booking.isConfirmed,
+        offerers_models.Offerer.is_caledonian,
         # `get_batch` function needs a field called exactly `id` to work,
         # the label prevents SA from using a bad (prefixed) label for this field
         models.Booking.id.label("id"),
@@ -819,6 +821,10 @@ def _write_bookings_to_csv(query: sa_orm.Query) -> str:
 
 
 def _write_csv_row(csv_writer: typing.Any, booking: models.Booking, booking_duo_column: str) -> None:
+    if hasattr(booking, "is_caledonian") and booking.is_caledonian:
+        booking_price = utils.convert_euro_to_pacific_franc(booking.amount)
+    else:
+        booking_price = booking.amount
     row: tuple[typing.Any, ...] = (
         booking.venueName,
         booking.offerName,
@@ -838,7 +844,7 @@ def _write_csv_row(csv_writer: typing.Any, booking: models.Booking, booking_duo_
             booking.stockBeginningDatetime,
         ),
         booking.priceCategoryLabel or "",
-        booking.amount,
+        booking_price,
         _get_booking_status(booking.status, booking.isConfirmed),
         utils.convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
         serialize_offer_type_educational_or_individual(offer_is_educational=False),
@@ -853,7 +859,8 @@ def _write_bookings_to_excel(query: sa_orm.Query) -> bytes:
     workbook = xlsxwriter.Workbook(output)
 
     bold = workbook.add_format(utils_export.EXCEL_BOLD_FORMAT)
-    currency_format = workbook.add_format(utils_export.EXCEL_CURRENCY_FORMAT)
+    currency_format_eur = workbook.add_format(utils_export.EXCEL_CURRENCY_FORMAT)
+    currency_format_cfp = workbook.add_format(utils_export.EXCEL_CFP_FORMAT)
     col_width = utils_export.EXCEL_COL_WIDTH
 
     worksheet = workbook.add_worksheet()
@@ -866,11 +873,11 @@ def _write_bookings_to_excel(query: sa_orm.Query) -> bytes:
     row = 1
     for booking in query.yield_per(1000):
         if booking.quantity == DUO_QUANTITY:
-            _write_excel_row(worksheet, row, booking, currency_format, "DUO 1")
+            _write_excel_row(worksheet, row, booking, currency_format_cfp if getattr(booking, "is_caledonian", False) else currency_format_eur, "DUO 1")
             row += 1
-            _write_excel_row(worksheet, row, booking, currency_format, "DUO 2")
+            _write_excel_row(worksheet, row, booking, currency_format_cfp if getattr(booking, "is_caledonian", False) else currency_format_eur, "DUO 2")
         else:
-            _write_excel_row(worksheet, row, booking, currency_format, "Non")
+            _write_excel_row(worksheet, row, booking, currency_format_cfp if getattr(booking, "is_caledonian", False) else currency_format_eur, "Non")
         row += 1
     workbook.close()
     return output.getvalue()
@@ -879,6 +886,10 @@ def _write_bookings_to_excel(query: sa_orm.Query) -> bytes:
 def _write_excel_row(
     worksheet: Worksheet, row: int, booking: models.Booking, currency_format: Format, duo_column: str
 ) -> None:
+    if hasattr(booking, "is_caledonian") and booking.is_caledonian:
+        booking_price = utils.convert_euro_to_pacific_franc(booking.amount)
+    else:
+        booking_price = booking.amount
     worksheet.write(row, 0, booking.venueName)
     worksheet.write(row, 1, booking.offerName)
     worksheet.write(
@@ -902,7 +913,7 @@ def _write_excel_row(
         ),
     )
     worksheet.write(row, 11, booking.priceCategoryLabel)
-    worksheet.write(row, 12, booking.amount, currency_format)
+    worksheet.write(row, 12, booking_price, currency_format)
     worksheet.write(row, 13, _get_booking_status(booking.status, booking.isConfirmed))
     worksheet.write(row, 14, str(utils.convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
     worksheet.write(row, 15, serialize_offer_type_educational_or_individual(offer_is_educational=False))
@@ -919,6 +930,10 @@ def _serialize_csv_report(query: sa_orm.Query) -> str:
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(booking_export_header())
     for booking in query.yield_per(1000):
+        if hasattr(booking, "is_caledonian") and booking.is_caledonian:
+            booking_price = utils.convert_euro_to_pacific_franc(booking.amount)
+        else:
+            booking_price = booking.amount
         row: tuple[typing.Any, ...] = (
             booking.venueName,
             booking.offerName,
@@ -938,7 +953,7 @@ def _serialize_csv_report(query: sa_orm.Query) -> str:
                 booking.stockBeginningDatetime,
             ),
             booking.priceCategoryLabel or "",
-            booking.amount,
+            booking_price,
             _get_booking_status(booking.status, booking.isConfirmed),
             utils.convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
             # This method is still used in the old Payment model
@@ -956,7 +971,8 @@ def _serialize_excel_report(query: sa_orm.Query) -> bytes:
     workbook = xlsxwriter.Workbook(output)
 
     bold = workbook.add_format(utils_export.EXCEL_BOLD_FORMAT)
-    currency_format = workbook.add_format(utils_export.EXCEL_CURRENCY_FORMAT)
+    currency_format_eur = workbook.add_format(utils_export.EXCEL_CURRENCY_FORMAT)
+    currency_format_cfp = workbook.add_format(utils_export.EXCEL_CFP_FORMAT)
     col_width = utils_export.EXCEL_COL_WIDTH
 
     worksheet = workbook.add_worksheet()
@@ -990,7 +1006,7 @@ def _serialize_excel_report(query: sa_orm.Query) -> bytes:
             "Oui" if booking.quantity == DUO_QUANTITY else "Non",
         )
         worksheet.write_row(row, 0, data)
-        worksheet.set_column(13, 13, cell_format=currency_format)
+        worksheet.set_column(13, 13, cell_format=currency_format_cfp if getattr(booking, "is_caledonian", False) else currency_format_eur)
         row += 1
 
     workbook.close()
