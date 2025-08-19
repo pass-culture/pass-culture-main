@@ -104,6 +104,7 @@ export const RadioButtonGroup = ({
       role="radiogroup"
       aria-labelledby={labelId}
       aria-describedby={describedBy}
+      aria-disabled={disabled}
       aria-required={required}
       aria-invalid={!!error}
       className={styles['radio-button-group']}
