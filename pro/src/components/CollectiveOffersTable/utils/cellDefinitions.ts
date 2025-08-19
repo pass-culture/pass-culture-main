@@ -9,7 +9,7 @@ type CELLS =
   | 'NAME'
   | 'EVENT_DATE'
   | 'VENUE'
-  | 'ADDRESS'
+  | 'LOCATION'
   | 'STRUCTURE'
   | 'INSTITUTION'
   | 'COLLECTIVE_STATUS'
@@ -37,9 +37,9 @@ export function getCellsDefinition(): Record<CELLS, CellDefinition> {
       id: 'offer-head-venue',
       title: 'Lieu',
     },
-    ADDRESS: {
-      id: 'offer-head-address',
-      title: 'Localisation',
+    LOCATION: {
+      id: 'offer-head-location',
+      title: 'Localisation de l’offre',
     },
     STRUCTURE: {
       id: 'offer-head-structure',

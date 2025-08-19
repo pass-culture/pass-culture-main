@@ -16,6 +16,7 @@ import { CollectiveOfferStatusCell } from './CollectiveOfferStatusCell/Collectiv
 import { ExpirationCell } from './ExpirationCell/ExpirationCell'
 import { OfferEventDateCell } from './OfferEventDateCell/OfferEventDateCell'
 import { OfferInstitutionCell } from './OfferInstitutionCell/OfferInstitutionCell'
+import { OfferLocationCell } from './OfferLocationCell/OfferLocationCell'
 import { OfferNameCell } from './OfferNameCell/OfferNameCell'
 import { OfferVenueCell } from './OfferVenueCell'
 
@@ -118,6 +119,9 @@ export const CollectiveOfferRow = ({
             educationalInstitution={offer.educationalInstitution}
             className={styles['collective-cell-institution']}
           />
+        )}
+        {isTemplateTable && (
+          <OfferLocationCell rowId={rowId} offerLocation={offer.location} />
         )}
         <CollectiveOfferStatusCell
           rowId={rowId}
