@@ -291,7 +291,7 @@ def create_artists() -> None:
     artist_1 = artist_factories.ArtistFactory.create(
         name="Virginie Despentes",
         description="écrivaine et réalisatrice française",
-        image="http://commons.wikimedia.org/wiki/Special:FilePath/Virginie%20Despentes%202012.jpg",
+        image="https://commons.wikimedia.org/wiki/Special:FilePath/Virginie%20Despentes%202012.jpg",
         image_license="CC BY-SA 3.0",
         image_license_url="https://creativecommons.org/licenses/by-sa/3.0",
     )
@@ -307,7 +307,7 @@ def create_artists() -> None:
     artist_2 = artist_factories.ArtistFactory.create(
         name="Avril Lavigne",
         description="chanteuse canadienne",
-        image="http://commons.wikimedia.org/wiki/Special:FilePath/Glaston2024%202806%20300624%20%28129%20of%20173%29%20%28cropped%29.jpg",
+        image="https://commons.wikimedia.org/wiki/Special:FilePath/Glaston2024%202806%20300624%20%28129%20of%20173%29%20%28cropped%29.jpg",
         image_license="CC BY 2.0",
         image_license_url="https://creativecommons.org/licenses/by/2.0",
     )
@@ -326,7 +326,7 @@ def create_artists() -> None:
     artist_3 = artist_factories.ArtistFactory.create(
         name="Marina Rollman",
         description="humoriste suisse",
-        image="http://commons.wikimedia.org/wiki/Special:FilePath/Marina-Rollman-20150710-023%20%2819415372158%29.jpg",
+        image="https://commons.wikimedia.org/wiki/Special:FilePath/Marina-Rollman-20150710-023%20%2819415372158%29.jpg",
         image_license="CC BY-SA 2.0",
         image_license_url="https://creativecommons.org/licenses/by-sa/2.0",
     )
