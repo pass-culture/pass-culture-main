@@ -1,0 +1,17 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.info-banners {
+  margin-bottom: rem.torem(24px);
+}
+
+.infotext {
+  @include fonts.body;
+
+  margin-top: rem.torem(8px);
+  margin-bottom: rem.torem(8px);
+}
+
+.email-row {
+  margin-top: rem.torem(16px);
+}

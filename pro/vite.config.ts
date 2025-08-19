@@ -49,9 +49,9 @@ export default defineConfig(({ mode }) => {
         reportsDirectory: '../coverage',
         reporter: ['text', 'json'],
         exclude: [
-          '**/__mocks__/**',
-          '**/factories/**',
-          '**/tests/**',
+          '**/__mocks__/*.ts',
+          '**/factories/*.ts',
+          '**/tests/*.ts',
           '**/*.stories.tsx',
           '@/apiClient/adage/*',
           '@/apiClient/adresse/*',
