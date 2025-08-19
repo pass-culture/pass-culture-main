@@ -13,17 +13,7 @@ describe('ExpirationCell', () => {
 
   function renderExpirationCell(offerParam = offer, bookingLimitDate: string) {
     return render(
-      <table>
-        <tbody>
-          <tr>
-            <ExpirationCell
-              offer={offerParam}
-              bookingLimitDate={bookingLimitDate}
-              rowId="rowId"
-            />
-          </tr>
-        </tbody>
-      </table>
+      <ExpirationCell offer={offerParam} bookingLimitDate={bookingLimitDate} />
     )
   }
 

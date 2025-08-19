@@ -154,7 +154,7 @@ export const CollectiveOffersScreen = ({
         searchButtonRef={searchButtonRef}
       />
 
-      <div role="status">
+      <div>
         {offers.length > MAX_OFFERS_TO_DISPLAY && (
           <Callout className={styles['offers-table-callout']}>
             L’affichage est limité à {MAX_OFFERS_TO_DISPLAY} offres. Modifiez
@@ -192,9 +192,16 @@ export const CollectiveOffersScreen = ({
         isRowSelectable={(row: CollectiveOfferResponseModel) =>
           isCollectiveOfferSelectable(row)
         }
-        getFullRowContent={(offer: CollectiveOfferResponseModel) => (
-          <ExpirationCell offer={offer} />
-        )}
+        getFullRowContent={(offer: CollectiveOfferResponseModel) => {
+          return (
+            <ExpirationCell
+              offer={offer}
+              bookingLimitDate={
+                offer.stocks[0]?.bookingLimitDatetime ?? undefined
+              }
+            />
+          )
+        }}
         noResult={{
           message: 'Aucune offre trouvée pour votre recherche',
           resetMessage: 'Afficher toutes les offres',
@@ -229,17 +236,16 @@ export const CollectiveOffersScreen = ({
           />
         </div>
       )}
-      <div role="status">
-        {selectedOfferIds.size > 0 && (
-          <CollectiveOffersActionsBar
-            areTemplateOffers={false}
-            areAllOffersSelected={areAllOffersSelected}
-            clearSelectedOfferIds={clearSelectedOffers}
-            selectedOffers={selectedOffers}
-            searchButtonRef={searchButtonRef}
-          />
-        )}
-      </div>
+
+      {selectedOfferIds.size > 0 && (
+        <CollectiveOffersActionsBar
+          areTemplateOffers={false}
+          areAllOffersSelected={areAllOffersSelected}
+          clearSelectedOfferIds={clearSelectedOffers}
+          selectedOffers={selectedOffers}
+          searchButtonRef={searchButtonRef}
+        />
+      )}
     </div>
   )
 }

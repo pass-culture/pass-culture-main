@@ -18,6 +18,7 @@ import styles from './ExpirationCell.module.scss'
 
 type ExpirationCellProps = {
   offer: CollectiveOfferResponseModel
+  bookingLimitDate: string | undefined
 }
 
 function isCollectiveOfferPublishedOrPreBooked(
@@ -29,9 +30,10 @@ function isCollectiveOfferPublishedOrPreBooked(
   )
 }
 
-export function ExpirationCell({ offer }: ExpirationCellProps) {
-  const bookingLimitDate = offer.stocks[0]?.bookingLimitDatetime
-
+export function ExpirationCell({
+  offer,
+  bookingLimitDate,
+}: ExpirationCellProps) {
   const daysCountBeforeExpiration = differenceInCalendarDays(
     new Date(bookingLimitDate ?? new Date()),
     new Date()
@@ -48,7 +50,7 @@ export function ExpirationCell({ offer }: ExpirationCellProps) {
 
   return (
     <div
-      className={classNames(styles['banner'], {
+      className={classNames(styles.banner, {
         [styles['banner-expires-soon']]: daysCountBeforeExpiration <= 7,
       })}
     >
@@ -73,12 +75,10 @@ export function ExpirationCell({ offer }: ExpirationCellProps) {
       </div>
       <div className={styles['banner-booking-date']}>
         date limite de réservation :{' '}
-        {bookingLimitDate
-          ? format(
-              toDateStrippedOfTimezone(bookingLimitDate.toString()),
-              FORMAT_DD_MM_YYYY
-            )
-          : '-'}
+        {format(
+          toDateStrippedOfTimezone(bookingLimitDate.toString()),
+          FORMAT_DD_MM_YYYY
+        )}
       </div>
     </div>
   )

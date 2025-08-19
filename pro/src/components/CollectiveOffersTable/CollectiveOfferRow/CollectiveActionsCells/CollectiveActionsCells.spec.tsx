@@ -46,7 +46,6 @@ vi.mock('react-router', async () => {
 
 const mockLogEvent = vi.fn()
 
-const mockDeselectOffer = vi.fn()
 const renderCollectiveActionsCell = (
   props: Partial<CollectiveActionsCellsProps> = {},
   features: string[] = []
@@ -55,22 +54,12 @@ const renderCollectiveActionsCell = (
     offer: collectiveOfferFactory(),
     editionOfferLink: '',
     urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-    isSelected: false,
-    deselectOffer: mockDeselectOffer,
-    rowId: 'rowId',
     ...props,
   }
 
-  return renderWithProviders(
-    <table>
-      <tbody>
-        <tr>
-          <CollectiveActionsCells {...defaultProps} />
-        </tr>
-      </tbody>
-    </table>,
-    { features }
-  )
+  return renderWithProviders(<CollectiveActionsCells {...defaultProps} />, {
+    features,
+  })
 }
 
 vi.mock('@/apiClient/api', () => ({
@@ -153,7 +142,6 @@ describe('CollectiveActionsCells', () => {
           },
         ],
       }),
-      isSelected: true,
     })
 
     await userEvent.click(
@@ -171,8 +159,6 @@ describe('CollectiveActionsCells', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Archiver l’offre' })
     )
-
-    expect(mockDeselectOffer).toHaveBeenCalledTimes(1)
   })
 
   it('should show action buttons when action is allowed on bookable offer', async () => {

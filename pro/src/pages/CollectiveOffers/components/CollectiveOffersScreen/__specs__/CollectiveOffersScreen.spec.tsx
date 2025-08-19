@@ -390,7 +390,7 @@ describe('CollectiveOffersScreen', () => {
 
     await userEvent.click(
       screen.getByRole('button', {
-        name: 'Trier par ordre croissant',
+        name: /Trier par ordre croissant/,
       })
     )
 
