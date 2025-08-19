@@ -28,14 +28,16 @@ import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuard
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { getIsOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/getIsOfferSubcategoryOnline'
-import { getOfferConditionalFields } from '@/pages/IndividualOffer/commons/getOfferConditionalFields'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { serializePatchOffer } from '@/pages/IndividualOffer/IndividualOfferInformations/commons/serializers'
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
 
 import type { UsefulInformationFormValues } from '../commons/types'
-import { getInitialValuesFromOffer } from '../commons/utils'
+import {
+  getInitialValuesFromOffer,
+  getOfferConditionalFields,
+} from '../commons/utils'
 import { getValidationSchema } from '../commons/validationSchema'
 import styles from './IndividualOfferInformationsScreen.module.scss'
 import { UsefulInformationForm } from './UsefulInformationForm/UsefulInformationForm'
