@@ -4,12 +4,11 @@ import type {
 } from '@/apiClient/v1'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { removeQuotes } from '@/commons/utils/removeQuotes'
-import { trimStringsInObject } from '@/commons/utils/trimStringsInObject'
 import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
 
 import type { LocationFormValues } from '../types'
 
-function isPhysicalLocationComplete(
+export function isPhysicalLocationComplete(
   formValues: LocationFormValues
 ): formValues is LocationFormValues & {
   city: string
@@ -30,7 +29,7 @@ function isPhysicalLocationComplete(
 
 // TODO (igabriele, 2025-07-19): Handle these dynamic props, logical & formatting rules via Yup schema to keep a single source of rules.
 // TODO (igabriele, 2025-07-19): Finish updating form values structure to match expected Patch payload and maybe prefix pure Frontend fields (`$internalField`).
-export const toPatchOfferPayload = ({
+export const toPatchOfferBodyModel = ({
   offer,
   formValues,
   shouldSendWarningMail,
@@ -64,9 +63,10 @@ export const toPatchOfferPayload = ({
           address: null,
         }
 
-  return trimStringsInObject({
+  return {
     ...maybePhysicalLocation,
+    // TODO (igabriele, 2025-07-19): Add this prop to the form values and set it via react-hook-form.
     shouldSendMail: shouldSendWarningMail,
-    url: formValues.url?.trim() || null,
-  })
+    url: formValues.url,
+  }
 }
