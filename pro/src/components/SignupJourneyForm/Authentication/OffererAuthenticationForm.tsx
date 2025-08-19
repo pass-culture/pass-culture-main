@@ -33,8 +33,13 @@ export const OffererAuthenticationForm = (): JSX.Element => {
   )
   const { offerer } = useSignupJourneyContext()
 
-  const { watch, setValue, register, getFieldState } =
-    useFormContext<OffererAuthenticationFormValues>()
+  const {
+    watch,
+    setValue,
+    register,
+    getFieldState,
+    formState: { errors, defaultValues },
+  } = useFormContext<OffererAuthenticationFormValues>()
 
   const manuallySetAddress = watch('manuallySetAddress')
 
@@ -62,27 +67,70 @@ export const OffererAuthenticationForm = (): JSX.Element => {
           disabled
         />
       </FormLayout.Row>
-      <FormLayout.Row mdSpaceAfter>
-        <TextInput
-          {...register('name')}
-          label="Raison sociale"
-          type="text"
-          required={true}
-          disabled
-        />
-      </FormLayout.Row>
+      {offerer?.isDiffusible || !isPartiallyDiffusableSignupEnabled ? (
+        <FormLayout.Row mdSpaceAfter>
+          <TextInput
+            {...register('name')}
+            label="Raison sociale"
+            type="text"
+            required={true}
+            disabled
+          />
+        </FormLayout.Row>
+      ) : (
+        <FormLayout.Row mdSpaceAfter className={styles['disabled-row']}>
+          <TextInput
+            value={offerer?.postalCode}
+            name="initial-postalCode"
+            label="Code postal"
+            type="text"
+            disabled
+          />
+          <TextInput
+            name="initial-city"
+            label="Ville"
+            type="text"
+            disabled
+            value={offerer?.city}
+          />
+        </FormLayout.Row>
+      )}
       <FormLayout.Row mdSpaceAfter>
         <TextInput
           {...register('publicName')}
           label="Nom public"
           type="text"
-          description="À remplir si le nom de votre structure est différent de la raison sociale. C’est ce nom qui sera visible du public."
+          required={
+            !offerer?.isDiffusible && isPartiallyDiffusableSignupEnabled
+          }
+          description={
+            offerer?.isDiffusible || !isPartiallyDiffusableSignupEnabled
+              ? 'À remplir si le nom de votre structure est différent de la raison sociale. C’est ce nom qui sera visible du public.'
+              : ''
+          }
+          error={errors.publicName?.message}
         />
       </FormLayout.Row>
       <FormLayout.Row mdSpaceAfter>
         <OpenToPublicToggle
           className={styles['open-to-public-toggle']}
           onChange={(e) => {
+            if (isPartiallyDiffusableSignupEnabled && !offerer?.isDiffusible) {
+              if (e.target.value === 'true') {
+                // We reset the address fields when the user toggles the open to public toggle when they aren't diffusible
+                resetReactHookFormAddressFields((name, defaultValue) =>
+                  setValue(name, defaultValue)
+                )
+              } else {
+                // We init the address fields as the default ones when the user untoggle the open to public toggle when they are not diffusible
+                if (defaultValues) {
+                  resetReactHookFormAddressFields((name, _) =>
+                    // @ts-expect-error Type is right since it's gotten from the defaultValues
+                    setValue(name, defaultValues[name])
+                  )
+                }
+              }
+            }
             setValue('isOpenToPublic', e.target.value)
           }}
           isOpenToPublic={watch('isOpenToPublic')}
@@ -116,11 +164,9 @@ export const OffererAuthenticationForm = (): JSX.Element => {
             icon={manuallySetAddress ? fullBackIcon : fullNextIcon}
             onClick={toggleManuallySetAddress}
           >
-            {manuallySetAddress ? (
-              <>Revenir à la sélection automatique</>
-            ) : (
-              <>Vous ne trouvez pas votre adresse ?</>
-            )}
+            {manuallySetAddress
+              ? 'Revenir à la sélection automatique'
+              : 'Vous ne trouvez pas votre adresse ?'}
           </Button>
           {manuallySetAddress && <AddressManual />}
         </FormLayout.Row>

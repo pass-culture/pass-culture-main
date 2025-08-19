@@ -246,5 +246,30 @@ describe('OffererAuthenticationForm', () => {
       const addressField = screen.queryByLabelText('Adresse postale *')
       expect(addressField).not.toBeInTheDocument()
     })
+
+    it('should call reset on open to public change', async () => {
+      renderOffererAuthenticationForm(
+        {
+          initialValues: initialValues,
+          contextValue: {
+            ...contextValue,
+            offerer: {
+              ...offererAuthenticationFormValues,
+              isDiffusible: false,
+            },
+          },
+        },
+        { features: ['WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE'] }
+      )
+
+      const yesRadio = await screen.findByRole('radio', { name: 'Oui' })
+      const noRadio = await screen.findByRole('radio', { name: 'Non' })
+
+      expect(noRadio).not.toBeChecked()
+      await userEvent.click(yesRadio)
+      await waitFor(() => {
+        expect(screen.getByLabelText('Adresse postale *')).toHaveValue('')
+      })
+    })
   })
 })

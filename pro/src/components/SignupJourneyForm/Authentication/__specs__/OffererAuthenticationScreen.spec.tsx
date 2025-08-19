@@ -72,7 +72,8 @@ fetchMock.mockResponse(
 )
 
 const renderOffererAuthenticationScreen = (
-  contextValue: SignupJourneyContextValues
+  contextValue: SignupJourneyContextValues,
+  features: string[] = []
 ) => {
   return renderWithProviders(
     <>
@@ -97,6 +98,7 @@ const renderOffererAuthenticationScreen = (
     {
       user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/inscription/structure/identification'],
+      features,
     }
   )
 }
@@ -195,13 +197,69 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     expect(screen.getByText('Offerer screen')).toBeInTheDocument()
   })
 
-  it('should redirect to offerer screen if there is no offerer name', () => {
+  it('should redirect to offerer screen if there is no offerer siren', () => {
     contextValue.offerer = {
       ...DEFAULT_OFFERER_FORM_VALUES,
       siret: '12345678933333',
+      siren: '',
     }
     renderOffererAuthenticationScreen(contextValue)
     expect(screen.queryByText('Identification')).not.toBeInTheDocument()
     expect(screen.getByText('Offerer screen')).toBeInTheDocument()
+  })
+
+  describe('not diffusible', () => {
+    const context = {
+      activity: null,
+      offerer: {
+        ...DEFAULT_OFFERER_FORM_VALUES,
+        siret: '923 456 789 33333',
+        siren: '923 456 789',
+        isDiffusible: false,
+      },
+      setActivity: () => {},
+      setOfferer: () => {},
+    }
+
+    it('should render the not diffusible callout', async () => {
+      renderOffererAuthenticationScreen(context, [
+        'WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE',
+      ])
+
+      expect(
+        await screen.findByText(
+          'Certaines informations de votre structure ne sont pas diffusibles.'
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should not render the not diffusible callout without the FF', () => {
+      renderOffererAuthenticationScreen(context)
+
+      expect(
+        screen.queryByText(
+          'Certaines informations de votre structure ne sont pas diffusibles.'
+        )
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not render the not diffusible callout for diffusible', () => {
+      renderOffererAuthenticationScreen(
+        {
+          ...context,
+          offerer: {
+            ...context.offerer,
+            isDiffusible: true,
+          },
+        },
+        ['WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE']
+      )
+
+      expect(
+        screen.queryByText(
+          'Certaines informations de votre structure ne sont pas diffusibles.'
+        )
+      ).not.toBeInTheDocument()
+    })
   })
 })

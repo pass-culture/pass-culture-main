@@ -4,3 +4,15 @@
 .open-to-public-toggle {
   margin-top: rem.torem(16px);
 }
+
+.disabled-row {
+  display: flex;
+  place-content: center space-between;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: rem.torem(24px);
+
+  & > div {
+    flex-grow: 1;
+  }
+}
