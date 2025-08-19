@@ -1,3 +1,5 @@
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance.models import BankAccountApplicationStatus
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
@@ -45,6 +47,10 @@ def create_eac_users_offerers() -> list[offerers_models.Offerer]:
         user__email="eac_pending_bank_informations@example.com",
         offerer__name="eac_pending_bank_informations",
         offerer__siren="552046955",
+    )
+    finance_factories.BankAccountFactory.create(
+        offerer=user_offerer.offerer,
+        status=BankAccountApplicationStatus.ON_GOING,
     )
     offerers.append(user_offerer.offerer)
     user_offerer = offerers_factories.UserOffererFactory.create(
