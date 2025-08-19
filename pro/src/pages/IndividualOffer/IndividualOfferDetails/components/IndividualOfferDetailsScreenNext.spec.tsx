@@ -262,6 +262,9 @@ describe('IndividualOfferDetailsScreenNext', () => {
       subCategories: MOCK_DATA.subCategories,
       offer: null,
     })
+    vi.spyOn(api, 'patchDraftOffer').mockResolvedValue(
+      getIndividualOfferFactory()
+    )
   })
 
   it('should render banner when no venue available', async () => {

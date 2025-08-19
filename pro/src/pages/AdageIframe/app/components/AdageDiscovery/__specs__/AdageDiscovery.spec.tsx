@@ -31,10 +31,7 @@ vi.mock('@/apiClient/api', () => ({
     newTemplateOffersPlaylist: vi.fn(),
   },
   api: {
-    listEducationalDomains: vi.fn(() => [
-      { id: 1, name: 'Danse' },
-      { id: 2, name: 'Architecture' },
-    ]),
+    listEducationalDomains: vi.fn(),
   },
 }))
 
@@ -68,6 +65,11 @@ describe('AdageDiscovery', () => {
       ...notifsImport,
       error: notifyError,
     }))
+
+    vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([
+      { id: 1, name: 'Danse', nationalPrograms: [] },
+      { id: 2, name: 'Architecture', nationalPrograms: [] },
+    ])
   })
 
   it('should render adage discovery', async () => {

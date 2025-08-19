@@ -260,6 +260,11 @@ describe('IndividualOfferDetailsScreen', () => {
       subCategories: MOCK_DATA.subCategories,
       offer: null,
     })
+    vi.spyOn(api, 'patchDraftOffer').mockResolvedValue(
+      getIndividualOfferFactory({
+        id: 12,
+      })
+    )
   })
 
   it('should render banner when no venue available', async () => {
@@ -618,11 +623,6 @@ describe('IndividualOfferDetailsScreen', () => {
   })
 
   it('should submit the form with correct payload in edition', async () => {
-    vi.spyOn(api, 'patchDraftOffer').mockResolvedValue(
-      getIndividualOfferFactory({
-        id: 12,
-      })
-    )
     vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
       { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
     ])

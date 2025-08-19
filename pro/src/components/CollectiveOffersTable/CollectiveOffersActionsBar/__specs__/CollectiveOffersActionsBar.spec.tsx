@@ -81,6 +81,8 @@ describe('ActionsBar', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
+
+    vi.spyOn(api, 'patchCollectiveOffersArchive').mockResolvedValue()
   })
 
   it('should have buttons to unckeck, disable and publish offers', () => {

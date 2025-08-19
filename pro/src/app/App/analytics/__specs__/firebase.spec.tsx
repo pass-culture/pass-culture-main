@@ -45,29 +45,41 @@ const renderFakeApp = ({ isCookieEnabled }: { isCookieEnabled: boolean }) => {
     user,
   })
 }
+const mockInitializeAnalytics = vi.fn()
+const mockGetAnalytics = vi.fn()
+const mockSetUserId = vi.fn()
+const mockinitializeApp = vi.fn()
 
 describe('useFirebase', () => {
   beforeEach(async () => {
     vi.spyOn(firebase, 'deleteApp').mockResolvedValue()
     vi.spyOn(firebaseAnalytics, 'isSupported').mockResolvedValue(true)
+    vi.spyOn(firebaseAnalytics, 'initializeAnalytics').mockImplementation(
+      mockInitializeAnalytics
+    )
+    vi.spyOn(firebaseAnalytics, 'getAnalytics').mockImplementation(
+      mockGetAnalytics
+    )
+    vi.spyOn(firebaseAnalytics, 'setUserId').mockImplementation(mockSetUserId)
+    vi.spyOn(firebase, 'initializeApp').mockImplementation(mockinitializeApp)
     await destroyFirebase()
   })
 
   it('should set logEvent and userId if cookie is set', async () => {
-    vi.spyOn(firebaseAnalytics, 'isSupported').mockResolvedValue(true)
-    vi.spyOn(firebase, 'initializeApp').mockReturnValue({
+    vi.spyOn(firebaseAnalytics, 'isSupported').mockResolvedValueOnce(true)
+    vi.spyOn(firebase, 'initializeApp').mockReturnValueOnce({
       name: '',
       options: {},
       automaticDataCollectionEnabled: true,
     })
-    vi.spyOn(firebaseAnalytics, 'setUserId')
-    vi.spyOn(firebaseAnalytics, 'initializeAnalytics')
-    vi.spyOn(firebaseAnalytics, 'getAnalytics').mockReturnValue(
+    vi.spyOn(firebaseAnalytics, 'getAnalytics').mockReturnValueOnce(
       'getAnalyticsReturn' as unknown as firebaseAnalytics.Analytics
     )
 
-    vi.spyOn(firebaseRemoteConfig, 'fetchAndActivate').mockResolvedValue(true)
-    vi.spyOn(firebaseRemoteConfig, 'getAll').mockResolvedValue({
+    vi.spyOn(firebaseRemoteConfig, 'fetchAndActivate').mockResolvedValueOnce(
+      true
+    )
+    vi.spyOn(firebaseRemoteConfig, 'getAll').mockResolvedValueOnce({
       A: {
         asString: () => 'true',
         asBoolean: vi.fn(),
