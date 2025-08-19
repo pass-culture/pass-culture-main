@@ -527,18 +527,19 @@ describe('CollectiveOfferRow', () => {
     })
 
     it('should not display a expiration row if the offer has no booking limit', () => {
-      props.offer = collectiveOfferFactory({
-        displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-        stocks: [
-          {
-            hasBookingLimitDatetimePassed: false,
-            remainingQuantity: 1,
-            bookingLimitDatetime: undefined,
-          },
-        ],
+      renderOfferItem({
+        ...props,
+        offer: collectiveOfferFactory({
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
+          stocks: [
+            {
+              hasBookingLimitDatetimePassed: false,
+              remainingQuantity: 1,
+              bookingLimitDatetime: undefined,
+            },
+          ],
+        }),
       })
-
-      renderOfferItem(props)
 
       expect(
         screen.queryByText('En attente de préréservation par l’enseignant')
@@ -546,18 +547,19 @@ describe('CollectiveOfferRow', () => {
     })
 
     it('should not display a expiration row if the offer was cancelled', () => {
-      props.offer = collectiveOfferFactory({
-        displayedStatus: CollectiveOfferDisplayedStatus.CANCELLED,
-        stocks: [
-          {
-            hasBookingLimitDatetimePassed: false,
-            remainingQuantity: 1,
-            bookingLimitDatetime: getToday().toISOString(),
-          },
-        ],
+      renderOfferItem({
+        ...props,
+        offer: collectiveOfferFactory({
+          displayedStatus: CollectiveOfferDisplayedStatus.CANCELLED,
+          stocks: [
+            {
+              hasBookingLimitDatetimePassed: false,
+              remainingQuantity: 1,
+              bookingLimitDatetime: getToday().toISOString(),
+            },
+          ],
+        }),
       })
-
-      renderOfferItem(props)
 
       expect(
         screen.queryByText('En attente de préréservation par l’enseignant')
@@ -565,7 +567,7 @@ describe('CollectiveOfferRow', () => {
     })
   })
 
-  it('should use the new collective offer detail URL when feature flag is active', () => {
+  it('should use the new collective offer detail URL when WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE is active', () => {
     renderOfferItem(props, {
       features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'],
     })

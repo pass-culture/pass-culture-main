@@ -1,18 +1,24 @@
 import type { Dispatch, FormEvent, SetStateAction } from 'react'
 
-import { EacFormat, type GetOffererResponseModel } from '@/apiClient/v1'
+import {
+  CollectiveOfferDisplayedStatus,
+  EacFormat,
+  type GetOffererResponseModel,
+} from '@/apiClient/v1'
 import {
   ALL_FORMATS_OPTION,
-  ALL_VENUES_OPTION,
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
 } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import type { SelectOption } from '@/commons/custom_types/form'
+import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OffersTableSearch } from '@/components/OffersTable/OffersTableSearch/OffersTableSearch'
-import styles from '@/components/OffersTable/OffersTableSearch/OffersTableSearch.module.scss'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
-import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
+import { Select } from '@/ui-kit/form/Select/Select'
 import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
+import { MultiSelect } from '@/ui-kit/MultiSelect/MultiSelect'
+
+import styles from '../TemplateCollectiveOffersScreen.module.scss'
 
 interface TemplateOffersSearchFiltersProps {
   hasFilters: boolean
@@ -22,41 +28,35 @@ interface TemplateOffersSearchFiltersProps {
   setSelectedFilters: Dispatch<SetStateAction<CollectiveSearchFiltersParams>>
   disableAllFilters: boolean
   resetFilters: () => void
-  venues: SelectOption[]
 }
 
-// const collectiveFilterStatus = [
-//   {
-//     label: 'En instruction',
-//     value: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
-//   },
-//   {
-//     label: 'Non conforme',
-//     value: CollectiveOfferDisplayedStatus.REJECTED,
-//   },
-//   {
-//     label: 'Publiée sur ADAGE',
-//     value: CollectiveOfferDisplayedStatus.PUBLISHED,
-//   },
-//   {
-//     label: 'En pause',
-//     value: CollectiveOfferDisplayedStatus.HIDDEN,
-//   },
-//   { label: 'Archivée', value: CollectiveOfferDisplayedStatus.ARCHIVED },
-//   {
-//     label: 'Brouillon',
-//     value: CollectiveOfferDisplayedStatus.DRAFT,
-//   },
-//   {
-//     label: 'Terminée',
-//     value: CollectiveOfferDisplayedStatus.ENDED,
-//   },
-// ]
-
-// type StatusFormValues = {
-//   status: CollectiveOfferDisplayedStatus[]
-//   'search-status': string
-// }
+const collectiveFilterStatus = [
+  {
+    label: 'En instruction',
+    id: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
+  },
+  {
+    label: 'Non conforme',
+    id: CollectiveOfferDisplayedStatus.REJECTED,
+  },
+  {
+    label: 'Publiée sur ADAGE',
+    id: CollectiveOfferDisplayedStatus.PUBLISHED,
+  },
+  {
+    label: 'En pause',
+    id: CollectiveOfferDisplayedStatus.HIDDEN,
+  },
+  { label: 'Archivée', id: CollectiveOfferDisplayedStatus.ARCHIVED },
+  {
+    label: 'Brouillon',
+    id: CollectiveOfferDisplayedStatus.DRAFT,
+  },
+  {
+    label: 'Terminée',
+    id: CollectiveOfferDisplayedStatus.ENDED,
+  },
+]
 
 export const TemplateOffersSearchFilters = ({
   hasFilters,
@@ -66,28 +66,11 @@ export const TemplateOffersSearchFilters = ({
   resetFilters,
   offerer,
   disableAllFilters,
-  venues,
 }: TemplateOffersSearchFiltersProps): JSX.Element => {
   const formats: SelectOption[] = Object.values(EacFormat).map((format) => ({
     value: format,
     label: format,
   }))
-
-  // const formik = useFormik<StatusFormValues>({
-  //   initialValues: {
-  //     status: Array.isArray(selectedFilters.status)
-  //       ? selectedFilters.status
-  //       : [selectedFilters.status],
-  //     'search-status': '',
-  //   },
-  //   onSubmit: () => {},
-  // })
-
-  // TODO(anoukhello - 24/07/24) we should not use useEffect for this but an event handler on SelectAutocomplete
-  // useEffect(() => {
-  //   updateSearchFilters({ status: formik.values.status })
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [formik.values.status])
 
   const updateSearchFilters = (
     newSearchFilters: Partial<CollectiveSearchFiltersParams>
@@ -100,10 +83,6 @@ export const TemplateOffersSearchFilters = ({
 
   const storeNameOrIsbnSearchValue = (event: FormEvent<HTMLInputElement>) => {
     updateSearchFilters({ nameOrIsbn: event.currentTarget.value })
-  }
-
-  const storeSelectedVenue = (event: FormEvent<HTMLSelectElement>) => {
-    updateSearchFilters({ venueId: event.currentTarget.value })
   }
 
   const storeSelectedFormat = (event: FormEvent<HTMLSelectElement>) => {
@@ -139,10 +118,6 @@ export const TemplateOffersSearchFilters = ({
   }
 
   const resetCollectiveFilters = () => {
-    // await formik.setFieldValue(
-    //   'status',
-    //   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status
-    // )
     resetFilters()
   }
 
@@ -160,50 +135,54 @@ export const TemplateOffersSearchFilters = ({
       }}
       onResetFilters={resetCollectiveFilters}
     >
-      <FieldLayout label="Lieu" name="lieu" isOptional>
-        <SelectInput
-          defaultOption={ALL_VENUES_OPTION}
-          onChange={storeSelectedVenue}
-          disabled={disableAllFilters}
-          name="lieu"
-          options={venues}
-          value={selectedFilters.venueId}
-        />
-      </FieldLayout>
-      <FieldLayout label="Format" name="format" isOptional>
-        <SelectInput
+      <FormLayout.Row inline smSpaceAfter>
+        <div className={styles['filter-select']}>
+          <MultiSelect
+            className={styles['offer-multiselect-status']}
+            name="status"
+            label="Statut"
+            options={collectiveFilterStatus}
+            hasSearch
+            searchLabel="Rechercher"
+            buttonLabel="Statut"
+            onSelectedOptionsChanged={(selectedOptions) => {
+              const selectedIds = selectedOptions.map(
+                (option) => option.id as CollectiveOfferDisplayedStatus
+              )
+
+              updateSearchFilters({
+                status: selectedIds,
+              })
+            }}
+            disabled={disableAllFilters}
+            selectedOptions={selectedFilters.status.map((option) => ({
+              id: option,
+              label:
+                collectiveFilterStatus.find((op) => op.id === option)?.label ||
+                '',
+            }))}
+          />
+        </div>
+        <Select
+          className={styles['filter-select']}
           defaultOption={ALL_FORMATS_OPTION}
           onChange={storeSelectedFormat}
           disabled={disableAllFilters}
           name="format"
+          label="Format"
           options={formats}
           value={selectedFilters.format}
         />
-      </FieldLayout>
-      <FieldLayout
-        label="Période de l’évènement"
-        name="period"
-        isOptional
-        className={styles['offers-table-search-filter-full-width']}
-      >
-        <PeriodSelector
-          onBeginningDateChange={onBeginningDateChange}
-          onEndingDateChange={onEndingDateChange}
-          isDisabled={disableAllFilters}
-          periodBeginningDate={selectedFilters.periodBeginningDate}
-          periodEndingDate={selectedFilters.periodEndingDate}
-        />
-      </FieldLayout>
-      {/* <FormikProvider value={formik}>
-        <SelectAutocomplete
-          multi
-          name="status"
-          label="Statut"
-          options={collectiveFilterStatus}
-          isOptional
-          disabled={disableAllFilters}
-        />
-      </FormikProvider> */}
+        <FieldLayout label="Période de l’évènement" name="period" isOptional>
+          <PeriodSelector
+            onBeginningDateChange={onBeginningDateChange}
+            onEndingDateChange={onEndingDateChange}
+            isDisabled={disableAllFilters}
+            periodBeginningDate={selectedFilters.periodBeginningDate}
+            periodEndingDate={selectedFilters.periodEndingDate}
+          />
+        </FieldLayout>
+      </FormLayout.Row>
     </OffersTableSearch>
   )
 }
