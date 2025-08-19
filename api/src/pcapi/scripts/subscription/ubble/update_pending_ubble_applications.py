@@ -19,7 +19,7 @@ from pcapi.models import db
 
 logger = logging.getLogger(__name__)
 
-PAGE_SIZE = 200_000
+PAGE_SIZE = 20_000
 
 
 def update_pending_ubble_applications(dry_run: bool = True) -> None:
