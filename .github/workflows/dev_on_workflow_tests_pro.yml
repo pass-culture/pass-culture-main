@@ -36,7 +36,13 @@ jobs:
           key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - run: yarn install --immutable
+      - name: "Install dependencies (3 attempts)"
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 2
+          max_attempts: 3
+          command: yarn install --immutable
+
       - run: yarn tsc -b
       - run: yarn lint:dead-code
       - run: yarn lint:js --diagnostic-level=error
@@ -74,7 +80,12 @@ jobs:
           restore-keys: |
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - run: yarn install --immutable
+      - name: "Install dependencies (3 attempts)"
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 2
+          max_attempts: 3
+          command: yarn install --immutable
 
       - name: Run tests with coverage
         run: yarn test:unit:ci --reporter=blob --reporter=allure-vitest/reporter --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
@@ -171,7 +182,12 @@ jobs:
           restore-keys: |
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - run: yarn install --immutable
+      - name: "Install dependencies (3 attempts)"
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 2
+          max_attempts: 3
+          command: yarn install --immutable
 
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
