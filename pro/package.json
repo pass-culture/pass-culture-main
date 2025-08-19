@@ -111,7 +111,7 @@
     "storybook-addon-remix-react-router": "^4.0.0",
     "stylelint": "^16.23.1",
     "stylelint-a11y": "^1.2.3",
-    "stylelint-config-standard-scss": "^13.1.0",
+    "stylelint-config-standard-scss": "^15.0.1",
     "tree-dump": "^1.0.3",
     "ts-unused-exports": "^11.0.1",
     "typescript": "^5.9.2",
