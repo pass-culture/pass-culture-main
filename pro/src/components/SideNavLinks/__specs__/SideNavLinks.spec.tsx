@@ -140,7 +140,7 @@ describe('SideNavLinks', () => {
       localStorage.setItem(
         SAVED_PARTNER_PAGE_VENUE_ID_KEYS,
         JSON.stringify({
-          [offerer.currentOfferer!.id as number]:
+          [offerer.currentOfferer?.id as number]:
             locallyStoredVenueId.toString(),
         })
       )
@@ -159,7 +159,7 @@ describe('SideNavLinks', () => {
       const link = await screen.findByRole('link', { name: linkLabel })
       expect(link).toHaveAttribute(
         'href',
-        `/structures/${offerer.currentOfferer!.id}/lieux/${reduxStoreSelectedVenueId.toString()}/page-partenaire`
+        `/structures/${offerer.currentOfferer?.id}/lieux/${reduxStoreSelectedVenueId.toString()}/page-partenaire`
       )
     })
 
@@ -170,7 +170,7 @@ describe('SideNavLinks', () => {
       localStorage.setItem(
         SAVED_PARTNER_PAGE_VENUE_ID_KEYS,
         JSON.stringify({
-          [offerer.currentOfferer!.id as number]:
+          [offerer.currentOfferer?.id as number]:
             locallyStoredVenueId.toString(),
         })
       )
@@ -180,7 +180,7 @@ describe('SideNavLinks', () => {
       const link = await screen.findByRole('link', { name: linkLabel })
       expect(link).toHaveAttribute(
         'href',
-        `/structures/${offerer.currentOfferer!.id}/lieux/${locallyStoredVenueId.toString()}/page-partenaire`
+        `/structures/${offerer.currentOfferer?.id}/lieux/${locallyStoredVenueId.toString()}/page-partenaire`
       )
     })
 
@@ -195,7 +195,7 @@ describe('SideNavLinks', () => {
       localStorage.setItem(
         SAVED_PARTNER_PAGE_VENUE_ID_KEYS,
         JSON.stringify({
-          [offerer.currentOfferer!.id as number]:
+          [offerer.currentOfferer?.id as number]:
             locallyStoredVenueId.toString(),
         })
       )
@@ -205,7 +205,7 @@ describe('SideNavLinks', () => {
       const link = await screen.findByRole('link', { name: linkLabel })
       expect(link).toHaveAttribute(
         'href',
-        `/structures/${offerer.currentOfferer!.id}/lieux/${fallbackVenueId}/page-partenaire`
+        `/structures/${offerer.currentOfferer?.id}/lieux/${fallbackVenueId}/page-partenaire`
       )
     })
   })
@@ -245,7 +245,74 @@ describe('SideNavLinks', () => {
     ).not.toBeInTheDocument()
   })
 
-  describe('small height devices', () => {
+  describe('on large height devices', () => {
+    it('should not collapse menus', () => {
+      vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValue(false)
+
+      renderSideNavLinks()
+
+      const individualAccordionButton = screen.getByRole('button', {
+        name: 'Individuel',
+      })
+      expect(individualAccordionButton).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Guichet' })).toBeInTheDocument()
+    })
+
+    describe('when window is resized to have a smaller height', () => {
+      it('should collapse individual section when location path doesnt match an individual page', () => {
+        vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValue(false)
+
+        const { rerender } = renderSideNavLinks({
+          initialRouterEntries: ['/offres/collectives'],
+        })
+
+        expect(
+          screen.getByRole('link', { name: 'Guichet' })
+        ).toBeInTheDocument()
+
+        vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValue(true)
+        rerender(<SideNavLinks isLateralPanelOpen={true} />)
+
+        expect(
+          screen.queryByRole('link', { name: 'Guichet' })
+        ).not.toBeInTheDocument()
+      })
+
+      it('should collapse collective section when location path doesnt match a collective page', () => {
+        vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValue(false)
+
+        const { rerender } = renderSideNavLinks({
+          initialRouterEntries: ['/offres'],
+        })
+
+        expect(screen.getAllByRole('link', { name: 'Offres' })).toHaveLength(2)
+
+        vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValue(true)
+        rerender(<SideNavLinks isLateralPanelOpen={true} />)
+
+        expect(screen.getAllByRole('link', { name: 'Offres' })).toHaveLength(1)
+      })
+
+      it('should collapse both section when location path doesnt match any page', () => {
+        vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValue(false)
+
+        const { rerender } = renderSideNavLinks({
+          initialRouterEntries: ['/'],
+        })
+
+        expect(screen.getAllByRole('link', { name: 'Offres' })).toHaveLength(2)
+
+        vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValue(true)
+        rerender(<SideNavLinks isLateralPanelOpen={true} />)
+
+        expect(
+          screen.queryByRole('link', { name: 'Offres' })
+        ).not.toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('on small height devices', () => {
     beforeEach(() => {
       vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValue(true)
     })

@@ -14,7 +14,8 @@ export const SkipLinks = ({
   return (
     <>
       {shouldDisplayTopPageLink && (
-        // biome-ignore lint/a11y/useAnchorContent: TODO (igabriele, 2025-08-08): There may be accessibility-friendlier ways to do this.
+        // biome-ignore lint/correctness/useUniqueElementIds: This cannot be used more than once on the page.
+        // biome-ignore lint/a11y/useAnchorContent: The unaccessible-top-page link is known to have a11y issues (hence, its name) and will be deleted in a near future.
         <a
           tabIndex={-1}
           // biome-ignore lint/a11y/useValidAnchor: See above comment.

@@ -40,8 +40,8 @@ export const Homepage = (): JSX.Element => {
 
   const offererOptions = sortByLabel(
     offererNames?.map((item) => ({
-      value: item['id'].toString(),
-      label: item['name'],
+      value: item.id.toString(),
+      label: item.name,
     })) ?? []
   )
 
@@ -78,54 +78,52 @@ export const Homepage = (): JSX.Element => {
   }
 
   return (
-    <>
-      <Layout mainHeading="Bienvenue sur votre espace partenaire">
-        <div className={styles['reimbursements-banners']}>
-          <AddBankAccountCallout offerer={selectedOfferer} />
-          <LinkVenueCallout offerer={selectedOfferer} />
-          <BankAccountHasPendingCorrectionCallout offerer={selectedOfferer} />
-        </div>
-        {!isOffererValidating && (selectedOfferer || offererApiError) && (
-          <OffererBanners
-            isUserOffererValidated={isUserOffererValidated}
-            offerer={selectedOfferer}
-          />
-        )}
+    <Layout mainHeading="Bienvenue sur votre espace partenaire">
+      <div className={styles['reimbursements-banners']}>
+        <AddBankAccountCallout offerer={selectedOfferer} />
+        <LinkVenueCallout offerer={selectedOfferer} />
+        <BankAccountHasPendingCorrectionCallout offerer={selectedOfferer} />
+      </div>
+      {!isOffererValidating && (selectedOfferer || offererApiError) && (
+        <OffererBanners
+          isUserOffererValidated={isUserOffererValidated}
+          offerer={selectedOfferer}
+        />
+      )}
 
-        {selectedOfferer?.isValidated && selectedOfferer.isActive && (
-          <section className={styles['section']}>
-            <StatisticsDashboard offerer={selectedOfferer} />
+      {selectedOfferer?.isValidated && selectedOfferer.isActive && (
+        <section className={styles.section}>
+          <StatisticsDashboard offerer={selectedOfferer} />
+        </section>
+      )}
+
+      <section className={styles.section} ref={offerersRef}>
+        <Offerers
+          selectedOfferer={selectedOfferer}
+          isLoading={isOffererLoading}
+          offererOptions={offererOptions}
+          isUserOffererValidated={isUserOffererValidated}
+          venueTypes={venueTypes}
+        />
+      </section>
+
+      {isUserOffererValidated &&
+        hasNoVenueVisible &&
+        selectedOfferer !== null && (
+          <section className={styles['step-section']}>
+            <VenueOfferSteps
+              hasVenue={!hasNoVenueVisible}
+              offerer={selectedOfferer}
+            />
           </section>
         )}
 
-        <section className={styles['section']} ref={offerersRef}>
-          <Offerers
-            selectedOfferer={selectedOfferer}
-            isLoading={isOffererLoading}
-            offererOptions={offererOptions}
-            isUserOffererValidated={isUserOffererValidated}
-            venueTypes={venueTypes}
-          />
-        </section>
-
-        {isUserOffererValidated &&
-          hasNoVenueVisible &&
-          selectedOfferer !== null && (
-            <section className={styles['step-section']}>
-              <VenueOfferSteps
-                hasVenue={!hasNoVenueVisible}
-                offerer={selectedOfferer}
-              />
-            </section>
-          )}
-
-        <section className={styles['section']} ref={profileRef}>
-          <div className={styles['newsletter']}>
-            <Newsletter />
-          </div>
-        </section>
-      </Layout>
-    </>
+      <section className={styles.section} ref={profileRef}>
+        <div className={styles.newsletter}>
+          <Newsletter />
+        </div>
+      </section>
+    </Layout>
   )
 }
 

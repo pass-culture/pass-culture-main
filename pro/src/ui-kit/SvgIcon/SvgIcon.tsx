@@ -71,6 +71,7 @@ export const SvgIcon = ({
   'data-testid': dataTestid,
 }: SvgIconProps) => {
   return (
+    // biome-ignore lint/a11y/noSvgWithoutTitle: For some reasons, biome does not interpret the (alt ? {} : {}) condition correctly.
     <svg
       className={className}
       viewBox={viewBox}

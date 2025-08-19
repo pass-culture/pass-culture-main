@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/correctness/useUniqueElementIds: SideNavLinks is used once per page. There cannot be id duplications. */
 import classnames from 'classnames'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -48,10 +49,20 @@ interface SideNavLinksProps {
   isLateralPanelOpen: boolean
 }
 
-const INDIVIDUAL_LINKS = ['/offres', '/guichet']
-const COLLECTIVE_LINKS = ['/offres/collectives']
+const INDIVIDUAL_LINKS = [
+  /offres$/,
+  /reservations$/,
+  /guichet$/,
+  /structures\/\d+\/lieux\/\d+\/page-partenaire/,
+]
+const COLLECTIVE_LINKS = [
+  /offres\/collectives$/,
+  /reservations\/collectives$/,
+  /structures\/\d+\/lieux\/\d+\/collectif/,
+]
 
 export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
+  const location = useLocation()
   const isNewCollectiveOffersStructureEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
@@ -60,7 +71,6 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
 
-  const location = useLocation()
   const dispatch = useDispatch()
   const isIndividualSectionOpen = useSelector(selectIsIndividualSectionOpen)
   const isCollectiveSectionOpen = useSelector(selectIsCollectiveSectionOpen)
@@ -83,6 +93,30 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     []
   const venueId = permanentVenues[0]?.id
 
+  useEffect(() => {
+    if (sideNavCollapseSize) {
+      for (const link of INDIVIDUAL_LINKS) {
+        if (link.test(location.pathname)) {
+          dispatch(setIsIndividualSectionOpen(true))
+          dispatch(setIsCollectiveSectionOpen(false))
+          return
+        }
+      }
+
+      for (const link of COLLECTIVE_LINKS) {
+        if (link.test(location.pathname)) {
+          dispatch(setIsCollectiveSectionOpen(true))
+          dispatch(setIsIndividualSectionOpen(false))
+          return
+        }
+      }
+
+      // If no link matches, we close both sections
+      dispatch(setIsIndividualSectionOpen(false))
+      dispatch(setIsCollectiveSectionOpen(false))
+    }
+  }, [sideNavCollapseSize, dispatch, location.pathname])
+
   const reduxStoredPartnerPageId = useSelector(selectSelectedPartnerPageId)
   const savedPartnerPageVenueId = getSavedPartnerPageVenueId(
     'partnerPage',
@@ -101,17 +135,6 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     stillRelevantSavedPartnerPageVenueId ||
     hasPartnerPageVenues[0]?.id
 
-  useEffect(() => {
-    if (sideNavCollapseSize) {
-      dispatch(
-        setIsIndividualSectionOpen(INDIVIDUAL_LINKS.includes(location.pathname))
-      )
-      dispatch(
-        setIsCollectiveSectionOpen(COLLECTIVE_LINKS.includes(location.pathname))
-      )
-    }
-  }, [sideNavCollapseSize, dispatch, location.pathname])
-
   return (
     <div
       className={classnames({
@@ -120,8 +143,8 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
       })}
     >
       {selectedOfferer && isUserOffererValidated && (
-        <ul className={styles['nav-links-group']}>
-          <li className={styles['nav-links-create-offer-wrapper']}>
+        <div className={styles['nav-links-group']}>
+          <div className={styles['nav-links-create-offer-wrapper']}>
             {isNewOfferCreationFlowFFEnabled && (
               <DropdownButton
                 name="Créer une offre"
@@ -167,8 +190,8 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 Créer une offre
               </ButtonLink>
             )}
-          </li>
-        </ul>
+          </div>
+        </div>
       )}
       <ul
         className={classnames(
@@ -189,13 +212,14 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               src={strokeHomeIcon}
               alt=""
               width={NAV_ITEM_ICON_SIZE}
-              className={styles['icon']}
+              className={styles.icon}
             />
             <span className={styles['nav-links-item-title']}>Accueil</span>
           </NavLink>
         </li>
         <li>
           <button
+            type="button"
             onClick={() => {
               const willOpenIndividualSection = !isIndividualSectionOpen
               if (sideNavCollapseSize && willOpenIndividualSection) {
@@ -203,7 +227,10 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               }
               dispatch(setIsIndividualSectionOpen(willOpenIndividualSection))
             }}
-            className={(styles['nav-links-item'], styles['nav-section-button'])}
+            className={classnames(
+              styles['nav-links-item'],
+              styles['nav-section-button']
+            )}
             aria-expanded={isIndividualSectionOpen}
             aria-controls="individual-sublist"
             id="individual-sublist-button"
@@ -212,7 +239,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               src={strokePhoneIcon}
               alt=""
               width={NAV_ITEM_ICON_SIZE}
-              className={styles['icon']}
+              className={styles.icon}
             />
             <span className={styles['nav-section-title']}>Individuel</span>
             <SvgIcon
@@ -294,6 +321,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         </li>
         <li>
           <button
+            type="button"
             onClick={() => {
               const willdOpenCollectiveSection = !isCollectiveSectionOpen
               if (sideNavCollapseSize && willdOpenCollectiveSection) {
@@ -303,7 +331,10 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 dispatch(setIsCollectiveSectionOpen(willdOpenCollectiveSection))
               )
             }}
-            className={(styles['nav-links-item'], styles['nav-section-button'])}
+            className={classnames(
+              styles['nav-links-item'],
+              styles['nav-section-button']
+            )}
             aria-expanded={isCollectiveSectionOpen}
             aria-controls="collective-sublist"
             id="collective-sublist-button"
@@ -312,7 +343,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               src={strokeTeacherIcon}
               alt=""
               width={NAV_ITEM_ICON_SIZE}
-              className={styles['icon']}
+              className={styles.icon}
             />
             <span className={styles['nav-section-title']}>Collectif</span>
             <SvgIcon
@@ -393,14 +424,14 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
           )}
         </li>
       </ul>
-      <ul className={styles['nav-links-group']}>
-        <li
+      <div className={styles['nav-links-group']}>
+        <div
           className={styles['nav-links-last-group-separator']}
           aria-hidden="true"
         >
           <div className={styles['separator-line']} />
-        </li>
-        <li>
+        </div>
+        <div>
           <NavLink
             to="/remboursements"
             className={({ isActive }) =>
@@ -413,12 +444,12 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               src={isCaledonian ? strokeFrancIcon : strokeEuroIcon}
               alt=""
               width={NAV_ITEM_ICON_SIZE}
-              className={styles['icon']}
+              className={styles.icon}
             />
             Gestion financière
           </NavLink>
-        </li>
-        <li>
+        </div>
+        <div>
           <NavLink
             to="/collaborateurs"
             className={({ isActive }) =>
@@ -431,12 +462,12 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               src={strokeCollaboratorIcon}
               alt=""
               width={NAV_ITEM_ICON_SIZE}
-              className={styles['icon']}
+              className={styles.icon}
             />
             Collaborateurs
           </NavLink>
-        </li>
-      </ul>
+        </div>
+      </div>
     </div>
   )
 }
