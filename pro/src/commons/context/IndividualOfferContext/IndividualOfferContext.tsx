@@ -29,6 +29,10 @@ export interface IndividualOfferContextValues {
   // so the stepper can be updated depending on form changes.
   isAccessibilityFilled: boolean
   setIsAccessibilityFilled: (isAccessibilityFilled: boolean) => void
+  /** Real boolean guarded by early `<Splinner />` return while fetching offer data in context provider. */
+  // TODO (igabriele, 2025-08-19): Remove the `?` in another PR.
+  hasPublishedOfferWithSameEan?: boolean
+  /** @deprecated use `publishedOfferWithSameEAN` instead */
   publishedOfferWithSameEAN?: GetActiveEANOfferResponseModel
 }
 
@@ -36,6 +40,7 @@ export const IndividualOfferContext =
   createContext<IndividualOfferContextValues>({
     offer: null,
     categories: [],
+    hasPublishedOfferWithSameEan: false,
     subCategories: [],
     isEvent: null,
     setIsEvent: () => {},
@@ -65,6 +70,7 @@ export const IndividualOfferContextProvider = ({
   const navigate = useNavigate()
 
   const offerQuery = useSWR(
+    // TODO (igabriele, 2025-08-18): Use the `mode` via `useOfferWizardMode` hook to keep a single source of truth.
     offerId && offerId !== 'creation'
       ? [GET_OFFER_QUERY_KEY, Number(offerId)]
       : null,
@@ -131,6 +137,7 @@ export const IndividualOfferContextProvider = ({
         setIsEvent,
         isAccessibilityFilled,
         setIsAccessibilityFilled,
+        hasPublishedOfferWithSameEan: Boolean(publishedOfferWithSameEAN),
         publishedOfferWithSameEAN,
       }}
     >
