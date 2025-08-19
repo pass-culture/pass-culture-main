@@ -32,7 +32,7 @@ describe('validationSchema', () => {
       formValues: priceCategoriesFormValuesFactory({
         priceCategories: [priceCategoryFormFactory({ price: -1 })],
       }),
-      expectedErrors: ['Le prix ne peut pas être inferieur à 0€'],
+      expectedErrors: ['Le prix ne peut pas être inferieur à 0 €'],
     },
     {
       description: 'price too high',
@@ -40,7 +40,7 @@ describe('validationSchema', () => {
         priceCategories: [priceCategoryFormFactory({ price: 1000 })],
       }),
       expectedErrors: [
-        `Veuillez renseigner un tarif inférieur à ${PRICE_CATEGORY_PRICE_MAX}€`,
+        `Veuillez renseigner un tarif inférieur à ${PRICE_CATEGORY_PRICE_MAX} €`,
       ],
     },
     {

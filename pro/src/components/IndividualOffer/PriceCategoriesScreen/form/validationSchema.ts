@@ -15,15 +15,15 @@ const labelDuplicateMsg =
   'Plusieurs tarifs sont identiques, veuillez changer l’intitulé ou le prix'
 
 const priceRequiredMsg = 'Veuillez renseigner un tarif'
-const priceTooLowMsg = 'Le prix ne peut pas être inferieur à 0€'
+const priceTooLowMsg = 'Le prix ne peut pas être inferieur à 0 €'
 
 export const getValidationSchema = (isCaledonian: boolean = false) => {
   const maxPrice = isCaledonian
     ? PRICE_MAX_PACIFIC_FRANC
     : PRICE_CATEGORY_PRICE_MAX
   const priceTooHighMsg = isCaledonian
-    ? `Veuillez renseigner un tarif inférieur à ${PRICE_MAX_PACIFIC_FRANC}F`
-    : `Veuillez renseigner un tarif inférieur à ${PRICE_CATEGORY_PRICE_MAX}€`
+    ? `Veuillez renseigner un tarif inférieur à ${PRICE_MAX_PACIFIC_FRANC} F`
+    : `Veuillez renseigner un tarif inférieur à ${PRICE_CATEGORY_PRICE_MAX} €`
 
   const priceCategoryValidationSchema = yup.object({
     label: yup
