@@ -1,5 +1,3 @@
-import { id } from 'date-fns/locale'
-
 import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
@@ -11,6 +9,7 @@ import { computeVenueDisplayName } from '@/repository/venuesService'
 import type { Column } from '@/ui-kit/Table/Table'
 
 import { CollectiveActionsCells } from './CollectiveActionsCells/CollectiveActionsCells'
+import styles from './CollectiveOfferColumns.module.scss'
 import { OfferEventDateCell } from './OfferEventDateCell/OfferEventDateCell'
 import { OfferNameCell } from './OfferNameCell/OfferNameCell'
 
@@ -28,12 +27,12 @@ export function getCollectiveOfferColumns(
       render: (offer) => {
         const isOfferDraft =
           offer.displayedStatus === CollectiveOfferDisplayedStatus.DRAFT &&
-          `/offre/collectif/${id}/creation`
+          `/offre/collectif/${offer.id}/creation`
 
         const offerLink =
           isNewCollectiveOfferDetailPageActive && !offer.isShowcase
-            ? `/offre/${id}/collectif/recapitulatif`
-            : isOfferDraft || `/offre/${id}/collectif/recapitulatif`
+            ? `/offre/${offer.id}/collectif/recapitulatif`
+            : isOfferDraft || `/offre/${offer.id}/collectif/recapitulatif`
 
         return <OfferNameCell offer={offer} offerLink={offerLink} />
       },
@@ -48,7 +47,11 @@ export function getCollectiveOfferColumns(
     {
       id: 'venue',
       label: 'Structure',
-      render: (offer) => <span> {computeVenueDisplayName(offer.venue)}</span>,
+      render: (offer) => (
+        <span className={styles['structure-cell']}>
+          {computeVenueDisplayName(offer.venue)}
+        </span>
+      ),
     },
     {
       id: 'educationalInstitution',

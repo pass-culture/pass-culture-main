@@ -17,7 +17,7 @@ import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/seria
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
-import { getStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'

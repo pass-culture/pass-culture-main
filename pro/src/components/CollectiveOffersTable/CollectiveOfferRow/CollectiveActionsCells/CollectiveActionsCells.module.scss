@@ -9,7 +9,8 @@
 @media screen and (min-width: size.$tablet) {
   .actions-column {
     &-container {
-      justify-content: flex-end;
+      display: flex;
+      justify-items: flex-end;
     }
   }
 }

@@ -4,8 +4,6 @@
 .title-column {
   @include fonts.body-accent;
 
-  grid-area: title;
-
   &-name {
     display: block;
     overflow-wrap: anywhere;
@@ -18,8 +16,16 @@
 
   &-with-thumb {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: rem.torem(8px) rem.torem(24px);
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: rem.torem(240px);
+    gap: rem.torem(16px);
   }
 }
+
+td[data-label='Nom de l’offre']::before {
+  content: none;
+  display: none;
+}
+

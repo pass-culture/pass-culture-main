@@ -279,7 +279,7 @@ export function Table<
             return (
               <React.Fragment key={row.id}>
                 <tr
-                  className={classNames(styles['table-row'], {
+                  className={classNames({
                     [styles.selected]: isSelected,
                   })}
                 >
@@ -319,6 +319,7 @@ export function Table<
                     const value = col.render
                       ? col.render(row)
                       : getValue(row, col.ordererField)
+
                     return (
                       <td
                         className={classNames({
@@ -331,15 +332,19 @@ export function Table<
                         data-label={col.label}
                       >
                         {value}
-                        {col.id === columns[1].id && tableFullRowContent && (
-                          <div className={styles['table-fullrow-content']}>
-                            {tableFullRowContent}
-                          </div>
-                        )}
                       </td>
                     )
                   })}
                 </tr>
+                {tableFullRowContent && (
+                  <tr>
+                    <td colSpan={columns.length + (selectable ? 1 : 0)}>
+                      <div className={styles['table-fullrow-content']}>
+                        {tableFullRowContent}
+                      </div>
+                    </td>
+                  </tr>
+                )}{' '}
               </React.Fragment>
             )
           })}

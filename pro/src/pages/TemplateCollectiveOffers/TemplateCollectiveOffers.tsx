@@ -18,7 +18,7 @@ import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getColle
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializer'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
-import { getStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { TemplateCollectiveOffersScreen } from '@/pages/TemplateCollectiveOffers/TemplateCollectiveOffersScreen/TemplateCollectiveOffersScreen'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 

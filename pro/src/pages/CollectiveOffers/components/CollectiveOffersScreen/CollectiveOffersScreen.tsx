@@ -24,7 +24,7 @@ import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformatio
 import { getCollectiveOfferColumns } from '@/components/CollectiveOffersTable/CollectiveOfferRow/CollectiveOfferColumns'
 import { ExpirationCell } from '@/components/CollectiveOffersTable/CollectiveOfferRow/ExpirationCell/ExpirationCell'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
-import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import strokeNoBooking from '@/icons/stroke-no-booking.svg'
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { Pagination } from '@/ui-kit/Pagination/Pagination'

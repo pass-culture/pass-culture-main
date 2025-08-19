@@ -19,7 +19,7 @@ import { usePagination } from '@/commons/hooks/usePagination'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
-import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { Pagination } from '@/ui-kit/Pagination/Pagination'
 
 import styles from './TemplateCollectiveOffersScreen.module.scss'
