@@ -56,7 +56,7 @@ const renderOffers = async (
   renderWithProviders(<TemplateCollectiveOffers />, {
     user,
     initialRouterEntries: [route],
-    features: features,
+    features,
     storeOverrides: {
       user: {
         currentUser: user,

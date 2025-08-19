@@ -5,6 +5,7 @@ import { api } from '@/apiClient/api'
 import {
   ApiError,
   CollectiveBookingStatus,
+  CollectiveLocationType,
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
@@ -615,26 +616,36 @@ describe('CollectiveOfferRow', () => {
   })
 
   it('should use only the first stock for bookingLimitDate', () => {
-    props.offer = collectiveOfferFactory({
-      displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
-      stocks: [
-        {
-          bookingLimitDatetime: getToday().toISOString(),
-          remainingQuantity: 1,
-          hasBookingLimitDatetimePassed: false,
-        },
-        {
-          bookingLimitDatetime: undefined,
-          remainingQuantity: 0,
-          hasBookingLimitDatetimePassed: true,
-        },
-      ],
+    renderOfferItem({
+      ...props,
+      offer: collectiveOfferFactory({
+        displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
+        stocks: [
+          {
+            bookingLimitDatetime: getToday().toISOString(),
+            remainingQuantity: 1,
+            hasBookingLimitDatetimePassed: false,
+          },
+          {
+            bookingLimitDatetime: undefined,
+            remainingQuantity: 0,
+            hasBookingLimitDatetimePassed: true,
+          },
+        ],
+      }),
     })
-
-    renderOfferItem(props)
 
     expect(
       screen.getByText('En attente de réservation par le chef d’établissement')
     ).toBeInTheDocument()
+  })
+
+  it('should display location cell when isTemplateTable is true', () => {
+    renderOfferItem({
+      ...props,
+      isTemplateTable: true,
+    })
+
+    expect(screen.getByText('À déterminer')).toBeInTheDocument()
   })
 })

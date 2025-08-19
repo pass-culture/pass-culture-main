@@ -71,6 +71,7 @@ export const CollectiveOffersTable = ({
       ? []
       : [getCellsDefinition().STRUCTURE]),
     ...(isTemplateTable ? [] : [getCellsDefinition().INSTITUTION]),
+    ...(isTemplateTable ? [getCellsDefinition().LOCATION] : []),
     getCellsDefinition().COLLECTIVE_STATUS,
   ]
 
