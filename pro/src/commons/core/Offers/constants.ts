@@ -61,9 +61,14 @@ export const OFFER_WITHDRAWAL_TYPE_LABELS = {
   [WithdrawalTypeEnum.IN_APP]: 'Les billets seront affichés dans l’application',
 }
 
+// TODO (igabriele, 2025-08-14): Replace these pass-through variables with the actual OfferStatus enum values where it's used.
+/** @deprecated Use `OfferStatus` enum from the API client instead. */
 export const OFFER_STATUS_SOLD_OUT = OfferStatus.SOLD_OUT
+/** @deprecated Use `OfferStatus` enum from the API client instead. */
 export const OFFER_STATUS_PENDING = OfferStatus.PENDING
+/** @deprecated Use `OfferStatus` enum from the API client instead. */
 export const OFFER_STATUS_REJECTED = OfferStatus.REJECTED
+/** @deprecated Use `OfferStatus` enum from the API client instead. */
 export const OFFER_STATUS_DRAFT = OfferStatus.DRAFT
 
 const ALL_OFFERS = ''
