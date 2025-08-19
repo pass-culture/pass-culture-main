@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.1.3/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
   // https://biomejs.dev/guides/big-projects/#monorepo
   "root": false,
   "extends": "//",
@@ -51,8 +51,8 @@
     "includes": [
       "**",
       "!scripts/customRequest.ts",
-      "!src/apiClient/adage/**",
-      "!src/apiClient/v1/**"
+      "!src/apiClient/adage",
+      "!src/apiClient/v1"
     ],
     "ignoreUnknown": true
   },
@@ -111,6 +111,7 @@
         "useHookAtTopLevel": "error",
         "useIsNan": "error",
         "useJsxKeyInIterable": "error",
+        "useUniqueElementIds": "warn", // default: "error"
         "useValidForDirection": "error",
         "useValidTypeof": "error",
         "useYield": "error"
