@@ -81,6 +81,8 @@ describe('ActionsBar', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
+
+    vi.spyOn(api, 'patchCollectiveOffersArchive').mockResolvedValue()
   })
 
   it('should have publish, hide, archive, cancel CTAs when WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is not active', () => {

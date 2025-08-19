@@ -76,6 +76,7 @@ describe('ActionsBar', () => {
       logEvent: mockLogEvent,
     }))
     vi.spyOn(router, 'useLocation').mockReturnValue(defaultUseLocationValue)
+    vi.spyOn(api, 'patchAllOffersActiveStatus').mockResolvedValue({})
   })
 
   it('should have buttons to activate and deactivate offers, to delete, and to abort action', () => {
