@@ -2,6 +2,7 @@ import logging
 import typing
 
 from pcapi.core import search
+from pcapi.core.artist import models as artists_models
 from pcapi.core.offerers import models as offerer_models
 from pcapi.core.offers import models as offers_models
 from pcapi.db_utils import clean_all_database
@@ -36,6 +37,7 @@ def save_sandbox(
     logger.info("Sandbox %s saved", name)
     _index_all_offers()
     _index_all_venues()
+    _index_all_artists()
 
 
 # The following functions are rather naive
@@ -52,6 +54,15 @@ def _index_all_offers() -> None:
         .with_entities(offers_models.Offer.id)
     )
     search.reindex_offer_ids([offer_id for (offer_id,) in query])
+
+    logger.info("Reindexing done")
+
+
+def _index_all_artists() -> None:
+    logger.info("Reindexing artists")
+
+    query = db.session.query(artists_models.Artist).with_entities(artists_models.Artist.id)
+    search.index_artist_ids([artist_id for (artist_id,) in query])
 
     logger.info("Reindexing done")
 
