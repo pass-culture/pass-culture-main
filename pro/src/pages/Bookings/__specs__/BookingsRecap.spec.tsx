@@ -112,6 +112,7 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     vi.spyOn(api, 'getUserHasBookings').mockResolvedValue({ hasBookings: true })
     vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
+    vi.spyOn(api, 'getBookingsCsv').mockResolvedValue({})
   })
 
   it('should show a pre-filter section', async () => {

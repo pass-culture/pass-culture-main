@@ -32,6 +32,14 @@ vi.spyOn(useNotification, 'useNotification').mockImplementation(
   () => mockUseNotification
 )
 
+const mockDispatch = vi.fn()
+
+vi.mock('react-redux', () => ({
+  ...vi.importActual('react-redux'),
+  useSelector: vi.fn(),
+  useDispatch: () => mockDispatch,
+}))
+
 describe('useCollectiveOfferImageUpload', () => {
   it('should initialize with current image', () => {
     const offer = getCollectiveOfferFactory()
