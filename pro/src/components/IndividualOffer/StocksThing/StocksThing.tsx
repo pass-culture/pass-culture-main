@@ -146,7 +146,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
     // Submit
     try {
-      await submitToApi(values, offer, reset, setError)
+      await submitToApi(values, offer, reset, setError, readOnlyFields)
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error.message)

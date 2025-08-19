@@ -41,6 +41,7 @@ describe('serializeCreateThingStock', () => {
     const serializedData = serializeCreateThingStock(
       formValues,
       offerId,
+      [],
       departementCode
     )
     expect(serializedData).toStrictEqual(expectedCreateThingStock)
@@ -60,6 +61,7 @@ describe('serializeCreateThingStock', () => {
         bookingLimitDatetime: '',
       },
       offerId,
+      [],
       departementCode
     )
     expect(serializedData).toStrictEqual(expectedApiStockThing)
@@ -73,6 +75,7 @@ describe('serializeCreateThingStock', () => {
         quantity: 0,
       },
       offerId,
+      [],
       departementCode
     )
     expect(serializedData.quantity).toStrictEqual(0)
@@ -86,6 +89,7 @@ describe('serializeCreateThingStock', () => {
         quantity: undefined,
       },
       offerId,
+      [],
       departementCode
     )
     // null is set in unlimited in api
@@ -121,6 +125,7 @@ describe('serializeUpdateThingStock', () => {
 
     const serializedData = serializeUpdateThingStock(
       formValues,
+      [],
       departementCode
     )
     expect(serializedData).toStrictEqual(expectedUpdateThingStock)
@@ -138,6 +143,7 @@ describe('serializeUpdateThingStock', () => {
         ...formValues,
         bookingLimitDatetime: '',
       },
+      [],
       departementCode
     )
     expect(serializedData).toStrictEqual(expectedApiStockThing)
@@ -150,6 +156,7 @@ describe('serializeUpdateThingStock', () => {
         ...formValues,
         quantity: 0,
       },
+      [],
       departementCode
     )
     expect(serializedData.quantity).toStrictEqual(0)
@@ -162,9 +169,23 @@ describe('serializeUpdateThingStock', () => {
         ...formValues,
         quantity: undefined,
       },
+      [],
       departementCode
     )
     // null is set in unlimited in api
     expect(serializedData.quantity).toStrictEqual(null)
+  })
+
+  it('should not send the bookingLimitDatetime when the field is disabled', () => {
+    const serializedData = serializeUpdateThingStock(
+      {
+        stockId: 1,
+        ...formValues,
+        bookingLimitDatetime: '2022-10-26T21:59:59Z',
+      },
+      ['bookingLimitDatetime']
+    )
+    // null is set in unlimited in api
+    expect(serializedData.bookingLimitDatetime).toStrictEqual(undefined)
   })
 })

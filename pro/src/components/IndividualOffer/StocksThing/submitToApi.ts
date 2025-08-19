@@ -20,7 +20,8 @@ export const submitToApi = async (
   values: StockThingFormValues,
   offer: GetIndividualOfferWithAddressResponseModel,
   resetForm: UseFormReset<StockThingFormValues>,
-  setErrors: UseFormSetError<StockThingFormValues>
+  setErrors: UseFormSetError<StockThingFormValues>,
+  readOnlyFields: string[]
 ) => {
   try {
     await api.patchOffer(offer.id, { isDuo: values.isDuo })
@@ -35,11 +36,16 @@ export const submitToApi = async (
     if (values.stockId) {
       await api.updateThingStock(
         values.stockId,
-        serializeUpdateThingStock(values, departementCode)
+        serializeUpdateThingStock(values, readOnlyFields, departementCode)
       )
     } else {
       await api.createThingStock(
-        serializeCreateThingStock(values, offer.id, departementCode)
+        serializeCreateThingStock(
+          values,
+          offer.id,
+          readOnlyFields,
+          departementCode
+        )
       )
     }
   } catch (error) {
