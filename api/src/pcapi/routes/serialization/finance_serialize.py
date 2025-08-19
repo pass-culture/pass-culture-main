@@ -138,7 +138,9 @@ class BankAccountResponseModel(BaseModel):
             [
                 link.venue
                 for link in bank_account.venueLinks
-                if link.timespan.lower <= now and (not link.timespan.upper or now <= link.timespan.upper)
+                if link.timespan.lower <= now
+                and (not link.timespan.upper or now <= link.timespan.upper)
+                and link.venue is not None  # ignore soft-deleted venues when the link is still active
             ],
         )
         bank_account.obfuscatedIban = cls._obfuscate_iban(bank_account.iban)
