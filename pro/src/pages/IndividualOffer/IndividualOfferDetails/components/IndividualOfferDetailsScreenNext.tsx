@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
@@ -89,23 +90,32 @@ export const IndividualOfferDetailsScreenNext = ({
   const availableVenues = filterAvailableVenues(venues)
   const availableVenuesAsOptions = getVenuesAsOptions(availableVenues)
 
-  const initialValues = isNewOfferDraft
-    ? getInitialValuesFromVenues(
-        availableVenues,
-        isNewOfferCreationFlowFeatureActive
-      )
-    : getInitialValuesFromOffer({
-        offer: initialOffer,
-        subcategories: subCategories,
-        isNewOfferCreationFlowFeatureActive,
-      })
+  const getInitialValues = () => {
+    return isNewOfferDraft
+      ? getInitialValuesFromVenues(
+          availableVenues,
+          isNewOfferCreationFlowFeatureActive
+        )
+      : getInitialValuesFromOffer({
+          offer: initialOffer,
+          subcategories: subCategories,
+          isNewOfferCreationFlowFeatureActive,
+        })
+  }
+
   const form = useForm<DetailsFormValues>({
-    defaultValues: initialValues,
+    defaultValues: getInitialValues(),
     resolver: yupResolver<DetailsFormValues>(
       getValidationSchemaForNewOfferCreationFlow()
     ),
     mode: 'onBlur',
   })
+
+  useEffect(() => {
+    //  If we go from an offer edition details page to the offer creation,
+    // the offerId is then null but the page remains the same so the form would not be reset
+    form.reset(getInitialValues())
+  }, [initialOffer?.id, form.reset])
 
   const hasSelectedProduct = !!form.watch('productId')
   const selectedSubcategoryId = form.watch('subcategoryId')
