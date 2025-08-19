@@ -22,6 +22,7 @@ export interface DialogProps {
   extraClassNames?: string
   trigger?: React.ReactNode | React.ReactNode[]
   refToFocusOnClose?: DialogBuilderProps['refToFocusOnClose']
+  // TODO (igabriele, 2025-08-18): We should rely on conditonally rendering rather than an open prop (perf, top-down decision tree).
   open: boolean
 }
 
