@@ -4,15 +4,10 @@ import { userEvent } from '@testing-library/user-event'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
-  type CollectiveOfferResponseModel,
   type SharedCurrentUserResponseModel,
   UserRole,
 } from '@/apiClient/v1'
-import {
-  ALL_VENUES_OPTION,
-  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-  DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-} from '@/commons/core/Offers/constants'
+import { DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
@@ -28,7 +23,7 @@ import {
 import {
   TemplateCollectiveOffersScreen,
   type TemplateCollectiveOffersScreenProps,
-} from '../TemplateCollectiveOffersScreen'
+} from './TemplateCollectiveOffersScreen'
 
 const renderOffers = (
   props: TemplateCollectiveOffersScreenProps,
@@ -44,25 +39,6 @@ const renderOffers = (
     ...options,
   })
 }
-
-const proVenues = [
-  {
-    id: 'JI',
-    name: 'Ma venue',
-    offererName: 'Mon offerer',
-    isVirtual: false,
-  },
-  {
-    id: 'JQ',
-    name: 'Ma venue virtuelle',
-    offererName: 'Mon offerer',
-    isVirtual: true,
-  },
-]
-const proVenuesOptions = [
-  { value: 'JI', label: 'Ma venue' },
-  { value: 'JQ', label: 'Mon offerer - Offre numérique' },
-]
 
 vi.mock('@/commons/utils/date', async () => {
   return {
@@ -80,10 +56,20 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
+const offers = [collectiveOfferFactory()]
+
+const props = {
+  currentPageNumber: 1,
+  isLoading: false,
+  offerer: { ...defaultGetOffererResponseModel },
+  offers,
+  urlSearchFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+  initialSearchFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+  redirectWithUrlFilters: vi.fn(),
+}
+
 describe('TemplateCollectiveOffersScreen', () => {
-  let props: TemplateCollectiveOffersScreenProps
   let currentUser: SharedCurrentUserResponseModel
-  let offersRecap: CollectiveOfferResponseModel[]
 
   const mockNotifyError = vi.fn()
   const mockNotifySuccess = vi.fn()
@@ -91,18 +77,6 @@ describe('TemplateCollectiveOffersScreen', () => {
     currentUser = sharedCurrentUserFactory({
       roles: [UserRole.PRO],
     })
-    offersRecap = [collectiveOfferFactory()]
-
-    props = {
-      currentPageNumber: 1,
-      isLoading: false,
-      offerer: { ...defaultGetOffererResponseModel },
-      offers: offersRecap,
-      urlSearchFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-      initialSearchFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-      redirectWithUrlFilters: vi.fn(),
-      venues: proVenuesOptions,
-    }
 
     const notifsImport = (await vi.importActual(
       '@/commons/hooks/useNotification'
@@ -149,11 +123,11 @@ describe('TemplateCollectiveOffersScreen', () => {
   it('should display total number of offers in plural if multiple offers', () => {
     renderOffers({
       ...props,
-      offers: [...offersRecap, collectiveOfferFactory()],
+      offers: [...offers, collectiveOfferFactory()],
     })
 
     expect(
-      screen.getByRole('checkbox', { name: offersRecap[0].name })
+      screen.getByRole('checkbox', { name: offers[0].name })
     ).toBeInTheDocument()
 
     expect(screen.getByText('2 offres')).toBeInTheDocument()
@@ -162,77 +136,27 @@ describe('TemplateCollectiveOffersScreen', () => {
   it('should display total number of offers in singular if one or no offer', async () => {
     renderOffers({
       ...props,
-      offers: offersRecap,
+      offers,
     })
 
     expect(
-      screen.getByRole('checkbox', { name: offersRecap[0].name })
+      screen.getByRole('checkbox', { name: offers[0].name })
     ).toBeInTheDocument()
     expect(await screen.findByText('1 offre')).toBeInTheDocument()
   })
 
   it('should display 100+ for total number of offers if more than 500 offers are fetched', async () => {
-    offersRecap = Array.from({ length: 101 }, () => collectiveOfferFactory())
+    const offers = Array.from({ length: 101 }, () => collectiveOfferFactory())
 
     renderOffers({
       ...props,
-      offers: offersRecap,
+      offers,
     })
 
     expect(
-      screen.getByRole('checkbox', { name: offersRecap[0].name })
+      screen.getByRole('checkbox', { name: offers[0].name })
     ).toBeInTheDocument()
     expect(await screen.findByText('100+ offres')).toBeInTheDocument()
-  })
-
-  it('should render venue filter with default option selected and given venues as options', () => {
-    const expectedSelectOptions = [
-      { id: [ALL_VENUES_OPTION.value], value: ALL_VENUES_OPTION.label },
-      { id: [proVenues[0].id], value: proVenues[0].name },
-      {
-        id: [proVenues[1].id],
-        value: `${proVenues[1].offererName} - Offre numérique`,
-      },
-    ]
-
-    renderOffers(props)
-
-    const defaultOption = screen.getByDisplayValue(
-      expectedSelectOptions[0].value
-    )
-    expect(defaultOption).toBeInTheDocument()
-
-    const firstVenueOption = screen.getByRole('option', {
-      name: expectedSelectOptions[1].value,
-    })
-    expect(firstVenueOption).toBeInTheDocument()
-
-    const secondVenueOption = screen.getByRole('option', {
-      name: expectedSelectOptions[2].value,
-    })
-    expect(secondVenueOption).toBeInTheDocument()
-  })
-
-  it('should render venue filter with given venue selected', () => {
-    const expectedSelectOptions = [
-      { id: [proVenues[0].id], value: proVenues[0].name },
-    ]
-    const filters = {
-      ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-      venueId: proVenues[0].id,
-    }
-
-    renderOffers({ ...props, initialSearchFilters: filters })
-
-    const venueSelect = screen.getByDisplayValue(expectedSelectOptions[0].value)
-    expect(venueSelect).toBeInTheDocument()
-  })
-
-  it('should display event period filter with no default option', () => {
-    renderOffers(props)
-
-    const eventPeriodSelect = screen.queryAllByLabelText(/période/)
-    expect(eventPeriodSelect).toHaveLength(2)
   })
 
   it('should indicate that user has no offers yet', () => {
@@ -262,7 +186,7 @@ describe('TemplateCollectiveOffersScreen', () => {
       user: currentUser,
     })
 
-    const checkbox = screen.getByRole('checkbox', { name: offersRecap[0].name })
+    const checkbox = screen.getByRole('checkbox', { name: offers[0].name })
     await userEvent.click(checkbox)
 
     const actionBar = await screen.findByTestId('actions-bar')
@@ -383,7 +307,7 @@ describe('TemplateCollectiveOffersScreen', () => {
     )
   })
 
-  it('should filter new column "Date de l’évènement"', async () => {
+  it('should filter new column "Dates de l’évènement"', async () => {
     renderOffers({
       ...props,
       offers: [

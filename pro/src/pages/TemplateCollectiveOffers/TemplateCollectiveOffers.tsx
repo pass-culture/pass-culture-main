@@ -1,12 +1,10 @@
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
-import { formatAndOrderVenues } from 'repository/venuesService'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { CollectiveOfferType } from '@/apiClient/v1'
 import { Layout } from '@/app/App/layout/Layout'
-import { GET_VENUES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   DEFAULT_PAGE,
@@ -40,13 +38,6 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
       : null,
     true
   )
-
-  const { data } = useSWR(
-    [GET_VENUES_QUERY_KEY, offerer?.id],
-    ([, offererIdParam]) => api.getVenues(null, null, offererIdParam),
-    { fallbackData: { venues: [] } }
-  )
-  const venues = formatAndOrderVenues(data.venues)
 
   const redirectWithUrlFilters = (
     filters: Partial<CollectiveSearchFiltersParams>
@@ -130,7 +121,6 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
         offers={offersQuery.data}
         redirectWithUrlFilters={redirectWithUrlFilters}
         urlSearchFilters={urlSearchFilters}
-        venues={venues}
       />
     </Layout>
   )
