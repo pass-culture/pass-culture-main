@@ -170,6 +170,7 @@
         "noWith": "error",
         "useAwait": "error",
         "useGetterReturn": "error",
+        "useIterableCallbackReturn": "warn", // default: "error"
         "useNamespaceKeyword": "error"
       }
     }
