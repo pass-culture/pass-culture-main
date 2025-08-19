@@ -56,36 +56,31 @@ const renderOfferItem = (
     options
   )
 
+const offerId = 12
+const stocks: Array<CollectiveOffersStockResponseModel> = [
+  {
+    startDatetime: String(new Date()),
+    remainingQuantity: 0,
+    hasBookingLimitDatetimePassed: false,
+  },
+]
+const offer: CollectiveOfferResponseModel = collectiveOfferFactory({
+  id: offerId,
+  hasBookingLimitDatetimesPassed: false,
+  name: 'My little offer',
+  imageUrl: '/my-fake-thumb',
+  stocks,
+  location: { locationType: CollectiveLocationType.TO_BE_DEFINED },
+})
+const props: CollectiveOfferRowProps = {
+  offer,
+  selectOffer: vi.fn(),
+  isSelected: false,
+  urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+  isFirstRow: true,
+}
+
 describe('CollectiveOfferRow', () => {
-  let props: CollectiveOfferRowProps
-  let offer: CollectiveOfferResponseModel
-  const offerId = 12
-  const stocks: Array<CollectiveOffersStockResponseModel> = [
-    {
-      startDatetime: String(new Date()),
-      remainingQuantity: 0,
-      hasBookingLimitDatetimePassed: false,
-    },
-  ]
-
-  beforeEach(() => {
-    offer = collectiveOfferFactory({
-      id: offerId,
-      hasBookingLimitDatetimesPassed: false,
-      name: 'My little offer',
-      imageUrl: '/my-fake-thumb',
-      stocks,
-    })
-
-    props = {
-      offer,
-      selectOffer: vi.fn(),
-      isSelected: false,
-      urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-      isFirstRow: true,
-    }
-  })
-
   describe('thumb Component', () => {
     it('should render an image with url from offer when offer has a thumb url', () => {
       renderOfferItem(props)
@@ -97,12 +92,13 @@ describe('CollectiveOfferRow', () => {
     })
 
     it('should render an image with an empty url when offer does not have a thumb url', () => {
-      props.offer = collectiveOfferFactory({ imageUrl: null })
-
-      renderOfferItem(props)
+      renderOfferItem({
+        ...props,
+        offer: collectiveOfferFactory({ imageUrl: null }),
+      })
 
       expect(
-        screen.getAllByRole('link', { name: 'offer name 4' })[0]
+        screen.getAllByRole('link', { name: 'offer name 3' })[0]
       ).toBeInTheDocument()
     })
   })
@@ -173,27 +169,29 @@ describe('CollectiveOfferRow', () => {
 
   describe('offer institution', () => {
     it('should display "Tous les établissements" when offer is not assigned to a specific institution', () => {
-      props.offer = collectiveOfferFactory({ booking: null, stocks })
+      renderOfferItem({
+        ...props,
+        offer: collectiveOfferFactory({ booking: null, stocks }),
+      })
 
-      renderOfferItem(props)
-
-      expect(screen.queryByText('Tous les établissements')).toBeInTheDocument()
+      expect(screen.getByText('Tous les établissements')).toBeInTheDocument()
     })
 
     it('should display institution name when offer is assigned to a specific institution', () => {
-      props.offer = collectiveOfferFactory({
-        educationalInstitution: {
-          id: 1,
-          name: 'Collège Bellevue',
-          city: 'Alès',
-          postalCode: '30100',
-          phoneNumber: '',
-          institutionId: 'ABCDEF11',
-        },
-        stocks,
+      renderOfferItem({
+        ...props,
+        offer: collectiveOfferFactory({
+          educationalInstitution: {
+            id: 1,
+            name: 'Collège Bellevue',
+            city: 'Alès',
+            postalCode: '30100',
+            phoneNumber: '',
+            institutionId: 'ABCDEF11',
+          },
+          stocks,
+        }),
       })
-
-      renderOfferItem(props)
 
       expect(screen.queryByText('Collège Bellevue')).toBeInTheDocument()
     })
@@ -217,266 +215,300 @@ describe('CollectiveOfferRow', () => {
 
       expect(screen.queryByText('LYCEE Alès')).toBeInTheDocument()
     })
+
+    it('should not display institution cell when isTemplateTable is true', () => {
+      renderOfferItem({
+        ...props,
+
+        isTemplateTable: true,
+      })
+
+      expect(
+        screen.queryByText('Tous les établissements')
+      ).not.toBeInTheDocument()
+    })
   })
 
   it('should display inactive thumb when offer is not editable', () => {
-    props.offer.allowedActions = []
-    props.offer.imageUrl = null
-    renderOfferItem(props)
+    renderOfferItem({
+      ...props,
+      offer: { ...offer, allowedActions: [], imageUrl: null },
+    })
 
     expect(screen.getByTestId('thumb-icon')).toHaveClass('default-thumb')
   })
 
   it('should display disabled checkbox when offer is the offer cannot be archived', () => {
-    props.offer.allowedActions = []
-    renderOfferItem(props)
+    renderOfferItem({
+      ...props,
+      offer: { ...offer, allowedActions: [] },
+    })
 
     expect(screen.getByRole('checkbox')).toBeDisabled()
   })
 
-  it('should display a tag when offer is template', () => {
-    props.offer = collectiveOfferFactory({ isShowcase: true, stocks })
-    renderOfferItem(props)
+  describe('template tag', () => {
+    it('should display a tag when offer is template', () => {
+      renderOfferItem({
+        ...props,
+        offer: collectiveOfferFactory({ isShowcase: true, stocks }),
+      })
 
-    expect(
-      within(screen.getAllByRole('cell')[2]).getByText('Offre vitrine')
-    ).toBeInTheDocument()
+      expect(
+        within(screen.getAllByRole('cell')[2]).getByText('Offre vitrine')
+      ).toBeInTheDocument()
+    })
+
+    it('should not display a tag when offer is not template', () => {
+      renderOfferItem({
+        ...props,
+        offer: collectiveOfferFactory({ isShowcase: false, stocks }),
+      })
+
+      expect(
+        within(screen.getAllByRole('cell')[1]).queryByText('Offre vitrine')
+      ).not.toBeInTheDocument()
+    })
   })
 
-  it('should not display a tag when offer is not template', () => {
-    props.offer = collectiveOfferFactory({ isShowcase: false, stocks })
-    renderOfferItem(props)
+  describe('duplicate button', () => {
+    it('should display confirm dialog when clicking on duplicate button when user did not see the modal', async () => {
+      renderOfferItem({
+        ...props,
+        offer: collectiveOfferFactory({
+          isShowcase: true,
+          stocks,
+          allowedActions: [
+            CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
+          ],
+        }),
+      })
 
-    expect(
-      within(screen.getAllByRole('cell')[1]).queryByText('Offre vitrine')
-    ).not.toBeInTheDocument()
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Voir les actions' })
+      )
+
+      const duplicateButton = screen.getByRole('button', {
+        name: 'Créer une offre réservable',
+      })
+      await userEvent.click(duplicateButton)
+
+      const modalTitle = screen.getByText(
+        'Créer une offre réservable pour un établissement scolaire'
+      )
+      expect(modalTitle).toBeInTheDocument()
+    })
+
+    it('should not display confirm dialog when clicking on duplicate button when user did see the modal', async () => {
+      Storage.prototype.getItem = vi.fn(() => 'true')
+      renderOfferItem({
+        ...props,
+        offer: collectiveOfferFactory({
+          isShowcase: true,
+          stocks,
+          allowedActions: [
+            CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
+          ],
+        }),
+      })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Voir les actions' })
+      )
+
+      const duplicateButton = screen.getByRole('button', {
+        name: 'Créer une offre réservable',
+      })
+      await userEvent.click(duplicateButton)
+
+      const modalTitle = screen.queryByLabelText(
+        'Créer une offre réservable pour un établissement scolaire'
+      )
+      expect(modalTitle).not.toBeInTheDocument()
+    })
   })
 
-  it('should display confirm dialog when clicking on duplicate button when user did not see the modal', async () => {
-    props.offer = collectiveOfferFactory({
-      isShowcase: true,
-      stocks,
-      allowedActions: [
-        CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
-      ],
+  describe('booking link', () => {
+    it('should display booking link for prebooked offer with pending booking', () => {
+      renderOfferItem({
+        ...props,
+        offer: collectiveOfferFactory({
+          displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
+          stocks: [
+            {
+              startDatetime: String(new Date()),
+              hasBookingLimitDatetimePassed: false,
+              remainingQuantity: 0,
+            },
+          ],
+          booking: { id: 1, booking_status: CollectiveBookingStatus.PENDING },
+        }),
+      })
+
+      const bookingLink = screen.getByRole('link', {
+        name: 'Voir la préréservation',
+      })
+
+      expect(bookingLink).toBeInTheDocument()
     })
 
-    renderOfferItem(props)
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Voir les actions' })
-    )
-
-    const duplicateButton = screen.getByRole('button', {
-      name: 'Créer une offre réservable',
-    })
-    await userEvent.click(duplicateButton)
-
-    const modalTitle = screen.getByText(
-      'Créer une offre réservable pour un établissement scolaire'
-    )
-    expect(modalTitle).toBeInTheDocument()
-  })
-
-  it('should not display confirm dialog when clicking on duplicate button when user did see the modal', async () => {
-    props.offer = collectiveOfferFactory({
-      isShowcase: true,
-      stocks,
-      allowedActions: [
-        CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
-      ],
-    })
-    Storage.prototype.getItem = vi.fn(() => 'true')
-    renderOfferItem(props)
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Voir les actions' })
-    )
-
-    const duplicateButton = screen.getByRole('button', {
-      name: 'Créer une offre réservable',
-    })
-    await userEvent.click(duplicateButton)
-
-    const modalTitle = screen.queryByLabelText(
-      'Créer une offre réservable pour un établissement scolaire'
-    )
-    expect(modalTitle).not.toBeInTheDocument()
-  })
-
-  it('should display booking link for sold out offer with pending booking', () => {
-    props.offer = collectiveOfferFactory({
-      displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
-      stocks: [
-        {
-          startDatetime: String(new Date()),
-          hasBookingLimitDatetimePassed: false,
-          remainingQuantity: 0,
-        },
-      ],
-      booking: { id: 1, booking_status: CollectiveBookingStatus.PENDING },
-    })
-
-    renderOfferItem(props)
-
-    const bookingLink = screen.getByRole('link', {
-      name: 'Voir la préréservation',
-    })
-
-    expect(bookingLink).toBeInTheDocument()
-  })
-
-  it('should display booking link for expired offer with booking', () => {
-    props.offer = collectiveOfferFactory({
-      displayedStatus: CollectiveOfferDisplayedStatus.EXPIRED,
-      stocks: [
-        {
-          startDatetime: String(new Date()),
-          hasBookingLimitDatetimePassed: false,
-          remainingQuantity: 0,
-        },
-      ],
-      booking: {
-        id: 1,
-        booking_status: CollectiveBookingStatus.USED,
-      },
-    })
-
-    renderOfferItem(props)
-
-    const bookingLink = screen.getByRole('link', {
-      name: 'Voir la réservation',
-    })
-
-    expect(bookingLink).toBeInTheDocument()
-  })
-
-  it('should log event when clicking booking link', async () => {
-    const mockLogEvent = vi.fn()
-    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      ...vi.importActual('@/app/App/analytics/firebase'),
-      logEvent: mockLogEvent,
-    }))
-
-    renderOfferItem({
-      ...props,
-      offer: collectiveOfferFactory({
-        displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
-        stocks: [
-          {
-            startDatetime: String(new Date()),
-            hasBookingLimitDatetimePassed: false,
-            remainingQuantity: 0,
+    it('should display booking link for expired offer with booking', () => {
+      renderOfferItem({
+        ...props,
+        offer: collectiveOfferFactory({
+          displayedStatus: CollectiveOfferDisplayedStatus.EXPIRED,
+          stocks: [
+            {
+              startDatetime: String(new Date()),
+              hasBookingLimitDatetimePassed: false,
+              remainingQuantity: 0,
+            },
+          ],
+          booking: {
+            id: 1,
+            booking_status: CollectiveBookingStatus.USED,
           },
-        ],
-        booking: { id: 1, booking_status: CollectiveBookingStatus.PENDING },
-        id: 5,
-      }),
+        }),
+      })
+
+      const bookingLink = screen.getByRole('link', {
+        name: 'Voir la réservation',
+      })
+
+      expect(bookingLink).toBeInTheDocument()
     })
 
-    const bookingLink = screen.getByRole('link', {
-      name: 'Voir la préréservation',
-    })
-    await userEvent.click(bookingLink)
+    it('should log event when clicking booking link', async () => {
+      const mockLogEvent = vi.fn()
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+        ...vi.importActual('@/app/App/analytics/firebase'),
+        logEvent: mockLogEvent,
+      }))
 
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
-      {
-        from: '/',
-        offerId: 5,
-        offerType: 'collective',
-      }
-    )
-  })
+      renderOfferItem({
+        ...props,
+        offer: collectiveOfferFactory({
+          displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
+          stocks: [
+            {
+              startDatetime: String(new Date()),
+              hasBookingLimitDatetimePassed: false,
+              remainingQuantity: 0,
+            },
+          ],
+          booking: { id: 1, booking_status: CollectiveBookingStatus.PENDING },
+          id: 5,
+        }),
+      })
 
-  it('should cancel offer booking', async () => {
-    props.offer = collectiveOfferFactory({
-      stocks,
-      displayedStatus: CollectiveOfferDisplayedStatus.BOOKED,
-      booking: { booking_status: CollectiveBookingStatus.PENDING, id: 1 },
-      allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
-    })
-    renderOfferItem(props)
+      const bookingLink = screen.getByRole('link', {
+        name: 'Voir la préréservation',
+      })
+      await userEvent.click(bookingLink)
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Voir les actions' })
-    )
-
-    const cancelBookingButton = screen.getByText('Annuler la réservation')
-    await userEvent.click(cancelBookingButton)
-
-    const modalTitle = screen.getByText(
-      'Êtes-vous sûr de vouloir annuler la réservation liée à cette offre ?'
-    )
-    expect(modalTitle).toBeInTheDocument()
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Annuler la réservation' })
-    )
-
-    expect(
-      screen.getByText(
-        'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
+        {
+          from: '/',
+          offerId: 5,
+          offerType: 'collective',
+        }
       )
-    ).toBeInTheDocument()
-  })
-
-  it('should return an error when there are no bookings for this offer', async () => {
-    props.offer = collectiveOfferFactory({
-      stocks,
-      displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
-      booking: { booking_status: 'PENDING', id: 0 },
-      allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
     })
 
-    vi.spyOn(api, 'cancelCollectiveOfferBooking').mockRejectedValueOnce(
-      new ApiError(
-        {} as ApiRequestOptions,
-        { body: { code: 'NO_BOOKING' }, status: 400 } as ApiResult,
-        ''
+    it('should cancel offer booking', async () => {
+      renderOfferItem({
+        ...props,
+        offer: collectiveOfferFactory({
+          stocks,
+          displayedStatus: CollectiveOfferDisplayedStatus.BOOKED,
+          booking: { booking_status: CollectiveBookingStatus.PENDING, id: 1 },
+          allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
+        }),
+      })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Voir les actions' })
       )
-    )
 
-    renderOfferItem(props)
+      const cancelBookingButton = screen.getByText('Annuler la réservation')
+      await userEvent.click(cancelBookingButton)
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Voir les actions' })
-    )
-
-    const cancelBookingButton = screen.getByText('Annuler la réservation')
-    await userEvent.click(cancelBookingButton)
-
-    const modalTitle = screen.getByText(
-      'Êtes-vous sûr de vouloir annuler la réservation liée à cette offre ?'
-    )
-    expect(modalTitle).toBeInTheDocument()
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Annuler la réservation' })
-    )
-
-    expect(
-      screen.getByText(
-        'Cette offre n’a aucune réservation en cours. Il est possible que la réservation que vous tentiez d’annuler ait déjà été utilisée.'
+      const modalTitle = screen.getByText(
+        'Êtes-vous sûr de vouloir annuler la réservation liée à cette offre ?'
       )
-    ).toBeInTheDocument()
+      expect(modalTitle).toBeInTheDocument()
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Annuler la réservation' })
+      )
+
+      expect(
+        screen.getByText(
+          'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should return an error when there are no bookings for this offer', async () => {
+      vi.spyOn(api, 'cancelCollectiveOfferBooking').mockRejectedValueOnce(
+        new ApiError(
+          {} as ApiRequestOptions,
+          { body: { code: 'NO_BOOKING' }, status: 400 } as ApiResult,
+          ''
+        )
+      )
+
+      renderOfferItem({
+        ...props,
+        offer: collectiveOfferFactory({
+          stocks,
+          displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
+          booking: { booking_status: 'PENDING', id: 0 },
+          allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
+        }),
+      })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Voir les actions' })
+      )
+
+      const cancelBookingButton = screen.getByText('Annuler la réservation')
+      await userEvent.click(cancelBookingButton)
+
+      const modalTitle = screen.getByText(
+        'Êtes-vous sûr de vouloir annuler la réservation liée à cette offre ?'
+      )
+      expect(modalTitle).toBeInTheDocument()
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Annuler la réservation' })
+      )
+
+      expect(
+        screen.getByText(
+          'Cette offre n’a aucune réservation en cours. Il est possible que la réservation que vous tentiez d’annuler ait déjà été utilisée.'
+        )
+      ).toBeInTheDocument()
+    })
   })
 
   describe('expiration row', () => {
     it('should display a expiration row if the bookable offer is published', () => {
-      props.offer = collectiveOfferFactory({
-        displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-        stocks: [
-          {
-            hasBookingLimitDatetimePassed: false,
-            remainingQuantity: 1,
-            bookingLimitDatetime: getToday().toISOString(),
-          },
-        ],
+      renderOfferItem({
+        ...props,
+        offer: collectiveOfferFactory({
+          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
+          stocks: [
+            {
+              hasBookingLimitDatetimePassed: false,
+              remainingQuantity: 1,
+              bookingLimitDatetime: getToday().toISOString(),
+            },
+          ],
+        }),
       })
-
-      renderOfferItem(props)
 
       expect(
         screen.getByText('En attente de préréservation par l’enseignant')
@@ -484,19 +516,20 @@ describe('CollectiveOfferRow', () => {
     })
 
     it('should display a expiration row if the bookable offer is pre-booked', () => {
-      props.offer = collectiveOfferFactory({
-        displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
-        stocks: [
-          {
-            hasBookingLimitDatetimePassed: false,
-            remainingQuantity: 1,
-            bookingLimitDatetime: getToday().toISOString(),
-          },
-        ],
-        booking: { id: 1, booking_status: 'PENDING' },
+      renderOfferItem({
+        ...props,
+        offer: collectiveOfferFactory({
+          displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
+          stocks: [
+            {
+              hasBookingLimitDatetimePassed: false,
+              remainingQuantity: 1,
+              bookingLimitDatetime: getToday().toISOString(),
+            },
+          ],
+          booking: { id: 1, booking_status: 'PENDING' },
+        }),
       })
-
-      renderOfferItem(props)
 
       expect(
         screen.getByText(
@@ -506,19 +539,20 @@ describe('CollectiveOfferRow', () => {
     })
 
     it('should display a expiration row if the bookable offer is pre-booked', () => {
-      props.offer = collectiveOfferFactory({
-        displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
-        stocks: [
-          {
-            hasBookingLimitDatetimePassed: false,
-            remainingQuantity: 1,
-            bookingLimitDatetime: getToday().toISOString(),
-          },
-        ],
-        booking: { id: 1, booking_status: 'PENDING' },
+      renderOfferItem({
+        ...props,
+        offer: collectiveOfferFactory({
+          displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
+          stocks: [
+            {
+              hasBookingLimitDatetimePassed: false,
+              remainingQuantity: 1,
+              bookingLimitDatetime: getToday().toISOString(),
+            },
+          ],
+          booking: { id: 1, booking_status: 'PENDING' },
+        }),
       })
-
-      renderOfferItem(props)
 
       expect(
         screen.getByText(
@@ -581,9 +615,13 @@ describe('CollectiveOfferRow', () => {
   })
 
   it('should use the creation edit URL when offer is a draft', () => {
-    props.offer.displayedStatus = CollectiveOfferDisplayedStatus.DRAFT
-
-    renderOfferItem(props)
+    renderOfferItem({
+      ...props,
+      offer: {
+        ...offer,
+        displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
+      },
+    })
 
     const actionsButton = screen.getByRole('button', {
       name: 'Voir les actions',

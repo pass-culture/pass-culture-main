@@ -68,18 +68,19 @@ const renderOffers = async (
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }
 
-describe('TemplateCollectiveOffers', () => {
-  let offersRecap: CollectiveOfferResponseModel[]
-  const stocks: Array<CollectiveOffersStockResponseModel> = [
-    {
-      startDatetime: String(new Date()),
-      hasBookingLimitDatetimePassed: false,
-      remainingQuantity: 1,
-    },
-  ]
+const stocks: Array<CollectiveOffersStockResponseModel> = [
+  {
+    startDatetime: String(new Date()),
+    hasBookingLimitDatetimePassed: false,
+    remainingQuantity: 1,
+  },
+]
+const offersRecap: CollectiveOfferResponseModel[] = [
+  collectiveOfferFactory({ stocks }),
+]
 
+describe('TemplateCollectiveOffers', () => {
   beforeEach(() => {
-    offersRecap = [collectiveOfferFactory({ stocks })]
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
@@ -257,22 +258,21 @@ describe('TemplateCollectiveOffers', () => {
     })
 
     describe('when 101 offers are fetched', () => {
+      const offersRecap = Array.from({ length: 101 }, () =>
+        collectiveOfferFactory({ stocks })
+      )
+
       beforeEach(() => {
-        offersRecap = Array.from({ length: 101 }, () =>
-          collectiveOfferFactory({ stocks })
-        )
+        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
       })
 
       it('should have max number page of 10', async () => {
-        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
-
         await renderOffers()
 
         expect(screen.getByText('Page 1/10')).toBeInTheDocument()
       })
 
       it('should not display the 101st offer', async () => {
-        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
         await renderOffers()
         const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
 
