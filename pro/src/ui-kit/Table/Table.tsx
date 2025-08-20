@@ -169,7 +169,7 @@ export function Table<
   }
 
   return (
-    <div className={classNames(styles.wrapper, className)} tabIndex={0}>
+    <div className={classNames(styles.wrapper, className)}>
       {selectable && (
         <div className={styles['table-select-all']}>
           <Checkbox
@@ -207,7 +207,7 @@ export function Table<
         <thead>
           <tr
             className={classNames(styles['table-header'], {
-              [styles['table-header']]: isSticky,
+              [styles['table-header-sticky']]: isSticky,
             })}
           >
             {selectable && (
@@ -224,7 +224,7 @@ export function Table<
                   scope="col"
                   id={col.id}
                   colSpan={col.headerColSpan || 1}
-                  key={`col-${index}`}
+                  key={`col-${col.id}-${index}`}
                   className={classNames(
                     styles.columnWidth,
                     styles['table-header-th'],
@@ -256,7 +256,7 @@ export function Table<
         <tbody>
           {isLoading &&
             Array.from({ length: 8 }).map((_, index) => (
-              <tr key={`loading-row-${index}`}>
+              <tr key={`loading-row-${columns.length}-${index}`}>
                 <td colSpan={columns.length + 1}>
                   <Skeleton height="7rem" width="100%" />
                 </td>
@@ -275,11 +275,15 @@ export function Table<
           {sortedData.map((row) => {
             const isSelected = selectedIds.has(row.id)
             const tableFullRowContent = getFullRowContent?.(row)
+            const isFullRowContent =
+              React.isValidElement(tableFullRowContent) &&
+              tableFullRowContent.key === row.id.toString()
 
             return (
               <React.Fragment key={row.id}>
                 <tr
-                  className={classNames(styles['table-row'], {
+                  className={classNames({
+                    [styles['table-row']]: !isFullRowContent,
                     [styles.selected]: isSelected,
                   })}
                 >
@@ -291,7 +295,6 @@ export function Table<
                         [styles['table-collapse-cell']]:
                           variant === TableVariant.COLLAPSE,
                       })}
-                      onClick={(e) => e.stopPropagation()}
                     >
                       <Checkbox
                         label={
@@ -307,7 +310,7 @@ export function Table<
                         }
                       />
                       <span className={styles['visually-hidden']}>
-                        Selectionner la ligne {(row as any).name || row.id}
+                        Selectionner la ligne {row.name || row.id}
                       </span>
                     </td>
                   )}
@@ -319,6 +322,7 @@ export function Table<
                     const value = col.render
                       ? col.render(row)
                       : getValue(row, col.ordererField)
+
                     return (
                       <td
                         className={classNames({
@@ -327,19 +331,23 @@ export function Table<
                           [styles['table-collapse-cell']]:
                             variant === TableVariant.COLLAPSE,
                         })}
-                        key={`col-${index}`}
+                        key={`col-${col.id}-${index}`}
                         data-label={col.label}
                       >
                         {value}
-                        {col.id === columns[1].id && tableFullRowContent && (
-                          <div className={styles['table-fullrow-content']}>
-                            {tableFullRowContent}
-                          </div>
-                        )}
                       </td>
                     )
                   })}
                 </tr>
+                {tableFullRowContent && (
+                  <tr className={classNames(styles['table-row'])}>
+                    <td colSpan={columns.length + (selectable ? 1 : 0)}>
+                      <div className={styles['table-fullrow-content']}>
+                        {tableFullRowContent}
+                      </div>
+                    </td>
+                  </tr>
+                )}
               </React.Fragment>
             )
           })}
