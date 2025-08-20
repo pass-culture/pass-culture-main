@@ -120,7 +120,7 @@ export const CollectiveOfferRow = ({
             className={styles['collective-cell-institution']}
           />
         )}
-        {isTemplateTable && (
+        {isNewCollectiveOffersStructureActive && (
           <OfferLocationCell rowId={rowId} offerLocation={offer.location} />
         )}
         <CollectiveOfferStatusCell
