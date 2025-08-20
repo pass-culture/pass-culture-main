@@ -56,7 +56,16 @@ class Artist(PcObject, Model):
     )
     aliases: sa_orm.Mapped[list["ArtistAlias"]] = sa_orm.relationship("ArtistAlias", backref="artist")
 
-    sa.Index("ix_artist_trgm_unaccent_name", sa.func.immutable_unaccent("name"), postgresql_using="gin")
+    __table_args__ = (
+        sa.Index(
+            "ix_artist_trgm_unaccent_name",
+            sa.func.immutable_unaccent("name"),
+            postgresql_using="gin",
+            postgresql_ops={
+                "description": "gin_trgm_ops",
+            },
+        ),
+    )
 
 
 class ArtistAlias(PcObject, Model):
