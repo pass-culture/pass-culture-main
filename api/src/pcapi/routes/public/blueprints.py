@@ -20,7 +20,6 @@ def _is_route_reading_json() -> bool:
 def _check_api_is_enabled_and_json_valid() -> None:
     # We test the json validity because pydantic will not raise an error if the json is not valid.
     # Pydantic will then try to apply the validation schema and throws unintelligible errors.
-    # view_function = app.view_functions.get(request.url_rule.endpoint)
     if _is_route_reading_json():
         # only test if data are present
         try:

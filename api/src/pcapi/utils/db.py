@@ -81,7 +81,7 @@ class MagicEnum(sa_types.TypeDecorator):
     ) -> str | None:
         if value is None:
             return None
-        return value.value
+        return value.name
 
     def process_result_value(
         self,
@@ -90,7 +90,11 @@ class MagicEnum(sa_types.TypeDecorator):
     ) -> enum.Enum | None:
         if value is None:
             return None
-        return self.enum_class(value)
+        try:
+            return self.enum_class[value]
+        except KeyError:
+            # to be robust, it should never happen
+            return self.enum_class(value)
 
 
 class TSVector(sa_types.TypeDecorator):
