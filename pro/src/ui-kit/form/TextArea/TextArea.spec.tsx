@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ForwardedRef } from 'react'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -12,12 +13,18 @@ const defaultProps: TextAreaProps = {
 }
 
 function rednerTextArea(props?: Partial<ForwardedRef<TextAreaProps>>) {
-  renderWithProviders(
+  return renderWithProviders(
     <TextArea {...defaultProps} {...(props as TextAreaProps)} />
   )
 }
 
 describe('TextArea', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = rednerTextArea()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show an textarea with a label', () => {
     rednerTextArea()
 

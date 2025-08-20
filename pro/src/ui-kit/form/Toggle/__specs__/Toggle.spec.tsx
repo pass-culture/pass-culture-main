@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { Toggle, type ToggleProps } from '../Toggle'
 
@@ -8,6 +9,15 @@ const renderToggle = (props: ToggleProps) => {
 }
 
 describe('Toggle button', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderToggle({
+      isDisabled: false,
+      label: 'Label',
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display toggle button and should be enabled', () => {
     // Given
     const props = {

@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -8,6 +9,16 @@ import { ButtonLink } from '../ButtonLink'
 
 describe('ButtonLink', () => {
   const props = { to: '#', isExternal: true }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = render(
+      <ButtonLink {...props} onClick={() => {}}>
+        test
+      </ButtonLink>
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should call callback action when clicking the button', async () => {
     const onClick = vi.fn()

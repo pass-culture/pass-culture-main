@@ -178,6 +178,7 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
               }}
               disabled={isScaleDisabled}
               aria-describedby="image-editor-scale-disabled"
+              label="Niveau de zoom de l'image"
               hideLabel
             />
           </div>

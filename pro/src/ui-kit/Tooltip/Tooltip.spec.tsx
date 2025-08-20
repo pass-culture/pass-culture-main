@@ -1,12 +1,13 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { Button } from '@/ui-kit/Button/Button'
 
 import { Tooltip } from './Tooltip'
 
 function renderTooltip() {
-  render(
+  return render(
     <Tooltip content="Tooltip content">
       <Button>Tooltip trigger</Button>
     </Tooltip>
@@ -14,6 +15,12 @@ function renderTooltip() {
 }
 
 describe('Tooltip', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderTooltip()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render the tooltip trigger and content', () => {
     renderTooltip()
 

@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
@@ -18,6 +19,14 @@ describe('Callout', () => {
       },
     ],
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(
+      <Callout {...props}>This is the content</Callout>
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should display title, content and links', () => {
     renderWithProviders(<Callout {...props}>This is the content</Callout>)

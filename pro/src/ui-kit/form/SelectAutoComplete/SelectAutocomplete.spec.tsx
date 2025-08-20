@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { searchPatternInOptions } from '@/commons/utils/searchPatternInOptions'
 
@@ -36,6 +37,12 @@ describe('SelectAutocomplete', () => {
     ],
     searchInOptions: searchPatternInOptions,
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = render(<SelectAutocomplete {...props} />)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 
   it('should display field', () => {
     render(<SelectAutocomplete {...props} />)

@@ -1,12 +1,13 @@
 import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { NavLinkItems } from './NavLinkItems'
 
 const renderNavLinkItems = (nav: string = 'Menu') => {
-  renderWithProviders(
+  return renderWithProviders(
     <Routes>
       <Route
         path="/offres"
@@ -37,6 +38,12 @@ const renderNavLinkItems = (nav: string = 'Menu') => {
 }
 
 describe('NavLinkItems', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderNavLinkItems()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render links', () => {
     renderNavLinkItems()
     expect(

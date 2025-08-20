@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { Slider, type SliderProps } from '../Slider'
 
@@ -9,7 +10,15 @@ describe('Slider', () => {
     name: 'sliderValue',
     scale: 'km',
     displayValue: false,
+    label: 'niveau',
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderSlider(defaultProps)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render default min and max value with scale', () => {
     renderSlider(defaultProps)
     expect(screen.getByText('0 km')).toBeInTheDocument()

@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { ButtonFilter } from './ButtonFilter'
 
@@ -8,6 +9,12 @@ vi.mock('@/ui-kit/SvgIcon/SvgIcon', () => ({
 }))
 
 describe('ButtonFilter', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = render(<ButtonFilter isOpen>Filter</ButtonFilter>)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should render correctly with default props', () => {
     render(<ButtonFilter>Filter</ButtonFilter>)
 

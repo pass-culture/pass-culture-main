@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { QuantityInput, type QuantityInputProps } from './QuantityInput'
 
@@ -13,6 +14,12 @@ const LABELS = {
 }
 
 describe('QuantityInput', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderQuantityInput({ label: LABELS.input })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display an input and a checkbox', () => {
     renderQuantityInput({ label: LABELS.input })
 

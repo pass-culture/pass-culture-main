@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { Pagination, type PaginationProps } from '../Pagination'
 
@@ -11,6 +12,14 @@ const defaultProps: PaginationProps = {
 }
 
 describe('Pagination', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = render(
+      <Pagination {...defaultProps} currentPage={1} />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should move from page to page', async () => {
     const previousPage = vi.fn()
     const nextPage = vi.fn()

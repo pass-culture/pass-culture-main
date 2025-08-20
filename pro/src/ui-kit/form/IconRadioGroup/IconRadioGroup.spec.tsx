@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { IconRadioGroup, type IconRadioGroupProps } from './IconRadioGroup'
 
@@ -22,10 +23,16 @@ const defaultProps: IconRadioGroupProps = {
 }
 
 function renderIconRadioGroup(props: Partial<IconRadioGroupProps> = {}) {
-  render(<IconRadioGroup {...defaultProps} {...props} />)
+  return render(<IconRadioGroup {...defaultProps} {...props} />)
 }
 
 describe('IconRadioGroup', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderIconRadioGroup()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should show the available options', () => {
     renderIconRadioGroup()
 

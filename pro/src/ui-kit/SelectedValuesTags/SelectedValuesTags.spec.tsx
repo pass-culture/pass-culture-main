@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { SelectedValuesTags } from './SelectedValuesTags'
 
@@ -19,6 +20,12 @@ describe('SelectedValuesTags', () => {
 
   afterEach(() => {
     vi.clearAllMocks()
+  })
+
+  it('should render without accessibility violations', async () => {
+    const { container } = render(<SelectedValuesTags {...defaultProps} />)
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should render tags correctly', () => {

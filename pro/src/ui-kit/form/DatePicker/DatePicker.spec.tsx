@@ -1,8 +1,25 @@
 import { render, screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { DatePicker } from './DatePicker'
 
 describe('DatePicker', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = render(
+      <DatePicker
+        value="2025-11-22"
+        onChange={() => {}}
+        label="input label"
+        name="name"
+      />
+    )
+
+    expect(
+      //  Ingore the color contrast to avoid an axe-core error cf https://github.com/NickColley/jest-axe/issues/147
+      await axe(container, { rules: { 'color-contrast': { enabled: false } } })
+    ).toHaveNoViolations()
+  })
+
   it('should render an input of type date', () => {
     render(
       <DatePicker

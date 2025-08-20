@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { Tag, type TagProps, TagVariant } from './Tag'
 
@@ -7,6 +8,12 @@ function renderTag(props: TagProps) {
 }
 
 describe('Tag', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderTag({ label: 'Département' })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should always render a label', () => {
     renderTag({ label: 'Département' })
 

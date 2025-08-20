@@ -1,6 +1,7 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
@@ -32,6 +33,16 @@ function renderDialogBuilder(props = defaultProps) {
 }
 
 describe('DialogBuilder', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderDialogBuilder()
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Open the dialog' })
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should open a dialog with a title and a footer', async () => {
     renderDialogBuilder()
 

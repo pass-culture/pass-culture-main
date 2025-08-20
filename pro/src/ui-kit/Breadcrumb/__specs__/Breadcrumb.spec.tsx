@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -15,6 +16,12 @@ const crumbs: Crumb[] = [
 ]
 
 describe('Breadcrumb', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderWithProviders(<Breadcrumb crumbs={crumbs} />)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display a navigation with a list of links', () => {
     renderWithProviders(<Breadcrumb crumbs={crumbs} />)
 

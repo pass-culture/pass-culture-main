@@ -4,7 +4,7 @@ import { axe } from 'vitest-axe'
 import { TipsBanner } from './TipsBanner'
 
 describe('TipsBanner', () => {
-  it('should render (without accessibility violations', async () => {
+  it('should render without accessibility violations', async () => {
     const { container } = render(<TipsBanner>Ceci est un tip.</TipsBanner>)
 
     expect(container).toBeInTheDocument()
