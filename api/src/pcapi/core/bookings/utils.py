@@ -4,6 +4,7 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
+from decimal import Decimal
 from hashlib import sha256
 from zoneinfo import ZoneInfo
 
@@ -119,11 +120,11 @@ def convert_date_period_to_utc_datetime_period(
 DEFAULT_PACIFIC_FRANC_TO_EURO_RATE = 0.00838
 
 
-def convert_euro_to_pacific_franc(price_in_euro: float | int) -> int:
+def convert_euro_to_pacific_franc(price_in_euro: Decimal) -> Decimal:
     """
     Convertit un montant en euros en francs pacifiques (CFP) avec arrondi par tranche de 5 CFP.
     """
     result = float(price_in_euro) / DEFAULT_PACIFIC_FRANC_TO_EURO_RATE
     result = round(result * 100) / 100
     result = round(result / 5) * 5
-    return int(result)
+    return Decimal(result)
