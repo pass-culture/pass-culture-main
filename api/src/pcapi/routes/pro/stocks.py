@@ -116,7 +116,12 @@ def update_thing_stock(
 ) -> stock_serialize.StockIdResponseModel:
     stock: offers_models.Stock = get_or_404(offers_models.Stock, stock_id)
     check_user_has_access_to_offerer(current_user, stock.offer.venue.managingOffererId)
-    offers_api.edit_stock(stock, **body.dict(exclude_unset=True))
+
+    update_data = body.dict(exclude_unset=True)
+    if "quantity" in update_data and update_data["quantity"] is not None:
+        update_data["quantity"] = stock.dnBookedQuantity + update_data["quantity"]
+
+    offers_api.edit_stock(stock, **update_data)
     return stock_serialize.StockIdResponseModel.from_orm(stock)
 
 

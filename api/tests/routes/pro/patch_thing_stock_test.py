@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
+import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -65,6 +66,29 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert stock.quantity == 3456
+
+    def test_quantity_sets_remaining_quantity_not_initial_one(self, client):
+        """Test that stock's initial quantity is computed as expected
+
+        The client should send the expected remaining quantity and the
+        update route should compute and update the stock's initial
+        quantity column from it.
+        """
+        email = "user@example.com"
+        stock = offers_factories.ThingStockFactory(quantity=10)
+        stock = bookings_factories.BookingFactory(stock=stock).stock
+        offerers_factories.UserOffererFactory(user__email=email, offerer=stock.offer.venue.managingOfferer)
+
+        new_remaining_quantity = stock.quantity - 5
+        payload = {"quantity": new_remaining_quantity}
+        response = client.with_session_auth(email).patch(f"/stocks/{stock.id}", json=payload)
+
+        assert response.status_code == 200
+        assert response.json["id"] == stock.id
+
+        db.session.refresh(stock)
+
+        assert stock.quantity == new_remaining_quantity + len(stock.bookings)
 
 
 @pytest.mark.usefixtures("db_session")
