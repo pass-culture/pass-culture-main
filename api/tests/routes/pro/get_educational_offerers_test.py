@@ -3,6 +3,7 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
+from pcapi.models import db
 
 
 class GetEducationalOfferersTest:
@@ -19,20 +20,18 @@ class GetEducationalOfferersTest:
             collectivePhone="0601020304",
             collectiveEmail="test@example.com",
         )
+        soft_deleted_venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer_1,
+            collectiveInterventionArea=None,
+            collectivePhone="0601020304",
+            collectiveEmail="test@example.com",
+        )
         venue_offerer_2 = offerers_factories.CollectiveVenueFactory(managingOfferer=offerer_2)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer_1)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer_2)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=not_validated_offerer)
 
-        # when
-        queries = testing.AUTHENTICATION_QUERIES
-        queries += 1  # select offerers
-        client = client.with_session_auth(pro_user.email)
-        with testing.assert_num_queries(queries):
-            response = client.get("/offerers/educational")
-            assert response.status_code == 200
-
-        assert response.json == {
+        expected_response = {
             "educationalOfferers": [
                 {
                     "id": offerer_1.id,
@@ -82,3 +81,18 @@ class GetEducationalOfferersTest:
                 },
             ]
         }
+
+        soft_deleted_venue.isSoftDeleted = True
+        db.session.add(soft_deleted_venue)
+
+        email = pro_user.email
+        db.session.expunge_all()
+
+        # when
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # select offerers
+        client = client.with_session_auth(email)
+        with testing.assert_num_queries(queries):
+            response = client.get("/offerers/educational")
+            assert response.status_code == 200
+            assert response.json == expected_response
