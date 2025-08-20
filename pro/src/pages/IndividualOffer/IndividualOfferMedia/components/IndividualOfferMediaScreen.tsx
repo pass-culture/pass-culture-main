@@ -20,6 +20,7 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
@@ -54,6 +55,9 @@ export const IndividualOfferMediaScreen = ({
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const mode = useOfferWizardMode()
+  const isNewOfferCreationFlowFeature = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
 
   const initialImageOffer = getIndividualOfferImage(offer)
   const {
@@ -147,9 +151,11 @@ export const IndividualOfferMediaScreen = ({
 
       let nextStep = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA
       if (mode !== OFFER_WIZARD_MODE.EDITION) {
-        nextStep = offer.isEvent
+        nextStep = isNewOfferCreationFlowFeature
           ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
-          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
+          : offer.isEvent
+            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
+            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
       }
 
       await navigate(
