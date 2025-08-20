@@ -236,6 +236,19 @@ class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityCompliance
         orm_mode = True
 
 
+# TODO(xordoquy): remove GetEducationalOffererResponseGetterDict once the soft delete lib is fixed
+class GetEducationalOffererResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any = None) -> Any:
+        row = self._obj
+        if key == "managedVenues":
+            return [
+                GetEducationalOffererVenueResponseModel.from_orm(venue)
+                for venue in row.managedVenues
+                if not venue.isSoftDeleted
+            ]
+        return super().get(key, default)
+
+
 class GetEducationalOffererResponseModel(BaseModel):
     id: int
     name: str
@@ -244,6 +257,7 @@ class GetEducationalOffererResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+        getter_dict = GetEducationalOffererResponseGetterDict
 
 
 class GetEducationalOfferersResponseModel(BaseModel):
