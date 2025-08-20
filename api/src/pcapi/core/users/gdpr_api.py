@@ -149,15 +149,15 @@ def anonymize_user(user: models.User, *, author: models.User | None = None) -> b
         history_models.ActionHistory.userId == user.id,
         history_models.ActionHistory.offererId.is_(None),
     ).delete()
-    db.session.query(
-        permissions_models.BackOfficeUserProfile,
-    ).filter(
-        permissions_models.BackOfficeUserProfile.userId == user.id,
-    ).delete()
+    was_bo_user = bool(
+        db.session.query(permissions_models.BackOfficeUserProfile)
+        .filter(permissions_models.BackOfficeUserProfile.userId == user.id)
+        .delete()
+    )
 
     if external_email_anonymized:
         user.replace_roles_by_anonymized_role()
-        user.email = f"anonymous_{user.id}@anonymized.passculture"
+        user.email = f"{'ex_backoffice_user' if was_bo_user else 'anonymous'}_{user.id}@anonymized.passculture"
         db.session.add(
             history_models.ActionHistory(
                 actionType=history_models.ActionType.USER_ANONYMIZED,
