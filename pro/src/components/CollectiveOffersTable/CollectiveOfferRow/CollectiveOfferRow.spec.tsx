@@ -55,7 +55,7 @@ const renderOfferItem = (
     options
   )
 
-describe('ollectiveOfferRow', () => {
+describe('CollectiveOfferRow', () => {
   let props: CollectiveOfferRowProps
   let offer: CollectiveOfferResponseModel
   const offerId = 12
@@ -129,7 +129,7 @@ describe('ollectiveOfferRow', () => {
 
       renderOfferItem(props)
 
-      expect(screen.queryByText(props.offer.venue.name)).toBeInTheDocument()
+      expect(screen.getByText(props.offer.venue.name)).toBeInTheDocument()
     })
 
     it('should display the venue public name when is given', () => {
@@ -142,7 +142,7 @@ describe('ollectiveOfferRow', () => {
 
       renderOfferItem(props)
 
-      expect(screen.queryByText('lieu de ouf')).toBeInTheDocument()
+      expect(screen.getByText('lieu de ouf')).toBeInTheDocument()
     })
 
     it('should display the offerer name with "- Offre numérique" when venue is virtual', () => {
@@ -155,9 +155,18 @@ describe('ollectiveOfferRow', () => {
 
       renderOfferItem(props)
 
-      expect(
-        screen.queryByText('Gaumont - Offre numérique')
-      ).toBeInTheDocument()
+      expect(screen.getByText('Gaumont - Offre numérique')).toBeInTheDocument()
+    })
+
+    it('should not display venue cell when WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is active', () => {
+      props.offer.venue = listOffersVenueFactory({
+        publicName: 'Gaumont Montparnasse',
+      })
+
+      renderOfferItem(props, {
+        features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'],
+      })
+      expect(screen.queryByText('Gaumont Montparnasse')).not.toBeInTheDocument()
     })
   })
 
@@ -557,11 +566,9 @@ describe('ollectiveOfferRow', () => {
   })
 
   it('should use the new collective offer detail URL when feature flag is active', () => {
-    vi.mock('@/commons/hooks/useActiveFeature', () => ({
-      useActiveFeature: vi.fn(() => true),
-    }))
-
-    renderOfferItem(props)
+    renderOfferItem(props, {
+      features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'],
+    })
 
     const offerTitle = screen.getByRole('link', { name: props.offer.name })
     expect(offerTitle).toHaveAttribute(
