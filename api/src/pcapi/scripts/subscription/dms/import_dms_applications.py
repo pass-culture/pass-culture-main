@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def _import_all_dms_applications_initial_import(procedure_id: int) -> None:
-    already_processed_applications_ids = dms_repository.get_already_processed_applications_ids(procedure_id)
+    already_processed_applications_ids = dms_repository._get_already_processed_applications_ids(procedure_id)
     client = dms_connector_api.DMSGraphQLClient()
     processed_applications: list = []
     new_import_datetime = None
