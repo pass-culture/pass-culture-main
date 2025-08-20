@@ -414,8 +414,8 @@ class NotifyProUsersBeforeAnonymizationTest:
         assert len(mails_testing.outbox) == 0
 
 
-def _assert_user_is_anonymized(user):
-    assert user.email == f"anonymous_{user.id}@anonymized.passculture"
+def _assert_user_is_anonymized(user, prefix="anonymous"):
+    assert user.email == f"{prefix}_{user.id}@anonymized.passculture"
     assert user.password == b"Anonymized"
     assert user.firstName is None
     assert user.lastName is None
@@ -550,14 +550,14 @@ class AnonymizeProUserTest:
 
 class AnonymizeInternalUserTest:
     @pytest.mark.parametrize(
-        "factory",
+        "factory, expected_prefix",
         [
-            users_factories.AdminFactory,
-            users_factories.BeneficiaryFactory,
-            users_factories.ProFactory,
+            (users_factories.AdminFactory, "ex_backoffice_user"),
+            (users_factories.BeneficiaryFactory, "anonymous"),
+            (users_factories.ProFactory, "anonymous"),
         ],
     )
-    def test_anonymize_internal_user(self, factory):
+    def test_anonymize_internal_user(self, factory, expected_prefix):
         # check independance with the user role
         user_to_anonymize = factory(
             email="user_to_anonymize@passculture.app",
@@ -570,7 +570,7 @@ class AnonymizeInternalUserTest:
 
         gdpr_api.anonymize_internal_users()
 
-        _assert_user_is_anonymized(user_to_anonymize)
+        _assert_user_is_anonymized(user_to_anonymize, prefix=expected_prefix)
 
     def test_anonymize_internal_user_without_action_date(self):
         user_to_anonymize = users_factories.AdminFactory(
@@ -585,7 +585,7 @@ class AnonymizeInternalUserTest:
 
         gdpr_api.anonymize_internal_users()
 
-        _assert_user_is_anonymized(user_to_anonymize)
+        _assert_user_is_anonymized(user_to_anonymize, prefix="ex_backoffice_user")
 
     def test_keep_recent_internal_user(self):
         user_to_anonymize = users_factories.AdminFactory(
