@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { PeriodSelector } from '../PeriodSelector'
 
@@ -7,7 +8,7 @@ describe('PeriodSelector', () => {
   const mockOnBeginningDateChange = vi.fn()
   const mockOnEndingDateChange = vi.fn()
   const renderPeriodSelector = () => {
-    render(
+    return render(
       <PeriodSelector
         onBeginningDateChange={mockOnBeginningDateChange}
         onEndingDateChange={mockOnEndingDateChange}
@@ -16,6 +17,17 @@ describe('PeriodSelector', () => {
       />
     )
   }
+
+  it('should render without accessibility violations', async () => {
+    const { container } = renderPeriodSelector()
+
+    expect(
+      //  Ingore the color contrast to avoid an axe-core error cf https://github.com/NickColley/jest-axe/issues/147
+      await axe(container, {
+        rules: { 'color-contrast': { enabled: false } },
+      })
+    ).toHaveNoViolations()
+  })
 
   it('should call on onBeginningDateChange and onEndingDateChange', async () => {
     renderPeriodSelector()

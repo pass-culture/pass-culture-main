@@ -1,8 +1,24 @@
 import { render, screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { CheckboxGroup } from './CheckboxGroup'
 
 describe('CheckboxGroup', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = render(
+      <CheckboxGroup
+        group={[
+          { label: 'Checkbox 1', checked: false, onChange: () => {} },
+          { label: 'Checkbox 2', checked: false, onChange: () => {} },
+        ]}
+        legend="Choose multiple options"
+        name="group"
+      />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display the checkbox inputs', () => {
     render(
       <CheckboxGroup

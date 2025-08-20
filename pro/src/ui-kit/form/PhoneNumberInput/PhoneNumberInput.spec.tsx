@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { PHONE_CODE_COUNTRY_CODE_OPTIONS, PHONE_EXAMPLE_MAP } from './constants'
 import {
@@ -11,7 +12,7 @@ const renderPhoneNumberInput = ({
   label = 'Mon label',
   ...props
 }: Partial<PhoneNumberInputProps>) => {
-  render(
+  return render(
     <>
       <PhoneNumberInput name="phone" label={label} {...props} />
       <a href="#">Dummy element only here to receive the focus</a>
@@ -20,6 +21,12 @@ const renderPhoneNumberInput = ({
 }
 
 describe('PhoneNumberInput', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderPhoneNumberInput({})
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should have by default the first prefix of the list PHONE_CODE_COUNTRY_CODE_OPTIONS and its corresponding placeholder', () => {
     renderPhoneNumberInput({})
 

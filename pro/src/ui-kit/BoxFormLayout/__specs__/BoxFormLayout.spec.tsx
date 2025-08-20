@@ -1,13 +1,14 @@
-// react-testing-library doc: https://testing-library.com/docs/react-testing-library/api
-
 import { render, screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { BoxFormLayout } from '../BoxFormLayout'
 
 describe('components:BoxFormLayout', () => {
-  it('renders component successfully', () => {
-    render(<BoxFormLayout>I’m a test</BoxFormLayout>)
+  it('renders component successfully without accessibility violations', async () => {
+    const { container } = render(<BoxFormLayout>I’m a test</BoxFormLayout>)
     expect(screen.getByText('I’m a test')).toBeInTheDocument()
+
+    expect(await axe(container)).toHaveNoViolations()
   })
   it('renders component successfully with required message', () => {
     render(

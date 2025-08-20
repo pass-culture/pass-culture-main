@@ -1,8 +1,26 @@
 import { render, screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
 
 import { Select } from '@/ui-kit/form/Select/Select'
 
 describe('Select', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = render(
+      <Select
+        label="select label"
+        name="mySelect"
+        options={[{ label: 'option 1', value: 'option1' }]}
+      />
+    )
+
+    expect(
+      //  Ingore the color contrast to avoid an axe-core error cf https://github.com/NickColley/jest-axe/issues/147
+      await axe(container, {
+        rules: { 'color-contrast': { enabled: false } },
+      })
+    ).toHaveNoViolations()
+  })
+
   it('should display a select input', () => {
     render(
       <Select

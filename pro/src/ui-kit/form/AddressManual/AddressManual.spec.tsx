@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 import { describe, it, vi } from 'vitest'
+import { axe } from 'vitest-axe'
 
 import { AddressManual } from './AddressManual'
 
@@ -44,10 +45,16 @@ function renderAddressManual({
     )
   }
 
-  render(<Wrapper />)
+  return render(<Wrapper />)
 }
 
 describe('AddressManual', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderAddressManual({})
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('renders and handles coords input blur event with userEvent', async () => {
     renderAddressManual({
       coords: '',

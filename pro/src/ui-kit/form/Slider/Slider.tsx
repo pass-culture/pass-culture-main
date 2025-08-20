@@ -17,6 +17,10 @@ export interface SliderProps extends React.HTMLProps<HTMLInputElement> {
    */
   name: string
   /**
+   * The label of the slider field.
+   */
+  label: string
+  /**
    * The scale or unit of the value being represented (e.g., '%', 'kg', etc.).
    * @default ''
    */
@@ -75,6 +79,7 @@ export const Slider = ({
   displayMinMaxValues = true,
   displayValue = false,
   onChange,
+  label,
   ...props
 }: SliderProps): JSX.Element => {
   const labelId = useId()
@@ -83,13 +88,13 @@ export const Slider = ({
 
   return (
     <>
-      {(props.label || displayValue) && (
+      {(label || displayValue) && (
         <div className={styles['slider-header']}>
           <label
             htmlFor={labelId}
             className={hideLabel ? styles['visually-hidden'] : ''}
           >
-            {props.label}
+            {label}
           </label>
           {displayValue && (
             <span className={styles['input-value']}>

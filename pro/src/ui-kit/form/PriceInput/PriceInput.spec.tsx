@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { PriceInput, type PriceInputProps } from './PriceInput'
 
@@ -20,6 +21,12 @@ const LABELS = {
 }
 
 describe('PriceInput', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = renderPriceInput({})
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should display always display an input', () => {
     renderPriceInput({})
 

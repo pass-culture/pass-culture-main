@@ -33,17 +33,15 @@ export const Breadcrumb = ({ crumbs }: BreadcrumbProps) => {
                   className={styles['breadcrumb-list-item-link']}
                   variant={ButtonVariant.TERNARYBRAND}
                 >
-                  <>
-                    {crumb.icon && (
-                      <SvgIcon
-                        src={crumb.icon}
-                        alt=""
-                        width="16"
-                        className={styles['breadcrumb-list-item-link-icon']}
-                      />
-                    )}
-                    {crumb.title}
-                  </>
+                  {crumb.icon && (
+                    <SvgIcon
+                      src={crumb.icon}
+                      alt=""
+                      width="16"
+                      className={styles['breadcrumb-list-item-link-icon']}
+                    />
+                  )}
+                  {crumb.title}
                 </ButtonLink>
               )}
               {!isLast && (

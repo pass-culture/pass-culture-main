@@ -2,6 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
+import { axe } from 'vitest-axe'
 import * as yup from 'yup'
 
 import { emailSchema } from '@/commons/utils/isValidEmail'
@@ -40,6 +41,12 @@ const renderEmailSpellCheckInput = () => {
 }
 
 describe('EmailSpellCheckInput', () => {
+  it('should render without accessibility violations', async () => {
+    const { container } = render(<FormWrapper />)
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('The email suggestion should not be displayed when the field is empty', async () => {
     renderEmailSpellCheckInput()
     const emailField = screen.getByLabelText('Email *')

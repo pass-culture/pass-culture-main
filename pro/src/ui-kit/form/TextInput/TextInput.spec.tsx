@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { TextInput } from './TextInput'
 
@@ -23,7 +24,7 @@ describe('TextInput', () => {
   ] as const)(
     'should allow tabbing from one input of type %s to the next',
     async (inputType) => {
-      render(
+      const { container } = render(
         <>
           <TextInput
             type={inputType}
@@ -39,6 +40,8 @@ describe('TextInput', () => {
           />
         </>
       )
+
+      expect(await axe(container)).toHaveNoViolations()
 
       screen.getByLabelText('Input 1 *').focus()
       expect(screen.getByLabelText('Input 1 *')).toHaveFocus()
