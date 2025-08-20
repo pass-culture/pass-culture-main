@@ -1,5 +1,4 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { format } from 'date-fns'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 
@@ -18,6 +17,7 @@ import { pluralize } from '@/commons/utils/pluralize'
 import { RadioButton } from '@/design-system/RadioButton/RadioButton'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import strokeDeskIcon from '@/icons/stroke-desk.svg'
+import { formatDateTime } from '@/pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/utils/formatDatetime'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
@@ -105,7 +105,7 @@ export const DownloadBookingsModal = ({
             value={eventDate}
             name="bookings-date-select"
             checked={selectedDate === eventDate}
-            label={`${day.substring(0, 3)} ${format(date, FORMAT_DD_MM_YYYY)}`}
+            label={`${day.substring(0, 3)} ${formatDateTime(date.toISOString(), FORMAT_DD_MM_YYYY)}`}
             onChange={() => setSelectedDate(eventDate)}
           />
         </td>
@@ -125,8 +125,10 @@ export const DownloadBookingsModal = ({
         {priceCategoryAndScheduleCountByDate.length === 1 ? (
           <h2 className={style['one-booking-date-section']}>
             Date de votre évènement :{' '}
-            {format(
-              new Date(priceCategoryAndScheduleCountByDate[0].eventDate),
+            {formatDateTime(
+              new Date(
+                priceCategoryAndScheduleCountByDate[0].eventDate
+              ).toISOString(),
               FORMAT_DD_MM_YYYY
             )}
           </h2>
