@@ -28,7 +28,7 @@ const FormWrapper = ({ children }: { children: React.ReactNode }) => {
 }
 
 const meta: Meta<typeof PhoneNumberInput> = {
-  title: '@/ui-kit/formsV2/PhoneNumberInput',
+  title: '@/ui-kit/forms/PhoneNumberInput',
   component: PhoneNumberInput,
 
   decorators: [
