@@ -1753,12 +1753,17 @@ def get_educational_offerers(offerer_id: int | None, current_user: users_models.
     if offerer_id and current_user.has_admin_role:
         offerers = (
             db.session.query(models.Offerer)
+            .join(models.Offerer.managedVenues)
             .filter(
                 models.Offerer.isValidated,
                 models.Offerer.isActive.is_(True),
                 models.Offerer.id == offerer_id,
             )
-            .options(sa_orm.joinedload(models.Offerer.managedVenues))
+            .options(
+                sa_orm.joinedload(models.Offerer.managedVenues)
+                .joinedload(models.Venue.offererAddress)
+                .joinedload(models.OffererAddress.address),
+            )
             .all()
         )
     else:
@@ -1767,7 +1772,12 @@ def get_educational_offerers(offerer_id: int | None, current_user: users_models.
                 user=current_user,
                 validated=True,
             )
-            .options(sa_orm.joinedload(models.Offerer.managedVenues))
+            .join(models.Offerer.managedVenues)
+            .options(
+                sa_orm.joinedload(models.Offerer.managedVenues)
+                .joinedload(models.Venue.offererAddress)
+                .joinedload(models.OffererAddress.address)
+            )
             .distinct(models.Offerer.id)
             .all()
         )
