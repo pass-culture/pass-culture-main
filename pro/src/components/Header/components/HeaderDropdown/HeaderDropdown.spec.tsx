@@ -17,7 +17,7 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import { locallyStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import { locallyStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 
 import { HeaderDropdown } from './HeaderDropdown'
 

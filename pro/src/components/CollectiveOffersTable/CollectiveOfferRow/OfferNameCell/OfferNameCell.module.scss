@@ -1,0 +1,31 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+
+.title-column {
+  @include fonts.body-accent;
+
+  &-name {
+    display: block;
+    overflow-wrap: anywhere;
+  }
+
+  &-thumb {
+    display: block;
+    width: fit-content;
+  }
+
+  &-with-thumb {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: rem.torem(240px);
+    gap: rem.torem(16px);
+  }
+}
+
+td[data-label='Nom de l’offre']::before {
+  content: none;
+  display: none;
+}
+

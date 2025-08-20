@@ -1,11 +1,6 @@
 import cn from 'classnames'
 import { useState } from 'react'
 
-import {
-  type FilterConfigType,
-  getStoredFilterConfig,
-  useStoredFilterConfig,
-} from '@/components/OffersTable/OffersTableSearch/utils'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
@@ -14,6 +9,11 @@ import { BaseInput } from '@/ui-kit/form/shared/BaseInput/BaseInput'
 import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import styles from './OffersTableSearch.module.scss'
+import {
+  type FilterConfigType,
+  getStoredFilterConfig,
+  useStoredFilterConfig,
+} from './utils'
 
 export type OffersTableSearchProps = {
   type: FilterConfigType

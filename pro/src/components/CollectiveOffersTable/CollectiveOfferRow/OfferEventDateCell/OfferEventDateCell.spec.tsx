@@ -9,18 +9,9 @@ import {
 } from './OfferEventDateCell'
 
 const renderOfferNameCell = (props: OfferEventDateCellProps) =>
-  renderWithProviders(
-    <table>
-      <tbody>
-        <tr>
-          <OfferEventDateCell {...props} />
-        </tr>
-      </tbody>
-    </table>,
-    {
-      initialRouterEntries: ['/offres'],
-    }
-  )
+  renderWithProviders(<OfferEventDateCell {...props} />, {
+    initialRouterEntries: ['/offres'],
+  })
 
 describe('OfferNameCell', () => {
   it('should display 1 date and time when dates are the same', () => {
@@ -35,7 +26,6 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      rowId: 'rowId',
     })
 
     expect(screen.getByText('04/08/2024')).toBeInTheDocument()
@@ -54,7 +44,6 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      rowId: 'rowId',
     })
 
     expect(screen.getByText('du 05/08/2024')).toBeInTheDocument()
@@ -71,7 +60,6 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      rowId: 'rowId',
     })
 
     expect(screen.getByText('Toute l’année scolaire')).toBeInTheDocument()
@@ -89,7 +77,6 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      rowId: 'rowId',
     })
 
     expect(screen.getByText('du 04/08/2024')).toBeInTheDocument()
@@ -108,7 +95,6 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      rowId: 'rowId',
     })
 
     expect(screen.getByText('04/08/2024')).toBeInTheDocument()
@@ -126,7 +112,6 @@ describe('OfferNameCell', () => {
 
     renderOfferNameCell({
       offer: eventOffer,
-      rowId: 'rowId',
     })
 
     expect(screen.getByText('04/09/2024')).toBeInTheDocument()
