@@ -50,6 +50,19 @@ describe('ModalImageUpsertOrEdit', () => {
     expect(screen.getByRole('button', { name: 'Importer' })).toBeInTheDocument()
   })
 
+  it('should render a spinner until the image is loaded', async () => {
+    const mockImageUrl = 'http://example.com/image.jpg'
+    renderModalImageCrop({
+      initialValues: {
+        croppedImageUrl: mockImageUrl,
+        originalImageUrl: mockImageUrl,
+      },
+    })
+    await waitFor(() => {
+      expect(screen.getByTestId('spinner-img-load')).toBeInTheDocument()
+    })
+  })
+
   describe('when an image is loaded', () => {
     it('should render an image editor & a preview with the loaded image', async () => {
       vi.spyOn(imageUtils, 'getImageBitmap').mockResolvedValue({
