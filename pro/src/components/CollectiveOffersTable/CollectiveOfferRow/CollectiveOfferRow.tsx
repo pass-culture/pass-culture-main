@@ -47,6 +47,9 @@ export const CollectiveOfferRow = ({
   const isNewCollectiveOfferDetailPageActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'
   )
+  const isNewCollectiveOffersStructureActive = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
+  )
 
   const rowId = `collective-offer-${id}`
 
@@ -100,11 +103,13 @@ export const CollectiveOfferRow = ({
           offer={offer}
           className={styles['collective-cell-event-date']}
         />
-        <OfferVenueCell
-          rowId={rowId}
-          venue={offer.venue}
-          className={styles['collective-cell-venue']}
-        />
+        {!isNewCollectiveOffersStructureActive && (
+          <OfferVenueCell
+            rowId={rowId}
+            venue={offer.venue}
+            className={styles['collective-cell-venue']}
+          />
+        )}
         <OfferInstitutionCell
           rowId={rowId}
           educationalInstitution={offer.educationalInstitution}

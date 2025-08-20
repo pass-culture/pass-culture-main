@@ -1,6 +1,7 @@
 import type { CollectiveOfferResponseModel } from '@/apiClient/v1'
 import type { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import type { SortingMode } from '@/commons/hooks/useColumnSorting'
 import { isSameOffer } from '@/commons/utils/isSameOffer'
 import { OffersTable } from '@/components/CollectiveOffersTable/OffersTable/OffersTable'
@@ -50,6 +51,9 @@ export const CollectiveOffersTable = ({
   currentSortingMode,
   currentPageItems,
 }: CollectiveOffersTableProps) => {
+  const isNewCollectiveOffersStructureActive = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
+  )
   const columns: Columns[] = [
     { ...getCellsDefinition().INFO_ON_EXPIRATION, isVisuallyHidden: true },
     { ...getCellsDefinition().NAME, isVisuallyHidden: false },
@@ -61,7 +65,9 @@ export const CollectiveOffersTable = ({
         currentSortingMode,
       },
     },
-    getCellsDefinition().STRUCTURE,
+    ...(isNewCollectiveOffersStructureActive
+      ? []
+      : [getCellsDefinition().STRUCTURE]),
     getCellsDefinition().INSTITUTION,
     getCellsDefinition().COLLECTIVE_STATUS,
   ]

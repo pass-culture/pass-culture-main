@@ -6,22 +6,16 @@ export type CellDefinition = {
 type CELLS =
   | 'CHECKBOX'
   | 'INFO_ON_EXPIRATION'
-  | 'THUMB'
   | 'NAME'
   | 'EVENT_DATE'
   | 'VENUE'
   | 'ADDRESS'
   | 'STRUCTURE'
   | 'INSTITUTION'
-  | 'STOCKS'
   | 'COLLECTIVE_STATUS'
-  | 'INDIVIDUAL_STATUS'
-  | 'INDIVIDUAL_BOOKINGS'
   | 'ACTIONS'
 
-export function getCellsDefinition(
-  isRefactoFutureOfferEnabled: boolean = false
-): Record<CELLS, CellDefinition> {
+export function getCellsDefinition(): Record<CELLS, CellDefinition> {
   return {
     CHECKBOX: {
       id: 'offer-head-checkbox',
@@ -31,17 +25,13 @@ export function getCellsDefinition(
       id: 'offer-head-info-on-expiration',
       title: 'Information sur l’expiration',
     },
-    THUMB: {
-      id: 'offer-head-image',
-      title: 'Image',
-    },
     NAME: {
       id: 'offer-head-name',
       title: 'Nom de l’offre',
     },
     EVENT_DATE: {
       id: 'offer-head-event-date',
-      title: 'Date de l’évènement',
+      title: 'Dates de l’évènement',
     },
     VENUE: {
       id: 'offer-head-venue',
@@ -59,21 +49,9 @@ export function getCellsDefinition(
       id: 'offer-head-institution',
       title: 'Établissement',
     },
-    STOCKS: {
-      id: 'offer-head-stocks',
-      title: 'Stocks',
-    },
     COLLECTIVE_STATUS: {
       id: 'offer-head-status',
       title: 'Statut',
-    },
-    INDIVIDUAL_STATUS: {
-      id: 'offer-head-status',
-      title: isRefactoFutureOfferEnabled ? 'Publication' : 'Statut',
-    },
-    INDIVIDUAL_BOOKINGS: {
-      id: 'offer-head-bookings',
-      title: 'Réservations',
     },
     ACTIONS: {
       id: 'offer-head-actions',
