@@ -38,8 +38,9 @@ export const IndividualOfferNavigation = () => {
 
   const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
   // TODO (igabriele, 2025-08-04): Confusing and error-prone. We should have a single source of truth for `isEvent`.
-  const isSurelyAnEvent =
-    isEvent || offer?.isEvent || isOfferSubtypeEvent(offerSubtype)
+  const isSurelyAnEvent = isNewOfferCreationFlowFeatureActive
+    ? isEvent
+    : isEvent || offer?.isEvent || isOfferSubtypeEvent(offerSubtype)
 
   const steps = getSteps({
     isMediaPageFeatureEnabled,
