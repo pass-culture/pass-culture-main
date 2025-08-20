@@ -300,6 +300,35 @@ export function CollectiveOffersActionsBar({
     return ''
   }
 
+  const getTemplateOffersCTAs = () => {
+    const templateCTAs = (
+      <>
+        <Button
+          onClick={openHideOffersDialog}
+          icon={fullHideIcon}
+          variant={ButtonVariant.SECONDARY}
+          ref={deActivateButtonRef}
+        >
+          Mettre en pause
+        </Button>
+        <Button
+          onClick={publishOffers}
+          icon={fullValidateIcon}
+          variant={ButtonVariant.SECONDARY}
+        >
+          Publier
+        </Button>
+      </>
+    )
+    if (!isNewOffersAndBookingsActive) {
+      return templateCTAs
+    }
+    if (areTemplateOffers) {
+      return templateCTAs
+    }
+    return null
+  }
+
   return (
     <>
       <CollectiveDeactivationConfirmDialog
@@ -349,21 +378,7 @@ export function CollectiveOffersActionsBar({
           >
             Archiver
           </Button>
-          <Button
-            onClick={openHideOffersDialog}
-            icon={fullHideIcon}
-            variant={ButtonVariant.SECONDARY}
-            ref={deActivateButtonRef}
-          >
-            Mettre en pause
-          </Button>
-          <Button
-            onClick={publishOffers}
-            icon={fullValidateIcon}
-            variant={ButtonVariant.SECONDARY}
-          >
-            Publier
-          </Button>
+          {getTemplateOffersCTAs()}
         </ActionsBarSticky.Right>
       </ActionsBarSticky>
     </>
