@@ -1,6 +1,6 @@
 import { mainlandOptions } from '@/commons/core/shared/interventionOptions'
 import { MAINLAND_OPTION_VALUE } from '@/pages/AdageIframe/app/constants/departmentOptions'
-import type { Option } from '@/ui-kit/MultiSelect/MultiSelect'
+import type { Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 
 type SelectInterventionAreasParams = {
   selectedOption: Option[]

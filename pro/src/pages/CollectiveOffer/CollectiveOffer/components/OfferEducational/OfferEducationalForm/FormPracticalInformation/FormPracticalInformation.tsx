@@ -11,9 +11,9 @@ import type { SelectOption } from '@/commons/custom_types/form'
 import { selectInterventionAreas } from '@/commons/utils/selectInterventionAreas'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
+import { MultiSelect, type Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
-import { MultiSelect, type Option } from '@/ui-kit/MultiSelect/MultiSelect'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
 import {

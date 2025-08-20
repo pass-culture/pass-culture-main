@@ -10,7 +10,7 @@ import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains
 import { getLastCollectiveDmsApplication } from '@/commons/utils/getLastCollectiveDmsApplication'
 import { PartnerPageCollectiveSection } from '@/pages/Homepage/components/Offerers/components/PartnerPages/components/PartnerPageCollectiveSection'
 import { Callout } from '@/ui-kit/Callout/Callout'
-import type { Option } from '@/ui-kit/MultiSelect/MultiSelect'
+import type { Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { CollectiveDmsTimeline } from '../CollectiveDmsTimeline/CollectiveDmsTimeline'

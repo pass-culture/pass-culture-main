@@ -17,7 +17,7 @@ import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { Select } from '@/ui-kit/form/Select/Select'
-import { Toggle } from '@/ui-kit/Toggle/Toggle'
+import { Toggle } from '@/ui-kit/form/Toggle/Toggle'
 
 import styles from './OfferPublicationEditionForm.module.scss'
 import type { EventPublicationEditionFormValues } from './types'

@@ -1,4 +1,4 @@
-import type { Option } from '@/ui-kit/MultiSelect/MultiSelect'
+import type { Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 
 export const mainlandOptions: Option[] = [
   { id: '01', label: '01 - Ain' },

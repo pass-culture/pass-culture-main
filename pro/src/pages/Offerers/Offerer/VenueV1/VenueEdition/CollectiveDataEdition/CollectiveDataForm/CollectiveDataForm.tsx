@@ -20,11 +20,11 @@ import { RouteLeavingGuardVenueEdition } from '@/pages/VenueEdition/RouteLeaving
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
+import { MultiSelect, type Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
-import { MultiSelect, type Option } from '@/ui-kit/MultiSelect/MultiSelect'
 
 import styles from './CollectiveDataForm.module.scss'
 import type { CollectiveDataFormValues } from './type'

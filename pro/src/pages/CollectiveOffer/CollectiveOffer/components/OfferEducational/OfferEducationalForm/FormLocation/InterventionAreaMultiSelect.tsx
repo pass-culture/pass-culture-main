@@ -4,7 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { offerInterventionOptions } from '@/commons/core/shared/interventionOptions'
 import { selectInterventionAreas } from '@/commons/utils/selectInterventionAreas'
-import { MultiSelect, type Option } from '@/ui-kit/MultiSelect/MultiSelect'
+import { MultiSelect, type Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 
 import styles from '../OfferEducationalForm.module.scss'
 
