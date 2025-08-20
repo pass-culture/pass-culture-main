@@ -820,7 +820,7 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Règles de conformité"] == ", ".join([rule_1.name, rule_2.name])
         assert rows[0]["Score data"] == "50"
-        assert rows[0]["Prédiction de validité"] == "Rejetée"
+        assert rows[0]["Prédiction de validité"] == "À rejeter"
 
         # Check tooltip associated with "Score data"
         tooltips = html_parser.get_soup(response.data).find_all(
@@ -3524,7 +3524,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert descriptions["Sous-catégorie"] == "Support physique (DVD, Blu-ray...)"
         assert descriptions["Statut"] == "Épuisée"
         assert descriptions["Score data"] == "55"
-        assert descriptions["Prédiction de validité"] == "Validée"
+        assert descriptions["Prédiction de validité"] == "À valider"
         assert descriptions["Raison de score faible"] == "Prix Sous-catégorie Description de l'offre"
         assert descriptions["Entité juridique"].startswith("Le Petit Rintintin Management")
         assert descriptions["Partenaire culturel"].startswith("Le Petit Rintintin")

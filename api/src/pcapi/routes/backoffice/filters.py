@@ -1058,9 +1058,9 @@ def format_offer_compliance_llm_validation(
 ) -> str:
     match validation_status_prediction:
         case offers_models.ComplianceValidationStatusPrediction.APPROVED:
-            return format_badge("Validée", "success")
+            return format_badge("À valider", "success")
         case offers_models.ComplianceValidationStatusPrediction.REJECTED:
-            return format_badge("Rejetée", "warning")
+            return format_badge("À rejeter", "warning")
         case _:
             return validation_status_prediction.value
 
