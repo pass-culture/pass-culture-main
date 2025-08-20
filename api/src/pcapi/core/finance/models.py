@@ -264,7 +264,7 @@ class BankAccount(PcObject, Model, DeactivableMixin):
     bic: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.String(11), nullable=False)
     dsApplicationId: sa_orm.Mapped[int | None] = sa.orm.mapped_column(sa.BigInteger, nullable=True, unique=True)
     status: sa_orm.Mapped[BankAccountApplicationStatus] = sa.orm.mapped_column(
-        db_utils.MagicEnum(BankAccountApplicationStatus), nullable=False
+        db_utils.MagicEnum(BankAccountApplicationStatus, use_values=False), nullable=False
     )
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now()
@@ -298,7 +298,7 @@ class BankAccountStatusHistory(PcObject, Model):
         BankAccount, foreign_keys=[bankAccountId], back_populates="statusHistory"
     )
     status: sa_orm.Mapped[BankAccountApplicationStatus] = sa.orm.mapped_column(
-        db_utils.MagicEnum(BankAccountApplicationStatus), nullable=False
+        db_utils.MagicEnum(BankAccountApplicationStatus, use_values=False), nullable=False
     )
     timespan: sa_orm.Mapped[psycopg2.extras.DateTimeRange] = sa.orm.mapped_column(sa_psql.TSRANGE, nullable=False)
 

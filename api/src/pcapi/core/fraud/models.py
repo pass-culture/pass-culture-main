@@ -588,7 +588,7 @@ class BeneficiaryFraudCheck(PcObject, Model):
     )
     # The eligibility is null when the user is not eligible
     eligibilityType = sa.orm.mapped_column(
-        MagicEnum(users_models.EligibilityType),
+        MagicEnum(users_models.EligibilityType, use_values=False),
         nullable=True,
     )
     idPicturesStored = sa.orm.mapped_column(
@@ -603,9 +603,13 @@ class BeneficiaryFraudCheck(PcObject, Model):
     resultContent: sa_orm.Mapped[dict | None] = sa.orm.mapped_column(
         sa.ext.mutable.MutableDict.as_mutable(sa.dialects.postgresql.JSONB(none_as_null=True))
     )
-    status: sa_orm.Mapped[FraudCheckStatus] = sa.orm.mapped_column(MagicEnum(FraudCheckStatus), nullable=True)
+    status: sa_orm.Mapped[FraudCheckStatus] = sa.orm.mapped_column(
+        MagicEnum(FraudCheckStatus, use_values=False), nullable=True
+    )
     thirdPartyId: sa_orm.Mapped[str] = sa.orm.mapped_column(sa.TEXT(), index=True, nullable=False)
-    type: sa_orm.Mapped[FraudCheckType] = sa.orm.mapped_column(MagicEnum(FraudCheckType), nullable=False)
+    type: sa_orm.Mapped[FraudCheckType] = sa.orm.mapped_column(
+        MagicEnum(FraudCheckType, use_values=False), nullable=False
+    )
     updatedAt: sa_orm.Mapped[datetime.datetime] = sa.orm.mapped_column(
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=sa.func.now()
     )
