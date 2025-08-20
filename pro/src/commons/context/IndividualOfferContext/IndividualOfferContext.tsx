@@ -47,6 +47,7 @@ export const IndividualOfferContext =
     offer: null,
     offerId: null,
     setIsAccessibilityFilled: () => undefined,
+    // TODO (igabriele, 2025-08-20): Rename that to `setIsControlledEvent`.
     setIsEvent: () => undefined,
     subCategories: [],
   })
@@ -62,7 +63,7 @@ interface IndividualOfferContextProviderProps {
 export const IndividualOfferContextProvider = ({
   children,
 }: IndividualOfferContextProviderProps) => {
-  const [isEvent, setIsEvent] = useState<boolean | null>(null)
+  const [isControlledEvent, setIsEvent] = useState<boolean | null>(null)
   const [isAccessibilityFilled, setIsAccessibilityFilled] = useState(true)
   const { offerId: offerIdAsString } = useParams<{
     offerId: string
@@ -140,7 +141,7 @@ export const IndividualOfferContextProvider = ({
         categories: categoriesQuery.data.categories,
         hasPublishedOfferWithSameEan: Boolean(publishedOfferWithSameEAN),
         isAccessibilityFilled,
-        isEvent,
+        isEvent: offer?.isEvent ?? isControlledEvent,
         offer: offer ?? null,
         offerId,
         publishedOfferWithSameEAN,
