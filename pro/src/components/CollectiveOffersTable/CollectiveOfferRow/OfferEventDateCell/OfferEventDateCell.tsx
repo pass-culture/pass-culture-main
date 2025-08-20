@@ -5,6 +5,7 @@ import type {
   ListOffersVenueResponseModel,
 } from '@/apiClient/v1'
 import {
+  formatShortDateForInput,
   getDateTimeToFrenchText,
   toDateStrippedOfTimezone,
 } from '@/commons/utils/date'
@@ -52,7 +53,7 @@ export const OfferEventDateCell = ({
   }
 
   const getFormattedDatesForOffer = (offer: CollectiveOfferResponseModel) => {
-    const offerDates = offer.dates
+    const offerDatetimes = offer.dates
 
     const options: Intl.DateTimeFormatOptions = {
       day: '2-digit',
@@ -60,21 +61,31 @@ export const OfferEventDateCell = ({
       year: 'numeric',
     }
 
-    if (!offerDates?.start || !offerDates.end) {
+    if (!offerDatetimes?.start || !offerDatetimes.end) {
       return ['Toute l’année scolaire']
     }
-    if (offerDates.start === offerDates.end) {
-      return [
-        `${getDateTimeToFrenchText(
-          getOfferDate(offerDates.start, offer.isShowcase, offer.venue),
-          options
-        )}`,
-      ]
+    const offerStartDate = getOfferDate(
+      offerDatetimes.start,
+      offer.isShowcase,
+      offer.venue
+    )
+    const offerEndDate = getOfferDate(
+      offerDatetimes.end,
+      offer.isShowcase,
+      offer.venue
+    )
+    if (
+      offerDatetimes.start === offerDatetimes.end ||
+      (offer.isShowcase &&
+        formatShortDateForInput(offerStartDate) ===
+          formatShortDateForInput(offerEndDate))
+    ) {
+      return [`${getDateTimeToFrenchText(offerStartDate, options)}`]
     }
 
     return [
-      `Du ${getDateTimeToFrenchText(getOfferDate(offerDates.start, offer.isShowcase, offer.venue), options)}`,
-      `au ${getDateTimeToFrenchText(getOfferDate(offerDates.end, offer.isShowcase, offer.venue), options)}`,
+      `Du ${getDateTimeToFrenchText(offerStartDate, options)}`,
+      `au ${getDateTimeToFrenchText(offerEndDate, options)}`,
     ]
   }
 

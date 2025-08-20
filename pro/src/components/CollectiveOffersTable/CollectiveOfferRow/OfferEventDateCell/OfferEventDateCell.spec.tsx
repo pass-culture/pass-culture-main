@@ -97,11 +97,11 @@ describe('OfferNameCell', () => {
     expect(screen.queryByText('01h00')).not.toBeInTheDocument()
   })
 
-  it('should display 1 date and time when dates are the same for a template offer', () => {
+  it('should display 1 date without time when dates are the same for a template offer', () => {
     const eventOffer = collectiveOfferFactory({
       isShowcase: true,
       dates: {
-        start: '2024-08-04T23:00:00Z',
+        start: '2024-08-04T21:00:00Z',
         end: '2024-08-04T23:00:00Z',
       },
     })
