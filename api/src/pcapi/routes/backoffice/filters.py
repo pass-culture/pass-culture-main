@@ -699,7 +699,7 @@ def format_offer_status(status: offer_mixin.OfferStatus) -> str:
             return "Publiée non réservable"
         case offer_mixin.OfferStatus.ACTIVE:
             if FeatureToggle.WIP_REFACTO_FUTURE_OFFER.is_active():
-                return "Réservable"
+                return "Publiée réservable"
             return "Publiée"
         case offer_mixin.OfferStatus.PENDING:
             return "En instruction"
