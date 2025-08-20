@@ -83,17 +83,58 @@ describe('ActionsBar', () => {
     }))
   })
 
-  it('should have buttons to unckeck, disable and publish offers', () => {
+  it('should have publish, hide, archive, cancel CTAs when WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is not active', () => {
     renderActionsBar(props)
 
     expect(
-      screen.queryByText('Publier', { selector: 'button' })
+      screen.getByText('Publier', { selector: 'button' })
     ).toBeInTheDocument()
+    expect(
+      screen.getByText('Mettre en pause', { selector: 'button' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Archiver', { selector: 'button' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Annuler', { selector: 'button' })
+    ).toBeInTheDocument()
+  })
+
+  it('should have publish, hide, archive, cancel CTAs when WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is active and offers are template', () => {
+    renderActionsBar({ ...props, areTemplateOffers: true }, [
+      'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE',
+    ])
+
+    expect(
+      screen.getByText('Publier', { selector: 'button' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Mettre en pause', { selector: 'button' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Archiver', { selector: 'button' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Annuler', { selector: 'button' })
+    ).toBeInTheDocument()
+  })
+
+  it('should have archive and cancel CTAs when WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is active and offers are bookable', () => {
+    renderActionsBar({ ...props, areTemplateOffers: false }, [
+      'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE',
+    ])
+
+    expect(
+      screen.queryByText('Publier', { selector: 'button' })
+    ).not.toBeInTheDocument()
     expect(
       screen.queryByText('Mettre en pause', { selector: 'button' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByText('Archiver', { selector: 'button' })
     ).toBeInTheDocument()
     expect(
-      screen.queryByText('Annuler', { selector: 'button' })
+      screen.getByText('Annuler', { selector: 'button' })
     ).toBeInTheDocument()
   })
 
@@ -102,13 +143,13 @@ describe('ActionsBar', () => {
 
     renderActionsBar(props)
 
-    expect(screen.queryByText('1 offre sélectionnée')).toBeInTheDocument()
+    expect(screen.getByText('1 offre sélectionnée')).toBeInTheDocument()
   })
 
   it('should say how many offers are selected when more than 1 offer are selected', () => {
     renderActionsBar(props)
 
-    expect(screen.queryByText('2 offres sélectionnées')).toBeInTheDocument()
+    expect(screen.getByText('2 offres sélectionnées')).toBeInTheDocument()
   })
 
   it('should show a generic count when more than 500 offers are selected', () => {
@@ -118,7 +159,7 @@ describe('ActionsBar', () => {
 
     renderActionsBar(props)
 
-    expect(screen.queryByText('100+ offres sélectionnées')).toBeInTheDocument()
+    expect(screen.getByText('100+ offres sélectionnées')).toBeInTheDocument()
   })
 
   it('should hide selected offers when CAN_HIDE action is allowed', async () => {
