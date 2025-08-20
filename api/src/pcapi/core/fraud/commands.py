@@ -5,6 +5,7 @@ import click
 
 import pcapi.utils.cron as cron_decorators
 from pcapi import settings
+from pcapi.core.subscription.dms import repository as dms_repository
 from pcapi.core.subscription.ubble.archive_past_identification_pictures import archive_past_identification_pictures
 from pcapi.scripts.subscription import dms as dms_script
 from pcapi.scripts.subscription import ubble as ubble_script
@@ -27,7 +28,7 @@ def archive_already_processed_dms_applications() -> None:
         if not procedure_id:
             logger.info("Skipping DMS %s because procedure id is empty", procedure_name)
             continue
-        dms_script.archive_dms_applications.archive_applications(procedure_id, dry_run=False)
+        dms_repository.archive_applications(procedure_id, dry_run=False)
 
 
 @blueprint.cli.command("import_all_updated_dms_applications")
@@ -71,7 +72,7 @@ def handle_deleted_dms_applications_cron() -> None:
     ]
     for procedure_id in procedures:
         try:
-            dms_script.handle_deleted_dms_applications(procedure_id)
+            dms_repository.handle_deleted_dms_applications(procedure_id)
         except Exception:
             logger.exception("Failed to handle deleted DMS applications for procedure %s", procedure_id)
 
