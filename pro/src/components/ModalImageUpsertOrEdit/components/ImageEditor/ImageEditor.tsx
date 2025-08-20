@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useId, useState } from 'react'
 import AvatarEditor, { type Position } from 'react-avatar-editor'
 import { useDebouncedCallback } from 'use-debounce'
 
@@ -60,6 +60,7 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
     },
     ref
   ) => {
+    const imageDisableDescriptionId = useId()
     const [position, setPosition] = useState<Position>(initialPosition)
     const [windowWidth, setWindowWidth] = useState(window.innerWidth)
 
@@ -177,7 +178,7 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
                 debouncedOnSearch()
               }}
               disabled={isScaleDisabled}
-              aria-describedby="image-editor-scale-disabled"
+              aria-describedby={imageDisableDescriptionId}
               label="Niveau de zoom de l'image"
               hideLabel
             />
@@ -186,7 +187,7 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
         </div>
         {isScaleDisabled && (
           <span
-            id="image-editor-scale-disabled"
+            id={imageDisableDescriptionId}
             className={style['image-editor-scale-disabled']}
           >
             L’image est trop petite pour utiliser le zoom.

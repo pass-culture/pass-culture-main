@@ -7,7 +7,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { ImageUploader, type ImageUploaderProps } from './ImageUploader'
 
 vi.mock('react-avatar-editor', () => {
-  const MockAvatarEditor = forwardRef((props, ref) => {
+  const MockAvatarEditor = forwardRef((_props, ref) => {
     if (ref && typeof ref === 'object' && 'current' in ref) {
       ref.current = {
         getImage: vi.fn(() => ({ toDataURL: vi.fn(() => 'my img') })),

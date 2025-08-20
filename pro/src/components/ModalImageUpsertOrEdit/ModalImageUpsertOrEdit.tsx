@@ -95,6 +95,9 @@ export const ModalImageUpsertOrEdit = ({
 
   const editorRef = useRef<AvatarEditor>(null)
   const notification = useNotification()
+  const [isLoadingImage, setIsLoadingImage] = useState(
+    !!previouslyUploadedImageUrl
+  )
   const [isPaintingImage, setIsPaintingImage] = useState(true)
   const [image, setImage] = useState<File | undefined>(draftImage)
   const [previewImageUrl, setPreviewImageUrl] = useState<string | undefined>(
@@ -129,13 +132,17 @@ export const ModalImageUpsertOrEdit = ({
       } catch {
         notification.error('Erreur lors de la récupération de votre image.')
       }
+
+      setIsLoadingImage(false)
     }
 
-    if (previouslyUploadedImageUrl) {
+    // Waiting the dialog to be opened is a minor optimization to avoid loading an image that
+    // might never be displayed since the dialog is always rendered.
+    if (dialogBuilderProps.open && previouslyUploadedImageUrl) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       setImageFromUrl(previouslyUploadedImageUrl)
     }
-  }, [previouslyUploadedImageUrl, notification])
+  }, [dialogBuilderProps.open, previouslyUploadedImageUrl, notification])
 
   useEffect(() => {
     setImage(draftImage)
@@ -237,9 +244,10 @@ export const ModalImageUpsertOrEdit = ({
             je dispose des autorisations nécessaires pour l’utilisation de
             celui-ci.
           </p>
-          {image && (
+          {isLoadingImage && <Spinner testId="spinner-img-load" />}
+          {!isLoadingImage && image && (
             <>
-              {isPaintingImage && <Spinner />}
+              {isPaintingImage && <Spinner testId="spinner-img-paint" />}
               <div
                 className={cn(
                   style['modal-image-crop-subwrapper'],
@@ -309,7 +317,7 @@ export const ModalImageUpsertOrEdit = ({
               />
             </>
           )}
-          {!image && (
+          {!isLoadingImage && !image && (
             <ImageDragAndDrop
               onDropOrSelected={onImageReplacementDropOrSelected}
               {...(mode !== UploaderModeEnum.OFFER

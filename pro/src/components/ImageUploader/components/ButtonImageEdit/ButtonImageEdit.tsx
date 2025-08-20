@@ -86,10 +86,8 @@ export const ButtonImageEdit = ({
             type="button"
             disabled={disableForm}
           >
-            <>
-              <SvgIcon src={fullMoreIcon} alt="" className={style['icon']} />
-              <span className={style['label']}>Ajouter une image</span>
-            </>
+            <SvgIcon src={fullMoreIcon} alt="" className={style['icon']} />
+            <span className={style['label']}>Ajouter une image</span>
           </button>
         )
       }
