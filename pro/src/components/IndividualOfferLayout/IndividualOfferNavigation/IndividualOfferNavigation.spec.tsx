@@ -367,7 +367,7 @@ describe('IndividualOfferNavigation', () => {
         steps.find((listitem) =>
           listitem.textContent?.match(FF_LABELS.links.TIMETABLE)
         )
-      ).toBeDefined()
+      ).not.toBeDefined()
       expect(
         steps.find((listitem) =>
           listitem.textContent?.match(FF_LABELS.links.SUMMARY)
