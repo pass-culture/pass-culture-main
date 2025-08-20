@@ -5,7 +5,7 @@ import { Button } from '@/ui-kit/Button/Button'
 import { TextInput } from './TextInput'
 
 const meta: Meta<typeof TextInput> = {
-  title: '@/ui-kit/formsV2/TextInput',
+  title: '@/ui-kit/forms/TextInput',
   component: TextInput,
 }
 

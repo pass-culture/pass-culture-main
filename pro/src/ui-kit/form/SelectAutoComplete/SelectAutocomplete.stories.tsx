@@ -48,7 +48,7 @@ const options: SelectOption[] = [
 ]
 
 export default {
-  title: '@/ui-kit/formsV2/SelectAutocomplete',
+  title: '@/ui-kit/forms/SelectAutocomplete',
   component: SelectAutocomplete,
 }
 

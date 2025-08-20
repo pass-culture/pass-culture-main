@@ -3,7 +3,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { CheckboxGroup, type CheckboxGroupProps } from './CheckboxGroup'
 
 export default {
-  title: '@/ui-kit/formsV2/CheckboxGroup',
+  title: '@/ui-kit/forms/CheckboxGroup',
   component: CheckboxGroup,
 }
 
