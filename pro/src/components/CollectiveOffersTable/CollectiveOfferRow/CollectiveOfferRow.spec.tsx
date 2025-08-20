@@ -678,11 +678,13 @@ describe('CollectiveOfferRow', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display location cell when isTemplateTable is true', () => {
-    renderOfferItem({
-      ...props,
-      isTemplateTable: true,
-    })
+  it('should display location cell when WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is active', () => {
+    renderOfferItem(
+      {
+        ...props,
+      },
+      { features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'] }
+    )
 
     expect(screen.getByText('À déterminer')).toBeInTheDocument()
   })
