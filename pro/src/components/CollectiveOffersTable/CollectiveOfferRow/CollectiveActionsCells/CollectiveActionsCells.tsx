@@ -51,12 +51,12 @@ import fullPlusIcon from '@/icons/full-plus.svg'
 import fullThreeDotsIcon from '@/icons/full-three-dots.svg'
 import strokeCheckIcon from '@/icons/stroke-check.svg'
 import strokeThingIcon from '@/icons/stroke-thing.svg'
-import styles from '@/styles/components/Cells.module.scss'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DropdownMenuWrapper } from '@/ui-kit/DropdownMenuWrapper/DropdownMenuWrapper'
 
+import styles from '../Cells.module.scss'
 import { BookingLinkCell } from './BookingLinkCell'
 import { DuplicateOfferDialog } from './DuplicateOfferDialog/DuplicateOfferDialog'
 

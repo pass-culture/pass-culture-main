@@ -4,8 +4,9 @@ import { Link } from 'react-router'
 import type { CollectiveOfferResponseModel } from '@/apiClient/v1'
 import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cellDefinitions'
 import { Tag } from '@/design-system/Tag/Tag'
-import styles from '@/styles/components/Cells.module.scss'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
+
+import styles from '../Cells.module.scss'
 
 export interface OfferNameCellProps {
   offer: CollectiveOfferResponseModel

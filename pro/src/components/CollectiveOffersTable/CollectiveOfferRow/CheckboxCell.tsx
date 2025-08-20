@@ -1,9 +1,9 @@
 import classNames from 'classnames'
 
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
-import styles from '@/styles/components/Cells.module.scss'
 
 import { getCellsDefinition } from '../utils/cellDefinitions'
+import styles from './Cells.module.scss'
 
 interface CheckboxCellProps {
   offerName: string
