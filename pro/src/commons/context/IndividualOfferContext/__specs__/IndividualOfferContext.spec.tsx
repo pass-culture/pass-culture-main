@@ -1,117 +1,230 @@
-import { screen, waitFor } from '@testing-library/react'
+import { renderHook, waitFor } from '@testing-library/react'
+import type { ReactNode } from 'react'
+import { useParams } from 'react-router'
+import { SWRConfig } from 'swr'
 
-import { ApiError } from '@/apiClient/adage'
-import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
 import { api } from '@/apiClient/api'
-import {
-  type GetIndividualOfferWithAddressResponseModel,
-  OfferStatus,
-  SubcategoryIdEnum,
-} from '@/apiClient/v1'
+import { ApiError } from '@/apiClient/v1'
+import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
-import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { offerVenueFactory } from '@/commons/utils/factories/venueFactories'
+import {
+  MOCKED_CATEGORIES,
+  MOCKED_SUBCATEGORIES,
+} from '@/pages/IndividualOffer/commons/__mocks__/constants'
 
-import { IndividualOfferContextProvider } from '../IndividualOfferContext'
+import {
+  IndividualOfferContextProvider,
+  useIndividualOfferContext,
+} from '../IndividualOfferContext'
 
 const mockNavigate = vi.fn()
 
 vi.mock('react-router', async () => ({
   ...(await vi.importActual('react-router')),
   useLocation: vi.fn(),
-  useParams: () => ({
-    offerId: '1',
-  }),
+  useParams: vi.fn(),
   useNavigate: () => mockNavigate,
 }))
 
-const apiOffer: GetIndividualOfferWithAddressResponseModel =
-  getIndividualOfferFactory()
-
-const renderIndividualOfferContextProvider = () =>
-  renderWithProviders(
-    <IndividualOfferContextProvider>
-      Test inner content
-    </IndividualOfferContextProvider>
+const renderUseIndividualOfferContext = async () => {
+  const wrapper = ({ children }: { children: ReactNode }) => (
+    <SWRConfig
+      value={{
+        // Ensure a fresh, isolated cache per test run
+        provider: () => new Map(),
+        dedupingInterval: 0,
+        revalidateOnFocus: false,
+        revalidateOnReconnect: false,
+        shouldRetryOnError: false,
+      }}
+    >
+      <IndividualOfferContextProvider>
+        {children}
+      </IndividualOfferContextProvider>
+    </SWRConfig>
   )
 
+  const { rerender, result, unmount } = renderHook(
+    () => useIndividualOfferContext(),
+    {
+      wrapper,
+    }
+  )
+
+  await waitFor(() => expect(result.current).not.toBeNull())
+
+  return { rerender, result, unmount }
+}
+
 describe('IndividualOfferContextProvider', () => {
+  const offerBase = getIndividualOfferFactory({
+    id: 1,
+    isEvent: false,
+  })
+
   beforeEach(() => {
+    vi.spyOn(api, 'getActiveVenueOfferByEan')
     vi.spyOn(api, 'getCategories').mockResolvedValue({
-      categories: [],
-      subcategories: [],
+      categories: MOCKED_CATEGORIES,
+      subcategories: MOCKED_SUBCATEGORIES,
     })
-    vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+    vi.spyOn(api, 'getOffer')
   })
 
-  it('should initialize context with api', async () => {
-    renderIndividualOfferContextProvider()
+  afterEach(() => {
+    vi.clearAllMocks()
+  })
 
-    await waitFor(() => {
-      expect(api.getCategories).toHaveBeenCalled()
+  describe.each([
+    ['when there is no offerId in the URL path', {}],
+    ['when offerId = "creation" in the URL path', { offerId: 'creation' }],
+  ])('%s', (_, pathParams) => {
+    beforeEach(() => {
+      vi.clearAllMocks()
+
+      vi.mocked(useParams).mockReturnValue(pathParams)
+    })
+
+    it('should call the expected api endpoints and return the expected context values', async () => {
+      const { result } = await renderUseIndividualOfferContext()
+
+      expect(api.getOffer).not.toHaveBeenCalled()
+      expect(api.getCategories).toHaveBeenCalledOnce()
+      expect(api.getActiveVenueOfferByEan).not.toHaveBeenCalled()
+
+      expect(result.current.categories.length).toBeGreaterThan(0)
+      expect(result.current.hasPublishedOfferWithSameEan).toBe(false)
+      expect(result.current.isEvent).toBeNull()
+      expect(result.current.offer).toBeNull()
+      expect(result.current.offerId).toBeNull()
+      expect(result.current.publishedOfferWithSameEAN).toBeUndefined()
+      expect(result.current.subCategories.length).toBeGreaterThan(0)
+    })
+
+    it('should control isEvent via setIsEvent', async () => {
+      vi.mocked(useParams).mockReturnValue({
+        offerId: 'creation',
+      } as unknown as ReturnType<typeof useParams>)
+
+      const { result } = await renderUseIndividualOfferContext()
+
+      expect(result.current.isEvent).toBeNull()
+      expect(result.current.offerId).toBeNull()
+
+      await waitFor(() => void result.current.setIsEvent(true))
+
+      expect(result.current.isEvent).toBe(true)
+      expect(result.current.offerId).toBeNull()
+    })
+
+    it('should allow toggling isAccessibilityFilled via setter', async () => {
+      const { result } = await renderUseIndividualOfferContext()
+
+      expect(result.current.isAccessibilityFilled).toBe(true)
+
+      await waitFor(() => void result.current.setIsAccessibilityFilled(false))
+
+      expect(result.current.isAccessibilityFilled).toBe(false)
     })
   })
 
-  it('should check if there is another offer on the venue with the same EAN', async () => {
-    vi.spyOn(api, 'getOffer').mockResolvedValueOnce({
-      ...apiOffer,
-      productId: 1,
-      extraData: { ean: 2 },
+  describe('when there is an offerId in the URL', () => {
+    beforeEach(() => {
+      vi.mocked(useParams).mockReturnValue({
+        offerId: '1',
+      })
+      vi.spyOn(api, 'getOffer').mockResolvedValue(offerBase)
     })
 
-    const spy = vi
-      .spyOn(api, 'getActiveVenueOfferByEan')
-      .mockResolvedValueOnce({
-        id: 1,
-        dateCreated: '',
-        isActive: true,
-        name: 'test',
-        status: OfferStatus.ACTIVE,
-        subcategoryId: SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD,
+    it('should call the expected api endpoints and return the expected context values', async () => {
+      const { result } = await renderUseIndividualOfferContext()
+
+      expect(api.getOffer).toHaveBeenCalledExactlyOnceWith(1)
+      expect(api.getCategories).toHaveBeenCalledOnce()
+      expect(api.getActiveVenueOfferByEan).not.toHaveBeenCalled() // because `offerBase` doesn't meet EAN check criteria
+
+      expect(result.current.categories.length).toBeGreaterThan(0)
+      expect(result.current.hasPublishedOfferWithSameEan).toBe(false)
+      expect(result.current.isEvent).toBe(false)
+      expect(result.current.offer?.id).toBe(1)
+      expect(result.current.offerId).toBe(1)
+      expect(result.current.publishedOfferWithSameEAN).toBeUndefined()
+      expect(result.current.subCategories.length).toBeGreaterThan(0)
+    })
+
+    it('should redirect to an error page when the offer does not exist', async () => {
+      vi.spyOn(api, 'getOffer').mockRejectedValueOnce({
+        status: 404,
       })
 
-    renderIndividualOfferContextProvider()
+      await renderUseIndividualOfferContext()
 
-    await waitFor(() => {
-      expect(spy).toHaveBeenCalledOnce()
-    })
-  })
-
-  it('should consider that there is no other offer with the same ean if the api responds with a 404 error', async () => {
-    vi.spyOn(api, 'getOffer').mockResolvedValueOnce({
-      ...apiOffer,
-      productId: 1,
-      extraData: { ean: 2 },
+      expect(mockNavigate).toHaveBeenLastCalledWith('/404', {
+        state: { from: 'offer' },
+      })
     })
 
-    vi.spyOn(api, 'getActiveVenueOfferByEan').mockRejectedValueOnce(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          status: 404,
-        } as ApiResult,
-        ''
+    it('should check for EAN duplicate and set hasPublishedOfferWithSameEan to true when there is one', async () => {
+      vi.spyOn(api, 'getOffer').mockResolvedValueOnce({
+        ...offerBase,
+        extraData: { ean: 2 },
+        productId: 3,
+        venue: offerVenueFactory({ id: 4 }),
+      })
+      vi.spyOn(api, 'getActiveVenueOfferByEan').mockResolvedValueOnce({
+        ...offerBase,
+        id: 5,
+      })
+
+      const { result } = await renderUseIndividualOfferContext()
+
+      expect(api.getOffer).toHaveBeenCalledExactlyOnceWith(1)
+      expect(api.getActiveVenueOfferByEan).toHaveBeenCalledExactlyOnceWith(4, 2)
+
+      expect(result.current.hasPublishedOfferWithSameEan).toBe(true)
+      expect(result.current.publishedOfferWithSameEAN?.id).toBe(5)
+    })
+
+    it('should check for EAN duplicate and set hasPublishedOfferWithSameEan to false when there is none', async () => {
+      vi.spyOn(api, 'getOffer').mockResolvedValueOnce({
+        ...offerBase,
+        extraData: { ean: 2 },
+        productId: 3,
+        venue: offerVenueFactory({ id: 4 }),
+      })
+      vi.spyOn(api, 'getActiveVenueOfferByEan').mockRejectedValueOnce(
+        new ApiError({} as ApiRequestOptions, { status: 404 } as ApiResult, '')
       )
-    )
 
-    renderIndividualOfferContextProvider()
+      const { result } = await renderUseIndividualOfferContext()
 
-    expect(await screen.findByText('Test inner content')).toBeInTheDocument()
-  })
+      expect(api.getOffer).toHaveBeenCalledExactlyOnceWith(1)
+      expect(api.getActiveVenueOfferByEan).toHaveBeenCalledWith(4, 2)
 
-  it('should redirect to an error page when the offer does not exist', async () => {
-    vi.spyOn(api, 'getOffer').mockRejectedValueOnce({
-      status: 404,
+      expect(result.current.hasPublishedOfferWithSameEan).toBe(false)
+      expect(result.current.publishedOfferWithSameEAN).toBeUndefined()
     })
 
-    renderIndividualOfferContextProvider()
+    it('should both expose isEvent from offer and ignore any setIsEvent override', async () => {
+      const { result } = await renderUseIndividualOfferContext()
 
-    await waitFor(() => {
-      expect(api.getCategories).toHaveBeenCalled()
+      expect(result.current.isEvent).toBe(false)
+
+      await waitFor(() => void result.current.setIsEvent(true))
+
+      expect(result.current.isEvent).toBe(false)
     })
 
-    expect(mockNavigate).toHaveBeenLastCalledWith('/404', {
-      state: { from: 'offer' },
+    it('should allow toggling isAccessibilityFilled via setter', async () => {
+      const { result } = await renderUseIndividualOfferContext()
+
+      expect(result.current.isAccessibilityFilled).toBe(true)
+
+      await waitFor(() => void result.current.setIsAccessibilityFilled(false))
+
+      expect(result.current.isAccessibilityFilled).toBe(false)
     })
   })
 })
