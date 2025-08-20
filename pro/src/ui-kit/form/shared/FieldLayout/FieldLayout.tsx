@@ -48,7 +48,6 @@ export type FieldLayoutBaseProps = {
    */
   classNameFooter?: string
   classNameInput?: string
-  filterVariant?: boolean
   /**
    * A flag to display a smaller label.
    */

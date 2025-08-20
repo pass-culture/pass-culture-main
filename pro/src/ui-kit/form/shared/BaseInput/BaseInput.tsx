@@ -13,7 +13,6 @@ export interface BaseInputProps
   > {
   className?: string
   hasError?: boolean
-  filterVariant?: boolean
   leftIcon?: string
   rightIcon?: string
   rightButton?: () => JSX.Element
@@ -25,7 +24,6 @@ export const BaseInput = forwardRef(
     {
       className,
       hasError,
-      filterVariant,
       name,
       leftIcon,
       rightIcon,
@@ -59,7 +57,6 @@ export const BaseInput = forwardRef(
                 [styles['base-input-with-right-icon']]: hasRightIcon,
                 [styles['base-input-with-left-icon']]: Boolean(leftIcon),
                 [styles['has-error']]: hasError,
-                [styles['filter-variant']]: filterVariant,
               },
               className
             )}
@@ -72,7 +69,6 @@ export const BaseInput = forwardRef(
               [styles['base-input-right-icon']]: hasRightIcon,
               [styles['base-input-left-icon']]: Boolean(leftIcon),
               [styles['base-input-right-button']]: hasButton,
-              [styles['filter-variant']]: filterVariant,
             })}
           >
             {leftIcon && <SvgIcon src={leftIcon} alt="" />}
@@ -91,7 +87,6 @@ export const BaseInput = forwardRef(
             styles['base-input'],
             {
               [styles['has-error']]: hasError,
-              [styles['filter-variant']]: filterVariant,
             },
             className
           )}
