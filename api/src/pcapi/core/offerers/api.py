@@ -2241,7 +2241,13 @@ def create_from_onboarding_data(
 ) -> models.UserOfferer:
     # Get name (raison sociale) from Sirene API
     siret_info = find_structure_data(onboarding_data.siret)
-    name = siret_info.name
+    if not siret_info.diffusible:
+        if onboarding_data.publicName:
+            name = onboarding_data.publicName
+        else:
+            raise ValueError("missing mandatory value for public name")
+    else:
+        name = siret_info.name
 
     # Create Offerer or attach user to existing Offerer
     offerer_creation_info = offerers_serialize.CreateOffererQueryModel(

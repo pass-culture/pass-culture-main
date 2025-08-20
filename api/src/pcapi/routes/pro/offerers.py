@@ -209,6 +209,8 @@ def save_new_onboarding_data(
         raise ApiErrors({"siret": "SIRET is no longer active"})
     except offerers_exceptions.NotACollectivity:
         raise ApiErrors({"siret": "SIRET doesn't belong to a collectivity"})
+    except ValueError:
+        raise ApiErrors({"publicName": "Veuillez renseigner un nom public pour votre structure."})
     return offerers_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
 
 
