@@ -20,6 +20,8 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 export interface IndividualOfferContextValues {
   offer: GetIndividualOfferWithAddressResponseModel | null
+  // TODO (igabriele, 2025-08-19): Remove the `?` in another PR.
+  offerId?: number | null
   categories: CategoryResponseModel[]
   subCategories: SubcategoryResponseModel[]
   isEvent: boolean | null
@@ -38,14 +40,15 @@ export interface IndividualOfferContextValues {
 
 export const IndividualOfferContext =
   createContext<IndividualOfferContextValues>({
-    offer: null,
     categories: [],
     hasPublishedOfferWithSameEan: false,
-    subCategories: [],
-    isEvent: null,
-    setIsEvent: () => {},
     isAccessibilityFilled: true,
-    setIsAccessibilityFilled: () => {},
+    isEvent: null,
+    offer: null,
+    offerId: null,
+    setIsAccessibilityFilled: () => undefined,
+    setIsEvent: () => undefined,
+    subCategories: [],
   })
 
 export const useIndividualOfferContext = () => {
@@ -61,9 +64,13 @@ export const IndividualOfferContextProvider = ({
 }: IndividualOfferContextProviderProps) => {
   const [isEvent, setIsEvent] = useState<boolean | null>(null)
   const [isAccessibilityFilled, setIsAccessibilityFilled] = useState(true)
-  const { offerId } = useParams<{
+  const { offerId: offerIdAsString } = useParams<{
     offerId: string
   }>()
+  const offerId =
+    offerIdAsString && offerIdAsString !== 'creation'
+      ? Number(offerIdAsString)
+      : null
 
   const SWRConfig = useSWRConfig()
 
@@ -71,7 +78,7 @@ export const IndividualOfferContextProvider = ({
 
   const offerQuery = useSWR(
     // TODO (igabriele, 2025-08-18): Use the `mode` via `useOfferWizardMode` hook to keep a single source of truth.
-    offerId && offerId !== 'creation'
+    offerId && offerIdAsString !== 'creation'
       ? [GET_OFFER_QUERY_KEY, Number(offerId)]
       : null,
     ([, offerIdParam]) => api.getOffer(offerIdParam),
@@ -130,15 +137,16 @@ export const IndividualOfferContextProvider = ({
   return (
     <IndividualOfferContext.Provider
       value={{
-        offer: offer ?? null,
         categories: categoriesQuery.data.categories,
-        subCategories: categoriesQuery.data.subcategories,
-        isEvent,
-        setIsEvent,
-        isAccessibilityFilled,
-        setIsAccessibilityFilled,
         hasPublishedOfferWithSameEan: Boolean(publishedOfferWithSameEAN),
+        isAccessibilityFilled,
+        isEvent,
+        offer: offer ?? null,
+        offerId,
         publishedOfferWithSameEAN,
+        setIsAccessibilityFilled,
+        setIsEvent,
+        subCategories: categoriesQuery.data.subcategories,
       }}
     >
       {children}
