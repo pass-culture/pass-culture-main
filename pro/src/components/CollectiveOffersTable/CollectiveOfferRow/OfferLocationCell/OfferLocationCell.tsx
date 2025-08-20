@@ -3,7 +3,8 @@ import classNames from 'classnames'
 import type { GetCollectiveOfferLocationModel } from '@/apiClient/adage'
 import { CollectiveLocationType } from '@/apiClient/v1'
 import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cellDefinitions'
-import styles from '@/styles/components/Cells.module.scss'
+
+import styles from '../Cells.module.scss'
 
 export interface OfferLocationCellProps {
   rowId: string

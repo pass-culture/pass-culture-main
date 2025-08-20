@@ -2,7 +2,8 @@ import classNames from 'classnames'
 
 import type { EducationalInstitutionResponseModel } from '@/apiClient/v1'
 import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cellDefinitions'
-import styles from '@/styles/components/Cells.module.scss'
+
+import styles from '../Cells.module.scss'
 
 export interface OfferInstitutionCellProps {
   rowId: string
