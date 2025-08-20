@@ -49,8 +49,10 @@ def get_siret_info(siret: str) -> sirene_serializers.SiretInfo:
     api=blueprint.pro_private_schema,
 )
 def get_structure_data(search_input: str) -> sirene_serializers.StructureDataBodyModel:
-    if not api_entreprise.is_valid_siret(search_input) or api_entreprise.is_pass_culture_siret(search_input):
+    if not api_entreprise.is_valid_siret(search_input):
         raise sirene_exceptions.InvalidFormatException()
+    if api_entreprise.is_pass_culture_siret(search_input):
+        raise ApiErrors(errors={"global": ["Ce SIRET est déjà inscrit sur le pass Culture."]})
     try:
         data = offerers_api.find_structure_data(search_input)
         address = offerers_api.find_ban_address_from_insee_address(data.diffusible, data.address)
