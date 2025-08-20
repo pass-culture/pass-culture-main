@@ -5,7 +5,6 @@ import type { ReactNode } from 'react'
 import { Provider } from 'react-redux'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { SWRConfig } from 'swr'
-import type { AnyObject } from 'yup'
 
 import type {
   FeatureResponseModel,
@@ -14,6 +13,8 @@ import type {
 import type { DeepPartial } from '@/commons/custom_types/utils'
 import type { RootState } from '@/commons/store/rootReducer'
 import { configureTestStore } from '@/commons/store/testUtils'
+
+import type { AnyObject } from './types'
 
 interface RenderComponentFunctionParams<
   ComponentProps extends AnyObject | unknown = unknown,
