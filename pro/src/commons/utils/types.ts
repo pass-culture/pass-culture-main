@@ -3,15 +3,6 @@ export type AnyObject = {
   [key: string]: any
 }
 
-/**
- * Used to force a type to be defined within `as` declarations.
- *
- * TODO (igabriele, 2025-08-19): We should enable `exactOptionalPropertyTypes` in TSConfig to avoid this kind of hack.
- */
-export type Defined<T extends AnyObject> = {
-  [K in keyof T]: T[K] extends undefined ? never : T[K]
-}
-
 /** Props can be undefined but not omitted contrary to `Partial<T>`. */
 export type Undefinedable<T extends AnyObject> = {
   [K in keyof T]: T[K] | undefined
