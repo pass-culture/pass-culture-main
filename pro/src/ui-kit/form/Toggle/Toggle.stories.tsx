@@ -3,7 +3,7 @@ import type { StoryObj } from '@storybook/react'
 import { Toggle } from './Toggle'
 
 export default {
-  title: '@/ui-kit/Toggle',
+  title: '@/ui-kit/forms/Toggle',
   component: Toggle,
 }
 

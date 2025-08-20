@@ -7,7 +7,7 @@ import { useVenuesFromOfferer } from '@/commons/hooks/swr/useVenuesFromOfferer'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { useIncome } from '@/pages/Reimbursements/Income/useIncome'
-import { MultiSelect } from '@/ui-kit/MultiSelect/MultiSelect'
+import { MultiSelect } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './Income.module.scss'

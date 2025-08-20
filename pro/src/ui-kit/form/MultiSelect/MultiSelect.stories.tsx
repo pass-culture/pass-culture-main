@@ -4,7 +4,7 @@ import { withRouter } from 'storybook-addon-remix-react-router'
 import { MultiSelect } from './MultiSelect'
 
 export default {
-  title: '@/ui-kit/MultiSelect',
+  title: '@/ui-kit/forms/MultiSelect',
   decorators: [withRouter],
   component: MultiSelect,
   parameters: {
