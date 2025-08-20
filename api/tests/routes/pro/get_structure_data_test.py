@@ -106,7 +106,7 @@ class Returns400Test:
         response = client.get(f"{GET_STRUCTURE_DATA_URL}{settings.PASS_CULTURE_SIRET}")
 
         assert response.status_code == 400
-        message = "Le format de ce SIREN ou SIRET est incorrect."
+        message = "Ce SIRET est déjà inscrit sur le pass Culture."
         assert response.json == {"global": [message]}
 
     def test_search_inactive_siret(self, client):
