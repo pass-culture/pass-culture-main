@@ -50,12 +50,11 @@
   &-cell {
     padding: rem.torem(8px);
     text-align: left;
-    border-bottom: 1px solid var(--color-border-subtle);
   }
 }
 
 .table-row {
-  border-bottom: 1px solid var(--color-background-subtle);
+ border-bottom: 1px solid var(--color-background-subtle);
 }
 
 .table-header {
@@ -89,17 +88,6 @@
     text-align: left;
     white-space: nowrap;
   }
-}
-
-.table-fullrow-wrapper {
-  padding-bottom: rem.torem(43px);
-}
-
-.table-fullrow-content {
-  position: absolute;
-  bottom: 0;
-  left: rem.torem(1px);
-  right: rem.torem(1px);
 }
 
 .table-select-all {
