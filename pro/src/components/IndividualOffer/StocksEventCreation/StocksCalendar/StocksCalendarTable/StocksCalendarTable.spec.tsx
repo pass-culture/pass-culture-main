@@ -88,6 +88,17 @@ describe('StocksCalendarTable', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('should not render the edit options when the offer is synchronized', () => {
+    renderStocksCalendarTable({
+      offer: getIndividualOfferFactory({ lastProvider: { name: '123' } }),
+      mode: OFFER_WIZARD_MODE.EDITION,
+    })
+
+    expect(
+      screen.queryByRole('button', { name: 'Modifier la date' })
+    ).not.toBeInTheDocument()
+  })
+
   it('should not render the delete and edit options when the offer is disabled (because it is pending)', () => {
     renderStocksCalendarTable({
       offer: getIndividualOfferFactory({ status: OfferStatus.PENDING }),

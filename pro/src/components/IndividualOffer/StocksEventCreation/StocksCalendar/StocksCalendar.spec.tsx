@@ -349,4 +349,18 @@ describe('StocksCalendar', () => {
       screen.getByText('Aucune date n’a pu être modifiée')
     ).toBeInTheDocument()
   })
+
+  it('should not show a button to add more stocks if the offer is synchronized', async () => {
+    renderStocksCalendar(defaultStocks, {
+      offer: getIndividualOfferFactory({ lastProvider: { name: '123' } }),
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    expect(
+      screen.queryByRole('button', { name: 'Ajouter une ou plusieurs dates' })
+    ).not.toBeInTheDocument()
+  })
 })

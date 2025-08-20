@@ -4,6 +4,7 @@ import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import fullMoreIcon from '@/icons/full-more.svg'
@@ -77,6 +78,7 @@ export function StocksCalendarLayout({
         <div className={styles['header']}>
           <h2 className={styles['title']}>Dates et capacités</h2>
           {hasStocks &&
+            !isOfferSynchronized(offer) &&
             getDialogBuilderButton('Ajouter une ou plusieurs dates')}
         </div>
       )}
@@ -84,14 +86,20 @@ export function StocksCalendarLayout({
       {children}
       {!hasStocks && !isLoading && (
         <div className={styles['no-stocks-content']}>
-          <div className={styles['icon-container']}>
-            <SvgIcon
-              alt=""
-              className={styles['icon']}
-              src={strokeAddCalendarIcon}
-            />
-          </div>
-          {getDialogBuilderButton('Définir le calendrier')}
+          {isOfferSynchronized(offer) ? (
+            <p>Aucune date à afficher</p>
+          ) : (
+            <>
+              <div className={styles['icon-container']}>
+                <SvgIcon
+                  alt=""
+                  className={styles['icon']}
+                  src={strokeAddCalendarIcon}
+                />
+              </div>
+              {getDialogBuilderButton('Définir le calendrier')}
+            </>
+          )}
         </div>
       )}
     </div>
