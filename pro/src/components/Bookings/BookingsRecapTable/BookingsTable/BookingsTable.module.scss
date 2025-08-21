@@ -3,11 +3,15 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_a11y.scss" as a11y;
 
-.wrapper {
+.bookings-recap-table {
   td[data-label='Nom de l’offre']::before {
     content: none;
     display: none;
   }
+}
+
+.bookings-pagination {
+  margin-top: rem.torem(32px);
 }
 
 .column-booking-id {

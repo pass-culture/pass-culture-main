@@ -26,10 +26,7 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isEqual } from '@/commons/utils/isEqual'
 import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformation/CollectiveBudgetCallout'
-import { NoData } from '@/components/NoData/NoData'
 import { ChoosePreFiltersMessage } from '@/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
-import { NoBookingsForPreFiltersMessage } from '@/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { BookingsRecapTable } from './BookingsRecapTable/BookingsRecapTable'
 import { PreFilters } from './PreFilters/PreFilters'
@@ -153,7 +150,7 @@ export const BookingsContainer = <
       />
 
       {wereBookingsRequested ? (
-        (bookingsQuery ?? []).length > 0 ? (
+        bookingsQuery?.length > 0 ? (
           <BookingsRecapTable
             bookingsRecap={bookingsQuery}
             isLoading={isLoading}
@@ -161,18 +158,10 @@ export const BookingsContainer = <
             audience={audience}
             resetBookings={resetAndApplyPreFilters}
           />
-        ) : isLoading ? (
-          <Spinner />
-        ) : (
-          <NoBookingsForPreFiltersMessage
-            resetPreFilters={resetPreFiltersWithLog}
-          />
-        )
+        ) : null
       ) : hasBookingsQuery.data ? (
         <ChoosePreFiltersMessage />
-      ) : (
-        <NoData page="bookings" />
-      )}
+      ) : null}
     </div>
   )
 }
