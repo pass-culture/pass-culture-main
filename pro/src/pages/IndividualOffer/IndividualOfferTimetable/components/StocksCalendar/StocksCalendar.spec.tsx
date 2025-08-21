@@ -43,6 +43,7 @@ function renderStocksCalendar(
       <StocksCalendar
         offer={getIndividualOfferFactory()}
         mode={OFFER_WIZARD_MODE.CREATION}
+        timetableTypeRadioGroupShown={false}
         {...props}
       />
       <Notification />

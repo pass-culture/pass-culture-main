@@ -10,12 +10,15 @@
   @include fonts.title2;
 }
 
+.subtitle {
+  @include fonts.title3;
+}
+
 .header {
   display: flex;
   align-items: center;
   gap: rem.torem(32px);
   flex-wrap: wrap;
-  margin-bottom: rem.torem(24px);
 }
 
 .no-stocks-content {
@@ -23,7 +26,10 @@
   flex-direction: column;
   gap: rem.torem(40px);
   align-items: center;
-  margin-top: rem.torem(64px);
+  padding: rem.torem(40px) rem.torem(24px);
+  border: 2px dashed var(--color-border-brand-primary);
+  border-radius: var(--size-border-radius-m);
+  margin-top: rem.torem(24px);
 }
 
 .icon {
@@ -32,4 +38,16 @@
   color: var(--color-icon-brand-primary);
   position: relative;
   z-index: 1;
+}
+
+.pagination {
+  margin: rem.torem(24px) 0;
+}
+
+.filters {
+  margin-bottom: rem.torem(32px);
+}
+
+.count {
+  margin-bottom: rem.torem(8px);
 }

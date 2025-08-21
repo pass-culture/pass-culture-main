@@ -9,6 +9,49 @@ import {
   RecurrenceType,
 } from './types'
 
+export const quantityPerPriceCategoriesSchema = yup
+  .array()
+  .required()
+  .of(
+    yup.object().shape({
+      quantity: yup
+        .number()
+        .nullable()
+        .min(1, 'Veuillez indiquer un nombre supérieur à 0')
+        .max(
+          MAX_STOCKS_QUANTITY,
+          'Veuillez modifier la quantité. Celle-ci ne peut pas être supérieure à 1 million'
+        ),
+      priceCategory: yup.string().required('Veuillez renseigner un tarif'),
+    })
+  )
+  .test('isPriceCategoryUnique', (list) => {
+    const price_category_map = list.map((a) => a.priceCategory)
+    const duplicateIndex = price_category_map.reduce<yup.ValidationError[]>(
+      (ac, a, i) => {
+        if (
+          price_category_map.indexOf(a) !==
+          price_category_map.lastIndexOf(a)
+        ) {
+          ac.push(
+            new yup.ValidationError(
+              'Veuillez renseigner des tarifs différents',
+              null,
+              `quantityPerPriceCategories[${i}].priceCategory`
+            )
+          )
+        }
+        return ac
+      },
+      []
+    )
+
+    if (duplicateIndex.length > 0) {
+      return new yup.ValidationError(duplicateIndex)
+    }
+    return true
+  })
+
 export const getValidationSchema = () =>
   yup.object().shape({
     recurrenceType: yup
@@ -101,48 +144,7 @@ export const getValidationSchema = () =>
         }
         return true
       }),
-    quantityPerPriceCategories: yup
-      .array()
-      .required()
-      .of(
-        yup.object().shape({
-          quantity: yup
-            .number()
-            .nullable()
-            .min(1, 'Veuillez indiquer un nombre supérieur à 0')
-            .max(
-              MAX_STOCKS_QUANTITY,
-              'Veuillez modifier la quantité. Celle-ci ne peut pas être supérieure à 1 million'
-            ),
-          priceCategory: yup.string().required('Veuillez renseigner un tarif'),
-        })
-      )
-      .test('isPriceCategoryUnique', (list) => {
-        const price_category_map = list.map((a) => a.priceCategory)
-        const duplicateIndex = price_category_map.reduce<yup.ValidationError[]>(
-          (ac, a, i) => {
-            if (
-              price_category_map.indexOf(a) !==
-              price_category_map.lastIndexOf(a)
-            ) {
-              ac.push(
-                new yup.ValidationError(
-                  'Veuillez renseigner des tarifs différents',
-                  null,
-                  `quantityPerPriceCategories[${i}].priceCategory`
-                )
-              )
-            }
-            return ac
-          },
-          []
-        )
-
-        if (duplicateIndex.length > 0) {
-          return new yup.ValidationError(duplicateIndex)
-        }
-        return true
-      }),
+    quantityPerPriceCategories: quantityPerPriceCategoriesSchema,
     bookingLimitDateInterval: yup.number().required().nullable(),
     monthlyOption: yup
       .string<MonthlyOption>()
