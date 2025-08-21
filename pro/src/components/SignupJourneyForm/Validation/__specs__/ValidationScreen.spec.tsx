@@ -290,47 +290,77 @@ describe('ValidationScreen', () => {
       }
     })
 
-    const publicNames = ['nom public', '']
-    it.each(publicNames)(
-      'should send data with name %s',
-      async (publicName: string) => {
-        if (contextValue.offerer) {
-          contextValue.offerer.publicName = publicName
-        }
-        vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
-          {} as PostOffererResponseModel
-        )
-        vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
-          remove: vi.fn(),
-        } as unknown as HTMLScriptElement)
-        vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
-        renderValidationScreen(contextValue)
-        await waitForElementToBeRemoved(() =>
-          screen.queryAllByTestId('spinner')
-        )
-        await userEvent.click(screen.getByText('Valider et créer ma structure'))
-        expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
-          publicName: publicName,
-          siret: '123123123',
-          venueTypeCode: 'MUSEUM',
-          webPresence: 'url1, url2',
-          target: Target.EDUCATIONAL,
-          createVenueWithoutSiret: false,
-          address: {
-            street: '3 Rue de Valois',
-            banId: '75118_5995_00043',
-            city: 'Paris',
-            latitude: 0,
-            longitude: 0,
-            postalCode: '75001',
-            inseeCode: '75111',
-          },
-          token: 'token',
-          isOpenToPublic: false,
-          phoneNumber: '',
-        })
+    it('should send data with public name', async () => {
+      if (contextValue.offerer) {
+        contextValue.offerer.publicName = 'nom public'
       }
-    )
+      vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
+        {} as PostOffererResponseModel
+      )
+      vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+        remove: vi.fn(),
+      } as unknown as HTMLScriptElement)
+      vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
+      renderValidationScreen(contextValue)
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+      await userEvent.click(screen.getByText('Valider et créer ma structure'))
+      expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
+        publicName: 'nom public',
+        siret: '123123123',
+        venueTypeCode: 'MUSEUM',
+        webPresence: 'url1, url2',
+        target: Target.EDUCATIONAL,
+        createVenueWithoutSiret: false,
+        address: {
+          street: '3 Rue de Valois',
+          banId: '75118_5995_00043',
+          city: 'Paris',
+          latitude: 0,
+          longitude: 0,
+          postalCode: '75001',
+          inseeCode: '75111',
+        },
+        token: 'token',
+        isOpenToPublic: false,
+        phoneNumber: '',
+      })
+    })
+
+    it('should send data without public name', async () => {
+      if (contextValue.offerer) {
+        contextValue.offerer.publicName = ''
+      }
+      vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
+        {} as PostOffererResponseModel
+      )
+      vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+        remove: vi.fn(),
+      } as unknown as HTMLScriptElement)
+      vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
+      renderValidationScreen(contextValue)
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+      await userEvent.click(screen.getByText('Valider et créer ma structure'))
+      expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
+        publicName: null,
+        siret: '123123123',
+        venueTypeCode: 'MUSEUM',
+        webPresence: 'url1, url2',
+        target: Target.EDUCATIONAL,
+        createVenueWithoutSiret: false,
+        address: {
+          street: '3 Rue de Valois',
+          banId: '75118_5995_00043',
+          city: 'Paris',
+          latitude: 0,
+          longitude: 0,
+          postalCode: '75001',
+          inseeCode: '75111',
+        },
+        token: 'token',
+        isOpenToPublic: false,
+        phoneNumber: '',
+      })
+    })
 
     it('should see the data from the previous forms for validation without public name', async () => {
       renderValidationScreen(contextValue)

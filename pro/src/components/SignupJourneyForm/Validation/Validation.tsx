@@ -104,7 +104,7 @@ export const Validation = (): JSX.Element => {
 
       const data: SaveNewOnboardingDataQueryModel = {
         isOpenToPublic: offerer.isOpenToPublic === 'true',
-        publicName: offerer.publicName ?? '',
+        publicName: offerer.publicName || null,
         siret: offerer.siret.replaceAll(' ', ''),
         venueTypeCode:
           /* istanbul ignore next: should not have empty or null venueTypeCode at this step */
