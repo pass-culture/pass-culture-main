@@ -14,6 +14,7 @@ from pcapi.core.offers.models import Reason
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.utils import first_or_404
 from pcapi.models.utils import get_or_404
@@ -50,7 +51,7 @@ def get_offer_v2(offer_id: int) -> serializers.OfferResponseV2:
     query = repository.get_offers_details([int(offer_id)])
     offer = first_or_404(query)
 
-    if offer.isActive:
+    if offer.isActive and FeatureToggle.ENABLE_UPDATE_CINEMA_EXTERNAL_STOCKS.is_active():
         api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
 
     return serializers.OfferResponseV2.from_orm(offer)
