@@ -371,7 +371,7 @@ describe('Offerer', () => {
 
   it('should display MaybeAppUserDialog and hide on cancel button', async () => {
     vi.spyOn(api, 'getStructureData').mockResolvedValue(
-      structureDataBodyModelFactory({ apeCode: '85.31Z' })
+      structureDataBodyModelFactory({ apeCode: '8531Z' })
     )
     renderOffererScreen(contextValue)
 
