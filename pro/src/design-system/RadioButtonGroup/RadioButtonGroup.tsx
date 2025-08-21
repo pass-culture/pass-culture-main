@@ -50,10 +50,6 @@ export type RadioButtonGroupProps<
   display?: 'horizontal' | 'vertical'
   /** Selected option, required if the group is non-controlled */
   checkedOption?: string
-  /** Custom CSS class for the radio button group */
-  className?: string
-  /** Custom CSS class for the label */
-  labelClassName?: string
   /** If the radio button group is disabled, making all options unselectable */
   disabled?: D
   /** Event handler for change */
@@ -64,8 +60,6 @@ export type RadioButtonGroupProps<
   required?: boolean
   /** Whether the required asterisk is displayed or not */
   asterisk?: boolean
-  /** Allow options to be an array with none, or a single element - exception case: CollectiveOfferSelectionDuplication */
-  allowSingleOrNoneOption?: boolean
 }
 
 export const RadioButtonGroup = ({
@@ -80,14 +74,11 @@ export const RadioButtonGroup = ({
   display = 'vertical',
   disabled = false,
   checkedOption,
-  className,
-  labelClassName,
   asset,
   onChange,
   onBlur,
   required,
   asterisk = true,
-  allowSingleOrNoneOption,
 }: RadioButtonGroupProps<
   string,
   RadioButtonVariantProps,
@@ -100,10 +91,6 @@ export const RadioButtonGroup = ({
   const errorId = useId()
   const descriptionId = useId()
   const describedBy = `${error ? errorId : ''}${description ? ` ${descriptionId}` : ''}`
-
-  if (!allowSingleOrNoneOption && options.length < 2) {
-    throw new Error('RadioButtonGroup requires at least two options.')
-  }
 
   // Ensure all options have distinct values, which is natural
   // for radio buttons but also a requirement since they are used as unique keys.
@@ -119,29 +106,28 @@ export const RadioButtonGroup = ({
       aria-describedby={describedBy}
       aria-required={required}
       aria-invalid={!!error}
-      className={cn(styles['radio-button-group'], className)}
+      className={styles['radio-button-group']}
       data-testid={`wrapper-${name}`}
     >
       <div className={styles['radio-button-group-header']}>
         <LabelTag
           id={labelId}
-          className={cn(
-            styles[`radio-button-group-label-${LabelTag}`],
-            labelClassName
-          )}
+          className={cn(styles[`radio-button-group-label-${LabelTag}`])}
         >
           {label}
           {required && asterisk ? ' *' : ''}
         </LabelTag>
-        <span
-          id={descriptionId}
-          className={styles['radio-button-group-description']}
-          // Description might change based on selection,
-          // so an aria-live is needed to announce changes.
-          aria-live="polite"
-        >
-          {description}
-        </span>
+        {description && (
+          <span
+            id={descriptionId}
+            className={styles['radio-button-group-description']}
+            // Description might change based on selection,
+            // so an aria-live is needed to announce changes.
+            aria-live="polite"
+          >
+            {description}
+          </span>
+        )}
         <div role="alert" id={errorId}>
           {error && (
             <span className={styles['radio-button-group-error']}>
@@ -164,21 +150,25 @@ export const RadioButtonGroup = ({
         )}
       >
         {options.map((optionProps) => (
-          <RadioButton
+          <div
+            className={styles['radio-button-group-option']}
             key={optionProps.value}
-            {...optionProps}
-            name={name}
-            variant={variant}
-            sizing={sizing}
-            disabled={disabled}
-            hasError={!!error}
-            onChange={onChange}
-            onBlur={onBlur}
-            asset={asset}
-            {...(onChange && {
-              checked: checkedOption === optionProps.value,
-            })}
-          />
+          >
+            <RadioButton
+              {...optionProps}
+              name={name}
+              variant={variant}
+              sizing={sizing}
+              disabled={disabled}
+              hasError={!!error}
+              onChange={onChange}
+              onBlur={onBlur}
+              asset={asset}
+              {...(onChange && {
+                checked: checkedOption === optionProps.value,
+              })}
+            />
+          </div>
         ))}
       </div>
     </div>

@@ -24,8 +24,6 @@ type RadioButtonBaseProps = {
   disabled?: boolean
   /** If the radio is in an error state */
   hasError?: boolean
-  /** Custom CSS class for the radio button */
-  className?: string
   /** Event handler for change */
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   /** Event handler for blur */
@@ -65,7 +63,6 @@ export const RadioButton = forwardRef(
       onChange,
       onBlur,
       name,
-      className,
     }: RadioButtonProps,
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
@@ -76,18 +73,14 @@ export const RadioButton = forwardRef(
     return (
       <>
         <div
-          className={cn(
-            styles['radio-button'],
-            {
-              [styles['sizing-fill']]: sizing === 'fill',
-              [styles['variant-detailed']]: isVariantDetailed,
-              [styles['is-collapsed']]: collapsed && checked,
-              [styles['is-checked']]: checked,
-              [styles['is-disabled']]: disabled,
-              [styles['has-error']]: hasError,
-            },
-            className
-          )}
+          className={cn(styles['radio-button'], {
+            [styles['sizing-fill']]: sizing === 'fill',
+            [styles['variant-detailed']]: isVariantDetailed,
+            [styles['is-collapsed']]: collapsed && checked,
+            [styles['is-checked']]: checked,
+            [styles['is-disabled']]: disabled,
+            [styles['has-error']]: hasError,
+          })}
         >
           <label htmlFor={id} className={styles['radio-button-label']}>
             <div className={styles['radio-button-left']}>

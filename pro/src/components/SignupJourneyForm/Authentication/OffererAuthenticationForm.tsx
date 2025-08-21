@@ -111,9 +111,8 @@ export const OffererAuthenticationForm = (): JSX.Element => {
           error={errors.publicName?.message}
         />
       </FormLayout.Row>
-      <FormLayout.Row mdSpaceAfter>
+      <FormLayout.Row mdSpaceAfter className={styles['open-to-public-toggle']}>
         <OpenToPublicToggle
-          className={styles['open-to-public-toggle']}
           onChange={(e) => {
             if (isPartiallyDiffusableSignupEnabled && !offerer?.isDiffusible) {
               if (e.target.value === 'true') {
