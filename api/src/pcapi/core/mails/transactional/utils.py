@@ -8,9 +8,10 @@ from pcapi.core.users import models as users_models
 def format_price(
     amount_in_euros: int | float | Decimal,
     target: users_models.User | offerers_models.Offerer | offerers_models.Venue | None,
+    replace_free_amount: bool = True,
 ) -> str:
     # format for transactional emails
-    if not amount_in_euros:
+    if not amount_in_euros and replace_free_amount:
         return "Gratuit"
 
     if target and target.is_caledonian:

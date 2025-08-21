@@ -6,6 +6,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.bookings import common as bookings_common
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.utils import format_price
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -81,6 +82,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
             "EVENT_DATE": formatted_event_beginning_date,
             "EVENT_HOUR": formatted_event_beginning_time,
             "OFFER_PRICE": stock_price,
+            "FORMATTED_OFFER_PRICE": format_price(booking.total_amount, beneficiary),
             "OFFER_PRICE_CATEGORY": booking.priceCategoryLabel,
             "OFFER_TAGS": ",".join([criterion.name for criterion in offer.criteria]),
             "OFFER_TOKEN": bookings_common.get_booking_token(booking),

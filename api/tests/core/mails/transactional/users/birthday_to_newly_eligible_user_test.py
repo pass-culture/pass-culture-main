@@ -33,7 +33,7 @@ class SendinblueSendNewlyEligibleUserEmailTest:
         send_birthday_age_18_email_to_newly_eligible_user_v3(user)
 
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0]["params"] == {"CREDIT": None, "DEPOSITS_COUNT": 0}
+        assert mails_testing.outbox[0]["params"] == {"FORMATTED_CREDIT": None, "CREDIT": None, "DEPOSITS_COUNT": 0}
         assert (
             mails_testing.outbox[0]["template"]
             == TransactionalEmail.BIRTHDAY_AGE_18_TO_NEWLY_ELIGIBLE_USER_V3.value.__dict__

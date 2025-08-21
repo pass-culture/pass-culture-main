@@ -4,6 +4,7 @@ from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.utils import format_price
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
@@ -47,6 +48,7 @@ def get_booking_cancellation_by_beneficiary_email_data(
             "IS_EXTERNAL": booking.isExternal,
             "OFFER_NAME": offer.name,
             "OFFER_PRICE": float(booking.total_amount),
+            "FORMATTED_OFFER_PRICE": format_price(booking.total_amount, beneficiary),
             "USER_FIRST_NAME": beneficiary.firstName,
             "CAN_BOOK_AGAIN": can_book_again,
             "OFFER_LINK": offer_app_link(offer),

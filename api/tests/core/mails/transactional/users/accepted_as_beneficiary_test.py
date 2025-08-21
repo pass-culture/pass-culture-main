@@ -18,4 +18,15 @@ class GetAcceptedAsBeneficiaryEmailSendinblueTest:
 
         # Then
         assert email.template == TransactionalEmail.ACCEPTED_AS_BENEFICIARY_V3.value
-        assert email.params == {"CREDIT": 150}
+        assert email.params == {"CREDIT": 150, "FORMATTED_CREDIT": "150 €"}
+
+    def test_return_correct_email_metadata_for_caledonian_user(self):
+        # Given
+        user = users_factories.BeneficiaryFactory(deposit__amount=42, postalCode="98818")
+
+        # When
+        email = get_accepted_as_beneficiary_email_v3_data(user)
+
+        # Then
+        assert email.template == TransactionalEmail.ACCEPTED_AS_BENEFICIARY_V3.value
+        assert email.params == {"CREDIT": 150, "FORMATTED_CREDIT": "17900 F"}
