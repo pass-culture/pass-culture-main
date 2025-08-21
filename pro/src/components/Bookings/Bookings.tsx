@@ -30,10 +30,7 @@ import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isEqual } from '@/commons/utils/isEqual'
 import { stringify } from '@/commons/utils/query-string'
 import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformation/CollectiveBudgetCallout'
-import { NoData } from '@/components/NoData/NoData'
 import { ChoosePreFiltersMessage } from '@/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
-import { NoBookingsForPreFiltersMessage } from '@/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { BookingsRecapTable } from './BookingsRecapTable/BookingsRecapTable'
 import { PreFilters } from './PreFilters/PreFilters'
@@ -232,8 +229,10 @@ export const BookingsContainer = <
     )
   }
 
+  console.log(bookingsQuery.data)
+
   return (
-    <div className="bookings-page">
+    <div>
       {audience === Audience.COLLECTIVE && offerer?.allowedOnAdage && (
         <CollectiveBudgetCallout
           variant="COLLECTIVE_TABLE"
@@ -258,7 +257,7 @@ export const BookingsContainer = <
       />
 
       {wereBookingsRequested ? (
-        bookingsQuery.data.length > 0 ? (
+        bookingsQuery.data?.length > 0 ? (
           <BookingsRecapTable
             bookingsRecap={bookingsQuery.data}
             isLoading={bookingsQuery.isLoading}
@@ -266,16 +265,12 @@ export const BookingsContainer = <
             audience={audience}
             resetBookings={resetAndApplyPreFilters}
           />
-        ) : bookingsQuery.isLoading ? (
-          <Spinner />
         ) : (
-          <NoBookingsForPreFiltersMessage resetPreFilters={resetPreFilters} />
+          <ChoosePreFiltersMessage />
         )
       ) : hasBookingsQuery.data ? (
         <ChoosePreFiltersMessage />
-      ) : (
-        <NoData page="bookings" />
-      )}
+      ) : null}
     </div>
   )
 }
