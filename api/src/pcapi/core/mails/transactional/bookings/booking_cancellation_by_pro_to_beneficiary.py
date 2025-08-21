@@ -2,6 +2,7 @@ from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.utils import format_price
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
@@ -13,6 +14,7 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
 ) -> models.TransactionalEmailData:
     stock = booking.stock
     offer = stock.offer
+    beneficiary = booking.user
     if offer.isEvent:
         event_date = get_date_formatted_for_email(get_event_datetime(stock))
         event_hour = get_time_formatted_for_email(get_event_datetime(stock))
@@ -35,6 +37,7 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
             "IS_EXTERNAL": booking.isExternal,
             "OFFER_NAME": offer.name,
             "OFFER_PRICE": booking.total_amount,
+            "FORMATTED_OFFER_PRICE": format_price(booking.total_amount, beneficiary),
             "OFFERER_NAME": offer.venue.managingOfferer.name,
             "REASON": booking.cancellationReason.value if booking.cancellationReason else None,
             "REJECTED": rejected_by_fraud_action,

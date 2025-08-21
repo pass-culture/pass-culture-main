@@ -22,6 +22,7 @@ def get_new_booking_to_pro_email_data(
     booking: Booking, first_venue_booking: bool = False
 ) -> models.TransactionalEmailData:
     stock = booking.stock
+    beneficiary = booking.user
     offer = stock.offer
 
     venue = (
@@ -97,7 +98,7 @@ def get_new_booking_to_pro_email_data(
             "OFFER_NAME": offer.name,
             "OFFER_SUBCATEGORY": offer_subcategory,
             "PRICE": "Gratuit" if stock.price == 0 else f"{stock.price} €",
-            "FORMATTED_PRICE": format_price(stock.price, venue),
+            "FORMATTED_PRICE": format_price(stock.price, beneficiary),
             "QUANTITY": booking.quantity,
             "USER_EMAIL": booking.user.email,
             "USER_FIRSTNAME": booking.user.firstName,
