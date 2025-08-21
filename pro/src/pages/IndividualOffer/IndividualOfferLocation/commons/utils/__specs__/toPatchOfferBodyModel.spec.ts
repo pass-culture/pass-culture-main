@@ -101,7 +101,7 @@ describe('toPatchOfferBodyModel', () => {
     expect(result.shouldSendMail).toBe(false)
   })
 
-  it('returns address = null when offer is digital even with complete form', () => {
+  it('should not return an when offer is digital even with complete form', () => {
     const offer = getIndividualOfferFactory({ isDigital: true })
 
     const result = toPatchOfferBodyModel({
@@ -110,7 +110,7 @@ describe('toPatchOfferBodyModel', () => {
       shouldSendWarningMail: true,
     })
 
-    expect(result.address).toBeNull()
+    expect(result).not.toHaveProperty('address')
     expect(result.shouldSendMail).toBe(true)
     expect(result.url).toBe('https://example.org/page')
   })
@@ -144,7 +144,7 @@ describe('toPatchOfferBodyModel', () => {
     ['street', ''],
     ['offerLocation', undefined], // must be truthy
   ] as const)(
-    'returns address = null when required field %s is missing/falsy',
+    'should not return an address when required field %s is missing/falsy',
     (missingKey, missingValue) => {
       const offer = getIndividualOfferFactory({ isDigital: false })
       const formValues = {
@@ -158,7 +158,7 @@ describe('toPatchOfferBodyModel', () => {
         shouldSendWarningMail: false,
       })
 
-      expect(result.address).toBeNull()
+      expect(result).not.toHaveProperty('address')
       expect(result.url).toBe('https://example.org/page')
       expect(result.shouldSendMail).toBe(false)
     }

@@ -19,6 +19,7 @@ export const IndividualOfferLocation = () => {
     { fallbackData: { venues: [] } }
   )
 
+  // TODO (igabriele, 2025-08-20): Handle API error.s
   if (!offer || venuesQuery.isLoading) {
     return <Spinner />
   }

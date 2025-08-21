@@ -102,7 +102,7 @@ const renderLocationForm: RenderComponentFunction<
   )
 }
 
-describe('LocationForm', () => {
+describe('<LocationForm />', () => {
   const contextValuesBase: Partial<IndividualOfferContextValues> = {
     subCategories: MOCKED_SUBCATEGORIES,
   }

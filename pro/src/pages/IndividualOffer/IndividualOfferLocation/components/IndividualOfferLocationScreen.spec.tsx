@@ -117,7 +117,7 @@ const LABELS = {
   },
 }
 
-describe('screens:IndividualOffer::UsefulInformation', () => {
+describe('<IndividualOfferLocationScreen />', () => {
   const offlineOffer = getIndividualOfferFactory({
     id: 3,
     subcategoryId: MOCKED_SUBCATEGORY.NON_EVENT_OFFLINE.id,
