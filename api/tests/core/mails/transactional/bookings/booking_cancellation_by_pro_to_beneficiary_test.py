@@ -51,6 +51,7 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
             "IS_ONLINE": False,
             "OFFER_NAME": booking.stock.offer.name,
             "OFFER_PRICE": decimal.Decimal("10.10"),
+            "FORMATTED_OFFER_PRICE": "10,10 €",
             "OFFERER_NAME": booking.offerer.name,
             "REASON": "OFFERER",
             "REJECTED": False,
@@ -104,6 +105,7 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
             "IS_ONLINE": False,
             "OFFER_NAME": booking.stock.offer.name,
             "OFFER_PRICE": decimal.Decimal("10.10"),
+            "FORMATTED_OFFER_PRICE": "10,10 €",
             "OFFERER_NAME": booking.offerer.name,
             "REASON": "OFFERER",
             "REJECTED": False,
@@ -111,6 +113,22 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
             "USER_LAST_NAME": "Doux",
             "VENUE_NAME": booking.venue.name,
         }
+
+    def test_should_display_the_price_in_xpf_for_caledonian_beneficiary(self):
+        # Given
+        booking = bookings_factories.BookingFactory(stock__price=20, quantity=1, user__postalCode="98818")
+
+        # When
+        send_booking_cancellation_by_pro_to_beneficiary_email(booking)
+
+        # Then
+        assert (
+            mails_testing.outbox[0]["template"]
+            == TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value.__dict__
+        )
+        mail_params = mails_testing.outbox[0]["params"]
+        assert mail_params["OFFER_PRICE"] == 20.00
+        assert mail_params["FORMATTED_OFFER_PRICE"] == "2385 F"
 
 
 @pytest.mark.usefixtures("db_session")
@@ -141,6 +159,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "IS_THING": False,
             "OFFER_NAME": booking.stock.offer.name,
             "OFFER_PRICE": decimal.Decimal("10.10"),
+            "FORMATTED_OFFER_PRICE": "10,10 €",
             "OFFERER_NAME": booking.offerer.name,
             "REASON": None,
             "REJECTED": False,
@@ -176,6 +195,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "IS_THING": True,
             "OFFER_NAME": booking.stock.offer.name,
             "OFFER_PRICE": decimal.Decimal("10.10"),
+            "FORMATTED_OFFER_PRICE": "10,10 €",
             "OFFERER_NAME": booking.offerer.name,
             "REASON": None,
             "REJECTED": False,
@@ -208,6 +228,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "IS_THING": False,
             "OFFER_NAME": booking.stock.offer.name,
             "OFFER_PRICE": decimal.Decimal("10.10"),
+            "FORMATTED_OFFER_PRICE": "10,10 €",
             "OFFERER_NAME": booking.offerer.name,
             "REASON": None,
             "REJECTED": False,
@@ -248,3 +269,16 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
         # Then
         assert sendiblue_data.params["IS_FREE_OFFER"] is False
         assert sendiblue_data.params["OFFER_PRICE"] == 20.00
+
+    def test_should_display_the_price_in_xpf_for_caledonian_beneficiary(self):
+        # Given
+        booking = bookings_factories.BookingFactory(stock__price=20, quantity=1, user__postalCode="98818")
+
+        # When
+        sendinblue_data = get_booking_cancellation_by_pro_to_beneficiary_email_data(
+            booking, rejected_by_fraud_action=False
+        )
+
+        # Then
+        assert sendinblue_data.params["OFFER_PRICE"] == 20.00
+        assert sendinblue_data.params["FORMATTED_OFFER_PRICE"] == "2385 F"

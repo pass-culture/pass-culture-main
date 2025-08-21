@@ -73,6 +73,7 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
             "IS_FREE_OFFER": False,
             "OFFER_NAME": "Test thing name",
             "OFFER_PRICE": 10.20,
+            "FORMATTED_OFFER_PRICE": "10,20 €",
             "USER_FIRST_NAME": "Fabien",
             "OFFER_LINK": "https://webapp-v2.example.com/offre/123456",
         }
@@ -103,6 +104,7 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
             "IS_FREE_OFFER": False,
             "OFFER_NAME": "Test event name",
             "OFFER_PRICE": 10.20,
+            "FORMATTED_OFFER_PRICE": "10,20 €",
             "USER_FIRST_NAME": "Fabien",
             "OFFER_LINK": "https://webapp-v2.example.com/offre/123456",
         }
@@ -126,3 +128,15 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
 
         # Then
         assert email_data.params["OFFER_PRICE"] == 20.00
+        assert email_data.params["FORMATTED_OFFER_PRICE"] == "20 €"
+
+    def test_should_return_the_formatted_price_in_xpf(self):
+        # Given
+        booking = booking_factories.CancelledBookingFactory(quantity=2, stock__price=10, user__postalCode="98818")
+
+        # When
+        email_data = get_booking_cancellation_by_beneficiary_email_data(booking)
+
+        # Then
+        assert email_data.params["OFFER_PRICE"] == 20.00
+        assert email_data.params["FORMATTED_OFFER_PRICE"] == "2385 F"

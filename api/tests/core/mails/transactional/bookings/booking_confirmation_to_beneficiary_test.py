@@ -52,6 +52,7 @@ def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
             "EVENT_HOUR": "13h48",
             "OFFER_PRICE_CATEGORY": booking.priceCategoryLabel,
             "OFFER_PRICE": f"{booking.total_amount} €" if booking.stock.price > 0 else "Gratuit",
+            "FORMATTED_OFFER_PRICE": "" if booking.stock.price > 0 else "Gratuit",
             "OFFER_TAGS": "",
             "OFFER_TOKEN": booking.token,
             "OFFER_CATEGORY": booking.stock.offer.category.id,
@@ -87,7 +88,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_an_event_send
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
     email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
-    expected = get_expected_base_sendinblue_email_data(booking, mediation)
+    expected = get_expected_base_sendinblue_email_data(booking, mediation, FORMATTED_OFFER_PRICE="23,99 €")
     assert email_data == expected
 
 
@@ -106,6 +107,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event_s
         IS_DUO_EVENT=True,
         IS_SINGLE_EVENT=False,
         OFFER_PRICE="47.98 €",
+        FORMATTED_OFFER_PRICE="47,98 €",
     )
     assert email_data == expected
 
@@ -131,6 +133,7 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing_sendi
         IS_EVENT=False,
         IS_SINGLE_EVENT=False,
         OFFER_NAME="Super bien culturel",
+        FORMATTED_OFFER_PRICE="23,99 €",
         CAN_EXPIRE=True,
         EXPIRATION_DELAY=30,
         BOOKING_LINK=f"https://webapp-v2.example.com/reservation/{booking.id}/details",
@@ -225,8 +228,16 @@ def test_should_return_offer_features():
         CAN_EXPIRE=True,
         EXPIRATION_DELAY=30,
         BOOKING_LINK=f"https://webapp-v2.example.com/reservation/{booking.id}/details",
+        FORMATTED_OFFER_PRICE="23,99 €",
     )
     assert email_data == expected
+
+
+def test_should_return_formatted_offer_price_in_xpf():
+    booking = BookingFactory(stock__price=20, user__postalCode="98818")
+    email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
+
+    assert email_data.params["FORMATTED_OFFER_PRICE"] == "2385 F"
 
 
 class DigitalOffersSendinblueTest:
@@ -292,6 +303,7 @@ class DigitalOffersSendinblueTest:
             IS_SINGLE_EVENT=False,
             OFFER_NAME="Super offre numérique",
             OFFER_PRICE="10.10 €",
+            FORMATTED_OFFER_PRICE="10,10 €",
             OFFER_TOKEN=booking.activationCode.code,
             CAN_EXPIRE=False,
             IS_DIGITAL_BOOKING_WITH_ACTIVATION_CODE_AND_NO_EXPIRATION_DATE=True,

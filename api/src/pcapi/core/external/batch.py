@@ -8,6 +8,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
 from pcapi.core.external.batch_utils import shorten_for_batch
+from pcapi.core.mails.transactional.utils import format_price
 from pcapi.notifications.push.trigger_events import BatchEvent
 from pcapi.notifications.push.trigger_events import TrackBatchEventRequest
 from pcapi.notifications.push.trigger_events import TrackBatchEventsRequest
@@ -145,8 +146,10 @@ def track_deposit_activated_event(user_id: int, deposit: finance_models.Deposit)
 
 def track_account_recredited(user_id: int, deposit: finance_models.Deposit, deposit_count: int) -> None:
     event_name = BatchEvent.RECREDITED_ACCOUNT
+    user = deposit.user
     event_payload = {
         "deposit_amount": round(deposit.amount),
+        "formatted_deposit_amount": format_price(deposit.amount, user, replace_free_amount=False),
         "deposit_type": deposit.type.value,
         "deposits_count": deposit_count,
         "deposit_expiration_date": _format_date(deposit.expirationDate),
@@ -192,11 +195,14 @@ def track_booking_cancellation(booking: bookings_models.Booking) -> None:
     user = booking.user
     offer = booking.stock.offer
     domains_credit = get_domains_credit(user)
+    assert domains_credit  # helps mypy
     event_payload = {
-        "credit": domains_credit.all.remaining,  # type: ignore[union-attr]
+        "credit": domains_credit.all.remaining,
+        "formatted_credit": format_price(domains_credit.all.remaining, user, replace_free_amount=False),
         "offer_id": offer.id,
         "offer_name": shorten_for_batch(offer.name, max_length=64, placeholder="...", preserve_words=True),
         "offer_price": booking.total_amount,
+        "formatted_offer_price": format_price(booking.total_amount, user),
     }
     payload = TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user.id)
     batch_tasks.track_event_task.delay(payload)
