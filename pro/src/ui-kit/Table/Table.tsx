@@ -39,6 +39,8 @@ export interface Column<T> {
   headerColSpan?: number
   bodyHidden?: boolean
   headerHidden?: boolean
+  /** Visual header content (can be any React node, e.g., a component) */
+  header?: React.ReactNode
 }
 
 interface TableProps<T extends { id: string | number }> {
@@ -216,21 +218,20 @@ export function Table<
               </th>
             )}
             {columns.map((col, index) => {
-              if (col.headerHidden) {
-                return null
-              }
+              if (col.headerHidden) return null
+
+              const headerContent = col.header ?? col.label ?? ''
+
               return (
                 <th
                   scope="col"
                   id={col.id}
                   colSpan={col.headerColSpan || 1}
-                  key={`col-${col.id}-${index}`}
+                  key={`col-${index}`}
                   className={classNames(
                     styles.columnWidth,
                     styles['table-header-th'],
-                    {
-                      [styles['table-header-sortable-th']]: col.sortable,
-                    }
+                    { [styles['table-header-sortable-th']]: col.sortable }
                   )}
                 >
                   {col.sortable ? (
@@ -242,10 +243,10 @@ export function Table<
                           : SortingMode.NONE
                       }
                     >
-                      {col.label}
+                      {headerContent}
                     </SortColumn>
                   ) : (
-                    col.label
+                    headerContent
                   )}
                 </th>
               )

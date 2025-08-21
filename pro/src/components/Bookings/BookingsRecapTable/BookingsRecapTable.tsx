@@ -1,15 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router'
 
 import type {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from '@/apiClient/v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { Audience } from '@/commons/core/shared/types'
+import { usePagination } from '@/commons/hooks/usePagination'
+import { Pagination } from '@/ui-kit/Pagination/Pagination'
+import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
-import { isCollectiveBooking } from './BookingsTable/Cells/BookingOfferCell'
-import { CollectiveBookingsTable } from './BookingsTable/CollectiveBookingsTable'
-import { IndividualBookingsTable } from './BookingsTable/IndividualBookingsTable'
+import { useCollectiveBookingsColumns } from './BookingsTable/ColumnsCollectiveBooking'
+import { useBookingsTableColumnsByIndex } from './BookingsTable/ColumnsIndividualBooking'
 import {
   ALL_BOOKING_STATUS,
   bookingIdOmnisearchFilter,
@@ -22,15 +26,7 @@ import { Header } from './Header/Header'
 import type { BookingsFilters } from './types'
 import { filterBookingsRecap } from './utils/filterBookingsRecap'
 
-const areCollectiveBookings = (
-  bookings: (BookingRecapResponseModel | CollectiveBookingResponseModel)[]
-): bookings is CollectiveBookingResponseModel[] =>
-  bookings.every(isCollectiveBooking)
-
-const areIndividualBookings = (
-  bookings: (BookingRecapResponseModel | CollectiveBookingResponseModel)[]
-): bookings is BookingRecapResponseModel[] =>
-  bookings.every((booking) => !isCollectiveBooking(booking))
+const BOOKINGS_PER_PAGE = 20
 
 interface BookingsRecapTableProps<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
@@ -47,13 +43,19 @@ interface BookingsRecapTableProps<
 export const BookingsRecapTable = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >({
-  bookingsRecap,
   isLoading,
   locationState,
   audience,
   resetBookings,
+  bookingsRecap: bookings,
 }: BookingsRecapTableProps<T>) => {
-  const [filteredBookings, setFilteredBookings] = useState(bookingsRecap)
+  const { logEvent } = useAnalytics()
+
+  const [filteredBookings, setFilteredBookings] = useState(bookings)
+
+  const { page, setPage, previousPage, nextPage, pageCount, currentPageItems } =
+    usePagination(bookings, BOOKINGS_PER_PAGE)
+
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
   const [defaultBookingId, setDefaultBookingId] = useState(
@@ -77,8 +79,9 @@ export const BookingsRecapTable = <
   })
 
   useEffect(() => {
+    setPage(1)
     applyFilters()
-  }, [bookingsRecap])
+  }, [bookings])
 
   const updateGlobalFilters = (updatedFilters: Partial<BookingsFilters>) => {
     setFilters((filters) => {
@@ -90,10 +93,7 @@ export const BookingsRecapTable = <
 
   const applyFilters = (filtersBookingResults?: BookingsFilters) => {
     const filtersToApply = filtersBookingResults || filters
-    const bookingsRecapFiltered = filterBookingsRecap(
-      bookingsRecap,
-      filtersToApply
-    )
+    const bookingsRecapFiltered = filterBookingsRecap(bookings, filtersToApply)
     setFilteredBookings(bookingsRecapFiltered)
   }
 
@@ -136,6 +136,48 @@ export const BookingsRecapTable = <
     })
   }
 
+  const rows = useMemo(
+    () =>
+      filteredBookings.map(
+        (b, i) =>
+          ({ ...b, id: i }) as BookingRecapResponseModel & { id: number }
+      ),
+    [filteredBookings]
+  )
+
+  const [expanded, setExpanded] = useState<Set<number>>(
+    new Set(
+      queryParams.get('bookingId') ? [Number(queryParams.get('bookingId'))] : []
+    )
+  )
+
+  console.log(expanded)
+  const toggle = (i: string | number) =>
+    setExpanded((prev) => {
+      const numericId = typeof i === 'string' ? parseInt(i, 10) : i
+      const next = new Set(prev)
+      next.has(numericId) ? next.delete(numericId) : next.add(numericId)
+      return next
+    })
+
+  const { columns: individualColumns, getFullRowContentIndividual } =
+    useBookingsTableColumnsByIndex({
+      bookings, // liste complète
+      bookingStatuses: filters.bookingStatus,
+      updateGlobalFilters, // (partial) -> void
+      expandedIds: expanded,
+      onToggle: toggle,
+    })
+
+  const { columns: collectiveColumns, getFullRowContentCollective } =
+    useCollectiveBookingsColumns({
+      bookings, // ✅ liste passée pour l'entête
+      bookingStatuses: filters.bookingStatus,
+      updateGlobalFilters, // optionnel; si absent, l'entête affiche juste "Statut"
+      expandedIds: expanded,
+      onToggle: toggle,
+    })
+
   return (
     <div>
       <div className={styles['filters-wrapper']}>
@@ -155,25 +197,53 @@ export const BookingsRecapTable = <
           resetBookings={resetBookings}
         />
       )}
-      {audience === Audience.INDIVIDUAL &&
-        areIndividualBookings(filteredBookings) && (
-          <IndividualBookingsTable
-            bookings={filteredBookings}
-            bookingStatuses={filters.bookingStatus}
-            updateGlobalFilters={updateGlobalFilters}
-            resetFilters={resetAllFilters}
-          />
-        )}
-      {audience === Audience.COLLECTIVE &&
-        areCollectiveBookings(filteredBookings) && (
-          <CollectiveBookingsTable
-            bookings={filteredBookings}
-            bookingStatuses={filters.bookingStatus}
-            updateGlobalFilters={updateGlobalFilters}
-            defaultOpenedBookingId={defaultBookingId}
-            resetFilters={resetAllFilters}
-          />
-        )}
+      <>
+        <Table
+          title="Réservations individuelles"
+          columns={
+            audience === Audience.INDIVIDUAL
+              ? individualColumns
+              : collectiveColumns
+          }
+          data={rows} // rows have { id: index }
+          isLoading={isLoading}
+          variant={TableVariant.COLLAPSE}
+          noData={{
+            hasNoData: false,
+            message: {
+              icon: '',
+              title: 'Vous n’avez aucune réservation pour le moment',
+              subtitle: '',
+            },
+          }}
+          noResult={{
+            message: 'Aucune réservation trouvée pour votre recherche',
+            resetMessage: 'Afficher toutes les réservations',
+            onFilterReset: resetAllFilters,
+          }}
+          getFullRowContent={
+            audience === Audience.INDIVIDUAL
+              ? getFullRowContentIndividual
+              : getFullRowContentCollective
+          }
+        />
+        <Pagination
+          currentPage={page}
+          pageCount={pageCount}
+          onPreviousPageClick={() => {
+            previousPage()
+            logEvent(Events.CLICKED_PAGINATION_PREVIOUS_PAGE, {
+              from: location.pathname,
+            })
+          }}
+          onNextPageClick={() => {
+            nextPage()
+            logEvent(Events.CLICKED_PAGINATION_NEXT_PAGE, {
+              from: location.pathname,
+            })
+          }}
+        />
+      </>
     </div>
   )
 }

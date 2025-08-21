@@ -9,7 +9,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import {
   IndividualTableRow,
   type IndividualTableRowProps,
-} from '../IndividualTableRow'
+} from '../ZZZIndividualTableRow'
 
 const MOCK_DATA = {
   booking: {
