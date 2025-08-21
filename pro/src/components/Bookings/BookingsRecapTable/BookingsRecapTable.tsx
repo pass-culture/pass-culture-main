@@ -6,10 +6,7 @@ import type {
   CollectiveBookingResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { Audience } from '@/commons/core/shared/types'
-import { usePagination } from '@/commons/hooks/usePagination'
-import { Pagination } from '@/ui-kit/Pagination/Pagination'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import { useCollectiveBookingsColumns } from './BookingsTable/ColumnsCollectiveBooking'
@@ -25,8 +22,6 @@ import styles from './Filters/Filters.module.scss'
 import { Header } from './Header/Header'
 import type { BookingsFilters } from './types'
 import { filterBookingsRecap } from './utils/filterBookingsRecap'
-
-const BOOKINGS_PER_PAGE = 20
 
 interface BookingsRecapTableProps<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
@@ -53,9 +48,6 @@ export const BookingsRecapTable = <
 
   const [filteredBookings, setFilteredBookings] = useState(bookings)
 
-  const { page, setPage, previousPage, nextPage, pageCount, currentPageItems } =
-    usePagination(bookings, BOOKINGS_PER_PAGE)
-
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
   const [defaultBookingId, setDefaultBookingId] = useState(
@@ -79,7 +71,6 @@ export const BookingsRecapTable = <
   })
 
   useEffect(() => {
-    setPage(1)
     applyFilters()
   }, [bookings])
 
@@ -151,7 +142,6 @@ export const BookingsRecapTable = <
     )
   )
 
-  console.log(expanded)
   const toggle = (i: string | number) =>
     setExpanded((prev) => {
       const numericId = typeof i === 'string' ? parseInt(i, 10) : i
@@ -226,22 +216,6 @@ export const BookingsRecapTable = <
               ? getFullRowContentIndividual
               : getFullRowContentCollective
           }
-        />
-        <Pagination
-          currentPage={page}
-          pageCount={pageCount}
-          onPreviousPageClick={() => {
-            previousPage()
-            logEvent(Events.CLICKED_PAGINATION_PREVIOUS_PAGE, {
-              from: location.pathname,
-            })
-          }}
-          onNextPageClick={() => {
-            nextPage()
-            logEvent(Events.CLICKED_PAGINATION_NEXT_PAGE, {
-              from: location.pathname,
-            })
-          }}
         />
       </>
     </div>
