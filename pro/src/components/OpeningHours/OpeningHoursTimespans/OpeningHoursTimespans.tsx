@@ -13,10 +13,12 @@ export function OpeningHoursTimespans({
   weekDay,
   hasTimespans,
   dayFrenchName,
+  hasErrorBecauseOfEmptyOpeningHours,
 }: {
   weekDay: keyof WeekdayOpeningHoursTimespans
   hasTimespans: boolean
   dayFrenchName: string
+  hasErrorBecauseOfEmptyOpeningHours: boolean
 }) {
   const form = useFormContext<{
     openingHours: WeekdayOpeningHoursTimespans | null
@@ -34,6 +36,7 @@ export function OpeningHoursTimespans({
           icon={fullMoreIcon}
           tooltipContent={`Ajouter une plage horaire le ${dayFrenchName.toLowerCase()}`}
           onClick={() => timespans.append([['', '']])}
+          aria-invalid={hasErrorBecauseOfEmptyOpeningHours}
         />
       </div>
     )

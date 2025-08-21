@@ -7,7 +7,11 @@ import { mapDayToFrench, OPENING_HOURS_DAYS } from '@/commons/utils/date'
 import styles from './OpeningHours.module.scss'
 import { OpeningHoursTimespans } from './OpeningHoursTimespans/OpeningHoursTimespans'
 
-export function OpeningHours() {
+export function OpeningHours({
+  hasErrorBecauseOfEmptyOpeningHours = false,
+}: {
+  hasErrorBecauseOfEmptyOpeningHours?: boolean
+}) {
   const form = useFormContext<{
     openingHours: WeekdayOpeningHoursTimespans | null
   }>()
@@ -35,6 +39,9 @@ export function OpeningHours() {
                 weekDay={day}
                 hasTimespans={dayHasTimespans}
                 dayFrenchName={dayFrenchName}
+                hasErrorBecauseOfEmptyOpeningHours={
+                  hasErrorBecauseOfEmptyOpeningHours
+                }
               />
             </div>
           </fieldset>
