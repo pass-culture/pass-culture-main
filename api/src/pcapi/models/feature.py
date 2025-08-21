@@ -81,6 +81,9 @@ class FeatureToggle(enum.Enum):
     ENABLE_SPECIAL_EVENTS_SYNC = "Activer la synchronisation des réponses aux opérations spéciales"
     ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
     ENABLE_UBBLE_SUBSCRIPTION_LIMITATION = "Active la limitation en fonction de l'âge lors de pic d'inscription"
+    ENABLE_UPDATE_CINEMA_EXTERNAL_STOCKS = (
+        "Active la mise à jour des stocks des providers cinéma lors de la consultation d'une offre"
+    )
     ENABLE_VIRUSTOTAL = "Active la vérification des liens externes par VirusTotal"
     GENERATE_CASHFLOWS_BY_CRON = (
         "Active la génération automatique (via cron) des flux monétaires et fichiers de remboursement"
