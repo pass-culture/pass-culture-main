@@ -366,7 +366,7 @@
     {% endif %}
     {% if offer.product %}
       {% call description_detail_vertical("Produit") %}
-        {{ offer.product.name }} ({{ offer.productId }})
+        {{ links.build_product_details_link(offer.product, "name") }}
       {% endcall %}
     {% endif %}
     {% call description_detail_vertical("Statut") %}

@@ -3663,7 +3663,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert descriptions["Offer ID"] == str(offer.id)
         assert descriptions["Catégorie"] == "Cinéma"
         assert descriptions["Sous-catégorie"] == "Séance de cinéma"
-        assert descriptions["Produit"] == f"good movie ({product.id})"
+        assert descriptions["Produit"] == "good movie"
         assert descriptions["Genres"] == "ADVENTURE, ANIMATION, DRAMA"
         assert descriptions["Statut"] == "Épuisée"
         assert descriptions["Entité juridique"].startswith("Le Petit Rintintin Management")
