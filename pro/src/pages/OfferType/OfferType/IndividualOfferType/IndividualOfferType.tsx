@@ -17,55 +17,62 @@ export const IndividualOfferType = () => {
   const isOnboarding = location.pathname.includes('onboarding')
 
   return (
-    <RadioButtonGroup
-      variant="detailed"
-      name="individualOfferSubtype"
+    <div
       className={cn(styles['container'], {
         [styles['container-onboarding']]: isOnboarding,
       })}
-      label="Votre offre est"
-      labelTag="h2"
-      onChange={(e) => setValue('offer.individualOfferSubtype', e.target.value)}
-      checkedOption={getValues('offer.individualOfferSubtype')}
-      options={[
-        {
-          label: 'Un bien physique',
-          value: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
-          description:
-            'Livre, instrument de musique, abonnement, cartes et pass…',
-          asset: {
-            variant: 'icon',
-            src: thingStrokeIcon,
+    >
+      <RadioButtonGroup
+        variant="detailed"
+        name="individualOfferSubtype"
+        label="Votre offre est"
+        display="vertical"
+        sizing="fill"
+        labelTag="h2"
+        onChange={(e) =>
+          setValue('offer.individualOfferSubtype', e.target.value)
+        }
+        checkedOption={getValues('offer.individualOfferSubtype')}
+        options={[
+          {
+            label: 'Un bien physique',
+            value: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
+            description:
+              'Livre, instrument de musique, abonnement, cartes et pass…',
+            asset: {
+              variant: 'icon',
+              src: thingStrokeIcon,
+            },
           },
-        },
-        {
-          label: 'Un bien numérique',
-          value: INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD,
-          description: 'Ebook, jeu vidéo, abonnement streaming...',
-          asset: {
-            variant: 'icon',
-            src: strokeVirtualThingIcon,
+          {
+            label: 'Un bien numérique',
+            value: INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD,
+            description: 'Ebook, jeu vidéo, abonnement streaming...',
+            asset: {
+              variant: 'icon',
+              src: strokeVirtualThingIcon,
+            },
           },
-        },
-        {
-          label: 'Un évènement physique daté',
-          value: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT,
-          description: 'Concert, représentation, conférence, ateliers...',
-          asset: {
-            variant: 'icon',
-            src: strokeDateIcon,
+          {
+            label: 'Un évènement physique daté',
+            value: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT,
+            description: 'Concert, représentation, conférence, ateliers...',
+            asset: {
+              variant: 'icon',
+              src: strokeDateIcon,
+            },
           },
-        },
-        {
-          label: 'Un évènement numérique daté',
-          value: INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT,
-          description: 'Livestream, cours en ligne, conférence en ligne...',
-          asset: {
-            variant: 'icon',
-            src: strokeVirtualEventIcon,
+          {
+            label: 'Un évènement numérique daté',
+            value: INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT,
+            description: 'Livestream, cours en ligne, conférence en ligne...',
+            asset: {
+              variant: 'icon',
+              src: strokeVirtualEventIcon,
+            },
           },
-        },
-      ]}
-    />
+        ]}
+      />
+    </div>
   )
 }

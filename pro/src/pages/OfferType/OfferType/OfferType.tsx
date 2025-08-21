@@ -187,6 +187,7 @@ export const OfferTypeScreen = ({ collectiveOnly }: OfferTypeScreenProps) => {
                     },
                   ]}
                   display="horizontal"
+                  sizing="hug"
                 />
               )}
 

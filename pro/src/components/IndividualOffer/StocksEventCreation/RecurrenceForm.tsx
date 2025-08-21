@@ -323,7 +323,6 @@ export const RecurrenceForm = ({
 
           <div className={styles['recurrence-section']}>
             <RadioButtonGroup
-              labelClassName={styles['legend-without-margin']}
               label="Cet évènement aura lieu"
               labelTag="h2"
               display="horizontal"

@@ -214,7 +214,6 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                       e.target.value
                     )
                   }}
-                  allowSingleOrNoneOption
                 />
                 {offers && offers.length < 1 && (
                   <div className={styles['search-no-results']}>

@@ -40,77 +40,83 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
   return (
     <>
       {offerer?.isValidated && offerer.allowedOnAdage && (
-        <RadioButtonGroup
-          variant="detailed"
-          name="collectiveOfferSubtype"
-          className={styles['container']}
-          label="Quel est le type de l’offre ?"
-          labelTag="h2"
-          onChange={(e) =>
-            setValue('offer.collectiveOfferSubtype', e.target.value)
-          }
-          checkedOption={getValues('offer.collectiveOfferSubtype')}
-          options={[
-            {
-              label: 'Une offre réservable',
-              value: COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE,
-              description:
-                'Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé.',
-              asset: {
-                variant: 'icon',
-                src: strokeBookedIcon,
+        <div className={styles['container']}>
+          <RadioButtonGroup
+            variant="detailed"
+            name="collectiveOfferSubtype"
+            label="Quel est le type de l’offre ?"
+            labelTag="h2"
+            onChange={(e) =>
+              setValue('offer.collectiveOfferSubtype', e.target.value)
+            }
+            checkedOption={getValues('offer.collectiveOfferSubtype')}
+            options={[
+              {
+                label: 'Une offre réservable',
+                value: COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE,
+                description:
+                  'Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé.',
+                asset: {
+                  variant: 'icon',
+                  src: strokeBookedIcon,
+                },
               },
-            },
-            {
-              label: 'Une offre vitrine',
-              value: COLLECTIVE_OFFER_SUBTYPE.TEMPLATE,
-              description:
-                'Cette offre n’est pas réservable. Elle permet aux enseignants de vous contacter pour co-construire une offre adaptée. Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.',
-              asset: {
-                variant: 'icon',
-                src: strokeTemplateOfferIcon,
+              {
+                label: 'Une offre vitrine',
+                value: COLLECTIVE_OFFER_SUBTYPE.TEMPLATE,
+                description:
+                  'Cette offre n’est pas réservable. Elle permet aux enseignants de vous contacter pour co-construire une offre adaptée. Vous pourrez facilement la dupliquer pour chaque enseignant intéressé.',
+                asset: {
+                  variant: 'icon',
+                  src: strokeTemplateOfferIcon,
+                },
               },
-            },
-          ]}
-        />
+            ]}
+          />
+        </div>
       )}
 
       {offerer?.allowedOnAdage &&
         getValues('offer.collectiveOfferSubtype') ===
           COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE && (
-          <RadioButtonGroup
-            variant="detailed"
-            name="collectiveOfferSubtypeDuplicate"
-            className={styles['container']}
-            label="Créer une nouvelle offre ou dupliquer une offre ?"
-            labelTag="h2"
-            onChange={(e) =>
-              setValue('offer.collectiveOfferSubtypeDuplicate', e.target.value)
-            }
-            checkedOption={getValues('offer.collectiveOfferSubtypeDuplicate')}
-            options={[
-              {
-                label: 'Créer une nouvelle offre',
-                value: COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER,
-                description:
-                  'Créer une nouvelle offre réservable en partant d’un formulaire vierge.',
-                asset: {
-                  variant: 'icon',
-                  src: strokeNewOfferIcon,
+          <div className={styles['container']}>
+            <RadioButtonGroup
+              variant="detailed"
+              name="collectiveOfferSubtypeDuplicate"
+              label="Créer une nouvelle offre ou dupliquer une offre ?"
+              labelTag="h2"
+              sizing="fill"
+              onChange={(e) =>
+                setValue(
+                  'offer.collectiveOfferSubtypeDuplicate',
+                  e.target.value
+                )
+              }
+              checkedOption={getValues('offer.collectiveOfferSubtypeDuplicate')}
+              options={[
+                {
+                  label: 'Créer une nouvelle offre',
+                  value: COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER,
+                  description:
+                    'Créer une nouvelle offre réservable en partant d’un formulaire vierge.',
+                  asset: {
+                    variant: 'icon',
+                    src: strokeNewOfferIcon,
+                  },
                 },
-              },
-              {
-                label: 'Dupliquer les informations d’une offre vitrine',
-                value: COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE,
-                description:
-                  'Créer une offre réservable en dupliquant les informations d’une offre vitrine existante.',
-                asset: {
-                  variant: 'icon',
-                  src: strokeDuplicateOfferIcon,
+                {
+                  label: 'Dupliquer les informations d’une offre vitrine',
+                  value: COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE,
+                  description:
+                    'Créer une offre réservable en dupliquant les informations d’une offre vitrine existante.',
+                  asset: {
+                    variant: 'icon',
+                    src: strokeDuplicateOfferIcon,
+                  },
                 },
-              },
-            ]}
-          />
+              ]}
+            />
+          </div>
         )}
 
       {getValues('offer.offerType') === OFFER_TYPES.EDUCATIONAL &&

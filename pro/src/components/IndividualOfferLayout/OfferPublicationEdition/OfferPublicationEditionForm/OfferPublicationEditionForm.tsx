@@ -120,117 +120,125 @@ export function OfferPublicationEditionForm({
               }}
             />
           </div>
-          <RadioButtonGroup
-            className={styles['group']}
-            label="Quand votre offre doit-elle être publiée&nbsp;?"
-            name="publicationMode"
-            variant="detailed"
-            disabled={isPaused}
-            options={[
-              { label: 'Publier maintenant', value: 'now' },
-              {
-                label: 'Publier plus tard',
-                description:
-                  'L’offre restera secrète pour le public jusqu’à sa publication.',
-                value: 'later',
-                collapsed: (
-                  <div className={styles['inputs-row']}>
-                    <DatePicker
-                      label="Date"
-                      minDate={new Date()}
-                      className={styles['date-picker']}
-                      disabled={isPaused}
-                      required
-                      {...form.register('publicationDate')}
-                      onBlur={async (e) => {
-                        await form.register('publicationDate').onBlur(e)
-                        await form.trigger('publicationTime')
-                      }}
-                      error={form.formState.errors.publicationDate?.message}
-                    />
-                    <Select
-                      label="Heure"
-                      options={publicationHoursOptions}
-                      defaultOption={{ label: 'HH:MM', value: '' }}
-                      className={styles['time-picker']}
-                      disabled={isPaused}
-                      required
-                      {...form.register('publicationTime')}
-                      error={form.formState.errors.publicationTime?.message}
-                    />
-                  </div>
-                ),
-              },
-            ]}
-            checkedOption={
-              isPaused ? undefined : form.watch('publicationMode') || undefined
-            }
-            onChange={(event) => {
-              form.setValue(
-                'publicationMode',
-                event.target
-                  .value as EventPublicationFormValues['publicationMode']
-              )
-            }}
-          />
-          <RadioButtonGroup
-            className={styles['group']}
-            label="Quand votre offre pourra-t-elle être réservable&nbsp;?"
-            name="bookingAllowedMode"
-            variant="detailed"
-            disabled={isPaused}
-            options={[
-              {
-                label: 'Rendre réservable dès la publication',
-                value: 'now',
-              },
-              {
-                label: 'Rendre réservable plus tard',
-                description:
-                  'En activant cette option, vous permettez au public de visualiser l’entièreté de votre offre, de la mettre en favori et pouvoir la suivre mais sans qu’elle puisse être réservable.',
-                value: 'later',
-                collapsed: form.watch('bookingAllowedMode') === 'later' && (
-                  <div className={styles['inputs-row']}>
-                    <DatePicker
-                      label="Date"
-                      className={styles['date-picker']}
-                      minDate={new Date()}
-                      disabled={isPaused}
-                      required
-                      {...form.register('bookingAllowedDate')}
-                      onBlur={async (e) => {
-                        await form.register('bookingAllowedDate').onBlur(e)
-                        await form.trigger('bookingAllowedDate')
-                      }}
-                      error={form.formState.errors.bookingAllowedDate?.message}
-                    />
-                    <Select
-                      label="Heure"
-                      options={publicationHoursOptions}
-                      defaultOption={{ label: 'HH:MM', value: '' }}
-                      className={styles['time-picker']}
-                      disabled={isPaused}
-                      required
-                      {...form.register('bookingAllowedTime')}
-                      error={form.formState.errors.bookingAllowedTime?.message}
-                    />
-                  </div>
-                ),
-              },
-            ]}
-            checkedOption={
-              isPaused
-                ? undefined
-                : form.watch('bookingAllowedMode') || undefined
-            }
-            onChange={(event) => {
-              form.setValue(
-                'bookingAllowedMode',
-                event.target
-                  .value as EventPublicationFormValues['bookingAllowedMode']
-              )
-            }}
-          />
+          <div className={styles['group']}>
+            <RadioButtonGroup
+              label="Quand votre offre doit-elle être publiée&nbsp;?"
+              name="publicationMode"
+              variant="detailed"
+              disabled={isPaused}
+              options={[
+                { label: 'Publier maintenant', value: 'now' },
+                {
+                  label: 'Publier plus tard',
+                  description:
+                    'L’offre restera secrète pour le public jusqu’à sa publication.',
+                  value: 'later',
+                  collapsed: (
+                    <div className={styles['inputs-row']}>
+                      <DatePicker
+                        label="Date"
+                        minDate={new Date()}
+                        className={styles['date-picker']}
+                        disabled={isPaused}
+                        required
+                        {...form.register('publicationDate')}
+                        onBlur={async (e) => {
+                          await form.register('publicationDate').onBlur(e)
+                          await form.trigger('publicationTime')
+                        }}
+                        error={form.formState.errors.publicationDate?.message}
+                      />
+                      <Select
+                        label="Heure"
+                        options={publicationHoursOptions}
+                        defaultOption={{ label: 'HH:MM', value: '' }}
+                        className={styles['time-picker']}
+                        disabled={isPaused}
+                        required
+                        {...form.register('publicationTime')}
+                        error={form.formState.errors.publicationTime?.message}
+                      />
+                    </div>
+                  ),
+                },
+              ]}
+              checkedOption={
+                isPaused
+                  ? undefined
+                  : form.watch('publicationMode') || undefined
+              }
+              onChange={(event) => {
+                form.setValue(
+                  'publicationMode',
+                  event.target
+                    .value as EventPublicationFormValues['publicationMode']
+                )
+              }}
+            />
+          </div>
+          <div className={styles['group']}>
+            <RadioButtonGroup
+              label="Quand votre offre pourra-t-elle être réservable&nbsp;?"
+              name="bookingAllowedMode"
+              variant="detailed"
+              disabled={isPaused}
+              options={[
+                {
+                  label: 'Rendre réservable dès la publication',
+                  value: 'now',
+                },
+                {
+                  label: 'Rendre réservable plus tard',
+                  description:
+                    'En activant cette option, vous permettez au public de visualiser l’entièreté de votre offre, de la mettre en favori et pouvoir la suivre mais sans qu’elle puisse être réservable.',
+                  value: 'later',
+                  collapsed: form.watch('bookingAllowedMode') === 'later' && (
+                    <div className={styles['inputs-row']}>
+                      <DatePicker
+                        label="Date"
+                        className={styles['date-picker']}
+                        minDate={new Date()}
+                        disabled={isPaused}
+                        required
+                        {...form.register('bookingAllowedDate')}
+                        onBlur={async (e) => {
+                          await form.register('bookingAllowedDate').onBlur(e)
+                          await form.trigger('bookingAllowedDate')
+                        }}
+                        error={
+                          form.formState.errors.bookingAllowedDate?.message
+                        }
+                      />
+                      <Select
+                        label="Heure"
+                        options={publicationHoursOptions}
+                        defaultOption={{ label: 'HH:MM', value: '' }}
+                        className={styles['time-picker']}
+                        disabled={isPaused}
+                        required
+                        {...form.register('bookingAllowedTime')}
+                        error={
+                          form.formState.errors.bookingAllowedTime?.message
+                        }
+                      />
+                    </div>
+                  ),
+                },
+              ]}
+              checkedOption={
+                isPaused
+                  ? undefined
+                  : form.watch('bookingAllowedMode') || undefined
+              }
+              onChange={(event) => {
+                form.setValue(
+                  'bookingAllowedMode',
+                  event.target
+                    .value as EventPublicationFormValues['bookingAllowedMode']
+                )
+              }}
+            />
+          </div>
         </div>
         <DialogBuilder.Footer>
           <div className={styles['actions']}>

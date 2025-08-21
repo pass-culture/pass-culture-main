@@ -1,7 +1,6 @@
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 
 export interface OpenToPublicToggleProps {
-  className?: string
   radioDescriptions?: {
     yes?: string
     no?: string
@@ -18,7 +17,6 @@ const DEFAULT_RADIO_DESCRIPTIONS: OpenToPublicToggleProps['radioDescriptions'] =
   }
 
 export const OpenToPublicToggle = ({
-  className,
   radioDescriptions = {},
   onChange,
   isOpenToPublic,
@@ -39,7 +37,6 @@ export const OpenToPublicToggle = ({
   return (
     <RadioButtonGroup
       name="isOpenToPublic"
-      className={className}
       label="Accueillez-vous du public dans votre structure ?"
       {...(showDescription ? { description } : {})}
       variant="detailed"

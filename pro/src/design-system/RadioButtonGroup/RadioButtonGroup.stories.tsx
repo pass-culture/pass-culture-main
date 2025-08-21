@@ -23,7 +23,7 @@ const options = [
   {
     label: 'Option 2',
     name: 'group1',
-    description: 'Description 2',
+    description: 'Description 2 that is a little longer...',
     value: '2',
   },
   {
@@ -60,6 +60,16 @@ export const Detailed: StoryObj<typeof RadioButtonGroup> = {
     name: 'radio-button-group',
     label: 'Detailed Radio Button Group',
     variant: 'detailed',
+    options,
+  },
+}
+
+export const DetailedHugged: StoryObj<typeof RadioButtonGroup> = {
+  args: {
+    name: 'radio-button-group',
+    label: 'Detailed Radio Button Group',
+    variant: 'detailed',
+    sizing: 'hug',
     options,
   },
 }
