@@ -105,7 +105,7 @@ export const OffererAuthentication = (): JSX.Element => {
               title="Certaines informations de votre structure ne sont pas diffusibles."
               links={[
                 {
-                  href: 'https://aide.passculture.app/hc/fr/articles/4633420022300--Acteurs-Culturels-Collectivit%C3%A9-Lieu-rattach%C3%A9-%C3%A0-une-collectivit%C3%A9-S-inscrire-et-param%C3%A9trer-son-compte-pass-Culture-',
+                  href: 'https://annuaire-entreprises.data.gouv.fr/faq/entreprise-non-diffusible',
                   label: 'En savoir plus',
                   isExternal: true,
                 },
