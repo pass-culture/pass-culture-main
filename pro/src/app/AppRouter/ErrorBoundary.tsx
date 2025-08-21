@@ -7,6 +7,8 @@ import { Unavailable } from '@/pages/Errors/Unavailable/Unavailable'
 export const ErrorBoundary = () => {
   const error = useRouteError()
 
+  console.error('ErrorBoundary caught an error:', error)
+
   useEffect(() => {
     Sentry.captureException(error)
   }, [error])
