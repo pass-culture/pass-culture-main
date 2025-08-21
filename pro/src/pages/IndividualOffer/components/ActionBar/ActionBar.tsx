@@ -10,13 +10,11 @@ import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import fullLeftIcon from '@/icons/full-left.svg'
 import fullRightIcon from '@/icons/full-right.svg'
-import fullValidateIcon from '@/icons/full-validate.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
-import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import styles from './ActionBar.module.scss'
+import { ActionBarDraftStatus } from './ActionBarDraftStatus/ActionBarDraftStatus'
 
 export interface ActionBarProps {
   onClickNext?: () => void
@@ -98,26 +96,8 @@ export const ActionBar = ({
     if (mode === OFFER_WIZARD_MODE.CREATION) {
       return (
         <>
-          {!isDisabled && (
-            <>
-              {dirtyForm === false && (
-                <span className={styles['draft-indicator']}>
-                  <SvgIcon
-                    src={fullValidateIcon}
-                    alt=""
-                    width="16"
-                    className={styles['draft-saved-icon']}
-                  />
-                  Brouillon enregistré
-                </span>
-              )}
-              {dirtyForm === true && (
-                <span className={styles['draft-indicator']}>
-                  <div className={styles['draft-not-saved-icon']} />
-                  Brouillon non enregistré
-                </span>
-              )}
-            </>
+          {!isDisabled && dirtyForm !== undefined && (
+            <ActionBarDraftStatus isSaved={dirtyForm === false} />
           )}
 
           {step === INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY ? (
