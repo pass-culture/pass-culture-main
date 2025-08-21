@@ -154,7 +154,7 @@ const renderPhysicalLocationSubform = (
   )
 }
 
-describe('PhysicalLocationSubform', () => {
+describe('<PhysicalLocationSubform />', () => {
   it('should render (without accessibility violations)', async () => {
     const { container } = renderPhysicalLocationSubform()
 
