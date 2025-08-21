@@ -244,7 +244,7 @@
         <td>{{ total_used_bookings_amount|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
         <td></td>
         <td>{{ total_contribution_amount|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
-        <td>{{ total_reimbursed_amount|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+        <td>{{ total_reimbursed_amount|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}{% if is_caledonian_invoice %} ({{ total_reimbursed_amount|fr_currency_opposite }} €){% endif %}</td>
     </tr>
     </tbody>
 </table>
