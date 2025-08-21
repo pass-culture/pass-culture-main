@@ -78,7 +78,7 @@ export const Offerers = (): JSX.Element => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate('/inscription/structure/recherche')
     }
-  }, [isLoadingVenues])
+  }, [isLoadingVenues, venuesOfOffererError])
 
   if (isLoadingVenues || !offerer) {
     return <Spinner />
@@ -166,7 +166,7 @@ export const Offerers = (): JSX.Element => {
                     displayToggleVenueList && !isVenueListOpen && index >= 4
                   }
                 >
-                  {venue.publicName ?? venue.name}
+                  {venue.publicName || venue.name}
                 </li>
               ))}
             </ul>

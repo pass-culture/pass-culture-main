@@ -125,6 +125,13 @@ describe('screens:SignupJourney::Offerers', () => {
         publicName: 'public venue 6',
         isPermanent: true,
       },
+      {
+        id: 7,
+        siret: '12345678963334',
+        name: 'venue 7',
+        publicName: '',
+        isPermanent: true,
+      },
     ]
 
     vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
@@ -272,8 +279,14 @@ describe('screens:SignupJourney::Offerers', () => {
     expect(screen.queryByText('public venue 0')).not.toBeInTheDocument()
   })
 
+  it('should render name if public name is an empty string', async () => {
+    renderOfferersScreen(contextValue)
+    expect(await screen.findByText('venue 7')).toBeInTheDocument()
+  })
+
   it('should not display venueListToggle', async () => {
     // toggle venues list is displayed only when venues length > 5
+    venues.pop()
     venues.pop()
     renderOfferersScreen(contextValue)
 
@@ -316,7 +329,7 @@ describe('screens:SignupJourney::Offerers', () => {
       })
     ).toBeInTheDocument()
 
-    expect(await screen.findAllByRole('listitem')).toHaveLength(6)
+    expect(await screen.findAllByRole('listitem')).toHaveLength(7)
     expect(screen.queryByText('venue 5')).toBeVisible()
     expect(screen.queryByText('public venue 6')).toBeVisible()
 
