@@ -56,15 +56,17 @@ export const Offerers = (): JSX.Element => {
     'WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY'
   )
 
+  // TODO: this is causing a rerender of the component and a double call to `getVenuesOfOffererFromSiret`
   const joinSpaceButtonRef = useRef<HTMLButtonElement>(null)
 
-  /* istanbul ignore next: redirect to offerer if there is no siret */
   const {
     isLoading: isLoadingVenues,
     error: venuesOfOffererError,
     data: venuesOfOfferer,
   } = useSWR(
-    [GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY, offerer?.siret ?? ''],
+    offerer && offerer.siret
+      ? [GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY, offerer.siret]
+      : null,
     ([, offererSiret]) =>
       api.getVenuesOfOffererFromSiret(offererSiret.replaceAll(' ', ''))
   )
