@@ -13,10 +13,10 @@ import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OffersTableSearch } from '@/components/OffersTable/OffersTableSearch/OffersTableSearch'
+import { MultiSelect } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
-import { MultiSelect } from '@/ui-kit/MultiSelect/MultiSelect'
 
 import styles from '../TemplateCollectiveOffersScreen.module.scss'
 
