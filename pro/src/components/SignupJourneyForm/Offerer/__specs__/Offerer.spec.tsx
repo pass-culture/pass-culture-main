@@ -208,7 +208,7 @@ describe('Offerer', () => {
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
     expect(mockSetOfferer).toHaveBeenCalledWith({
-      apeCode: '90.03A',
+      apeCode: '9003A',
       hasVenueWithSiret: false,
       name: 'ma super stucture',
       siren: '123456789',
@@ -371,7 +371,7 @@ describe('Offerer', () => {
 
   it('should display MaybeAppUserDialog and hide on cancel button', async () => {
     vi.spyOn(api, 'getStructureData').mockResolvedValue(
-      structureDataBodyModelFactory({ apeCode: '85.31Z' })
+      structureDataBodyModelFactory({ apeCode: '8531Z' })
     )
     renderOffererScreen(contextValue)
 
