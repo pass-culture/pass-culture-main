@@ -240,7 +240,7 @@ describe('screens:SignupJourney::Offerers', () => {
     renderOfferersScreen(
       {
         ...contextValue,
-        offerer: { ...DEFAULT_OFFERER_FORM_VALUES, apeCode: '84.11Z' },
+        offerer: { ...DEFAULT_OFFERER_FORM_VALUES, apeCode: '8411Z' },
       },
       {
         features: [
@@ -355,7 +355,7 @@ describe('screens:SignupJourney::Offerers', () => {
         ...DEFAULT_OFFERER_FORM_VALUES,
         name: 'Trifoulli les Oies',
         siret: '12345678933333',
-        apeCode: '84.11Z',
+        apeCode: '8411Z',
       },
       setActivity: () => {},
       setOfferer: () => {},
@@ -420,7 +420,7 @@ describe('screens:SignupJourney::Offerers', () => {
         ...DEFAULT_OFFERER_FORM_VALUES,
         name: 'Trifoulli les Oies',
         siret: '12345678933333',
-        apeCode: '84.11Z',
+        apeCode: '8411Z',
       },
       setActivity: () => {},
       setOfferer: () => {},

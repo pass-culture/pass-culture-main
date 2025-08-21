@@ -53,7 +53,7 @@ export const structureDataBodyModelFactory = (
 ): StructureDataBodyModel => {
   return {
     address: addressBodyModelFactory(overrides.address ?? {}),
-    apeCode: '90.03A',
+    apeCode: '9003A',
     isDiffusible: true,
     name: 'ma super stucture',
     siren: '123456789',
