@@ -1936,7 +1936,7 @@ class UpdateVenueTest(PostEndpointHelper):
                 siret=f"{venue.managingOfferer.siren}12345",
                 siren=venue.managingOfferer.siren,
                 name=venue.name,
-                ape_code="90.01Z",
+                ape_code="9001Z",
                 ape_label="Arts du spectacle vivant",
                 legal_category_code="5710",
                 address=entreprise_models.SireneAddress(
@@ -3658,7 +3658,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
         assert "Ville : PARIS" in sirene_content
         assert "SIRET actif : Oui" in sirene_content
         assert "Diffusible : Oui" in sirene_content
-        assert "Code APE : 90.03A" in sirene_content
+        assert "Code APE : 9003A" in sirene_content
         assert "Activité principale : Création artistique relevant des arts plastiques" in sirene_content
 
     def test_siret_not_found(self, authenticated_client):

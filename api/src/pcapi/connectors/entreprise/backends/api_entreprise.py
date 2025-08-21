@@ -242,7 +242,7 @@ class EntrepriseBackend(BaseBackend):
             siren=siren_data["siren"],
             name=self._get_name_from_sirene_data(siren_data),
             head_office_siret=head_office_siret,
-            ape_code=siren_data["activite_principale"]["code"],
+            ape_code=self._format_ape_code(siren_data["activite_principale"].get("code")),
             ape_label=data["activite_principale"]["libelle"],
             active=siren_data["etat_administratif"] == "A",
             diffusible=self._is_diffusible(siren_data),
@@ -278,7 +278,7 @@ class EntrepriseBackend(BaseBackend):
             siren=siren_data["siren"],
             name=self._get_name_from_sirene_data(siren_data),
             head_office_siret=head_office_siret,
-            ape_code=siren_data["activite_principale"]["code"],
+            ape_code=self._format_ape_code(siren_data["activite_principale"].get("code")),
             ape_label=data["activite_principale"]["libelle"],
             active=siren_data["etat_administratif"] == "A",
             diffusible=is_diffusible,
@@ -289,6 +289,11 @@ class EntrepriseBackend(BaseBackend):
             # Information in /siege_social ("date_fermeture") may not be the same as the company closure date
             closure_date=self._convert_timestamp_to_date(siren_data.get("date_cessation")),
         )
+
+    def _format_ape_code(self, ape_code: str | None) -> str | None:
+        if not ape_code:
+            return None
+        return ape_code.replace(".", "")
 
     def get_siret_open_data(self, siret: str) -> models.SiretInfo:
         """
@@ -305,7 +310,7 @@ class EntrepriseBackend(BaseBackend):
             diffusible=self._is_diffusible(data),
             name=self._get_name_from_sirene_data(data["unite_legale"]),
             address=self._get_address_from_sirene_data(data["adresse"]),
-            ape_code=data["activite_principale"]["code"],
+            ape_code=self._format_ape_code(data["activite_principale"].get("code")),
             ape_label=data["activite_principale"]["libelle"],
             legal_category_code=data["unite_legale"]["forme_juridique"]["code"],
         )
@@ -329,7 +334,7 @@ class EntrepriseBackend(BaseBackend):
             diffusible=is_diffusible,
             name=self._get_name_from_sirene_data(data["unite_legale"]),
             address=self._get_address_from_sirene_data(data["adresse"]),
-            ape_code=data["activite_principale"]["code"],
+            ape_code=self._format_ape_code(data["activite_principale"].get("code")),
             ape_label=data["activite_principale"]["libelle"],
             legal_category_code=data["unite_legale"]["forme_juridique"]["code"],
         )

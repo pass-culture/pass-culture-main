@@ -153,6 +153,11 @@ class InseeBackend(BaseBackend):
             insee_code=block["codeCommuneEtablissement"] or "",
         )
 
+    def _format_ape_code(self, ape_code: str | None) -> str | None:
+        if not ape_code:
+            return None
+        return ape_code.replace(".", "")
+
     def get_siren(self, siren: str, with_address: bool = True, raise_if_non_public: bool = True) -> models.SirenInfo:
         subpath = f"/siren/{siren}"
         data = self._cached_get(subpath)["uniteLegale"]
@@ -166,7 +171,7 @@ class InseeBackend(BaseBackend):
             name=self._get_name_from_siren_data(data),
             head_office_siret=head_office_siret,
             legal_category_code=head_office["categorieJuridiqueUniteLegale"],
-            ape_code=head_office["activitePrincipaleUniteLegale"],
+            ape_code=self._format_ape_code(head_office.get("activitePrincipaleUniteLegale")),
             address=address,
             active=head_office["etatAdministratifUniteLegale"] == "A",
             diffusible=data["statutDiffusionUniteLegale"] == "O",
@@ -193,7 +198,7 @@ class InseeBackend(BaseBackend):
             diffusible=legal_unit_block["statutDiffusionUniteLegale"] == "O",
             name=self._get_name_from_siret_data(data),
             address=self._get_address_from_siret_data(data),
-            ape_code=legal_unit_block["activitePrincipaleUniteLegale"],
+            ape_code=self._format_ape_code(legal_unit_block.get("activitePrincipaleUniteLegale")),
             legal_category_code=legal_unit_block["categorieJuridiqueUniteLegale"],
         )
         if raise_if_non_public:

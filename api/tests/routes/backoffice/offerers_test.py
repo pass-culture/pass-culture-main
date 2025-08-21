@@ -4834,7 +4834,7 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
         assert "SIREN actif : Oui" in sirene_content
         assert "Diffusible : Oui" in sirene_content
         assert "Catégorie juridique : Entrepreneur individuel" in sirene_content
-        assert "Code APE : 90.03A" in sirene_content
+        assert "Code APE : 9003A" in sirene_content
         assert "Activité principale : Création artistique relevant des arts plastiques" in sirene_content
 
     def test_siren_not_found(self, authenticated_client):
