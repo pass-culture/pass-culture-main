@@ -177,7 +177,7 @@ export const Offerers = (): JSX.Element => {
                 setIsVenueListOpen(!isVenueListOpen)
               }}
               variant={ButtonVariant.TERNARY}
-              icon={isVenueListOpen ? fullDownIcon : fullUpIcon}
+              icon={isVenueListOpen ? fullUpIcon : fullDownIcon}
             >
               {isVenueListOpen
                 ? 'Afficher moins de structures'
