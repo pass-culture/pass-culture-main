@@ -59,9 +59,7 @@ export const toPatchOfferBodyModel = ({
             street: removeQuotes(formValues.street),
           },
         }
-      : {
-          address: null,
-        }
+      : {}
 
   return {
     ...maybePhysicalLocation,
