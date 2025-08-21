@@ -76,7 +76,7 @@ class CheckOffererTest:
                 siren=offerer.siren,
                 name=offerer.name,
                 head_office_siret=siren_utils.complete_siren_or_siret(offerer.siren + "0001"),
-                ape_code="90.01Z",
+                ape_code="9001Z",
                 ape_label="Arts du spectacle vivant",
                 legal_category_code="5710",
                 address=None,

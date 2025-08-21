@@ -27,7 +27,7 @@ def test_get_siren():
         assert siren_info.siren == siren
         assert siren_info.name == "LE PETIT RINTINTIN"
         assert siren_info.head_office_siret == "12345678900017"
-        assert siren_info.ape_code == "47.61Z"
+        assert siren_info.ape_code == "4761Z"
         assert siren_info.legal_category_code == "5499"
         assert siren_info.address.street == "1 BD POISSONIERE"
         assert siren_info.address.postal_code == "75002"
@@ -178,7 +178,7 @@ def test_get_siret():
         assert siret_info.address.street == "1 BD POISSONIERE"
         assert siret_info.address.postal_code == "75002"
         assert siret_info.address.city == "PARIS"
-        assert siret_info.ape_code == "47.61Z"
+        assert siret_info.ape_code == "4761Z"
         assert siret_info.legal_category_code == "5499"
 
     # Test cache, no HTTP request
