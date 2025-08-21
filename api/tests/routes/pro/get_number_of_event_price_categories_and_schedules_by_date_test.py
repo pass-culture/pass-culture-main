@@ -78,6 +78,7 @@ def test_return_price_categories_and_schedule_count_by_date(client):
     client = client.with_session_auth(user_offerer.user.email)
     offer_id = offer.id
     queries = testing.AUTHENTICATION_QUERIES
+    queries += 1  # offer timezone
     queries += 1  # select venue
     queries += 1  # check user_offerer exists
     queries += 1  # select stock
@@ -103,6 +104,7 @@ def test_return_empty_list_when_no_stock(client):
     client = client.with_session_auth(user_offerer.user.email)
     offer_id = offer.id
     queries = testing.AUTHENTICATION_QUERIES
+    queries += 1  # offer timezone
     queries += 1  # select venue
     queries += 1  # check user_offerer exists
     queries += 1  # select stock
