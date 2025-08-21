@@ -5,8 +5,8 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
-import { StocksCalendar } from '@/components/IndividualOffer/StocksEventCreation/StocksCalendar/StocksCalendar'
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
+import { StocksCalendar } from '@/pages/IndividualOffer/IndividualOfferTimetable/components/StocksCalendar/StocksCalendar'
 import { getStockWarningText } from '@/pages/IndividualOfferSummary/commons/getStockWarningText'
 import { Callout } from '@/ui-kit/Callout/Callout'
 
@@ -51,7 +51,11 @@ export function IndividualOfferSummaryStocksCalendarScreen({
         </Callout>
       )}
 
-      <StocksCalendar offer={offer} mode={OFFER_WIZARD_MODE.READ_ONLY} />
+      <StocksCalendar
+        offer={offer}
+        mode={OFFER_WIZARD_MODE.READ_ONLY}
+        timetableTypeRadioGroupShown={false}
+      />
     </SummarySection>
   )
 }

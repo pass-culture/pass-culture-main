@@ -10,7 +10,7 @@ import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 
-import type { StocksTableFilters, StocksTableSort } from '../../form/types'
+import type { StocksTableFilters, StocksTableSort } from '../form/types'
 import styles from './StocksCalendarFilters.module.scss'
 
 export type StocksCalendarFiltersProps = {
