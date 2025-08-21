@@ -1003,6 +1003,12 @@ def _serialize_excel_report(query: sa_orm.Query) -> bytes:
     row = 1
     data: tuple[typing.Any, ...]
     for booking in query.yield_per(1000):
+        if hasattr(booking, "is_caledonian") and booking.is_caledonian:
+            booking_price = utils.convert_euro_to_pacific_franc(booking.amount)
+            currency_format = currency_format_cfp
+        else:
+            booking_price = booking.amount
+            currency_format = currency_format_eur
         data = (
             booking.venueName,
             booking.offerName,
@@ -1017,7 +1023,7 @@ def _serialize_excel_report(query: sa_orm.Query) -> bytes:
             str(utils.convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)),
             get_booking_token(booking.token, booking.status, booking.isExternal, booking.stockBeginningDatetime),
             booking.priceCategoryLabel,
-            booking.amount,
+            booking_price,
             _get_booking_status(booking.status, booking.isConfirmed),
             str(utils.convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)),
             serialize_offer_type_educational_or_individual(offer_is_educational=False),
@@ -1025,9 +1031,7 @@ def _serialize_excel_report(query: sa_orm.Query) -> bytes:
             "Oui" if booking.quantity == DUO_QUANTITY else "Non",
         )
         worksheet.write_row(row, 0, data)
-        worksheet.set_column(
-            13, 13, cell_format=currency_format_cfp if getattr(booking, "is_caledonian", False) else currency_format_eur
-        )
+        worksheet.write(row, 12, booking_price, currency_format)
         row += 1
 
     workbook.close()
