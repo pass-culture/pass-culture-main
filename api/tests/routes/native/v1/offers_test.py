@@ -809,6 +809,7 @@ class OffersV2Test:
     base_num_queries += 1  # select mediations (selectinload)
     base_num_queries += 1  # select stocks (selectinload)
     base_num_queries += 1  # select chronicles (selectinload)
+    base_num_queries += 1  # select feature
 
     num_queries_with_product = 1  # select artists (selectinload)
 
@@ -1106,7 +1107,6 @@ class OffersV2Test:
         num_queries += 1  # select products with artists (selectinload)
         num_queries += 1  # select cinema_provider_pivot
         num_queries += 1  # update offer
-        num_queries += 1  # select feature
         num_queries += 1  # reload offer
         with assert_num_queries(num_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
@@ -1220,7 +1220,6 @@ class OffersV2Test:
 
         offer_id = offer.id
         num_queries = self.base_num_queries + self.num_queries_for_cinema + self.num_queries_for_stock_sync
-        num_queries += 1  # select feature
         with assert_num_queries(num_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
@@ -1267,7 +1266,6 @@ class OffersV2Test:
 
         offer_id = offer.id
         num_queries = self.base_num_queries + self.num_queries_for_cinema + self.num_queries_for_stock_sync
-        num_queries += 1  # select feature
         num_queries += 1  # select EXISTS venue_provider
         num_queries += 1  # select boost_cinema_details
         with assert_num_queries(num_queries):
@@ -1315,7 +1313,6 @@ class OffersV2Test:
 
         offer_id = offer.id
         num_queries = self.base_num_queries + self.num_queries_for_cinema + self.num_queries_for_stock_sync
-        num_queries += 1  # select feature
         num_queries += 1  # select EXISTS venue_provider
         num_queries += 1  # select cgr_cinema_details
         with assert_num_queries(num_queries):
@@ -1355,7 +1352,6 @@ class OffersV2Test:
         offer_id = offer.id
         num_queries = self.base_num_queries + self.num_queries_with_product + self.num_queries_for_cinema
         num_queries += 1  # select cinema_provider_pivot
-        num_queries += 1  # select feature
         num_queries += 1  # select EXISTS venue_provider
         with assert_num_queries(num_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
@@ -1392,7 +1388,6 @@ class OffersV2Test:
         num_queries = self.base_num_queries + self.num_queries_for_cinema
         num_queries += 1  # select cinema_provider_pivot
         num_queries += 1  # select EXISTS venue_provider
-        num_queries += 1  # select feature
         num_queries += 1  # select cgr_cinema_details
         with assert_num_queries(num_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
@@ -1424,7 +1419,6 @@ class OffersV2Test:
         offer_id = offer.id
         num_queries = self.base_num_queries + self.num_queries_for_cinema
         num_queries += 1  # update offer (why?)
-        num_queries += 1  # select feature
         with assert_num_queries(num_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
@@ -1463,7 +1457,6 @@ class OffersV2Test:
         offer_id = offer.id
         num_queries = self.base_num_queries + self.num_queries_for_cinema
         num_queries += 1  # select cinema_provider_pivot
-        num_queries += 1  # select feature
         num_queries += 1  # select EXISTS venue_provider
         num_queries += 1  # select boost_cinema_details
         with assert_num_queries(num_queries):
@@ -1471,6 +1464,15 @@ class OffersV2Test:
 
         assert response.status_code == 200
         assert offer.stocks[0].remainingQuantity == 1
+
+    @pytest.mark.features(ENABLE_UPDATE_CINEMA_EXTERNAL_STOCKS=False)
+    @patch("pcapi.routes.native.v1.offers.api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places")
+    def test_does_not_update_stocks_when_disabled(self, mock_update_stock_function, client):
+        offer = offers_factories.OfferFactory(isActive=True)
+
+        client.get(f"/native/v2/offer/{offer.id}")
+
+        mock_update_stock_function.assert_not_called()
 
     @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_get_inactive_cinema_provider_offer(self, client):
@@ -1493,7 +1495,6 @@ class OffersV2Test:
         offer_id = offer.id
         num_queries = self.base_num_queries + self.num_queries_for_cinema
         num_queries += 1  # update offer
-        num_queries += 1  # select feature
         with assert_num_queries(num_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
@@ -1874,7 +1875,7 @@ class OffersV2Test:
     def test_get_not_headline_offer(self, client):
         headline_offer = offers_factories.HeadlineOfferFactory()
         offer_id = headline_offer.offer.id
-        with assert_num_queries(self.base_num_queries + 1):  # FF WIP_REFACTO_FUTURE_OFFER
+        with assert_num_queries(self.base_num_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
