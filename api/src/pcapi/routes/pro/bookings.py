@@ -1,6 +1,7 @@
 import math
 from datetime import date
 from typing import cast
+from zoneinfo import ZoneInfo
 
 from flask_login import current_user
 from flask_login import login_required
@@ -204,11 +205,13 @@ def get_offer_price_categories_and_schedules_by_dates(offer_id: int) -> EventDat
     )
     stocks_by_date: dict[date, dict[str, list]] = {}
 
+    offer_timezone = booking_repository._get_offer_timezone(offer_id)
     for stock in stocks:
         if stock.beginningDatetime is None:
             continue
-        stock_date = stock.beginningDatetime.date()
-        stock_time = stock.beginningDatetime.time()
+        local_datetime = stock.beginningDatetime.astimezone(ZoneInfo(offer_timezone))
+        stock_date = local_datetime.date()
+        stock_time = local_datetime.time()
         stock_price_category = stock.priceCategoryId
         if stock_date not in stocks_by_date:
             stocks_by_date[stock_date] = {
