@@ -101,7 +101,7 @@ logger = logging.getLogger(__name__)
 # reindexation of offers.
 VENUE_ALGOLIA_INDEXED_FIELDS = ["name", "publicName", "postalCode", "city", "latitude", "longitude"]
 API_KEY_SEPARATOR = "_"
-APE_TAG_MAPPING = {"84.11Z": "Collectivité"}
+APE_TAG_MAPPING = {"8411Z": "Collectivité"}
 DMS_TOKEN_REGEX = r"^(?:PRO-)?([a-fA-F0-9]{12})$"
 
 

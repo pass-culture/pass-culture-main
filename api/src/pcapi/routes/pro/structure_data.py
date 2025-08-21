@@ -32,12 +32,13 @@ def get_siret_info(siret: str) -> sirene_serializers.SiretInfo:
     assert info.address  # helps mypy
     info_address_dict = info.address.dict()
     info_address_dict.pop("insee_code")
+
     return sirene_serializers.SiretInfo(
         siret=siret,
         name=info.name,
         active=info.active,
         address=sirene_serializers.Address(**info_address_dict),
-        ape_code=info.ape_code or "00.00Z",  # APE code can be null, frontend expects a string
+        ape_code=info.ape_code or "0000Z",  # APE code can be null, frontend expects a string
         legal_category_code=info.legal_category_code,
     )
 

@@ -45,15 +45,15 @@ class TestingBackend(BaseBackend):
     def _ape_code_and_label(cls, siren_or_siret: str) -> tuple[str, str]:
         # allows to get an offerer with a specific APE code using specific siren
         siren_ape = defaultdict(
-            lambda: ("90.03A", "Création artistique relevant des arts plastiques"),
+            lambda: ("9003A", "Création artistique relevant des arts plastiques"),
             {
-                "777084112": ("84.11Z", "Administration publique générale"),
+                "777084112": ("8411Z", "Administration publique générale"),
                 "777084122": (
-                    "84.12Z",
+                    "8412Z",
                     "Administration publique (tutelle) de la santé, de la formation, de la culture et des services sociaux, autre que sécurité sociale ",
                 ),
                 "777091032": (
-                    "91.03Z",
+                    "9103Z",
                     "Gestion des sites et monuments historiques et des attractions touristiques similaires",
                 ),
             },
@@ -114,7 +114,7 @@ class TestingBackend(BaseBackend):
                 siren=siren,
                 name="[ND]",
                 head_office_siret=siren_utils.complete_siren_or_siret(siren + "0001"),
-                ape_code="90.01Z",
+                ape_code="9001Z",
                 ape_label="Arts du spectacle vivant",
                 legal_category_code=self._legal_category_code(siren),
                 address=self.nd_address if with_address else None,
@@ -242,7 +242,7 @@ class TestingBackend(BaseBackend):
                 siren=siren,
                 name="[ND]",
                 head_office_siret=siren_utils.complete_siren_or_siret(siren + "0001"),
-                ape_code="90.01Z",
+                ape_code="9001Z",
                 ape_label="Arts du spectacle vivant",
                 legal_category_code=self._legal_category_code(siren),
                 address=self.nd_address if with_address else None,
