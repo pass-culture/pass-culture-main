@@ -825,7 +825,6 @@ def _write_csv_row(csv_writer: typing.Any, booking: models.Booking, booking_duo_
         booking_price = utils.convert_euro_to_pacific_franc(booking.amount)
     else:
         booking_price = booking.amount
-
     row: tuple[typing.Any, ...] = (
         booking.venueName,
         booking.offerName,
