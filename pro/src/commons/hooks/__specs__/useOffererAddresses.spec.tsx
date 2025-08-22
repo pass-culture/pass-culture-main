@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { beforeEach, expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
+import { GetOffererAddressesWithOffersOption } from '@/apiClient/v1'
 import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import {
@@ -20,7 +21,11 @@ const user = sharedCurrentUserFactory()
 const TestComponent = () => {
   return (
     <div data-testid="addresses-length">
-      {useOffererAddresses().data.length}
+      {
+        useOffererAddresses(
+          GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
+        ).data.length
+      }
     </div>
   )
 }
