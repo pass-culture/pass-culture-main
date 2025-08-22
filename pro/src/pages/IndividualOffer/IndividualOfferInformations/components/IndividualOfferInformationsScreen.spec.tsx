@@ -90,46 +90,42 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     subCategories,
   })
 
+  const selectedVenue = {
+    ...venueListItemFactory({
+      id: 1,
+      publicName: 'Lieu Nom Public Pour Test',
+    }),
+    address: {
+      banId: '75101_9575_00003',
+      city: 'Paris',
+      id: 945,
+      id_oa: 1,
+      inseeCode: '75056',
+      isLinkedToVenue: false,
+      isManualEdition: false,
+      label: 'MINISTERE DE LA CULTURE',
+      latitude: 48.87171,
+      longitude: 2.30829,
+      postalCode: '75001',
+      street: '3 Rue de Valois',
+    },
+  }
+
   const offlineOfferProps: IndividualOfferInformationsScreenProps = {
     offer: getIndividualOfferFactory({
       id: 3,
       subcategoryId: 'OFFLINE_SUBCATEGORY' as SubcategoryIdEnum,
       venue: getOfferVenueFactory({ id: 1 }),
     }),
+    selectedVenue: selectedVenue,
   }
   const onlineOfferProps: IndividualOfferInformationsScreenProps = {
     offer: {
       ...offlineOfferProps.offer,
       subcategoryId: 'ONLINE_SUBCATEGORY' as SubcategoryIdEnum,
     },
+    selectedVenue: selectedVenue,
   }
-
-  beforeEach(() => {
-    vi.spyOn(api, 'getVenues').mockResolvedValue({
-      venues: [
-        {
-          ...venueListItemFactory({
-            id: 1,
-            publicName: 'Lieu Nom Public Pour Test',
-          }),
-          address: {
-            banId: '75101_9575_00003',
-            city: 'Paris',
-            id: 945,
-            id_oa: 1,
-            inseeCode: '75056',
-            isLinkedToVenue: false,
-            isManualEdition: false,
-            label: 'MINISTERE DE LA CULTURE',
-            latitude: 48.87171,
-            longitude: 2.30829,
-            postalCode: '75001',
-            street: '3 Rue de Valois',
-          },
-        },
-      ],
-    })
-  })
 
   it('should render the component', async () => {
     renderUsefulInformationScreen(offlineOfferProps, contextValue)
@@ -202,7 +198,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
   it('should submit the form with correct payload', async () => {
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
       getIndividualOfferFactory({
-        id: 12,
+        id: 3,
       })
     )
     renderUsefulInformationScreen(offlineOfferProps, contextValue)
@@ -225,7 +221,6 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     expect(api.patchOffer).toHaveBeenCalledWith(3, {
       address: {
         city: 'Paris',
-        isManualEdition: false,
         isVenueAddress: true,
         label: 'MINISTERE DE LA CULTURE',
         latitude: '48.87171',
