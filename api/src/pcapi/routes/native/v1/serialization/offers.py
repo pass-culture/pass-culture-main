@@ -5,11 +5,14 @@ from datetime import datetime
 from typing import Any
 from typing import Callable
 from typing import TypeVar
+from typing import cast
 
 from pydantic.v1.class_validators import validator
 from pydantic.v1.fields import Field
 from pydantic.v1.utils import GetterDict
 
+import pcapi.core.opening_hours.api as opening_hours_api
+import pcapi.core.opening_hours.schemas as opening_hours_schemas
 from pcapi.core.bookings.api import compute_booking_cancellation_limit_date
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres.movie import get_movie_label
@@ -474,9 +477,20 @@ class BaseOfferResponse(ConfiguredBaseModel):
     venue: OfferVenueResponse
     video: OfferVideo | None
     withdrawalDetails: str | None
+    openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None
 
     class Config:
         getter_dict = BaseOfferResponseGetterDict
+
+    @validator("openingHours", pre=True)
+    def transform_opening_hours(
+        cls,
+        opening_hours: list[offerers_models.OpeningHours] | opening_hours_schemas.WeekdayOpeningHoursTimespans | None,
+    ) -> opening_hours_schemas.WeekdayOpeningHoursTimespans | None:
+        # data might already have been parsed
+        if opening_hours and isinstance(opening_hours, list):
+            return opening_hours_api.format_offer_opening_hours(opening_hours)
+        return cast(opening_hours_schemas.WeekdayOpeningHoursTimespans | None, opening_hours)
 
 
 class OfferResponse(BaseOfferResponse):

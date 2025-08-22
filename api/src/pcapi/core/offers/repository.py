@@ -381,6 +381,7 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query:
             models.Offer.id.in_(offer_ids),
             models.Offer.validation == models.OfferValidationStatus.APPROVED,
         )
+        .options(sa_orm.selectinload(models.Offer.openingHours))
     )
 
 
