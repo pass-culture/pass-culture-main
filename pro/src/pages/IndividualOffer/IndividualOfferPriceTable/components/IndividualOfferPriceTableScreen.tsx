@@ -38,7 +38,7 @@ import { ActivationCodeCallout } from './ActivationCodeCallout/ActivationCodeCal
 import styles from './IndividualOfferPriceTableScreen.module.scss'
 import { PriceTableForm } from './PriceTableForm/PriceTableForm'
 
-export interface IndividualOfferPriceTableScreenProps {
+interface IndividualOfferPriceTableScreenProps {
   offer: GetIndividualOfferWithAddressResponseModel
   offerStocks: GetOfferStockResponseModel[]
 }

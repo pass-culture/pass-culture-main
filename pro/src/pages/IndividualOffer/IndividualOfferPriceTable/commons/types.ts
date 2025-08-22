@@ -16,7 +16,7 @@ type UpdatabledPriceTableEntryFormValues = Partial<
     ThingStockUpdateBodyModel
 >
 
-export type ReadonlyPriceTableEntryFormValues = Readonly<
+type ReadonlyPriceTableEntryFormValues = Readonly<
   Partial<
     Omit<
       PriceCategoryResponseModel & GetOfferStockResponseModel,
@@ -27,11 +27,6 @@ export type ReadonlyPriceTableEntryFormValues = Readonly<
 
 export type PriceTableEntryApiValues = UpdatabledPriceTableEntryFormValues &
   ReadonlyPriceTableEntryFormValues
-
-export interface PriceTableFormValuesOnceValidated {
-  entries: PriceTableEntryApiValues[]
-  isDuo: boolean | null
-}
 
 export interface PriceTableFormContext {
   isCaledonian: boolean
