@@ -1381,17 +1381,22 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
         assert response.status_code == 200
 
         alerts = flash.get_htmx_flash_messages(authenticated_client)
+        warning = (
+            alerts["warning"]
+            .pop()
+            .split("Certaines réservations n'ont pas pu être validées et ont été ignorées : ")[-1]
+        )
+        warnings = warning.split("- ")
         assert "1 réservation a été validée" in alerts["success"]
-        base_message = (
-            "Certaines réservations n'ont pas pu être validées et ont été ignorées : "
-            f"- 1 réservation dont l'offre n'a plus assez de stock disponible ({insufficient_stock_booking.token})"
-            "- 2 réservations déjà remboursées ("
+        assert (
+            f"1 réservation dont l'offre n'a plus assez de stock disponible ({insufficient_stock_booking.token})"
+            in warnings
         )
         assert (
-            f"{base_message}{already_reimbursed_booking.token}, {another_reimbursed_booking.token})"
-            in alerts["warning"]
-            or f"{base_message}{another_reimbursed_booking.token}, {already_reimbursed_booking.token})"
-            in alerts["warning"]
+            f"2 réservations déjà remboursées ({already_reimbursed_booking.token}, {another_reimbursed_booking.token})"
+            in warnings
+            or f"2 réservations déjà remboursées ({another_reimbursed_booking.token}, {already_reimbursed_booking.token})"
+            in warnings
         )
 
     def test_batch_mark_as_used_unlocks_achievement(self, authenticated_client, bookings):
