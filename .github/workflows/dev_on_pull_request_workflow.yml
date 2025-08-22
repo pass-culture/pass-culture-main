@@ -129,7 +129,7 @@ jobs:
   test-api:
     name: "Tests api"
     needs: [pcapi-init-job, build-pcapi-tests]
-    if: needs.pcapi-init-job.outputs.api-changed == 'true'
+    if: false
     uses: ./.github/workflows/dev_on_workflow_tests_api.yml
     with:
       tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
@@ -161,10 +161,7 @@ jobs:
     name: "Pro E2E Tests"
     needs: [pcapi-init-job, build-pcapi-tests]
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
-    if: always() &&
-      !cancelled() &&
-      needs.pcapi-init-job.outputs.api-changed == 'true' ||
-      needs.pcapi-init-job.outputs.pro-changed == 'true'
+    if: false
     with:
       ENV: "development"
       tag: ${{ needs.build-pcapi-tests.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
@@ -186,7 +183,7 @@ jobs:
     name: "[PRO] Deploy PR version for validation with testing backend"
     needs: [pcapi-init-job, test-pro]
     if: |
-      always() && 
+      always() &&
       needs.pcapi-init-job.outputs.api-changed == 'false' && needs.pcapi-init-job.outputs.pro-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:

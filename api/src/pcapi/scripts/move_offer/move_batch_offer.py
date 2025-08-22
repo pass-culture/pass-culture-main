@@ -56,9 +56,18 @@ def _get_venue_rows(origin: int | None, destination: int | None) -> typing.Itera
             "flask",
             os.path.dirname(__file__).split("/")[-1],
         )
-        with open(f"{namespace_dir}/venues_to_move.csv", "r", encoding="utf-8") as csv_file:
-            csv_rows = csv.DictReader(csv_file, delimiter=",")
-            yield from csv_rows
+        try:
+            with open(f"{namespace_dir}/venues_to_move.csv", "r", encoding="utf-8") as csv_file:
+                csv_rows = csv.DictReader(csv_file, delimiter=",")
+                yield from csv_rows
+        except FileNotFoundError:
+            namespace_dir = os.path.join(
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                os.path.dirname(__file__).split("/")[-1],
+            )
+            with open(f"{namespace_dir}/venues_to_move.csv", "r", encoding="utf-8") as csv_file:
+                csv_rows = csv.DictReader(csv_file, delimiter=",")
+                yield from csv_rows
 
 
 def _extract_invalid_venues_to_csv(invalid_venues: list[tuple[int, int, str]]) -> None:
