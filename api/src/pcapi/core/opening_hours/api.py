@@ -1,4 +1,5 @@
 import typing
+from datetime import time
 
 import pcapi.utils.date as date_utils
 from pcapi.core.offerers import models as offerers_models
@@ -71,3 +72,27 @@ def compute_upsert_changes(
     old_values: MappedWeekdayOpeningHours, updates: MappedWeekdayOpeningHours
 ) -> dict[offerers_models.Weekday, dict[typing.Literal["old", "new"], schemas.OpeningHoursTimespans | None]]:
     return {weekday: {"old": old_values.get(weekday), "new": timespans} for weekday, timespans in updates.items()}
+
+
+def format_offer_opening_hours(
+    opening_hours: list[offerers_models.OpeningHours] | None,
+) -> schemas.WeekdayOpeningHoursTimespans:
+    """Format DB data to the expected pydantic model format
+
+    From: [NumericRange(600, 720), NumericRange(780, 1200)]
+    To: [["10:00", "12:00"], ["13:00", "20:00"]]
+    """
+    formatted: dict[str, list[tuple[str, str]] | None] = {weekday.value: None for weekday in offerers_models.Weekday}
+    for oh in opening_hours or []:
+        timespans = []
+        for ts in oh.timespan:
+            lower = int(ts.lower)
+            upper = int(ts.upper)
+
+            start = time(lower // 60, lower % 60).isoformat(timespec="minutes")
+            end = time(upper // 60, upper % 60).isoformat(timespec="minutes")
+
+            timespans.append((start, end))
+        formatted[oh.weekday.value] = timespans
+
+    return schemas.WeekdayOpeningHoursTimespans(**formatted)  # type: ignore[arg-type]
