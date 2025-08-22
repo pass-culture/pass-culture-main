@@ -309,16 +309,17 @@ def _connect_venue_to_cinema_provider(
 @atomic()
 def _connect_venue_to_provider(
     venue: offerers_models.Venue,
-    provider: providers_models.Provider,
+    venue_provider: providers_models.VenueProvider,
 ) -> providers_models.VenueProvider:
     # Rewriting those methods as they are still using repository.save() in repo
     venue_provider = providers_models.VenueProvider()
     venue_provider.isActive = False
     venue_provider.venue = venue
-    venue_provider.provider = provider
+    venue_provider.provider = venue_provider.provider
+    venue_provider.venueIdAtOfferProvider = venue_provider.venueIdAtOfferProvider
 
     db.session.add(venue_provider)
-    logger.info("Connect provider %s to venue %s", provider, venue)
+    logger.info("Connect provider %s to venue %s", venue_provider.provider, venue)
     return venue_provider
 
 
@@ -362,7 +363,7 @@ def _create_destination_venue_provider(
         )
         new_venue_provider = _connect_venue_to_cinema_provider(destination_venue, provider, payload)
     else:
-        new_venue_provider = _connect_venue_to_provider(destination_venue, provider)
+        new_venue_provider = _connect_venue_to_provider(destination_venue, venue_provider_source)
     db.session.add(new_venue_provider)
 
     history_api.add_action(
