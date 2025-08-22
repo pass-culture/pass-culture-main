@@ -4,6 +4,7 @@ import { formatAndOrderAddresses } from 'repository/venuesService'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
+import { GetOffererAddressesWithOffersOption } from '@/apiClient/v1'
 import { Layout } from '@/app/App/layout/Layout'
 import {
   GET_CATEGORIES_QUERY_KEY,
@@ -77,7 +78,9 @@ export const IndividualOffers = (): JSX.Element => {
     navigate(computeIndividualOffersUrl(filters), { replace: true })
   }
 
-  const offererAddressQuery = useOffererAddresses()
+  const offererAddressQuery = useOffererAddresses(
+    GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
+  )
   // TODO (igabriele, 2025-07-21): offererAddresses should be unique (which is not guaranteed in current code).
   const offererAddresses = formatAndOrderAddresses(offererAddressQuery.data)
 

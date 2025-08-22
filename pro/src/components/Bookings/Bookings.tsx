@@ -12,6 +12,7 @@ import {
   type BookingRecapResponseModel,
   BookingStatusFilter,
   type CollectiveBookingResponseModel,
+  GetOffererAddressesWithOffersOption,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
@@ -103,7 +104,9 @@ export const BookingsContainer = <
 
   const { data: offerer } = useOfferer(selectedOffererId)
 
-  const offererAddressQuery = useOffererAddresses()
+  const offererAddressQuery = useOffererAddresses(
+    GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
+  )
   const offererAddresses = formatAndOrderAddresses(offererAddressQuery.data)
 
   const bookingsQuery = useSWR(
