@@ -8,6 +8,7 @@
       <th scope="col">ID</th>
       <th scope="col">Intitulé du compte bancaire</th>
       <th scope="col">Statut du dossier DMS CB</th>
+      <th scope="col">Date de dernière mise à jour</th>
     </tr>
   </thead>
   <tbody>
@@ -17,6 +18,7 @@
         <td class="fw-bolder">{{ links.build_bank_account_name_to_details_link(bank_account, text_attr="id") }}</td>
         <td class="text-break">{{ build_connect_as_link(connect_as[bank_account.id], bank_account.label, "link-primary") }}</td>
         <td>{{ bank_account.status | format_dms_application_status_badge }}</td>
+        <td>{{ bank_account.dateLastStatusUpdate | format_date_time }}</td>
       </tr>
     {% endfor %}
   </tbody>
