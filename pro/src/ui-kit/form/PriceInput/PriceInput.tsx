@@ -151,6 +151,7 @@ export const PriceInput = React.forwardRef(
           asterisk={!hideAsterisk}
           onChange={onTextInputChange}
           hasError={!!error}
+          error={error}
           {...(showFreeCheckbox ? { InputExtension: inputExtension } : {})}
         />
       </div>
