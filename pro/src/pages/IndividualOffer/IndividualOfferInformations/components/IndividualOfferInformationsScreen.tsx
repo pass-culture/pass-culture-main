@@ -2,15 +2,15 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useRef, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
-import useSWR, { useSWRConfig } from 'swr'
+import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
-import {
-  GET_OFFER_QUERY_KEY,
-  GET_VENUES_QUERY_KEY,
-} from '@/commons/config/swrQueryKeys'
+import type {
+  GetIndividualOfferWithAddressResponseModel,
+  VenueListItemResponseModel,
+} from '@/apiClient/v1'
+import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -42,10 +42,12 @@ import { UsefulInformationForm } from './UsefulInformationForm/UsefulInformation
 
 export type IndividualOfferInformationsScreenProps = {
   offer: GetIndividualOfferWithAddressResponseModel
+  selectedVenue?: VenueListItemResponseModel
 }
 
 export const IndividualOfferInformationsScreen = ({
   offer,
+  selectedVenue,
 }: IndividualOfferInformationsScreenProps): JSX.Element => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -75,17 +77,6 @@ export const IndividualOfferInformationsScreen = ({
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
 
-  // Getting selected venue at step 1 (details) to infer address fields
-  const venuesQuery = useSWR(
-    [GET_VENUES_QUERY_KEY, offer.venue.managingOfferer.id],
-    ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
-    { fallbackData: { venues: [] } }
-  )
-
-  const selectedVenue = venuesQuery.data.venues.find(
-    (v) => v.id.toString() === offer.venue.id.toString()
-  )
-
   const offerSubCategory = subCategories.find(
     (s) => s.id === offer.subcategoryId
   )
@@ -107,6 +98,7 @@ export const IndividualOfferInformationsScreen = ({
     selectedVenue,
     offerSubcategory: offerSubCategory,
   })
+
   const form = useForm<UsefulInformationFormValues>({
     defaultValues: initialValues,
     mode: 'all',
