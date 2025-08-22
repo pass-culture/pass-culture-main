@@ -1334,7 +1334,9 @@ def get_unbookable_unbooked_old_offer_ids(
             AND offer.id < :max_id
             AND offer."dateUpdated" < now() - interval '1 year'
             -- offers without any bookable stock (either no stocks
-            -- at all, or no one with a quantity > 0)
+            -- at all, or no one with a quantity > 0) and whose
+            -- validation status is not REJECTED (rejected offers
+            -- cannot be booked).
             AND offer.id NOT IN (
                 SELECT
                     distinct(stock."offerId")
@@ -1348,7 +1350,7 @@ def get_unbookable_unbooked_old_offer_ids(
                     AND (
                         stock."bookingLimitDatetime" IS NULL
                         OR stock."bookingLimitDatetime" > now()
-                    )
+                    ) AND offer.validation != 'REJECTED'
             )
             -- offers without any linked booking
             -- (event cancelled ones)

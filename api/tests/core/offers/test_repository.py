@@ -2252,6 +2252,29 @@ class GetUnbookableUnbookedOldOfferIdsTest:
         ids = list(repository.get_unbookable_unbooked_old_offer_ids(0, offer.id + 1))
         assert ids == [offer.id]
 
+    def test_old_rejected_offer_with_bookable_stock_is_matched(self):
+        # If the offer has been rejected bookable stocks are meaningless
+        # as long as there is no booking
+        offer = factories.StockFactory(
+            quantity=10,
+            offer__dateCreated=self.a_year_ago,
+            offer__dateUpdated=self.a_year_ago,
+            offer__validation=offer_mixin.OfferValidationStatus.REJECTED,
+        ).offer
+
+        ids = list(repository.get_unbookable_unbooked_old_offer_ids(0, offer.id + 1))
+        assert ids == [offer.id]
+
+    def test_old_rejected_offer_with_bookable_stock_and_a_booking_is_ignored(self):
+        offer = bookings_factories.BookingFactory(
+            stock__quantity=10,
+            stock__offer__dateCreated=self.a_year_ago,
+            stock__offer__dateUpdated=self.a_year_ago,
+            stock__offer__validation=offer_mixin.OfferValidationStatus.REJECTED,
+        ).stock.offer
+
+        assert not list(repository.get_unbookable_unbooked_old_offer_ids(0, offer.id + 1))
+
     def test_get_old_offer_with_an_ongoing_stock_is_ignored(self):
         offer = factories.StockFactory(offer__dateCreated=self.a_year_ago, offer__dateUpdated=self.a_year_ago).offer
         assert not list(repository.get_unbookable_unbooked_old_offer_ids(0, offer.id + 1))
