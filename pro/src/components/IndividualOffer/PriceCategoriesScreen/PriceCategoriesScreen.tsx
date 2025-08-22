@@ -374,10 +374,7 @@ export const PriceCategoriesScreen = ({
                       className={styles['label-input']}
                       labelClassName={styles['label-input-label']}
                       disabled={priceCategories.length <= 1 || isDisabled}
-                      error={
-                        errors.priceCategories?.[index]?.label?.message ??
-                        errors.priceCategories?.[index]?.price?.message
-                      }
+                      error={errors.priceCategories?.[index]?.label?.message}
                       autoComplete="off"
                     />
                     <PriceInput
