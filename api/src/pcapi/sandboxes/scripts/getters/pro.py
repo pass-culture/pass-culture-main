@@ -403,6 +403,14 @@ def create_pro_user_with_active_collective_offer() -> dict:
         venue=venue,
         formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
     )
+    # Make sur the stock starts during the current year
+    stock_start = min(
+        datetime.datetime.utcnow() + datetime.timedelta(days=10),
+        current_year.expirationDate - datetime.timedelta(days=1),
+    )
+    offer.collectiveStock.startDatetime = stock_start
+    offer.collectiveStock.endDatetime = stock_start
+    db.session.add(offer.collectiveStock)
 
     # Create a provider for the offerer
     provider = providers_factories.PublicApiProviderFactory.create()
@@ -422,7 +430,7 @@ def create_pro_user_with_active_collective_offer() -> dict:
     return {
         "user": get_pro_user_helper(pro_user),
         "offer": {"id": offer.id, "name": offer.name, "venueName": offer.venue.name},
-        "stock": {"startDatetime": datetime.datetime.utcnow() + datetime.timedelta(days=10)},
+        "stock": {"startDatetime": stock_start},
         "providerApiKey": str(clear_token),
     }
 
