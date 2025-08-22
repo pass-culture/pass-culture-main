@@ -1142,10 +1142,11 @@ def get_bank_accounts(offerer_id: int) -> utils.BackofficeResponse:
                 finance_models.BankAccount.id,
                 finance_models.BankAccount.label,
                 finance_models.BankAccount.status,
+                finance_models.BankAccount.dateLastStatusUpdate,
                 finance_models.BankAccount.offererId,
             ),
         )
-        .order_by(finance_models.BankAccount.label)
+        .order_by(finance_models.BankAccount.dateLastStatusUpdate.desc())
         .all()
     )
     connect_as = {}

@@ -2001,11 +2001,13 @@ class GetOffererBankAccountTest(GetEndpointHelper):
             offerer=offerer,
             label="Premier compte",
             status=finance_models.BankAccountApplicationStatus.ACCEPTED,
+            dateLastStatusUpdate=datetime.datetime.utcnow(),
         )
         bank2 = finance_factories.BankAccountFactory(
             offerer=offerer,
             label="Deuxième compte",
             status=finance_models.BankAccountApplicationStatus.ON_GOING,
+            dateLastStatusUpdate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
         )
         finance_factories.BankAccountFactory()  # not listed
 
@@ -2018,13 +2020,15 @@ class GetOffererBankAccountTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
 
-        assert rows[0]["ID"] == str(bank2.id)
-        assert rows[0]["Intitulé du compte bancaire"] == bank2.label
-        assert rows[0]["Statut du dossier DMS CB"] == "En instruction"
+        assert rows[0]["ID"] == str(bank1.id)
+        assert rows[0]["Intitulé du compte bancaire"] == bank1.label
+        assert rows[0]["Statut du dossier DMS CB"] == "Accepté"
+        assert rows[0]["Date de dernière mise à jour"].startswith(bank1.dateLastStatusUpdate.strftime("%d/%m/%Y à"))
 
-        assert rows[1]["ID"] == str(bank1.id)
-        assert rows[1]["Intitulé du compte bancaire"] == bank1.label
-        assert rows[1]["Statut du dossier DMS CB"] == "Accepté"
+        assert rows[1]["ID"] == str(bank2.id)
+        assert rows[1]["Intitulé du compte bancaire"] == bank2.label
+        assert rows[1]["Statut du dossier DMS CB"] == "En instruction"
+        assert rows[1]["Date de dernière mise à jour"].startswith(bank2.dateLastStatusUpdate.strftime("%d/%m/%Y à"))
 
 
 class CommentOffererTest(PostEndpointHelper):
