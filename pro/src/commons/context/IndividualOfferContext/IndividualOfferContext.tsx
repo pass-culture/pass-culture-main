@@ -34,7 +34,7 @@ export interface IndividualOfferContextValues {
   /** Real boolean guarded by early `<Splinner />` return while fetching offer data in context provider. */
   // TODO (igabriele, 2025-08-19): Remove the `?` in another PR.
   hasPublishedOfferWithSameEan?: boolean
-  /** @deprecated use `publishedOfferWithSameEAN` instead */
+  /** @deprecated Use `hasPublishedOfferWithSameEan` instead. */
   publishedOfferWithSameEAN?: GetActiveEANOfferResponseModel
 }
 
