@@ -49,6 +49,10 @@ describe('serializePatchOffer', () => {
       externalTicketOfficeUrl: 'https://my-external-ticket-office.url',
       bookingEmail: 'booking@email.org',
       shouldSendMail: false,
+      audioDisabilityCompliant: true,
+      mentalDisabilityCompliant: true,
+      motorDisabilityCompliant: true,
+      visualDisabilityCompliant: true,
       address: {
         city: 'Paris',
         latitude: '48.853320',
@@ -62,267 +66,219 @@ describe('serializePatchOffer', () => {
     }
   })
 
-  describe('without Feature Flag', () => {
-    const isNewOfferCreationFlowFeatureActive = false
-
-    beforeEach(() => {
-      patchBody = {
-        ...patchBody,
-        audioDisabilityCompliant: true,
-        mentalDisabilityCompliant: true,
-        motorDisabilityCompliant: true,
-        visualDisabilityCompliant: true,
-      }
-    })
-
-    it('should serialize patchBody', () => {
-      expect(
-        serializePatchOffer({
-          offer: getIndividualOfferFactory(),
-          formValues,
-          isNewOfferCreationFlowFeatureActive,
-        })
-      ).toEqual(patchBody)
-    })
-
-    it('should serialize patchBody with default', () => {
-      formValues = {
-        ...formValues,
-        receiveNotificationEmails: false,
-        externalTicketOfficeUrl: '',
-      }
-      patchBody = {
-        ...patchBody,
-        bookingEmail: null,
-        externalTicketOfficeUrl: null,
-      }
-      expect(
-        serializePatchOffer({
-          offer: getIndividualOfferFactory(),
-          formValues,
-          isNewOfferCreationFlowFeatureActive,
-        })
-      ).toEqual(patchBody)
-    })
-
-    it('should serialize patchBody with empty address label and manual edition false', () => {
-      formValues = {
-        ...formValues,
-        locationLabel: '',
-        manuallySetAddress: false,
-      }
-      patchBody = {
-        ...patchBody,
-        address: {
-          ...patchBody.address!,
-          label: '',
-          isManualEdition: false,
-        },
-      }
-
-      expect(
-        serializePatchOffer({
-          offer: getIndividualOfferFactory(),
-          formValues,
-          isNewOfferCreationFlowFeatureActive,
-        })
-      ).toEqual(patchBody)
-    })
-
-    it('should serialize patchBody with empty address when venue is digital', () => {
-      formValues = {
-        ...formValues,
-        locationLabel: '',
-        manuallySetAddress: false,
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { address: _address, ...body } = patchBody
-
-      expect(
-        serializePatchOffer({
-          offer: getIndividualOfferFactory({ isDigital: true }),
-          formValues,
-          isNewOfferCreationFlowFeatureActive,
-        })
-      ).toEqual(body)
-    })
-
-    it('should serialize patchBody with empty address when address did not change', () => {
-      formValues = {
-        ...formValues,
-        city: undefined,
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { address: _address, ...body } = patchBody
-
-      expect(
-        serializePatchOffer({
-          offer: getIndividualOfferFactory(),
-          formValues,
-          isNewOfferCreationFlowFeatureActive,
-        })
-      ).toEqual(body)
-    })
-
-    it('should send isVenueAddress flag set to true when user select the venue location', () => {
-      formValues = {
-        ...formValues,
-        offerLocation: '1', // any ID that represents the venue OA location
-      }
-      patchBody = {
-        ...patchBody,
-        address: {
-          ...patchBody.address!,
-          isVenueAddress: true,
-        },
-      }
-      expect(
-        serializePatchOffer({
-          offer: getIndividualOfferFactory(),
-          formValues,
-          isNewOfferCreationFlowFeatureActive,
-        })
-      ).toEqual(patchBody)
-    })
-
-    it('should send isVenueAddress flag set to false when user select another location', () => {
-      formValues = {
-        ...formValues,
-        offerLocation: OFFER_LOCATION.OTHER_ADDRESS, // user choosed to set another address
-      }
-      patchBody = {
-        ...patchBody,
-        address: {
-          ...patchBody.address!,
-          isVenueAddress: false,
-        },
-      }
-      expect(
-        serializePatchOffer({
-          offer: getIndividualOfferFactory(),
-          formValues,
-          isNewOfferCreationFlowFeatureActive,
-        })
-      ).toEqual(patchBody)
-
-      // Test with empty label and manual edition false
-      formValues = {
-        ...formValues,
-        locationLabel: '',
-        manuallySetAddress: false,
-        offerLocation: OFFER_LOCATION.OTHER_ADDRESS,
-      }
-      patchBody = {
-        ...patchBody,
-        address: {
-          ...patchBody.address!,
-          label: '',
-          isManualEdition: false,
-          isVenueAddress: false,
-        },
-      }
-
-      expect(
-        serializePatchOffer({
-          offer: getIndividualOfferFactory(),
-          formValues,
-          isNewOfferCreationFlowFeatureActive,
-        })
-      ).toEqual(patchBody)
-    })
-
-    it('should trim blank spaces in string fields', () => {
-      formValues = {
-        ...formValues,
-        withdrawalDetails: '  test withdrawalDetails  ',
-        locationLabel: ' test label     ',
-        street: '  test street   ',
-        city: '    test city     ',
-        postalCode: ' test postalCode     ',
-      }
-      patchBody = {
-        ...patchBody,
-        withdrawalDetails: 'test withdrawalDetails',
-        address: {
-          ...patchBody.address!,
-          label: 'test label',
-          street: 'test street',
-          city: 'test city',
-          postalCode: 'test postalCode',
-        },
-      }
-
-      expect(
-        serializePatchOffer({
-          offer: getIndividualOfferFactory(),
-          formValues,
-          isNewOfferCreationFlowFeatureActive,
-        })
-      ).toEqual(patchBody)
-    })
-
-    it("should only return accessibility fields when it's a synchronized offer", () => {
-      const offer = getIndividualOfferFactory({
-        lastProvider: getOfferLastProvider(),
-      })
-      formValues = {
-        ...formValues,
-        accessibility: {
-          [AccessibilityEnum.AUDIO]: true,
-          [AccessibilityEnum.MENTAL]: false,
-          [AccessibilityEnum.MOTOR]: true,
-          [AccessibilityEnum.VISUAL]: false,
-          [AccessibilityEnum.NONE]: false,
-        },
-      }
-      patchBody = {
-        ...patchBody,
-        audioDisabilityCompliant: true,
-        mentalDisabilityCompliant: false,
-        motorDisabilityCompliant: true,
-        visualDisabilityCompliant: false,
-      }
-
-      const result = serializePatchOffer({
-        offer,
-        formValues,
-        isNewOfferCreationFlowFeatureActive,
-      })
-
-      expect(result).toEqual({
-        audioDisabilityCompliant: true,
-        mentalDisabilityCompliant: false,
-        motorDisabilityCompliant: true,
-        visualDisabilityCompliant: false,
-      })
-    })
-  })
-
-  describe('with Feature Flag', () => {
-    const isNewOfferCreationFlowFeatureActive = true
-
-    it('should exclude accessibility fields', () => {
-      formValues = {
-        ...formValues,
-        accessibility: {
-          [AccessibilityEnum.AUDIO]: true,
-          [AccessibilityEnum.MENTAL]: false,
-          [AccessibilityEnum.MOTOR]: true,
-          [AccessibilityEnum.VISUAL]: false,
-          [AccessibilityEnum.NONE]: false,
-        },
-      }
-
-      const result = serializePatchOffer({
+  it('should serialize patchBody', () => {
+    expect(
+      serializePatchOffer({
         offer: getIndividualOfferFactory(),
         formValues,
-        isNewOfferCreationFlowFeatureActive,
       })
+    ).toEqual(patchBody)
+  })
 
-      expect(result).not.toHaveProperty('audioDisabilityCompliant')
-      expect(result).not.toHaveProperty('mentalDisabilityCompliant')
-      expect(result).not.toHaveProperty('motorDisabilityCompliant')
-      expect(result).not.toHaveProperty('visualDisabilityCompliant')
+  it('should serialize patchBody with default', () => {
+    formValues = {
+      ...formValues,
+      receiveNotificationEmails: false,
+      externalTicketOfficeUrl: '',
+    }
+    patchBody = {
+      ...patchBody,
+      bookingEmail: null,
+      externalTicketOfficeUrl: null,
+      audioDisabilityCompliant: true,
+      mentalDisabilityCompliant: true,
+      motorDisabilityCompliant: true,
+      visualDisabilityCompliant: true,
+    }
+    expect(
+      serializePatchOffer({
+        offer: getIndividualOfferFactory(),
+        formValues,
+      })
+    ).toEqual(patchBody)
+  })
+
+  it('should serialize patchBody with empty address label and manual edition false', () => {
+    formValues = {
+      ...formValues,
+      locationLabel: '',
+      manuallySetAddress: false,
+    }
+    patchBody = {
+      ...patchBody,
+      address: {
+        ...patchBody.address!,
+        label: '',
+        isManualEdition: false,
+      },
+    }
+
+    expect(
+      serializePatchOffer({
+        offer: getIndividualOfferFactory(),
+        formValues,
+      })
+    ).toEqual(patchBody)
+  })
+
+  it('should serialize patchBody with empty address when venue is digital', () => {
+    formValues = {
+      ...formValues,
+      locationLabel: '',
+      manuallySetAddress: false,
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { address: _address, ...body } = patchBody
+
+    expect(
+      serializePatchOffer({
+        offer: getIndividualOfferFactory({ isDigital: true }),
+        formValues,
+      })
+    ).toEqual(body)
+  })
+
+  it('should serialize patchBody with empty address when address did not change', () => {
+    formValues = {
+      ...formValues,
+      city: undefined,
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { address: _address, ...body } = patchBody
+
+    expect(
+      serializePatchOffer({
+        offer: getIndividualOfferFactory(),
+        formValues,
+      })
+    ).toEqual(body)
+  })
+
+  it('should send isVenueAddress flag set to true when user select the venue location', () => {
+    formValues = {
+      ...formValues,
+      offerLocation: '1', // any ID that represents the venue OA location
+    }
+    patchBody = {
+      ...patchBody,
+      address: {
+        ...patchBody.address!,
+        isVenueAddress: true,
+      },
+    }
+    expect(
+      serializePatchOffer({
+        offer: getIndividualOfferFactory(),
+        formValues,
+      })
+    ).toEqual(patchBody)
+  })
+
+  it('should send isVenueAddress flag set to false when user select another location', () => {
+    formValues = {
+      ...formValues,
+      offerLocation: OFFER_LOCATION.OTHER_ADDRESS, // user choosed to set another address
+    }
+    patchBody = {
+      ...patchBody,
+      address: {
+        ...patchBody.address!,
+        isVenueAddress: false,
+      },
+    }
+    expect(
+      serializePatchOffer({
+        offer: getIndividualOfferFactory(),
+        formValues,
+      })
+    ).toEqual(patchBody)
+
+    // Test with empty label and manual edition false
+    formValues = {
+      ...formValues,
+      locationLabel: '',
+      manuallySetAddress: false,
+      offerLocation: OFFER_LOCATION.OTHER_ADDRESS,
+    }
+    patchBody = {
+      ...patchBody,
+      address: {
+        ...patchBody.address!,
+        label: '',
+        isManualEdition: false,
+        isVenueAddress: false,
+      },
+    }
+
+    expect(
+      serializePatchOffer({
+        offer: getIndividualOfferFactory(),
+        formValues,
+      })
+    ).toEqual(patchBody)
+  })
+
+  it('should trim blank spaces in string fields', () => {
+    formValues = {
+      ...formValues,
+      withdrawalDetails: '  test withdrawalDetails  ',
+      locationLabel: ' test label     ',
+      street: '  test street   ',
+      city: '    test city     ',
+      postalCode: ' test postalCode     ',
+    }
+    patchBody = {
+      ...patchBody,
+      withdrawalDetails: 'test withdrawalDetails',
+      address: {
+        ...patchBody.address!,
+        label: 'test label',
+        street: 'test street',
+        city: 'test city',
+        postalCode: 'test postalCode',
+      },
+    }
+
+    expect(
+      serializePatchOffer({
+        offer: getIndividualOfferFactory(),
+        formValues,
+      })
+    ).toEqual(patchBody)
+  })
+
+  it("should only return accessibility fields when it's a synchronized offer", () => {
+    const offer = getIndividualOfferFactory({
+      lastProvider: getOfferLastProvider(),
+    })
+    formValues = {
+      ...formValues,
+      accessibility: {
+        [AccessibilityEnum.AUDIO]: true,
+        [AccessibilityEnum.MENTAL]: false,
+        [AccessibilityEnum.MOTOR]: true,
+        [AccessibilityEnum.VISUAL]: false,
+        [AccessibilityEnum.NONE]: false,
+      },
+    }
+    patchBody = {
+      ...patchBody,
+      audioDisabilityCompliant: true,
+      mentalDisabilityCompliant: false,
+      motorDisabilityCompliant: true,
+      visualDisabilityCompliant: false,
+    }
+
+    const result = serializePatchOffer({
+      offer,
+      formValues,
+    })
+
+    expect(result).toEqual({
+      audioDisabilityCompliant: true,
+      mentalDisabilityCompliant: false,
+      motorDisabilityCompliant: true,
+      visualDisabilityCompliant: false,
     })
   })
 })

@@ -16,35 +16,25 @@ export const serializePatchOffer = ({
   offer,
   formValues,
   shouldSendMail = false,
-  isNewOfferCreationFlowFeatureActive,
 }: {
   offer: GetIndividualOfferResponseModel
   formValues: UsefulInformationFormValues
   shouldSendMail?: boolean
-  isNewOfferCreationFlowFeatureActive: boolean
 }): PatchOfferBodyModel => {
-  const maybeAccessibilityProps = isNewOfferCreationFlowFeatureActive
-    ? {}
-    : {
-        audioDisabilityCompliant:
-          formValues.accessibility?.[AccessibilityEnum.AUDIO],
-        mentalDisabilityCompliant:
-          formValues.accessibility?.[AccessibilityEnum.MENTAL],
-        motorDisabilityCompliant:
-          formValues.accessibility?.[AccessibilityEnum.MOTOR],
-        visualDisabilityCompliant:
-          formValues.accessibility?.[AccessibilityEnum.VISUAL],
-      }
-
-  if (isOfferSynchronized(offer)) {
-    return maybeAccessibilityProps
+  const accessibilityProps = {
+    audioDisabilityCompliant:
+      formValues.accessibility?.[AccessibilityEnum.AUDIO],
+    mentalDisabilityCompliant:
+      formValues.accessibility?.[AccessibilityEnum.MENTAL],
+    motorDisabilityCompliant:
+      formValues.accessibility?.[AccessibilityEnum.MOTOR],
+    visualDisabilityCompliant:
+      formValues.accessibility?.[AccessibilityEnum.VISUAL],
   }
 
-  const maybeUrl = isNewOfferCreationFlowFeatureActive
-    ? {
-        url: formValues.url?.trim() || undefined,
-      }
-    : {}
+  if (isOfferSynchronized(offer)) {
+    return accessibilityProps
+  }
 
   let addressValues = {}
   const allAddressFieldsAreNotNull =
@@ -82,9 +72,8 @@ export const serializePatchOffer = ({
       : Number(formValues.withdrawalDelay)
 
   return trimStringsInObject({
-    ...maybeAccessibilityProps,
+    ...accessibilityProps,
     ...addressValues,
-    ...maybeUrl,
 
     bookingContact: formValues.bookingContact,
     bookingEmail: !formValues.receiveNotificationEmails

@@ -75,9 +75,6 @@ export const IndividualOfferInformationsScreen = ({
     (subcategory) => subcategory.id === offer.subcategoryId
   )?.isEvent
   const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
-  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
-    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
-  )
 
   const offerSubCategory = subCategories.find(
     (s) => s.id === offer.subcategoryId
@@ -90,13 +87,11 @@ export const IndividualOfferInformationsScreen = ({
 
   const validationSchema = getValidationSchema({
     conditionalFields,
-    isNewOfferCreationFlowFeatureActive,
     isOfferOnline: getIsOfferSubcategoryOnline(offer, subCategories),
     setIsAccessibilityFilled,
   })
 
   const initialValues = getInitialValuesFromOffer(offer, {
-    isNewOfferCreationFlowFeatureActive,
     selectedVenue,
     offerSubcategory: offerSubCategory,
   })
@@ -147,7 +142,6 @@ export const IndividualOfferInformationsScreen = ({
         offer,
         formValues,
         shouldSendMail: sendWithdrawalMail,
-        isNewOfferCreationFlowFeatureActive,
       })
       const response = await api.patchOffer(offer.id, requestBody)
 

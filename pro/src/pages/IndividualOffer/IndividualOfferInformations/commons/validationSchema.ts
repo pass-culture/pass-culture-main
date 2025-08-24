@@ -3,7 +3,6 @@ import * as yup from 'yup'
 import { WithdrawalTypeEnum } from '@/apiClient/v1'
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 import { emailSchema } from '@/commons/utils/isValidEmail'
-import { offerFormUrlRegex } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
 
 import { validationSchema as locationSchema } from '../components/OfferLocation/validationSchema'
 import type { UsefulInformationFormValues } from './types'
@@ -13,67 +12,35 @@ const isAnyTrue = (values: Record<string, boolean>): boolean =>
 
 export const getValidationSchema = ({
   conditionalFields,
-  isNewOfferCreationFlowFeatureActive,
   isOfferOnline,
   setIsAccessibilityFilled,
 }: {
   conditionalFields: string[]
-  isNewOfferCreationFlowFeatureActive: boolean
   isOfferOnline: boolean
   setIsAccessibilityFilled: (isAccessibilityFilled: boolean) => void
 }) => {
-  const accessibility = yup.lazy(() =>
-    isNewOfferCreationFlowFeatureActive
-      ? yup
-          .mixed<any>() // `any` represents `undefined` here which is impossible to type via yup
-          .optional()
-      : yup
-          .object<AccessibilityFormValues>()
-          .test({
-            name: 'is-any-true',
-            message:
-              'Veuillez sélectionner au moins un critère d’accessibilité',
-            test: (values) => {
-              const isAccessibilityFilled = isAnyTrue(values)
-              setIsAccessibilityFilled(isAccessibilityFilled)
-              return isAccessibilityFilled
-            },
-          })
-          .shape({
-            mental: yup.boolean().required(),
-            audio: yup.boolean().required(),
-            visual: yup.boolean().required(),
-            motor: yup.boolean().required(),
-            none: yup.boolean().required(),
-          })
-          .required()
-  )
-
-  const url = yup.lazy(() =>
-    isNewOfferCreationFlowFeatureActive
-      ? yup.string().when('subcategoryId', {
-          is: () => isOfferOnline,
-          then: (schema) =>
-            schema
-              .matches(offerFormUrlRegex, {
-                message:
-                  'Veuillez renseigner une URL valide. Ex : https://exemple.com',
-                excludeEmptyString: true,
-              })
-              .required(
-                'Veuillez renseigner une URL valide. Ex : https://exemple.com'
-              ),
-          otherwise: (schema) => schema.nullable(),
-        })
-      : yup
-          .mixed<any>() // `any` represents `undefined` here which is impossible to type via yup
-          .optional()
-  )
-
   const maybeLocationSchema = isOfferOnline ? {} : { ...locationSchema }
 
   return yup.object<UsefulInformationFormValues>().shape({
-    accessibility,
+    accessibility: yup
+      .object<AccessibilityFormValues>()
+      .test({
+        name: 'is-any-true',
+        message: 'Veuillez sélectionner au moins un critère d’accessibilité',
+        test: (values) => {
+          const isAccessibilityFilled = isAnyTrue(values)
+          setIsAccessibilityFilled(isAccessibilityFilled)
+          return isAccessibilityFilled
+        },
+      })
+      .shape({
+        mental: yup.boolean().required(),
+        audio: yup.boolean().required(),
+        visual: yup.boolean().required(),
+        motor: yup.boolean().required(),
+        none: yup.boolean().required(),
+      })
+      .required(),
     addressAutocomplete: yup.string(),
     banId: yup.string(),
     bookingContact: yup.string().when([], {
@@ -112,7 +79,6 @@ export const getValidationSchema = ({
     receiveNotificationEmails: yup.boolean(),
     'search-addressAutocomplete': yup.string(),
     street: yup.string(),
-    url,
     withdrawalDelay: yup.string().when('withdrawalType', {
       is: (withdrawalType: WithdrawalTypeEnum) =>
         conditionalFields.includes('withdrawalDelay') &&

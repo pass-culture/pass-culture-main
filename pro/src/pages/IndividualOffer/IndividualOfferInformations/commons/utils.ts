@@ -24,19 +24,13 @@ import type { UsefulInformationFormValues } from './types'
 export function getInitialValuesFromOffer(
   offer: GetIndividualOfferWithAddressResponseModel,
   {
-    isNewOfferCreationFlowFeatureActive,
     offerSubcategory,
     selectedVenue = undefined,
   }: {
     selectedVenue?: VenueListItemResponseModel | undefined
     offerSubcategory?: SubcategoryResponseModel
-    isNewOfferCreationFlowFeatureActive: boolean
   }
 ): UsefulInformationFormValues {
-  const maybeAccessibility = isNewOfferCreationFlowFeatureActive
-    ? {}
-    : { accessibility: getAccessibilityFormValuesFromOffer(offer) }
-
   let addressFields = {}
 
   if (offer.address) {
@@ -102,8 +96,8 @@ export function getInitialValuesFromOffer(
     bookingContact: offer.bookingContact || undefined,
     receiveNotificationEmails: !!offer.bookingEmail,
     externalTicketOfficeUrl: offer.externalTicketOfficeUrl || undefined,
+    accessibility: getAccessibilityFormValuesFromOffer(offer),
     ...addressFields,
-    ...maybeAccessibility,
   }
 }
 
