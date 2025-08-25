@@ -5,6 +5,7 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
+from decimal import Decimal
 from io import BytesIO
 from io import StringIO
 
@@ -806,6 +807,15 @@ def _get_booking_status(status: models.BookingStatus, is_confirmed: bool) -> str
     return BOOKING_STATUS_LABELS[status]
 
 
+def get_booking_price(booking: models.Booking) -> Decimal:
+    """
+    Retourne le prix de la réservation, converti en CFP si le bénéficiaire est calédonien.
+    """
+    if hasattr(booking, "is_caledonian") and booking.is_caledonian:
+        return utils.convert_euro_to_pacific_franc(booking.amount)
+    return booking.amount
+
+
 def _write_bookings_to_csv(query: sa_orm.Query) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
@@ -821,10 +831,7 @@ def _write_bookings_to_csv(query: sa_orm.Query) -> str:
 
 
 def _write_csv_row(csv_writer: typing.Any, booking: models.Booking, booking_duo_column: str) -> None:
-    if hasattr(booking, "is_caledonian") and booking.is_caledonian:
-        booking_price = utils.convert_euro_to_pacific_franc(booking.amount)
-    else:
-        booking_price = booking.amount
+    booking_price = get_booking_price(booking)
     row: tuple[typing.Any, ...] = (
         booking.venueName,
         booking.offerName,
@@ -904,10 +911,7 @@ def _write_bookings_to_excel(query: sa_orm.Query) -> bytes:
 def _write_excel_row(
     worksheet: Worksheet, row: int, booking: models.Booking, currency_format: Format, duo_column: str
 ) -> None:
-    if hasattr(booking, "is_caledonian") and booking.is_caledonian:
-        booking_price = utils.convert_euro_to_pacific_franc(booking.amount)
-    else:
-        booking_price = booking.amount
+    booking_price = get_booking_price(booking)
     worksheet.write(row, 0, booking.venueName)
     worksheet.write(row, 1, booking.offerName)
     worksheet.write(
@@ -948,10 +952,7 @@ def _serialize_csv_report(query: sa_orm.Query) -> str:
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(booking_export_header())
     for booking in query.yield_per(1000):
-        if hasattr(booking, "is_caledonian") and booking.is_caledonian:
-            booking_price = utils.convert_euro_to_pacific_franc(booking.amount)
-        else:
-            booking_price = booking.amount
+        booking_price = get_booking_price(booking)
         row: tuple[typing.Any, ...] = (
             booking.venueName,
             booking.offerName,
@@ -1002,11 +1003,10 @@ def _serialize_excel_report(query: sa_orm.Query) -> bytes:
     row = 1
     data: tuple[typing.Any, ...]
     for booking in query.yield_per(1000):
+        booking_price = get_booking_price(booking)
         if hasattr(booking, "is_caledonian") and booking.is_caledonian:
-            booking_price = utils.convert_euro_to_pacific_franc(booking.amount)
             currency_format = currency_format_cfp
         else:
-            booking_price = booking.amount
             currency_format = currency_format_eur
         data = (
             booking.venueName,
@@ -1030,7 +1030,7 @@ def _serialize_excel_report(query: sa_orm.Query) -> bytes:
             "Oui" if booking.quantity == DUO_QUANTITY else "Non",
         )
         worksheet.write_row(row, 0, data)
-        worksheet.write(row, 12, booking_price, currency_format)
+        worksheet.set_column(13, 13, cell_format=currency_format)
         row += 1
 
     workbook.close()
