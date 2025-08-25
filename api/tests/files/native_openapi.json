@@ -3094,6 +3094,15 @@
                         "title": "Name",
                         "type": "string"
                     },
+                    "openingHours": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/WeekdayOpeningHoursTimespans"
+                            }
+                        ],
+                        "nullable": true,
+                        "title": "WeekdayOpeningHoursTimespans"
+                    },
                     "publicationDate": {
                         "format": "date-time",
                         "nullable": true,
@@ -3280,6 +3289,15 @@
                     "name": {
                         "title": "Name",
                         "type": "string"
+                    },
+                    "openingHours": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/WeekdayOpeningHoursTimespans"
+                            }
+                        ],
+                        "nullable": true,
+                        "title": "WeekdayOpeningHoursTimespans"
                     },
                     "publicationDate": {
                         "format": "date-time",
@@ -5536,6 +5554,139 @@
                     }
                 },
                 "title": "VoucherResponse",
+                "type": "object"
+            },
+            "WeekdayOpeningHoursTimespans": {
+                "additionalProperties": false,
+                "properties": {
+                    "FRIDAY": {
+                        "items": {
+                            "items": {
+                                "pattern": "^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$",
+                                "type": "string"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2,
+                            "type": "array",
+                            "uniqueItems": true
+                        },
+                        "maxItems": 2,
+                        "minItems": 1,
+                        "nullable": true,
+                        "title": "Friday",
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "MONDAY": {
+                        "items": {
+                            "items": {
+                                "pattern": "^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$",
+                                "type": "string"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2,
+                            "type": "array",
+                            "uniqueItems": true
+                        },
+                        "maxItems": 2,
+                        "minItems": 1,
+                        "nullable": true,
+                        "title": "Monday",
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "SATURDAY": {
+                        "items": {
+                            "items": {
+                                "pattern": "^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$",
+                                "type": "string"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2,
+                            "type": "array",
+                            "uniqueItems": true
+                        },
+                        "maxItems": 2,
+                        "minItems": 1,
+                        "nullable": true,
+                        "title": "Saturday",
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "SUNDAY": {
+                        "items": {
+                            "items": {
+                                "pattern": "^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$",
+                                "type": "string"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2,
+                            "type": "array",
+                            "uniqueItems": true
+                        },
+                        "maxItems": 2,
+                        "minItems": 1,
+                        "nullable": true,
+                        "title": "Sunday",
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "THURSDAY": {
+                        "items": {
+                            "items": {
+                                "pattern": "^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$",
+                                "type": "string"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2,
+                            "type": "array",
+                            "uniqueItems": true
+                        },
+                        "maxItems": 2,
+                        "minItems": 1,
+                        "nullable": true,
+                        "title": "Thursday",
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "TUESDAY": {
+                        "items": {
+                            "items": {
+                                "pattern": "^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$",
+                                "type": "string"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2,
+                            "type": "array",
+                            "uniqueItems": true
+                        },
+                        "maxItems": 2,
+                        "minItems": 1,
+                        "nullable": true,
+                        "title": "Tuesday",
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    "WEDNESDAY": {
+                        "items": {
+                            "items": {
+                                "pattern": "^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$",
+                                "type": "string"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2,
+                            "type": "array",
+                            "uniqueItems": true
+                        },
+                        "maxItems": 2,
+                        "minItems": 1,
+                        "nullable": true,
+                        "title": "Wednesday",
+                        "type": "array",
+                        "uniqueItems": true
+                    }
+                },
+                "title": "WeekdayOpeningHoursTimespans",
                 "type": "object"
             },
             "WithdrawalResponse": {
