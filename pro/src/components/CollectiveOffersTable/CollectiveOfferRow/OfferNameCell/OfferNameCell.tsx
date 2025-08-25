@@ -12,7 +12,6 @@ export interface OfferNameCellProps {
   offer: CollectiveOfferResponseModel
   offerLink: string
   rowId: string
-  displayLabel?: boolean
   displayThumb?: boolean
   className?: string
 }
@@ -21,7 +20,6 @@ export const OfferNameCell = ({
   offer,
   offerLink,
   rowId,
-  displayLabel = false,
   displayThumb = false,
   className,
 }: OfferNameCellProps) => {
@@ -49,15 +47,8 @@ export const OfferNameCell = ({
         <div>
           {offer.isShowcase && <Tag label="Offre vitrine" />}
           <div className={styles['title-column-name']}>
-            {displayLabel && (
-              <span
-                className={styles['offers-table-cell-mobile-label']}
-                aria-hidden={true}
-              >
-                {`${getCellsDefinition().NAME.title} :`}
-              </span>
-            )}
-            {offer.name}
+            {!offer.isShowcase && <span>{`N°${offer.id}`}</span>}
+            <span>{offer.name}</span>
           </div>
         </div>
       </Link>

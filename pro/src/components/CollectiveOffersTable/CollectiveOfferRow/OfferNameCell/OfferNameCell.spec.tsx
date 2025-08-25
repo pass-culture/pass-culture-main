@@ -81,19 +81,6 @@ describe('OfferNameCell', () => {
     expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
   })
 
-  it('should display the mobile label when displayLabel is true', () => {
-    const offer = collectiveOfferFactory({ name: 'Test' })
-
-    renderOfferNameCell({
-      offer,
-      offerLink: '#',
-      rowId: 'rowId',
-      displayLabel: true,
-    })
-
-    expect(screen.getByText(/Nom de l’offre|Nom/i)).toBeInTheDocument()
-  })
-
   it('should use the correct link for the offer', () => {
     const offer = collectiveOfferFactory({ name: 'Link test' })
 

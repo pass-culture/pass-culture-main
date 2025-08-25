@@ -35,21 +35,25 @@ const renderOfferInstitutionCell = (props: OfferInstitutionCellProps) =>
   )
 
 describe('OfferInstitutionCell', () => {
-  it('should display the full institution name when provided', () => {
+  it('should display the full institution name and postal code when provided', () => {
+    props.educationalInstitution.postalCode = '76000'
     renderOfferInstitutionCell(props)
 
-    expect(screen.getByRole('cell')).toHaveTextContent('Collège Bellevue')
+    expect(screen.getByRole('cell')).toHaveTextContent(
+      'Collège Bellevue - 76000'
+    )
   })
 
   it('should display institutionType and city when name is not provided', () => {
     props.educationalInstitution.name = ''
-
     renderOfferInstitutionCell(props)
 
     expect(screen.getByRole('cell')).toHaveTextContent('COLLEGE Rouen')
   })
 
-  it('should display "Tous les établissements" when institution type and city are empty', () => {
+  it('should display "Tous les établissements" when institution name and postal code are empty', () => {
+    props.educationalInstitution.name = ''
+    props.educationalInstitution.postalCode = ''
     props.educationalInstitution.institutionType = ''
     props.educationalInstitution.city = ''
 

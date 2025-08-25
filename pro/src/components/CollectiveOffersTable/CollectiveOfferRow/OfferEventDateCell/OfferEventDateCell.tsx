@@ -106,11 +106,7 @@ export const OfferEventDateCell = ({
             {date}
           </span>
         ))}
-        {!offer.isShowcase && (
-          <span className={styles['offer-event-hours']}>
-            {formattedTime(offer.dates?.start)}
-          </span>
-        )}
+        {!offer.isShowcase && <span>{formattedTime(offer.dates?.start)}</span>}
       </div>
     </td>
   )
