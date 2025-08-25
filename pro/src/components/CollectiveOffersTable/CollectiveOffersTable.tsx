@@ -67,6 +67,9 @@ export const CollectiveOffersTable = ({
         currentSortingMode,
       },
     },
+    ...(isNewCollectiveOffersStructureActive && !isTemplateTable
+      ? [getCellsDefinition().PRICE_AND_PARTICIPANTS]
+      : []),
     ...(isNewCollectiveOffersStructureActive
       ? []
       : [getCellsDefinition().STRUCTURE]),

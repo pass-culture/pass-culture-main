@@ -19,6 +19,7 @@ import { OfferInstitutionCell } from './OfferInstitutionCell/OfferInstitutionCel
 import { OfferLocationCell } from './OfferLocationCell/OfferLocationCell'
 import { OfferNameCell } from './OfferNameCell/OfferNameCell'
 import { OfferVenueCell } from './OfferVenueCell'
+import { PriceAndParticipantsCell } from './PriceAndParticipantsCell/PriceAndParticipantsCell'
 
 export type CollectiveOfferRowProps = {
   isSelected: boolean
@@ -106,6 +107,9 @@ export const CollectiveOfferRow = ({
           offer={offer}
           className={styles['collective-cell-event-date']}
         />
+        {isNewCollectiveOffersStructureActive && !isTemplateTable ? (
+          <PriceAndParticipantsCell rowId={rowId} offer={offer} />
+        ) : null}
         {!isNewCollectiveOffersStructureActive && (
           <OfferVenueCell
             rowId={rowId}
