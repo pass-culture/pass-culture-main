@@ -115,6 +115,8 @@ export const IndividualOffers = (): JSX.Element => {
   })
 
   const offers = offersQuery.error ? [] : offersQuery.data || []
+  // This is for tracking purposes, check useLogNavigation for more details.
+  const bannerVideoQueryParam = '?from_banner=banner_video'
 
   return (
     <HeadlineOfferContextProvider>
@@ -132,7 +134,6 @@ export const IndividualOffers = (): JSX.Element => {
                       className={styles['banner-img']}
                       alt=""
                       src={videoBannerPng}
-                      role="presentation"
                     />
                   }
                   cta={
@@ -145,8 +146,8 @@ export const IndividualOffers = (): JSX.Element => {
                               step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
                               mode: OFFER_WIZARD_MODE.CREATION,
                               isOnboarding: false,
-                            })
-                          : '/offre/creation'
+                            }) + bannerVideoQueryParam
+                          : `/offre/creation${bannerVideoQueryParam}`
                       }
                     >
                       Créer une offre
