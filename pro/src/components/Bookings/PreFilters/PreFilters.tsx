@@ -1,9 +1,7 @@
 import classNames from 'classnames'
-import { type FormEvent, useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { type FormEvent, useCallback, useState } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import type {
   CollectivePreFiltersParams,
   PreFiltersParams,
@@ -14,9 +12,6 @@ import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { Audience } from '@/commons/core/shared/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
-import { isDateValid } from '@/commons/utils/date'
-import { isEqual } from '@/commons/utils/isEqual'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MultiDownloadButtonsModal } from '@/components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
@@ -25,6 +20,7 @@ import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
 import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
+import { useBookingsFilters } from '../useBookingsFilters'
 import { FilterByBookingStatusPeriod } from './FilterByBookingStatusPeriod/FilterByBookingStatusPeriod'
 import { FilterByEventDate } from './FilterByEventDate'
 import { FilterByVenue } from './FilterByVenue'
@@ -65,80 +61,22 @@ export const PreFilters = ({
   updateUrl,
 }: PreFiltersProps): JSX.Element => {
   const notify = useNotification()
-
   const { logEvent } = useAnalytics()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
-  const initialAppliedFilters = {
-    ...DEFAULT_PRE_FILTERS,
-    ...{
-      offererId: selectedOffererId?.toString(),
-    },
-  }
 
-  const [selectedPreFilters, setSelectedPreFilters] =
-    useState<PreFiltersParams>({
-      ...appliedPreFilters,
-    })
+  const {
+    selectedPreFilters,
+    hasPreFilters,
+    isRefreshRequired,
+    updateSelectedFilters,
+  } = useBookingsFilters({ appliedPreFilters, wereBookingsRequested })
+
   const [isDownloadingCSV, setIsDownloadingCSV] = useState<boolean>(false)
-
-  useEffect(
-    () => setSelectedPreFilters({ ...appliedPreFilters }),
-    [appliedPreFilters]
-  )
-
-  const [hasPreFilters, setHasPreFilters] = useState<boolean>(false)
-  useEffect(() => {
-    let key: keyof PreFiltersParams
-    let hasFilters = false
-    for (key in selectedPreFilters) {
-      const selectedValue = selectedPreFilters[key]
-      const defaultValue = initialAppliedFilters[key]
-      if (
-        key.includes('Date') &&
-        isDateValid(selectedValue) &&
-        isDateValid(defaultValue)
-      ) {
-        if (
-          new Date(selectedValue).getTime() !== new Date(defaultValue).getTime()
-        ) {
-          hasFilters = true
-        }
-      } else if (selectedValue !== defaultValue) {
-        hasFilters = true
-      }
-    }
-    setHasPreFilters(hasFilters)
-  }, [selectedPreFilters])
-
-  const updateSelectedFilters = useCallback(
-    (updatedFilter: any) => {
-      if (updatedFilter.offerEventDate) {
-        updatedFilter.bookingBeginningDate = ''
-        updatedFilter.bookingEndingDate = ''
-        /* istanbul ignore next: DEBT to fix */
-        if (updatedFilter.offerEventDate === appliedPreFilters.offerEventDate) {
-          updatedFilter.bookingBeginningDate =
-            appliedPreFilters.bookingBeginningDate
-          updatedFilter.bookingEndingDate = appliedPreFilters.bookingEndingDate
-        }
-      }
-
-      setSelectedPreFilters((currentFilters) => ({
-        ...currentFilters,
-        ...updatedFilter,
-      }))
-    },
-    [appliedPreFilters]
-  )
 
   const requestFilteredBookings = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     applyPreFilters(selectedPreFilters)
     updateUrl(selectedPreFilters)
   }
-
-  const isRefreshRequired =
-    !isEqual(selectedPreFilters, appliedPreFilters) && wereBookingsRequested
 
   const downloadBookingsFilters = {
     ...selectedPreFilters,
@@ -250,6 +188,7 @@ export const PreFilters = ({
             </div>
           </FormLayout.Row>
         </div>
+
         <div className={styles['button-group']}>
           <div className={styles['button-group-buttons']}>
             <span className={styles['button-group-separator']} />
@@ -266,6 +205,7 @@ export const PreFilters = ({
               isFiltersDisabled={isFiltersDisabled}
               isLocalLoading={isLocalLoading}
             />
+
             <Button
               className={styles['show-button']}
               disabled={isTableLoading || isLocalLoading || isFiltersDisabled}
@@ -282,6 +222,7 @@ export const PreFilters = ({
           </div>
         </div>
       </form>
+
       {isRefreshRequired && (
         <p
           className={styles['pf-refresh-message']}
