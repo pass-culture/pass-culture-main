@@ -25,8 +25,12 @@ import { Select } from '@/ui-kit/form/Select/Select'
 import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import styles from '../CollectiveOffersScreen.module.scss'
+import { GET_VENUES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { api } from '@/apiClient/api'
+import { formatAndOrderVenues } from '@/repository/venuesService'
+import useSWR from 'swr'
 
-interface CollectiveOffersSearchFiltersProps {
+export interface CollectiveOffersSearchFiltersProps {
   hasFilters: boolean
   applyFilters: (filters: CollectiveSearchFiltersParams) => void
   offerer: GetOffererResponseModel | null
@@ -34,7 +38,6 @@ interface CollectiveOffersSearchFiltersProps {
   setSelectedFilters: Dispatch<SetStateAction<CollectiveSearchFiltersParams>>
   disableAllFilters: boolean
   resetFilters: () => void
-  venues: SelectOption[]
   searchButtonRef?: React.RefObject<HTMLButtonElement>
 }
 
@@ -46,7 +49,6 @@ export const CollectiveOffersSearchFilters = ({
   resetFilters,
   offerer,
   disableAllFilters,
-  venues,
   searchButtonRef,
 }: CollectiveOffersSearchFiltersProps): JSX.Element => {
   const isNewOffersAndBookingsActive = useActiveFeature(
@@ -54,6 +56,14 @@ export const CollectiveOffersSearchFilters = ({
   )
 
   const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
+
+  const { data } = useSWR(
+    [GET_VENUES_QUERY_KEY, offerer?.id],
+    ([, offererIdParam]) => api.getVenues(null, null, offererIdParam),
+    { fallbackData: { venues: [] } }
+  )
+
+  const venues = formatAndOrderVenues(data.venues ?? [])
 
   const formats: SelectOption[] = Object.values(EacFormat).map((format) => ({
     value: format,

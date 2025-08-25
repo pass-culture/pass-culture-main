@@ -40,7 +40,6 @@ export type CollectiveOffersScreenProps = {
     }
   ) => void
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
-  venues: SelectOption[]
   offers: CollectiveOfferResponseModel[]
 }
 
@@ -51,7 +50,6 @@ export const CollectiveOffersScreen = ({
   initialSearchFilters,
   redirectWithUrlFilters,
   urlSearchFilters,
-  venues,
   offers,
 }: CollectiveOffersScreenProps): JSX.Element => {
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('collective')
@@ -165,7 +163,6 @@ export const CollectiveOffersScreen = ({
         resetFilters={() => resetFilters(false)}
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
-        venues={venues}
         searchButtonRef={searchButtonRef}
       />
       {userHasNoOffers ? (
