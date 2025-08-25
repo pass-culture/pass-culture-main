@@ -1,56 +1,107 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { useLocation, useNavigate } from 'react-router'
 
+import { BookingStatusFilter } from '@/apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
+import { Audience } from '@/commons/core/shared/types'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isDateValid } from '@/commons/utils/date'
 import { isEqual } from '@/commons/utils/isEqual'
+import { stringify } from '@/commons/utils/query-string'
 
-type UseBookingsFiltersArgs = {
-  /** filters that are currently applied to the table (from parent/container) */
-  appliedPreFilters: PreFiltersParams
-  /** whether a search has already been performed (affects “refresh required” flag) */
-  wereBookingsRequested: boolean
+function isBookingStatusFilter(
+  value: string | null
+): value is BookingStatusFilter {
+  return (
+    value !== null &&
+    Object.values(BookingStatusFilter).includes(value as BookingStatusFilter)
+  )
 }
 
-/**
- * Centralizes “selected filters” state + all derived booleans for the PreFilters UI.
- * - Mirrors applied filters into a local “selected” draft
- * - Computes whether something changed vs defaults (hasPreFilters)
- * - Computes refresh hint (isRefreshRequired)
- * - Encapsulates the “event date vs booking dates” coupling
- */
-export function useBookingsFilters({
-  appliedPreFilters,
-  wereBookingsRequested,
-}: UseBookingsFiltersArgs) {
+type Args = {
+  audience: Audience
+}
+
+export function useBookingsFilters({ audience }: Args) {
+  const navigate = useNavigate()
+  const location = useLocation()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const initialAppliedFilters: PreFiltersParams = useMemo(
     () => ({
       ...DEFAULT_PRE_FILTERS,
-      offererId: selectedOffererId?.toString() || '',
+      offererId: selectedOffererId?.toString() ?? '',
     }),
     [selectedOffererId]
   )
 
-  // Local draft used by the form before the user clicks “Afficher”
+  const [appliedPreFilters, setAppliedPreFilters] = useState<PreFiltersParams>(
+    initialAppliedFilters
+  )
+
   const [selectedPreFilters, setSelectedPreFilters] =
-    useState<PreFiltersParams>({ ...appliedPreFilters })
+    useState<PreFiltersParams>(initialAppliedFilters)
 
-  // Keep local draft in sync when parent changes (reset, url load, etc.)
+  const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
+  const [urlParams, setUrlParams] = useState<PreFiltersParams>(
+    initialAppliedFilters
+  )
+
   useEffect(() => {
-    setSelectedPreFilters({ ...appliedPreFilters })
-  }, [appliedPreFilters])
+    const params = new URLSearchParams(location.search)
 
-  // Has at least one filter deviated from defaults?
+    if (
+      params.has('offerVenueId') ||
+      params.has('bookingStatusFilter') ||
+      params.has('bookingBeginningDate') ||
+      params.has('bookingEndingDate') ||
+      params.has('offerType') ||
+      params.has('offerEventDate') ||
+      params.has('offererId') ||
+      params.has('offererAddressId')
+    ) {
+      const next: PreFiltersParams = {
+        offerVenueId:
+          params.get('offerVenueId') ?? DEFAULT_PRE_FILTERS.offerVenueId,
+        offererAddressId:
+          params.get('offererAddressId') ??
+          DEFAULT_PRE_FILTERS.offererAddressId,
+        bookingStatusFilter: (() => {
+          const param = params.get('bookingStatusFilter')
+          return isBookingStatusFilter(param)
+            ? param
+            : initialAppliedFilters.bookingStatusFilter
+        })(),
+        bookingBeginningDate:
+          params.get('bookingBeginningDate') ??
+          (params.has('offerEventDate')
+            ? ''
+            : initialAppliedFilters.bookingBeginningDate),
+        bookingEndingDate:
+          params.get('bookingEndingDate') ??
+          (params.has('offerEventDate')
+            ? ''
+            : initialAppliedFilters.bookingEndingDate),
+        offerEventDate:
+          params.get('offerEventDate') ?? initialAppliedFilters.offerEventDate,
+        offererId:
+          selectedOffererId !== null
+            ? selectedOffererId.toString()
+            : DEFAULT_PRE_FILTERS.offererId,
+      }
+
+      setAppliedPreFilters(next)
+      setSelectedPreFilters(next)
+    }
+  }, [location.search, selectedOffererId, initialAppliedFilters])
+
   const hasPreFilters = useMemo(() => {
     let key: keyof PreFiltersParams
     for (key in selectedPreFilters) {
       const selectedValue = selectedPreFilters[key]
       const defaultValue = initialAppliedFilters[key]
-
       if (
         key.includes('Date') &&
         isDateValid(selectedValue) &&
@@ -69,24 +120,19 @@ export function useBookingsFilters({
     return false
   }, [selectedPreFilters, initialAppliedFilters])
 
-  // Do we need to prompt user to press “Afficher”?
   const isRefreshRequired = useMemo(
     () =>
       !isEqual(selectedPreFilters, appliedPreFilters) && wereBookingsRequested,
     [selectedPreFilters, appliedPreFilters, wereBookingsRequested]
   )
 
-  // Single way to mutate the draft (handles the eventDate<->bookingDates rule)
   const updateSelectedFilters = useCallback(
     (updated: Partial<PreFiltersParams>) => {
       const next: Partial<PreFiltersParams> = { ...updated }
 
       if ('offerEventDate' in updated) {
-        // When user sets an offerEventDate, wipe booking period
         next.bookingBeginningDate = ''
         next.bookingEndingDate = ''
-
-        // If user picks the same value as already applied, restore booking period
         if (updated.offerEventDate === appliedPreFilters.offerEventDate) {
           next.bookingBeginningDate = appliedPreFilters.bookingBeginningDate
           next.bookingEndingDate = appliedPreFilters.bookingEndingDate
@@ -98,14 +144,70 @@ export function useBookingsFilters({
     [appliedPreFilters]
   )
 
+  const updateUrl = (filter: PreFiltersParams) => {
+    const partialUrlInfo = {
+      bookingStatusFilter: filter.bookingStatusFilter,
+      ...(filter.offerEventDate && filter.offerEventDate !== 'all'
+        ? { offerEventDate: filter.offerEventDate }
+        : {}),
+      ...(filter.bookingBeginningDate
+        ? { bookingBeginningDate: filter.bookingBeginningDate }
+        : {}),
+      ...(filter.bookingEndingDate
+        ? { bookingEndingDate: filter.bookingEndingDate }
+        : {}),
+      ...(filter.offerVenueId ? { offerVenueId: filter.offerVenueId } : {}),
+      ...(filter.offererAddressId
+        ? { offererAddressId: filter.offererAddressId }
+        : {}),
+      ...(filter.offererId ? { offererId: filter.offererId } : {}),
+    } as Partial<PreFiltersParams>
+
+    setUrlParams((prev) => ({ ...prev, ...partialUrlInfo }) as PreFiltersParams)
+
+    navigate(
+      `/reservations${
+        audience === Audience.COLLECTIVE ? '/collectives' : ''
+      }?page=1&${stringify(partialUrlInfo)}`
+    )
+  }
+
+  const applyNow = () => {
+    setAppliedPreFilters(selectedPreFilters)
+    updateUrl(selectedPreFilters)
+  }
+
+  const applyPreFilters = (filters: PreFiltersParams) => {
+    setAppliedPreFilters(filters)
+  }
+
+  const resetPreFilters = () => {
+    setWereBookingsRequested(false)
+    setAppliedPreFilters(initialAppliedFilters)
+    setSelectedPreFilters(initialAppliedFilters)
+  }
+
+  const resetAndApplyPreFilters = () => {
+    resetPreFilters()
+    updateUrl({ ...initialAppliedFilters })
+  }
+
   return {
-    // state
+    initialAppliedFilters,
+    appliedPreFilters,
     selectedPreFilters,
-    // derived
+    wereBookingsRequested,
+    urlParams,
+
     hasPreFilters,
     isRefreshRequired,
-    // actions
-    setSelectedPreFilters,
+
+    setWereBookingsRequested,
     updateSelectedFilters,
+    applyNow,
+    applyPreFilters,
+    resetPreFilters,
+    resetAndApplyPreFilters,
+    updateUrl,
   }
 }
