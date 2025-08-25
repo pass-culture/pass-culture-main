@@ -960,7 +960,10 @@ describe('IndividualOffers', () => {
 
     expect(
       screen.getByRole('link', { name: 'Créer une offre' })
-    ).toHaveAttribute('href', '/offre/individuelle/creation/details')
+    ).toHaveAttribute(
+      'href',
+      '/offre/individuelle/creation/details?from_banner=banner_video'
+    )
   })
 
   it('should have a create offer button that redirects to the offer type selection when the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is disabled', async () => {
@@ -968,6 +971,6 @@ describe('IndividualOffers', () => {
 
     expect(
       screen.getByRole('link', { name: 'Créer une offre' })
-    ).toHaveAttribute('href', '/offre/creation')
+    ).toHaveAttribute('href', '/offre/creation?from_banner=banner_video')
   })
 })
