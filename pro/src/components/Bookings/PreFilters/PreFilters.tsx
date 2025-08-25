@@ -6,7 +6,6 @@ import type {
   CollectivePreFiltersParams,
   PreFiltersParams,
 } from '@/commons/core/Bookings/types'
-import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { ALL_OFFERER_ADDRESS_OPTION } from '@/commons/core/Offers/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { Audience } from '@/commons/core/shared/types'
@@ -20,7 +19,6 @@ import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
 import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
-import { useBookingsFilters } from '../useBookingsFilters'
 import { FilterByBookingStatusPeriod } from './FilterByBookingStatusPeriod/FilterByBookingStatusPeriod'
 import { FilterByEventDate } from './FilterByEventDate'
 import { FilterByVenue } from './FilterByVenue'
@@ -31,8 +29,12 @@ import { downloadIndividualBookingsCSVFile } from './utils/downloadIndividualBoo
 import { downloadIndividualBookingsXLSFile } from './utils/downloadIndividualBookingsXLSFile'
 
 export interface PreFiltersProps {
-  appliedPreFilters: PreFiltersParams
-  applyPreFilters: (filters: PreFiltersParams) => void
+  selectedPreFilters: PreFiltersParams
+  updateSelectedFilters: (updated: Partial<PreFiltersParams>) => void
+  hasPreFilters: boolean
+  isRefreshRequired: boolean
+  applyNow: () => void
+
   audience: Audience
   hasResult: boolean
   isFiltersDisabled: boolean
@@ -47,41 +49,30 @@ export interface PreFiltersProps {
 }
 
 export const PreFilters = ({
-  appliedPreFilters,
-  applyPreFilters,
+  selectedPreFilters,
+  updateSelectedFilters,
+  hasPreFilters,
+  isRefreshRequired,
+  applyNow,
   audience,
   hasResult,
   isFiltersDisabled,
   isTableLoading,
-  wereBookingsRequested,
   isLocalLoading,
   resetPreFilters,
   venues,
   offererAddresses,
-  updateUrl,
 }: PreFiltersProps): JSX.Element => {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
-
-  const {
-    selectedPreFilters,
-    hasPreFilters,
-    isRefreshRequired,
-    updateSelectedFilters,
-  } = useBookingsFilters({ appliedPreFilters, wereBookingsRequested })
-
-  const [isDownloadingCSV, setIsDownloadingCSV] = useState<boolean>(false)
+  const [isDownloadingCSV, setIsDownloadingCSV] = useState(false)
 
   const requestFilteredBookings = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    applyPreFilters(selectedPreFilters)
-    updateUrl(selectedPreFilters)
+    applyNow()
   }
 
-  const downloadBookingsFilters = {
-    ...selectedPreFilters,
-    page: 1,
-  }
+  const downloadBookingsFilters = { ...selectedPreFilters, page: 1 }
 
   type DownloadParams =
     | { audience: Audience.INDIVIDUAL; filters: PreFiltersParams }
@@ -114,7 +105,7 @@ export const PreFilters = ({
 
       setIsDownloadingCSV(false)
     },
-    [notify, audience]
+    [notify]
   )
 
   return (
@@ -137,10 +128,8 @@ export const PreFilters = ({
               >
                 <SelectInput
                   defaultOption={ALL_OFFERER_ADDRESS_OPTION}
-                  onChange={(event) =>
-                    updateSelectedFilters({
-                      offererAddressId: event.target.value,
-                    })
+                  onChange={(e) =>
+                    updateSelectedFilters({ offererAddressId: e.target.value })
                   }
                   disabled={isFiltersDisabled}
                   name="address"
@@ -211,10 +200,8 @@ export const PreFilters = ({
               disabled={isTableLoading || isLocalLoading || isFiltersDisabled}
               variant={ButtonVariant.SECONDARY}
               onClick={() => {
-                updateUrl(selectedPreFilters)
-                logEvent(Events.CLICKED_SHOW_BOOKINGS, {
-                  from: location.pathname,
-                })
+                applyNow()
+                logEvent('CLICKED_SHOW_BOOKINGS', { from: location.pathname })
               }}
             >
               Afficher
