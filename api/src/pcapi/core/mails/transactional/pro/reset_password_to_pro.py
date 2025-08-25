@@ -24,6 +24,7 @@ def get_reset_password_to_pro_email_data(token: token_utils.Token) -> models.Tra
 
 def send_reset_password_email_to_pro(token: token_utils.Token) -> None:
     user = db.session.get(users_models.User, token.user_id)
+    assert user  # helps mypy
     data = get_reset_password_to_pro_email_data(token)
     mails.send(recipients=[user.email], data=data)
 

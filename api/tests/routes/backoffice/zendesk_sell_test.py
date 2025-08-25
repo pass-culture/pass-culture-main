@@ -31,7 +31,7 @@ class UpdateOffererOnZendeskSellTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
+        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
 
         assert testing.zendesk_sell_requests == [
             {
@@ -49,7 +49,7 @@ class UpdateOffererOnZendeskSellTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
+        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == "Cette entité juridique ne gère que des partenaires culturels virtuels"
@@ -83,7 +83,7 @@ class UpdateOffererOnZendeskSellTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
+        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == "Plusieurs entités juridiques ont été trouvées dans Zendesk Sell, aucune ne peut donc être mise à jour : "
@@ -102,7 +102,7 @@ class UpdateOffererOnZendeskSellTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
+        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == "L'entité juridique n'a pas été trouvée dans Zendesk Sell"
@@ -122,7 +122,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
 
         assert testing.zendesk_sell_requests == [
             {
@@ -143,7 +143,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
 
         assert testing.zendesk_sell_requests == [
             {
@@ -181,7 +181,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
         assert html_parser.extract_alerts(authenticated_client.get(response.location).data) == [
             "Attention : Plusieurs entités juridiques parentes possibles ont été trouvées pour ce partenaire culturel dans Zendesk Sell. "
             f"Identifiant Zendesk Sell : 123, Produit Offerer ID : {venue.managingOffererId}, SIREN : {venue.managingOfferer.siren} "
@@ -210,7 +210,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
         assert html_parser.extract_alerts(authenticated_client.get(response.location).data) == [
             "Une erreur 500 s'est produite lors de la recherche de l'entité juridique parente : test",
             "Le partenaire culturel a été mis à jour sur Zendesk Sell",
@@ -231,7 +231,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == "Ce partenaire culturel est virtuel ou n'est pas ouvert au public"
@@ -245,7 +245,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == "Ce partenaire culturel est virtuel ou n'est pas ouvert au public"
@@ -279,7 +279,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == "Plusieurs partenaires culturels ont été trouvés dans Zendesk Sell, aucun ne peut donc être mis à jour : "
@@ -298,7 +298,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == "Le partenaire culturel n'a pas été trouvé dans Zendesk Sell"

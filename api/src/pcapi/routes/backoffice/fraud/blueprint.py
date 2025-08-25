@@ -91,7 +91,7 @@ def _list_untouched_pro_accounts(domain_name: str) -> list[str]:
     query = (
         db.session.query(users_models.User)
         .filter(
-            sa.or_(  # type: ignore[type-var]
+            sa.or_(
                 users_models.User.has_pro_role,
                 users_models.User.has_non_attached_pro_role,
             ),

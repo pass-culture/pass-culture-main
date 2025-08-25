@@ -114,6 +114,7 @@ def notify_users_of_expired_individual_bookings(expired_on: datetime.date | None
     notified_users_str = []
     for user_id in user_ids:
         user = db.session.get(User, user_id)
+        assert user  # helps mypy
         transactional_mails.send_expired_bookings_to_beneficiary_email(
             user,
             bookings_repository.get_expired_individual_bookings_for_user(user),

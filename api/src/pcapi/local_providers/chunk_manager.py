@@ -2,7 +2,6 @@ import datetime
 
 import pcapi.core.offers.models as offers_models
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
 
@@ -28,7 +27,7 @@ def insert_chunk(chunk_to_insert: dict[str, Model]) -> None:
 def update_chunk(chunk_to_update: dict[str, Model]) -> None:
     # Access `Model.registry` here, not at module-scope,
     # because it may not be populated yet if this module is imported too early.
-    MODELS = {mapper.class_.__name__: mapper.class_ for mapper in Base.registry.mappers}
+    MODELS = {mapper.class_.__name__: mapper.class_ for mapper in Model.registry.mappers}
 
     models_in_chunk: set[str] = set(_extract_model_name_from_chunk_key(key) for key in chunk_to_update.keys())
 

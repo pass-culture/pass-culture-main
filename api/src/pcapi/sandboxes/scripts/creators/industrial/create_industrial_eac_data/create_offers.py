@@ -116,18 +116,20 @@ def _get_or_create_offerer_address(
     offer_venue = location_option["offerVenue"]
     if offer_venue["addressType"] == educational_models.OfferAddressType.OFFERER_VENUE:
         target_venue = db.session.get(offerers_models.Venue, offer_venue["venueId"])
+        assert target_venue  # helps mypy
 
         if location_option["isLocatedAtVenue"]:
             return target_venue.offererAddress
 
+        assert target_venue.offererAddress  # helps mypy
         # get or create OA with same offerer and adress as target_venue
         label = target_venue.common_name
         target_address = target_venue.offererAddress.address
         offerer_address = (
             db.session.query(offerers_models.OffererAddress)
             .filter(
-                offerers_models.OffererAddress.offerer == managing_offerer,
-                offerers_models.OffererAddress.address == target_address,
+                offerers_models.OffererAddress.offererId == managing_offerer.id,
+                offerers_models.OffererAddress.addressId == target_address.id,
                 offerers_models.OffererAddress.label == label,
             )
             .one_or_none()

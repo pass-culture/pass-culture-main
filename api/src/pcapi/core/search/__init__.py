@@ -501,7 +501,7 @@ def get_base_query_for_offer_indexation() -> sa_orm.Query:
             sa_orm.joinedload(offers_models.Offer.venue)
             .load_only(
                 offerers_models.Venue.id,
-                offerers_models.Venue.bannerUrl,
+                typing.cast(sa_orm.QueryableAttribute[str | None], offerers_models.Venue.bannerUrl),
                 offerers_models.Venue.isPermanent,
                 offerers_models.Venue.name,
                 offerers_models.Venue.audioDisabilityCompliant,
@@ -560,7 +560,7 @@ def get_offers_booking_count_by_id(
     offer_ids: abc.Collection[int], days: int = DEFAULT_DAYS_FOR_LAST_BOOKINGS
 ) -> dict[int, int]:
     offer_booked_since_x_days = (
-        db.session.query(offers_models.Offer)
+        db.session.query(offers_models.Offer.id, sa.func.count(bookings_models.Booking.id))
         .join(offers_models.Offer.stocks)
         .outerjoin(offers_models.Offer.product)
         .join(offers_models.Stock.bookings)
@@ -571,9 +571,9 @@ def get_offers_booking_count_by_id(
             bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
         )
         .group_by(offers_models.Offer.id)
-        .with_entities(offers_models.Offer.id, sa.func.count(bookings_models.Booking.id))
     )
-    return dict(offer_booked_since_x_days)
+    # mypy and ruff fight for this line, let's take the ruff version
+    return dict(offer_booked_since_x_days.all())  # type: ignore [arg-type]
 
 
 def get_last_x_days_booking_count_by_offer(offers: abc.Iterable[offers_models.Offer]) -> dict[int, int]:

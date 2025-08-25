@@ -173,7 +173,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
 def edit_venue_collective_data(
     venue_id: int, body: venues_serialize.EditVenueCollectiveDataBodyModel
 ) -> venues_serialize.GetVenueResponseModel:
-    venue = offerers_api.get_venue_by_id(venue_id)
+    venue = get_or_404(Venue, venue_id)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 

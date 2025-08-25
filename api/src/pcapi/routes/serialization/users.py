@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import datetime
+from decimal import Decimal
 
 import flask
 import pydantic.v1 as pydantic_v1
@@ -301,7 +302,7 @@ class GdprDepositSerializer(BaseModel):
     dateCreated: datetime
     dateUpdated: datetime | None
     expirationDate: datetime | None
-    amount: float
+    amount: float | Decimal
     source: str
     type: str
 
@@ -311,7 +312,7 @@ class GdprBookingSerializer(BaseModel):
     dateCreated: datetime
     dateUsed: datetime | None
     quantity: int
-    amount: float
+    amount: float | Decimal
     status: str
     name: str
     venue: str
