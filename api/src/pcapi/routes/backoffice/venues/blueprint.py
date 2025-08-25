@@ -147,8 +147,9 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
 
     if form.order.data:
         base_query = base_query.order_by(getattr(getattr(offerers_models.Venue, "id"), form.order.data)())
+    # TODO(xordoquy): implement a proper fix in the soft delete lirary
     # +1 to check if there are more results than requested
-    return base_query.limit(form.limit.data + 1).all()
+    return base_query.filter(offerers_models.Venue.isSoftDeleted != True).limit(form.limit.data + 1).all()
 
 
 def _render_venues(venues_ids: list[int] | None = None) -> utils.BackofficeResponse:

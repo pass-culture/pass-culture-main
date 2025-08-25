@@ -172,6 +172,10 @@ class ListVenuesTest(GetEndpointHelper):
             offerers_factories.VirtualVenueFactory(managingOfferer=offerer),
             offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer),
         ]
+        soft_deleted_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        soft_deleted_venue.isSoftDeleted = True
+        db.session.add(soft_deleted_venue)
+        db.session.flush()
 
         offerer_id = offerer.id
         # 1 more request is necessary to prefill form choices with selected offerer(s)
