@@ -22,20 +22,22 @@ import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import { getOfferConditionalFields } from '@/commons/utils/getOfferConditionalFields'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
-import { isOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/utils'
+import { getIsOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/getIsOfferSubcategoryOnline'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { serializePatchOffer } from '@/pages/IndividualOffer/IndividualOfferInformations/commons/serializers'
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
 
 import type { UsefulInformationFormValues } from '../commons/types'
-import { getInitialValuesFromOffer } from '../commons/utils'
+import {
+  getInitialValuesFromOffer,
+  getOfferConditionalFields,
+} from '../commons/utils'
 import { getValidationSchema } from '../commons/validationSchema'
 import styles from './IndividualOfferInformationsScreen.module.scss'
 import { UsefulInformationForm } from './UsefulInformationForm/UsefulInformationForm'
@@ -89,7 +91,7 @@ export const IndividualOfferInformationsScreen = ({
   const validationSchema = getValidationSchema({
     conditionalFields,
     isNewOfferCreationFlowFeatureActive,
-    isOfferOnline: isOfferSubcategoryOnline(offer, subCategories),
+    isOfferOnline: getIsOfferSubcategoryOnline(offer, subCategories),
     setIsAccessibilityFilled,
   })
 

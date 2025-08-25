@@ -9,9 +9,7 @@ import {
   ApiError,
   CancelablePromise,
   type GetIndividualOfferResponseModel,
-  type GetMusicTypesResponse,
   OfferStatus,
-  SubcategoryIdEnum,
 } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
@@ -21,42 +19,37 @@ import {
   type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
-  CATEGORY_STATUS,
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
-  categoryFactory,
   defaultGetOffererResponseModel,
   getIndividualOfferFactory,
   getOfferManagingOffererFactory,
   getOfferVenueFactory,
-  individualOfferContextValuesFactory,
-  subcategoryFactory,
-  venueListItemFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
 import {
+  type RenderComponentFunction,
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
+import {
+  MOCKED_CATEGORIES,
+  MOCKED_CATEGORY,
+  MOCKED_SUBCATEGORIES,
+  MOCKED_SUBCATEGORY,
+} from '@/pages/IndividualOffer/commons/__mocks__/constants'
 
 import { IndividualOfferSummaryScreen } from './IndividualOfferSummaryScreen'
-
-// vi.mock('@/apiClient/api', () => ({
-//   api: {
-//     getMusicTypes: vi.fn(),
-//     getOfferer: vi.fn(),
-//     patchPublishOffer: vi.fn(),
-//   },
-// }))
 
 const LABELS = {
   publicationModeNowRadio: /Publier maintenant/,
@@ -77,27 +70,66 @@ const ERROR_MESSAGES = {
 
 const mockLogEvent = vi.fn()
 
-const renderIndividualOfferSummaryScreen = ({
-  contextValue = {},
-  mode = OFFER_WIZARD_MODE.READ_ONLY,
-  options,
-  path = getIndividualOfferPath({
-    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-    mode,
-  }),
-}: Partial<{
-  contextValue: Partial<IndividualOfferContextValues>
-  mode: OFFER_WIZARD_MODE
-  options: RenderWithProvidersOptions
-  path: string
-  url: string
-}>) => {
-  const controlledContextValue =
-    individualOfferContextValuesFactory(contextValue)
+const renderIndividualOfferSummaryScreen: RenderComponentFunction<
+  void,
+  IndividualOfferContextValues
+> = (params) => {
+  const offer = getIndividualOfferFactory({
+    audioDisabilityCompliant: false,
+    bookingEmail: 'booking@example.com',
+    description: 'ma description',
+    isDigital: true,
+    isEvent: true,
+    lastProvider: {
+      name: 'Ciné Office',
+    },
+    mentalDisabilityCompliant: false,
+    motorDisabilityCompliant: false,
+    name: 'mon offre',
+    subcategoryId: MOCKED_SUBCATEGORY.EVENT_ONLINE.id,
+    status: OfferStatus.PUBLISHED,
+    url: 'https://offer-url.example.com',
+    venue: getOfferVenueFactory({
+      name: 'ma venue',
+      publicName: 'ma venue (nom public)',
+      isVirtual: true,
+      managingOfferer: getOfferManagingOffererFactory({
+        name: 'mon offerer',
+      }),
+    }),
+    visualDisabilityCompliant: false,
+    withdrawalDetails: 'détails de retrait',
+  })
+  const contextValues: IndividualOfferContextValues = {
+    categories: MOCKED_CATEGORIES,
+    isEvent: false,
+    isAccessibilityFilled: false,
+    offer,
+    setIsAccessibilityFilled: vi.fn(),
+    setIsEvent: vi.fn(),
+    subCategories: MOCKED_SUBCATEGORIES,
+    ...params.contextValues,
+  }
+
+  assertOrFrontendError(
+    params.path,
+    '`path` is required to render the component.'
+  )
+  const path = params.path
+
+  const options: RenderWithProvidersOptions = {
+    initialRouterEntries: [path],
+    user: sharedCurrentUserFactory(),
+    storeOverrides: {
+      user: { currentUser: sharedCurrentUserFactory() },
+      offerer: currentOffererFactory(),
+    },
+    ...params.options,
+  }
 
   return renderWithProviders(
     <>
-      <IndividualOfferContext.Provider value={controlledContextValue}>
+      <IndividualOfferContext.Provider value={contextValues}>
         <Routes>
           <Route
             path={getIndividualOfferPath({
@@ -124,25 +156,49 @@ const renderIndividualOfferSummaryScreen = ({
       </IndividualOfferContext.Provider>
       <Notification />
     </>,
-    { initialRouterEntries: [path], ...options }
+    options
   )
 }
 
-const categories = [categoryFactory({ id: 'A' })]
-
-const subCategories = [
-  subcategoryFactory({
-    id: String(SubcategoryIdEnum.CONCERT),
-    categoryId: 'A',
-  }),
-  subcategoryFactory({ categoryId: 'A' }),
-]
-
 describe('IndividualOfferSummaryScreen', () => {
-  let customContext: Partial<IndividualOfferContextValues>
-  let musicTypes: GetMusicTypesResponse
+  const offerBase = getIndividualOfferFactory({
+    audioDisabilityCompliant: false,
+    bookingEmail: 'booking@example.com',
+    description: 'ma description',
+    isDigital: true,
+    isEvent: true,
+    lastProvider: {
+      name: 'Ciné Office',
+    },
+    mentalDisabilityCompliant: false,
+    motorDisabilityCompliant: false,
+    name: 'mon offre',
+    subcategoryId: MOCKED_SUBCATEGORY.EVENT_ONLINE.id,
+    status: OfferStatus.PUBLISHED,
+    url: 'https://offer-url.example.com',
+    venue: getOfferVenueFactory({
+      name: 'ma venue',
+      publicName: 'ma venue (nom public)',
+      isVirtual: true,
+      managingOfferer: getOfferManagingOffererFactory({
+        name: 'mon offerer',
+      }),
+    }),
+    visualDisabilityCompliant: false,
+    withdrawalDetails: 'détails de retrait',
+  })
+  const contextValuesBase: IndividualOfferContextValues = {
+    categories: MOCKED_CATEGORIES,
+    isAccessibilityFilled: false,
+    isEvent: false,
+    offer: offerBase,
+    setIsAccessibilityFilled: vi.fn(),
+    setIsEvent: vi.fn(),
+    subCategories: MOCKED_SUBCATEGORIES,
+  }
+
   beforeEach(() => {
-    musicTypes = [
+    const musicTypes = [
       {
         gtl_id: '07000000',
         label: 'Metal',
@@ -159,35 +215,6 @@ describe('IndividualOfferSummaryScreen', () => {
         canBeEvent: false,
       },
     ]
-    customContext = {
-      offer: getIndividualOfferFactory({
-        isEvent: false,
-        name: 'mon offre',
-        lastProvider: {
-          name: 'Ciné Office',
-        },
-        motorDisabilityCompliant: false,
-        mentalDisabilityCompliant: false,
-        audioDisabilityCompliant: false,
-        visualDisabilityCompliant: false,
-        description: 'ma description',
-        subcategoryId: SubcategoryIdEnum.CONCERT,
-        url: 'https://offer-url.example.com',
-        isDigital: true,
-        withdrawalDetails: 'détails de retrait',
-        bookingEmail: 'booking@example.com',
-        venue: getOfferVenueFactory({
-          name: 'ma venue',
-          publicName: 'ma venue (nom public)',
-          isVirtual: true,
-          managingOfferer: getOfferManagingOffererFactory({
-            name: 'mon offerer',
-          }),
-        }),
-      }),
-      subCategories,
-      categories,
-    }
 
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -197,6 +224,10 @@ describe('IndividualOfferSummaryScreen', () => {
       getIndividualOfferFactory()
     )
     vi.spyOn(api, 'getMusicTypes').mockResolvedValue(musicTypes)
+  })
+
+  afterEach(() => {
+    vi.clearAllMocks()
   })
 
   const expectOfferFields = async () => {
@@ -209,8 +240,10 @@ describe('IndividualOfferSummaryScreen', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('Aperçu dans l’app')).toBeInTheDocument()
 
-    expect(screen.getByText(categories[0].proLabel)).toBeInTheDocument()
-    expect(screen.getByText(subCategories[0].proLabel)).toBeInTheDocument()
+    expect(screen.getByText(MOCKED_CATEGORY.A.proLabel)).toBeInTheDocument()
+    expect(
+      screen.getByText(MOCKED_SUBCATEGORY.EVENT_ONLINE.proLabel)
+    ).toBeInTheDocument()
     expect(screen.getByText('détails de retrait')).toBeInTheDocument()
     expect(screen.getByText('Non accessible')).toBeInTheDocument()
     expect(screen.getByText('booking@example.com')).toBeInTheDocument()
@@ -218,61 +251,73 @@ describe('IndividualOfferSummaryScreen', () => {
     expect(screen.getAllByText('ma description')).toHaveLength(2)
   }
 
-  it('should render component with informations on edition', async () => {
-    renderIndividualOfferSummaryScreen({ contextValue: customContext })
+  describe('when mode = "READONLY"', () => {
+    const path = generatePath(
+      getIndividualOfferPath({
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
+        mode: OFFER_WIZARD_MODE.READ_ONLY,
+      }),
+      { offerId: 1 }
+    )
 
-    await expectOfferFields()
-    expect(screen.getByText('Retour à la liste des offres')).toBeInTheDocument()
-    expect(screen.getByText('Visualiser dans l’app')).toBeInTheDocument()
-  })
+    it('should render component with informations on edition', async () => {
+      renderIndividualOfferSummaryScreen({ path })
 
-  it('should render public name if available', async () => {
-    renderIndividualOfferSummaryScreen({ contextValue: customContext })
+      await expectOfferFields()
+      expect(
+        screen.getByText('Retour à la liste des offres')
+      ).toBeInTheDocument()
+      expect(screen.getByText('Visualiser dans l’app')).toBeInTheDocument()
+    })
 
-    await expectOfferFields()
-    expect(screen.getByText('ma venue (nom public)')).toBeInTheDocument()
-  })
+    it('should render public name if available', async () => {
+      renderIndividualOfferSummaryScreen({ path })
 
-  it('should render name if no public name available', async () => {
-    renderIndividualOfferSummaryScreen({
-      contextValue: {
-        ...customContext,
-        offer: getIndividualOfferFactory({
-          ...customContext.offer,
+      await expectOfferFields()
+      expect(screen.getByText('ma venue (nom public)')).toBeInTheDocument()
+    })
+
+    it('should render name if no public name available', async () => {
+      const contextValues = {
+        offer: {
+          ...offerBase,
           venue: getOfferVenueFactory({
             name: 'ma venue (name)',
             publicName: null,
           }),
-        }),
-      },
-    })
+        },
+      }
 
-    await expectOfferFields()
-    expect(screen.getByText('ma venue (name)')).toBeInTheDocument()
+      renderIndividualOfferSummaryScreen({ contextValues, path })
+
+      await expectOfferFields()
+      expect(screen.getByText('ma venue (name)')).toBeInTheDocument()
+    })
   })
 
-  describe('On Creation', () => {
-    beforeEach(() => {
-      if (customContext.offer) {
-        customContext.offer = {
-          ...customContext.offer,
-          status: OfferStatus.DRAFT,
-        }
-      }
-    })
+  describe('when mode = "CREATION"', () => {
+    const path = generatePath(
+      getIndividualOfferPath({
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
+        mode: OFFER_WIZARD_MODE.CREATION,
+      }),
+      { offerId: 1 }
+    )
+
+    const draftOfferBase = {
+      ...offerBase,
+      status: OfferStatus.DRAFT,
+    }
+
+    const contextValuesWithDraftOffer: IndividualOfferContextValues = {
+      ...contextValuesBase,
+      offer: draftOfferBase,
+    }
 
     it('should render component with informations', async () => {
-      renderIndividualOfferSummaryScreen({
-        contextValue: customContext,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        path: generatePath(
-          getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: 'AA' }
-        ),
-      })
+      const contextValues = { offer: draftOfferBase }
+
+      renderIndividualOfferSummaryScreen({ contextValues, path })
 
       await expectOfferFields()
       expect(
@@ -281,20 +326,12 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it('should render a media section when media page is enabled (WIP_ADD_VIDEO)', () => {
-      renderIndividualOfferSummaryScreen({
-        contextValue: customContext,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        path: generatePath(
-          getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: 'AA' }
-        ),
-        options: {
-          features: ['WIP_ADD_VIDEO'],
-        },
-      })
+      const contextValues = { offer: draftOfferBase }
+      const options = {
+        features: ['WIP_ADD_VIDEO'],
+      }
+
+      renderIndividualOfferSummaryScreen({ contextValues, options, path })
 
       expect(
         screen.getByRole('heading', { name: 'Image et vidéo' })
@@ -305,18 +342,10 @@ describe('IndividualOfferSummaryScreen', () => {
       vi.spyOn(api, 'getOfferer').mockResolvedValue(
         defaultGetOffererResponseModel
       )
-      customContext.offer = getIndividualOfferFactory({ isEvent: true })
 
       renderIndividualOfferSummaryScreen({
-        contextValue: customContext,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        path: generatePath(
-          getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: 'AA' }
-        ),
+        contextValues: { offer: draftOfferBase },
+        path,
       })
 
       expect(
@@ -325,17 +354,9 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it('should render component with right buttons', () => {
-      renderIndividualOfferSummaryScreen({
-        contextValue: customContext,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        path: generatePath(
-          getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: 'AA' }
-        ),
-      })
+      const contextValues = { offer: draftOfferBase }
+
+      renderIndividualOfferSummaryScreen({ contextValues, path })
 
       expect(screen.getByText('Retour')).toBeInTheDocument()
       expect(
@@ -349,17 +370,9 @@ describe('IndividualOfferSummaryScreen', () => {
         defaultGetOffererResponseModel
       )
 
-      renderIndividualOfferSummaryScreen({
-        contextValue: customContext,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        path: generatePath(
-          getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: 'AA' }
-        ),
-      })
+      const contextValues = { offer: draftOfferBase }
+
+      renderIndividualOfferSummaryScreen({ contextValues, path })
 
       await userEvent.click(
         screen.getByRole('button', { name: /Publier l’offre/ })
@@ -371,17 +384,9 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it('should disabled publish button link during submit', async () => {
-      renderIndividualOfferSummaryScreen({
-        contextValue: customContext,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        path: generatePath(
-          getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: 'AA' }
-        ),
-      })
+      const contextValues = { offer: draftOfferBase }
+
+      renderIndividualOfferSummaryScreen({ contextValues, path })
 
       const pageTitle = await screen.findByRole('heading', {
         name: /Détails de l’offre/,
@@ -419,19 +424,10 @@ describe('IndividualOfferSummaryScreen', () => {
       vi.spyOn(api, 'getOfferer').mockResolvedValue(
         defaultGetOffererResponseModel
       )
-      customContext.offer = getIndividualOfferFactory()
 
-      renderIndividualOfferSummaryScreen({
-        contextValue: customContext,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        path: generatePath(
-          getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: 'AA' }
-        ),
-      })
+      const contextValues = { offer: draftOfferBase }
+
+      renderIndividualOfferSummaryScreen({ contextValues, path })
 
       await userEvent.click(screen.getByLabelText(/Publier plus tard/))
 
@@ -465,7 +461,7 @@ describe('IndividualOfferSummaryScreen', () => {
         await screen.findByText(/Confirmation page: creation/)
       ).toBeInTheDocument()
       expect(api.patchPublishOffer).toHaveBeenCalledWith({
-        id: customContext.offer.id,
+        id: 1,
         publicationDatetime: `${publicationDate}T10:00:00Z`,
       })
 
@@ -480,20 +476,15 @@ describe('IndividualOfferSummaryScreen', () => {
       vi.spyOn(api, 'getOfferer').mockResolvedValue(
         defaultGetOffererResponseModel
       )
-      customContext.offer = getIndividualOfferFactory()
 
-      renderIndividualOfferSummaryScreen({
-        contextValue: customContext,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        path: generatePath(
-          getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: 'AA' }
-        ),
-        options: { features: ['WIP_REFACTO_FUTURE_OFFER'] },
-      })
+      const contextValues = {
+        offer: draftOfferBase,
+      }
+      const options = {
+        features: ['WIP_REFACTO_FUTURE_OFFER'],
+      }
+
+      renderIndividualOfferSummaryScreen({ contextValues, options, path })
 
       await userEvent.click(
         screen.getByLabelText(/Rendre réservable plus tard/)
@@ -531,7 +522,7 @@ describe('IndividualOfferSummaryScreen', () => {
         await screen.findByText(/Confirmation page: creation/)
       ).toBeInTheDocument()
       expect(api.patchPublishOffer).toHaveBeenCalledWith({
-        id: customContext.offer.id,
+        id: 1,
         bookingAllowedDatetime: `${bookingAllowedDate}T10:00:00Z`,
       })
 
@@ -540,17 +531,9 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it('should display notification on api error', async () => {
-      renderIndividualOfferSummaryScreen({
-        contextValue: customContext,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        path: generatePath(
-          getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: 'AA' }
-        ),
-      })
+      const contextValues = { offer: draftOfferBase }
+
+      renderIndividualOfferSummaryScreen({ contextValues, path })
 
       vi.spyOn(api, 'patchPublishOffer').mockRejectedValue(
         new ApiError(
@@ -574,27 +557,25 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it('should display redirect modal if first offer', async () => {
+      const expectedOffererId = 2
+
       const venueId = 1
-      const context = {
-        offer: getIndividualOfferFactory({
-          venue: getOfferVenueFactory({ id: venueId }),
-        }),
+      const contextValues = {
+        offer: {
+          ...offerBase,
+          venue: getOfferVenueFactory({
+            id: venueId,
+            managingOfferer: getOfferManagingOffererFactory({
+              id: expectedOffererId,
+            }),
+          }),
+        },
         showVenuePopin: {
           [venueId]: true,
         },
       }
 
-      renderIndividualOfferSummaryScreen({
-        contextValue: context,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        path: generatePath(
-          getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: 'AA' }
-        ),
-      })
+      renderIndividualOfferSummaryScreen({ contextValues, path })
 
       await userEvent.click(
         screen.getByRole('button', { name: /Publier l’offre/ })
@@ -609,39 +590,36 @@ describe('IndividualOfferSummaryScreen', () => {
         })
       ).toHaveAttribute(
         'href',
-        `/remboursements/informations-bancaires?structure=${context.offer.venue.managingOfferer.id}`
+        `/remboursements/informations-bancaires?structure=${expectedOffererId}`
       )
     })
 
     it('should display redirect modal if first non free offer', async () => {
-      const context = {
-        offer: getIndividualOfferFactory(),
-        venueList: [venueListItemFactory()],
-      }
-
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
         ...defaultGetOffererResponseModel,
         hasValidBankAccount: false,
         hasPendingBankAccount: false,
         hasNonFreeOffer: false,
       })
-
       vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory({ isNonFreeOffer: true })
       )
 
-      renderIndividualOfferSummaryScreen({
-        contextValue: context,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        path: generatePath(
-          getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
+      const expectedOffererId = 2
+
+      const contextValues = {
+        offer: {
+          ...offerBase,
+          venue: getOfferVenueFactory({
+            id: 1,
+            managingOfferer: getOfferManagingOffererFactory({
+              id: expectedOffererId,
+            }),
           }),
-          { offerId: 'AA' }
-        ),
-        options: {},
-      })
+        },
+      }
+
+      renderIndividualOfferSummaryScreen({ contextValues, path })
 
       await userEvent.click(
         screen.getByRole('button', { name: /Publier l’offre/ })
@@ -654,38 +632,23 @@ describe('IndividualOfferSummaryScreen', () => {
         screen.getByRole('link', { name: 'Ajouter un compte bancaire' })
       ).toHaveAttribute(
         'href',
-        `/remboursements/informations-bancaires?structure=${context.offer.venue.managingOfferer.id}`
+        `/remboursements/informations-bancaires?structure=${expectedOffererId}`
       )
     })
 
     it('should not display redirect modal if hasPendingBankAccount is true', async () => {
-      const context = {
-        offer: getIndividualOfferFactory(),
-        venueList: [venueListItemFactory()],
-      }
-
       vi.spyOn(api, 'getOfferer').mockResolvedValue({
         ...defaultGetOffererResponseModel,
         hasValidBankAccount: true,
         hasPendingBankAccount: false,
       })
-
       vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
         getIndividualOfferFactory({ isNonFreeOffer: false })
       )
 
-      renderIndividualOfferSummaryScreen({
-        contextValue: context,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        path: generatePath(
-          getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: 'AA' }
-        ),
-        options: {},
-      })
+      const contextValues = { offer: draftOfferBase }
+
+      renderIndividualOfferSummaryScreen({ contextValues, path })
 
       await userEvent.click(
         screen.getByRole('button', { name: /Publier l’offre/ })
@@ -701,23 +664,9 @@ describe('IndividualOfferSummaryScreen', () => {
         getIndividualOfferFactory({ isNonFreeOffer: false })
       )
 
-      const context = {
-        offer: getIndividualOfferFactory(),
-        venueList: [venueListItemFactory()],
-      }
+      const contextValues = { offer: draftOfferBase }
 
-      renderIndividualOfferSummaryScreen({
-        contextValue: context,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        path: generatePath(
-          getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: 'AA' }
-        ),
-        options: {},
-      })
+      renderIndividualOfferSummaryScreen({ contextValues, path })
 
       await userEvent.click(
         screen.getByRole('button', { name: /Publier l’offre/ })
@@ -734,23 +683,9 @@ describe('IndividualOfferSummaryScreen', () => {
         hasNonFreeOffer: true,
       })
 
-      const context = {
-        offer: getIndividualOfferFactory(),
-        venueList: [venueListItemFactory()],
-      }
+      const contextValues = { offer: draftOfferBase }
 
-      renderIndividualOfferSummaryScreen({
-        contextValue: context,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        path: generatePath(
-          getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: 'AA' }
-        ),
-        options: {},
-      })
+      renderIndividualOfferSummaryScreen({ contextValues, path })
 
       await userEvent.click(
         screen.getByRole('button', { name: /Publier l’offre/ })
@@ -765,29 +700,26 @@ describe('IndividualOfferSummaryScreen', () => {
       vi.spyOn(api, 'getOfferer').mockResolvedValue(
         defaultGetOffererResponseModel
       )
-      customContext.offer = getIndividualOfferFactory({
-        isEvent: true,
-        address: {
-          ...getAddressResponseIsLinkedToVenueModelFactory({
-            label: 'mon adresse',
-            city: 'ma ville',
-            street: 'ma street',
-            postalCode: '1',
-          }),
-        },
-      })
 
-      renderIndividualOfferSummaryScreen({
-        contextValue: customContext,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        path: generatePath(
-          getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: 'AA' }
-        ),
-      })
+      const contextValues = {
+        offer: {
+          ...offerBase,
+          address: {
+            ...getAddressResponseIsLinkedToVenueModelFactory({
+              label: 'mon adresse',
+              city: 'ma ville',
+              street: 'ma street',
+              postalCode: '1',
+            }),
+          },
+          // This is the condition determining if the venue address is displayed
+          isDigital: false, // TODO (igabriele, 2025-08-08): will be replaced by `isOfferSubcategoryOnline`.
+          subcategoryId: MOCKED_SUBCATEGORY.EVENT_OFFLINE.id,
+          url: null,
+        },
+      }
+
+      renderIndividualOfferSummaryScreen({ contextValues, path })
 
       expect(await screen.findByText(/Structure/)).toBeInTheDocument()
       expect(
@@ -807,26 +739,27 @@ describe('IndividualOfferSummaryScreen', () => {
       expect(screen.getAllByText('ma street 1 ma ville')).toHaveLength(2)
     })
 
+    // TODO (igabriele, 2025-08-08): Is this case even possible?
     it('should render component with new sections and empty address data', async () => {
       vi.spyOn(api, 'getOfferer').mockResolvedValue(
         defaultGetOffererResponseModel
       )
-      customContext.offer = getIndividualOfferFactory({
+
+      contextValuesWithDraftOffer.offer = getIndividualOfferFactory({
         isEvent: true,
         address: null,
       })
+      const contextValues = {
+        offer: {
+          ...offerBase,
+          address: null,
+          // This is the condition determining if the venue address is displayed
+          isDigital: false, // TODO (igabriele, 2025-08-08): will be replaced by `isOfferSubcategoryOnline`.
+          subcategoryId: MOCKED_SUBCATEGORY.EVENT_OFFLINE.id,
+        },
+      }
 
-      renderIndividualOfferSummaryScreen({
-        contextValue: customContext,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        path: generatePath(
-          getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: 'AA' }
-        ),
-      })
+      renderIndividualOfferSummaryScreen({ contextValues, path })
 
       expect(await screen.findByText(/Structure/)).toBeInTheDocument()
       expect(
@@ -839,38 +772,20 @@ describe('IndividualOfferSummaryScreen', () => {
         )
       ).toHaveLength(2)
     })
-  })
 
-  describe('banners', () => {
     it('should display pre publishing banner in creation', () => {
-      const url = generatePath(
-        getIndividualOfferPath({
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode: OFFER_WIZARD_MODE.CREATION,
-        }),
-        { offerId: 'AA' }
-      )
-      renderIndividualOfferSummaryScreen({
-        contextValue: customContext,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        path: url,
-      })
+      const contextValues = { offer: draftOfferBase }
+
+      renderIndividualOfferSummaryScreen({ contextValues, path })
 
       expect(screen.getByText('Vous y êtes presque !')).toBeInTheDocument()
     })
 
     it('should display a notification when saving as draft', async () => {
-      renderIndividualOfferSummaryScreen({
-        contextValue: customContext,
-        mode: OFFER_WIZARD_MODE.CREATION,
-        path: generatePath(
-          getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          { offerId: 'AA' }
-        ),
-      })
+      const contextValues = { offer: draftOfferBase }
+
+      renderIndividualOfferSummaryScreen({ contextValues, path })
+
       await userEvent.click(
         screen.getByText('Sauvegarder le brouillon et quitter')
       )
@@ -879,244 +794,197 @@ describe('IndividualOfferSummaryScreen', () => {
       ).toBeInTheDocument()
     })
 
-    it('should not display pre publishing banner in edition mode', () => {
-      renderIndividualOfferSummaryScreen({
-        contextValue: customContext,
-        mode: OFFER_WIZARD_MODE.EDITION,
-        path: generatePath(
-          getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          }),
-          { offerId: 'AA' }
-        ),
-      })
+    const inOneMonth = set(add(new Date(), { months: 1 }), {
+      hours: 10,
+      minutes: 0,
+    })
+
+    it("should validate publication date and time when it's a scheduled publication", async () => {
+      vi.spyOn(api, 'getOfferer').mockImplementation(vi.fn())
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+        getIndividualOfferFactory()
+      )
+
+      const contextValues = { offer: draftOfferBase }
+
+      renderIndividualOfferSummaryScreen({ contextValues, path })
+
+      await userEvent.click(
+        screen.getByLabelText(LABELS.publicationModeLaterRadio)
+      )
+      await userEvent.click(
+        screen.getByRole('button', { name: LABELS.submitScheduledOfferButton })
+      )
 
       expect(
-        screen.queryByText('Vous y êtes presque !')
-      ).not.toBeInTheDocument()
-    })
-  })
-})
+        await screen.findByText(ERROR_MESSAGES.publicationDateIsRequired)
+      ).toBeVisible()
+      expect(
+        await screen.findByText(ERROR_MESSAGES.publicationTimeIsRequired)
+      ).toBeVisible()
 
-describe('Form', () => {
-  const inOneMonth = set(add(new Date(), { months: 1 }), {
-    hours: 10,
-    minutes: 0,
-  })
-
-  let contextValue: IndividualOfferContextValues
-  const mode = OFFER_WIZARD_MODE.CREATION
-  const options: RenderWithProvidersOptions = {
-    user: sharedCurrentUserFactory(),
-    storeOverrides: {
-      user: { currentUser: sharedCurrentUserFactory() },
-      offerer: currentOffererFactory(),
-    },
-  }
-
-  beforeEach(() => {
-    const categories = [
-      categoryFactory({
-        id: 'A',
-        proLabel: 'Catégorie A',
-        isSelectable: true,
-      }),
-    ]
-    const subCategories = [
-      subcategoryFactory({
-        id: 'virtual',
-        categoryId: 'A',
-        proLabel: 'Sous catégorie online de A',
-        isEvent: false,
-        canBeDuo: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
-      }),
-      subcategoryFactory({
-        id: 'physical',
-        categoryId: 'A',
-        proLabel: 'Sous catégorie offline de A',
-        isEvent: false,
-        conditionalFields: ['ean'],
-        canBeDuo: true,
-        canBeWithdrawable: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-      }),
-    ]
-
-    contextValue = individualOfferContextValuesFactory({
-      categories,
-      offer: getIndividualOfferFactory({ id: 1 }),
-      subCategories,
-    })
-
-    vi.spyOn(api, 'getOfferer').mockImplementation(vi.fn())
-    vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
-      getIndividualOfferFactory()
-    )
-  })
-
-  afterEach(() => {
-    vi.clearAllMocks()
-  })
-
-  it("should validate publication date and time when it's a scheduled publication", async () => {
-    renderIndividualOfferSummaryScreen({ contextValue, mode, options })
-
-    await userEvent.click(
-      screen.getByLabelText(LABELS.publicationModeLaterRadio)
-    )
-    await userEvent.click(
-      screen.getByRole('button', { name: LABELS.submitScheduledOfferButton })
-    )
-
-    expect(
-      await screen.findByText(ERROR_MESSAGES.publicationDateIsRequired)
-    ).toBeVisible()
-    expect(
-      await screen.findByText(ERROR_MESSAGES.publicationTimeIsRequired)
-    ).toBeVisible()
-
-    const publicationDateInput = screen.getByLabelText(
-      LABELS.publicationDateInput
-    )
-    const publicationTimeSelect = screen.getByLabelText(
-      LABELS.publicationTimeSelect
-    )
-
-    await userEvent.type(publicationDateInput, format(inOneMonth, 'yyyy-MM-dd'))
-
-    expect(
-      screen.queryByText(ERROR_MESSAGES.publicationDateIsRequired)
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByText(ERROR_MESSAGES.publicationDateMustBeInFuture)
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByText(ERROR_MESSAGES.publicationTimeIsRequired)
-    ).toBeVisible()
-
-    await userEvent.selectOptions(
-      publicationTimeSelect,
-      format(inOneMonth, 'HH:mm')
-    )
-
-    expect(
-      screen.queryByTestId('error-publicationDate')
-    ).not.toBeInTheDocument()
-
-    await userEvent.click(
-      screen.getByRole('button', { name: LABELS.submitScheduledOfferButton })
-    )
-
-    expect(api.patchPublishOffer).toHaveBeenCalledWith({
-      id: contextValue.offer!.id,
-      publicationDatetime: expect.any(String),
-      bookingAllowedDatetime: undefined,
-    })
-  })
-
-  it("should require publication date to be in the future when it's a scheduled publication", async () => {
-    const yesterday = set(sub(new Date(), { days: 1 }), {
-      hours: 10,
-      minutes: 0,
-    })
-
-    renderIndividualOfferSummaryScreen({ contextValue, mode, options })
-
-    await userEvent.click(
-      screen.getByLabelText(LABELS.publicationModeLaterRadio)
-    )
-
-    const publicationDateInput = screen.getByLabelText(
-      LABELS.publicationDateInput
-    )
-    const publicationTimeSelect = screen.getByLabelText(
-      LABELS.publicationTimeSelect
-    )
-
-    await userEvent.type(publicationDateInput, format(yesterday, 'yyyy-MM-dd'))
-    await userEvent.selectOptions(
-      publicationTimeSelect,
-      format(yesterday, 'HH:mm')
-    )
-
-    expect(
-      await screen.findByText(ERROR_MESSAGES.publicationDateMustBeInFuture)
-    ).toBeVisible()
-
-    await userEvent.clear(publicationDateInput)
-    await userEvent.type(publicationDateInput, format(inOneMonth, 'yyyy-MM-dd'))
-
-    expect(
-      screen.queryByTestId('error-publicationDate')
-    ).not.toBeInTheDocument()
-
-    await userEvent.click(
-      screen.getByRole('button', { name: LABELS.submitScheduledOfferButton })
-    )
-
-    expect(api.patchPublishOffer).toHaveBeenCalledWith({
-      id: contextValue.offer!.id,
-      publicationDatetime: expect.any(String),
-      bookingAllowedDatetime: undefined,
-    })
-  })
-
-  it("should require publication date to be within two years when it's a scheduled publication", async () => {
-    const inMoreThanTwoYears = set(add(new Date(), { months: 25 }), {
-      hours: 10,
-      minutes: 0,
-    })
-
-    renderIndividualOfferSummaryScreen({ contextValue, mode, options })
-
-    await userEvent.click(
-      screen.getByLabelText(LABELS.publicationModeLaterRadio)
-    )
-
-    const publicationDateInput = screen.getByLabelText(
-      LABELS.publicationDateInput
-    )
-    const publicationTimeSelect = screen.getByLabelText(
-      LABELS.publicationTimeSelect
-    )
-
-    await userEvent.type(
-      publicationDateInput,
-      format(inMoreThanTwoYears, 'yyyy-MM-dd')
-    )
-    await userEvent.selectOptions(
-      publicationTimeSelect,
-      format(inMoreThanTwoYears, 'HH:mm')
-    )
-
-    expect(
-      await screen.findByText(
-        ERROR_MESSAGES.publicationDateMustBeWithinTwoYears
+      const publicationDateInput = screen.getByLabelText(
+        LABELS.publicationDateInput
       )
-    ).toBeVisible()
+      const publicationTimeSelect = screen.getByLabelText(
+        LABELS.publicationTimeSelect
+      )
 
-    await act(() =>
-      fireEvent.input(publicationDateInput, {
-        target: {
-          value: format(inOneMonth, 'yyyy-MM-dd'),
-        },
+      await userEvent.type(
+        publicationDateInput,
+        format(inOneMonth, 'yyyy-MM-dd')
+      )
+
+      expect(
+        screen.queryByText(ERROR_MESSAGES.publicationDateIsRequired)
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(ERROR_MESSAGES.publicationDateMustBeInFuture)
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(ERROR_MESSAGES.publicationTimeIsRequired)
+      ).toBeVisible()
+
+      await userEvent.selectOptions(
+        publicationTimeSelect,
+        format(inOneMonth, 'HH:mm')
+      )
+
+      expect(
+        screen.queryByTestId('error-publicationDate')
+      ).not.toBeInTheDocument()
+
+      await userEvent.click(
+        screen.getByRole('button', { name: LABELS.submitScheduledOfferButton })
+      )
+
+      expect(api.patchPublishOffer).toHaveBeenCalledWith({
+        id: 1,
+        publicationDatetime: expect.any(String),
+        bookingAllowedDatetime: undefined,
       })
-    )
+    })
 
-    expect(
-      screen.queryByTestId('error-publicationDate')
-    ).not.toBeInTheDocument()
+    it("should require publication date to be in the future when it's a scheduled publication", async () => {
+      vi.spyOn(api, 'getOfferer').mockImplementation(vi.fn())
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+        getIndividualOfferFactory()
+      )
 
-    await userEvent.click(
-      screen.getByRole('button', { name: LABELS.submitScheduledOfferButton })
-    )
+      const contextValues = { offer: draftOfferBase }
 
-    expect(api.patchPublishOffer).toHaveBeenCalledWith({
-      id: contextValue.offer!.id,
-      publicationDatetime: expect.any(String),
-      bookingAllowedDatetime: undefined,
+      renderIndividualOfferSummaryScreen({ contextValues, path })
+
+      await userEvent.click(
+        screen.getByLabelText(LABELS.publicationModeLaterRadio)
+      )
+
+      const publicationDateInput = screen.getByLabelText(
+        LABELS.publicationDateInput
+      )
+      const publicationTimeSelect = screen.getByLabelText(
+        LABELS.publicationTimeSelect
+      )
+
+      const yesterday = set(sub(new Date(), { days: 1 }), {
+        hours: 10,
+        minutes: 0,
+      })
+      await userEvent.type(
+        publicationDateInput,
+        format(yesterday, 'yyyy-MM-dd')
+      )
+      await userEvent.selectOptions(
+        publicationTimeSelect,
+        format(yesterday, 'HH:mm')
+      )
+
+      expect(
+        await screen.findByText(ERROR_MESSAGES.publicationDateMustBeInFuture)
+      ).toBeVisible()
+
+      await userEvent.clear(publicationDateInput)
+      await userEvent.type(
+        publicationDateInput,
+        format(inOneMonth, 'yyyy-MM-dd')
+      )
+
+      expect(
+        screen.queryByTestId('error-publicationDate')
+      ).not.toBeInTheDocument()
+
+      await userEvent.click(
+        screen.getByRole('button', { name: LABELS.submitScheduledOfferButton })
+      )
+
+      expect(api.patchPublishOffer).toHaveBeenCalledWith({
+        id: 1,
+        publicationDatetime: expect.any(String),
+        bookingAllowedDatetime: undefined,
+      })
+    })
+
+    it("should require publication date to be within two years when it's a scheduled publication", async () => {
+      vi.spyOn(api, 'getOfferer').mockImplementation(vi.fn())
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+        getIndividualOfferFactory()
+      )
+
+      const contextValues = { offer: draftOfferBase }
+
+      renderIndividualOfferSummaryScreen({ contextValues, path })
+
+      await userEvent.click(
+        screen.getByLabelText(LABELS.publicationModeLaterRadio)
+      )
+
+      const publicationDateInput = screen.getByLabelText(
+        LABELS.publicationDateInput
+      )
+      const publicationTimeSelect = screen.getByLabelText(
+        LABELS.publicationTimeSelect
+      )
+
+      const inMoreThanTwoYears = set(add(new Date(), { months: 25 }), {
+        hours: 10,
+        minutes: 0,
+      })
+      await userEvent.type(
+        publicationDateInput,
+        format(inMoreThanTwoYears, 'yyyy-MM-dd')
+      )
+      await userEvent.selectOptions(
+        publicationTimeSelect,
+        format(inMoreThanTwoYears, 'HH:mm')
+      )
+
+      expect(
+        await screen.findByText(
+          ERROR_MESSAGES.publicationDateMustBeWithinTwoYears
+        )
+      ).toBeVisible()
+
+      await act(() =>
+        fireEvent.input(publicationDateInput, {
+          target: {
+            value: format(inOneMonth, 'yyyy-MM-dd'),
+          },
+        })
+      )
+
+      expect(
+        screen.queryByTestId('error-publicationDate')
+      ).not.toBeInTheDocument()
+
+      await userEvent.click(
+        screen.getByRole('button', { name: LABELS.submitScheduledOfferButton })
+      )
+
+      expect(api.patchPublishOffer).toHaveBeenCalledWith({
+        id: 1,
+        publicationDatetime: expect.any(String),
+        bookingAllowedDatetime: undefined,
+      })
     })
   })
 })

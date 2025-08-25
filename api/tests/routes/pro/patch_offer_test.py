@@ -1043,6 +1043,12 @@ class Returns400Test:
                 {"withdrawalType": "no_ticket"},
                 {"offer": ["Il ne peut pas y avoir de délai de retrait lorsqu'il s'agit d'un évènement sans ticket"]},
             ),
+            # TODO (igabriele, 2025-08-22): Investigate this dubious case and comment it if valid.
+            (
+                {"subcategoryId": subcategories.FESTIVAL_MUSIQUE.id, "name": "New name", "url": None},
+                {"withdrawalType": WithdrawalTypeEnum.NO_TICKET.value},
+                {"offer": ["Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"]},
+            ),
         ],
     )
     def when_sending_incorrect_patch_body_to_thing_offer(self, offer_data, patch_body, expected_response_json, client):

@@ -13,12 +13,17 @@ vi.mock('react-router', () => ({
 
 describe('ErrorBoundary', () => {
   it('should capture exception with Sentry', async () => {
+    vi.spyOn(console, 'error').mockImplementation(vi.fn())
     const error = new Error('Some error')
     vi.spyOn(router, 'useRouteError').mockReturnValue(error)
 
     render(<ErrorBoundary />)
 
     expect(screen.getByText('Page indisponible')).toBeInTheDocument()
+    expect(console.error).toHaveBeenCalledWith(
+      'ErrorBoundary caught an error:',
+      error
+    )
     await waitFor(() => {
       expect(Sentry.captureException).toHaveBeenCalledWith(error)
     })

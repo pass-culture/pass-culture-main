@@ -37,7 +37,7 @@ export type QuantityInputProps = Pick<
   /**
    * The quantity value. Should be `undefined` if the quantity is unlimited.
    */
-  value?: number
+  value?: number | null
   /**
    * The minimum value allowed for the quantity. Make sure it matches validation schema.
    */
@@ -155,7 +155,7 @@ export const QuantityInput = ({
       InputExtension={inputExtension}
       onChange={onQuantityChange}
       onBlur={onBlur}
-      value={isUnlimited ? '' : value === 0 ? '0' : value || ''}
+      value={isUnlimited ? '' : (value ?? '')}
       error={error}
       aria-label={ariaLabel}
     />

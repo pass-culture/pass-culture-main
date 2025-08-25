@@ -45,7 +45,7 @@ const renderIndividualOfferNavigation: RenderComponentFunction<
     ...params.options,
   }
 
-  renderWithProviders(
+  return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValues}>
       <IndividualOfferNavigation />
     </IndividualOfferContext.Provider>,
@@ -367,7 +367,7 @@ describe('IndividualOfferNavigation', () => {
         steps.find((listitem) =>
           listitem.textContent?.match(FF_LABELS.links.TIMETABLE)
         )
-      ).toBeDefined()
+      ).not.toBeDefined()
       expect(
         steps.find((listitem) =>
           listitem.textContent?.match(FF_LABELS.links.SUMMARY)

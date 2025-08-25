@@ -37,6 +37,7 @@ export interface IndividualOfferLayoutProps {
   venueHasPublishedOfferWithSameEan?: boolean
 }
 
+// TODO (igabriele, 2025-08-18): Get `offer` and `venueHasPublishedOfferWithSameEan` directly from context (DRY, complexity).
 export const IndividualOfferLayout = ({
   title,
   children,
