@@ -1,6 +1,10 @@
-import type { LocationFormValues, PhysicalAddressSubformValues } from './types'
+import { OFFER_LOCATION } from '../../commons/constants'
+import type {
+  NullableIfNonBoolean,
+  PhysicalAddressSubformValues,
+} from './types'
 
-export const DEFAULT_PHYSICAL_ADDRESS_SUBFORM_INITIAL_VALUES: PhysicalAddressSubformValues =
+export const EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES: NullableIfNonBoolean<PhysicalAddressSubformValues> =
   {
     addressAutocomplete: null,
     banId: null,
@@ -8,16 +12,12 @@ export const DEFAULT_PHYSICAL_ADDRESS_SUBFORM_INITIAL_VALUES: PhysicalAddressSub
     coords: null,
     inseeCode: null,
     isManualEdition: false,
+    isVenueAddress: false,
     latitude: null,
     locationLabel: null,
     longitude: null,
-    offerLocation: null,
+    offerLocation: OFFER_LOCATION.OTHER_ADDRESS,
     postalCode: null,
     'search-addressAutocomplete': null,
     street: null,
   }
-
-export const DEFAULT_LOCATION_FORM_INITIAL_VALUES: LocationFormValues = {
-  ...DEFAULT_PHYSICAL_ADDRESS_SUBFORM_INITIAL_VALUES,
-  url: null,
-}

@@ -16,7 +16,6 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import { hasFormChanged } from '@/commons/utils/hasFormChanged'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
@@ -94,18 +93,7 @@ export const IndividualOfferLocationScreen = ({
     shouldSendWarningMail = false
   ): Promise<void> => {
     if (mode === OFFER_WIZARD_MODE.EDITION) {
-      const hasAddressChanged = hasFormChanged({
-        form,
-        fields: [
-          'offerLocation',
-          'search-addressAutocomplete',
-          'street',
-          'postalCode',
-          'city',
-          'coords',
-        ],
-        initialValues,
-      })
+      const hasAddressChanged = form.getFieldState('address').isDirty
 
       const shouldDisplayUpdatesWarningModal =
         offer.hasPendingBookings && hasAddressChanged
@@ -166,10 +154,7 @@ export const IndividualOfferLocationScreen = ({
           <FormLayout fullWidthActions>
             <FormLayout.MandatoryInfo />
 
-            <LocationForm
-              offerVenue={offerVenue}
-              hasPublishedOfferWithSameEan={!!hasPublishedOfferWithSameEan}
-            />
+            <LocationForm offerVenue={offerVenue} />
           </FormLayout>
 
           <ActionBar

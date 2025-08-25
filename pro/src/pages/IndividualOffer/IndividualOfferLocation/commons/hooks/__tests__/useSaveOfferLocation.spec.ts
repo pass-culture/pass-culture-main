@@ -60,11 +60,8 @@ describe('useSaveOfferLocation', () => {
   let mutateMock: ReturnType<typeof vi.fn>
   let notificationMock: ReturnType<typeof useNotification>
 
-  // makeLocationFormValues now imported from shared test-utils
-
   beforeEach(() => {
     vi.clearAllMocks()
-
     vi.mocked(api.patchOffer).mockResolvedValue(offer)
     vi.mocked(getIndividualOfferUrl).mockReturnValue('/mock-url')
     vi.mocked(useLocation).mockReturnValue({
@@ -86,17 +83,10 @@ describe('useSaveOfferLocation', () => {
 
   it('saves and navigates to Useful Informations (read-only) in EDITION mode, updates cache, and sets local storage', async () => {
     const { saveAndContinue } = useSaveOfferLocation({ offer, setError })
-
-    const formValues = makeLocationFormValues({})
-    const requestBody: PatchOfferBodyModel = {
-      address: null,
-      shouldSendMail: true,
-      url: null,
-    }
+    const formValues = makeLocationFormValues({ address: null })
+    const requestBody: PatchOfferBodyModel = { shouldSendMail: true }
     vi.mocked(toPatchOfferBodyModel).mockReturnValueOnce(requestBody)
-
     await saveAndContinue({ formValues, shouldSendWarningMail: true })
-
     expect(toPatchOfferBodyModel).toHaveBeenCalledWith({
       offer,
       formValues,
@@ -104,12 +94,10 @@ describe('useSaveOfferLocation', () => {
     })
     expect(api.patchOffer).toHaveBeenCalledWith(offer.id, requestBody)
     expect(mutateMock).toHaveBeenCalledWith([GET_OFFER_QUERY_KEY, offer.id])
-
     expect(localStorageManager.setItemIfNone).toHaveBeenCalledWith(
       `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offer.id}`,
       'true'
     )
-
     expect(getIndividualOfferUrl).toHaveBeenCalledWith({
       offerId: offer.id,
       step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
@@ -126,12 +114,9 @@ describe('useSaveOfferLocation', () => {
     vi.mocked(useLocation).mockReturnValue({
       pathname: '/onboarding/create-offer',
     } as unknown as ReturnType<typeof useLocation>)
-
     const { saveAndContinue } = useSaveOfferLocation({ offer, setError })
-
-    const formValues = makeLocationFormValues({})
+    const formValues = makeLocationFormValues({ address: null })
     await saveAndContinue({ formValues })
-
     expect(toPatchOfferBodyModel).toHaveBeenCalledWith({
       offer,
       formValues,
@@ -139,7 +124,6 @@ describe('useSaveOfferLocation', () => {
     })
     expect(api.patchOffer).toHaveBeenCalled()
     expect(mutateMock).not.toHaveBeenCalled()
-
     expect(getIndividualOfferUrl).toHaveBeenCalledWith({
       offerId: offer.id,
       step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
@@ -157,14 +141,11 @@ describe('useSaveOfferLocation', () => {
 
   it('returns early when serialization throws (no API call or side-effects)', async () => {
     const { saveAndContinue } = useSaveOfferLocation({ offer, setError })
-
-    const formValues = makeLocationFormValues({})
+    const formValues = makeLocationFormValues({ address: null })
     vi.mocked(toPatchOfferBodyModel).mockImplementationOnce(() => {
       throw new Error('serialize')
     })
-
     await saveAndContinue({ formValues })
-
     expect(api.patchOffer).not.toHaveBeenCalled()
     expect(mutateMock).not.toHaveBeenCalled()
     expect(localStorageManager.setItemIfNone).not.toHaveBeenCalled()
@@ -176,15 +157,18 @@ describe('useSaveOfferLocation', () => {
 
   it('handles API error by setting field errors and notifying the user', async () => {
     const apiError = {
-      body: { address: 'Invalid address', postalCode: 'Invalid postal code' },
+      body: {
+        addressAutocomplete: 'Invalid address',
+        postalCode: 'Invalid postal code',
+      },
     }
     vi.mocked(api.patchOffer).mockRejectedValueOnce(apiError)
     vi.mocked(isErrorAPIError).mockReturnValue(true)
-
     const { saveAndContinue } = useSaveOfferLocation({ offer, setError })
-    await saveAndContinue({ formValues: makeLocationFormValues({}) })
-
-    expect(setError).toHaveBeenCalledWith('address', {
+    await saveAndContinue({
+      formValues: makeLocationFormValues({ address: null }),
+    })
+    expect(setError).toHaveBeenCalledWith('addressAutocomplete', {
       message: 'Invalid address',
     })
     expect(setError).toHaveBeenCalledWith('postalCode', {
@@ -198,10 +182,10 @@ describe('useSaveOfferLocation', () => {
   it('silently returns on non-API errors (no notifications or field errors)', async () => {
     vi.mocked(api.patchOffer).mockRejectedValueOnce(new Error('network'))
     vi.mocked(isErrorAPIError).mockReturnValue(false)
-
     const { saveAndContinue } = useSaveOfferLocation({ offer, setError })
-    await saveAndContinue({ formValues: makeLocationFormValues({}) })
-
+    await saveAndContinue({
+      formValues: makeLocationFormValues({ address: null }),
+    })
     expect(setError).not.toHaveBeenCalled()
     expect(notificationMock.error).not.toHaveBeenCalled()
     expect(navigateMock).not.toHaveBeenCalled()

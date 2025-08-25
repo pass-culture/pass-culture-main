@@ -1,9 +1,10 @@
-import type React from 'react'
-import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
+import type { AdresseData } from '@/apiClient/adresse/types.ts'
 import type { VenueListItemResponseModel } from '@/apiClient/v1'
+import { FrontendError } from '@/commons/errors/FrontendError'
+import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import fullBackIcon from '@/icons/full-back.svg'
@@ -11,11 +12,13 @@ import fullNextIcon from '@/icons/full-next.svg'
 import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
+import type { CustomEvent } from '@/ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
+import { EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES } from '../../../commons/constants'
 import type { LocationFormValues } from '../../../commons/types'
+import { AddressManualAdapter } from './AddressManualAdapter'
 import styles from './PhysicalLocationSubform.module.scss'
 
 export interface PhysicalLocationSubformProps {
@@ -29,64 +32,91 @@ export const PhysicalLocationSubform = ({
 }: PhysicalLocationSubformProps): JSX.Element => {
   const {
     register,
+    resetField,
     watch,
     setValue,
     formState: { errors },
   } = useFormContext<LocationFormValues>()
-  const isManualEdition = watch('isManualEdition')
-  const offerLocation = watch('offerLocation')
+  const isManualEdition = watch('address.isManualEdition')
+  const isVenueAddress = watch('address.isVenueAddress')
 
   const readOnlyFieldsForAddressManual = isDisabled
     ? ['street', 'postalCode', 'city', 'coords']
     : []
 
-  const [showOtherAddress, setShowOtherAddress] = useState(
-    offerLocation === OFFER_LOCATION.OTHER_ADDRESS
-  )
+  const toggleIsVenueAddress = () => {
+    const willBeVenueAddress = !isVenueAddress
 
-  const onChangePhysicalLocationSubform = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const isVenueAddress = event.target.value !== OFFER_LOCATION.OTHER_ADDRESS
-    setShowOtherAddress(!isVenueAddress)
-    setValue('isManualEdition', false)
-
-    if (isVenueAddress) {
-      // If here, the user chose to use the venue address so
-      // we reset the form fields with the related address values.
-
-      // Avoid crashes if the venue doesn't have an OA, but this shouldn't technically happens
-      if (!venue?.address) {
-        return
+    if (willBeVenueAddress) {
+      if (!venue.address) {
+        return handleUnexpectedError(
+          new FrontendError('`venue.address` is nullish.')
+        )
       }
 
-      setValue('inseeCode', venue.address.inseeCode ?? null)
-      setValue('banId', venue.address.banId ?? null)
-      setValue('city', venue.address.city)
-      setValue('latitude', venue.address.latitude.toString())
-      setValue('longitude', venue.address.longitude.toString())
+      setValue('address.inseeCode', venue.address.inseeCode ?? null)
+      setValue('address.banId', venue.address.banId ?? null)
+      setValue('address.city', venue.address.city)
+      setValue('address.latitude', venue.address.latitude.toString())
+      setValue('address.longitude', venue.address.longitude.toString())
       setValue(
-        'coords',
+        'address.coords',
         `${venue.address.latitude}, ${venue.address.longitude}`
       )
-      setValue('postalCode', venue.address.postalCode)
-      setValue('street', venue.address.street ?? null)
-      setValue('locationLabel', venue.address.label ?? null)
-      setValue('offerLocation', venue.address.id_oa.toString())
+      setValue('address.postalCode', venue.address.postalCode)
+      // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive a venue address without street since it's mandatory.
+      // @ts-expect-error
+      setValue('address.street', venue.address.street ?? null)
+      setValue('address.locationLabel', venue.address.label ?? null)
+      setValue('address.offerLocation', venue.address.id_oa.toString())
     } else {
-      setValue('locationLabel', null)
-      setValue('offerLocation', OFFER_LOCATION.OTHER_ADDRESS)
+      // @ts-expect-error We have to initialize with empty values to reset the address form.
+      setValue('address', EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES)
+    }
+
+    setValue('address.isManualEdition', false)
+    setValue('address.isVenueAddress', willBeVenueAddress)
+  }
+
+  const toggleIsManualEdition = () => {
+    const willBeManualEdition = !isManualEdition
+
+    if (willBeManualEdition) {
+      resetField('address')
+      setValue(
+        'address',
+        // @ts-expect-error We have to initialize with empty values to reset the address form.
+        {
+          ...EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES,
+          isManualEdition: true,
+        },
+        { shouldDirty: false }
+      )
+    } else {
+      setValue('address.isManualEdition', false)
     }
   }
 
-  const toggleManuallySetAddress = () => {
-    setValue('isManualEdition', !isManualEdition)
+  const updateAddressFromAutocomplete = (nextAddress: AdresseData) => {
+    setValue('address.banId', nextAddress.id)
+    setValue('address.city', nextAddress.city)
+    setValue('address.inseeCode', nextAddress.inseeCode)
+    setValue('address.isManualEdition', false)
+    setValue('address.latitude', String(nextAddress.latitude))
+    setValue('address.longitude', String(nextAddress.longitude))
+    setValue('address.postalCode', nextAddress.postalCode)
+    setValue('address.street', nextAddress.address, {
+      shouldValidate: true,
+    })
   }
 
-  const venueAddress = venue?.address
-    ? computeAddressDisplayName(venue.address, false)
-    : null
-  const venueFullText = `${venue?.publicName || venue?.name} – ${venueAddress}`
+  const updateAutoCompleteInput = (e: CustomEvent<'change'>) => {
+    setValue('address.addressAutocomplete', e.target.value)
+  }
+
+  const venueFullText = `${venue.publicName || venue.name} – ${
+    venue.address ? computeAddressDisplayName(venue.address, false) : null
+  }`
 
   return (
     <>
@@ -104,36 +134,36 @@ export const PhysicalLocationSubform = ({
             value: OFFER_LOCATION.OTHER_ADDRESS,
           },
         ]}
-        checkedOption={offerLocation ?? undefined}
-        onChange={onChangePhysicalLocationSubform}
+        checkedOption={watch('address.offerLocation')}
+        onChange={toggleIsVenueAddress}
         disabled={isDisabled}
       />
-      {showOtherAddress && (
+
+      {!isVenueAddress && (
         <div className={styles['other-address-wrapper']}>
           <FormLayout.Row className={styles['location-row']}>
             <TextInput
-              {...register('locationLabel')}
+              {...register('address.locationLabel')}
               label="Intitulé de la localisation"
               disabled={isDisabled}
             />
           </FormLayout.Row>
           <FormLayout.Row>
+            {/*
+              TODO (igabriele, 2025-08-25): Investigate ref issue in `AddressSelect`.
+
+              We can't use `register` here because it produces a warning in console:
+              `Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?`
+            */}
             <AddressSelect
-              {...register('addressAutocomplete')}
               label="Adresse postale"
+              name="address.addressAutocomplete"
               disabled={isManualEdition || isDisabled}
               className={styles['location-field']}
-              error={errors.addressAutocomplete?.message}
-              onAddressChosen={(addressData) => {
-                setValue('isManualEdition', false)
-                setValue('street', addressData.address)
-                setValue('postalCode', addressData.postalCode)
-                setValue('city', addressData.city)
-                setValue('latitude', String(addressData.latitude))
-                setValue('longitude', String(addressData.longitude))
-                setValue('banId', addressData.id)
-                setValue('inseeCode', addressData.inseeCode)
-              }}
+              error={errors.address?.addressAutocomplete?.message}
+              onAddressChosen={updateAddressFromAutocomplete}
+              onChange={updateAutoCompleteInput}
+              value={watch('address.addressAutocomplete') ?? undefined}
             />
           </FormLayout.Row>
 
@@ -141,7 +171,7 @@ export const PhysicalLocationSubform = ({
             <Button
               variant={ButtonVariant.QUATERNARY}
               icon={isManualEdition ? fullBackIcon : fullNextIcon}
-              onClick={toggleManuallySetAddress}
+              onClick={toggleIsManualEdition}
               disabled={isDisabled}
             >
               {isManualEdition
@@ -151,7 +181,10 @@ export const PhysicalLocationSubform = ({
           </FormLayout.Row>
 
           {isManualEdition && (
-            <AddressManual readOnlyFields={readOnlyFieldsForAddressManual} />
+            // Use adapter to map flat field expectations of AddressManual to nested address.* structure
+            <AddressManualAdapter
+              readOnlyFields={readOnlyFieldsForAddressManual}
+            />
           )}
         </div>
       )}

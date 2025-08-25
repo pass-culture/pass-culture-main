@@ -1,22 +1,22 @@
+import { EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES } from '../constants'
 import type { LocationFormValues } from '../types'
 
-export const makeLocationFormValues = <T extends Partial<LocationFormValues>>(
+export const makeLocationFormValues = <
+  T extends Partial<
+    Omit<LocationFormValues, 'address'> & {
+      address: Partial<LocationFormValues['address']>
+    }
+  >,
+>(
   overrides: T
-) =>
-  ({
-    addressAutocomplete: null,
-    banId: null,
-    city: null,
-    coords: null,
-    inseeCode: null,
-    isManualEdition: false,
-    latitude: null,
-    locationLabel: null,
-    longitude: null,
-    offerLocation: null,
-    postalCode: null,
-    'search-addressAutocomplete': null,
-    street: null,
-    url: null,
-    ...overrides,
-  }) as Omit<LocationFormValues, keyof T> & T
+): Omit<LocationFormValues, keyof T> & T => {
+  return {
+    address: overrides.address
+      ? {
+          ...EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES,
+          ...overrides.address,
+        }
+      : null,
+    url: overrides.url ?? null,
+  } as Omit<LocationFormValues, keyof T> & T
+}

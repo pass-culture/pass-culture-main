@@ -1,25 +1,21 @@
 import * as yup from 'yup'
 
 import { checkCoords } from '@/commons/utils/coords'
+import { removeQuotes } from '@/commons/utils/removeQuotes'
 import { nonEmptyStringOrNull } from '@/commons/utils/yup/nonEmptyStringOrNull'
 import { offerFormUrlRegex } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
 
 import { OFFER_LOCATION } from '../../../commons/constants'
-import type { LocationFormValues } from '../types'
+import type { LocationFormValues, PhysicalAddressSubformValues } from '../types'
 
-export const getValidationSchema = ({
-  isOfferSubcategoryOnline,
-}: {
-  isOfferSubcategoryOnline: boolean
-}) => {
-  return yup.object<LocationFormValues>().shape({
+export const PhysicalLocationValidationSchema = yup
+  .object<PhysicalAddressSubformValues>()
+  .shape({
     addressAutocomplete: nonEmptyStringOrNull().when(
       ['offerLocation', 'isManualEdition'],
       {
         is: (offerLocation: string, isManualEdition: boolean) =>
-          !isOfferSubcategoryOnline &&
-          offerLocation === OFFER_LOCATION.OTHER_ADDRESS &&
-          !isManualEdition,
+          offerLocation === OFFER_LOCATION.OTHER_ADDRESS && !isManualEdition,
         then: (schema) =>
           schema.nonNullable(
             'Veuillez sélectionner une adresse parmi les suggestions'
@@ -27,51 +23,88 @@ export const getValidationSchema = ({
       }
     ),
     banId: nonEmptyStringOrNull(),
-    city: nonEmptyStringOrNull().when(['offerLocation'], {
-      is: (offerLocation: string) =>
-        !isOfferSubcategoryOnline &&
-        offerLocation === OFFER_LOCATION.OTHER_ADDRESS,
-      then: (schema) => schema.nonNullable('Veuillez renseigner une ville'),
-    }),
-    coords: nonEmptyStringOrNull().when(['offerLocation', 'isManualEdition'], {
-      is: (offerLocation: string, isManualEdition: boolean) =>
-        !isOfferSubcategoryOnline &&
-        offerLocation === OFFER_LOCATION.OTHER_ADDRESS &&
-        isManualEdition,
+    city: yup
+      .string()
+      .trim()
+      .defined()
+      .transform((value: string | null) =>
+        typeof value === 'string' ? removeQuotes(value) : value
+      )
+      .when(['offerLocation'], {
+        is: (offerLocation: string) =>
+          offerLocation === OFFER_LOCATION.OTHER_ADDRESS,
+        then: (schema) => schema.required('Veuillez renseigner une ville'),
+      }),
+    coords: nonEmptyStringOrNull().when(['isManualEdition'], {
+      is: (isManualEdition: boolean) => isManualEdition,
       then: (schema) =>
         schema
-          .nonNullable('Veuillez renseigner les coordonnées GPS')
+          .required('Veuillez renseigner les coordonnées GPS')
           .test('coords', 'Veuillez respecter le format attendu', (value) =>
             checkCoords(value)
           ),
     }),
     inseeCode: nonEmptyStringOrNull(),
     isManualEdition: yup.boolean().defined(),
-    latitude: nonEmptyStringOrNull(),
+    isVenueAddress: yup
+      .boolean()
+      .when('offerLocation', {
+        is: (offerLocation: string) =>
+          offerLocation !== OFFER_LOCATION.OTHER_ADDRESS,
+        then: (schema) => schema.transform(() => true),
+        otherwise: (schema) => schema.transform(() => false),
+      })
+      .defined(),
+    latitude: yup.string().trim().defined(),
     locationLabel: nonEmptyStringOrNull(),
-    longitude: nonEmptyStringOrNull(),
-    offerLocation: nonEmptyStringOrNull().when({
-      is: () => !isOfferSubcategoryOnline,
-      then: (schema) => schema.nonNullable('Veuillez sélectionner un choix'),
-    }),
-    postalCode: nonEmptyStringOrNull()
+    longitude: yup.string().trim().defined(),
+    offerLocation: yup
+      .string()
+      .default(OFFER_LOCATION.OTHER_ADDRESS)
+      .defined()
+      .required('Veuillez sélectionner un choix'),
+    postalCode: yup
+      .string()
+      .trim()
+      .defined()
       .when(['offerLocation'], {
         is: (offerLocation: string) =>
-          !isOfferSubcategoryOnline &&
           offerLocation === OFFER_LOCATION.OTHER_ADDRESS,
-        then: (schema) =>
-          schema.nonNullable('Veuillez renseigner un code postal'),
+        then: (schema) => schema.required('Veuillez renseigner un code postal'),
       })
       .min(5, 'Veuillez renseigner un code postal valide')
       .max(5, 'Veuillez renseigner un code postal valide'),
     'search-addressAutocomplete': nonEmptyStringOrNull(),
-    street: nonEmptyStringOrNull().when(['offerLocation'], {
-      is: (offerLocation: string) =>
-        !isOfferSubcategoryOnline &&
-        offerLocation === OFFER_LOCATION.OTHER_ADDRESS,
-      then: (schema) =>
-        schema.nonNullable('Veuillez renseigner une adresse postale'),
-    }),
+    street: yup
+      .string()
+      .trim()
+      .defined()
+      .transform((value: string | null) =>
+        typeof value === 'string' ? removeQuotes(value) : value
+      )
+      .when(['offerLocation'], {
+        is: (offerLocation: string) =>
+          offerLocation === OFFER_LOCATION.OTHER_ADDRESS,
+        then: (schema) =>
+          schema.required('Veuillez renseigner une adresse postale'),
+      }),
+  })
+
+export const getValidationSchema = ({
+  isOfferSubcategoryOnline,
+}: {
+  isOfferSubcategoryOnline: boolean
+}) => {
+  return yup.object<LocationFormValues>().shape({
+    address: yup
+      .mixed<PhysicalAddressSubformValues>()
+      .nullable()
+      .defined()
+      .when({
+        is: () => isOfferSubcategoryOnline,
+        then: () => yup.mixed().nullable().defined(),
+        otherwise: () => PhysicalLocationValidationSchema.defined(),
+      }),
     url: nonEmptyStringOrNull().when({
       is: () => isOfferSubcategoryOnline,
       then: (schema) =>

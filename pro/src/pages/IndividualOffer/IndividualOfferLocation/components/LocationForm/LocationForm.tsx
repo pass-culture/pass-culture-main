@@ -15,19 +15,16 @@ import styles from './LocationForm.module.scss'
 import { PhysicalLocationSubform } from './PhysicalLocationSubform/PhysicalLocationSubform'
 
 export interface LocationFormProps {
-  hasPublishedOfferWithSameEan: boolean
   offerVenue: VenueListItemResponseModel
 }
-export const LocationForm = ({
-  hasPublishedOfferWithSameEan,
-  offerVenue,
-}: LocationFormProps) => {
+export const LocationForm = ({ offerVenue }: LocationFormProps) => {
   const {
     register,
     formState: { errors },
   } = useFormContext<LocationFormValues>()
 
-  const { offer, subCategories } = useIndividualOfferContext()
+  const { hasPublishedOfferWithSameEan, offer, subCategories } =
+    useIndividualOfferContext()
   assertOrFrontendError(offer, '`offer` is undefined in LocationForm.')
 
   const isOfferOnline = getIsOfferSubcategoryOnline(offer, subCategories)
