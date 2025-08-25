@@ -38,14 +38,35 @@ def _get_venue_rows(origin: int | None, destination: int | None) -> typing.Itera
     if origin and destination:
         yield from [{ORIGIN_VENUE_ID_HEADER: origin, DESTINATION_VENUE_ID_HEADER: destination}]
     else:
+        list_files_recursive(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         namespace_dir = os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             "flask",
             os.path.dirname(__file__).split("/")[-1],
         )
-        with open(f"{namespace_dir}/venues_to_move.csv", "r", encoding="utf-8") as csv_file:
-            csv_rows = csv.DictReader(csv_file, delimiter=",")
-            yield from csv_rows
+        try:
+            with open(f"{namespace_dir}/venues_to_move.csv", "r", encoding="utf-8") as csv_file:
+                csv_rows = csv.DictReader(csv_file, delimiter=",")
+                yield from csv_rows
+        except FileNotFoundError:
+            namespace_dir = os.path.join(
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                os.path.dirname(__file__).split("/")[-1],
+            )
+            with open(f"{namespace_dir}/venues_to_move.csv", "r", encoding="utf-8") as csv_file:
+                csv_rows = csv.DictReader(csv_file, delimiter=",")
+                yield from csv_rows
+
+
+def list_files_recursive(path: str) -> None:
+    for entry in os.listdir(path):
+        full_path = os.path.join(path, entry)
+        if os.path.isdir(full_path):
+            list_files_recursive(full_path)
+        else:
+            IGNORED_SUFFIXES = (".pyc", ".py", "__pycache__")
+            if not any([full_path.endswith(suffix) for suffix in IGNORED_SUFFIXES]):
+                print(full_path)
 
 
 def _extract_invalid_venues_to_csv(invalid_venues: list[tuple[int, int, str]]) -> None:
@@ -321,8 +342,10 @@ def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int |
                         on_commit(partial(search.reindex_venue_ids, [origin_venue_id]))
                     logger.info("Transfer done for venue %d to venue %d", origin_venue_id, destination_venue_id)
             except sa_exc.SQLAlchemyError:
+                print(traceback.format_exc())
                 invalid_venues.append((origin_venue.id, destination_venue.id, "SQL error: " + traceback.format_exc()))
             except Exception:
+                print(traceback.format_exc())
                 invalid_venues.append(
                     (origin_venue.id, destination_venue.id, "Python exception: " + traceback.format_exc())
                 )
