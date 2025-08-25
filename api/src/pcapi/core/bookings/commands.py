@@ -56,6 +56,7 @@ def cancel_unstored_external_bookings() -> None:
 
 @blueprint.cli.command("cancel_ems_external_bookings")
 @cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 @cron_decorators.cron_require_feature(FeatureToggle.EMS_CANCEL_PENDING_EXTERNAL_BOOKING)
 def cancel_ems_external_bookings() -> None:
     api.cancel_ems_external_bookings()
