@@ -11,8 +11,8 @@ import { getIsOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/get
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import type { LocationFormValues } from '../../commons/types'
-import { PhysicalLocationSubform } from '../PhysicalLocationSubform/PhysicalLocationSubform'
 import styles from './LocationForm.module.scss'
+import { PhysicalLocationSubform } from './PhysicalLocationSubform/PhysicalLocationSubform'
 
 export interface LocationFormProps {
   hasPublishedOfferWithSameEan: boolean

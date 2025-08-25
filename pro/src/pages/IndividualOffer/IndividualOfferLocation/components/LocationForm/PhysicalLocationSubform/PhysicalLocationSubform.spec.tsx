@@ -20,7 +20,7 @@ import {
 } from '@/commons/utils/renderWithProviders'
 import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
 
-import type { LocationFormValues } from '../../commons/types'
+import type { LocationFormValues } from '../../../commons/types'
 import {
   PhysicalLocationSubform,
   type PhysicalLocationSubformProps,
