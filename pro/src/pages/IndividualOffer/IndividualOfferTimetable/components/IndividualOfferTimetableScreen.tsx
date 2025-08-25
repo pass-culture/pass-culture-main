@@ -5,6 +5,7 @@ import { api } from '@/apiClient/api'
 import {
   type GetIndividualOfferWithAddressResponseModel,
   type GetOfferStockResponseModel,
+  type GetVenueResponseModel,
   SubcategoryIdEnum,
   type WeekdayOpeningHoursTimespans,
 } from '@/apiClient/v1'
@@ -15,6 +16,7 @@ import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGr
 import { StocksCalendar } from '@/pages/IndividualOffer/IndividualOfferTimetable/components/StocksCalendar/StocksCalendar'
 
 import { areOpeningHoursEmpty } from '../commons/areOpeningHoursEmpty'
+import { getTimetableDefaultOpeningHours } from '../commons/getTimetableDefaultOpeningHours'
 import type { IndividualOfferTimetableFormValues } from '../commons/types'
 import { validationSchema } from '../commons/validationSchema'
 import styles from './IndividualOfferTimetableScreen.module.scss'
@@ -25,6 +27,7 @@ type IndividualOfferTimetableScreenProps = {
   mode: OFFER_WIZARD_MODE
   openingHours?: WeekdayOpeningHoursTimespans | null
   stocks?: GetOfferStockResponseModel[]
+  venue?: GetVenueResponseModel
 }
 
 const DISABLED_OPENING_HOURS_CATEGORIES: SubcategoryIdEnum[] = [
@@ -40,21 +43,27 @@ export function IndividualOfferTimetableScreen({
   mode,
   openingHours,
   stocks,
+  venue,
 }: IndividualOfferTimetableScreenProps) {
   const isNewOfferCreationFlowFFEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
 
-  const openingHoursEmpty = areOpeningHoursEmpty(openingHours)
+  const prefilledOpeningHours = getTimetableDefaultOpeningHours({
+    offerOpeningHours: openingHours,
+    venueOpeningHours: venue?.openingHours,
+  })
+
+  const prefilledOpeningHoursEmpty = areOpeningHoursEmpty(prefilledOpeningHours)
 
   const form = useForm<IndividualOfferTimetableFormValues>({
     defaultValues: {
-      timetableType: openingHoursEmpty ? 'calendar' : 'openingHours',
-      openingHours: openingHours,
+      timetableType: prefilledOpeningHoursEmpty ? 'calendar' : 'openingHours',
+      openingHours: prefilledOpeningHours,
       startDate: undefined,
       noEndDate: true,
       quantityPerPriceCategories:
-        !openingHoursEmpty && stocks && stocks.length > 0
+        !prefilledOpeningHoursEmpty && stocks && stocks.length > 0
           ? stocks.map((stock) => ({
               priceCategory: stock.priceCategoryId?.toString(),
               quantity: stock.quantity,
@@ -74,7 +83,7 @@ export function IndividualOfferTimetableScreen({
     offer.isEvent &&
     !DISABLED_OPENING_HOURS_CATEGORIES.includes(offer.subcategoryId) &&
     mode === OFFER_WIZARD_MODE.CREATION &&
-    openingHoursEmpty &&
+    prefilledOpeningHoursEmpty &&
     !offer.hasStocks
 
   const timetableType = form.watch('timetableType')
