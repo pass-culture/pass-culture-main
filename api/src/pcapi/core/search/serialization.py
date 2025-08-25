@@ -320,6 +320,9 @@ class AlgoliaSerializationMixin:
             "_geoloc": position(venue, offer),
         }
 
+        if offer.thumbUrl:
+            object_to_index["_tags"] = ["hasImage"]
+
         if offer.subcategory.category.id == pro_categories.LIVRE.id and gtl:
             object_to_index["offer"]["gtl_level1"] = gtl.get("level_01_label")
             object_to_index["offer"]["gtl_level2"] = gtl.get("level_02_label")

@@ -447,6 +447,13 @@ def test_serialize_offer_artists_without_image():
     assert serialized["artists"][0]["image"] == offer.thumbUrl
 
 
+def test_serialize_offer_with_image_tag():
+    offer = offers_factories.MediationFactory().offer
+
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
+    assert serialized["_tags"] == ["hasImage"]
+
+
 def test_filter_artists():
     offer = offers_factories.OfferFactory(
         extraData={
