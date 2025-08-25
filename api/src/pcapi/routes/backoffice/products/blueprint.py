@@ -113,6 +113,7 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
             offers_models.Offer.name,
             offers_models.Offer.dateCreated,
             offers_models.Offer.publicationDatetime,
+            offers_models.Offer.bookingAllowedDatetime,
             offers_models.Offer.validation,
         ),
         sa_orm.selectinload(offers_models.Offer.stocks).options(

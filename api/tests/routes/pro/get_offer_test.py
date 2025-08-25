@@ -177,7 +177,7 @@ class Returns200Test:
             "lastProvider": None,
             "name": "Derrick",
             "id": stock.offer.id,
-            "status": "ACTIVE",
+            "status": "PUBLISHED",
             "isNonFreeOffer": None,
             "priceCategories": [{"label": "Au pied du mur", "price": 10.1, "id": stock.priceCategoryId}],
             "subcategoryId": "SEANCE_CINE",
