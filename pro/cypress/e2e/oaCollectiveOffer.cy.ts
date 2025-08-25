@@ -137,7 +137,7 @@ describe('Create collective offers with OA', () => {
         '',
         '',
         data.title,
-        `${format(data.date, 'dd/MM/yyyy')}18h30`,
+        `${format(data.date, 'dd/MM/yyyy')}`,
         venueName,
         data.institution,
         'publiée',

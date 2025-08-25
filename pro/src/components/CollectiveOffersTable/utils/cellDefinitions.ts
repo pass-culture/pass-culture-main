@@ -32,7 +32,7 @@ export function getCellsDefinition(): Record<CELLS, CellDefinition> {
     },
     EVENT_DATE: {
       id: 'offer-head-event-date',
-      title: 'Dates de l’évènement',
+      title: 'Dates',
     },
     VENUE: {
       id: 'offer-head-venue',
@@ -40,7 +40,7 @@ export function getCellsDefinition(): Record<CELLS, CellDefinition> {
     },
     LOCATION: {
       id: 'offer-head-location',
-      title: 'Localisation de l’offre',
+      title: 'Localisation',
     },
     STRUCTURE: {
       id: 'offer-head-structure',

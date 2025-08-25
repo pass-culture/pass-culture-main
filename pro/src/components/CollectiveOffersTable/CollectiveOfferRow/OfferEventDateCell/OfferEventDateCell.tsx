@@ -35,24 +35,6 @@ export const OfferEventDateCell = ({
   offer,
   className,
 }: OfferEventDateCellProps) => {
-  function formattedTime(hour: string | null | undefined) {
-    if (!hour) {
-      return
-    }
-    const offerStartDatetime = getOfferDate(hour, offer.isShowcase, offer.venue)
-
-    const timeFormatter = new Intl.DateTimeFormat('fr-FR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-
-    const formattedTime = timeFormatter
-      .format(offerStartDatetime)
-      .replace(':', 'h')
-
-    return formattedTime
-  }
-
   const getFormattedDatesForOffer = (offer: CollectiveOfferResponseModel) => {
     const offerDatetimes = offer.dates
 
@@ -107,11 +89,6 @@ export const OfferEventDateCell = ({
             {date}
           </span>
         ))}
-        {!offer.isShowcase && (
-          <span className={styles['offer-event-hours']}>
-            {formattedTime(offer.dates?.start)}
-          </span>
-        )}
       </div>
     </td>
   )

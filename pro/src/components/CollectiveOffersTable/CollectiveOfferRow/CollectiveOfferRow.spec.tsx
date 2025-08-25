@@ -97,9 +97,10 @@ describe('CollectiveOfferRow', () => {
         offer: collectiveOfferFactory({ imageUrl: null }),
       })
 
-      expect(
-        screen.getAllByRole('link', { name: 'offer name 3' })[0]
-      ).toBeInTheDocument()
+      const offer = screen.getByRole('link', {
+        name: 'offer name 3',
+      })
+      expect(offer).toBeInTheDocument()
     })
   })
 
@@ -107,7 +108,9 @@ describe('CollectiveOfferRow', () => {
     it('should contain a link with the offer name and details link', () => {
       renderOfferItem(props)
 
-      const offerTitle = screen.getByRole('link', { name: props.offer.name })
+      const offerTitle = screen.getByRole('link', {
+        name: props.offer.name,
+      })
       expect(offerTitle).toBeInTheDocument()
       expect(offerTitle).toHaveAttribute(
         'href',
@@ -193,16 +196,16 @@ describe('CollectiveOfferRow', () => {
         }),
       })
 
-      expect(screen.queryByText('Collège Bellevue')).toBeInTheDocument()
+      expect(screen.queryByText('Collège Bellevue - 30100')).toBeInTheDocument()
     })
 
-    it('should display acronym + city when educationalinstitution has no name', () => {
+    it('should display institution cell when offer is bookable', () => {
       renderOfferItem({
         ...props,
         offer: collectiveOfferFactory({
           educationalInstitution: {
             id: 1,
-            name: '',
+            name: 'Lycée Jean Moulin',
             city: 'Alès',
             postalCode: '30100',
             phoneNumber: '',
@@ -213,7 +216,7 @@ describe('CollectiveOfferRow', () => {
         }),
       })
 
-      expect(screen.queryByText('LYCEE Alès')).toBeInTheDocument()
+      expect(screen.getByText('Lycée Jean Moulin - 30100')).toBeInTheDocument()
     })
 
     it('should not display institution cell when isTemplateTable is true', () => {
@@ -607,7 +610,9 @@ describe('CollectiveOfferRow', () => {
       features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'],
     })
 
-    const offerTitle = screen.getByRole('link', { name: props.offer.name })
+    const offerTitle = screen.getByRole('link', {
+      name: props.offer.name,
+    })
     expect(offerTitle).toHaveAttribute(
       'href',
       `/offre/${props.offer.id}/collectif/recapitulatif`

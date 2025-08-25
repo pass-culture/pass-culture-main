@@ -2,7 +2,6 @@ import classNames from 'classnames'
 import { Link } from 'react-router'
 
 import type { CollectiveOfferResponseModel } from '@/apiClient/v1'
-import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cellDefinitions'
 import { Tag } from '@/design-system/Tag/Tag'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
 
@@ -12,18 +11,18 @@ export interface OfferNameCellProps {
   offer: CollectiveOfferResponseModel
   offerLink: string
   rowId: string
-  displayLabel?: boolean
   displayThumb?: boolean
   className?: string
+  isNewCollectiveOffersStructureActive: boolean
 }
 
 export const OfferNameCell = ({
   offer,
   offerLink,
   rowId,
-  displayLabel = false,
   displayThumb = false,
   className,
+  isNewCollectiveOffersStructureActive,
 }: OfferNameCellProps) => {
   return (
     <th
@@ -51,15 +50,10 @@ export const OfferNameCell = ({
         <div>
           {offer.isShowcase && <Tag label="Offre vitrine" />}
           <div className={styles['title-column-name']}>
-            {displayLabel && (
-              <span
-                className={styles['offers-table-cell-mobile-label']}
-                aria-hidden={true}
-              >
-                {`${getCellsDefinition().NAME.title} :`}
-              </span>
-            )}
-            {offer.name}
+            {!offer.isShowcase && isNewCollectiveOffersStructureActive ? (
+              <span>{`N°${offer.id}`}</span>
+            ) : null}
+            <span>{offer.name}</span>
           </div>
         </div>
       </Link>

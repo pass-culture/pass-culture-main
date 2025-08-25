@@ -35,25 +35,43 @@ const renderOfferInstitutionCell = (props: OfferInstitutionCellProps) =>
   )
 
 describe('OfferInstitutionCell', () => {
-  it('should display the full institution name when provided', () => {
-    renderOfferInstitutionCell(props)
+  it('should display the full institution name and postal code when provided', () => {
+    renderOfferInstitutionCell({
+      ...props,
+      educationalInstitution: {
+        ...props.educationalInstitution,
+        postalCode: '76000',
+      },
+    })
 
-    expect(screen.getByRole('cell')).toHaveTextContent('Collège Bellevue')
+    expect(screen.getByRole('cell')).toHaveTextContent(
+      'Collège Bellevue - 76000'
+    )
   })
 
   it('should display institutionType and city when name is not provided', () => {
-    props.educationalInstitution.name = ''
-
-    renderOfferInstitutionCell(props)
+    renderOfferInstitutionCell({
+      ...props,
+      educationalInstitution: {
+        ...props.educationalInstitution,
+        name: '',
+      },
+    })
 
     expect(screen.getByRole('cell')).toHaveTextContent('COLLEGE Rouen')
   })
 
-  it('should display "Tous les établissements" when institution type and city are empty', () => {
-    props.educationalInstitution.institutionType = ''
-    props.educationalInstitution.city = ''
-
-    renderOfferInstitutionCell(props)
+  it('should display "Tous les établissements" when institution name and postal code are empty', () => {
+    renderOfferInstitutionCell({
+      ...props,
+      educationalInstitution: {
+        ...props.educationalInstitution,
+        postalCode: '',
+        name: '',
+        institutionType: '',
+        city: '',
+      },
+    })
 
     expect(screen.getByRole('cell')).toHaveTextContent(
       'Tous les établissements'
@@ -61,10 +79,11 @@ describe('OfferInstitutionCell', () => {
   })
 
   it('should include custom class and headers attribute', () => {
-    props.rowId = 'row-42'
-    props.className = 'my-custom'
-
-    renderOfferInstitutionCell(props)
+    renderOfferInstitutionCell({
+      ...props,
+      rowId: 'row-42',
+      className: 'my-custom',
+    })
 
     const cell = screen.getByRole('cell')
     expect(cell).toHaveClass('my-custom')
