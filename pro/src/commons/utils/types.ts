@@ -3,11 +3,6 @@ export type AnyObject = {
   [key: string]: any
 }
 
-/** Props can be undefined but not omitted contrary to `Partial<T>`. */
-export type Undefinedable<T extends AnyObject> = {
-  [K in keyof T]: T[K] | undefined
-}
-
 export const hasProperty = <T extends string>(
   element: unknown,
   property: T

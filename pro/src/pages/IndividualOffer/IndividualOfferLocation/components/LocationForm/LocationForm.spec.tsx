@@ -51,7 +51,6 @@ const renderLocationForm: RenderComponentFunction<
   }
 > = (params) => {
   const props: LocationFormProps = {
-    hasPublishedOfferWithSameEan: false,
     offerVenue: makeVenueListItem({}),
     ...params.props,
   }
@@ -68,19 +67,22 @@ const renderLocationForm: RenderComponentFunction<
   const Component = () => {
     const formProviderProps = useForm<LocationFormValues>({
       defaultValues: {
-        addressAutocomplete: undefined,
-        banId: undefined,
-        city: undefined,
-        coords: undefined,
-        inseeCode: undefined,
-        isManualEdition: false,
-        latitude: undefined,
-        locationLabel: undefined,
-        longitude: undefined,
-        offerLocation: undefined,
-        postalCode: undefined,
-        'search-addressAutocomplete': undefined,
-        street: undefined,
+        address: {
+          addressAutocomplete: undefined,
+          banId: undefined,
+          city: undefined,
+          coords: undefined,
+          inseeCode: undefined,
+          isManualEdition: false,
+          isVenueAddress: false,
+          latitude: undefined,
+          locationLabel: undefined,
+          longitude: undefined,
+          offerLocation: undefined,
+          postalCode: undefined,
+          'search-addressAutocomplete': undefined,
+          street: undefined,
+        },
         url: undefined,
 
         ...params.formDefaultValues,

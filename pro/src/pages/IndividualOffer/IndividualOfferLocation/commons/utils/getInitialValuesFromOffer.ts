@@ -4,13 +4,12 @@ import type {
   GetIndividualOfferWithAddressResponseModel,
   VenueListItemResponseModel,
 } from '@/apiClient/v1'
-import type { Undefinedable } from '@/commons/utils/types'
-import { nonEmptyStringOrNull } from '@/commons/utils/yup/nonEmptyStringOrNull'
 
 import { OFFER_LOCATION } from '../../../commons/constants'
-import { DEFAULT_PHYSICAL_ADDRESS_SUBFORM_INITIAL_VALUES } from '../constants'
+import { EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES } from '../constants'
 import type { LocationFormValues, PhysicalAddressSubformValues } from '../types'
 
+// TODO (igabriele, 2025-08-25): Integrate the last rules in Yup schema and use schema.cast() here instead.
 function getPhysicalAddressSubformInitialValuesFromOffer(
   offer: GetIndividualOfferWithAddressResponseModel,
   {
@@ -20,9 +19,9 @@ function getPhysicalAddressSubformInitialValuesFromOffer(
     isOfferSubcategoryOnline: boolean
     offerVenue: VenueListItemResponseModel
   }
-): Undefinedable<PhysicalAddressSubformValues> {
+): PhysicalAddressSubformValues | null {
   if (isOfferSubcategoryOnline) {
-    return DEFAULT_PHYSICAL_ADDRESS_SUBFORM_INITIAL_VALUES
+    return null
   }
 
   if (offer.address) {
@@ -40,17 +39,20 @@ function getPhysicalAddressSubformInitialValuesFromOffer(
 
     return {
       addressAutocomplete,
-      banId: offer.address.banId,
+      banId: offer.address.banId ?? null,
       city: offer.address.city,
       coords,
-      inseeCode: offer.address.inseeCode,
+      inseeCode: offer.address.inseeCode ?? null,
       isManualEdition: offer.address.isManualEdition,
+      isVenueAddress: String(offerLocation) !== OFFER_LOCATION.OTHER_ADDRESS,
       latitude: String(offer.address.latitude),
-      locationLabel: offer.address.label,
+      locationLabel: offer.address.label ?? null,
       longitude: String(offer.address.longitude),
       offerLocation: String(offerLocation),
       postalCode: offer.address.postalCode,
       'search-addressAutocomplete': addressAutocomplete,
+      // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive an offer address without street since it's mandatory.
+      // @ts-expect-error
       street: offer.address.street,
     }
   } else if (offerVenue.address) {
@@ -61,17 +63,21 @@ function getPhysicalAddressSubformInitialValuesFromOffer(
       coords: `${offerVenue.address.latitude}, ${offerVenue.address.longitude}`,
       inseeCode: offerVenue.address.inseeCode ?? null,
       isManualEdition: false,
+      isVenueAddress: true,
       latitude: String(offerVenue.address.latitude),
       locationLabel: offerVenue.address.label ?? null,
       longitude: String(offerVenue.address.longitude),
       offerLocation: String(offerVenue.address.id_oa),
       postalCode: offerVenue.address.postalCode,
       'search-addressAutocomplete': null,
+      // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive a venue address without street since it's mandatory.
+      // @ts-expect-error
       street: offerVenue.address.street ?? null,
     }
   }
 
-  return DEFAULT_PHYSICAL_ADDRESS_SUBFORM_INITIAL_VALUES
+  // @ts-expect-error We have to initialize with empty values when we don't have an address.
+  return EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES
 }
 
 export function getInitialValuesFromOffer(
@@ -93,7 +99,7 @@ export function getInitialValuesFromOffer(
   // Build initial values without enforcing required constraints at mount time.
   // Normalize URL but allow null (CREATION mode can start without URL for online offers).
   return {
-    ...(physicalAddressInitialValues as LocationFormValues),
-    url: nonEmptyStringOrNull().cast(offer.url ?? null),
+    address: physicalAddressInitialValues,
+    url: offer.url ?? null,
   }
 }

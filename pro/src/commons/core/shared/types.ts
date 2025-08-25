@@ -21,7 +21,7 @@ export interface AccessibilityFormValues {
   none: boolean
 }
 
-//TO DO to be removed or used in the all app
+// TODO (igabriele, 2025-08-25): Only used by SignupJouneyForm, move it there.
 export interface Address {
   city: string
   latitude: number | null

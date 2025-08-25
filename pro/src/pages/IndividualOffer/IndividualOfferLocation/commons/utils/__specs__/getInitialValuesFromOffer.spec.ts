@@ -7,6 +7,7 @@ import {
 } from '@/commons/utils/factories/individualApiFactories'
 import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
 
+import { EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES } from '../../constants'
 import { getInitialValuesFromOffer } from '../getInitialValuesFromOffer'
 
 describe('getInitialValuesFromOffer', () => {
@@ -52,19 +53,21 @@ describe('getInitialValuesFromOffer', () => {
         )
 
         expect(result).toMatchObject({
-          'search-addressAutocomplete': addressAutocomplete,
-          addressAutocomplete,
-          banId: offer.address.banId,
-          city: offer.address.city,
-          coords: `${offer.address.latitude}, ${offer.address.longitude}`,
-          inseeCode: offer.address.inseeCode,
-          latitude: String(offer.address.latitude),
-          locationLabel: offer.address.label,
-          longitude: String(offer.address.longitude),
-          isManualEdition: offer.address.isManualEdition,
-          offerLocation: OFFER_LOCATION.OTHER_ADDRESS,
-          postalCode: offer.address.postalCode,
-          street: offer.address.street,
+          address: {
+            'search-addressAutocomplete': addressAutocomplete,
+            addressAutocomplete,
+            banId: offer.address.banId,
+            city: offer.address.city,
+            coords: `${offer.address.latitude}, ${offer.address.longitude}`,
+            inseeCode: offer.address.inseeCode,
+            isManualEdition: offer.address.isManualEdition,
+            latitude: String(offer.address.latitude),
+            locationLabel: offer.address.label,
+            longitude: String(offer.address.longitude),
+            offerLocation: OFFER_LOCATION.OTHER_ADDRESS,
+            postalCode: offer.address.postalCode,
+            street: offer.address.street,
+          },
           url: null,
         })
       })
@@ -99,7 +102,7 @@ describe('getInitialValuesFromOffer', () => {
 
         const result = getInitialValuesFromOffer(offer, params)
 
-        expect(result).toEqual(
+        expect(result.address).toEqual(
           expect.objectContaining({
             offerLocation: String(id_oa),
           })
@@ -126,16 +129,18 @@ describe('getInitialValuesFromOffer', () => {
         const result = getInitialValuesFromOffer(offerWithoutAddress, params)
 
         expect(result).toMatchObject({
-          banId: offerVenue.address.banId,
-          city: offerVenue.address.city,
-          coords: `${offerVenue.address.latitude}, ${offerVenue.address.longitude}`,
-          inseeCode: offerVenue.address.inseeCode,
-          latitude: String(offerVenue.address.latitude),
-          locationLabel: offerVenue.address.label,
-          longitude: String(offerVenue.address.longitude),
-          offerLocation: String(offerVenue.address.id_oa),
-          postalCode: offerVenue.address.postalCode,
-          street: offerVenue.address.street,
+          address: {
+            banId: offerVenue.address.banId,
+            city: offerVenue.address.city,
+            coords: `${offerVenue.address.latitude}, ${offerVenue.address.longitude}`,
+            inseeCode: offerVenue.address.inseeCode,
+            latitude: String(offerVenue.address.latitude),
+            locationLabel: offerVenue.address.label,
+            longitude: String(offerVenue.address.longitude),
+            offerLocation: String(offerVenue.address.id_oa),
+            postalCode: offerVenue.address.postalCode,
+            street: offerVenue.address.street,
+          },
           url: null,
         })
       })
@@ -158,10 +163,12 @@ describe('getInitialValuesFromOffer', () => {
         const result = getInitialValuesFromOffer(offerWithoutAddress, params)
 
         expect(result).toMatchObject({
-          banId: null,
-          inseeCode: null,
-          locationLabel: null,
-          street: null,
+          address: {
+            banId: null,
+            inseeCode: null,
+            locationLabel: null,
+            street: null,
+          },
         })
       })
     })
@@ -212,19 +219,7 @@ describe('getInitialValuesFromOffer', () => {
       )
 
       expect(result).toMatchObject({
-        addressAutocomplete: null,
-        banId: null,
-        city: null,
-        coords: null,
-        inseeCode: null,
-        latitude: null,
-        locationLabel: null,
-        longitude: null,
-        isManualEdition: false,
-        offerLocation: null,
-        postalCode: null,
-        'search-addressAutocomplete': null,
-        street: null,
+        address: null,
         url: 'https://passculture.app',
       })
     })
@@ -236,5 +231,17 @@ describe('getInitialValuesFromOffer', () => {
       )
       expect(result.url).toBe('https://passculture.app')
     })
+  })
+
+  it('should return EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES when neither offer nor venue has address (offline)', () => {
+    const offer = { ...offerBase, address: undefined }
+    const params = {
+      offerVenue: makeVenueListItem({ address: undefined }),
+      isOfferSubcategoryOnline: false,
+    }
+
+    const result = getInitialValuesFromOffer(offer, params)
+
+    expect(result.address).toEqual(EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES)
   })
 })

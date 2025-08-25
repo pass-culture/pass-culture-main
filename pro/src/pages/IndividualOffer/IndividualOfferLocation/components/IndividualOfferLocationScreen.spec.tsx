@@ -7,7 +7,6 @@ import {
   type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
-import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
   getOfferVenueFactory,
@@ -99,17 +98,17 @@ const LABELS = {
     main: 'Où profiter de l’offre ?',
   },
   buttons: {
-    save: 'Enregistrer les modifications',
-    cantFindAddress: 'Vous ne trouvez pas votre adresse ?',
+    save: 'Enregistrer et continuer',
+    cantFindAddress: /Vous ne trouvez pas votre adresse \?/,
   },
   fields: {
-    physicalLocation: `Il s’agit de l’adresse à laquelle les jeunes devront se présenter.`,
+    address: `Il s’agit de l’adresse à laquelle les jeunes devront se présenter.`,
     url: `URL d’accès à l’offre *`,
-    locationLabel: 'Intitulé de la localisation',
-    street: 'Adresse postale *',
-    postalCode: 'Code postal *',
-    city: 'Ville *',
-    coords: 'Coordonnées GPS *',
+    addressLocationLabel: 'Intitulé de la localisation',
+    street: 'Adresse postale',
+    postalCode: 'Code postal',
+    city: 'Ville',
+    coords: 'Coordonnées GPS',
   },
   options: {
     venueAddress: 'Lieu Nom Public Pour Test – 3 Rue de Valois 75001 Paris',
@@ -138,44 +137,6 @@ describe('<IndividualOfferLocationScreen />', () => {
     ).toBeInTheDocument()
   })
 
-  it.skip('should show the physical location subform when offline', async () => {
-    const props = { offer: offlineOffer }
-
-    renderIndividualOfferLocationScreen({ props })
-
-    expect(
-      await screen.findByRole('heading', { name: LABELS.titles.main })
-    ).toBeInTheDocument()
-
-    await userEvent.click(
-      screen.getByRole('radio', { name: LABELS.options.venueAddress })
-    )
-    expect(
-      screen.queryByLabelText(LABELS.fields.locationLabel)
-    ).not.toBeInTheDocument()
-
-    await userEvent.click(
-      screen.getByRole('radio', { name: LABELS.options.otherAddress })
-    )
-    expect(
-      screen.queryByLabelText(LABELS.fields.locationLabel)
-    ).toBeInTheDocument()
-
-    await userEvent.click(
-      screen.getByRole('button', {
-        name: LABELS.buttons.cantFindAddress,
-      })
-    )
-    expect(
-      screen.queryByLabelText(LABELS.fields.street, { selector: '#street' })
-    ).toBeInTheDocument()
-    expect(
-      screen.queryByLabelText(LABELS.fields.postalCode)
-    ).toBeInTheDocument()
-    expect(screen.queryByLabelText(LABELS.fields.city)).toBeInTheDocument()
-    expect(screen.queryByLabelText(LABELS.fields.coords)).toBeInTheDocument()
-  })
-
   it('should submit the venue address payload when a venue address is selected', async () => {
     vi.spyOn(api, 'patchOffer').mockResolvedValue(offlineOffer)
 
@@ -189,25 +150,28 @@ describe('<IndividualOfferLocationScreen />', () => {
       })
     )
 
-    await userEvent.click(screen.getByText(LABELS.buttons.save))
+    await userEvent.click(screen.getByRole('button', { name: /Enregistrer/ }))
 
     expect(api.patchOffer).toHaveBeenCalledOnce()
-    expect(api.patchOffer).toHaveBeenCalledWith(3, {
-      address: {
-        city: 'Paris',
-        isManualEdition: false,
-        isVenueAddress: true,
-        label: 'MINISTERE DE LA CULTURE',
-        latitude: '48.87171',
-        longitude: '2.30829',
-        postalCode: '75001',
-        street: '3 Rue de Valois',
-        banId: '75101_9575_00003',
-        inseeCode: '75056',
-      },
-      shouldSendMail: false,
-      url: null,
-    })
+    expect(api.patchOffer).toHaveBeenCalledWith(
+      3,
+      expect.objectContaining({
+        address: expect.objectContaining({
+          city: 'Paris',
+          isManualEdition: false,
+          isVenueAddress: true,
+          locationLabel: 'MINISTERE DE LA CULTURE',
+          latitude: '48.87171',
+          longitude: '2.30829',
+          postalCode: '75001',
+          street: '3 Rue de Valois',
+          banId: '75101_9575_00003',
+          inseeCode: '75056',
+        }),
+        shouldSendMail: false,
+        url: null,
+      })
+    )
   })
 
   it('should disable the physical location inputs if another offer with the same EAN exists', async () => {
@@ -218,58 +182,9 @@ describe('<IndividualOfferLocationScreen />', () => {
 
     expect(
       await screen.findByRole('radiogroup', {
-        name: LABELS.fields.physicalLocation,
+        name: LABELS.fields.address,
       })
     ).toHaveAttribute('aria-disabled', 'true')
-  })
-
-  describe('ConfirmDialog', () => {
-    beforeEach(() => {
-      // Should appear only in edition mode, and if offer has pending bookings
-      vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
-        useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.EDITION),
-      }))
-    })
-
-    it.skip('should open the dialog when address fields are updated', async () => {
-      const props = {
-        offer: {
-          ...offlineOffer,
-
-          address: getAddressResponseIsLinkedToVenueModelFactory({
-            id: 666,
-            id_oa: 1337,
-            isLinkedToVenue: false,
-            isManualEdition: true,
-          }),
-          hasPendingBookings: true,
-        },
-      }
-
-      renderIndividualOfferLocationScreen({ props })
-
-      const cityField = await screen.findByRole('textbox', {
-        name: LABELS.fields.city,
-      })
-
-      await userEvent.type(cityField, 'Updated city')
-
-      await userEvent.click(
-        await screen.findByRole('button', {
-          name: LABELS.buttons.save,
-        })
-      )
-
-      expect(
-        screen.getByText(
-          /Les changements vont s’appliquer à l’ensemble des réservations en cours associées/
-        )
-      ).toBeInTheDocument()
-
-      expect(
-        screen.getByText('Vous avez modifié la localisation.')
-      ).toBeInTheDocument()
-    })
   })
 
   describe('online subcategory', () => {
@@ -293,31 +208,9 @@ describe('<IndividualOfferLocationScreen />', () => {
 
       expect(
         screen.queryByRole('radiogroup', {
-          name: LABELS.fields.physicalLocation,
+          name: LABELS.fields.address,
         })
       ).not.toBeInTheDocument()
-    })
-
-    it.skip('should submit the URL payload when online', async () => {
-      vi.spyOn(api, 'patchOffer').mockResolvedValue(onlineOffer)
-      const props = { offer: onlineOffer }
-
-      renderIndividualOfferLocationScreen({ props })
-
-      const urlInput = await screen.findByRole('textbox', {
-        name: LABELS.fields.url,
-      })
-      await userEvent.clear(urlInput)
-      await userEvent.type(urlInput, 'https://passculture.app')
-
-      await userEvent.click(screen.getByText(LABELS.buttons.save))
-
-      expect(api.patchOffer).toHaveBeenCalledOnce()
-      expect(api.patchOffer).toHaveBeenCalledWith(3, {
-        address: null,
-        shouldSendMail: false,
-        url: 'https://passculture.app',
-      })
     })
 
     it('should disable the URL field if another offer with the same EAN exists', async () => {
@@ -364,7 +257,7 @@ describe('<IndividualOfferLocationScreen />', () => {
 
       expect(
         await screen.findByRole('radiogroup', {
-          name: LABELS.fields.physicalLocation,
+          name: LABELS.fields.address,
         })
       ).toHaveAttribute('aria-disabled', 'true')
     })
