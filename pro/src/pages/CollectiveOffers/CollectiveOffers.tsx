@@ -1,12 +1,10 @@
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
-import { formatAndOrderVenues } from 'repository/venuesService'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { CollectiveOfferType } from '@/apiClient/v1'
 import { Layout } from '@/app/App/layout/Layout'
-import { GET_VENUES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { DEFAULT_PAGE } from '@/commons/core/Offers/constants'
 import { useDefaultCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useDefaultCollectiveSearchFilters'
 import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
@@ -49,18 +47,6 @@ export const CollectiveOffers = (): JSX.Element => {
     offererId !== defaultCollectiveFilters.offererId ? offererId : null,
     true
   )
-
-  const {
-    data,
-    isLoading: isVenuesLoading,
-    isValidating: isVenuesValidating,
-  } = useSWR(
-    [GET_VENUES_QUERY_KEY, offerer?.id],
-    ([, offererIdParam]) => api.getVenues(null, null, offererIdParam),
-    { fallbackData: { venues: [] } }
-  )
-
-  const venues = formatAndOrderVenues(data.venues)
 
   const redirectWithUrlFilters = (
     filters: Partial<CollectiveSearchFiltersParams>
@@ -131,10 +117,7 @@ export const CollectiveOffers = (): JSX.Element => {
     >
       {/* When the venues are cached for a given offerer, we still need to reset the Screen component.
       SWR isLoading is only true when the data is not cached, while isValidating is always set to true when the key is updated */}
-      {isOffererLoading ||
-      isOffererValidating ||
-      isVenuesLoading ||
-      isVenuesValidating ? (
+      {isOffererLoading || isOffererValidating ? (
         <Spinner />
       ) : (
         <CollectiveOffersScreen
@@ -145,7 +128,6 @@ export const CollectiveOffers = (): JSX.Element => {
           offers={offersQuery.data}
           redirectWithUrlFilters={redirectWithUrlFilters}
           urlSearchFilters={urlSearchFilters}
-          venues={venues}
         />
       )}
     </Layout>
