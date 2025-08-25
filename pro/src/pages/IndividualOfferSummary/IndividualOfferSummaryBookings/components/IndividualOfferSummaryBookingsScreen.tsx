@@ -13,7 +13,7 @@ import {
   EMPTY_FILTER_VALUE,
 } from '@/commons/core/Bookings/constants'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
-import { IndividualBookingsTable } from '@/components/Bookings/BookingsRecapTable/BookingsTable/IndividualBookingsTable'
+import { IndividualBookingsTable } from '@/components/Bookings/BookingsRecapTable/BookingsTable/ZZZIndividualBookingsTable'
 import { DEFAULT_OMNISEARCH_CRITERIA } from '@/components/Bookings/BookingsRecapTable/Filters/constants'
 import { filterBookingsRecap } from '@/components/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import strokeBookingHold from '@/icons/stroke-booking-hold.svg'

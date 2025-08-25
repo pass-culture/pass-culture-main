@@ -30,13 +30,15 @@ import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isEqual } from '@/commons/utils/isEqual'
 import { stringify } from '@/commons/utils/query-string'
 import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformation/CollectiveBudgetCallout'
-import { NoData } from '@/components/NoData/NoData'
 import { ChoosePreFiltersMessage } from '@/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
-import { NoBookingsForPreFiltersMessage } from '@/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
+import { usePagination } from '@/commons/hooks/usePagination'
+import { Pagination } from '@/ui-kit/Pagination/Pagination'
 import { BookingsRecapTable } from './BookingsRecapTable/BookingsRecapTable'
+import styles from './BookingsRecapTable/BookingsTable/BookingsTable.module.scss'
 import { PreFilters } from './PreFilters/PreFilters'
+
+const BOOKINGS_PER_PAGE = 20
 
 type BookingsProps<T> = {
   locationState?: { statuses: string[] }
@@ -110,6 +112,7 @@ export const BookingsContainer = <
     !isEqual(appliedPreFilters, initialAppliedFilters)
       ? [GET_BOOKINGS_QUERY_KEY, appliedPreFilters]
       : null,
+
     async ([, filterParams]) => {
       setWereBookingsRequested(true)
       const { bookings, pages, currentPage } = await getFilteredBookingsAdapter(
@@ -126,6 +129,11 @@ export const BookingsContainer = <
     },
     { fallbackData: [] }
   )
+
+  const { page, setPage, previousPage, nextPage, pageCount, currentPageItems } =
+    usePagination(bookingsQuery.data, BOOKINGS_PER_PAGE)
+
+  console.log(currentPageItems)
 
   const hasBookingsQuery = useSWR(
     [GET_HAS_BOOKINGS_QUERY_KEY],
@@ -154,6 +162,8 @@ export const BookingsContainer = <
   const navigate = useNavigate()
 
   useEffect(() => {
+    setPage(1)
+
     const params = new URLSearchParams(location.search)
 
     if (
@@ -233,7 +243,7 @@ export const BookingsContainer = <
   }
 
   return (
-    <div className="bookings-page">
+    <div className={styles['bookings-recap-table']}>
       {audience === Audience.COLLECTIVE && offerer?.allowedOnAdage && (
         <CollectiveBudgetCallout
           variant="COLLECTIVE_TABLE"
@@ -258,24 +268,37 @@ export const BookingsContainer = <
       />
 
       {wereBookingsRequested ? (
-        bookingsQuery.data.length > 0 ? (
+        bookingsQuery.data?.length > 0 ? (
           <BookingsRecapTable
-            bookingsRecap={bookingsQuery.data}
+            bookingsRecap={currentPageItems}
             isLoading={bookingsQuery.isLoading}
             locationState={locationState}
             audience={audience}
             resetBookings={resetAndApplyPreFilters}
           />
-        ) : bookingsQuery.isLoading ? (
-          <Spinner />
-        ) : (
-          <NoBookingsForPreFiltersMessage resetPreFilters={resetPreFilters} />
-        )
+        ) : null
       ) : hasBookingsQuery.data ? (
         <ChoosePreFiltersMessage />
-      ) : (
-        <NoData page="bookings" />
-      )}
+      ) : null}
+
+      <div className={styles['bookings-pagination']}>
+        <Pagination
+          currentPage={page}
+          pageCount={pageCount}
+          onPreviousPageClick={() => {
+            previousPage()
+            logEvent(Events.CLICKED_PAGINATION_PREVIOUS_PAGE, {
+              from: location.pathname,
+            })
+          }}
+          onNextPageClick={() => {
+            nextPage()
+            logEvent(Events.CLICKED_PAGINATION_NEXT_PAGE, {
+              from: location.pathname,
+            })
+          }}
+        />
+      </div>
     </div>
   )
 }
