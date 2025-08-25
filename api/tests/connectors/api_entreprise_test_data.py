@@ -21,7 +21,7 @@ RESPONSE_SIREN_COMPANY = {
         "status_diffusion": "diffusible",
         "forme_juridique": {"code": "5710", "libelle": "SAS, soci\u00e9t\u00e9 par actions simplifi\u00e9e"},
         "activite_principale": {
-            "code": "47.61Z",
+            "code": "4761Z",
             "nomenclature": "NAFRev2",
             "libelle": "Commerce de d\u00e9tail de livres en magasin sp\u00e9cialis\u00e9",
         },
@@ -52,7 +52,7 @@ RESPONSE_SIRET_COMPANY = {
         "date_fermeture": None,
         "enseigne": None,
         "activite_principale": {
-            "code": "47.61Z",
+            "code": "4761Z",
             "nomenclature": "NAFRev2",
             "libelle": "Commerce de d\u00e9tail de livres en magasin sp\u00e9cialis\u00e9",
         },
@@ -82,7 +82,7 @@ RESPONSE_SIRET_COMPANY = {
             "diffusable_commercialement": True,
             "forme_juridique": {"code": "5710", "libelle": "SAS, soci\u00e9t\u00e9 par actions simplifi\u00e9e"},
             "activite_principale": {
-                "code": "47.61Z",
+                "code": "4761Z",
                 "nomenclature": "NAFRev2",
                 "libelle": "Commerce de d\u00e9tail de livres en magasin sp\u00e9cialis\u00e9",
             },
@@ -151,7 +151,7 @@ RESPONSE_SIREN_ENTREPRISE_INDIVIDUELLE = {
         "status_diffusion": "diffusible",
         "forme_juridique": {"code": "1000", "libelle": "Entrepreneur individuel"},
         "activite_principale": {
-            "code": "72.19Z",
+            "code": "7219Z",
             "nomenclature": "NAFRev2",
             "libelle": "Recherche-d\u00e9veloppement en autres sciences physiques et naturelles",
         },
@@ -176,7 +176,7 @@ RESPONSE_SIRET_ENTREPRISE_INDIVIDUELLE = {
         "date_fermeture": None,
         "enseigne": None,
         "activite_principale": {
-            "code": "72.19Z",
+            "code": "7219Z",
             "nomenclature": "NAFRev2",
             "libelle": "Recherche-d\u00e9veloppement en autres sciences physiques et naturelles",
         },
@@ -206,7 +206,7 @@ RESPONSE_SIRET_ENTREPRISE_INDIVIDUELLE = {
             "diffusable_commercialement": True,
             "forme_juridique": {"code": "1000", "libelle": "Entrepreneur individuel"},
             "activite_principale": {
-                "code": "72.19Z",
+                "code": "7219Z",
                 "nomenclature": "NAFRev2",
                 "libelle": "Recherche-d\u00e9veloppement en autres sciences physiques et naturelles",
             },
@@ -269,7 +269,7 @@ RESPONSE_SIREN_COMPANY_WITH_NON_PUBLIC_DATA = {
         "status_diffusion": "partiellement_diffusible",
         "forme_juridique": {"code": "1000", "libelle": "Entrepreneur individuel"},
         "activite_principale": {
-            "code": "90.03B",
+            "code": "9003B",
             "nomenclature": "NAFRev2",
             "libelle": "Autre cr\u00e9ation artistique",
         },
@@ -295,7 +295,7 @@ RESPONSE_SIRET_COMPANY_WITH_NON_PUBLIC_DATA = {
         "date_fermeture": None,
         "enseigne": None,
         "activite_principale": {
-            "code": "90.03B",
+            "code": "9003B",
             "nomenclature": "NAFRev2",
             "libelle": "Autre cr\u00e9ation artistique",
         },
@@ -325,7 +325,7 @@ RESPONSE_SIRET_COMPANY_WITH_NON_PUBLIC_DATA = {
             "diffusable_commercialement": False,
             "forme_juridique": {"code": "1000", "libelle": "Entrepreneur individuel"},
             "activite_principale": {
-                "code": "90.03B",
+                "code": "9003B",
                 "nomenclature": "NAFRev2",
                 "libelle": "Autre cr\u00e9ation artistique",
             },
@@ -391,7 +391,7 @@ RESPONSE_SIREN_INACTIVE_COMPANY = {
             "code": "5499",
             "libelle": "Soci\u00e9t\u00e9 \u00e0 responsabilit\u00e9 limit\u00e9e (sans autre indication)",
         },
-        "activite_principale": {"code": "90.01Z", "nomenclature": "NAFRev2", "libelle": "Arts du spectacle vivant"},
+        "activite_principale": {"code": "9001Z", "nomenclature": "NAFRev2", "libelle": "Arts du spectacle vivant"},
         "tranche_effectif_salarie": {
             "de": None,
             "a": None,
@@ -418,7 +418,7 @@ RESPONSE_SIRET_INACTIVE_COMPANY = {
         "etat_administratif": "F",
         "date_fermeture": 1703977200,
         "enseigne": None,
-        "activite_principale": {"code": "90.01Z", "nomenclature": "NAFRev2", "libelle": "Arts du spectacle vivant"},
+        "activite_principale": {"code": "9001Z", "nomenclature": "NAFRev2", "libelle": "Arts du spectacle vivant"},
         "tranche_effectif_salarie": {
             "de": None,
             "a": None,
@@ -453,7 +453,7 @@ RESPONSE_SIRET_INACTIVE_COMPANY = {
                 "code": "5499",
                 "libelle": "Soci\u00e9t\u00e9 \u00e0 responsabilit\u00e9 limit\u00e9e (sans autre indication)",
             },
-            "activite_principale": {"code": "90.01Z", "nomenclature": "NAFRev2", "libelle": "Arts du spectacle vivant"},
+            "activite_principale": {"code": "9001Z", "nomenclature": "NAFRev2", "libelle": "Arts du spectacle vivant"},
             "tranche_effectif_salarie": {
                 "de": None,
                 "a": None,
@@ -568,7 +568,7 @@ RESPONSE_SIREN_WITHOUT_CREATION_DATE = {
         "status_diffusion": "diffusible",
         "forme_juridique": {"code": "9220", "libelle": "Association déclarée"},
         "activite_principale": {
-            "code": "85.32Z",
+            "code": "8532Z",
             "nomenclature": "NAFRev2",
             "libelle": "Enseignement secondaire technique ou professionnel",
         },

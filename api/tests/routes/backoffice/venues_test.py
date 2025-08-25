@@ -1931,7 +1931,7 @@ class UpdateVenueTest(PostEndpointHelper):
                 siret=f"{venue.managingOfferer.siren}12345",
                 siren=venue.managingOfferer.siren,
                 name=venue.name,
-                ape_code="90.01Z",
+                ape_code="9001Z",
                 ape_label="Arts du spectacle vivant",
                 legal_category_code="5710",
                 address=entreprise_models.SireneAddress(

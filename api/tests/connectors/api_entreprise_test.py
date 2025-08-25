@@ -25,7 +25,7 @@ def test_get_siren_without_address():
         assert siren_info.siren == siren
         assert siren_info.name == "LE PETIT RINTINTIN"
         assert siren_info.head_office_siret == "12345678900012"
-        assert siren_info.ape_code == "47.61Z"
+        assert siren_info.ape_code == "4761Z"
         assert siren_info.ape_label == "Commerce de détail de livres en magasin spécialisé"
         assert siren_info.legal_category_code == "5710"
         assert siren_info.address is None
@@ -47,7 +47,7 @@ def test_get_siren_with_address():
         assert siren_info.siren == siren
         assert siren_info.name == "LE PETIT RINTINTIN"
         assert siren_info.head_office_siret == "12345678900012"
-        assert siren_info.ape_code == "47.61Z"
+        assert siren_info.ape_code == "4761Z"
         assert siren_info.ape_label == "Commerce de détail de livres en magasin spécialisé"
         assert siren_info.legal_category_code == "5710"
         assert siren_info.address.street == "12 BIS AVENUE DU LIVRE"
@@ -75,7 +75,7 @@ def test_get_siren_of_entreprise_individuelle():
         assert siren_info.siren == siren
         assert siren_info.name == "MARIE SKLODOWSKA CURIE"
         assert siren_info.head_office_siret == "11122233300022"
-        assert siren_info.ape_code == "72.19Z"
+        assert siren_info.ape_code == "7219Z"
         assert siren_info.ape_label == "Recherche-développement en autres sciences physiques et naturelles"
         assert siren_info.legal_category_code == "1000"
         assert siren_info.address.street == "36 QUAI DE BETHUNE"
@@ -111,7 +111,7 @@ def test_get_siren_with_non_public_data_do_not_raise():
         assert siren_info.siren == siren
         assert siren_info.name == "GEORGE DUPIN SAND"
         assert siren_info.head_office_siret == "98765432100016"
-        assert siren_info.ape_code == "90.03B"
+        assert siren_info.ape_code == "9003B"
         assert siren_info.ape_label == "Autre création artistique"
         assert siren_info.legal_category_code == "1000"
         assert siren_info.address.street == "31 RUE DE SEINE"
@@ -135,7 +135,7 @@ def test_get_siren_of_inactive_company():
         assert siren_info.siren == siren
         assert siren_info.name == "LE RIDEAU FERME"
         assert siren_info.head_office_siret == "77789988800021"
-        assert siren_info.ape_code == "90.01Z"
+        assert siren_info.ape_code == "9001Z"
         assert siren_info.ape_label == "Arts du spectacle vivant"
         assert siren_info.legal_category_code == "5499"
         assert siren_info.address is None
@@ -228,7 +228,7 @@ def test_get_siret():
         assert siret_info.address.street == "12 BIS AVENUE DU LIVRE"
         assert siret_info.address.postal_code == "58400"
         assert siret_info.address.city == "LA CHARITE-SUR-LOIRE"
-        assert siret_info.ape_code == "47.61Z"
+        assert siret_info.ape_code == "4761Z"
         assert siret_info.ape_label == "Commerce de détail de livres en magasin spécialisé"
         assert siret_info.legal_category_code == "5710"
         assert siret_info.active is True
@@ -253,7 +253,7 @@ def test_get_siret_of_entreprise_individuelle():
         assert siret_info.address.street == "36 QUAI DE BETHUNE"
         assert siret_info.address.postal_code == "75004"
         assert siret_info.address.city == "PARIS"
-        assert siret_info.ape_code == "72.19Z"
+        assert siret_info.ape_code == "7219Z"
         assert siret_info.ape_label == "Recherche-développement en autres sciences physiques et naturelles"
         assert siret_info.legal_category_code == "1000"
         assert siret_info.active is True
@@ -286,7 +286,7 @@ def test_get_siret_with_non_public_data_do_not_raise():
         assert siret_info.address.street == "31 RUE DE SEINE"
         assert siret_info.address.postal_code == "75006"
         assert siret_info.address.city == "PARIS"
-        assert siret_info.ape_code == "90.03B"
+        assert siret_info.ape_code == "9003B"
         assert siret_info.ape_label == "Autre création artistique"
         assert siret_info.legal_category_code == "1000"
         assert siret_info.active is True
@@ -307,7 +307,7 @@ def test_get_siret_of_inactive_company():
         assert siret_info.address.street == "OCCI"
         assert siret_info.address.postal_code == "20260"
         assert siret_info.address.city == "LUMIO"
-        assert siret_info.ape_code == "90.01Z"
+        assert siret_info.ape_code == "9001Z"
         assert siret_info.ape_label == "Arts du spectacle vivant"
         assert siret_info.legal_category_code == "5499"
         assert siret_info.active is False
