@@ -14,6 +14,7 @@ type CELLS =
   | 'INSTITUTION'
   | 'COLLECTIVE_STATUS'
   | 'ACTIONS'
+  | 'PRICE_AND_PARTICIPANTS'
 
 export function getCellsDefinition(): Record<CELLS, CellDefinition> {
   return {
@@ -31,7 +32,7 @@ export function getCellsDefinition(): Record<CELLS, CellDefinition> {
     },
     EVENT_DATE: {
       id: 'offer-head-event-date',
-      title: 'Dates de l’évènement',
+      title: 'Dates',
     },
     VENUE: {
       id: 'offer-head-venue',
@@ -39,7 +40,7 @@ export function getCellsDefinition(): Record<CELLS, CellDefinition> {
     },
     LOCATION: {
       id: 'offer-head-location',
-      title: 'Localisation de l’offre',
+      title: 'Localisation',
     },
     STRUCTURE: {
       id: 'offer-head-structure',
@@ -56,6 +57,10 @@ export function getCellsDefinition(): Record<CELLS, CellDefinition> {
     ACTIONS: {
       id: 'offer-head-actions',
       title: 'Actions',
+    },
+    PRICE_AND_PARTICIPANTS: {
+      id: 'offer-head-price-and-participants',
+      title: 'Prix et participants',
     },
   }
 }

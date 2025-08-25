@@ -2,7 +2,8 @@ import classNames from 'classnames'
 
 import type { EducationalInstitutionResponseModel } from '@/apiClient/v1'
 import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cellDefinitions'
-import styles from '@/styles/components/Cells.module.scss'
+
+import styles from '../Cells.module.scss'
 
 export interface OfferInstitutionCellProps {
   rowId: string
@@ -15,14 +16,18 @@ export const OfferInstitutionCell = ({
   educationalInstitution,
   className,
 }: OfferInstitutionCellProps) => {
-  const { name, institutionType, city } = educationalInstitution || {}
+  const { name, postalCode, institutionType, city } =
+    educationalInstitution || {}
 
-  let showEducationalInstitution = 'Tous les établissements'
+  const getInstitutionLabel = () => {
+    if (name && postalCode) {
+      return `${name} - ${postalCode}`
+    }
+    if (institutionType || city) {
+      return `${institutionType} ${city}`
+    }
 
-  if (name) {
-    showEducationalInstitution = name
-  } else if (institutionType || city) {
-    showEducationalInstitution = `${institutionType} ${city}`
+    return 'Tous les établissements'
   }
 
   return (
@@ -35,7 +40,7 @@ export const OfferInstitutionCell = ({
       )}
       headers={`${rowId} ${getCellsDefinition().INSTITUTION.id}`}
     >
-      {showEducationalInstitution}
+      {getInstitutionLabel()}
     </td>
   )
 }

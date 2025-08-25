@@ -11,7 +11,8 @@ import {
 } from '@/commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
 import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cellDefinitions'
-import styles from '@/styles/components/Cells.module.scss'
+
+import styles from '../Cells.module.scss'
 
 export interface OfferEventDateCellProps {
   offer: CollectiveOfferResponseModel
@@ -105,11 +106,7 @@ export const OfferEventDateCell = ({
             {date}
           </span>
         ))}
-        {!offer.isShowcase && (
-          <span className={styles['offer-event-hours']}>
-            {formattedTime(offer.dates?.start)}
-          </span>
-        )}
+        {!offer.isShowcase && <span>{formattedTime(offer.dates?.start)}</span>}
       </div>
     </td>
   )

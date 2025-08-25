@@ -171,7 +171,7 @@ export const CollectiveOffersSearchFilters = ({
       searchButtonRef={searchButtonRef}
     >
       <FormLayout.Row inline mdSpaceAfter>
-        <div className={styles['offer-multiselect-status']}>
+        <div className={styles['filter-container']}>
           <MultiSelect
             name="status"
             label="Statut"
@@ -197,18 +197,22 @@ export const CollectiveOffersSearchFilters = ({
             }))}
           />
         </div>
+        {!isNewOffersAndBookingsActive && (
+          <Select
+            className={styles['filter-container']}
+            defaultOption={ALL_OFFERERS_OPTION}
+            onChange={(event) =>
+              updateSearchFilters({ venueId: event.currentTarget.value })
+            }
+            disabled={disableAllFilters}
+            name="structure"
+            options={venues}
+            value={selectedFilters.venueId}
+            label="Structure"
+          />
+        )}
         <Select
-          defaultOption={ALL_OFFERERS_OPTION}
-          onChange={(event) =>
-            updateSearchFilters({ venueId: event.currentTarget.value })
-          }
-          disabled={disableAllFilters}
-          name="structure"
-          options={venues}
-          value={selectedFilters.venueId}
-          label="Structure"
-        />
-        <Select
+          className={styles['filter-container']}
           defaultOption={ALL_FORMATS_OPTION}
           onChange={(event) =>
             updateSearchFilters({
@@ -223,6 +227,7 @@ export const CollectiveOffersSearchFilters = ({
         />
         {!isNewOffersAndBookingsActive && (
           <Select
+            className={styles['filter-container']}
             onChange={(event) =>
               updateSearchFilters({
                 collectiveOfferType: event.currentTarget
@@ -236,16 +241,29 @@ export const CollectiveOffersSearchFilters = ({
             label="Type de l’offre"
           />
         )}
+        {isNewOffersAndBookingsActive && (
+          <FieldLayout label="Période de l’évènement" name="period" isOptional>
+            <PeriodSelector
+              onBeginningDateChange={onBeginningDateChange}
+              onEndingDateChange={onEndingDateChange}
+              isDisabled={disableAllFilters}
+              periodBeginningDate={selectedFilters.periodBeginningDate}
+              periodEndingDate={selectedFilters.periodEndingDate}
+            />
+          </FieldLayout>
+        )}
       </FormLayout.Row>
-      <FieldLayout label="Période de l’évènement" name="period" isOptional>
-        <PeriodSelector
-          onBeginningDateChange={onBeginningDateChange}
-          onEndingDateChange={onEndingDateChange}
-          isDisabled={disableAllFilters}
-          periodBeginningDate={selectedFilters.periodBeginningDate}
-          periodEndingDate={selectedFilters.periodEndingDate}
-        />
-      </FieldLayout>
+      {!isNewOffersAndBookingsActive && (
+        <FieldLayout label="Période de l’évènement" name="period" isOptional>
+          <PeriodSelector
+            onBeginningDateChange={onBeginningDateChange}
+            onEndingDateChange={onEndingDateChange}
+            isDisabled={disableAllFilters}
+            periodBeginningDate={selectedFilters.periodBeginningDate}
+            periodEndingDate={selectedFilters.periodEndingDate}
+          />
+        </FieldLayout>
+      )}
     </OffersTableSearch>
   )
 }

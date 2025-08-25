@@ -67,11 +67,16 @@ export const CollectiveOffersTable = ({
         currentSortingMode,
       },
     },
+    ...(isNewCollectiveOffersStructureActive && !isTemplateTable
+      ? [getCellsDefinition().PRICE_AND_PARTICIPANTS]
+      : []),
     ...(isNewCollectiveOffersStructureActive
       ? []
       : [getCellsDefinition().STRUCTURE]),
     ...(isTemplateTable ? [] : [getCellsDefinition().INSTITUTION]),
-    ...(isTemplateTable ? [getCellsDefinition().LOCATION] : []),
+    ...(isNewCollectiveOffersStructureActive
+      ? [getCellsDefinition().LOCATION]
+      : []),
     getCellsDefinition().COLLECTIVE_STATUS,
   ]
 
