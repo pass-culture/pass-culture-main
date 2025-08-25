@@ -136,9 +136,8 @@ export const TemplateOffersSearchFilters = ({
       onResetFilters={resetCollectiveFilters}
     >
       <FormLayout.Row inline smSpaceAfter>
-        <div className={styles['filter-select']}>
+        <div className={styles['filter-container']}>
           <MultiSelect
-            className={styles['offer-multiselect-status']}
             name="status"
             label="Statut"
             options={collectiveFilterStatus}
@@ -164,7 +163,7 @@ export const TemplateOffersSearchFilters = ({
           />
         </div>
         <Select
-          className={styles['filter-select']}
+          className={styles['filter-container']}
           defaultOption={ALL_FORMATS_OPTION}
           onChange={storeSelectedFormat}
           disabled={disableAllFilters}
