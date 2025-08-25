@@ -101,6 +101,9 @@ export const CollectiveOfferRow = ({
           offerLink={offerLink}
           className={styles['collective-cell-name']}
           displayThumb={true}
+          isNewCollectiveOffersStructureActive={
+            isNewCollectiveOffersStructureActive
+          }
         />
         <OfferEventDateCell
           rowId={rowId}

@@ -37,6 +37,7 @@ describe('OfferNameCell', () => {
       offer: eventOffer,
       offerLink: '#',
       rowId: 'rowId',
+      isNewCollectiveOffersStructureActive: false,
     })
 
     expect(screen.getByText('Offre vitrine')).toBeInTheDocument()
@@ -46,7 +47,12 @@ describe('OfferNameCell', () => {
   it('should not display tag when offer is not a template', () => {
     const offer = collectiveOfferFactory({ isShowcase: false, name: 'Test' })
 
-    renderOfferNameCell({ offer, offerLink: '#', rowId: 'rowId' })
+    renderOfferNameCell({
+      offer,
+      offerLink: '#',
+      rowId: 'rowId',
+      isNewCollectiveOffersStructureActive: false,
+    })
 
     expect(screen.queryByText('Offre vitrine')).not.toBeInTheDocument()
     expect(screen.getByText('Test')).toBeInTheDocument()
@@ -60,6 +66,7 @@ describe('OfferNameCell', () => {
       offerLink: '#',
       rowId: 'rowId',
       displayThumb: true,
+      isNewCollectiveOffersStructureActive: false,
     })
 
     expect(screen.getByRole('presentation')).toHaveAttribute(
@@ -76,22 +83,10 @@ describe('OfferNameCell', () => {
       offerLink: '#',
       rowId: 'rowId',
       displayThumb: false,
+      isNewCollectiveOffersStructureActive: false,
     })
 
     expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
-  })
-
-  it('should display the mobile label when displayLabel is true', () => {
-    const offer = collectiveOfferFactory({ name: 'Test' })
-
-    renderOfferNameCell({
-      offer,
-      offerLink: '#',
-      rowId: 'rowId',
-      displayLabel: true,
-    })
-
-    expect(screen.getByText(/Nom de l’offre|Nom/i)).toBeInTheDocument()
   })
 
   it('should use the correct link for the offer', () => {
@@ -101,8 +96,54 @@ describe('OfferNameCell', () => {
       offer,
       offerLink: '/offre/123',
       rowId: 'rowId',
+      isNewCollectiveOffersStructureActive: false,
     })
 
     expect(screen.getByRole('link')).toHaveAttribute('href', '/offre/123')
+  })
+
+  it('should show offer id when WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is active', () => {
+    const offer = collectiveOfferFactory({
+      name: 'Link test',
+    })
+
+    renderOfferNameCell(
+      {
+        offer,
+        offerLink: '/offre/123',
+        rowId: 'rowId',
+        isNewCollectiveOffersStructureActive: true,
+      },
+      {
+        features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'],
+      }
+    )
+    const offerTitle = screen.getByRole('link', {
+      name: `N°${offer.id} ${offer.name}`,
+    })
+    expect(offerTitle).toBeInTheDocument()
+  })
+
+  it('should not show offer id when WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is active and offer is template', () => {
+    const offer = collectiveOfferFactory({
+      name: 'Link test',
+      isShowcase: true,
+    })
+
+    renderOfferNameCell(
+      {
+        offer,
+        offerLink: '/offre/123',
+        rowId: 'rowId',
+        isNewCollectiveOffersStructureActive: true,
+      },
+      {
+        features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'],
+      }
+    )
+    const offerTitle = screen.getByRole('link', {
+      name: `Offre vitrine ${offer.name}`,
+    })
+    expect(offerTitle).toBeInTheDocument()
   })
 })
