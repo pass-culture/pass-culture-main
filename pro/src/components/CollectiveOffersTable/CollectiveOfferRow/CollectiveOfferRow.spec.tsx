@@ -679,13 +679,31 @@ describe('CollectiveOfferRow', () => {
   })
 
   it('should display location cell when WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is active', () => {
+    renderOfferItem(props, {
+      features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'],
+    })
+
+    expect(screen.getByText('À déterminer')).toBeInTheDocument()
+  })
+
+  it('should display price and participants cell when WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is active', () => {
     renderOfferItem(
       {
         ...props,
+        offer: collectiveOfferFactory({
+          stocks: [
+            {
+              price: 10,
+              numberOfTickets: 2,
+              hasBookingLimitDatetimePassed: false,
+            },
+          ],
+        }),
       },
       { features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'] }
     )
 
-    expect(screen.getByText('À déterminer')).toBeInTheDocument()
+    expect(screen.getByText('10€')).toBeInTheDocument()
+    expect(screen.getByText('2 participants')).toBeInTheDocument()
   })
 })
