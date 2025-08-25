@@ -24,7 +24,8 @@
     ],
     "replicas": [
         "virtual(PRODUCTION Top offres)",
-        "PRODUCTION B"
+        "PRODUCTION B",
+        "PRODUCTIONC"
     ],
     "attributesForFaceting": [
         "filterOnly(artists.id)",
