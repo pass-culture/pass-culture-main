@@ -106,7 +106,7 @@ export const BookingsContainer = <
   const offererAddressQuery = useOffererAddresses()
   const offererAddresses = formatAndOrderAddresses(offererAddressQuery.data)
 
-  const bookingsQuery = useSWR(
+  const { data: bookingsQuery, isLoading } = useSWR(
     !isEqual(appliedPreFilters, initialAppliedFilters)
       ? [GET_BOOKINGS_QUERY_KEY, appliedPreFilters]
       : null,
@@ -245,10 +245,10 @@ export const BookingsContainer = <
         appliedPreFilters={appliedPreFilters}
         applyPreFilters={applyPreFilters}
         audience={audience}
-        hasResult={bookingsQuery.data.length > 0}
+        hasResult={bookingsQuery.length > 0}
         isFiltersDisabled={!hasBookingsQuery.data}
         isLocalLoading={venuesQuery.isLoading}
-        isTableLoading={bookingsQuery.isLoading}
+        isTableLoading={isLoading}
         resetPreFilters={resetPreFilters}
         venues={venues}
         offererAddresses={offererAddresses}
@@ -258,15 +258,15 @@ export const BookingsContainer = <
       />
 
       {wereBookingsRequested ? (
-        bookingsQuery.data.length > 0 ? (
+        bookingsQuery.length > 0 ? (
           <BookingsRecapTable
-            bookingsRecap={bookingsQuery.data}
-            isLoading={bookingsQuery.isLoading}
+            bookingsRecap={bookingsQuery}
+            isLoading={isLoading}
             locationState={locationState}
             audience={audience}
             resetBookings={resetAndApplyPreFilters}
           />
-        ) : bookingsQuery.isLoading ? (
+        ) : isLoading ? (
           <Spinner />
         ) : (
           <NoBookingsForPreFiltersMessage resetPreFilters={resetPreFilters} />
