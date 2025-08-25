@@ -15,7 +15,7 @@ import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
-import type { LocationFormValues } from '../../commons/types'
+import type { LocationFormValues } from '../../../commons/types'
 import styles from './PhysicalLocationSubform.module.scss'
 
 export interface PhysicalLocationSubformProps {
