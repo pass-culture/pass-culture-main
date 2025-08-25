@@ -26,9 +26,11 @@ export const Section = ({
           <h2 className={style['form-layout-section-title']}>{title}</h2>
         </legend>
       )}
-      <div className={style['form-layout-section-header']}>
-        <FormLayoutDescription description={description} />
-      </div>
+      {description && (
+        <div className={style['form-layout-section-header']}>
+          <FormLayoutDescription description={description} />
+        </div>
+      )}
       {children}
     </fieldset>
   )

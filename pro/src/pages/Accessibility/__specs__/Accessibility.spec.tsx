@@ -7,9 +7,8 @@ import {
 
 import { AccessibilityMenu } from '../AccessibilityMenu'
 
-const renderAccessibilityMenu: RenderComponentFunction = () => {
+const renderAccessibilityMenu: RenderComponentFunction = () =>
   renderWithProviders(<AccessibilityMenu />)
-}
 
 describe('Statement of Accessibility page', () => {
   it('should display Accessibility information message', () => {
