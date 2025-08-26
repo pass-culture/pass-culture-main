@@ -85,6 +85,7 @@ describe('useSaveOfferLocation', () => {
     const { saveAndContinue } = useSaveOfferLocation({
       offer: offerBase,
       setError: setErrorMock,
+      withAddVideoFeatureFlag: true,
     })
     await saveAndContinue({
       formValues,
@@ -120,6 +121,7 @@ describe('useSaveOfferLocation', () => {
     const { saveAndContinue } = useSaveOfferLocation({
       offer: offerBase,
       setError: setErrorMock,
+      withAddVideoFeatureFlag: true,
     })
     await saveAndContinue({ formValues })
 
@@ -141,6 +143,39 @@ describe('useSaveOfferLocation', () => {
     expect(setErrorMock).not.toHaveBeenCalled()
   })
 
+  it('should save and navigate to Tarifs in non-EDITION mode when WIP_ADD_VIDEO FF is disabled', async () => {
+    vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.CREATION)
+    vi.mocked(useLocation).mockReturnValue({
+      pathname: '/offers/create',
+    } as unknown as ReturnType<typeof useLocation>)
+
+    const formValues = makeLocationFormValues({ address: null })
+
+    const { saveAndContinue } = useSaveOfferLocation({
+      offer: offerBase,
+      setError: setErrorMock,
+      withAddVideoFeatureFlag: false,
+    })
+    await saveAndContinue({ formValues })
+
+    expect(toPatchOfferBodyModel).toHaveBeenCalledWith({
+      offer: offerBase,
+      formValues,
+      shouldSendMail: false,
+    })
+    expect(api.patchOffer).toHaveBeenCalled()
+    expect(mutateMock).not.toHaveBeenCalled()
+    expect(getIndividualOfferUrl).toHaveBeenCalledWith({
+      offerId: offerBase.id,
+      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
+      mode: OFFER_WIZARD_MODE.CREATION,
+      isOnboarding: false,
+    })
+    expect(navigateMock).toHaveBeenCalledWith('/mock-url')
+    expect(notificationMock.error).not.toHaveBeenCalled()
+    expect(setErrorMock).not.toHaveBeenCalled()
+  })
+
   it('should return early when serialization throws (no API call or side-effects)', async () => {
     vi.mocked(toPatchOfferBodyModel).mockImplementationOnce(() => {
       throw new Error('serialize')
@@ -151,6 +186,7 @@ describe('useSaveOfferLocation', () => {
     const { saveAndContinue } = useSaveOfferLocation({
       offer: offerBase,
       setError: setErrorMock,
+      withAddVideoFeatureFlag: true,
     })
     await saveAndContinue({ formValues })
 
@@ -175,6 +211,7 @@ describe('useSaveOfferLocation', () => {
     const { saveAndContinue } = useSaveOfferLocation({
       offer: offerBase,
       setError: setErrorMock,
+      withAddVideoFeatureFlag: true,
     })
     await saveAndContinue({
       formValues: makeLocationFormValues({ address: null }),
@@ -198,6 +235,7 @@ describe('useSaveOfferLocation', () => {
     const { saveAndContinue } = useSaveOfferLocation({
       offer: offerBase,
       setError: setErrorMock,
+      withAddVideoFeatureFlag: true,
     })
     await saveAndContinue({
       formValues: makeLocationFormValues({ address: null }),
