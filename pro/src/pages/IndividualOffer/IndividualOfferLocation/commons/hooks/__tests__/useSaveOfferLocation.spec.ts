@@ -53,8 +53,8 @@ vi.mock('../../utils/toPatchOfferBodyModel', () => ({
 }))
 
 describe('useSaveOfferLocation', () => {
-  const offer = getIndividualOfferFactory({ id: 123 })
-  const setError = vi.fn() as unknown as UseFormSetError<LocationFormValues>
+  const offerBase = getIndividualOfferFactory({ id: 123 })
+  const setErrorMock = vi.fn() as unknown as UseFormSetError<LocationFormValues>
 
   let navigateMock: ReturnType<typeof useNavigate>
   let mutateMock: ReturnType<typeof vi.fn>
@@ -62,7 +62,7 @@ describe('useSaveOfferLocation', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(api.patchOffer).mockResolvedValue(offer)
+    vi.mocked(api.patchOffer).mockResolvedValue(offerBase)
     vi.mocked(getIndividualOfferUrl).mockReturnValue('/mock-url')
     vi.mocked(useLocation).mockReturnValue({
       pathname: '/offers',
@@ -81,81 +81,102 @@ describe('useSaveOfferLocation', () => {
     vi.mocked(toPatchOfferBodyModel).mockReturnValue({})
   })
 
-  it('saves and navigates to Useful Informations (read-only) in EDITION mode, updates cache, and sets local storage', async () => {
-    const { saveAndContinue } = useSaveOfferLocation({ offer, setError })
-    const formValues = makeLocationFormValues({ address: null })
+  it('should save and navigate to Useful Informations (read-only) in EDITION mode, update cache, and set local storage', async () => {
     const requestBody: PatchOfferBodyModel = { shouldSendMail: true }
     vi.mocked(toPatchOfferBodyModel).mockReturnValueOnce(requestBody)
-    await saveAndContinue({ formValues, shouldSendWarningMail: true })
-    expect(toPatchOfferBodyModel).toHaveBeenCalledWith({
-      offer,
-      formValues,
-      shouldSendWarningMail: true,
+
+    const formValues = makeLocationFormValues({ address: null })
+
+    const { saveAndContinue } = useSaveOfferLocation({
+      offer: offerBase,
+      setError: setErrorMock,
     })
-    expect(api.patchOffer).toHaveBeenCalledWith(offer.id, requestBody)
-    expect(mutateMock).toHaveBeenCalledWith([GET_OFFER_QUERY_KEY, offer.id])
+    await saveAndContinue({
+      formValues,
+      shouldSendMail: true,
+    })
+
+    expect(toPatchOfferBodyModel).toHaveBeenCalledWith({
+      offer: offerBase,
+      formValues,
+      shouldSendMail: true,
+    })
+    expect(api.patchOffer).toHaveBeenCalledWith(offerBase.id, requestBody)
+    expect(mutateMock).toHaveBeenCalledWith([GET_OFFER_QUERY_KEY, offerBase.id])
     expect(localStorageManager.setItemIfNone).toHaveBeenCalledWith(
-      `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offer.id}`,
+      `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offerBase.id}`,
       'true'
     )
     expect(getIndividualOfferUrl).toHaveBeenCalledWith({
-      offerId: offer.id,
+      offerId: offerBase.id,
       step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
       mode: OFFER_WIZARD_MODE.READ_ONLY,
       isOnboarding: false,
     })
     expect(navigateMock).toHaveBeenCalledWith('/mock-url')
     expect(notificationMock.error).not.toHaveBeenCalled()
-    expect(setError).not.toHaveBeenCalled()
+    expect(setErrorMock).not.toHaveBeenCalled()
   })
 
-  it('saves and navigates to Media in non-EDITION mode, no cache update, respects onboarding flag, default warningMail=false', async () => {
+  it('should save and navigate to Media in non-EDITION mode, no cache update, respect onboarding flag, default warningMail=false', async () => {
     vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.CREATION)
     vi.mocked(useLocation).mockReturnValue({
       pathname: '/onboarding/create-offer',
     } as unknown as ReturnType<typeof useLocation>)
-    const { saveAndContinue } = useSaveOfferLocation({ offer, setError })
+
     const formValues = makeLocationFormValues({ address: null })
+
+    const { saveAndContinue } = useSaveOfferLocation({
+      offer: offerBase,
+      setError: setErrorMock,
+    })
     await saveAndContinue({ formValues })
+
     expect(toPatchOfferBodyModel).toHaveBeenCalledWith({
-      offer,
+      offer: offerBase,
       formValues,
-      shouldSendWarningMail: false,
+      shouldSendMail: false,
     })
     expect(api.patchOffer).toHaveBeenCalled()
     expect(mutateMock).not.toHaveBeenCalled()
     expect(getIndividualOfferUrl).toHaveBeenCalledWith({
-      offerId: offer.id,
+      offerId: offerBase.id,
       step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
       mode: OFFER_WIZARD_MODE.CREATION,
       isOnboarding: true,
     })
     expect(localStorageManager.setItemIfNone).toHaveBeenCalledWith(
-      `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offer.id}`,
+      `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offerBase.id}`,
       'true'
     )
     expect(navigateMock).toHaveBeenCalledWith('/mock-url')
     expect(notificationMock.error).not.toHaveBeenCalled()
-    expect(setError).not.toHaveBeenCalled()
+    expect(setErrorMock).not.toHaveBeenCalled()
   })
 
-  it('returns early when serialization throws (no API call or side-effects)', async () => {
-    const { saveAndContinue } = useSaveOfferLocation({ offer, setError })
-    const formValues = makeLocationFormValues({ address: null })
+  it('should return early when serialization throws (no API call or side-effects)', async () => {
     vi.mocked(toPatchOfferBodyModel).mockImplementationOnce(() => {
       throw new Error('serialize')
     })
+
+    const formValues = makeLocationFormValues({ address: null })
+
+    const { saveAndContinue } = useSaveOfferLocation({
+      offer: offerBase,
+      setError: setErrorMock,
+    })
     await saveAndContinue({ formValues })
+
     expect(api.patchOffer).not.toHaveBeenCalled()
     expect(mutateMock).not.toHaveBeenCalled()
     expect(localStorageManager.setItemIfNone).not.toHaveBeenCalled()
     expect(getIndividualOfferUrl).not.toHaveBeenCalled()
     expect(navigateMock).not.toHaveBeenCalled()
     expect(notificationMock.error).not.toHaveBeenCalled()
-    expect(setError).not.toHaveBeenCalled()
+    expect(setErrorMock).not.toHaveBeenCalled()
   })
 
-  it('handles API error by setting field errors and notifying the user', async () => {
+  it('should handle API error by setting field errors and notifying the user', async () => {
     const apiError = {
       body: {
         addressAutocomplete: 'Invalid address',
@@ -164,14 +185,19 @@ describe('useSaveOfferLocation', () => {
     }
     vi.mocked(api.patchOffer).mockRejectedValueOnce(apiError)
     vi.mocked(isErrorAPIError).mockReturnValue(true)
-    const { saveAndContinue } = useSaveOfferLocation({ offer, setError })
+
+    const { saveAndContinue } = useSaveOfferLocation({
+      offer: offerBase,
+      setError: setErrorMock,
+    })
     await saveAndContinue({
       formValues: makeLocationFormValues({ address: null }),
     })
-    expect(setError).toHaveBeenCalledWith('addressAutocomplete', {
+
+    expect(setErrorMock).toHaveBeenCalledWith('addressAutocomplete', {
       message: 'Invalid address',
     })
-    expect(setError).toHaveBeenCalledWith('postalCode', {
+    expect(setErrorMock).toHaveBeenCalledWith('postalCode', {
       message: 'Invalid postal code',
     })
     expect(notificationMock.error).toHaveBeenCalledWith(SENT_DATA_ERROR_MESSAGE)
@@ -179,14 +205,19 @@ describe('useSaveOfferLocation', () => {
     expect(mutateMock).not.toHaveBeenCalled()
   })
 
-  it('silently returns on non-API errors (no notifications or field errors)', async () => {
+  it('should silently return on non-API errors (no notifications or field errors)', async () => {
     vi.mocked(api.patchOffer).mockRejectedValueOnce(new Error('network'))
     vi.mocked(isErrorAPIError).mockReturnValue(false)
-    const { saveAndContinue } = useSaveOfferLocation({ offer, setError })
+
+    const { saveAndContinue } = useSaveOfferLocation({
+      offer: offerBase,
+      setError: setErrorMock,
+    })
     await saveAndContinue({
       formValues: makeLocationFormValues({ address: null }),
     })
-    expect(setError).not.toHaveBeenCalled()
+
+    expect(setErrorMock).not.toHaveBeenCalled()
     expect(notificationMock.error).not.toHaveBeenCalled()
     expect(navigateMock).not.toHaveBeenCalled()
     expect(mutateMock).not.toHaveBeenCalled()

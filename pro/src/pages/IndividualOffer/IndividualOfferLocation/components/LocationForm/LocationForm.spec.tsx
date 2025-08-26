@@ -31,7 +31,7 @@ const LABELS = {
   },
   fields: {
     offerLocation:
-      'Il s’agit de l’adresse à laquelle les jeunes devront se présenter.',
+      'Il s’agit de l’adresse à laquelle les jeunes devront se présenter. *',
     url: 'URL d’accès à l’offre *',
   },
 }

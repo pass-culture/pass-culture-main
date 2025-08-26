@@ -10,7 +10,7 @@ import styles from './UpdateWarningDialog.module.scss'
 
 interface UpdateWarningDialogProps {
   onCancel: () => void
-  onConfirm: (shouldSendWithdrawalMail: boolean) => void
+  onConfirm: (shouldSendMail: boolean) => void
 }
 export const UpdateWarningDialog = ({
   onCancel,
@@ -18,14 +18,14 @@ export const UpdateWarningDialog = ({
 }: UpdateWarningDialogProps): JSX.Element => {
   const saveEditionChangesButtonRef = useRef<HTMLButtonElement>(null)
 
-  const [shouldSendWithdrawalMail, setShouldSendWithdrawalMail] = useState(true)
+  const [shouldSendMail, setShouldSendMail] = useState(true)
 
   return (
     <ConfirmDialog
       cancelText="Annuler"
       confirmText="Je confirme le changement"
       onCancel={onCancel}
-      onConfirm={() => onConfirm(shouldSendWithdrawalMail)}
+      onConfirm={() => onConfirm(shouldSendMail)}
       open
       title="Les changements vont s’appliquer à l’ensemble des réservations en cours associées"
       refToFocusOnClose={saveEditionChangesButtonRef}
@@ -42,8 +42,8 @@ export const UpdateWarningDialog = ({
         <FormLayout.Row>
           <Checkbox
             label="Prévenir les jeunes par e-mail"
-            onChange={(evt) => setShouldSendWithdrawalMail(evt.target.checked)}
-            checked={shouldSendWithdrawalMail}
+            onChange={(evt) => setShouldSendMail(evt.target.checked)}
+            checked={shouldSendMail}
           />
         </FormLayout.Row>
       </div>
