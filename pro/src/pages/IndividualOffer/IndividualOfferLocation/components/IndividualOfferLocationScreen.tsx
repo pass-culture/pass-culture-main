@@ -90,23 +90,21 @@ export const IndividualOfferLocationScreen = ({
 
   const updateOffer = async (
     formValues: LocationFormValues,
-    shouldSendWarningMail = false
+    shouldSendMail = false
   ): Promise<void> => {
-    if (mode === OFFER_WIZARD_MODE.EDITION) {
-      const hasAddressChanged = form.getFieldState('address').isDirty
+    if (
+      offer.hasPendingBookings &&
+      form.getFieldState('address').isDirty &&
+      !isUpdateWarningDialogOpen
+    ) {
+      setIsUpdateWarningDialogOpen(true)
 
-      const shouldDisplayUpdatesWarningModal =
-        offer.hasPendingBookings && hasAddressChanged
-
-      if (shouldDisplayUpdatesWarningModal && !isUpdateWarningDialogOpen) {
-        setIsUpdateWarningDialogOpen(true)
-        return
-      }
+      return
     }
 
     await saveAndContinue({
       formValues,
-      shouldSendWarningMail,
+      shouldSendMail,
     })
   }
 
@@ -137,10 +135,10 @@ export const IndividualOfferLocationScreen = ({
       {isUpdateWarningDialogOpen && (
         <UpdateWarningDialog
           onCancel={() => setIsUpdateWarningDialogOpen(false)}
-          onConfirm={(shouldSendWarningMail) =>
+          onConfirm={(shouldSendMail) =>
             form.handleSubmit((formValues) =>
-              updateOffer(formValues, shouldSendWarningMail)
-            )
+              updateOffer(formValues, shouldSendMail)
+            )()
           }
         />
       )}

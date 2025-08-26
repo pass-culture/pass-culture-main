@@ -30,7 +30,7 @@ describe('toPatchOfferBodyModel', () => {
   const paramsBase = {
     offer: offerBase,
     formValues: formValuesBase,
-    shouldSendWarningMail: true,
+    shouldSendMail: true,
   }
 
   it('should return empty object when offer is synchronized', () => {
@@ -44,7 +44,7 @@ describe('toPatchOfferBodyModel', () => {
     expect(result).toEqual({})
   })
 
-  it('should return form values and shouldSendWarningMail when offer is NOT synchronized', () => {
+  it('should return form values and shouldSendMail when offer is NOT synchronized', () => {
     const offer = {
       ...offerBase,
       lastProvider: null,

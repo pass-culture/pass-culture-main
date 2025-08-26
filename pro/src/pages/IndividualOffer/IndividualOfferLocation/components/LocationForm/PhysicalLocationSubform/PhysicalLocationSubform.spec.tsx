@@ -310,7 +310,7 @@ describe('PhysicalLocationSubform (new)', () => {
 
       expect(
         screen.getByRole('radiogroup', {
-          name: 'Il s’agit de l’adresse à laquelle les jeunes devront se présenter.',
+          name: 'Il s’agit de l’adresse à laquelle les jeunes devront se présenter. *',
         })
       ).toHaveAttribute('aria-disabled', 'true')
 

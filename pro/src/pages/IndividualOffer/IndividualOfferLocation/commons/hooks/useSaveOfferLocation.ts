@@ -37,16 +37,16 @@ export function useSaveOfferLocation({
 
   const saveAndContinue = async ({
     formValues,
-    shouldSendWarningMail = false,
+    shouldSendMail = false,
   }: {
     formValues: LocationFormValues
-    shouldSendWarningMail?: boolean
+    shouldSendMail?: boolean
   }) => {
     try {
       const requestBody = toPatchOfferBodyModel({
         offer,
         formValues,
-        shouldSendWarningMail,
+        shouldSendMail,
       })
 
       await api.patchOffer(offer.id, requestBody)

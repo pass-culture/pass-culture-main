@@ -9,11 +9,11 @@ import type { LocationFormValues } from '../types'
 export const toPatchOfferBodyModel = ({
   offer,
   formValues,
-  shouldSendWarningMail,
+  shouldSendMail,
 }: {
   offer: GetIndividualOfferResponseModel
   formValues: LocationFormValues
-  shouldSendWarningMail: boolean
+  shouldSendMail: boolean
 }): PatchOfferBodyModel => {
   if (isOfferSynchronized(offer)) {
     return {}
@@ -22,6 +22,6 @@ export const toPatchOfferBodyModel = ({
   return {
     ...formValues,
     // TODO (igabriele, 2025-07-19): Add this prop to Yup schema set it via react-hook-form.
-    shouldSendMail: shouldSendWarningMail,
+    shouldSendMail,
   }
 }

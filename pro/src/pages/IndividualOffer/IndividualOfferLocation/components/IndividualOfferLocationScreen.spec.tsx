@@ -102,7 +102,7 @@ const LABELS = {
     cantFindAddress: /Vous ne trouvez pas votre adresse \?/,
   },
   fields: {
-    address: `Il s’agit de l’adresse à laquelle les jeunes devront se présenter.`,
+    address: `Il s’agit de l’adresse à laquelle les jeunes devront se présenter. *`,
     url: `URL d’accès à l’offre *`,
     addressLocationLabel: 'Intitulé de la localisation',
     street: 'Adresse postale',
