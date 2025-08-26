@@ -89,9 +89,11 @@ def _get_online_bookings_happening_soon() -> sa_orm.query.Query:
             booking_models.Booking.status == booking_models.BookingStatus.CONFIRMED,
             Stock.beginningDatetime >= in_30_minutes,
             Stock.beginningDatetime < in_1_hour,
-            Offer.isEvent,
             Offer.isDigital,
         )
+        # event -> has event subcategory and a timestamped stock
+        .filter(Offer.hasEventSubcategory)
+        .filter(Stock.beginningDatetime != None)
     )
 
     return bookings_query

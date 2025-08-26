@@ -131,7 +131,9 @@ def _get_existing_offers(
         db.session.query(
             sa.func.max(offers_models.Offer.id).label("max_id"),
         )
-        .filter(offers_models.Offer.isEvent == False)
+        # If the offer's subcategory is not an event, the offer cannot be an
+        # event. No need to check if one of its stocks has a beginning date.
+        .filter(sa.not_(offers_models.Offer.hasEventSubcategory))
         .filter(offers_models.Offer.venue == venue)
         .filter(offers_models.Offer.ean.in_(ean_to_create_or_update))
         .group_by(
@@ -141,11 +143,13 @@ def _get_existing_offers(
         .subquery()
     )
 
-    return (
+    res = (
         individual_offers_v1_utils.retrieve_offer_relations_query(db.session.query(offers_models.Offer))
         .join(subquery, offers_models.Offer.id == subquery.c.max_id)
         .all()
     )
+
+    return res
 
 
 @job(worker.low_queue)

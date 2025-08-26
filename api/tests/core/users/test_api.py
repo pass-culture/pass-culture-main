@@ -150,7 +150,7 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
         in_the_past = datetime.datetime.utcnow() - relativedelta(seconds=1)
         further_in_the_past = datetime.datetime.utcnow() - relativedelta(days=3)
         booking_event = bookings_factories.BookingFactory(
-            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
+            stock=offers_factories.EventStockFactory(offer__subcategoryId=subcategories.SEANCE_CINE.id),
             status=BookingStatus.CONFIRMED,
             dateCreated=further_in_the_past,
             cancellationLimitDate=in_the_past,

@@ -485,7 +485,7 @@ def _get_offers_by_ids(
             sa.case(
                 (
                     sa.or_(
-                        sa.not_(offers_models.Offer.isEvent),
+                        sa.not_(offers_models.Offer.hasEventSubcategory),
                         sa.func.max(offers_models.Stock.beginningDatetime).cast(sa.Date).is_(None),
                     ),
                     sa.cast(postgresql.array([]), postgresql.ARRAY(sa.Date)),
@@ -514,7 +514,7 @@ def _get_offers_by_ids(
             sa.case(
                 (
                     sa.or_(
-                        sa.not_(offers_models.Offer.isEvent),
+                        sa.not_(offers_models.Offer.hasEventSubcategory),
                         sa.func.max(offers_models.Stock.bookingLimitDatetime).cast(sa.Date).is_(None),
                     ),
                     sa.cast(postgresql.array([]), postgresql.ARRAY(sa.Date)),
@@ -1283,8 +1283,9 @@ def _get_editable_stock(offer_id: int) -> set[int]:
         db.session.query(offers_models.Stock.id)
         .join(bookings_models.Booking, offers_models.Stock.bookings)
         .join(offers_models.Offer, offers_models.Stock.offer)
+        # event -> has event subcategory and a timestamped stock
+        .filter(offers_models.Offer.hasEventSubcategory, offers_models.Stock.beginningDatetime != None)
         .filter(
-            offers_models.Offer.isEvent,
             offers_models.Stock.offerId == offer_id,
             bookings_models.Booking.status.in_(
                 (

@@ -353,6 +353,7 @@ class OffererBookingRecapTest:
         offerers_factories.VenueBankAccountLinkFactory(venue=venue)
         booking = make_booking(stock__offer__venue=venue)
         # Preload available data - calling functions should do that
+        _ = booking.stock.offer.stocks
         _ = booking.stock.offer.venue.offererAddress.address
         _ = booking.user
         # 1 - SELECT venue with bank account
@@ -381,6 +382,7 @@ class OffererBookingRecapTest:
         )
         booking = make_booking(stock__offer__venue=venue)
         # Preload available data - calling functions should do that
+        _ = booking.stock.offer.stocks
         _ = booking.stock.offer.venue.offererAddress.address
         _ = booking.user
         # 1 - SELECT venue with bank account

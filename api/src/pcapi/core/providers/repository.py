@@ -225,7 +225,6 @@ def _get_future_provider_events_requiring_a_ticketing_system_query(
     # Events linked to the provider & requiring a ticketing system
     events_query = events_query.filter(
         offers_models.Offer.lastProvider == provider,
-        offers_models.Offer.isEvent,
         offers_models.Offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP,
     )
 
@@ -233,6 +232,9 @@ def _get_future_provider_events_requiring_a_ticketing_system_query(
     events_query = events_query.filter(
         offers_models.Stock.beginningDatetime >= datetime.datetime.utcnow(),
     )
+
+    # event -> has event subcategory and a timestamped stock (already checked)
+    events_query = events_query.filter(offers_models.Offer.hasEventSubcategory)
 
     return events_query
 

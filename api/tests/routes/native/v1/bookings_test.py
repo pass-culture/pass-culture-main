@@ -759,6 +759,11 @@ class PostBookingTest:
 class GetBookingsTest:
     identifier = "pascal.ture@example.com"
 
+    nb_queries = 1  # select user
+    nb_queries += 1  # select booking
+    nb_queries += 1  # select booking's stock's offer with its stocks
+    # -> is the offer an event?
+
     def test_get_bookings(self, client):
         OFFER_URL = "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}"
         user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
@@ -822,8 +827,7 @@ class GetBookingsTest:
         )
 
         client = client.with_token(self.identifier)
-        with assert_num_queries(2):
-            # select user, booking
+        with assert_num_queries(self.nb_queries):
             response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
@@ -928,8 +932,7 @@ class GetBookingsTest:
         )
 
         client = client.with_token(ongoing_booking.user.email)
-        with assert_num_queries(2):
-            # select user, booking
+        with assert_num_queries(self.nb_queries):
             response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
@@ -944,8 +947,7 @@ class GetBookingsTest:
         ReactionFactory(user=ongoing_booking.user, offer=stock.offer)
 
         client = client.with_token(ongoing_booking.user.email)
-        with assert_num_queries(2):
-            # select user, booking
+        with assert_num_queries(self.nb_queries):
             response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
@@ -960,24 +962,22 @@ class GetBookingsTest:
         )
         ReactionFactory(reactionType=ReactionTypeEnum.LIKE, user=ongoing_booking.user, product=stock.offer.product)
         client = client.with_token(ongoing_booking.user.email)
-        with assert_num_queries(3):
-            # select user, booking, offer
+        with assert_num_queries(self.nb_queries):
             response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
         assert response.json["ongoing_bookings"][0]["userReaction"] == "LIKE"
 
     def test_get_bookings_returns_enable_pop_up_reaction(self, client):
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.SEANCE_CINE.id,
-        )
+        offer = offers_factories.EventStockFactory(
+            offer__subcategoryId=subcategories.SEANCE_CINE.id,
+        ).offer
         booking = booking_factories.UsedBookingFactory(
             stock__offer=offer,
             dateUsed=datetime.utcnow() - timedelta(seconds=60 * 24 * 3600),
         )
         client = client.with_token(booking.user.email)
-        with assert_num_queries(2):
-            # select user, booking, offer
+        with assert_num_queries(self.nb_queries):
             response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
@@ -991,8 +991,7 @@ class GetBookingsTest:
         )
         booking_factories.BookingFactory(stock=stock, user=ongoing_booking.user, status=BookingStatus.CANCELLED)
         client = client.with_token(ongoing_booking.user.email)
-        with assert_num_queries(2):
-            # select user, booking
+        with assert_num_queries(self.nb_queries):
             response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
@@ -1017,8 +1016,7 @@ class GetBookingsTest:
         )
 
         client = client.with_token(ongoing_booking.user.email)
-        with assert_num_queries(2):
-            # select user, booking
+        with assert_num_queries(self.nb_queries):
             response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
@@ -1034,8 +1032,7 @@ class GetBookingsTest:
         )
 
         test_client = client.with_token(user.email)
-        with assert_num_queries(2):
-            # select user, booking
+        with assert_num_queries(self.nb_queries):
             response = test_client.get("/native/v1/bookings")
 
         assert response.status_code == 200
@@ -1052,7 +1049,7 @@ class GetBookingsTest:
             stock__offer__withdrawalDelay=60 * 30,
         )
 
-        with assert_num_queries(2):  # user + booking
+        with assert_num_queries(self.nb_queries):
             response = client.with_token(self.identifier).get("/native/v1/bookings")
             assert response.status_code == 200
 
@@ -1076,7 +1073,7 @@ class GetBookingsTest:
         ExternalBookingFactory(booking=booking, barcode="111111111", seat="A_1")
         ExternalBookingFactory(booking=booking, barcode="111111112", seat="A_2")
 
-        with assert_num_queries(2):  # user + booking
+        with assert_num_queries(self.nb_queries):
             response = client.with_token(self.identifier).get("/native/v1/bookings")
             assert response.status_code == 200
 
@@ -1098,7 +1095,7 @@ class GetBookingsTest:
         offer = offers_factories.OfferFactory(venue=venue, offererAddress=None)
         booking_factories.BookingFactory(stock__offer=offer, user=user)
 
-        with assert_num_queries(2):  # user + booking
+        with assert_num_queries(self.nb_queries):
             response = client.with_token(self.identifier).get("/native/v1/bookings")
 
         assert response.status_code == 200
@@ -1110,7 +1107,7 @@ class GetBookingsTest:
         booking_factories.BookingFactory(user=user)
 
         client = client.with_token(user.email)
-        with assert_num_queries(2):  # user + booking
+        with assert_num_queries(self.nb_queries):
             response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
@@ -1363,7 +1360,10 @@ class ToggleBookingVisibilityTest:
         )
 
         client = client.with_token(self.identifier)
-        with assert_num_queries(2):  # user + booking
+        # 1. select user
+        # 2. select booking
+        # 3. select booking's stock's offer with its stocks (check if offer is an event)
+        with assert_num_queries(3):
             response = client.get("/native/v1/bookings")
             assert response.status_code == 200
 
