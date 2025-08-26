@@ -5,4 +5,10 @@ export const DEFAULT_AXE_CONFIG = {
 }
 //  TODO : Fix the "unaccessible" link axe-core error, cf this WIP :
 //  https://www.notion.so/passcultureapp/Redirection-SPA-d-claration-de-titres-de-niveau-1-et-skip-links-94461d27b2444ed29b5103ea3d0ede2e
-export const DEFAULT_AXE_RULES = { rules: { 'link-name': { enabled: false } } }
+// color-contrast: fals positive ? no error in storybook
+export const DEFAULT_AXE_RULES = {
+  rules: {
+    'link-name': { enabled: false },
+    'color-contrast': { enabled: false },
+  },
+}

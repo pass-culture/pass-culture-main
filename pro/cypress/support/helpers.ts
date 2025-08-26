@@ -40,7 +40,7 @@ export function expectOffersOrBookingsAreFound(
     cy.findAllByTestId('offer-item-row')
       .eq(rowLine)
       .within(() => {
-        cy.get('td').then(($elt) => {
+        cy.get('td, th[scope="row"]').then(($elt) => {
           for (let column = 0; column < lineArray.length; column++) {
             cy.wrap($elt)
               .eq(column)

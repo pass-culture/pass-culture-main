@@ -401,6 +401,7 @@ export const PriceCategoriesScreen = ({
 
                     {mode === OFFER_WIZARD_MODE.CREATION && (
                       <Button
+                        aria-label={`Supprimer le tarif ${priceCategories[index].label}`}
                         className={styles['delete-icon']}
                         iconClassName={styles['delete-icon-svg']}
                         data-testid={'delete-button'}

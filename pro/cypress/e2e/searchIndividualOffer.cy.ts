@@ -1,5 +1,6 @@
 import { addDays, format } from 'date-fns'
 
+import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
 import {
   expectOffersOrBookingsAreFoundForNewTable,
   logInAndGoToPage,
@@ -43,7 +44,10 @@ describe('Search individual offers', () => {
 
   it('I should be able to search with a name and see expected results', () => {
     cy.stepLog({ message: 'I search with the text "Une super offre"' })
+
     cy.findByRole('searchbox', { name: /Nom de l’offre/ }).type(offerName1)
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
