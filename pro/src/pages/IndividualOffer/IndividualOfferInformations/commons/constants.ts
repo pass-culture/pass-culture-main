@@ -119,6 +119,3 @@ export const ticketWithdrawalHourOptions = [
     value: (60 * 60 * 48).toString(),
   },
 ]
-
-export const LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED =
-  'USEFUL_INFORMATION_SUBMITTED'
