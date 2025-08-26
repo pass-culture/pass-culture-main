@@ -33,7 +33,7 @@
 {% endmacro %}
 {% macro build_static_htmx_modal(div_id, target_id, dst, form, title, button_text, description, icon, modal_size="lg", method="get") %}
   <div class="modal fade modal-{{ modal_size }}"
-       id="{{ div_id }}-modal"
+       id="{{ div_id }}"
        tabindex="-1"
        aria-labelledby="{{ div_id }}-label"
        aria-hidden="false">
