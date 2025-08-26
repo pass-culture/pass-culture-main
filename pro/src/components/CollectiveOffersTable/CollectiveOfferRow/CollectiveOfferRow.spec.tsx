@@ -254,9 +254,8 @@ describe('CollectiveOfferRow', () => {
         offer: collectiveOfferFactory({ isShowcase: true, stocks }),
       })
 
-      expect(
-        within(screen.getAllByRole('cell')[2]).getByText('Offre vitrine')
-      ).toBeInTheDocument()
+      const rowHeader = screen.getAllByRole('rowheader')[0]
+      expect(within(rowHeader).getByText(/Offre vitrine/i)).toBeInTheDocument()
     })
 
     it('should not display a tag when offer is not template', () => {
@@ -265,8 +264,9 @@ describe('CollectiveOfferRow', () => {
         offer: collectiveOfferFactory({ isShowcase: false, stocks }),
       })
 
+      const rowHeader = screen.getAllByRole('rowheader')[0]
       expect(
-        within(screen.getAllByRole('cell')[1]).queryByText('Offre vitrine')
+        within(rowHeader).queryByText(/Offre vitrine/i)
       ).not.toBeInTheDocument()
     })
   })

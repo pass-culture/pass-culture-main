@@ -1,5 +1,6 @@
 import { addDays, format } from 'date-fns'
 
+import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
 import {
   expectOffersOrBookingsAreFound,
   logInAndGoToPage,
@@ -49,6 +50,9 @@ describe('Create collective offers', () => {
 
     cy.findByText('À un groupe scolaire').click()
     cy.findByText('Étape suivante').click()
+    cy.findByText('Créer une offre réservable')
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
     cy.wait('@getDomains')
 
@@ -89,7 +93,8 @@ describe('Create collective offers', () => {
     cy.findByLabelText('Date limite de réservation').type(
       format(tomorrow, 'yyyy-MM-dd')
     )
-
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
     cy.findByText('Enregistrer et continuer').click()
 
     cy.findByLabelText('Nom de l’établissement scolaire ou code UAI *').type(
@@ -102,6 +107,8 @@ describe('Create collective offers', () => {
     cy.wait('@educationalOfferers').its('response.statusCode').should('eq', 200)
     cy.findByRole('heading', { name: 'Détails de l’offre' }).should('exist')
 
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
     cy.findByText('Enregistrer et continuer').click()
     cy.findByText('Sauvegarder le brouillon et quitter').click()
 

@@ -1,3 +1,4 @@
+import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
 import { logInAndGoToPage } from '../support/helpers.ts'
 
 export function attachmentModificationsDone() {
@@ -46,6 +47,9 @@ describe('Financial Management - messages, links to external help page, reimburs
       cy.contains(
         'Vous n’avez pas encore de justificatifs de remboursement disponibles'
       )
+
+      cy.injectAxe(DEFAULT_AXE_CONFIG)
+      cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
       cy.stepLog({
         message: 'I can see a link to the next reimbursement help page',

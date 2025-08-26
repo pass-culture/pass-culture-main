@@ -25,14 +25,16 @@ export const OfferNameCell = ({
   className,
 }: OfferNameCellProps) => {
   return (
-    <td
-      role="cell"
+    <th
+      scope="row"
+      // biome-ignore lint: accepted for assistive technologies
+      role="rowheader"
       className={classNames(
         styles['offers-table-cell'],
         styles['title-column'],
         className
       )}
-      headers={`${rowId} ${getCellsDefinition().NAME.id}`}
+      id={rowId}
     >
       <Link
         className={classNames({
@@ -60,6 +62,6 @@ export const OfferNameCell = ({
           </div>
         </div>
       </Link>
-    </td>
+    </th>
   )
 }

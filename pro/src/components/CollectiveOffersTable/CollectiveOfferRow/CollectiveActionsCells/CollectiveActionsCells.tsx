@@ -319,6 +319,7 @@ export const CollectiveActionsCells = ({
 
   return (
     <td
+      // biome-ignore lint/a11y: accepted for assistive tech
       role="cell"
       className={cn(
         styles['offers-table-cell'],

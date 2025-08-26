@@ -27,6 +27,7 @@ export const OfferInstitutionCell = ({
 
   return (
     <td
+      // biome-ignore lint/a11y: accepted for assistive tech
       role="cell"
       className={classNames(
         styles['offers-table-cell'],

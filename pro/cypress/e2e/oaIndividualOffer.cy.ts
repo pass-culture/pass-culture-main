@@ -1,4 +1,8 @@
-import { MOCKED_BACK_ADDRESS_LABEL } from '../support/constants.ts'
+import {
+  DEFAULT_AXE_CONFIG,
+  DEFAULT_AXE_RULES,
+  MOCKED_BACK_ADDRESS_LABEL,
+} from '../support/constants.ts'
 import {
   interceptSearch5Adresses,
   logInAndGoToPage,
@@ -40,6 +44,8 @@ describe('Create individual offers with OA', () => {
     })
     cy.findByText('Au grand public').click()
     cy.findByText('Un évènement physique daté').click()
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
     cy.findByText('Étape suivante').click()
 
     cy.stepLog({ message: 'I fill in event details' })
@@ -51,6 +57,19 @@ describe('Create individual offers with OA', () => {
     cy.findByLabelText('Sous-catégorie *').select('Spectacle, représentation')
     cy.findByLabelText('Type de spectacle *').select('Théâtre')
     cy.findByLabelText('Sous-type *').select('Comédie')
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    // field image label is not seen
+    cy.checkA11y(
+      undefined,
+      {
+        ...DEFAULT_AXE_RULES,
+        rules: {
+          ...DEFAULT_AXE_RULES?.rules,
+          'label-title-only': { enabled: false },
+        },
+      },
+      cy.a11yLog
+    )
 
     cy.stepLog({ message: 'I validate event details step' })
     cy.findByText('Enregistrer et continuer').click()
@@ -62,6 +81,8 @@ describe('Create individual offers with OA', () => {
       'passculture@example.com'
     )
 
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
     cy.stepLog({ message: 'I validate event useful informations step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@getOffer', '@patchOffer'])
@@ -70,6 +91,21 @@ describe('Create individual offers with OA', () => {
     cy.findByLabelText('Intitulé du tarif').should('have.value', 'Tarif unique')
 
     cy.findByLabelText('Prix par personne').type('100')
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    // trash icon button is just an image button
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
+
+    // cy.checkA11y(
+    //   undefined,
+    //   {
+    //     ...DEFAULT_AXE_RULES,
+    //     rules: {
+    //       ...DEFAULT_AXE_RULES?.rules,
+    //       'button-name': { enabled: false },
+    //     },
+    //   },
+    //   cy.a11yLog
+    // )
 
     cy.stepLog({ message: 'I validate prices step' })
     cy.findByText('Enregistrer et continuer').click()
@@ -91,12 +127,27 @@ describe('Create individual offers with OA', () => {
     cy.findByLabelText('Horaire 1 *').type('18:30')
     cy.findByLabelText('Tarif *').select('100,00\xa0€ - Tarif unique')
 
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    // FIX ME: day selector has no visible label
+    cy.checkA11y(
+      undefined,
+      {
+        ...DEFAULT_AXE_RULES,
+        rules: {
+          ...DEFAULT_AXE_RULES?.rules,
+          'label-title-only': { enabled: false },
+        },
+      },
+      cy.a11yLog
+    )
     cy.stepLog({ message: 'I validate recurrence step' })
     cy.findByText('Valider').click()
     cy.wait(['@postEventStocks', '@getStocks'])
 
     cy.findByText('Enregistrer et continuer').click()
     cy.contains('Accepter les réservations "Duo" : Oui')
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
     cy.stepLog({ message: 'I publish my offer' })
     cy.findByText('Publier l’offre').click()
