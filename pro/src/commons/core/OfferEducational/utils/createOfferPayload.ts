@@ -7,10 +7,10 @@ import {
   type PostCollectiveOfferTemplateBodyModel,
 } from '@/apiClient/v1'
 import {
+  buildDateTime,
   formatBrowserTimezonedDateAsUTC,
   toISOStringWithoutMilliseconds,
 } from '@/commons/utils/date'
-import { buildDateTime } from '@/components/IndividualOffer/StocksEventEdition/serializers'
 
 import type { OfferEducationalFormValues } from '../types'
 import { parseDuration } from './parseDuration'
