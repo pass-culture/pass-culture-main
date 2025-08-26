@@ -2,11 +2,10 @@ import { isValid } from 'date-fns'
 import * as yup from 'yup'
 
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
-
 import {
   PRICE_CATEGORY_PRICE_MAX,
   PRICE_MAX_PACIFIC_FRANC,
-} from '../PriceCategoriesScreen/form/constants'
+} from '@/pages/IndividualOffer/commons/prices/constants'
 
 export const MAX_STOCKS_QUANTITY = 1000000
 

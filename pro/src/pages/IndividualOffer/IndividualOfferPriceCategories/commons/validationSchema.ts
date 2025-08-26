@@ -1,12 +1,12 @@
 import * as yup from 'yup'
 
 import { getNthParentFormValues } from '@/commons/utils/yupValidationTestHelpers'
-
 import {
-  PRICE_CATEGORY_LABEL_MAX_LENGTH,
   PRICE_CATEGORY_PRICE_MAX,
   PRICE_MAX_PACIFIC_FRANC,
-} from './constants'
+} from '@/pages/IndividualOffer/commons/prices/constants'
+
+import { PRICE_CATEGORY_LABEL_MAX_LENGTH } from './constants'
 import { isPriceCategoriesForm, isPriceCategoriesFormValues } from './types'
 
 const labelTooLongMsg = 'Le nom du tarif est trop long'
