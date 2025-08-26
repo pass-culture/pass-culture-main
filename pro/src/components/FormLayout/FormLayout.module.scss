@@ -39,6 +39,11 @@ $info-box-margin-left: rem.torem(24px);
       @include fonts.title2;
     }
 
+    // Legend spacing variant when no description follows
+    &-legend--spaced {
+      margin-bottom: rem.torem(16px);
+    }
+
     &-header {
       margin-bottom: rem.torem(16px);
     }

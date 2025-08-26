@@ -22,7 +22,12 @@ export const Section = ({
   return (
     <fieldset className={cn(style['form-layout-section'], className)} id={id}>
       {title && (
-        <legend>
+        <legend
+          className={cn({
+            [style['form-layout-section-legend--spaced']]:
+              title && !description,
+          })}
+        >
           <h2 className={style['form-layout-section-title']}>{title}</h2>
         </legend>
       )}
