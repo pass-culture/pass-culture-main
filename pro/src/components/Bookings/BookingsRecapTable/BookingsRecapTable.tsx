@@ -32,7 +32,7 @@ interface BookingsRecapTableProps<
     statuses: string[]
   }
   audience: Audience
-  resetBookings: () => void
+  resetBookings?: () => void
 }
 
 export const BookingsRecapTable = <
