@@ -191,7 +191,9 @@ def get_event(event_id: int) -> events_serializers.EventOfferResponse:
     """
     offer: offers_models.Offer | None = (
         utils.retrieve_offer_relations_query(utils.retrieve_offer_query(event_id))
-        .filter(offers_models.Offer.isEvent)
+        # event -> has event subcategory and a timestamped stock
+        .filter(offers_models.Offer.hasEventSubcategory)
+        .filter(offers_models.Stock.beginningDatetime != None)
         .one_or_none()
     )
     if not offer:
@@ -260,7 +262,9 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
     """
     offer: offers_models.Offer | None = (
         utils.retrieve_offer_relations_query(utils.retrieve_offer_query(event_id))
-        .filter(offers_models.Offer.isEvent)
+        # event -> has event subcategory and a timestamped stock
+        .filter(offers_models.Offer.hasEventSubcategory)
+        .filter(offers_models.Stock.beginningDatetime != None)
         .one_or_none()
     )
 
@@ -352,7 +356,13 @@ def post_event_price_categories(
 
     Batch create price categories for given event.
     """
-    offer = utils.retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent).one_or_none()
+    offer = (
+        utils.retrieve_offer_query(event_id)
+        # event -> has event subcategory and a timestamped stock
+        .filter(offers_models.Offer.hasEventSubcategory)
+        .filter(offers_models.Stock.beginningDatetime != None)
+        .one_or_none()
+    )
     if not offer:
         raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
 
@@ -419,7 +429,13 @@ def get_event_price_categories(
 
     Get existing price categories for given event
     """
-    offer = utils.retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent).one_or_none()
+    offer = (
+        utils.retrieve_offer_query(event_id)
+        # event -> has event subcategory and a timestamped stock
+        .filter(offers_models.Offer.hasEventSubcategory)
+        .filter(offers_models.Stock.beginningDatetime != None)
+        .one_or_none()
+    )
 
     if not offer:
         raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
@@ -525,7 +541,9 @@ def post_event_stocks(
     offer = (
         utils.retrieve_offer_query(event_id)
         .options(sa_orm.joinedload(offers_models.Offer.priceCategories))
-        .filter(offers_models.Offer.isEvent)
+        # event -> has event subcategory and a timestamped stock
+        .filter(offers_models.Offer.hasEventSubcategory)
+        .filter(offers_models.Stock.beginningDatetime != None)
         .one_or_none()
     )
 
@@ -603,7 +621,13 @@ def get_event_stocks(
 
     Return all stocks for given event. Results are paginated (by default there are `50` date per page).
     """
-    offer = utils.retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent).one_or_none()
+    offer = (
+        utils.retrieve_offer_query(event_id)
+        # event -> has event subcategory and a timestamped stock
+        .filter(offers_models.Offer.hasEventSubcategory)
+        .filter(offers_models.Stock.beginningDatetime != None)
+        .one_or_none()
+    )
     if not offer:
         raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
 
@@ -665,7 +689,9 @@ def delete_event_stock(event_id: int, stock_id: int) -> None:
     """
     offer = (
         utils.retrieve_offer_query(event_id)
-        .filter(offers_models.Offer.isEvent)
+        # event -> has event subcategory and a timestamped stock
+        .filter(offers_models.Offer.hasEventSubcategory)
+        .filter(offers_models.Stock.beginningDatetime != None)
         .options(sa_orm.joinedload(offers_models.Offer.stocks))
         .one_or_none()
     )
@@ -709,7 +735,9 @@ def patch_event_stock(
     """
     offer: offers_models.Offer | None = (
         utils.retrieve_offer_relations_query(utils.retrieve_offer_query(event_id))
-        .filter(offers_models.Offer.isEvent)
+        # event -> has event subcategory and a timestamped stock
+        .filter(offers_models.Offer.hasEventSubcategory)
+        .filter(offers_models.Stock.beginningDatetime != None)
         .one_or_none()
     )
     if not offer:

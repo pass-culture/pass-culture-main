@@ -15,11 +15,12 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
     endpoint_method = "get"
     default_path_params = {"event_id": 1}
 
-    def setup_base_resource(self, venue=None, provider=None) -> offers_models.Offer:
-        return offers_factories.EventOfferFactory(
-            venue=venue or self.setup_venue(),
-            lastProvider=provider,
-        )
+    def setup_base_resource(self, venue=None, provider=None, **kwargs) -> offers_models.Offer:
+        return offers_factories.EventStockFactory(
+            offer__venue=venue or self.setup_venue(),
+            offer__lastProvider=provider,
+            **kwargs,
+        ).offer
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
         plain_api_key, _ = self.setup_provider()
@@ -35,7 +36,9 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
 
     def test_should_return_price_categories(self, client: TestClient):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        event = self.setup_base_resource(
+            venue=venue_provider.venue, provider=venue_provider.provider, priceCategory=None
+        )
         price_category_1 = offers_factories.PriceCategoryFactory(
             offer=event,
             priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(
