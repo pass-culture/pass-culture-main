@@ -31,7 +31,7 @@ import {
 import type { IndividualOfferContextValues } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
-import type { StocksEvent } from '@/components/IndividualOffer/StocksEventCreation/form/types'
+import type { StocksEvent } from '@/pages/IndividualOffer/IndividualOfferTimetable/components/StocksCalendar/form/types'
 
 import { listOffersVenueFactory } from './collectiveApiFactories'
 
@@ -186,9 +186,9 @@ export const individualOfferContextValuesFactory = (
     categories: [],
     subCategories: [],
     isEvent: null,
-    setIsEvent: () => {},
+    setIsEvent: () => { },
     isAccessibilityFilled: true,
-    setIsAccessibilityFilled: () => {},
+    setIsAccessibilityFilled: () => { },
     ...customIndividualOfferContextValues,
   }
 }
@@ -361,20 +361,20 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
 }
 
 export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
-  {
-    collectiveDmsApplications: [],
-    hasAdageId: false,
-    hasCreatedOffer: false,
-    isVirtual: false,
-    name: 'Mon super lieu',
-    id: 1,
-    venueTypeCode: VenueTypeCode.AUTRE,
-    hasVenueProviders: false,
-    isPermanent: true,
-    bannerUrl: null,
-    bannerMeta: null,
-    hasPartnerPage: true,
-  }
+{
+  collectiveDmsApplications: [],
+  hasAdageId: false,
+  hasCreatedOffer: false,
+  isVirtual: false,
+  name: 'Mon super lieu',
+  id: 1,
+  venueTypeCode: VenueTypeCode.AUTRE,
+  hasVenueProviders: false,
+  isPermanent: true,
+  bannerUrl: null,
+  bannerMeta: null,
+  hasPartnerPage: true,
+}
 
 export const defaultGetBookingResponse: GetBookingResponse = {
   bookingId: 'test_booking_id',

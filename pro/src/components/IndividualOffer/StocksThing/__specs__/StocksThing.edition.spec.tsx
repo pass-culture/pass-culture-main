@@ -28,7 +28,7 @@ import {
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
-import { Stocks } from '@/pages/IndividualOfferWizard/Stocks/Stocks'
+import { IndividualOfferTimetable } from '@/pages/IndividualOffer/IndividualOfferTimetable/IndividualOfferTimetable'
 
 vi.mock('screens/IndividualOffer/Informations/utils', () => {
   return {
@@ -60,7 +60,7 @@ const renderStockThingScreen = () =>
           })}
           element={
             <IndividualOfferContextProvider>
-              <Stocks />
+              <IndividualOfferTimetable />
             </IndividualOfferContextProvider>
           }
         />

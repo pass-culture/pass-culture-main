@@ -25,7 +25,7 @@ const accessibilityTestAndShape = (schema: any) => {
 const openingHoursDaySchema = yup
   .array()
   .of(
-    yup.array().of(
+    yup.array().required().of(
       yup
         .string()
         //  Custom tests are necessary to get the index of the required field
@@ -60,6 +60,16 @@ const openingHoursDaySchema = yup
       value[0][1] < value[1][0]
   )
 
+export const openingHoursSchema = yup.object().nullable().shape({
+  MONDAY: openingHoursDaySchema,
+  TUESDAY: openingHoursDaySchema,
+  WEDNESDAY: openingHoursDaySchema,
+  THURSDAY: openingHoursDaySchema,
+  FRIDAY: openingHoursDaySchema,
+  SATURDAY: openingHoursDaySchema,
+  SUNDAY: openingHoursDaySchema,
+})
+
 export const validationSchema = yup.object().shape({
   accessibility: yup.object().when('isOpenToPublic', {
     is: 'true',
@@ -87,13 +97,5 @@ export const validationSchema = yup.object().shape({
     .string()
     .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
     .nullable(),
-  openingHours: yup.object().nullable().shape({
-    MONDAY: openingHoursDaySchema,
-    TUESDAY: openingHoursDaySchema,
-    WEDNESDAY: openingHoursDaySchema,
-    THURSDAY: openingHoursDaySchema,
-    FRIDAY: openingHoursDaySchema,
-    SATURDAY: openingHoursDaySchema,
-    SUNDAY: openingHoursDaySchema,
-  }),
+  openingHours: openingHoursSchema,
 })
