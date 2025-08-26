@@ -131,7 +131,7 @@ describe('useSaveOfferLocation', () => {
       shouldSendMail: false,
     })
     expect(api.patchOffer).toHaveBeenCalled()
-    expect(mutateMock).not.toHaveBeenCalled()
+    expect(mutateMock).toHaveBeenCalledWith([GET_OFFER_QUERY_KEY, offerBase.id])
     expect(getIndividualOfferUrl).toHaveBeenCalledWith({
       offerId: offerBase.id,
       step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
@@ -164,7 +164,7 @@ describe('useSaveOfferLocation', () => {
       shouldSendMail: false,
     })
     expect(api.patchOffer).toHaveBeenCalled()
-    expect(mutateMock).not.toHaveBeenCalled()
+    expect(mutateMock).toHaveBeenCalledWith([GET_OFFER_QUERY_KEY, offerBase.id])
     expect(getIndividualOfferUrl).toHaveBeenCalledWith({
       offerId: offerBase.id,
       step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
