@@ -13,7 +13,6 @@ import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
-import type { CustomEvent } from '@/ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES } from '../../../commons/constants'
@@ -110,10 +109,6 @@ export const PhysicalLocationSubform = ({
     })
   }
 
-  const updateAutoCompleteInput = (e: CustomEvent<'change'>) => {
-    setValue('address.addressAutocomplete', e.target.value)
-  }
-
   const venueFullText = `${venue.publicName || venue.name} – ${
     venue.address ? computeAddressDisplayName(venue.address, false) : null
   }`
@@ -157,14 +152,12 @@ export const PhysicalLocationSubform = ({
               `Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?`
             */}
             <AddressSelect
-              label="Adresse postale"
-              name="address.addressAutocomplete"
-              disabled={isManualEdition || isDisabled}
+              {...register('address.addressAutocomplete')}
               className={styles['location-field']}
+              disabled={isManualEdition || isDisabled}
               error={errors.address?.addressAutocomplete?.message}
+              label="Adresse postale"
               onAddressChosen={updateAddressFromAutocomplete}
-              onChange={updateAutoCompleteInput}
-              value={watch('address.addressAutocomplete') ?? undefined}
             />
           </FormLayout.Row>
 

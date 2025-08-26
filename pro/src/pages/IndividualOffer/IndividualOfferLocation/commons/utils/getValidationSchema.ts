@@ -17,7 +17,7 @@ export const PhysicalLocationValidationSchema = yup
         is: (offerLocation: string, isManualEdition: boolean) =>
           offerLocation === OFFER_LOCATION.OTHER_ADDRESS && !isManualEdition,
         then: (schema) =>
-          schema.nonNullable(
+          schema.required(
             'Veuillez sélectionner une adresse parmi les suggestions'
           ),
       }
