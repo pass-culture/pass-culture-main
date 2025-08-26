@@ -14,12 +14,10 @@
 }
 
 .checkbox-column {
-  grid-area: check;
   width: fit-content;
 }
 
 .thumb-column {
-  grid-area: thumb;
   padding: rem.torem(8px);
 
   &-link {
@@ -38,12 +36,9 @@
 }
 
 .title-column {
-  @include fonts.body-accent;
-
-  grid-area: title;
-
   &-name {
-    display: block;
+    display: flex;
+    flex-direction: column;
     overflow-wrap: anywhere;
   }
 
@@ -60,30 +55,12 @@
   }
 }
 
-.event-date-column {
-  grid-area: event-date;
-}
-
-.venue-column {
-  grid-area: venue;
-}
-
 .institution-column {
   min-width: rem.torem(160px);
 }
 
-.institution-column,
-.stock-column {
-  grid-area: stock-or-institution;
-}
-
-.bookings-column {
-  grid-area: bookings;
-}
-
 .status-column {
-  grid-area: status;
-  min-width: rem.torem(160px);
+  min-width: rem.torem(120px);
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -111,7 +88,6 @@
 }
 
 .actions-column {
-  grid-area: actions;
   place-self: end end;
 
   &-container {
@@ -159,7 +135,7 @@
   }
 
   .title-column {
-    min-width: rem.torem(160px);
+    min-width: rem.torem(150px);
 
     &-with-thumb {
       display: flex;
@@ -237,13 +213,9 @@
 }
 
 .offer-event {
-  min-width: rem.torem(170px);
+  min-width: rem.torem(120px);
   display: flex;
   flex-direction: column;
-
-  &-hours {
-    @include fonts.body-accent-xs;
-  }
 }
 
 .expiration-date-cell {
@@ -254,4 +226,18 @@
   *:not(input) {
     @include a11y.visually-hidden;
   }
+}
+
+.price-and-participants-column {
+  min-width: rem.torem(140px);
+}
+
+.price-and-participants-container {
+  min-width: rem.torem(130px);
+  display: flex;
+  flex-direction: column;
+}
+
+.location-column {
+  min-width: rem.torem(130px);
 }
