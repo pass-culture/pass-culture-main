@@ -1,6 +1,7 @@
 name: "2 [on_schedule] Delete pullrequest deployments"
 
 on:
+  workflow_dispatch:
   schedule:
     # This cron is defined in UTC timezone. It means that it will run :
     # - during summer hours between 7:27am - 7:27pm
@@ -90,7 +91,7 @@ jobs:
 
           files_modified=false
           for id in $pullrequests_ids; do
-            [[ -d "pcapi-pr-$id" ]] && { git rm -r pcapi-pr-$id; files_modified=true; } || echo "path pcapi-pr-$id does not exist"
+            [[ -d "testing-pr-$id" ]] && { git rm -r testing-pr-$id; files_modified=true; } || echo "path testing-pr-$id does not exist"
             [[ -d "postgresql-pr-$id" ]] && { git rm -r postgresql-pr-$id; files_modified=true; } || echo "path postgresql-pr-$id does not exist"
             [[ -d "redis-pr-$id" ]] && { git rm -r redis-pr-$id; files_modified=true; } || echo "path redis-pr-$id does not exist"
           done
