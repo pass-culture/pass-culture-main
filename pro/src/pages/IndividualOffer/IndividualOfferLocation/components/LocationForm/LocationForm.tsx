@@ -11,7 +11,6 @@ import { getIsOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/get
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import type { LocationFormValues } from '../../commons/types'
-import styles from './LocationForm.module.scss'
 import { PhysicalLocationSubform } from './PhysicalLocationSubform/PhysicalLocationSubform'
 
 export interface LocationFormProps {
@@ -37,7 +36,7 @@ export const LocationForm = ({ offerVenue }: LocationFormProps) => {
 
   return (
     <FormLayout.Section title="Où profiter de l’offre ?">
-      <FormLayout.Row className={styles['row']}>
+      <FormLayout.Row>
         {!isOfferOnline && (
           <PhysicalLocationSubform
             isDisabled={isFormReadOnly}
