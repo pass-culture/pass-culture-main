@@ -37,15 +37,15 @@ export const LocationForm = ({ offerVenue }: LocationFormProps) => {
 
   return (
     <FormLayout.Section title="Où profiter de l’offre ?">
-      {!isOfferOnline && (
-        <PhysicalLocationSubform
-          isDisabled={isFormReadOnly}
-          venue={offerVenue}
-        />
-      )}
+      <FormLayout.Row className={styles['row']}>
+        {!isOfferOnline && (
+          <PhysicalLocationSubform
+            isDisabled={isFormReadOnly}
+            venue={offerVenue}
+          />
+        )}
 
-      {isOfferOnline && (
-        <FormLayout.Row className={styles.row}>
+        {isOfferOnline && (
           <TextInput
             description="Format : https://exemple.com"
             disabled={isFormReadOnly}
@@ -55,8 +55,8 @@ export const LocationForm = ({ offerVenue }: LocationFormProps) => {
             error={errors.url?.message}
             required
           />
-        </FormLayout.Row>
-      )}
+        )}
+      </FormLayout.Row>
     </FormLayout.Section>
   )
 }
