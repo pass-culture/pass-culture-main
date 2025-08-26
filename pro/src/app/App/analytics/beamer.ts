@@ -20,7 +20,10 @@ export const useBeamer = (consentedToBeamer: boolean) => {
     ) {
       // We use setTimeout because Beamer might not be loaded yet
       setTimeout(() => {
-        window.Beamer?.update({ user_id: currentUser.id.toString() })
+        window.Beamer?.update({
+          user_id: currentUser.id.toString(),
+          departmentCode: currentUser.departementCode,
+        })
         window.Beamer?.init()
       }, 1000)
     } else {
