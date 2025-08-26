@@ -30,6 +30,13 @@ def offer_app_link(offer_id: int, utm: str | None = None) -> str:
     return base
 
 
+def venue_app_link(venue_id: int, utm: str | None = None) -> str:
+    base = f"{settings.WEBAPP_V2_URL}/lieu/{venue_id}"
+    if utm:
+        return f"{base}?{utm}"
+    return base
+
+
 def booking_app_link(booking: Booking) -> str:
     return f"{settings.WEBAPP_V2_URL}/reservation/{booking.id}/details"
 
