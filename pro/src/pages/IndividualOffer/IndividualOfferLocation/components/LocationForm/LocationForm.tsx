@@ -13,7 +13,7 @@ import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import type { LocationFormValues } from '../../commons/types'
 import { PhysicalLocationSubform } from './PhysicalLocationSubform/PhysicalLocationSubform'
 
-export interface LocationFormProps {
+interface LocationFormProps {
   offerVenue: VenueListItemResponseModel
 }
 export const LocationForm = ({ offerVenue }: LocationFormProps) => {
