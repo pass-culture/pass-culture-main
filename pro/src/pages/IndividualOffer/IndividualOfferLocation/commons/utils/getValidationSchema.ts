@@ -55,8 +55,8 @@ export const PhysicalLocationValidationSchema = yup
         otherwise: (schema) => schema.transform(() => false),
       })
       .defined(),
+    label: nonEmptyStringOrNull(),
     latitude: yup.string().trim().defined(),
-    locationLabel: nonEmptyStringOrNull(),
     longitude: yup.string().trim().defined(),
     offerLocation: yup
       .string()

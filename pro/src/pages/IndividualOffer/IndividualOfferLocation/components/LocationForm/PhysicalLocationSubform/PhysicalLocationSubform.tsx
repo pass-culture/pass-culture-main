@@ -67,7 +67,7 @@ export const PhysicalLocationSubform = ({
       // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive a venue address without street since it's mandatory.
       // @ts-expect-error
       setValue('address.street', venue.address.street ?? null)
-      setValue('address.locationLabel', venue.address.label ?? null)
+      setValue('address.label', venue.address.label ?? null)
       setValue('address.offerLocation', venue.address.id_oa.toString())
     } else {
       // @ts-expect-error We have to initialize with empty values to reset the address form.
@@ -143,7 +143,7 @@ export const PhysicalLocationSubform = ({
         <div className={styles['other-address-wrapper']}>
           <FormLayout.Row className={styles['location-row']}>
             <TextInput
-              {...register('address.locationLabel')}
+              {...register('address.label')}
               label="Intitulé de la localisation"
               disabled={isDisabled}
             />
