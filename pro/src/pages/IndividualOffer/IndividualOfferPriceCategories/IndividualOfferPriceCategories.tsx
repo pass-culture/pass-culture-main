@@ -1,13 +1,14 @@
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import { PriceCategoriesScreen } from '@/components/IndividualOffer/PriceCategoriesScreen/PriceCategoriesScreen'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
 import { getTitle } from '@/components/IndividualOfferLayout/utils/getTitle'
 import { IndividualOfferPriceTable } from '@/pages/IndividualOffer/IndividualOfferPriceTable/IndividualOfferPriceTable'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
-export const PriceCategories = (): JSX.Element | null => {
+import { IndividualOfferPriceCategoriesScreen } from './components/IndividualOfferPriceCategoriesScreen'
+
+export const IndividualOfferPriceCategories = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { offer } = useIndividualOfferContext()
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
@@ -28,11 +29,11 @@ export const PriceCategories = (): JSX.Element | null => {
 
   return (
     <IndividualOfferLayout offer={offer} title={getTitle(mode)} mode={mode}>
-      <PriceCategoriesScreen offer={offer} />
+      <IndividualOfferPriceCategoriesScreen offer={offer} />
     </IndividualOfferLayout>
   )
 }
 
 // Below exports are used by react-router
 // ts-unused-exports:disable-next-line
-export const Component = PriceCategories
+export const Component = IndividualOfferPriceCategories

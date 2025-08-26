@@ -13,7 +13,8 @@ import {
   subcategoryFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { PriceCategoriesScreen } from '@/components/IndividualOffer/PriceCategoriesScreen/PriceCategoriesScreen'
+
+import { IndividualOfferPriceCategoriesScreen } from '../IndividualOfferPriceCategoriesScreen'
 
 const renderPriceCategoriesForm = (
   canBeDuo = true,
@@ -41,7 +42,7 @@ const renderPriceCategoriesForm = (
   }
   return renderWithProviders(
     <IndividualOfferContext.Provider value={context}>
-      <PriceCategoriesScreen offer={offer} />
+      <IndividualOfferPriceCategoriesScreen offer={offer} />
     </IndividualOfferContext.Provider>,
     { initialRouterEntries: ['/creation'] }
   )

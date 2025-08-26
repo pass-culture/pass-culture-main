@@ -1,7 +1,7 @@
 import type {
   PriceCategoriesFormValues,
   PriceCategoryForm,
-} from '@/components/IndividualOffer/PriceCategoriesScreen/form/types'
+} from '@/pages/IndividualOffer/IndividualOfferPriceCategories/commons/types'
 
 let priceCategoryFormId = 1
 export const priceCategoryFormFactory = (

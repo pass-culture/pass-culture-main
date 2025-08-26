@@ -19,6 +19,7 @@ import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGr
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
+import { getPriceCategoryOptions } from '@/pages/IndividualOffer/commons/getPriceCategoryOptions'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
@@ -33,7 +34,6 @@ import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 
-import { getPriceCategoryOptions } from '../PriceCategoriesScreen/form/getPriceCategoryOptions'
 import { computeInitialValues } from './form/computeInitialValues'
 import { isLastWeekOfMonth } from './form/recurrenceUtils'
 import {

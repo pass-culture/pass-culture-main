@@ -20,12 +20,12 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 
 import {
-  PriceCategoriesScreen,
-  type PriceCategoriesScreenProps,
-} from '../PriceCategoriesScreen'
+  IndividualOfferPriceCategoriesScreen,
+  type IndividualOfferPriceCategoriesScreenProps,
+} from '../IndividualOfferPriceCategoriesScreen'
 
 const renderPriceCategories = (
-  props: PriceCategoriesScreenProps,
+  props: IndividualOfferPriceCategoriesScreenProps,
   url = generatePath(
     getIndividualOfferPath({
       step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
@@ -47,7 +47,7 @@ const renderPriceCategories = (
 
   return renderWithProviders(
     <IndividualOfferContext.Provider value={context}>
-      <PriceCategoriesScreen {...props} />
+      <IndividualOfferPriceCategoriesScreen {...props} />
       <Notification />
     </IndividualOfferContext.Provider>,
     { initialRouterEntries: [url] }

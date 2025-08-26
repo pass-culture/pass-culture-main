@@ -17,9 +17,9 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 
 import {
-  PriceCategoriesScreen,
-  type PriceCategoriesScreenProps,
-} from '../PriceCategoriesScreen'
+  IndividualOfferPriceCategoriesScreen,
+  type IndividualOfferPriceCategoriesScreenProps,
+} from '../IndividualOfferPriceCategoriesScreen'
 
 const renderPriceCategories = ({
   props,
@@ -32,7 +32,7 @@ const renderPriceCategories = ({
   ),
   features = [],
 }: {
-  props: PriceCategoriesScreenProps
+  props: IndividualOfferPriceCategoriesScreenProps
   url?: string
   features?: string[]
 }) =>
@@ -47,7 +47,7 @@ const renderPriceCategories = ({
           })}
           element={
             <>
-              <PriceCategoriesScreen {...props} />
+              <IndividualOfferPriceCategoriesScreen {...props} />
               <ButtonLink to="/outside">Go outside !</ButtonLink>
               <ButtonLink
                 to={getIndividualOfferPath({
