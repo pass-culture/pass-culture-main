@@ -1106,10 +1106,10 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[models.Boo
         .join(offers_models.Offer.venue)
         .outerjoin(models.Booking.activationCode)
         .outerjoin(offers_models.Offer.criteria)
+        .filter(offers_models.Offer.hasEventSubcategory)
         .filter(
             offers_models.Stock.beginningDatetime >= tomorrow_min, offers_models.Stock.beginningDatetime <= tomorrow_max
         )
-        .filter(offers_models.Offer.isEvent)
         .filter(sa.not_(offers_models.Offer.isDigital))
         .filter(models.Booking.status != models.BookingStatus.CANCELLED)
         .options(sa_orm.contains_eager(models.Booking.user))

@@ -89,19 +89,18 @@ class GetFutureEventsRequiringTicketingSystemTest:
         venue = offerers_factories.VenueFactory()
         factories.VenueProviderFactory(provider=provider, venue=venue)
 
-        expected_event_offer = offers_factories.EventOfferFactory(
-            lastProvider=provider, venue=venue, withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP
-        )
-        # event not linked to ticketing
-        offers_factories.EventOfferFactory(
-            lastProvider=provider, venue=venue, withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL
-        )
-        # event with no stock
-        offers_factories.EventOfferFactory(
-            lastProvider=provider, venue=venue, withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP
-        )
+        expected_event_offer = offers_factories.EventStockFactory(
+            offer__lastProvider=provider,
+            offer__venue=venue,
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+        ).offer
 
-        offers_factories.StockFactory(offer=expected_event_offer)
+        # event not linked to ticketing
+        offers_factories.EventStockFactory(
+            offer__lastProvider=provider,
+            offer__venue=venue,
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
+        )
 
         future_events = repository.get_future_events_requiring_ticketing_system(provider)
 
@@ -144,33 +143,33 @@ class GetFutureEventsRequiringTicketingSystemTest:
         venue_2 = offerers_factories.VenueFactory()
         factories.VenueProviderFactory(provider=provider, venue=venue)
 
-        expected_event_offer = offers_factories.EventOfferFactory(
-            lastProvider=provider, venue=venue, withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP
-        )
+        expected_event_offer = offers_factories.EventStockFactory(
+            offer__lastProvider=provider,
+            offer__venue=venue,
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+        ).offer
 
         # event with old stock
-        event_with_old_sock = offers_factories.EventOfferFactory(
-            lastProvider=provider, venue=venue, withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP
-        )
+        one_day_ago = datetime.utcnow() - timedelta(days=1)
+        offers_factories.EventStockFactory(
+            offer__lastProvider=provider,
+            offer__venue=venue,
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+            beginningDatetime=one_day_ago,
+        ).offer
         # event not linked to ticketing
-        not_linked_to_ticketing_event_offer = offers_factories.EventOfferFactory(
-            lastProvider=provider, venue=venue, withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL
-        )
-        # event with no stock
-        offers_factories.EventOfferFactory(
-            lastProvider=provider, venue=venue, withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP
-        )
+        offers_factories.EventStockFactory(
+            offer__lastProvider=provider,
+            offer__venue=venue,
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
+        ).offer
 
         # event linked to other venue
-        linked_to_other_venue_offer = offers_factories.EventOfferFactory(
-            lastProvider=provider, venue=venue_2, withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP
-        )
-
-        offers_factories.StockFactory(offer=expected_event_offer)
-        offers_factories.StockFactory(offer=not_linked_to_ticketing_event_offer)
-        offers_factories.StockFactory(offer=linked_to_other_venue_offer)
-        one_day_ago = datetime.utcnow() - timedelta(days=1)
-        offers_factories.StockFactory(offer=event_with_old_sock, beginningDatetime=one_day_ago)
+        offers_factories.EventStockFactory(
+            offer__lastProvider=provider,
+            offer__venue=venue_2,
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+        ).offer
 
         future_events = repository.get_future_events_requiring_ticketing_system(provider, venue)
 

@@ -205,9 +205,11 @@ class UpdateProviderExternalUrlsTest:
         previous_cancel_url = provider.cancelExternalUrl
         venue = offerers_factories.VenueFactory()
         providers_factories.VenueProviderFactory(provider=provider, venue=venue)
-        event_offer = offers_factories.EventOfferFactory(
-            lastProvider=provider, venue=venue, withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP
-        )
+        event_offer = offers_factories.EventStockFactory(
+            offer__lastProvider=provider,
+            offer__venue=venue,
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+        ).offer
         offers_factories.StockFactory(offer=event_offer)
 
         with pytest.raises(exceptions.ProviderException) as e:
@@ -355,12 +357,11 @@ class UpdateVenueProviderExternalUrlsTest:
         )
         previous_booking_url = venue_provider_external_urls.bookingExternalUrl
         previous_cancel_url = venue_provider_external_urls.cancelExternalUrl
-        event_offer = offers_factories.EventOfferFactory(
-            lastProvider=provider_without_ticketing_urls,
-            venue=venue,
-            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
-        )
-        offers_factories.StockFactory(offer=event_offer)
+        event_offer = offers_factories.EventStockFactory(
+            offer__lastProvider=provider_without_ticketing_urls,
+            offer__venue=venue,
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+        ).offer
 
         with pytest.raises(exceptions.ProviderException) as e:
             api.update_venue_provider_external_urls(venue_provider, booking_external_url=None, cancel_external_url=None)

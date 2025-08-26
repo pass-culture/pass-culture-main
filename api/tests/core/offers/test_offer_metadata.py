@@ -111,21 +111,21 @@ class OfferMetadataTest:
 
     class GivenAnEventTest:
         def should_describe_an_event(self):
-            offer = offers_factories.EventOfferFactory()
+            offer = offers_factories.EventStockFactory().offer
 
             metadata = get_metadata_from_offer(offer)
 
             assert metadata["@type"] == "Event"
 
         def should_describe_an_event_for_a_concert(self):
-            offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id)
+            offer = offers_factories.EventStockFactory(offer__subcategoryId=subcategories.CONCERT.id).offer
 
             metadata = get_metadata_from_offer(offer)
 
             assert metadata["@type"] == "Event"
 
         def should_describe_an_event_for_a_festival(self):
-            offer = offers_factories.OfferFactory(subcategoryId=subcategories.FESTIVAL_MUSIQUE.id)
+            offer = offers_factories.EventStockFactory(offer__subcategoryId=subcategories.FESTIVAL_MUSIQUE.id).offer
 
             metadata = get_metadata_from_offer(offer)
 
@@ -148,15 +148,15 @@ class OfferMetadataTest:
             assert metadata["startDate"] == "2023-05-03T12:39"
 
         def should_have_a_location_when_event_is_physical(self):
-            offer = offers_factories.EventOfferFactory(
-                venue__name="Le Poney qui tousse",
-                venue__offererAddress__address__street="Rue du Poney qui tousse",
-                venue__offererAddress__address__postalCode="75001",
-                venue__offererAddress__address__city="Boulgourville",
-                venue__offererAddress__address__latitude="47.097456",
-                venue__offererAddress__address__longitude="-1.270040",
-                url=None,
-            )
+            offer = offers_factories.EventStockFactory(
+                offer__venue__name="Le Poney qui tousse",
+                offer__venue__offererAddress__address__street="Rue du Poney qui tousse",
+                offer__venue__offererAddress__address__postalCode="75001",
+                offer__venue__offererAddress__address__city="Boulgourville",
+                offer__venue__offererAddress__address__latitude="47.097456",
+                offer__venue__offererAddress__address__longitude="-1.270040",
+                offer__url=None,
+            ).offer
 
             metadata = get_metadata_from_offer(offer)
 
@@ -177,37 +177,34 @@ class OfferMetadataTest:
             }
 
         def should_not_have_a_location_when_event_is_digital(self):
-            offer = offers_factories.EventOfferFactory(url="https://digital-offer.com")
+            offer = offers_factories.EventStockFactory(offer__url="https://digital-offer.com").offer
 
             metadata = get_metadata_from_offer(offer)
 
             assert "location" not in metadata
 
         def should_have_an_url(self):
-            offer = offers_factories.EventOfferFactory(id=72180399)
-
-            offers_factories.StockFactory(offer=offer)
-
+            offer = offers_factories.EventStockFactory(offer__id=72180399).offer
             metadata = get_metadata_from_offer(offer)
 
             assert metadata["offers"]["url"] == "https://webapp-v2.example.com/offre/72180399"
 
         def should_have_online_event_attendance_mode(self):
-            offer = offers_factories.EventOfferFactory(url="https://passculture.app/offre/72180399")
+            offer = offers_factories.EventStockFactory(offer__url="https://passculture.app/offre/72180399").offer
 
             metadata = get_metadata_from_offer(offer)
 
             assert metadata["eventAttendanceMode"] == "OnlineEventAttendanceMode"
 
         def should_have_offline_event_attendance_mode(self):
-            offer = offers_factories.EventOfferFactory()
+            offer = offers_factories.EventStockFactory().offer
 
             metadata = get_metadata_from_offer(offer)
 
             assert metadata["eventAttendanceMode"] == "OfflineEventAttendanceMode"
 
         def should_have_valid_from_date(self):
-            offer = offers_factories.EventOfferFactory(extraData={"releaseDate": "2000-01-01"})
+            offer = offers_factories.EventStockFactory(offer__extraData={"releaseDate": "2000-01-01"}).offer
 
             metadata = get_metadata_from_offer(offer)
 
@@ -215,7 +212,7 @@ class OfferMetadataTest:
 
         def should_be_sold_out_when_offer_has_no_active_stocks(self):
             offer = offers_factories.EventOfferFactory()
-            offers_factories.StockFactory(offer=offer, isSoftDeleted=True)
+            offers_factories.EventStockFactory(offer=offer, isSoftDeleted=True)
 
             metadata = get_metadata_from_offer(offer)
 
@@ -240,7 +237,7 @@ class OfferMetadataTest:
             offer_address = offerers_factories.OffererAddressFactory(
                 address=address, label="Le grand poney qui respire"
             )
-            offer = offers_factories.EventOfferFactory(venue=venue, offererAddress=offer_address)
+            offer = offers_factories.EventStockFactory(offer__venue=venue, offer__offererAddress=offer_address).offer
 
             metadata = get_metadata_from_offer(offer)
 

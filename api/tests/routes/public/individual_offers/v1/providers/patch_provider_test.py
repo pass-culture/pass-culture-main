@@ -110,7 +110,7 @@ class PatchProviderTest(PublicAPIEndpointBaseHelper):
         event_offer = offers_factories.EventOfferFactory(
             lastProvider=provider, venue=venue, withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP
         )
-        offers_factories.StockFactory(offer=event_offer)
+        offers_factories.EventStockFactory(offer=event_offer)
 
         response = self.make_request(plain_api_key, json_body={"cancelUrl": None, "bookingUrl": None})
 

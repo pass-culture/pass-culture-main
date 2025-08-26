@@ -139,7 +139,7 @@ class PatchVenueProviderExternalUrlsTest(PublicAPIVenueEndpointHelper):
             venue=venue_provider.venue,
             withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
         )
-        offers_factories.StockFactory(offer=event_offer)
+        offers_factories.EventStockFactory(offer=event_offer)
         previous_booking_url = venue_provider_external_urls.bookingExternalUrl
         previous_cancel_url = venue_provider_external_urls.cancelExternalUrl
 

@@ -48,7 +48,7 @@ class Returns200Test:
 
         client = client.with_session_auth(pro.email)
         booking_token = booking.token
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries + 1):  # select WIP_NEW_OFFER_IS_EVENT_DEFINITION FF
             response = client.get(f"/bookings/token/{booking_token}")
             assert response.status_code == 200
 
@@ -87,7 +87,7 @@ class Returns200Test:
         pro_user = user_offerer.user
 
         client = client.with_session_auth(pro_user.email)
-        with testing.assert_num_queries(self.num_queries):
+        with testing.assert_num_queries(self.num_queries + 1):  # select WIP_NEW_OFFER_IS_EVENT_DEFINITION FF
             response = client.get(f"/bookings/token/{booking_token}")
             assert response.status_code == 200
 

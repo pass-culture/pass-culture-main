@@ -16,7 +16,10 @@ class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
     default_path_params = {"event_id": 1}
 
     def setup_base_resource(self, venue=None, provider=None) -> offers_models.Offer:
-        return offers_factories.EventOfferFactory(venue=venue or self.setup_venue(), lastProvider=provider)
+        return offers_factories.EventStockFactory(
+            priceCategory=None,
+            offer=offers_factories.EventOfferFactory(venue=venue or self.setup_venue(), lastProvider=provider),
+        ).offer
 
     @staticmethod
     def _get_base_payload() -> dict:

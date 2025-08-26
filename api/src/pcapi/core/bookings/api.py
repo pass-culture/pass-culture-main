@@ -126,6 +126,24 @@ def get_individual_bookings(user: users_models.User) -> list[models.Booking]:
                     offers_models.Offer._extraData,
                 )
                 .options(
+                    # The booking's stock's offers' stocks are needed to
+                    # figure out whether the offer is an event or not
+                    # (-> the offer has at least one timestamped stock)
+                    sa_orm.selectinload(offers_models.Offer.stocks)
+                    .load_only(
+                        offers_models.Stock.id,
+                        offers_models.Stock.beginningDatetime,
+                        offers_models.Stock.price,
+                        offers_models.Stock.features,
+                        offers_models.Stock.offerId,
+                    )
+                    # TODO(jbaudet): why is this joinedload needed?
+                    # Which fields could be loaded and which can be
+                    # ignored? I still have no clue. Feel free to
+                    # fix this, I gave up.
+                    .joinedload(offers_models.Stock.offer)
+                )
+                .options(
                     sa_orm.joinedload(offers_models.Offer.product)
                     .load_only(
                         offers_models.Product.id,

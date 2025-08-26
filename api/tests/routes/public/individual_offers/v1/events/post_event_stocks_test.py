@@ -2,6 +2,7 @@ import datetime
 import decimal
 
 import pytest
+import sqlalchemy as sa
 import time_machine
 
 from pcapi.core.offers import factories as offers_factories
@@ -10,6 +11,9 @@ from pcapi.models import db
 from pcapi.utils import date as date_utils
 
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
+
+
+DEFAULT_ID_AT_PROVIDERS = "default id at providers"
 
 
 @pytest.mark.usefixtures("db_session")
@@ -45,11 +49,13 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         if booking_allowed_datetime:
             additional_offer_params["bookingAllowedDatetime"] = booking_allowed_datetime
 
-        offer = offers_factories.EventOfferFactory(
-            venue=venue or self.setup_venue(),
-            lastProvider=provider,
-            **additional_offer_params,
-        )
+        offer = offers_factories.EventStockFactory(
+            priceCategory=None,
+            idAtProviders=DEFAULT_ID_AT_PROVIDERS,
+            offer=offers_factories.EventOfferFactory(
+                venue=venue or self.setup_venue(), lastProvider=provider, **additional_offer_params
+            ),
+        ).offer
         price_category = offers_factories.PriceCategoryFactory(
             offer=offer,
             price=decimal.Decimal("88.99"),
@@ -88,7 +94,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         )
 
         next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
-        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=35)
         next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
         two_months_from_now = next_month + datetime.timedelta(days=30)
         two_months_from_now_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(two_months_from_now, "972")
@@ -114,7 +120,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 200
         created_stocks = db.session.query(offers_models.Stock).filter(offers_models.Stock.offerId == offer.id).all()
-        assert len(created_stocks) == 2
+        assert len(created_stocks) == 3
         first_stock = next(stock for stock in created_stocks if stock.beginningDatetime == next_month)
         assert first_stock.price == decimal.Decimal("88.99")
         assert first_stock.quantity == 10
@@ -231,8 +237,8 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
             ),
             # errors on idAtProvider
             (
-                [{"idAtProvider": "c'est déjà pris :'("}],
-                {"dates.0.idAtProvider": ["`c'est déjà pris :'(` is already taken by another offer stock"]},
+                [{"idAtProvider": DEFAULT_ID_AT_PROVIDERS}],
+                {"dates.0.idAtProvider": [f"`{DEFAULT_ID_AT_PROVIDERS}` is already taken by another offer stock"]},
             ),
             (
                 [{"idAtProvider": "a" * 71}],
@@ -248,7 +254,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
             publication_datetime=datetime.datetime(2025, 7, 2),
             booking_allowed_datetime=datetime.datetime(2025, 7, 4),
         )
-        existing_stock = offers_factories.StockFactory(offer=offer, idAtProviders="c'est déjà pris :'(")
+        existing_stocks = {stock.id for stock in offer.stocks}
         dates = []
 
         for partial_date in partial_dates:
@@ -261,4 +267,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json == expected_response_json
 
-        assert db.session.query(offers_models.Stock).filter(offers_models.Stock.id != existing_stock.id).count() == 0
+        found_stocks = db.session.query(offers_models.Stock).filter(
+            sa.not_(offers_models.Stock.id.in_(existing_stocks))
+        )
+        assert found_stocks.count() == 0

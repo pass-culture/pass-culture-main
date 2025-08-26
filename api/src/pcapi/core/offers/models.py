@@ -925,12 +925,34 @@ class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
         return cls.subcategoryId.in_(subcategories.PERMANENT_SUBCATEGORIES)
 
     @hybrid_property
-    def isEvent(self) -> bool:
+    def hasEventSubcategory(self) -> bool:
+        """An offer with an event subcategory is very likely to be an event
+
+        However, an offer is an event only if it has at least one stock
+        with a `beginningDatetime` set.
+        """
         return self.subcategory.is_event
+
+    @hasEventSubcategory.expression  # type: ignore[no-redef]
+    def hasEventSubcategory(cls) -> BinaryExpression:
+        return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
+
+    @hybrid_property
+    def isEvent(self) -> bool:
+        if FeatureToggle.WIP_NEW_OFFER_IS_EVENT_DEFINITION.is_active():
+            if not self.hasEventSubcategory:
+                return False
+            return any(stock.beginningDatetime is not None for stock in self.stocks)
+        else:
+            return self.hasEventSubcategory
 
     @isEvent.expression  # type: ignore[no-redef]
     def isEvent(cls) -> BinaryExpression:
-        return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
+        if FeatureToggle.WIP_NEW_OFFER_IS_EVENT_DEFINITION.is_active():
+            logger.warning("Offer.isEvent used as SQLA expression: should have called Offer.hasEventSubcategory")
+            return cls.hasEventSubcategory
+        else:
+            return cls.hasEventSubcategory
 
     @property
     def isEventLinkedToTicketingService(self) -> bool:
