@@ -290,6 +290,17 @@
                   {% endif %}
                 </p>
               {% endif %}
+              <p class="mb-1">
+                <a class="fw-bold link-primary"
+                   href="{{ venue | webapp_venue_link }}"
+                   data-bs-toggle="tooltip"
+                   data-bs-placement="top"
+                   data-bs-title="Visualiser le lieu sur l’app jeune"
+                   target="_blank">
+                  Page partenaire
+                  <i class="bi bi-phone"></i>
+                </a>
+              </p>
               <div>
                 {% if zendesk_sell_synchronisation_form %}
                   <button class="btn btn-outline-primary btn-sm"

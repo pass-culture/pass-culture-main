@@ -388,6 +388,7 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Entité juridique : {venue.managingOfferer.name}" in response_text
         assert "Site web : https://www.example.com" in response_text
         assert "Validation des offres : Suivre les règles" in response_text
+        assert "Page partenaire" in response_text
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Partenaire culturel" in badges
