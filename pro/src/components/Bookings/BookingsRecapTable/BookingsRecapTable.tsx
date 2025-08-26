@@ -7,9 +7,9 @@ import type {
 } from '@/apiClient/v1'
 import { Audience } from '@/commons/core/shared/types'
 
-import { isCollectiveBooking } from './BookingsTable/Cells/BookingOfferCell'
-import { CollectiveBookingsTable } from './BookingsTable/CollectiveBookingsTable'
-import { IndividualBookingsTable } from './BookingsTable/IndividualBookingsTable'
+import { pluralize } from '@/commons/utils/pluralize'
+import styles from './BookingRecapTable.module.scss'
+import { BookingsTable } from './BookingsTable/BookingTable'
 import {
   ALL_BOOKING_STATUS,
   bookingIdOmnisearchFilter,
@@ -17,20 +17,8 @@ import {
   EMPTY_FILTER_VALUE,
 } from './Filters/constants'
 import { FilterByOmniSearch } from './Filters/FilterByOmniSearch'
-import styles from './Filters/Filters.module.scss'
-import { Header } from './Header/Header'
 import type { BookingsFilters } from './types'
 import { filterBookingsRecap } from './utils/filterBookingsRecap'
-
-const areCollectiveBookings = (
-  bookings: (BookingRecapResponseModel | CollectiveBookingResponseModel)[]
-): bookings is CollectiveBookingResponseModel[] =>
-  bookings.every(isCollectiveBooking)
-
-const areIndividualBookings = (
-  bookings: (BookingRecapResponseModel | CollectiveBookingResponseModel)[]
-): bookings is BookingRecapResponseModel[] =>
-  bookings.every((booking) => !isCollectiveBooking(booking))
 
 interface BookingsRecapTableProps<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
@@ -41,19 +29,19 @@ interface BookingsRecapTableProps<
     statuses: string[]
   }
   audience: Audience
-  resetBookings: () => void
+  resetBookings?: () => void
 }
 
 export const BookingsRecapTable = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >({
-  bookingsRecap,
   isLoading,
   locationState,
   audience,
-  resetBookings,
+  bookingsRecap: bookings,
 }: BookingsRecapTableProps<T>) => {
-  const [filteredBookings, setFilteredBookings] = useState(bookingsRecap)
+  const [filteredBookings, setFilteredBookings] = useState(bookings)
+
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
   const [defaultBookingId, setDefaultBookingId] = useState(
@@ -78,7 +66,7 @@ export const BookingsRecapTable = <
 
   useEffect(() => {
     applyFilters()
-  }, [bookingsRecap])
+  }, [bookings])
 
   const updateGlobalFilters = (updatedFilters: Partial<BookingsFilters>) => {
     setFilters((filters) => {
@@ -90,10 +78,7 @@ export const BookingsRecapTable = <
 
   const applyFilters = (filtersBookingResults?: BookingsFilters) => {
     const filtersToApply = filtersBookingResults || filters
-    const bookingsRecapFiltered = filterBookingsRecap(
-      bookingsRecap,
-      filtersToApply
-    )
+    const bookingsRecapFiltered = filterBookingsRecap(bookings, filtersToApply)
     setFilteredBookings(bookingsRecapFiltered)
   }
 
@@ -138,7 +123,7 @@ export const BookingsRecapTable = <
 
   return (
     <div>
-      <div className={styles['filters-wrapper']}>
+      <div className={styles['booking-filters-wrapper']}>
         <FilterByOmniSearch
           isDisabled={isLoading}
           keywords={filters.keywords}
@@ -148,32 +133,21 @@ export const BookingsRecapTable = <
         />
       </div>
       {filteredBookings.length !== 0 && (
-        <Header
-          bookingsRecapFilteredLength={filteredBookings.length}
-          isLoading={isLoading}
-          queryBookingId={defaultBookingId}
-          resetBookings={resetBookings}
-        />
+        <div className={styles['bookings-header']}>
+          {pluralize(filteredBookings.length, 'réservation')}
+        </div>
       )}
-      {audience === Audience.INDIVIDUAL &&
-        areIndividualBookings(filteredBookings) && (
-          <IndividualBookingsTable
-            bookings={filteredBookings}
-            bookingStatuses={filters.bookingStatus}
-            updateGlobalFilters={updateGlobalFilters}
-            resetFilters={resetAllFilters}
-          />
-        )}
-      {audience === Audience.COLLECTIVE &&
-        areCollectiveBookings(filteredBookings) && (
-          <CollectiveBookingsTable
-            bookings={filteredBookings}
-            bookingStatuses={filters.bookingStatus}
-            updateGlobalFilters={updateGlobalFilters}
-            defaultOpenedBookingId={defaultBookingId}
-            resetFilters={resetAllFilters}
-          />
-        )}
+      <BookingsTable
+        key={`table-${audience}`}
+        audience={audience}
+        isLoading={isLoading}
+        bookings={filteredBookings}
+        allBookings={bookings}
+        bookingStatuses={filters.bookingStatus}
+        onUpdateGlobalFilters={updateGlobalFilters}
+        onResetAllFilters={resetAllFilters}
+        defaultBookingId={defaultBookingId || undefined}
+      />
     </div>
   )
 }

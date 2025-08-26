@@ -26,10 +26,7 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isEqual } from '@/commons/utils/isEqual'
 import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformation/CollectiveBudgetCallout'
-import { NoData } from '@/components/NoData/NoData'
 import { ChoosePreFiltersMessage } from '@/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
-import { NoBookingsForPreFiltersMessage } from '@/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { BookingsRecapTable } from './BookingsRecapTable/BookingsRecapTable'
 import { PreFilters } from './PreFilters/PreFilters'
@@ -94,7 +91,7 @@ export const BookingsContainer = <
 
   const { data: bookingsQuery, isLoading } = useSWR(
     !isEqual(appliedPreFilters, initialAppliedFilters)
-      ? [GET_BOOKINGS_QUERY_KEY, appliedPreFilters]
+      ? [GET_BOOKINGS_QUERY_KEY, audience, appliedPreFilters]
       : null,
     async ([, filterParams]) => {
       setWereBookingsRequested(true)
@@ -113,8 +110,9 @@ export const BookingsContainer = <
     { fallbackData: [] }
   )
 
+  // and for the presence check:
   const hasBookingsQuery = useSWR(
-    [GET_HAS_BOOKINGS_QUERY_KEY],
+    [GET_HAS_BOOKINGS_QUERY_KEY, audience],
     () => getUserHasBookingsAdapter(),
     { fallbackData: true }
   )
@@ -134,6 +132,7 @@ export const BookingsContainer = <
       )}
 
       <PreFilters
+        key={`prefilters-${audience}`} // ⬅️ remount on audience change
         selectedPreFilters={selectedPreFilters}
         updateSelectedFilters={updateSelectedFilters}
         hasPreFilters={hasPreFilters}
@@ -153,26 +152,17 @@ export const BookingsContainer = <
       />
 
       {wereBookingsRequested ? (
-        (bookingsQuery ?? []).length > 0 ? (
-          <BookingsRecapTable
-            bookingsRecap={bookingsQuery}
-            isLoading={isLoading}
-            locationState={locationState}
-            audience={audience}
-            resetBookings={resetAndApplyPreFilters}
-          />
-        ) : isLoading ? (
-          <Spinner />
-        ) : (
-          <NoBookingsForPreFiltersMessage
-            resetPreFilters={resetPreFiltersWithLog}
-          />
-        )
+        <BookingsRecapTable
+          key={`table-${audience}`} // ⬅️ remount on audience change
+          bookingsRecap={bookingsQuery}
+          isLoading={isLoading}
+          locationState={locationState}
+          audience={audience}
+          resetBookings={resetAndApplyPreFilters}
+        />
       ) : hasBookingsQuery.data ? (
         <ChoosePreFiltersMessage />
-      ) : (
-        <NoData page="bookings" />
-      )}
+      ) : null}
     </div>
   )
 }

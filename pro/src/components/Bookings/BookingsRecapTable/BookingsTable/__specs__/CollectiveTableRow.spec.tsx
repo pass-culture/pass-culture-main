@@ -16,7 +16,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import {
   CollectiveTableRow,
   type CollectiveTableRowProps,
-} from '../CollectiveTableRow'
+} from '../ZZZCollectiveTableRow'
 
 vi.mock('@/apiClient/api')
 vi.mock(
