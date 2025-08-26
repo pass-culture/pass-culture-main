@@ -19,11 +19,12 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
-from pcapi.domain.password import random_password
+from pcapi.core.users.password_utils import random_password
 from pcapi.models import db
-from pcapi.repository.session_management import atomic
-from pcapi.repository.session_management import mark_transaction_as_invalid
 from pcapi.routes.serialization import users as users_serializers
+from pcapi.utils import siren as siren_utils
+from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
 logger = logging.getLogger(__name__)
@@ -95,10 +96,11 @@ def main(filename: str, not_dry: bool) -> None:
             "phoneNumber": row["n° de téléphone"].strip(),
             "email": row["Adresse mail"].strip(),
         }
+        ridet = row["RIDET"].strip().replace(" ", "").replace(".", "")
+        rid7 = ridet[:7]
+        siren = siren_utils.rid7_to_siren(rid7)
 
-        offerer: offerers_models.Offerer = (
-            db.session.query(offerers_models.Offerer).filter_by(siren=row["RIDET"].strip()).one()
-        )
+        offerer: offerers_models.Offerer = db.session.query(offerers_models.Offerer).filter_by(siren=siren).one()
 
         create_pro(user_row=user_row, offerer=offerer, row_number=i + 1)
 
