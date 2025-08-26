@@ -6,7 +6,7 @@ import {
   toZonedTime,
 } from 'date-fns-tz'
 
-import { getToday } from './date'
+import { buildDateTime, getToday, toISOStringWithoutMilliseconds } from './date'
 
 const timeRegex = /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/
 export const isValidTime = (time?: string | null): boolean =>
@@ -80,8 +80,6 @@ export const getDepartmentTimezone = (
       return 'Pacific/Noumea'
     case '989': // Clipperton
       return 'Pacific/Pitcairn'
-    case undefined:
-    case null:
     default:
       return defaultTimezone
   }
@@ -105,4 +103,22 @@ export function convertTimeFromVenueTimezoneToUtc(
 
   // get hours and minutes, now in UTC from the fake date
   return formatInTimeZone(utcDate, 'Etc/UTC', 'HH:mm')
+}
+
+export const serializeDateTimeToUTCFromLocalDepartment = (
+  beginningDate: string,
+  beginningTime: string,
+  departementCode?: string | null
+): string => {
+  const beginningDateTimeInUserTimezone = buildDateTime(
+    beginningDate,
+    beginningTime
+  )
+
+  const beginningDateTimeInUTCTimezone = getUtcDateTimeFromLocalDepartement(
+    beginningDateTimeInUserTimezone,
+    departementCode
+  )
+
+  return toISOStringWithoutMilliseconds(beginningDateTimeInUTCTimezone)
 }

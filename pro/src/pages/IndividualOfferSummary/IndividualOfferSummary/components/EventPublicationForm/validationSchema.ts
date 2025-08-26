@@ -1,8 +1,7 @@
 import { addYears, isBefore, isSameDay, startOfDay } from 'date-fns'
 import * as yup from 'yup'
 
-import { isDateValid } from '@/commons/utils/date'
-import { buildDateTime } from '@/components/IndividualOffer/StocksEventEdition/serializers'
+import { buildDateTime, isDateValid } from '@/commons/utils/date'
 
 import type { EventPublicationFormValues } from './types'
 
