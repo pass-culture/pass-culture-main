@@ -78,6 +78,24 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         assert response.json["status"] == "INACTIVE"
         assert offer.isActive is False
 
+    @pytest.mark.features(WIP_REFACTO_FUTURE_OFFER=True)
+    def test_activate_offer_default_publication_datetime(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+        offer = offers_factories.EventOfferFactory(
+            venue=venue_provider.venue,
+            lastProvider=venue_provider.provider,
+            publicationDatetime=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1),
+            isActive=False,
+        )
+
+        now = datetime.datetime.now(datetime.timezone.utc)
+        with time_machine.travel(now, tick=False):
+            response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body={"isActive": True})
+        assert response.status_code == 200
+        db.session.refresh(offer)
+        assert offer.isActive is True
+        assert offer.publicationDatetime == now.replace(tzinfo=None)
+
     def test_sets_field_to_none_and_leaves_other_unchanged(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer = offers_factories.EventOfferFactory(
