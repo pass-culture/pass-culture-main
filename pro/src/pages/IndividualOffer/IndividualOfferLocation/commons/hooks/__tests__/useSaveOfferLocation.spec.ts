@@ -15,8 +15,6 @@ import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
-import { localStorageManager } from '@/commons/utils/localStorageManager'
-import { LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED } from '@/pages/IndividualOffer/IndividualOfferInformations/commons/constants'
 
 import { makeLocationFormValues } from '../../__mocks__/makeLocationFormValues'
 import type { LocationFormValues } from '../../types'
@@ -41,9 +39,6 @@ vi.mock('@/commons/hooks/useNotification', () => ({
 }))
 vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
   useOfferWizardMode: vi.fn(),
-}))
-vi.mock('@/commons/utils/localStorageManager', () => ({
-  localStorageManager: { setItemIfNone: vi.fn() },
 }))
 vi.mock('@/commons/core/Offers/utils/getIndividualOfferUrl', () => ({
   getIndividualOfferUrl: vi.fn(),
@@ -103,10 +98,6 @@ describe('useSaveOfferLocation', () => {
     })
     expect(api.patchOffer).toHaveBeenCalledWith(offerBase.id, requestBody)
     expect(mutateMock).toHaveBeenCalledWith([GET_OFFER_QUERY_KEY, offerBase.id])
-    expect(localStorageManager.setItemIfNone).toHaveBeenCalledWith(
-      `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offerBase.id}`,
-      'true'
-    )
     expect(getIndividualOfferUrl).toHaveBeenCalledWith({
       offerId: offerBase.id,
       step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
@@ -145,10 +136,6 @@ describe('useSaveOfferLocation', () => {
       mode: OFFER_WIZARD_MODE.CREATION,
       isOnboarding: true,
     })
-    expect(localStorageManager.setItemIfNone).toHaveBeenCalledWith(
-      `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offerBase.id}`,
-      'true'
-    )
     expect(navigateMock).toHaveBeenCalledWith('/mock-url')
     expect(notificationMock.error).not.toHaveBeenCalled()
     expect(setErrorMock).not.toHaveBeenCalled()
@@ -169,7 +156,6 @@ describe('useSaveOfferLocation', () => {
 
     expect(api.patchOffer).not.toHaveBeenCalled()
     expect(mutateMock).not.toHaveBeenCalled()
-    expect(localStorageManager.setItemIfNone).not.toHaveBeenCalled()
     expect(getIndividualOfferUrl).not.toHaveBeenCalled()
     expect(navigateMock).not.toHaveBeenCalled()
     expect(notificationMock.error).not.toHaveBeenCalled()

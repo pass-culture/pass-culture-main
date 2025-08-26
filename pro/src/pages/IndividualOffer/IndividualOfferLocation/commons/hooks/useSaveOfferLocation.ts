@@ -14,8 +14,6 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import { localStorageManager } from '@/commons/utils/localStorageManager'
-import { LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED } from '@/pages/IndividualOffer/IndividualOfferInformations/commons/constants'
 
 import type { LocationFormValues } from '../types'
 import { toPatchOfferBodyModel } from '../utils/toPatchOfferBodyModel'
@@ -55,11 +53,6 @@ export function useSaveOfferLocation({
         // Force offer update so that READ_ONLY page is up to date once the user is redirected
         await mutate([GET_OFFER_QUERY_KEY, offer.id])
       }
-
-      localStorageManager.setItemIfNone(
-        `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offer.id}`,
-        true.toString()
-      )
 
       const nextStep =
         mode === OFFER_WIZARD_MODE.EDITION
