@@ -3,6 +3,7 @@ import {
   CollectiveBookingResponseModel,
 } from '@/apiClient/v1'
 import { Audience } from '@/commons/core/shared/types'
+import strokeNoBooking from '@/icons/stroke-no-booking.svg'
 import { Column, Table, TableVariant } from '@/ui-kit/Table/Table'
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { BookingsFilters } from '../types'
@@ -20,8 +21,8 @@ type Props<T extends AnyBooking> = {
   /** source bookings list for header/columns context (usually the unfiltered list) */
   allBookings: T[]
   bookingStatuses: string[]
-  onUpdateGlobalFilters: (updated: Partial<BookingsFilters>) => void
-  onResetAllFilters: () => void
+  onUpdateGlobalFilters?: (updated: Partial<BookingsFilters>) => void
+  onResetAllFilters?: () => void
   /** bookingId from URL to open by default (if present) */
   defaultBookingId?: string
 }
@@ -108,10 +109,10 @@ export function BookingsTable<T extends AnyBooking>({
         isLoading={isLoading}
         variant={TableVariant.COLLAPSE}
         noData={{
-          hasNoData: false,
+          hasNoData: bookings.length === 0,
           message: {
-            icon: '',
-            title: 'Vous n’avez aucune réservation pour le moment',
+            icon: strokeNoBooking,
+            title: 'Vous n’avez pas encore de réservations',
             subtitle: '',
           },
         }}

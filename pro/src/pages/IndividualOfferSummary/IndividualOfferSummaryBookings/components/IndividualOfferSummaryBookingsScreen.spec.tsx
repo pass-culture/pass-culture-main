@@ -1,4 +1,4 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
@@ -53,8 +53,6 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
 
     render(offer)
 
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
     expect(screen.getByText(/Réservations/)).toBeInTheDocument()
     expect(
       await screen.findByRole('button', {
@@ -82,8 +80,6 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
 
     render(offer)
 
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
     expect(screen.getByText(/Réservations/)).toBeInTheDocument()
     expect(
       await screen.findByRole('button', {
@@ -106,8 +102,6 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
     })
 
     render(offer)
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(
       screen.getByText('Vous n’avez pas encore de réservations')
@@ -135,8 +129,6 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
     })
 
     render(offer)
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const downloadButton = await screen.findByRole('button', {
       name: 'Télécharger les réservations',

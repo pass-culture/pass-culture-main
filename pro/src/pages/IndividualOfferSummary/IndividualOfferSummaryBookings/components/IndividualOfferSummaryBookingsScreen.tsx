@@ -11,12 +11,13 @@ import {
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import { Audience } from '@/commons/core/shared/types'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
-import { BookingsRecapTable } from '@/components/Bookings/BookingsRecapTable/BookingsRecapTable'
 import { getFilteredIndividualBookingsAdapter } from '@/pages/Bookings/adapters/getFilteredIndividualBookingsAdapter'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
+import { BookingsTable } from '@/components/Bookings/BookingsRecapTable/BookingsTable/BookingTable'
+import { ALL_BOOKING_STATUS } from '@/components/Bookings/BookingsRecapTable/Filters/constants'
 import { DownloadBookingsModal } from './DownloadBookingsModal/DownloadBookingsModal'
 import styles from './IndividualOfferSummaryBookingsScreen.module.scss'
 
@@ -44,8 +45,6 @@ export const IndividualOfferSummaryBookingsScreen = ({
       bookingEndingDate: format(new Date(), FORMAT_ISO_DATE_ONLY),
     })
   )
-
-  console.log(data?.bookings)
 
   return (
     <>
@@ -75,10 +74,13 @@ export const IndividualOfferSummaryBookingsScreen = ({
             </DialogBuilder>
           )}
       </div>
-      <BookingsRecapTable
-        bookingsRecap={data?.bookings || []}
-        isLoading={isLoading}
+      <BookingsTable
+        key={`table-${Audience.INDIVIDUAL}`}
         audience={Audience.INDIVIDUAL}
+        isLoading={isLoading}
+        bookings={data?.bookings || []}
+        bookingStatuses={[...ALL_BOOKING_STATUS]}
+        allBookings={data?.bookings || []}
       />
     </>
   )
