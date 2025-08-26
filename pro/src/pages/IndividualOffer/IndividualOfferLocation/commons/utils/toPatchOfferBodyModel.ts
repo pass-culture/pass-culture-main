@@ -19,8 +19,12 @@ export const toPatchOfferBodyModel = ({
     return {}
   }
 
+  const formValuesWithoutNulls = Object.fromEntries(
+    Object.entries(formValues).filter(([, value]) => value !== null)
+  ) as LocationFormValues
+
   return {
-    ...formValues,
+    ...formValuesWithoutNulls,
     // TODO (igabriele, 2025-07-19): Add this prop to Yup schema set it via react-hook-form.
     shouldSendMail,
   }
