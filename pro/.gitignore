@@ -52,6 +52,7 @@ licenses
 licenses.json
 
 # reports
+/.vitest-reports
 tyrion_report.html
 result.html
 
