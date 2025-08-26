@@ -179,7 +179,6 @@ describe('<IndividualOfferLocationScreen />', () => {
               inseeCode: '75056',
             }),
             shouldSendMail: false,
-            url: null,
           })
         )
       })
