@@ -296,8 +296,6 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
     )
     priceCategory: sa_orm.Mapped["PriceCategory | None"] = sa_orm.relationship("PriceCategory", back_populates="stocks")
     quantity: int | None = sa.Column(sa.Integer, nullable=True)
-    # FIXME: mageoffray (2024-01-05) : remove this column when Provider API is not used anymore
-    rawProviderQuantity = sa.Column(sa.Integer, nullable=True)
     features: list[str] = sa.Column(postgresql.ARRAY(sa.Text), nullable=False, server_default=sa.text("'{}'::text[]"))
 
     @declared_attr
