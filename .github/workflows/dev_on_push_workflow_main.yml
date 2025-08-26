@@ -218,3 +218,24 @@ jobs:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  tag-rc:
+    runs-on: ubuntu-latest
+    needs:
+      - test-api
+      - test-api-documentation
+      - test-pro
+      - test-pro-e2e-parallel
+    if: always()
+    steps:
+      - name: Vérifier résultats des tests
+        if: ${{ contains(needs.*.result, 'failure') || !contains(needs.*.result, 'success') }}
+        run: |
+          echo "No tests run, do not tag an RC on it"
+          exit 1
+
+      - name: Tous les tests valides
+        if: ${{ !contains(needs.*.result, 'failure') && contains(needs.*.result, 'success') }}
+        run: |
+          git tag -f rc
+          git push origin rc --force
