@@ -1,34 +1,47 @@
 import { yup } from '../index'
 
 describe('yup.array().uniqueBy', () => {
-  const base = yup.mixed().nullable().optional()
+  const nullableOptionalMixedSchema = yup.mixed().nullable().optional()
 
   it('should return true when string values are unique by key', () => {
-    const schema = yup.array().of(base).uniqueBy('code', 'dup')
-    const data = [{ code: 'A' }, { code: 'B' }, { code: 'C' }]
+    const schema = yup
+      .array()
+      .of(nullableOptionalMixedSchema)
+      .uniqueBy('code', 'Codes must be unique')
+    const testData = [{ code: 'A' }, { code: 'B' }, { code: 'C' }]
 
-    expect(schema.isValidSync(data)).toBe(true)
+    expect(schema.isValidSync(testData)).toBe(true)
   })
 
   it('should return false when string values are duplicated by key', () => {
-    const schema = yup.array().of(base).uniqueBy('code', 'dup')
-    const data = [{ code: 'A' }, { code: 'A' }]
+    const schema = yup
+      .array()
+      .of(nullableOptionalMixedSchema)
+      .uniqueBy('code', 'Codes must be unique')
 
-    expect(schema.isValidSync(data)).toBe(false)
+    const testData = [{ code: 'A' }, { code: 'A' }]
+
+    expect(schema.isValidSync(testData)).toBe(false)
   })
 
   it('should return false when number values are duplicated by key', () => {
-    const schema = yup.array().of(base).uniqueBy('code', 'dup')
-    const data = [{ code: 1 }, { code: 2 }, { code: 1 }]
+    const schema = yup
+      .array()
+      .of(nullableOptionalMixedSchema)
+      .uniqueBy('code', 'Codes must be unique')
 
-    expect(schema.isValidSync(data)).toBe(false)
+    const testData = [{ code: 1 }, { code: 2 }, { code: 1 }]
+
+    expect(schema.isValidSync(testData)).toBe(false)
   })
 
   it('should ignore nullish items and nullish key values', () => {
-    const schema = yup.array().of(base).uniqueBy('code', 'dup')
-    const data = [
-      null,
-      undefined,
+    const schema = yup
+      .array()
+      .of(nullableOptionalMixedSchema)
+      .uniqueBy('code', 'Codes must be unique')
+
+    const testData = [
       { code: null },
       { code: undefined },
       { code: 'A' },
@@ -37,45 +50,77 @@ describe('yup.array().uniqueBy', () => {
       { code: 2 },
     ]
 
-    expect(schema.isValidSync(data)).toBe(true)
+    expect(schema.isValidSync(testData)).toBe(true)
   })
 
   it('should ignore non string/number key values without failing', () => {
-    const schema = yup.array().of(base).uniqueBy('code', 'dup')
-    const data = [{ code: { foo: 'bar' } }, { code: { foo: 'bar' } }]
+    const schema = yup
+      .array()
+      .of(nullableOptionalMixedSchema)
+      .uniqueBy('code', 'Codes must be unique')
 
-    expect(schema.isValidSync(data)).toBe(true)
+    const testData = [{ code: { foo: 'bar' } }, { code: { foo: 'bar' } }]
+
+    expect(schema.isValidSync(testData)).toBe(true)
   })
 
   it('should use the provided custom message on failure', () => {
-    const schema = yup.array().of(base).uniqueBy('code', 'Dup key')
-    const data = [{ code: 'X' }, { code: 'X' }]
+    const schema = yup
+      .array()
+      .of(nullableOptionalMixedSchema)
+      .uniqueBy('code', 'Codes must be unique.')
+    const testData = [{ code: 'X' }, { code: 'X' }]
 
     try {
-      schema.validateSync(data)
+      schema.validateSync(testData)
+
       expect(true).toBe(false)
-    } catch (e: unknown) {
-      const err = e as yup.ValidationError
-      expect(err.inner.length).toBe(2)
-      expect(err.inner.every((ie) => ie.message === 'Dup key')).toBe(true)
+    } catch (error: unknown) {
+      const validationError = error as yup.ValidationError
+
+      expect(validationError.inner.length).toBe(1)
+      expect(
+        validationError.inner.every(
+          (innerError) => innerError.message === 'Codes must be unique.'
+        )
+      ).toBe(true)
     }
   })
 
   it('should set errors at each offending item index', () => {
-    const schema = yup.array().of(base).uniqueBy('code', 'dup-message')
-    const data = [{ code: 'A' }, { code: 'B' }, { code: 'A' }, { code: 'B' }]
+    const schema = yup
+      .array()
+      .of(nullableOptionalMixedSchema)
+      .uniqueBy('code', 'Codes must be unique')
+
+    const testData = [
+      { code: 'A' },
+      { code: 'B' },
+      { code: 'A' },
+      { code: 'B' },
+    ]
 
     try {
-      schema.validateSync(data, { abortEarly: false })
+      schema.validateSync(testData, { abortEarly: false })
+
       expect(true).toBe(false)
-    } catch (e: unknown) {
-      const err = e as yup.ValidationError
-      const paths = (err.inner?.length ? err.inner : [err])
-        .map((x) => x.path)
-        .filter((p): p is string => Boolean(p))
+    } catch (error: unknown) {
+      const validationError = error as yup.ValidationError
+      const errorPaths = (
+        validationError.inner?.length
+          ? validationError.inner
+          : [validationError]
+      )
+        .map((errorDetail) => errorDetail.path)
+        .filter((path): path is string => Boolean(path))
         .sort()
-      expect(paths).toEqual(['[0]', '[1]', '[2]', '[3]'])
-      expect(err.inner.every((ie) => ie.message === 'dup-message')).toBe(true)
+
+      expect(errorPaths).toEqual(['[2]', '[3]'])
+      expect(
+        validationError.inner.every(
+          (innerError) => innerError.message === 'Codes must be unique'
+        )
+      ).toBe(true)
     }
   })
 })
