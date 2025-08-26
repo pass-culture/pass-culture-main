@@ -91,7 +91,7 @@ export const BookingsContainer = <
 
   const { data: bookingsQuery, isLoading } = useSWR(
     !isEqual(appliedPreFilters, initialAppliedFilters)
-      ? [GET_BOOKINGS_QUERY_KEY, appliedPreFilters]
+      ? [GET_BOOKINGS_QUERY_KEY, audience, appliedPreFilters]
       : null,
     async ([, filterParams]) => {
       setWereBookingsRequested(true)
@@ -110,8 +110,9 @@ export const BookingsContainer = <
     { fallbackData: [] }
   )
 
+  // and for the presence check:
   const hasBookingsQuery = useSWR(
-    [GET_HAS_BOOKINGS_QUERY_KEY],
+    [GET_HAS_BOOKINGS_QUERY_KEY, audience],
     () => getUserHasBookingsAdapter(),
     { fallbackData: true }
   )
@@ -131,6 +132,7 @@ export const BookingsContainer = <
       )}
 
       <PreFilters
+        key={`prefilters-${audience}`} // ⬅️ remount on audience change
         selectedPreFilters={selectedPreFilters}
         updateSelectedFilters={updateSelectedFilters}
         hasPreFilters={hasPreFilters}
@@ -150,15 +152,14 @@ export const BookingsContainer = <
       />
 
       {wereBookingsRequested ? (
-        bookingsQuery?.length > 0 ? (
-          <BookingsRecapTable
-            bookingsRecap={bookingsQuery}
-            isLoading={isLoading}
-            locationState={locationState}
-            audience={audience}
-            resetBookings={resetAndApplyPreFilters}
-          />
-        ) : null
+        <BookingsRecapTable
+          key={`table-${audience}`} // ⬅️ remount on audience change
+          bookingsRecap={bookingsQuery}
+          isLoading={isLoading}
+          locationState={locationState}
+          audience={audience}
+          resetBookings={resetAndApplyPreFilters}
+        />
       ) : hasBookingsQuery.data ? (
         <ChoosePreFiltersMessage />
       ) : null}

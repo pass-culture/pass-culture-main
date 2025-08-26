@@ -1,18 +1,15 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 
 import type {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from '@/apiClient/v1'
-import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Audience } from '@/commons/core/shared/types'
-import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import { pluralize } from '@/commons/utils/pluralize'
 import styles from './BookingRecapTable.module.scss'
-import { useCollectiveBookingsColumns } from './BookingsTable/ColumnsCollectiveBooking'
-import { useBookingsTableColumnsByIndex } from './BookingsTable/ColumnsIndividualBooking'
+import { BookingsTable } from './BookingsTable/BookingTable'
 import {
   ALL_BOOKING_STATUS,
   bookingIdOmnisearchFilter,
@@ -41,11 +38,8 @@ export const BookingsRecapTable = <
   isLoading,
   locationState,
   audience,
-  resetBookings,
   bookingsRecap: bookings,
 }: BookingsRecapTableProps<T>) => {
-  const { logEvent } = useAnalytics()
-
   const [filteredBookings, setFilteredBookings] = useState(bookings)
 
   const location = useLocation()
@@ -127,47 +121,6 @@ export const BookingsRecapTable = <
     })
   }
 
-  const rows = useMemo(
-    () =>
-      filteredBookings.map(
-        (b, i) =>
-          ({ ...b, id: i }) as BookingRecapResponseModel & { id: number }
-      ),
-    [filteredBookings]
-  )
-
-  const [expanded, setExpanded] = useState<Set<number>>(
-    new Set(
-      queryParams.get('bookingId') ? [Number(queryParams.get('bookingId'))] : []
-    )
-  )
-
-  const toggle = (i: string | number) =>
-    setExpanded((prev) => {
-      const numericId = typeof i === 'string' ? parseInt(i, 10) : i
-      const next = new Set(prev)
-      next.has(numericId) ? next.delete(numericId) : next.add(numericId)
-      return next
-    })
-
-  const { columns: individualColumns, getFullRowContentIndividual } =
-    useBookingsTableColumnsByIndex({
-      bookings, // liste complète
-      bookingStatuses: filters.bookingStatus,
-      updateGlobalFilters, // (partial) -> void
-      expandedIds: expanded,
-      onToggle: toggle,
-    })
-
-  const { columns: collectiveColumns, getFullRowContentCollective } =
-    useCollectiveBookingsColumns({
-      bookings, // ✅ liste passée pour l'entête
-      bookingStatuses: filters.bookingStatus,
-      updateGlobalFilters, // optionnel; si absent, l'entête affiche juste "Statut"
-      expandedIds: expanded,
-      onToggle: toggle,
-    })
-
   return (
     <div>
       <div className={styles['booking-filters-wrapper']}>
@@ -184,37 +137,17 @@ export const BookingsRecapTable = <
           {pluralize(filteredBookings.length, 'réservation')}
         </div>
       )}
-      <>
-        <Table
-          title="Réservations individuelles"
-          columns={
-            audience === Audience.INDIVIDUAL
-              ? individualColumns
-              : collectiveColumns
-          }
-          data={rows} // rows have { id: index }
-          isLoading={isLoading}
-          variant={TableVariant.COLLAPSE}
-          noData={{
-            hasNoData: false,
-            message: {
-              icon: '',
-              title: 'Vous n’avez aucune réservation pour le moment',
-              subtitle: '',
-            },
-          }}
-          noResult={{
-            message: 'Aucune réservation trouvée pour votre recherche',
-            resetMessage: 'Afficher toutes les réservations',
-            onFilterReset: resetAllFilters,
-          }}
-          getFullRowContent={
-            audience === Audience.INDIVIDUAL
-              ? getFullRowContentIndividual
-              : getFullRowContentCollective
-          }
-        />
-      </>
+      <BookingsTable
+        key={`table-${audience}`}
+        audience={audience}
+        isLoading={isLoading}
+        bookings={filteredBookings}
+        allBookings={bookings}
+        bookingStatuses={filters.bookingStatus}
+        onUpdateGlobalFilters={updateGlobalFilters}
+        onResetAllFilters={resetAllFilters}
+        defaultBookingId={defaultBookingId || undefined}
+      />
     </div>
   )
 }

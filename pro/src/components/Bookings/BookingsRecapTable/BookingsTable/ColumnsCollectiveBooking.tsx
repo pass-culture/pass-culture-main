@@ -13,6 +13,8 @@ import type { BookingsFilters } from '@/components/Bookings/BookingsRecapTable/t
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import type { Column } from '@/ui-kit/Table/Table'
 
+import { doesUserPreferReducedMotion } from '@/commons/utils/windowMatchMedia'
+import { useRef } from 'react'
 import { FilterByBookingStatus } from '../Filters/FilterByBookingStatus'
 import styles from './BookingsTable.module.scss'
 import { BookingOfferCell } from './Cells/BookingOfferCell'
@@ -183,13 +185,25 @@ export function useCollectiveBookingsColumns(
     },
   ]
 
+  const detailsRef = useRef<HTMLTableRowElement | null>(null)
+
   // Ligne de détails plein-largeur (optionnelle)
-  const getFullRowContentCollective = (row: BookingRow) =>
-    expandedIds?.has(row.id) ? (
-      <div className={styles['table-fullrow-content']}>
+  const getFullRowContentCollective = (row: BookingRow) => {
+    if (expandedIds?.has(row.id)) {
+      setTimeout(
+        () =>
+          detailsRef.current?.scrollIntoView({
+            behavior: doesUserPreferReducedMotion() ? 'auto' : 'smooth',
+          }),
+        100
+      )
+    }
+    return expandedIds?.has(row.id) ? (
+      <div ref={detailsRef} className={styles['table-fullrow-content']}>
         <CollectiveDetailsLoader booking={row} />
       </div>
     ) : null
+  }
 
   return { columns, getFullRowContentCollective }
 }
