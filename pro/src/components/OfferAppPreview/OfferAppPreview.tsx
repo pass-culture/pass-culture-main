@@ -1,5 +1,5 @@
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
-import { getIndividualOfferImage } from '@/components/IndividualOffer/utils/getIndividualOfferImage'
+import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividualOfferImage'
 import { Markdown } from '@/components/Markdown/Markdown'
 
 import style from './OfferAppPreview.module.scss'

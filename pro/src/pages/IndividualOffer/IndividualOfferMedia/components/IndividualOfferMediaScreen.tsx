@@ -17,6 +17,7 @@ import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
+import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividualOfferImage'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
@@ -26,7 +27,6 @@ import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
-import { getIndividualOfferImage } from '@/components/IndividualOffer/utils/getIndividualOfferImage'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'

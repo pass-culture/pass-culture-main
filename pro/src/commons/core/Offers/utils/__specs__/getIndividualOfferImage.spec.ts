@@ -1,6 +1,5 @@
+import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividualOfferImage'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
-
-import { getIndividualOfferImage } from '../getIndividualOfferImage'
 
 describe('getIndividualOfferImage', () => {
   const serializeOfferApiImageDataSet = [
