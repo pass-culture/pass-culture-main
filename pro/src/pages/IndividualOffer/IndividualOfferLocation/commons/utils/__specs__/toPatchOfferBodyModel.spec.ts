@@ -55,4 +55,25 @@ describe('toPatchOfferBodyModel', () => {
     expect(result).toMatchObject(formValuesBase)
     expect(result.shouldSendMail).toBe(true)
   })
+
+  it('should omit null top-level fields (url is null)', () => {
+    const offer = {
+      ...offerBase,
+      lastProvider: null,
+    }
+    const formValues = {
+      ...formValuesBase,
+      address: null,
+    }
+
+    const result = toPatchOfferBodyModel({
+      offer,
+      formValues,
+      shouldSendMail: false,
+    })
+
+    expect(result).not.toHaveProperty('address')
+    expect(result).toHaveProperty('url')
+    expect(result.shouldSendMail).toBe(false)
+  })
 })
