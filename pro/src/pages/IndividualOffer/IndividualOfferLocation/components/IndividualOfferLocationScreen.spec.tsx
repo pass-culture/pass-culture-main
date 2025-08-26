@@ -1,5 +1,6 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
 import {
@@ -98,7 +99,8 @@ const LABELS = {
     main: 'Où profiter de l’offre ?',
   },
   buttons: {
-    save: 'Enregistrer et continuer',
+    saveAndContinue: 'Enregistrer et continuer',
+    saveAndGoBack: 'Enregistrer les modifications',
     cantFindAddress: /Vous ne trouvez pas votre adresse \?/,
   },
   fields: {
@@ -117,160 +119,302 @@ const LABELS = {
 }
 
 describe('<IndividualOfferLocationScreen />', () => {
-  const offlineOffer = getIndividualOfferFactory({
-    id: 3,
-    subcategoryId: MOCKED_SUBCATEGORY.NON_EVENT_OFFLINE.id,
-    venue: getOfferVenueFactory({ id: 1 }),
-  })
-  const onlineOffer = {
-    ...offlineOffer,
-    subcategoryId: MOCKED_SUBCATEGORY.NON_EVENT_ONLINE.id,
-  }
-
-  it('should render the screen', async () => {
-    const props = { offer: offlineOffer }
-
-    renderIndividualOfferLocationScreen({ props })
-
-    expect(
-      await screen.findByRole('heading', { name: LABELS.titles.main })
-    ).toBeInTheDocument()
-  })
-
-  it('should submit the venue address payload when a venue address is selected', async () => {
-    vi.spyOn(api, 'patchOffer').mockResolvedValue(offlineOffer)
-
-    const props = { offer: offlineOffer }
-
-    renderIndividualOfferLocationScreen({ props })
-
-    await userEvent.click(
-      screen.getByRole('radio', {
-        name: 'Lieu Nom Public Pour Test – 3 Rue de Valois 75001 Paris',
-      })
-    )
-
-    await userEvent.click(screen.getByRole('button', { name: /Enregistrer/ }))
-
-    expect(api.patchOffer).toHaveBeenCalledOnce()
-    expect(api.patchOffer).toHaveBeenCalledWith(
-      3,
-      expect.objectContaining({
-        address: expect.objectContaining({
-          city: 'Paris',
-          isManualEdition: false,
-          isVenueAddress: true,
-          label: 'MINISTERE DE LA CULTURE',
-          latitude: '48.87171',
-          longitude: '2.30829',
-          postalCode: '75001',
-          street: '3 Rue de Valois',
-          banId: '75101_9575_00003',
-          inseeCode: '75056',
-        }),
-        shouldSendMail: false,
-        url: null,
-      })
-    )
-  })
-
-  it('should disable the physical location inputs if another offer with the same EAN exists', async () => {
-    const contextValues = { hasPublishedOfferWithSameEan: true }
-    const props = { offer: offlineOffer }
-
-    renderIndividualOfferLocationScreen({ contextValues, props })
-
-    expect(
-      await screen.findByRole('radiogroup', {
-        name: LABELS.fields.address,
-      })
-    ).toHaveAttribute('aria-disabled', 'true')
-  })
-
-  describe('online subcategory', () => {
-    beforeEach(() => {
-      vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
-        useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.EDITION),
-      }))
+  describe('when offer subcategory is OFFLINE', () => {
+    const offlineOffer = getIndividualOfferFactory({
+      id: 3,
+      subcategoryId: MOCKED_SUBCATEGORY.NON_EVENT_OFFLINE.id,
+      venue: getOfferVenueFactory({ id: 1 }),
     })
-    it('should show only the URL field', async () => {
-      const props = { offer: onlineOffer }
 
-      renderIndividualOfferLocationScreen({ props })
+    describe('when mode is CREATION', () => {
+      beforeEach(() => {
+        vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
+          useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.CREATION),
+        }))
+      })
 
-      expect(
-        await screen.findByRole('heading', { name: LABELS.titles.main })
-      ).toBeInTheDocument()
+      it('should render and pass accessibility checks', async () => {
+        const props = { offer: offlineOffer }
 
-      expect(
-        screen.getByRole('textbox', { name: LABELS.fields.url })
-      ).toBeInTheDocument()
+        const { container } = renderIndividualOfferLocationScreen({ props })
 
-      expect(
-        screen.queryByRole('radiogroup', {
-          name: LABELS.fields.address,
+        expect(
+          await screen.findByRole('heading', { name: LABELS.titles.main })
+        ).toBeInTheDocument()
+
+        expect(await axe(container)).toHaveNoViolations()
+      })
+
+      it('should submit the venue address payload when a venue address is selected', async () => {
+        vi.spyOn(api, 'patchOffer').mockResolvedValue(offlineOffer)
+
+        const props = { offer: offlineOffer }
+
+        renderIndividualOfferLocationScreen({ props })
+
+        await userEvent.click(
+          screen.getByRole('radio', {
+            name: 'Lieu Nom Public Pour Test – 3 Rue de Valois 75001 Paris',
+          })
+        )
+
+        await userEvent.click(
+          screen.getByRole('button', { name: /Enregistrer/ })
+        )
+
+        expect(api.patchOffer).toHaveBeenCalledOnce()
+        expect(api.patchOffer).toHaveBeenCalledWith(
+          3,
+          expect.objectContaining({
+            address: expect.objectContaining({
+              city: 'Paris',
+              isManualEdition: false,
+              isVenueAddress: true,
+              label: 'MINISTERE DE LA CULTURE',
+              latitude: '48.87171',
+              longitude: '2.30829',
+              postalCode: '75001',
+              street: '3 Rue de Valois',
+              banId: '75101_9575_00003',
+              inseeCode: '75056',
+            }),
+            shouldSendMail: false,
+            url: null,
+          })
+        )
+      })
+
+      it('should disable the physical location inputs if another offer with the same EAN exists', async () => {
+        const contextValues = { hasPublishedOfferWithSameEan: true }
+        const props = { offer: offlineOffer }
+
+        renderIndividualOfferLocationScreen({ contextValues, props })
+
+        expect(
+          await screen.findByRole('radiogroup', {
+            name: LABELS.fields.address,
+          })
+        ).toHaveAttribute('aria-disabled', 'true')
+      })
+    })
+
+    describe('when mode is EDITION', () => {
+      beforeEach(() => {
+        vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
+          useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.EDITION),
+        }))
+      })
+
+      it('should render and pass accessibility checks', async () => {
+        const props = { offer: offlineOffer }
+
+        const { container } = renderIndividualOfferLocationScreen({ props })
+
+        expect(
+          await screen.findByRole('heading', { name: LABELS.titles.main })
+        ).toBeInTheDocument()
+
+        expect(await axe(container)).toHaveNoViolations()
+      })
+
+      describe('should open the update warning dialog before saving when address changed and offer has pending bookings', () => {
+        const offlineOfferWithPendingBookings = {
+          ...offlineOffer,
+          address: {
+            id: 11,
+            banId: '12',
+            inseeCode: '13',
+            postalCode: '12345',
+            street: 'Rue',
+            city: 'Test-sur-Seine',
+            latitude: 1.23,
+            longitude: 4.56,
+            departmentCode: '12',
+            label: 'Etiquette de lieu',
+            id_oa: 14,
+            isLinkedToVenue: false,
+            isManualEdition: false,
+          },
+          hasPendingBookings: true,
+        }
+
+        beforeEach(async () => {
+          vi.spyOn(api, 'patchOffer').mockResolvedValue(
+            offlineOfferWithPendingBookings
+          )
+
+          renderIndividualOfferLocationScreen({
+            props: { offer: offlineOfferWithPendingBookings },
+          })
+
+          await userEvent.click(
+            screen.getByRole('radio', { name: LABELS.options.otherAddress })
+          )
+          await userEvent.type(
+            screen.getByRole('textbox', {
+              name: LABELS.fields.addressLocationLabel,
+            }),
+            'Etiquette de lieu modifié'
+          )
+          await userEvent.click(
+            screen.getByRole('button', { name: LABELS.buttons.saveAndGoBack })
+          )
         })
-      ).not.toBeInTheDocument()
-    })
 
-    it('should disable the URL field if another offer with the same EAN exists', async () => {
-      const contextValues = { hasPublishedOfferWithSameEan: true }
-      const props = { offer: onlineOffer }
+        it('and behave as expected', async () => {
+          expect(
+            await screen.findByText(
+              'Les changements vont s’appliquer à l’ensemble des réservations en cours associées'
+            )
+          ).toBeInTheDocument()
+          expect(api.patchOffer).not.toHaveBeenCalled()
+        })
 
-      renderIndividualOfferLocationScreen({ contextValues, props })
+        // `shouldSendMail` checkbox is checked by default
+        it('and send shouldSendMail=true to API when checked', async () => {
+          await userEvent.click(
+            screen.getByRole('button', { name: 'Je confirme le changement' })
+          )
 
-      expect(
-        await screen.findByRole('textbox', { name: LABELS.fields.url })
-      ).toBeDisabled()
-    })
+          await waitFor(() => {
+            expect(api.patchOffer).toHaveBeenCalledWith(
+              offlineOfferWithPendingBookings.id,
+              expect.objectContaining({ shouldSendMail: true })
+            )
+          })
+        })
 
-    it('should render without error in CREATION mode even if URL is initially null', async () => {
-      vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
-        useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.CREATION),
-      }))
-      const props = { offer: { ...onlineOffer, url: null } }
+        // `shouldSendMail` checkbox is checked by default
+        it('and send shouldSendMail=false to API when checked', async () => {
+          // = uncheck since `shouldSendMail` checkbox is checked by default
+          await userEvent.click(
+            await screen.findByRole('checkbox', {
+              name: 'Prévenir les jeunes par e-mail',
+            })
+          )
 
-      renderIndividualOfferLocationScreen({ props })
+          await userEvent.click(
+            screen.getByRole('button', { name: 'Je confirme le changement' })
+          )
 
-      expect(
-        await screen.findByRole('heading', { name: LABELS.titles.main })
-      ).toBeInTheDocument()
+          await waitFor(() => {
+            expect(api.patchOffer).toHaveBeenCalledWith(
+              offlineOfferWithPendingBookings.id,
+              expect.objectContaining({ shouldSendMail: false })
+            )
+          })
+        })
 
-      expect(
-        screen.getByRole('textbox', { name: LABELS.fields.url })
-      ).toBeInTheDocument()
+        it('and close the dialog without saving when canceled', async () => {
+          expect(
+            await screen.findByText(
+              'Les changements vont s’appliquer à l’ensemble des réservations en cours associées'
+            )
+          ).toBeInTheDocument()
+
+          await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+
+          expect(
+            screen.queryByText(
+              'Les changements vont s’appliquer à l’ensemble des réservations en cours associées'
+            )
+          ).not.toBeInTheDocument()
+          expect(api.patchOffer).not.toHaveBeenCalled()
+        })
+      })
     })
   })
 
-  describe('read-only mode', () => {
-    beforeEach(() => {
-      vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
-        useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.READ_ONLY),
-      }))
+  describe('when offer subcategory is ONLINE', () => {
+    const onlineOffer = getIndividualOfferFactory({
+      id: 3,
+      subcategoryId: MOCKED_SUBCATEGORY.NON_EVENT_ONLINE.id,
+      venue: getOfferVenueFactory({ id: 1 }),
     })
 
-    it('should disable all fields for offline offer', async () => {
-      const props = { offer: offlineOffer }
-      const contextValues = { hasPublishedOfferWithSameEan: false }
+    describe('when mode is CREATION', () => {
+      beforeEach(() => {
+        vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
+          useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.CREATION),
+        }))
+      })
 
-      renderIndividualOfferLocationScreen({ props, contextValues })
+      it('should render and pass accessibility checks', async () => {
+        const props = { offer: onlineOffer }
 
-      expect(
-        await screen.findByRole('radiogroup', {
-          name: LABELS.fields.address,
-        })
-      ).toHaveAttribute('aria-disabled', 'true')
+        const { container } = renderIndividualOfferLocationScreen({ props })
+
+        expect(
+          await screen.findByRole('heading', { name: LABELS.titles.main })
+        ).toBeInTheDocument()
+
+        expect(await axe(container)).toHaveNoViolations()
+      })
+
+      it('should render without error even when url is null', async () => {
+        const props = { offer: { ...onlineOffer, url: null } }
+
+        renderIndividualOfferLocationScreen({ props })
+
+        expect(
+          await screen.findByRole('heading', { name: LABELS.titles.main })
+        ).toBeInTheDocument()
+
+        expect(
+          screen.getByRole('textbox', { name: LABELS.fields.url })
+        ).toBeInTheDocument()
+      })
     })
 
-    it('should disable the URL field for online offer', async () => {
-      const props = { offer: onlineOffer }
-      const contextValues = { hasPublishedOfferWithSameEan: false }
+    describe('when mode is EDITION', () => {
+      beforeEach(() => {
+        vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
+          useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.EDITION),
+        }))
+      })
 
-      renderIndividualOfferLocationScreen({ props, contextValues })
+      it('should render and pass accessibility checks', async () => {
+        const props = { offer: onlineOffer }
 
-      expect(
-        await screen.findByRole('textbox', { name: LABELS.fields.url })
-      ).toBeDisabled()
+        const { container } = renderIndividualOfferLocationScreen({ props })
+
+        expect(
+          await screen.findByRole('heading', { name: LABELS.titles.main })
+        ).toBeInTheDocument()
+
+        expect(await axe(container)).toHaveNoViolations()
+      })
+
+      it('should show only the URL field', async () => {
+        const props = { offer: onlineOffer }
+
+        renderIndividualOfferLocationScreen({ props })
+
+        expect(
+          await screen.findByRole('heading', { name: LABELS.titles.main })
+        ).toBeInTheDocument()
+
+        expect(
+          screen.getByRole('textbox', { name: LABELS.fields.url })
+        ).toBeInTheDocument()
+
+        expect(
+          screen.queryByRole('radiogroup', {
+            name: LABELS.fields.address,
+          })
+        ).not.toBeInTheDocument()
+      })
+
+      it('should disable the URL field if another offer with the same EAN exists', async () => {
+        const contextValues = { hasPublishedOfferWithSameEan: true }
+        const props = { offer: onlineOffer }
+
+        renderIndividualOfferLocationScreen({ contextValues, props })
+
+        expect(
+          await screen.findByRole('textbox', { name: LABELS.fields.url })
+        ).toBeDisabled()
+      })
     })
   })
 })
