@@ -21,9 +21,11 @@ import { toPatchOfferBodyModel } from '../utils/toPatchOfferBodyModel'
 export function useSaveOfferLocation({
   offer,
   setError,
+  withAddVideoFeatureFlag,
 }: {
   offer: GetIndividualOfferResponseModel
   setError: UseFormSetError<LocationFormValues>
+  withAddVideoFeatureFlag: boolean
 }) {
   const { pathname } = useLocation()
   const mode = useOfferWizardMode()
@@ -57,7 +59,9 @@ export function useSaveOfferLocation({
       const nextStep =
         mode === OFFER_WIZARD_MODE.EDITION
           ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
-          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA
+          : withAddVideoFeatureFlag
+            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA
+            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
 
       navigate(
         getIndividualOfferUrl({
