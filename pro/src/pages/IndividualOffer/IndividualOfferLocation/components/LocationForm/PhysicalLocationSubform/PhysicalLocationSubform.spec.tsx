@@ -31,10 +31,28 @@ vi.mock('@/ui-kit/form/AddressSelect/AddressSelect', () => ({
   AddressSelect: ({
     label,
     disabled,
+    onChange,
+    value = '',
   }: {
     label: string
     disabled?: boolean
-  }) => <input aria-label={label} role="combobox" disabled={disabled} />,
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+    value?: string | null
+  }) => (
+    <input
+      aria-label={label}
+      role="combobox"
+      disabled={disabled}
+      value={value ?? ''}
+      onChange={(e) => onChange?.(e)}
+    />
+  ),
+}))
+vi.mock('@/commons/errors/handleUnexpectedError', () => ({
+  handleUnexpectedError: vi.fn(),
+}))
+vi.mock('@/commons/errors/FrontendError', () => ({
+  FrontendError: class FrontendError extends Error {},
 }))
 
 type ExtraParams = { formDefaults?: Partial<LocationFormValues> }
@@ -105,229 +123,395 @@ const renderPhysicalLocationSubform: RenderComponentFunction<
   )
 }
 
-describe('PhysicalLocationSubform (new)', () => {
-  describe('initial state', () => {
-    it('should show venue address radio selected by default (no other address fields)', () => {
-      renderPhysicalLocationSubform({})
+describe('<PhysicalLocationSubform />', () => {
+  it('should show venue address radio selected by default (no other address fields)', () => {
+    renderPhysicalLocationSubform({})
 
-      expect(
-        screen.getByRole('radio', { name: /10 Rue de Paris 75000 Paris/i })
-      ).toBeInTheDocument()
+    expect(
+      screen.getByRole('radio', { name: /10 Rue de Paris 75000 Paris/i })
+    ).toBeInTheDocument()
 
-      expect(
-        screen.queryByLabelText(/Intitulé de la localisation/i)
-      ).not.toBeInTheDocument()
-    })
-
-    it('should switch to other address fields when selecting other address', async () => {
-      renderPhysicalLocationSubform({})
-
-      const otherRadio = screen.getByRole('radio', {
-        name: 'À une autre adresse',
-      })
-      await userEvent.click(otherRadio)
-
-      expect(
-        screen.getByLabelText(/Intitulé de la localisation/i)
-      ).toBeInTheDocument()
-    })
+    expect(
+      screen.queryByLabelText(/Intitulé de la localisation/i)
+    ).not.toBeInTheDocument()
   })
 
-  describe('manual edition', () => {
-    it('should enable manual edition and display manual address fields', async () => {
-      renderPhysicalLocationSubform({
-        formDefaults: {
-          address: {
-            addressAutocomplete: null,
-            banId: null,
-            city: 'Paris',
-            coords: null,
-            inseeCode: null,
-            isManualEdition: false,
-            isVenueAddress: false,
-            label: null,
-            latitude: '48.8566',
-            longitude: '2.3522',
-            offerLocation: 'other',
-            postalCode: '75000',
-            'search-addressAutocomplete': null,
-            street: '10 Rue de Paris',
-          },
-        },
-      })
+  it('should switch to other address fields when selecting other address', async () => {
+    renderPhysicalLocationSubform({})
+    await userEvent.click(
+      screen.getByRole('radio', { name: 'À une autre adresse' })
+    )
 
-      const manualButton = screen.getByRole('button', {
+    expect(
+      screen.getByLabelText(/Intitulé de la localisation/i)
+    ).toBeInTheDocument()
+  })
+
+  it('should toggle back to venue address and hide other address fields', async () => {
+    renderPhysicalLocationSubform({})
+
+    await userEvent.click(
+      screen.getByRole('radio', { name: 'À une autre adresse' })
+    )
+    expect(
+      screen.getByLabelText(/Intitulé de la localisation/i)
+    ).toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getByRole('radio', { name: /10 Rue de Paris 75000 Paris/i })
+    )
+
+    expect(
+      screen.queryByLabelText(/Intitulé de la localisation/i)
+    ).not.toBeInTheDocument()
+  })
+
+  it('should enable manual edition and display manual address fields', async () => {
+    renderPhysicalLocationSubform({
+      formDefaults: {
+        address: {
+          addressAutocomplete: null,
+          banId: null,
+          city: 'Paris',
+          coords: null,
+          inseeCode: null,
+          isManualEdition: false,
+          isVenueAddress: false,
+          label: null,
+          latitude: '48.8566',
+          longitude: '2.3522',
+          offerLocation: 'other',
+          postalCode: '75000',
+          'search-addressAutocomplete': null,
+          street: '10 Rue de Paris',
+        },
+      },
+    })
+    await userEvent.click(
+      screen.getByRole('button', {
         name: /Vous ne trouvez pas votre adresse/i,
       })
-      await userEvent.click(manualButton)
-      // Street manual field becomes available (textbox) while original combobox (role=combobox) stays
-      expect(
-        screen.getByRole('textbox', { name: /Adresse postale/i })
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole('combobox', { name: /Adresse postale/i })
-      ).toBeDisabled()
-    })
+    )
+    // Street manual field becomes available (textbox) while original combobox (role=combobox) stays
+    expect(
+      screen.getByRole('textbox', { name: /Adresse postale/i })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('combobox', { name: /Adresse postale/i })
+    ).toBeDisabled()
+  })
 
-    it('should reset address fields when switching from venue to other address', async () => {
-      renderPhysicalLocationSubform({})
+  it('should reset address fields when switching from venue to other address', async () => {
+    renderPhysicalLocationSubform({})
 
-      await userEvent.click(
-        screen.getByRole('radio', { name: 'À une autre adresse' })
-      )
+    await userEvent.click(
+      screen.getByRole('radio', { name: 'À une autre adresse' })
+    )
 
-      await userEvent.click(
-        screen.getByRole('button', {
-          name: /Vous ne trouvez pas votre adresse/i,
-        })
-      )
-      const streetInput = screen.getByRole('textbox', {
-        name: /Adresse postale/i,
-      }) as HTMLInputElement
-      expect(streetInput.value).toBe('')
-    })
-
-    it('should toggle manual edition off and hide manual fields keeping other address mode', async () => {
-      renderPhysicalLocationSubform({
-        formDefaults: {
-          address: {
-            addressAutocomplete: null,
-            banId: null,
-            city: 'Paris',
-            coords: null,
-            inseeCode: null,
-            isManualEdition: false,
-            isVenueAddress: false,
-            label: null,
-            latitude: '48.8566',
-            longitude: '2.3522',
-            offerLocation: 'other',
-            postalCode: '75000',
-            'search-addressAutocomplete': null,
-            street: '10 Rue de Paris',
-          },
-        },
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: /Vous ne trouvez pas votre adresse/i,
       })
+    )
 
-      await userEvent.click(
-        screen.getByRole('button', {
-          name: /Vous ne trouvez pas votre adresse/i,
-        })
-      )
+    const streetInput = screen.getByRole<HTMLInputElement>('textbox', {
+      name: /Adresse postale/i,
+    })
+    expect(streetInput.value).toBe('')
+  })
 
-      expect(
-        screen.getAllByLabelText(/Adresse postale/i).length
-      ).toBeGreaterThanOrEqual(1)
+  it('should toggle manual edition off and hide manual fields keeping other address mode', async () => {
+    renderPhysicalLocationSubform({
+      formDefaults: {
+        address: {
+          addressAutocomplete: null,
+          banId: null,
+          city: 'Paris',
+          coords: null,
+          inseeCode: null,
+          isManualEdition: false,
+          isVenueAddress: false,
+          label: null,
+          latitude: '48.8566',
+          longitude: '2.3522',
+          offerLocation: 'other',
+          postalCode: '75000',
+          'search-addressAutocomplete': null,
+          street: '10 Rue de Paris',
+        },
+      },
+    })
 
-      const backButton = await screen.findByRole('button', {
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: /Vous ne trouvez pas votre adresse/i,
+      })
+    )
+
+    expect(
+      screen.getAllByLabelText(/Adresse postale/i).length
+    ).toBeGreaterThanOrEqual(1)
+    await userEvent.click(
+      await screen.findByRole('button', {
         name: /Revenir à la sélection automatique/i,
       })
-      await userEvent.click(backButton)
-      // Manual street textbox should be gone, but combobox (Adresse postale) should still be present
-      expect(
-        screen.getByRole('combobox', { name: /Adresse postale/i })
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByRole('textbox', { name: /Adresse postale/i })
-      ).not.toBeInTheDocument()
-      expect(
-        screen.getByLabelText(/Intitulé de la localisation/i)
-      ).toBeInTheDocument()
+    )
+
+    // Manual street textbox should be gone, but combobox (Adresse postale) should still be present
+    expect(
+      screen.getByRole('combobox', { name: /Adresse postale/i })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('textbox', { name: /Adresse postale/i })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByLabelText(/Intitulé de la localisation/i)
+    ).toBeInTheDocument()
+  })
+
+  it('should disable address select (combobox) when manual edition is enabled and keep manual street input enabled', async () => {
+    renderPhysicalLocationSubform({
+      formDefaults: {
+        address: {
+          addressAutocomplete: null,
+          banId: null,
+          city: 'Paris',
+          coords: null,
+          inseeCode: null,
+          isManualEdition: false,
+          isVenueAddress: false,
+          label: null,
+          latitude: '48.8566',
+          longitude: '2.3522',
+          offerLocation: 'other',
+          postalCode: '75000',
+          'search-addressAutocomplete': null,
+          street: '10 Rue de Paris',
+        },
+      },
+    })
+    expect(
+      screen.getByRole<HTMLInputElement>('combobox', {
+        name: /Adresse postale/i,
+      })
+    ).not.toBeDisabled()
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: /Vous ne trouvez pas votre adresse/i,
+      })
+    )
+
+    const postaleFields = screen.getAllByLabelText(/Adresse postale/i)
+    expect(postaleFields.length).toBeGreaterThanOrEqual(2)
+
+    expect(
+      screen.getByRole<HTMLInputElement>('combobox', {
+        name: /Adresse postale/i,
+      })
+    ).toBeDisabled()
+
+    const manualStreet = postaleFields.find((el) => el.id === 'street')
+    expect(manualStreet).toBeDefined()
+    expect(manualStreet).not.toBeDisabled()
+  })
+
+  it('should respect isDisabled prop (all interactive elements disabled)', () => {
+    renderPhysicalLocationSubform({
+      props: { isDisabled: true },
+      formDefaults: {
+        address: {
+          addressAutocomplete: null,
+          banId: null,
+          city: 'Paris',
+          coords: null,
+          inseeCode: null,
+          isManualEdition: true,
+          isVenueAddress: false,
+          label: null,
+          latitude: '48.8566',
+          longitude: '2.3522',
+          offerLocation: 'other',
+          postalCode: '75000',
+          'search-addressAutocomplete': null,
+          street: '10 Rue de Paris',
+        },
+      },
     })
 
-    it('should disable address select (combobox) when manual edition is enabled and keep manual street input enabled', async () => {
-      renderPhysicalLocationSubform({
-        formDefaults: {
-          address: {
-            addressAutocomplete: null,
-            banId: null,
-            city: 'Paris',
-            coords: null,
-            inseeCode: null,
-            isManualEdition: false,
-            isVenueAddress: false,
-            label: null,
-            latitude: '48.8566',
-            longitude: '2.3522',
-            offerLocation: 'other',
-            postalCode: '75000',
-            'search-addressAutocomplete': null,
-            street: '10 Rue de Paris',
-          },
-        },
+    expect(
+      screen.getByRole('radiogroup', {
+        name: 'Il s’agit de l’adresse à laquelle les jeunes devront se présenter. *',
       })
+    ).toHaveAttribute('aria-disabled', 'true')
 
-      const addressSelect = screen.getByRole('combobox', {
-        name: /Adresse postale/i,
-      }) as HTMLInputElement
-      expect(addressSelect).not.toBeDisabled()
+    expect(
+      screen.getByRole('textbox', { name: 'Intitulé de la localisation' })
+    ).toBeDisabled()
 
-      await userEvent.click(
-        screen.getByRole('button', {
-          name: /Vous ne trouvez pas votre adresse/i,
-        })
-      )
+    expect(
+      screen.getByRole('button', {
+        name: /Revenir à la sélection automatique/i,
+      })
+    ).toBeDisabled()
 
-      const postaleFields = screen.getAllByLabelText(/Adresse postale/i)
-      expect(postaleFields.length).toBeGreaterThanOrEqual(2)
-
-      const combobox = screen.getByRole('combobox', {
-        name: /Adresse postale/i,
-      }) as HTMLInputElement
-      expect(combobox).toBeDisabled()
-
-      const manualStreet = postaleFields.find(
-        (el) => el.getAttribute('id') === 'street'
-      ) as HTMLInputElement | undefined
-      expect(manualStreet).toBeDefined()
-      expect(manualStreet).not.toBeDisabled()
+    const postaleFields = screen.getAllByLabelText(/Adresse postale/i)
+    postaleFields.forEach((el) => {
+      expect(el).toBeDisabled()
     })
   })
 
-  describe('disabled state', () => {
-    it('should respect isDisabled prop (all interactive elements disabled)', () => {
-      renderPhysicalLocationSubform({
-        props: { isDisabled: true },
-        formDefaults: {
-          address: {
-            addressAutocomplete: null,
-            banId: null,
-            city: 'Paris',
-            coords: null,
-            inseeCode: null,
-            isManualEdition: true,
-            isVenueAddress: false,
-            label: null,
-            latitude: '48.8566',
-            longitude: '2.3522',
-            offerLocation: 'other',
-            postalCode: '75000',
-            'search-addressAutocomplete': null,
-            street: '10 Rue de Paris',
-          },
-        },
-      })
-
-      expect(
-        screen.getByRole('radiogroup', {
-          name: 'Il s’agit de l’adresse à laquelle les jeunes devront se présenter. *',
-        })
-      ).toHaveAttribute('aria-disabled', 'true')
-
-      expect(
-        screen.getByRole('textbox', { name: 'Intitulé de la localisation' })
-      ).toBeDisabled()
-
-      expect(
-        screen.getByRole('button', {
-          name: /Revenir à la sélection automatique/i,
-        })
-      ).toBeDisabled()
-
-      const postaleFields = screen.getAllByLabelText(/Adresse postale/i)
-      postaleFields.forEach((el) => {
-        expect(el).toBeDisabled()
-      })
+  it('should not switch to other address when radiogroup is disabled', async () => {
+    renderPhysicalLocationSubform({
+      props: { isDisabled: true },
     })
+
+    const radiogroup = screen.getByRole('radiogroup', {
+      name: 'Il s’agit de l’adresse à laquelle les jeunes devront se présenter. *',
+    })
+    expect(radiogroup).toHaveAttribute('aria-disabled', 'true')
+
+    // Attempt click
+    await userEvent.click(
+      screen.getByRole('radio', { name: 'À une autre adresse' })
+    )
+
+    // Other address fields should remain hidden
+    expect(
+      screen.queryByLabelText(/Intitulé de la localisation/i)
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not enable manual edition when button is disabled', async () => {
+    renderPhysicalLocationSubform({
+      props: { isDisabled: true },
+      formDefaults: {
+        address: {
+          addressAutocomplete: null,
+          banId: null,
+          city: 'Paris',
+          coords: null,
+          inseeCode: null,
+          isManualEdition: false,
+          isVenueAddress: false,
+          label: null,
+          latitude: '48.8566',
+          longitude: '2.3522',
+          offerLocation: 'other',
+          postalCode: '75000',
+          'search-addressAutocomplete': null,
+          street: '10 Rue de Paris',
+        },
+      },
+    })
+
+    const manualBtn = screen.getByRole('button', {
+      name: /Vous ne trouvez pas votre adresse/i,
+    })
+    expect(manualBtn).toBeDisabled()
+    await userEvent.click(manualBtn)
+    // Manual textbox should not appear
+    expect(
+      screen.queryByRole('textbox', { name: /Adresse postale/i })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should update address autocomplete value when typing', async () => {
+    renderPhysicalLocationSubform({
+      formDefaults: {
+        address: {
+          addressAutocomplete: null,
+          banId: null,
+          city: 'Paris',
+          coords: null,
+          inseeCode: null,
+          isManualEdition: false,
+          isVenueAddress: false,
+          label: null,
+          latitude: '48.8566',
+          longitude: '2.3522',
+          offerLocation: 'other',
+          postalCode: '75000',
+          'search-addressAutocomplete': null,
+          street: '10 Rue de Paris',
+        },
+      },
+    })
+
+    const combobox = screen.getByRole('combobox', {
+      name: /Adresse postale/i,
+    }) as HTMLInputElement
+    await userEvent.type(combobox, '12 Rue de Lyon')
+    expect(combobox.value).toContain('12 Rue de Lyon')
+  })
+
+  it('should call handleUnexpectedError when toggling back to venue address but venue.address is missing', async () => {
+    const { handleUnexpectedError } = await import(
+      '@/commons/errors/handleUnexpectedError'
+    )
+    // Start on venue address, go to other, then back (error path when venue.address is undefined)
+    const venueWithoutAddress = makeVenueListItem({ address: undefined })
+    renderPhysicalLocationSubform({
+      props: {
+        venue: venueWithoutAddress as unknown as VenueListItemResponseModel,
+      },
+      formDefaults: {
+        address: {
+          addressAutocomplete: null,
+          banId: null,
+          city: '',
+          coords: null,
+          inseeCode: null,
+          isManualEdition: false,
+          isVenueAddress: true,
+          label: null,
+          latitude: '',
+          longitude: '',
+          offerLocation: '',
+          postalCode: '',
+          'search-addressAutocomplete': null,
+          street: '',
+        },
+      },
+    })
+
+    // First click switches to other address
+    await userEvent.click(
+      screen.getByRole('radio', { name: 'À une autre adresse' })
+    )
+    expect(
+      screen.getByLabelText(/Intitulé de la localisation/i)
+    ).toBeInTheDocument()
+
+    // Second click attempts to switch back to venue address triggering error
+    await userEvent.click(screen.getByRole('radio', { name: / – null/i }))
+    expect(handleUnexpectedError).toHaveBeenCalled()
+  })
+
+  it('should render manual edition fields on mount when defaults set isManualEdition=true', () => {
+    renderPhysicalLocationSubform({
+      formDefaults: {
+        address: {
+          addressAutocomplete: null,
+          banId: null,
+          city: 'Paris',
+          coords: null,
+          inseeCode: null,
+          isManualEdition: true,
+          isVenueAddress: false,
+          label: null,
+          latitude: '48.8566',
+          longitude: '2.3522',
+          offerLocation: 'other',
+          postalCode: '75000',
+          'search-addressAutocomplete': null,
+          street: '10 Rue de Paris',
+        },
+      },
+    })
+
+    expect(
+      screen.getByRole('textbox', { name: /Adresse postale/i })
+    ).toBeInTheDocument()
   })
 })
