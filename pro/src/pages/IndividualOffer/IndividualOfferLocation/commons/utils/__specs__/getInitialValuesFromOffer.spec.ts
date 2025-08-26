@@ -61,8 +61,8 @@ describe('getInitialValuesFromOffer', () => {
             coords: `${offer.address.latitude}, ${offer.address.longitude}`,
             inseeCode: offer.address.inseeCode,
             isManualEdition: offer.address.isManualEdition,
+            label: offer.address.label,
             latitude: String(offer.address.latitude),
-            locationLabel: offer.address.label,
             longitude: String(offer.address.longitude),
             offerLocation: OFFER_LOCATION.OTHER_ADDRESS,
             postalCode: offer.address.postalCode,
@@ -134,8 +134,8 @@ describe('getInitialValuesFromOffer', () => {
             city: offerVenue.address.city,
             coords: `${offerVenue.address.latitude}, ${offerVenue.address.longitude}`,
             inseeCode: offerVenue.address.inseeCode,
+            label: offerVenue.address.label,
             latitude: String(offerVenue.address.latitude),
-            locationLabel: offerVenue.address.label,
             longitude: String(offerVenue.address.longitude),
             offerLocation: String(offerVenue.address.id_oa),
             postalCode: offerVenue.address.postalCode,
@@ -166,7 +166,7 @@ describe('getInitialValuesFromOffer', () => {
           address: {
             banId: null,
             inseeCode: null,
-            locationLabel: null,
+            label: null,
             street: null,
           },
         })

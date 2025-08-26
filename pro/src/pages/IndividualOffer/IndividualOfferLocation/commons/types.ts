@@ -10,6 +10,7 @@ export type NullableIfNonBoolean<T extends AnyObject> = {
   [K in keyof T]: T[K] extends boolean ? T[K] : T[K] | null
 }
 
+// TODO (igabriele, 2025-08-25): We can get rid of `isManualEdition` and `offerLocation` to only use `isVenueAddress` + `banId` (Frontend + Backend).
 export interface PhysicalAddressSubformValues {
   addressAutocomplete: string | null
   banId: string | null
@@ -17,10 +18,9 @@ export interface PhysicalAddressSubformValues {
   coords: string | null
   inseeCode: string | null
   isManualEdition: boolean
-  // TODO (igabriele, 2025-08-25): We can get rid of this prop and only use `offerLocation` + `isManualEdition` + `banId`.
   isVenueAddress: boolean
+  label: string | null
   latitude: string
-  locationLabel: string | null
   longitude: string
   offerLocation: string
   postalCode: string

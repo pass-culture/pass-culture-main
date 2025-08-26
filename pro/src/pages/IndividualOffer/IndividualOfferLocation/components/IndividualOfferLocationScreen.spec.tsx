@@ -160,7 +160,7 @@ describe('<IndividualOfferLocationScreen />', () => {
           city: 'Paris',
           isManualEdition: false,
           isVenueAddress: true,
-          locationLabel: 'MINISTERE DE LA CULTURE',
+          label: 'MINISTERE DE LA CULTURE',
           latitude: '48.87171',
           longitude: '2.30829',
           postalCode: '75001',
