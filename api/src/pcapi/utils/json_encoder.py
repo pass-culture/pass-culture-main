@@ -1,10 +1,10 @@
 import typing
 from enum import Enum
 
-from flask.json import JSONEncoder
+from flask.json.provider import DefaultJSONProvider
 
 
-class EnumJSONEncoder(JSONEncoder):
+class EnumJSONEncoder(DefaultJSONProvider):
     def default(self, obj: typing.Any) -> typing.Any:
         try:
             if isinstance(obj, Enum):
@@ -14,4 +14,4 @@ class EnumJSONEncoder(JSONEncoder):
             pass
         else:
             return list(iterable)
-        return JSONEncoder.default(self, obj)
+        return super().default(obj)

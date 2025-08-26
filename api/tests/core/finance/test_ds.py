@@ -696,7 +696,8 @@ class BankAccountJourneyTest:
             pricing_point="self", managingOfferer=venue.managingOfferer
         )
         offerer = venue.managingOfferer
-        offers_factories.StockFactory(offer__venue=venue_with_no_bank_account)
+        s = offers_factories.StockFactory(offer__venue=venue_with_no_bank_account)
+        assert s.offer.publicationDatetime < datetime.datetime.now()
         offers_factories.StockFactory(offer__venue=venue_without_non_free_offer, price=0)
 
         mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v4_as_batch(

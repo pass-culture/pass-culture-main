@@ -138,7 +138,7 @@ def get_individual_bookings(user: users_models.User) -> list[models.Booking]:
                         offerers_models.Venue.publicName,
                         # FIXME bdalbianco 28/04/2025 CLEAN_OA: check timezone relevance after regul venue
                         offerers_models.Venue.timezone,
-                        offerers_models.Venue.bannerUrl,
+                        typing.cast(sa_orm.QueryableAttribute, offerers_models.Venue.bannerUrl),
                         offerers_models.Venue.isOpenToPublic,
                         offerers_models.Venue.venueTypeCode,
                     )
@@ -256,7 +256,9 @@ def _book_offer(
                 booking.usedRecreditType = models.BookingRecreditType.RECREDIT_17
 
         if is_activation_code_applicable:
-            booking.activationCode = offers_repository.get_available_activation_code(stock)
+            activation_code = offers_repository.get_available_activation_code(stock)
+            assert activation_code  # helps mypy
+            booking.activationCode = activation_code
             booking.mark_as_used(models.BookingValidationAuthorType.AUTO)
         if stock.is_automatically_used:
             booking.mark_as_used(models.BookingValidationAuthorType.AUTO)
@@ -1059,11 +1061,16 @@ def auto_mark_as_used_after_event() -> None:
 
 def get_individual_bookings_from_stock(
     stock_id: int,
-) -> typing.Generator[models.Booking, None, None]:
+) -> typing.Generator[sa.Row[tuple[int, int]], None, None]:
     query = (
-        db.session.query(models.Booking)
-        .filter(models.Booking.stockId == stock_id, models.Booking.status != models.BookingStatus.CANCELLED)
-        .with_entities(models.Booking.id, models.Booking.userId)
+        db.session.query(
+            models.Booking.id,
+            models.Booking.userId,
+        )
+        .filter(
+            models.Booking.stockId == stock_id,
+            models.Booking.status != models.BookingStatus.CANCELLED,
+        )
         .distinct()
     )
     yield from query.yield_per(1_000)

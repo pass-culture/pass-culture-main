@@ -44,5 +44,6 @@ def send_today_stock_notification(stock_id: int) -> None:
 @job(worker.default_queue)
 def send_offer_link_by_push_job(user_id: int, offer_id: int) -> None:
     offer = db.session.get(Offer, offer_id)
+    assert offer  # helps mypy
     notification_data = get_offer_notification_data(user_id, offer)
     send_transactional_notification(notification_data)

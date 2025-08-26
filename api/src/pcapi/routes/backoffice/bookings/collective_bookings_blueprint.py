@@ -100,13 +100,20 @@ def _get_collective_bookings_query() -> sa_orm.Query:
 def _get_collective_bookings(
     form: booking_forms.GetCollectiveBookingListForm,
 ) -> list[educational_models.CollectiveBooking]:
+    typed_validated_incident_id = typing.cast(
+        sa_orm.Mapped[int | None], educational_models.CollectiveBooking.validated_incident_id
+    )
     base_query = _get_collective_bookings_query()
 
     if form.has_incident.data and len(form.has_incident.data) == 1:
         if form.has_incident.data[0] == "true":
-            base_query = base_query.filter(educational_models.CollectiveBooking.validated_incident_id != None)
+            base_query = base_query.filter(
+                typed_validated_incident_id != None,
+            )
         else:
-            base_query = base_query.filter(educational_models.CollectiveBooking.validated_incident_id == None)
+            base_query = base_query.filter(
+                typed_validated_incident_id == None,
+            )
 
     return booking_helpers.get_bookings(
         base_query=base_query,

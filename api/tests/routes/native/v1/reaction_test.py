@@ -23,7 +23,7 @@ class PostReactionTest:
     num_queries_success += 1  # Insert reaction
     num_queries_success_with_product = num_queries_success + 1  # update product likes count
 
-    num_queries_failure = num_queries_base + 1  # rollback
+    num_queries_failure = num_queries_base + 2  # rollback x2
 
     def test_should_be_logged_in_to_post_reaction(self, client):
         with assert_num_queries(0):

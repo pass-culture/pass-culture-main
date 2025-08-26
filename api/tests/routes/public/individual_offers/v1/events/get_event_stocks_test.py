@@ -21,6 +21,7 @@ class GetEventStocksTest(PublicAPIVenueEndpointHelper):
     num_queries_400 = 1  # select api_key, offerer and provider
     num_queries_400 += 1  # select offers
     num_queries_400 += 1  # rollback atomic
+    num_queries_400 += 1  # rollback atomic
 
     num_queries = 1  # select api_key, offerer and provider
     num_queries += 1  # select offers

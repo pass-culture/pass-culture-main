@@ -2,6 +2,8 @@ import logging
 from datetime import date
 from enum import Enum
 
+import sqlalchemy as sa
+
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
@@ -53,7 +55,9 @@ def get_bookings_cancellation_notification_data(booking_ids: list[int]) -> Trans
     )
 
 
-def get_today_stock_booking_notification_data(booking: Booking, offer: Offer) -> TransactionalNotificationData | None:
+def get_today_stock_booking_notification_data(
+    booking: sa.Row[tuple[int, int]], offer: Offer
+) -> TransactionalNotificationData | None:
     return TransactionalNotificationData(
         group_id=GroupId.TODAY_STOCK.value,
         user_ids=[booking.userId],

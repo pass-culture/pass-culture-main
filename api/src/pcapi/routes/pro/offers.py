@@ -1,4 +1,5 @@
 import logging
+import typing
 from datetime import time
 
 import sqlalchemy as sqla
@@ -462,6 +463,19 @@ def patch_offer(
         updates["extraData"] = body_extra_data
 
     offer = offers_api.update_offer(offer, offers_schemas.UpdateOffer(**updates), is_from_private_api=True)
+    db.session.flush()
+    offer = offers_repository.get_offer_by_id(
+        offer_id,
+        load_options=[
+            "stock",
+            "venue",
+            "offerer_address",
+            "product",
+            "bookings_count",
+            "is_non_free_offer",
+            "meta_data",
+        ],
+    )
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
@@ -647,7 +661,7 @@ def delete_price_category(offer_id: int, price_category_id: int) -> None:
 @atomic()
 def get_active_venue_offer_by_ean(venue_id: int, ean: str) -> offers_serialize.GetActiveEANOfferResponseModel:
     try:
-        venue = offerers_repository.get_venue_by_id(venue_id)
+        venue = get_or_404(offerers_models.Venue, venue_id)
         rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
         offer = offers_repository.get_active_offer_by_venue_id_and_ean(venue_id, ean)
     except exceptions.OfferNotFound:
@@ -695,7 +709,7 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
         .one_or_none()
     )
     validation.check_product_cgu_and_offerer(product, ean, offerer)
-    return offers_serialize.GetProductInformations.from_orm(product=product)
+    return offers_serialize.GetProductInformations.from_orm(product=typing.cast(models.Product, product))
 
 
 def _format_offer_opening_hours(
@@ -709,7 +723,7 @@ def _format_offer_opening_hours(
     formatted: dict[str, list[tuple[str, str]] | None] = {weekday.value: None for weekday in offerers_models.Weekday}
     for oh in opening_hours or []:
         timespans = []
-        for ts in oh.timespan:
+        for ts in oh.timespan or []:
             lower = int(ts.lower)
             upper = int(ts.upper)
 
