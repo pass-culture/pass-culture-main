@@ -255,6 +255,7 @@ elif [[ "$CMD" == "start-proxy-backend" ]]; then
 
 # Start API server with database and nginx server (without building the images)
 elif [[ "$CMD" == "up-backend" ]]; then
+  FAST=true
   source "$INFRA_SCRIPTS_PATH"/start_backend.sh
   start_backend
 

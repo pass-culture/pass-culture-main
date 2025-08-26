@@ -15,17 +15,18 @@ function build_backend {
     concat_command
     move
     concat_command
+    if  [[ $SLOW == true ]];then
+        RUN="$RUN docker system prune -f &&"
+    fi
     if  [[ $FAST != true ]];then
-        RUN="$RUN docker compose -f '$ROOT_PATH/docker-compose-backend.yml' build"
+        RUN="$RUN docker system prune -f && docker compose -f '$ROOT_PATH/docker-compose-backend.yml' build"
     fi
 }
 
 function build_proxy_backend {
-    concat_command
-    move
-    concat_command
+    build_backend
     if  [[ $FAST != true ]];then
-        RUN="$RUN docker compose -f '$ROOT_PATH/docker-compose-backend.yml' build --build-arg=\"network_mode=proxy\""
+        RUN="$RUN  --build-arg=\"network_mode=proxy\""
     fi
 }
 
