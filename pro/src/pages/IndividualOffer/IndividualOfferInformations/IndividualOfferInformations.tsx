@@ -20,16 +20,16 @@ const IndividualOfferInformations = (): JSX.Element | null => {
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
 
-  if (isNewOfferCreationFlowFeatureActive) {
-    return <IndividualOfferLocation />
-  }
-
   // Getting selected venue at step 1 (details) to infer address fields
   const venuesQuery = useSWR(
     offer ? [GET_VENUES_QUERY_KEY, offer.venue.managingOfferer.id] : null,
     ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
     { fallbackData: { venues: [] } }
   )
+
+  if (isNewOfferCreationFlowFeatureActive) {
+    return <IndividualOfferLocation />
+  }
 
   const selectedVenue = venuesQuery.data.venues.find(
     (v) => v.id.toString() === offer?.venue.id.toString()
