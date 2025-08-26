@@ -21,49 +21,32 @@ yup.addMethod(
           return true
         }
 
-        const checked = new Map<string | number, number[]>()
+        const nonFalsyKeyValues = value
+          .map<string | number>((item) => item[key])
+          .filter(Boolean)
 
-        for (let i = 0; i < value.length; i++) {
-          const item = value[i]
-          if (item == null) {
-            continue
-          }
-
-          const prop = (item as Record<string, unknown>)[key]
-
-          if (prop == null) {
-            continue
-          }
-
-          const t = typeof prop
-          if (t !== 'string' && t !== 'number') {
-            continue
-          }
-
-          const comparable = prop as string | number
-          const arr = checked.get(comparable)
-          if (arr) {
-            arr.push(i)
-          } else {
-            checked.set(comparable, [i])
-          }
+        // Performance shortcut
+        const hasDuplicates =
+          new Set(nonFalsyKeyValues).size !== nonFalsyKeyValues.length
+        if (!hasDuplicates) {
+          return true
         }
 
         const duplicateIndices: number[] = []
-        for (const indices of checked.values()) {
-          if (indices.length > 1) {
-            duplicateIndices.push(...indices)
+        const seenValues = new Set<string | number>()
+        nonFalsyKeyValues.forEach((keyValue, index) => {
+          if (seenValues.has(keyValue)) {
+            duplicateIndices.push(index)
+          } else {
+            seenValues.add(keyValue)
           }
-        }
+        })
 
-        if (duplicateIndices.length > 0) {
-          const errors = duplicateIndices.map((i) =>
-            this.createError({ path: `${this.path}[${i}]`, message })
-          )
-          return new yup.ValidationError(errors)
-        }
+        const validationErrors = duplicateIndices.map((duplicateIndex) =>
+          this.createError({ path: `${this.path}[${duplicateIndex}]`, message })
+        )
 
-        return true
+        return new yup.ValidationError(validationErrors)
       },
     })
   }
