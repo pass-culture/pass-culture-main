@@ -9,6 +9,8 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Audience } from '@/commons/core/shared/types'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
+import { pluralize } from '@/commons/utils/pluralize'
+import styles from './BookingRecapTable.module.scss'
 import { useCollectiveBookingsColumns } from './BookingsTable/ColumnsCollectiveBooking'
 import { useBookingsTableColumnsByIndex } from './BookingsTable/ColumnsIndividualBooking'
 import {
@@ -18,8 +20,6 @@ import {
   EMPTY_FILTER_VALUE,
 } from './Filters/constants'
 import { FilterByOmniSearch } from './Filters/FilterByOmniSearch'
-import styles from './Filters/Filters.module.scss'
-import { Header } from './Header/Header'
 import type { BookingsFilters } from './types'
 import { filterBookingsRecap } from './utils/filterBookingsRecap'
 
@@ -170,7 +170,7 @@ export const BookingsRecapTable = <
 
   return (
     <div>
-      <div className={styles['filters-wrapper']}>
+      <div className={styles['booking-filters-wrapper']}>
         <FilterByOmniSearch
           isDisabled={isLoading}
           keywords={filters.keywords}
@@ -180,12 +180,9 @@ export const BookingsRecapTable = <
         />
       </div>
       {filteredBookings.length !== 0 && (
-        <Header
-          bookingsRecapFilteredLength={filteredBookings.length}
-          isLoading={isLoading}
-          queryBookingId={defaultBookingId}
-          resetBookings={resetBookings}
-        />
+        <div className={styles['bookings-header']}>
+          {pluralize(filteredBookings.length, 'réservation')}
+        </div>
       )}
       <>
         <Table
