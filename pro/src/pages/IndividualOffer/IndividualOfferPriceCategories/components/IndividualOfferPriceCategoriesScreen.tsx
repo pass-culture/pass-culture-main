@@ -24,95 +24,41 @@ import { isEqual } from '@/commons/utils/isEqual'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import {
-  INITIAL_PRICE_CATEGORY,
-  PRICE_CATEGORY_LABEL_MAX_LENGTH,
-  PRICE_CATEGORY_MAX_LENGTH,
-  UNIQUE_PRICE,
-} from '@/components/IndividualOffer/PriceCategoriesScreen/form/constants'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import strokeEuroIcon from '@/icons/stroke-euro.svg'
 import strokeFrancIcon from '@/icons/stroke-franc.svg'
+import { getSuccessMessage } from '@/pages/IndividualOffer/commons/getSuccessMessage'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { PriceInput } from '@/ui-kit/form/PriceInput/PriceInput'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
-import { getSuccessMessage } from '../utils/getSuccessMessage'
-import { computeInitialValues } from './form/computeInitialValues'
-import { submitToApi } from './form/submitToApi'
-import type { PriceCategoriesFormValues, PriceCategoryForm } from './form/types'
-import { getValidationSchema } from './form/validationSchema'
-import styles from './PriceCategoriesScreen.module.scss'
+import { arePriceCategoriesChanged } from '../commons/arePriceCategoriesChanged'
+import { computeInitialValues } from '../commons/computeInitialValues'
+import {
+  INITIAL_PRICE_CATEGORY,
+  PRICE_CATEGORY_LABEL_MAX_LENGTH,
+  PRICE_CATEGORY_MAX_LENGTH,
+  UNIQUE_PRICE,
+} from '../commons/constants'
+import { submitToApi } from '../commons/submitToApi'
+import type {
+  PriceCategoriesFormValues,
+  PriceCategoryForm,
+} from '../commons/types'
+import { getValidationSchema } from '../commons/validationSchema'
+import styles from './IndividualOfferPricesScreen.module.scss'
 
-export interface PriceCategoriesScreenProps {
+export interface IndividualOfferPriceCategoriesScreenProps {
   offer: GetIndividualOfferWithAddressResponseModel
 }
 
-const hasFieldChange = (
-  priceCategories: PriceCategoryForm[],
-  initialPriceCategories: Record<string, Partial<PriceCategoryForm>>,
-  field: keyof PriceCategoryForm
-) =>
-  priceCategories.some((priceCategory) => {
-    // if no id, it is new and has no stocks
-    if (!priceCategory.id) {
-      return false
-    }
-    // have fields which trigger warning been edited ?
-    const initialpriceCategory = initialPriceCategories[priceCategory.id]
-    return initialpriceCategory[field] !== priceCategory[field]
-  })
-
-/**
- * @function arePriceCategoriesChanged
- * Returns `true` if at least one of the initial price categories has changed
- * and `false` otherwise (even if there are additional price cateogires in the values).
- * */
-export const arePriceCategoriesChanged = (
-  initialValues: PriceCategoriesFormValues,
-  values: PriceCategoriesFormValues
-): boolean => {
-  const initialPriceCategories: Record<
-    string,
-    Partial<PriceCategoryForm>
-  > = initialValues.priceCategories.reduce(
-    (dict: Record<string, Partial<PriceCategoryForm>>, priceCategory) => {
-      dict[priceCategory.id || 'new'] = {
-        id: priceCategory.id,
-        label: priceCategory.label,
-        price: priceCategory.price,
-      }
-      return dict
-    },
-    {}
-  )
-
-  const changedPriceCategories = values.priceCategories.filter(
-    (priceCategory) => {
-      if (!priceCategory.id) {
-        return false
-      }
-      if (
-        priceCategory.price !==
-          initialPriceCategories[priceCategory.id].price ||
-        priceCategory.label !== initialPriceCategories[priceCategory.id].label
-      ) {
-        return true
-      }
-      return false
-    }
-  )
-
-  return hasFieldChange(changedPriceCategories, initialPriceCategories, 'price')
-}
-
-export const PriceCategoriesScreen = ({
+export const IndividualOfferPriceCategoriesScreen = ({
   offer,
-}: PriceCategoriesScreenProps): JSX.Element => {
+}: IndividualOfferPriceCategoriesScreenProps): JSX.Element => {
   const { subCategories } = useIndividualOfferContext()
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -325,143 +271,131 @@ export const PriceCategoriesScreen = ({
         cancelText="Annuler"
         open={isConfirmationModalOpen}
       >
-        {(offer.bookingsCount ?? 0) > 0 && (
-          <>
-            Le tarif restera inchangé pour les personnes ayant déjà réservé
-            cette offre.
-          </>
-        )}
+        {(offer.bookingsCount ?? 0) > 0 &&
+          'Le tarif restera inchangé pour les personnes ayant déjà réservé cette offre.'}
       </ConfirmDialog>
-
       <form onSubmit={handleSubmit(onSubmit)}>
-        <>
-          <FormLayout>
-            <FormLayout.MandatoryInfo areAllFieldsMandatory />
-            <FormLayout.Section title="Tarifs">
-              <ConfirmDialog
-                onCancel={() => setCurrentDeletionIndex(null)}
-                onConfirm={() => {
-                  return onDeletePriceCategory(
-                    //  TODO : restructure this composant so that this hack is not necessary
-                    //  By creating a component for each of the price category lines
-                    currentDeletionIndex!,
-                    priceCategories
-                  )
-                }}
-                title="En supprimant ce tarif vous allez aussi supprimer l’ensemble des dates qui lui sont associées."
-                confirmText="Confirmer la suppression"
-                cancelText="Annuler"
-                open={currentDeletionIndex !== null}
-              />
-              {fields.map((field, index) => (
-                <fieldset
-                  key={field.id}
-                  data-testid={`priceCategories.${index}.label`}
-                >
-                  <legend className={styles['visually-hidden']}>
-                    Tarif {index + 1}
-                  </legend>
-                  <FormLayout.Row
-                    inline
-                    mdSpaceAfter
-                    className={styles['form-layout-row-price-category']}
-                  >
-                    <TextInput
-                      {...register(`priceCategories.${index}.label`)}
-                      name={`priceCategories.${index}.label`}
-                      label="Intitulé du tarif"
-                      description="Par exemple : catégorie 2, moins de 18 ans, pass 3 jours..."
-                      maxLength={PRICE_CATEGORY_LABEL_MAX_LENGTH}
-                      count={priceCategories[index]?.label.length}
-                      className={styles['label-input']}
-                      labelClassName={styles['label-input-label']}
-                      disabled={priceCategories.length <= 1 || isDisabled}
-                      error={errors.priceCategories?.[index]?.label?.message}
-                      autoComplete="off"
-                    />
-                    <PriceInput
-                      {...register(`priceCategories.${index}.price`)}
-                      className={styles['price-input']}
-                      name={`priceCategories.${index}.price`}
-                      label="Prix par personne"
-                      rightIcon={
-                        isCaledonian ? strokeFrancIcon : strokeEuroIcon
-                      }
-                      disabled={isDisabled}
-                      showFreeCheckbox
-                      hideAsterisk={true}
-                      smallLabel
-                      updatePriceValue={(value) =>
-                        setValue(
-                          `priceCategories.${index}.price`,
-                          isCaledonian ? Number(value) : parseFloat(value),
-                          { shouldValidate: true }
-                        )
-                      }
-                      error={errors.priceCategories?.[index]?.price?.message}
-                    />
-
-                    {mode === OFFER_WIZARD_MODE.CREATION && (
-                      <Button
-                        aria-label={`Supprimer le tarif ${priceCategories[index].label}`}
-                        className={styles['delete-icon']}
-                        iconClassName={styles['delete-icon-svg']}
-                        data-testid={'delete-button'}
-                        variant={ButtonVariant.TERNARY}
-                        icon={fullTrashIcon}
-                        iconPosition={IconPositionEnum.CENTER}
-                        disabled={priceCategories.length <= 1 || isDisabled}
-                        onClick={() =>
-                          onDeletePriceCategory(index, priceCategories)
-                        }
-                        tooltipContent={
-                          priceCategories.length > 1 && !isDisabled ? (
-                            <>Supprimer le tarif</>
-                          ) : undefined
-                        }
-                      />
-                    )}
-                  </FormLayout.Row>
-                </fieldset>
-              ))}
-
-              <Button
-                variant={ButtonVariant.TERNARY}
-                icon={fullMoreIcon}
-                onClick={() => {
-                  append(INITIAL_PRICE_CATEGORY)
-                  if (priceCategories[0].label === UNIQUE_PRICE) {
-                    setValue(`priceCategories.0.label`, '', {
-                      shouldValidate: true,
-                    })
-                  }
-                }}
-                disabled={
-                  priceCategories.length >= PRICE_CATEGORY_MAX_LENGTH ||
-                  isDisabled
-                }
+        <FormLayout>
+          <FormLayout.MandatoryInfo areAllFieldsMandatory />
+          <FormLayout.Section title="Tarifs">
+            <ConfirmDialog
+              onCancel={() => setCurrentDeletionIndex(null)}
+              onConfirm={() => {
+                return onDeletePriceCategory(
+                  //  TODO : restructure this composant so that this hack is not necessary
+                  //  By creating a component for each of the price category lines
+                  currentDeletionIndex!,
+                  priceCategories
+                )
+              }}
+              title="En supprimant ce tarif vous allez aussi supprimer l’ensemble des dates qui lui sont associées."
+              confirmText="Confirmer la suppression"
+              cancelText="Annuler"
+              open={currentDeletionIndex !== null}
+            />
+            {fields.map((field, index) => (
+              <fieldset
+                key={field.id}
+                data-testid={`priceCategories.${index}.label`}
               >
-                Ajouter un tarif
-              </Button>
+                <legend className={styles['visually-hidden']}>
+                  Tarif {index + 1}
+                </legend>
+                <FormLayout.Row
+                  inline
+                  mdSpaceAfter
+                  className={styles['form-layout-row-price-category']}
+                >
+                  <TextInput
+                    {...register(`priceCategories.${index}.label`)}
+                    name={`priceCategories.${index}.label`}
+                    label="Intitulé du tarif"
+                    description="Par exemple : catégorie 2, moins de 18 ans, pass 3 jours..."
+                    maxLength={PRICE_CATEGORY_LABEL_MAX_LENGTH}
+                    count={priceCategories[index]?.label.length}
+                    className={styles['label-input']}
+                    labelClassName={styles['label-input-label']}
+                    disabled={priceCategories.length <= 1 || isDisabled}
+                    error={errors.priceCategories?.[index]?.label?.message}
+                    autoComplete="off"
+                  />
+                  <PriceInput
+                    {...register(`priceCategories.${index}.price`)}
+                    className={styles['price-input']}
+                    name={`priceCategories.${index}.price`}
+                    label="Prix par personne"
+                    rightIcon={isCaledonian ? strokeFrancIcon : strokeEuroIcon}
+                    disabled={isDisabled}
+                    showFreeCheckbox
+                    hideAsterisk={true}
+                    smallLabel
+                    updatePriceValue={(value) =>
+                      setValue(
+                        `priceCategories.${index}.price`,
+                        isCaledonian ? Number(value) : parseFloat(value),
+                        { shouldValidate: true }
+                      )
+                    }
+                    error={errors.priceCategories?.[index]?.price?.message}
+                  />
+
+                  {mode === OFFER_WIZARD_MODE.CREATION && (
+                    <Button
+                      aria-label={`Supprimer le tarif ${priceCategories[index].label}`}
+                      className={styles['delete-icon']}
+                      iconClassName={styles['delete-icon-svg']}
+                      data-testid={'delete-button'}
+                      variant={ButtonVariant.TERNARY}
+                      icon={fullTrashIcon}
+                      iconPosition={IconPositionEnum.CENTER}
+                      disabled={priceCategories.length <= 1 || isDisabled}
+                      onClick={() =>
+                        onDeletePriceCategory(index, priceCategories)
+                      }
+                      tooltipContent={
+                        priceCategories.length > 1 && !isDisabled
+                          ? 'Supprimer le tarif'
+                          : undefined
+                      }
+                    />
+                  )}
+                </FormLayout.Row>
+              </fieldset>
+            ))}
+            <Button
+              variant={ButtonVariant.TERNARY}
+              icon={fullMoreIcon}
+              onClick={() => {
+                append(INITIAL_PRICE_CATEGORY)
+                if (priceCategories[0].label === UNIQUE_PRICE) {
+                  setValue(`priceCategories.0.label`, '', {
+                    shouldValidate: true,
+                  })
+                }
+              }}
+              disabled={
+                priceCategories.length >= PRICE_CATEGORY_MAX_LENGTH ||
+                isDisabled
+              }
+            >
+              Ajouter un tarif
+            </Button>
+          </FormLayout.Section>
+        </FormLayout>
+        {canBeDuo && (
+          <FormLayout fullWidthActions>
+            <FormLayout.Section
+              className={styles['duo-section']}
+              title="Réservations “Duo”"
+            >
+              <DuoCheckbox
+                {...register('isDuo')}
+                checked={Boolean(watch('isDuo'))}
+                disabled={isDisabled}
+              />
             </FormLayout.Section>
           </FormLayout>
-
-          {canBeDuo && (
-            <FormLayout fullWidthActions>
-              <FormLayout.Section
-                className={styles['duo-section']}
-                title="Réservations “Duo”"
-              >
-                <DuoCheckbox
-                  {...register('isDuo')}
-                  checked={Boolean(watch('isDuo'))}
-                  disabled={isDisabled}
-                />
-              </FormLayout.Section>
-            </FormLayout>
-          )}
-        </>
-
+        )}
         <ActionBar
           onClickPrevious={handlePreviousStepOrBackToReadOnly}
           step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS}
@@ -470,7 +404,6 @@ export const PriceCategoriesScreen = ({
           isEvent={offer.isEvent}
         />
       </form>
-
       <RouteLeavingGuardIndividualOffer when={isDirty && !isSubmitting} />
     </>
   )

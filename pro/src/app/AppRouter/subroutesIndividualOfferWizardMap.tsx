@@ -89,13 +89,17 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   // Price categories pages
   {
     lazy: () =>
-      import('@/pages/IndividualOfferWizard/PriceCategories/PriceCategories'),
+      import(
+        '@/pages/IndividualOffer/IndividualOfferPriceCategories/IndividualOfferPriceCategories'
+      ),
     path: '/offre/individuelle/:offerId/creation/tarifs',
     title: 'Tarifs - Créer une offre individuelle',
   },
   {
     lazy: () =>
-      import('@/pages/IndividualOfferWizard/PriceCategories/PriceCategories'),
+      import(
+        '@/pages/IndividualOffer/IndividualOfferPriceCategories/IndividualOfferPriceCategories'
+      ),
     path: '/offre/individuelle/:offerId/edition/tarifs',
     title: 'Tarifs - Modifier une offre individuelle',
   },
@@ -210,7 +214,9 @@ export const routesOnboardingIndividualOfferWizard: RouteConfig[] = [
   },
   {
     lazy: () =>
-      import('@/pages/IndividualOfferWizard/PriceCategories/PriceCategories'),
+      import(
+        '@/pages/IndividualOffer/IndividualOfferPriceCategories/IndividualOfferPriceCategories'
+      ),
     path: '/onboarding/offre/individuelle/:offerId/creation/tarifs',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
     title: 'Tarifs - Créer une offre individuelle - Onboarding',

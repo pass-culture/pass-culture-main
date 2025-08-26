@@ -3,11 +3,9 @@ import {
   priceCategoryFormFactory,
 } from '@/commons/utils/factories/priceCategoryFactories'
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
+import { PRICE_CATEGORY_PRICE_MAX } from '@/pages/IndividualOffer/commons/prices/constants'
 
-import {
-  PRICE_CATEGORY_LABEL_MAX_LENGTH,
-  PRICE_CATEGORY_PRICE_MAX,
-} from '../constants'
+import { PRICE_CATEGORY_LABEL_MAX_LENGTH } from '../constants'
 import type { PriceCategoriesFormValues } from '../types'
 import { getValidationSchema } from '../validationSchema'
 
