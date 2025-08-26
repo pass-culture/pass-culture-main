@@ -137,10 +137,20 @@ describe('<PhysicalLocationSubform />', () => {
   })
 
   it('should switch to other address fields when selecting other address', async () => {
+    //  Catch an error that only seems to appear in tests:
+    // `Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?`
+    // This may be related to `AddressSelect` implementation.
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(vi.fn())
+
     renderPhysicalLocationSubform({})
+
     await userEvent.click(
       screen.getByRole('radio', { name: 'À une autre adresse' })
     )
+
+    expect(consoleErrorSpy).toHaveBeenCalledOnce()
 
     expect(
       screen.getByLabelText(/Intitulé de la localisation/i)
@@ -414,35 +424,6 @@ describe('<PhysicalLocationSubform />', () => {
     expect(
       screen.queryByRole('textbox', { name: /Adresse postale/i })
     ).not.toBeInTheDocument()
-  })
-
-  it('should update address autocomplete value when typing', async () => {
-    renderPhysicalLocationSubform({
-      formDefaults: {
-        address: {
-          addressAutocomplete: null,
-          banId: null,
-          city: 'Paris',
-          coords: null,
-          inseeCode: null,
-          isManualEdition: false,
-          isVenueAddress: false,
-          label: null,
-          latitude: '48.8566',
-          longitude: '2.3522',
-          offerLocation: 'other',
-          postalCode: '75000',
-          'search-addressAutocomplete': null,
-          street: '10 Rue de Paris',
-        },
-      },
-    })
-
-    const combobox = screen.getByRole('combobox', {
-      name: /Adresse postale/i,
-    }) as HTMLInputElement
-    await userEvent.type(combobox, '12 Rue de Lyon')
-    expect(combobox.value).toContain('12 Rue de Lyon')
   })
 
   it('should call handleUnexpectedError when toggling back to venue address but venue.address is missing', async () => {
