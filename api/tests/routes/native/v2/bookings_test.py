@@ -434,6 +434,25 @@ class GetBookingTicketTest:
         ticket = response.json["ongoingBookings"][0]["ticket"]
         assert ticket["display"] == "no_ticket"
 
+    def test_get_booking_not_event_no_ticket(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        booking = booking_factories.BookingFactory(
+            user=user,
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.NO_TICKET,
+        )
+
+        with assert_num_queries(2):  # user + booking
+            response = client.with_token(self.identifier).get("/native/v2/bookings")
+            assert response.status_code == 200
+
+        ticket = response.json["ongoingBookings"][0]["ticket"]
+        assert ticket["token"] == {
+            "data": booking.token,
+        }
+        assert ticket["voucher"] == {"data": f"PASSCULTURE:v3;TOKEN:{booking.token}"}
+        assert ticket["display"] == "voucher"
+
     @pytest.mark.parametrize(
         "withdrawal_delay,delta,display",
         [
