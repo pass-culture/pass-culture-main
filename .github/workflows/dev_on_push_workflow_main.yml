@@ -227,12 +227,22 @@ jobs:
       - test-pro
       - test-pro-e2e-parallel
     if: always()
+    env:
+      GIT_CONFIG_EMAIL: github-actions-bot@passculture.app
+      GIT_CONFIG_NAME: ${{ github.actor }}
     steps:
+      - name: Checkout ref
+        uses: actions/checkout@v4
+        
+      - name: Configure git author
+        run: |
+          git config --global user.email "$GIT_CONFIG_EMAIL"
+          git config --global user.name "$GIT_CONFIG_NAME"
+
       - name: Vérifier résultats des tests
         if: ${{ contains(needs.*.result, 'failure') || !contains(needs.*.result, 'success') }}
         run: |
           echo "Some tests have not run successfully, do not tag an RC on it"
-          exit 1
 
       - name: Tests tous valides, pose de tag
         if: ${{ !contains(needs.*.result, 'failure') && contains(needs.*.result, 'success') }}
