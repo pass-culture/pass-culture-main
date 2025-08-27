@@ -968,7 +968,7 @@ class BankAccountJourneyTest:
         assert on_going_status_history.status == bank_account.status
         assert on_going_status_history.timespan.upper is None
 
-        # DS dossier status is updated by the compliance (accepted)
+        # DS dossier status is updated to 'accepted' by the compliance team (without any change in bank account info)
 
         mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
             state=GraphQLApplicationStates.accepted.value,
@@ -982,6 +982,135 @@ class BankAccountJourneyTest:
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
         assert bank_account.label == "Intitulé du compte bancaire"
+        mock_archive_dossier.assert_called_once_with("RG9zc2llci0xNDc0MjY1NA==")
+
+        link = db.session.query(offerers_models.VenueBankAccountLink).one()
+        assert link.bankAccount == bank_account
+        assert link.venue == venue
+
+        assert db.session.query(history_models.ActionHistory).count() == 1
+        status_history = (
+            db.session.query(finance_models.BankAccountStatusHistory)
+            .order_by(finance_models.BankAccountStatusHistory.id)
+            .all()
+        )
+        assert len(status_history) == 2
+        accepted_status_history = status_history[-1]
+
+        db.session.refresh(on_going_status_history)
+        db.session.refresh(bank_account)
+
+        assert on_going_status_history.timespan.upper is not None
+        assert (
+            accepted_status_history.status
+            == bank_account.status
+            == finance_models.BankAccountApplicationStatus.ACCEPTED
+        )
+        assert accepted_status_history.timespan.upper is None
+
+    def test_DSv5_bank_account_get_successfully_updated_on_bank_account_info_change(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client, db_session
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+
+        first_bic = "SOGEFRPP"
+        first_iban = "FR7630007000111234567890144"
+        first_label = "Oupsie"
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.on_going.value, bic=first_bic, iban=first_iban, label=first_label
+        )
+
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        bank_account = db.session.query(finance_models.BankAccount).one()
+        assert bank_account.label == first_label
+        assert bank_account.bic == first_bic
+        assert bank_account.iban == first_iban
+        assert bank_account.offerer == venue.managingOfferer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ON_GOING
+        assert bank_account.dsApplicationId == self.dsv5_application_id
+        mock_archive_dossier.assert_not_called()
+
+        assert not db.session.query(offerers_models.VenueBankAccountLink).count()
+        assert not db.session.query(history_models.ActionHistory).count()
+
+        first_status_history = db.session.query(finance_models.BankAccountStatusHistory).one()
+        assert first_status_history.status == bank_account.status
+        assert first_status_history.timespan.upper is None
+
+        # DS dossier is updated by the cultural partner (without any status modification from the compliance team)
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.on_going.value,
+        )
+
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        bank_account = db.session.query(finance_models.BankAccount).one()
+        assert bank_account.label == "Intitulé du compte bancaire"
+        assert bank_account.bic == "BICAGRIFRPP"
+        assert bank_account.iban == "FR7630006000011234567890189"
+        assert bank_account.offerer == venue.managingOfferer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ON_GOING
+        mock_archive_dossier.assert_not_called()
+
+        assert not db.session.query(offerers_models.VenueBankAccountLink).count()
+        assert not db.session.query(history_models.ActionHistory).count()
+
+        last_status_history = db.session.query(finance_models.BankAccountStatusHistory).one()
+        assert last_status_history == first_status_history
+
+    def test_DSv5_bank_account_get_successfully_updated(
+        self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client, db_session
+    ):
+        siret = "85331845900049"
+        siren = siret[:9]
+        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
+
+        first_bic = "SOGEFRPP"
+        first_iban = "FR7630007000111234567890144"
+        first_label = "Oupsie"
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.on_going.value, bic=first_bic, iban=first_iban, label=first_label
+        )
+
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        bank_account = db.session.query(finance_models.BankAccount).one()
+        assert bank_account.label == first_label
+        assert bank_account.bic == first_bic
+        assert bank_account.iban == first_iban
+        assert bank_account.offerer == venue.managingOfferer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ON_GOING
+        assert bank_account.dsApplicationId == self.dsv5_application_id
+        mock_archive_dossier.assert_not_called()
+
+        assert not db.session.query(offerers_models.VenueBankAccountLink).count()
+        assert not db.session.query(history_models.ActionHistory).count()
+
+        on_going_status_history = db.session.query(finance_models.BankAccountStatusHistory).one()
+
+        assert on_going_status_history.status == bank_account.status
+        assert on_going_status_history.timespan.upper is None
+
+        # DS dossier is updated by the cultural partner and accepted by the compliance team
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.accepted.value,
+        )
+
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
+
+        bank_account = db.session.query(finance_models.BankAccount).one()
+        assert bank_account.label == "Intitulé du compte bancaire"
+        assert bank_account.bic == "BICAGRIFRPP"
+        assert bank_account.iban == "FR7630006000011234567890189"
+        assert bank_account.offerer == venue.managingOfferer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
         mock_archive_dossier.assert_called_once_with("RG9zc2llci0xNDc0MjY1NA==")
 
         link = db.session.query(offerers_models.VenueBankAccountLink).one()

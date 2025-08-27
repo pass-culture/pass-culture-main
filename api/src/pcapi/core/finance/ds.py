@@ -211,7 +211,7 @@ class ImportBankAccountMixin:
 
         return True
 
-    def get_or_create_bank_account(
+    def create_or_update_bank_account(
         self,
         offerer: offerers_models.Offerer,
         venue: "Venue | None" = None,
@@ -248,19 +248,21 @@ class ImportBankAccountMixin:
             )
             .one_or_none()
         )
+
         if bank_account is None:
-            label = self.application_details.label
-            if label is None:
-                label = venue.common_name if venue is not None else self.application_details.obfuscatedIban
-                label = shorten(label, width=100, placeholder="...")
             bank_account = finance_models.BankAccount(
-                iban=self.application_details.iban,
-                bic=self.application_details.bic,
-                label=label,
                 offerer=offerer,
                 dsApplicationId=self.application_details.application_id,
             )
             created = True
+
+        label = self.application_details.label
+        if label is None:
+            label = venue.common_name if venue is not None else self.application_details.obfuscatedIban
+            label = shorten(label, width=100, placeholder="...")
+        bank_account.label = label
+        bank_account.iban = self.application_details.iban
+        bank_account.bic = self.application_details.bic
         bank_account.status = self.application_details.status
         db.session.add(bank_account)
         db.session.flush()
@@ -453,7 +455,7 @@ class ImportBankAccountV4(AbstractImportBankAccount, ImportBankAccountMixin):
         if not self.validate_bic_and_iban():
             return
 
-        bank_account, created = self.get_or_create_bank_account(venue.managingOfferer, venue)
+        bank_account, created = self.create_or_update_bank_account(venue.managingOfferer, venue)
         if not created and not self.application_details.is_accepted:
             self.deprecate_venue_bank_account_links(bank_account)
         self.keep_track_of_bank_account_status_changes(bank_account)
@@ -515,7 +517,7 @@ class ImportBankAccountV5(AbstractImportBankAccount, ImportBankAccountMixin):
         if not self.validate_bic_and_iban():
             return
 
-        bank_account, created = self.get_or_create_bank_account(offerer, venue)
+        bank_account, created = self.create_or_update_bank_account(offerer, venue)
         if not created and not self.application_details.is_accepted:
             self.deprecate_venue_bank_account_links(bank_account)
         self.keep_track_of_bank_account_status_changes(bank_account)
