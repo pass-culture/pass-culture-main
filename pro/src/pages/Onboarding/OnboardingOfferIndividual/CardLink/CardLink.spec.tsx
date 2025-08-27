@@ -55,4 +55,12 @@ describe('<CardLink />', () => {
     expect(descriptionElement).toBeInTheDocument()
     expect(descriptionElement).toHaveClass('cardlink-description')
   })
+
+  it('should render a button when there is a click callback instread of a link href', () => {
+    renderCardLink({ onClick: () => {}, label: 'Un bien physique' })
+
+    expect(
+      screen.getByRole('button', { name: 'Un bien physique' })
+    ).toBeInTheDocument()
+  })
 })

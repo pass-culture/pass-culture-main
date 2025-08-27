@@ -5,14 +5,20 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './CardLink.module.scss'
 
-export interface CardLinkProps {
+export type CardLinkProps = {
   className?: string
-  to: string
   icon?: string
   label: string
   description?: string
   direction?: 'horizontal' | 'vertical'
-}
+  to?: string
+  onClick?: () => void
+} & (
+  | {
+      to: string
+    }
+  | { onClick: () => void }
+)
 
 export const CardLink = ({
   className,
@@ -21,6 +27,7 @@ export const CardLink = ({
   label,
   description,
   direction = 'horizontal',
+  onClick,
 }: CardLinkProps): JSX.Element => {
   return (
     <div
@@ -37,9 +44,21 @@ export const CardLink = ({
         )}
         <div className={styles['cardlink-content']}>
           <p>
-            <Link to={to} className={cn(styles['cardlink-link'])}>
-              {label}
-            </Link>
+            {to && (
+              <Link to={to} className={cn(styles['cardlink-link'])}>
+                {label}
+              </Link>
+            )}
+
+            {onClick && (
+              <button
+                type="button"
+                className={cn(styles['cardlink-button'])}
+                onClick={onClick}
+              >
+                {label}
+              </button>
+            )}
           </p>
 
           {description && (
