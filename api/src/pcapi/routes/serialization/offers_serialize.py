@@ -641,3 +641,18 @@ class GetProductInformations(BaseModel):
         alias_generator = to_camel
         allow_population_by_field_name = True
         orm_mode = True
+
+
+class VideoMetatdataQueryModel(BaseModel):
+    video_url: HttpUrl
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class OfferVideo(ConfiguredBaseModel):
+    id: str
+    title: str | None
+    thumbnailUrl: str | None
+    duration: int | None

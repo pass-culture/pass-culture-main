@@ -23,4 +23,4 @@ def check_video_url(video_url: HttpUrl | None) -> None:
     is_youtube = youtube_pattern.match(video_url)
 
     if not is_youtube:
-        raise ApiErrors(errors={"videoUrl": ["Veuillez renseigner une url provenant de la plateforme Youtube"]})
+        raise ApiErrors(errors={"videoUrl": ["Veuillez renseigner une URL provenant de la plateforme Youtube"]})

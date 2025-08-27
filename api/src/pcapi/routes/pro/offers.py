@@ -1,7 +1,9 @@
+import json
 import logging
 
 import sqlalchemy as sqla
 import sqlalchemy.orm as sa_orm
+from flask import current_app
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
@@ -10,6 +12,7 @@ import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 import pcapi.core.opening_hours.api as opening_hours_api
+from pcapi.connectors import youtube
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -29,8 +32,10 @@ from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import requests
 from pcapi.utils import rest
 from pcapi.utils.transaction_manager import atomic
+from pcapi.validation.routes import offers as offers_validation
 from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
 
 from . import blueprint
@@ -746,3 +751,43 @@ def get_offer_opening_hours(offer_id: int) -> offers_schemas.OfferOpeningHoursSc
 
     opening_hours = opening_hours_api.format_offer_opening_hours(offer.openingHours)
     return offers_schemas.OfferOpeningHoursSchema(openingHours=opening_hours)
+
+
+@private_api.route("/get-offer-video-data", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.OfferVideo,
+    api=blueprint.pro_private_schema,
+)
+@atomic()
+def get_offer_video_metadata(
+    query: offers_serialize.VideoMetatdataQueryModel,
+) -> offers_serialize.OfferVideo:
+    offers_validation.check_video_url(query.video_url)
+    video_id = offers_api.extract_youtube_video_id(url=query.video_url)
+    # check_video_url ensure we have a valid youtube url. video_id cannot be None, so the next line is to please mypy
+    assert video_id is not None
+    try:
+        video_metadata = youtube.get_video_metadata(video_id=video_id)
+    except requests.ExternalAPIException:
+        raise api_errors.ApiErrors(
+            errors={"videoUrl": ["Nous rencontrons des problèmes de serveur, veuillez réessayer plus tard"]}
+        )
+    if video_metadata is None:
+        raise api_errors.ApiErrors(
+            errors={"videoUrl": ["URL Youtube non trouvée, vérifiez si votre vidéo n’est pas en privé"]}
+        )
+    json_video_metadata = json.dumps(
+        {
+            "title": video_metadata.title,
+            "thumbnail_url": video_metadata.thumbnail_url,
+            "duration": video_metadata.duration,
+        }
+    )
+    current_app.redis_client.set(video_metadata.id, json_video_metadata)
+    return offers_serialize.OfferVideo(
+        id=video_metadata.id,
+        title=video_metadata.title,
+        thumbnailUrl=video_metadata.thumbnail_url,
+        duration=video_metadata.duration,
+    )
