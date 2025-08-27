@@ -16,7 +16,8 @@ export const createOfferFromTemplate = async (
   templateOfferId: number,
   isCollectiveOaActive: boolean,
   requestId?: string,
-  isMarseilleActive?: boolean
+  isMarseilleActive?: boolean,
+  setIsCreatingNewOffer?: (isCreating: boolean) => void
 ) => {
   try {
     const offerTemplateResponse =
@@ -66,8 +67,10 @@ export const createOfferFromTemplate = async (
       )
     } catch {
       notify.error(SENT_DATA_ERROR_MESSAGE)
+      setIsCreatingNewOffer?.(false)
     }
   } catch {
+    setIsCreatingNewOffer?.(false)
     return notify.error(
       'Une erreur est survenue lors de la récupération de votre offre'
     )

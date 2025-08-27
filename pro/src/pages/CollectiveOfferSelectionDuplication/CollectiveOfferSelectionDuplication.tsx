@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
@@ -21,14 +21,15 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { pluralize } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
-import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import strokeSearchIcon from '@/icons/stroke-search.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
+import { CardLink } from '../Onboarding/OnboardingOfferIndividual/CardLink/CardLink'
 import styles from './CollectiveOfferSelectionDuplication.module.scss'
 import { SkeletonLoader } from './CollectiveOfferSelectionLoaderSkeleton'
 
@@ -102,6 +103,8 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
     )
   )
 
+  const [isCreatingNewOffer, setIsCreatingNewOffer] = useState(false)
+
   const templateOfferForm = useForm<SelectionFormValues>()
 
   useEffect(() => {
@@ -113,6 +116,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const { handleSubmit: handleSubmitSelection } = templateOfferForm
 
   const handleOnSubmit = async () => {
+    setIsCreatingNewOffer(true)
     const templateOfferId = templateOfferForm.watch('templateOfferId')
 
     await createOfferFromTemplate(
@@ -121,7 +125,21 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
       Number(templateOfferId),
       isCollectiveOaActive,
       undefined,
-      isMarseilleActive
+      isMarseilleActive,
+      setIsCreatingNewOffer
+    )
+  }
+
+  if (isCreatingNewOffer) {
+    return (
+      <Layout
+        layout={'sticky-actions'}
+        mainHeading="Créer une offre réservable"
+      >
+        <div className="container">
+          <Spinner message="Création de la nouvelle offre réservable en cours" />
+        </div>
+      </Layout>
     )
   }
 
@@ -184,37 +202,30 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                 {offers && pluralize(offers.length, 'offre vitrine trouvée')}
               </p>
               <form onSubmit={handleSubmitSelection(handleOnSubmit)}>
-                <RadioButtonGroup
-                  name="templateOfferId"
-                  variant="detailed"
-                  label={
-                    searchFilterForm.watch('searchFilter').length < 1
-                      ? 'Les dernières offres vitrines créées'
-                      : `${offers && pluralize(offers.length, 'offre')}` +
-                        ' vitrine'
-                  }
-                  options={
-                    offers
-                      ? offers.slice(0, 5).map((offer) => ({
-                          value: offer.id.toString(),
-                          label: offer.name,
-                          description: offer.venue.name,
-                          variant: 'detailed',
-                          image: offer.imageUrl as string,
-                          imageSize: 'm',
+                <p className={styles['legend']}>
+                  {searchFilterForm.watch('searchFilter').length < 1
+                    ? 'Les dernières offres vitrines créées'
+                    : `${offers && pluralize(offers.length, 'offre')}` +
+                      ' vitrine'}
+                </p>
+                <ul className={styles['list']}>
+                  {(offers || []).slice(0, 5).map((offer) => (
+                    <li key={offer.id}>
+                      <CardLink
+                        label={offer.name}
+                        description={offer.venue.name}
+                        onClick={() => {
+                          templateOfferForm.setValue(
+                            'templateOfferId',
+                            offer.id.toString()
+                          )
+                          handleOnSubmit()
+                        }}
+                      />
+                    </li>
+                  ))}
+                </ul>
 
-                          sizing: 'fill',
-                        }))
-                      : []
-                  }
-                  checkedOption={templateOfferForm.watch('templateOfferId')}
-                  onChange={(e) => {
-                    templateOfferForm.setValue(
-                      'templateOfferId',
-                      e.target.value
-                    )
-                  }}
-                />
                 {offers && offers.length < 1 && (
                   <div className={styles['search-no-results']}>
                     <SvgIcon
@@ -235,14 +246,9 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                       variant={ButtonVariant.SECONDARY}
                       to={computeCollectiveOffersUrl({})}
                     >
-                      Annuler et quitter
+                      Retour à la liste des offres
                     </ButtonLink>
                   </ActionsBarSticky.Left>
-                  <ActionsBarSticky.Right>
-                    <Button type="submit" disabled={false}>
-                      Étape suivante
-                    </Button>
-                  </ActionsBarSticky.Right>
                 </ActionsBarSticky>
               </form>
             </>
