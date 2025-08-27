@@ -26,8 +26,8 @@ import {
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { PRICE_CATEGORY_MAX_LENGTH } from './form/constants'
-import { PriceCategoriesScreen } from './PriceCategoriesScreen'
+import { PRICE_CATEGORY_MAX_LENGTH } from '../../commons/constants'
+import { IndividualOfferPriceCategoriesScreen } from '../IndividualOfferPriceCategoriesScreen'
 
 const renderPriceCategoriesScreen = async (
   apiOffer: GetIndividualOfferWithAddressResponseModel,
@@ -50,7 +50,7 @@ const renderPriceCategoriesScreen = async (
 
   renderWithProviders(
     <IndividualOfferContextProvider>
-      <PriceCategoriesScreen offer={apiOffer} />
+      <IndividualOfferPriceCategoriesScreen offer={apiOffer} />
     </IndividualOfferContextProvider>,
     {
       user: sharedCurrentUserFactory(),
@@ -67,7 +67,7 @@ const renderPriceCategoriesScreen = async (
   await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 }
 
-describe('PriceCategoriesScreen', () => {
+describe('IndividualOfferPriceCategoriesScreen', () => {
   let apiOffer: GetIndividualOfferWithAddressResponseModel
 
   beforeEach(() => {

@@ -1,7 +1,7 @@
 import { priceCategoryFormFactory } from '@/commons/utils/factories/priceCategoryFactories'
 
-import type { PriceCategoriesFormValues } from '../form/types'
-import { arePriceCategoriesChanged } from '../PriceCategoriesScreen'
+import { arePriceCategoriesChanged } from '../arePriceCategoriesChanged'
+import type { PriceCategoriesFormValues } from '../types'
 
 describe('arePriceCategoriesChanged', () => {
   const cases: {

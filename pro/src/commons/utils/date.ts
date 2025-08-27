@@ -11,6 +11,24 @@ export const FORMAT_DD_MM_YYYY = 'dd/MM/yyyy'
 export const FORMAT_DD_MMMM_YYYY = 'dd MMMM yyyy'
 export const FORMAT_HH_mm = 'HH:mm'
 
+export const buildDateTime = (date: string, time: string) => {
+  const hoursAndMinutes = time.split(':')
+  if (!isDateValid(date) || hoursAndMinutes.length < 2) {
+    throw Error('La date ou l’heure est invalide')
+  }
+  const [hours, minutes] = hoursAndMinutes
+  const [year, month, day] = date.split('-')
+
+  // new Date(year, month, day, hours, minutes)
+  return new Date(
+    parseInt(year, 10),
+    parseInt(month, 10) - 1,
+    parseInt(day, 10),
+    parseInt(hours, 10),
+    parseInt(minutes, 10)
+  )
+}
+
 export const formatDateTimeParts = (
   date?: string | null
 ): { date: string; time: string } => {

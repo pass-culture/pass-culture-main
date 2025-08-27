@@ -8,7 +8,7 @@ import {
   isDateValid,
   toISOStringWithoutMilliseconds,
 } from '@/commons/utils/date'
-import { serializeDateTimeToUTCFromLocalDepartment } from '@/components/IndividualOffer/StocksEventEdition/serializers'
+import { serializeDateTimeToUTCFromLocalDepartment } from '@/commons/utils/timezone'
 
 import {
   getDatesInInterval,

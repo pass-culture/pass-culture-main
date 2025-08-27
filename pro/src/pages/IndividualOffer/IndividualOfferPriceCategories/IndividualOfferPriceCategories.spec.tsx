@@ -8,7 +8,7 @@ import {
 import { individualOfferContextValuesFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { PriceCategories } from '../PriceCategories'
+import { IndividualOfferPriceCategories } from './IndividualOfferPriceCategories'
 
 const renderOffer = (
   contextOverride?: Partial<IndividualOfferContextValues>
@@ -22,7 +22,7 @@ const renderOffer = (
         path="/edition/tarifs"
         element={
           <IndividualOfferContext.Provider value={contextValue}>
-            <PriceCategories />
+            <IndividualOfferPriceCategories />
           </IndividualOfferContext.Provider>
         }
       />
@@ -31,7 +31,7 @@ const renderOffer = (
   )
 }
 
-describe('PriceCategories', () => {
+describe('IndividualOfferPriceCategories', () => {
   it('should display', () => {
     renderOffer()
     expect(screen.getByText('Modifier l’offre')).toBeInTheDocument()

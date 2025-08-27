@@ -5,12 +5,13 @@ import { getIndividualOfferFactory } from '@/commons/utils/factories/individualA
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
-  PriceCategoriesScreen,
-  type PriceCategoriesScreenProps,
-} from '../PriceCategoriesScreen'
+  IndividualOfferPriceCategoriesScreen,
+  type IndividualOfferPriceCategoriesScreenProps,
+} from '../IndividualOfferPriceCategoriesScreen'
 
-const renderPriceCategories = (props: PriceCategoriesScreenProps) =>
-  renderWithProviders(<PriceCategoriesScreen {...props} />)
+const renderPriceCategories = (
+  props: IndividualOfferPriceCategoriesScreenProps
+) => renderWithProviders(<IndividualOfferPriceCategoriesScreen {...props} />)
 
 describe('PriceCategories', () => {
   it('should render without error', () => {
