@@ -27,8 +27,12 @@ class GetArtistDetailsTest(GetEndpointHelper):
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # user + session + artist
-    expected_num_queries = 3
+    # Expected queries:
+    # 1. User
+    # 2. Session
+    # 3. Artist with joinedload on products
+    # 4. selectinload on aliases
+    expected_num_queries = 4
 
     def test_get_artist_details_success(self, authenticated_client):
         product1 = offers_factories.ProductFactory.create()

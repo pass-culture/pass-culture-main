@@ -65,7 +65,7 @@ def get_artist_details(artist_id: str) -> utils.BackofficeResponse:
                     offers_models.Product.subcategoryId,
                 )
             ),
-            sa_orm.joinedload(artist_models.Artist.aliases).options(
+            sa_orm.selectinload(artist_models.Artist.aliases).options(
                 sa_orm.load_only(artist_models.ArtistAlias.artist_alias_name)
             ),
         )
