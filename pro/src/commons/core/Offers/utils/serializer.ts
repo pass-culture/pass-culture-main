@@ -4,6 +4,7 @@ import type {
   ListCollectiveOffersQueryModel,
   ListOffersQueryModel,
 } from '@/apiClient/v1'
+import { CollectiveLocationType } from '@/apiClient/v1/models/CollectiveLocationType'
 
 import { DEFAULT_SEARCH_FILTERS } from '../constants'
 import type {
@@ -54,6 +55,8 @@ export const serializeApiCollectiveFilters = (
     'periodEndingDate',
     'collectiveOfferType',
     'format',
+    'locationType',
+    'offererAddressId',
   ] satisfies (keyof CollectiveSearchFiltersParams)[]
 
   const body: ListCollectiveOffersQueryModel = {}
@@ -61,10 +64,42 @@ export const serializeApiCollectiveFilters = (
   return listOffersQueryKeys.reduce((accumulator, field) => {
     const filterValue = searchFilters[field]
 
+    if (field === 'locationType' && filterValue) {
+      switch (filterValue) {
+        case CollectiveLocationType.ADDRESS:
+          return {
+            ...accumulator,
+            locationType: CollectiveLocationType.ADDRESS,
+            offererAddressId: searchFilters.offererAddressId
+              ? Number(searchFilters.offererAddressId)
+              : null,
+          }
+        case CollectiveLocationType.SCHOOL:
+          return {
+            ...accumulator,
+            locationType: CollectiveLocationType.SCHOOL,
+            offererAddressId: null,
+          }
+        case CollectiveLocationType.TO_BE_DEFINED:
+          return {
+            ...accumulator,
+            locationType: CollectiveLocationType.TO_BE_DEFINED,
+            offererAddressId: null,
+          }
+        default:
+          return accumulator
+      }
+    }
+
     if (filterValue && !isEqual(filterValue, defaultFilters[field])) {
       return {
         ...accumulator,
-        [field]: filterValue,
+        [field]:
+          field === 'offererAddressId'
+            ? filterValue
+              ? Number(filterValue)
+              : null
+            : filterValue,
       }
     }
     return accumulator

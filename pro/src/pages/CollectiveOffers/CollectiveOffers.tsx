@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { CollectiveOfferType } from '@/apiClient/v1'
 import { Layout } from '@/app/App/layout/Layout'
 import { DEFAULT_PAGE } from '@/commons/core/Offers/constants'
 import { useDefaultCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useDefaultCollectiveSearchFilters'
@@ -78,30 +77,24 @@ export const CollectiveOffers = (): JSX.Element => {
   const offersQuery = useSWR(
     collectiveOffersQueryKeys,
     () => {
-      const {
-        nameOrIsbn,
-        offererId,
-        venueId,
-        status,
-        creationMode,
-        periodBeginningDate,
-        periodEndingDate,
-        collectiveOfferType,
-        format,
-      } = serializeApiCollectiveFilters(apiFilters, defaultCollectiveFilters)
+      const params = serializeApiCollectiveFilters(
+        apiFilters,
+        defaultCollectiveFilters,
+        isNewOffersAndBookingsActive
+      )
 
       return api.getCollectiveOffers(
-        nameOrIsbn,
-        offererId,
-        status,
-        venueId,
-        creationMode,
-        periodBeginningDate,
-        periodEndingDate,
-        isNewOffersAndBookingsActive
-          ? CollectiveOfferType.OFFER
-          : collectiveOfferType,
-        format
+        params.nameOrIsbn,
+        params.offererId,
+        params.status,
+        params.venueId,
+        params.creationMode,
+        params.periodBeginningDate,
+        params.periodEndingDate,
+        params.collectiveOfferType,
+        params.format,
+        params.locationType,
+        params.offererAddressId
       )
     },
     { fallbackData: [] }
