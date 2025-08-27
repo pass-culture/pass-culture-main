@@ -201,7 +201,7 @@ class BookingResponseGetterDict(GetterDict):
             delay=offer.withdrawalDelay,
         )
 
-        if offer.withdrawalType == WithdrawalTypeEnum.NO_TICKET:
+        if offer.withdrawalType == WithdrawalTypeEnum.NO_TICKET and offer.isEvent:
             return TicketResponse(
                 activation_code=None,
                 external_booking=None,
