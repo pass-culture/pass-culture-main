@@ -17,7 +17,7 @@ import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeC
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
-  venueListItemFactory,
+  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -72,15 +72,27 @@ const renderOffers = async (
 }
 
 const proVenues = [
-  venueListItemFactory({
+  makeVenueListItem({
     id: 1,
     name: 'Ma venue',
   }),
-  venueListItemFactory({
+  makeVenueListItem({
     id: 2,
     name: 'Mon autre venue',
   }),
 ]
+
+vi.mock('@/apiClient/api', () => {
+  return {
+    api: {
+      getCollectiveOffers: vi.fn(),
+      getOfferer: vi.fn(),
+      listOfferersNames: vi.fn(),
+      getVenues: vi.fn(),
+      getOffererAddresses: vi.fn(),
+    },
+  }
+})
 
 vi.mock('repository/venuesService', async () => ({
   ...(await vi.importActual('repository/venuesService')),
