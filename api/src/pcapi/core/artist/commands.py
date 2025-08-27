@@ -4,6 +4,7 @@ import typing
 from typing import Iterable
 from typing import Type
 
+import click
 from sqlalchemy import exc as sa_exc
 
 import pcapi.core.artist.models as artist_models
@@ -47,8 +48,28 @@ BigQueryDeltaModel = typing.TypeVar(
 Model = typing.TypeVar("Model", artist_models.Artist, artist_models.ArtistProductLink, artist_models.ArtistAlias)
 
 
+def truncate_artist_tables() -> None:
+    with transaction():
+        db.session.execute("TRUNCATE TABLE artist_product_link")
+    logger.info("ArtistProductLink table truncated")
+
+    with transaction():
+        db.session.execute("TRUNCATE TABLE artist_alias")
+    logger.info("ArtistAlias table truncated")
+
+    with transaction():
+        # Here we use `DELETE` instead of `TRUNCATE` because we are less likely to get
+        # an Access Exclusive Lock on table `artist`, on which there is more traffic.
+        db.session.execute("DELETE FROM artist")
+    logger.info("Artist table truncated")
+
+
 @blueprint.cli.command("import_all_artists_data")
-def import_all_artists_data() -> None:
+@click.option("--clear", is_flag=True, help="Truncate artists tables before importing data.")
+def import_all_artists_data(clear: bool = False) -> None:
+    if clear:
+        truncate_artist_tables()
+
     import_all_artists()
     import_all_artist_product_links()
     import_all_artist_aliases()
