@@ -319,7 +319,7 @@ describe('Create collective offers with OA', () => {
       url: '/collective/offers?offererId=1&status=PUBLISHED&status=HIDDEN&status=ENDED&collectiveOfferType=template',
     }).as('duplicateOffers')
     cy.wait('@duplicateOffers')
-    cy.findByText('Étape suivante').click()
+    cy.findByText(newOfferName).click()
     // eslint-disable-next-line cypress/unsafe-to-chain-command
     cy.findByLabelText('Titre de l’offre *').clear().type('Offre dupliquée OA')
     cy.findByLabelText('Email *').type(commonOfferData.email)
