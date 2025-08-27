@@ -7,7 +7,7 @@ import { GET_OFFERER_ADDRESS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 
 export const useOffererAddresses = (
-  offererAudience: GetOffererAddressesWithOffersOption
+  offersOption: GetOffererAddressesWithOffersOption
 ) => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
@@ -15,7 +15,7 @@ export const useOffererAddresses = (
     [GET_OFFERER_ADDRESS_QUERY_KEY, selectedOffererId],
     ([, offererIdParam]) =>
       offererIdParam
-        ? api.getOffererAddresses(offererIdParam, offererAudience)
+        ? api.getOffererAddresses(offererIdParam, offersOption)
         : [],
     { fallbackData: [] }
   )

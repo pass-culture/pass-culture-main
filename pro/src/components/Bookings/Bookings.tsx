@@ -8,9 +8,9 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import {
-  GetOffererAddressesWithOffersOption,
   type BookingRecapResponseModel,
   type CollectiveBookingResponseModel,
+  GetOffererAddressesWithOffersOption,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
