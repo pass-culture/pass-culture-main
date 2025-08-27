@@ -29,7 +29,7 @@ import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import { CardLink } from '../Onboarding/OnboardingOfferIndividual/CardLink/CardLink'
+import { CardLink } from '../../ui-kit/CardLink/CardLink'
 import styles from './CollectiveOfferSelectionDuplication.module.scss'
 import { SkeletonLoader } from './CollectiveOfferSelectionLoaderSkeleton'
 
