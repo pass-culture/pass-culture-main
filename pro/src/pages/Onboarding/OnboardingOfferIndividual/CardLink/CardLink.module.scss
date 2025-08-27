@@ -3,13 +3,10 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_outline.scss" as outline;
 
-$cardlink-max-width: rem.torem(565px);
-
 .cardlink {
   border: rem.torem(1px) solid var(--color-border-default);
   border-radius: var(--size-border-radius-m);
   position: relative;
-  max-width: $cardlink-max-width;
 
   // Direction: horizontal (default)
   padding: rem.torem(16px);
@@ -38,7 +35,8 @@ $cardlink-max-width: rem.torem(565px);
     flex-direction: column;
   }
 
-  &-link {
+  &-link,
+  &-button {
     &:focus {
       outline: none;
     }
@@ -49,6 +47,12 @@ $cardlink-max-width: rem.torem(565px);
       inset: 0;
       z-index: 1;
     }
+  }
+
+  &-button {
+    border: none;
+    background: none;
+    cursor: pointer;
   }
 
   &-description {
