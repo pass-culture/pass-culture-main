@@ -202,6 +202,14 @@ export const routesOnboardingIndividualOfferWizard: RouteConfig[] = [
   },
   {
     lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferMedia/IndividualOfferMedia'
+      ),
+    path: '/onboarding/offre/individuelle/:offerId/creation/media',
+    title: 'Image et vidéo - Créer une offre individuelle - Onboarding',
+  },
+  {
+    lazy: () =>
       import('@/pages/IndividualOfferWizard/PriceCategories/PriceCategories'),
     path: '/onboarding/offre/individuelle/:offerId/creation/tarifs',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
