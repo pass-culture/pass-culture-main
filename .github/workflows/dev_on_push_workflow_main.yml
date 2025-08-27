@@ -231,7 +231,7 @@ jobs:
       - name: Vérifier résultats des tests
         if: ${{ contains(needs.*.result, 'failure') || !contains(needs.*.result, 'success') }}
         run: |
-          echo "No tests run, do not tag an RC on it"
+          echo "Some tests have not run successfully, do not tag an RC on it"
           exit 1
 
       - name: Tous les tests valides
