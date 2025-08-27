@@ -234,7 +234,7 @@ jobs:
           echo "Some tests have not run successfully, do not tag an RC on it"
           exit 1
 
-      - name: Tous les tests valides
+      - name: Tests tous valides, pose de tag
         if: ${{ !contains(needs.*.result, 'failure') && contains(needs.*.result, 'success') }}
         run: |
           git tag -f rc
