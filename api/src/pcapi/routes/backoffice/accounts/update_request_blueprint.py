@@ -354,15 +354,18 @@ def get_accept_form(ds_application_id: int) -> utils.BackofficeResponse:
             alert = "Attention ! Le compte doublon qui sera suspendu est un compte pro ou admin."
 
     return render_template(
-        "accounts/modal/accept_update_request.html",
+        "components/dynamic/modal_form.html",
+        include_template="accounts/modal/accept_update_request.html",
+        button_text="Appliquer les modifications et accepter" if can_be_accepted else None,
         target_id=f"#request-row-{ds_application_id}",
+        title=f"Accepter le dossier Démarches-Simplifiées n°{ds_application_id}",
         div_id=f"accept-{update_request.dsApplicationId}",
         ds_application_id=ds_application_id,
         update_request=update_request,
         duplicate_user=duplicate_user,
         can_be_accepted=can_be_accepted,
         alert=alert,
-        form=account_forms.AccountUpdateRequestAcceptForm(),
+        form=account_forms.AccountUpdateRequestAcceptForm() if can_be_accepted else None,
         dst=url_for("backoffice_web.account_update.accept", ds_application_id=ds_application_id),
     )
 
