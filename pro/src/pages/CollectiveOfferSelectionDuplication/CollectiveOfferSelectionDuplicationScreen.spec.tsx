@@ -34,15 +34,15 @@ vi.mock(
   })
 )
 
+const offers: CollectiveOfferResponseModel[] = [
+  collectiveOfferFactory(),
+  collectiveOfferFactory(),
+]
+
 describe('CollectiveOfferConfirmation', () => {
   const notifyError = vi.fn()
 
   beforeEach(() => {
-    const offers: CollectiveOfferResponseModel[] = [
-      collectiveOfferFactory(),
-      collectiveOfferFactory(),
-    ]
-
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       success: vi.fn(),
       error: notifyError,
@@ -101,8 +101,10 @@ describe('CollectiveOfferConfirmation', () => {
     )
   })
 
-  it('should select an offer', async () => {
+  it('should create a bookable offer after clicking a template offer an offer', async () => {
     renderCollectiveOfferSelectionDuplication()
+
+    vi.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
 
     await waitFor(() =>
       expect(
@@ -112,27 +114,10 @@ describe('CollectiveOfferConfirmation', () => {
 
     expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
 
-    const inputOffer = await waitFor(() => screen.getAllByRole('radio')[0])
-    await userEvent.click(inputOffer)
-
-    expect(inputOffer).toBeChecked()
-  })
-
-  it('should redirect on submit button and offer selected', async () => {
-    vi.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
-    renderCollectiveOfferSelectionDuplication()
-
-    await waitFor(() =>
-      expect(
-        screen.getByText('Les dernières offres vitrines créées')
-      ).toBeInTheDocument()
+    const inputOffer = await waitFor(() =>
+      screen.getByRole('button', { name: offers[0].name })
     )
-
-    const inputOffer = await waitFor(() => screen.getAllByRole('radio')[0])
     await userEvent.click(inputOffer)
-
-    const buttonNextStep = screen.getByText('Étape suivante')
-    await userEvent.click(buttonNextStep)
 
     expect(createFromTemplateUtils.createOfferFromTemplate).toHaveBeenCalled()
   })
