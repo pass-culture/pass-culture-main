@@ -5,6 +5,7 @@
 .search-container {
   position: relative;
   margin: rem.torem(16px) 0;
+  max-width: rem.torem(565px);
 }
 
 .search-input-container {
@@ -41,4 +42,16 @@
 
 .visually-hidden {
   @include a11y.visually-hidden;
+}
+
+.legend {
+    @include fonts.body-accent;
+
+  margin-bottom: rem.torem(8px);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: rem.torem(8px);
 }

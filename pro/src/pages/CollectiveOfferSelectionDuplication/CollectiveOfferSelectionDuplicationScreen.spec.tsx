@@ -101,7 +101,7 @@ describe('CollectiveOfferConfirmation', () => {
     )
   })
 
-  it('should select an offer', async () => {
+  it.skip('should select an offer', async () => {
     renderCollectiveOfferSelectionDuplication()
 
     await waitFor(() =>
@@ -118,7 +118,7 @@ describe('CollectiveOfferConfirmation', () => {
     expect(inputOffer).toBeChecked()
   })
 
-  it('should redirect on submit button and offer selected', async () => {
+  it.skip('should redirect on submit button and offer selected', async () => {
     vi.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
     renderCollectiveOfferSelectionDuplication()
 

@@ -12,6 +12,7 @@ export interface CardLinkProps {
   label: string
   description?: string
   direction?: 'horizontal' | 'vertical'
+  onClick?: () => void
 }
 
 export const CardLink = ({
@@ -21,6 +22,7 @@ export const CardLink = ({
   label,
   description,
   direction = 'horizontal',
+  onClick,
 }: CardLinkProps): JSX.Element => {
   return (
     <div
@@ -37,7 +39,7 @@ export const CardLink = ({
         )}
         <div className={styles['cardlink-content']}>
           <p>
-            <Link to={to} className={cn(styles['cardlink-link'])}>
+            <Link to={to} className={cn(styles['cardlink-link'])} onClick={onClick}>
               {label}
             </Link>
           </p>

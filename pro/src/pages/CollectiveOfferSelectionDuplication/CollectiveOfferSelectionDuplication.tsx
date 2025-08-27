@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
@@ -21,14 +21,15 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { pluralize } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
-import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import strokeSearchIcon from '@/icons/stroke-search.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
+import { CardLink } from '../Onboarding/OnboardingOfferIndividual/CardLink/CardLink'
 import styles from './CollectiveOfferSelectionDuplication.module.scss'
 import { SkeletonLoader } from './CollectiveOfferSelectionLoaderSkeleton'
 
@@ -102,6 +103,8 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
     )
   )
 
+  const [isLoadingNewOffer, setIsLoadingNewOffer] = useState(false)
+
   const templateOfferForm = useForm<SelectionFormValues>()
 
   useEffect(() => {
@@ -113,6 +116,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const { handleSubmit: handleSubmitSelection } = templateOfferForm
 
   const handleOnSubmit = async () => {
+    setIsLoadingNewOffer(true)
     const templateOfferId = templateOfferForm.watch('templateOfferId')
 
     await createOfferFromTemplate(
@@ -123,131 +127,125 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
       undefined,
       isMarseilleActive
     )
+    setIsLoadingNewOffer(false)
   }
 
   return (
     <Layout layout={'sticky-actions'} mainHeading="Créer une offre réservable">
       <div className="container">
-        <div className={styles['search-container']}>
-          <form
-            className={styles['search-input-container']}
-            aria-labelledby="search-filter"
-            onSubmit={handleSubmitSearch(({ searchFilter }) => {
-              searchFilterForm.setValue('searchFilter', searchFilter)
-              templateOfferForm.setValue(
-                'templateOfferId',
-                String(offers?.[0]?.id)
-              )
+        {isLoadingNewOffer ? (
+          <Spinner message="Création de la nouvelle offre réservable en cours" />
+        ) : (
+          <div className={styles['search-container']}>
+            <form
+              className={styles['search-input-container']}
+              aria-labelledby="search-filter"
+              onSubmit={handleSubmitSearch(({ searchFilter }) => {
+                searchFilterForm.setValue('searchFilter', searchFilter)
+                templateOfferForm.setValue(
+                  'templateOfferId',
+                  String(offers?.[0]?.id)
+                )
 
-              if (error) {
-                return notify.error(GET_DATA_ERROR_MESSAGE)
-              }
-            })}
-          >
-            <TextInput
-              label="Rechercher l’offre vitrine à dupliquer"
-              {...registerSearch('searchFilter')}
-              name="searchFilter"
-              type="search"
-              autoComplete="off"
-              onChange={(e) => {
-                if (e.target.value === '') {
-                  searchFilterForm.setValue('searchFilter', e.target.value)
+                if (error) {
+                  return notify.error(GET_DATA_ERROR_MESSAGE)
                 }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  searchFilterForm.setValue(
-                    'searchFilter',
-                    (e.target as HTMLInputElement).value
-                  )
+              })}
+            >
+              <TextInput
+                label="Rechercher l’offre vitrine à dupliquer"
+                {...registerSearch('searchFilter')}
+                name="searchFilter"
+                type="search"
+                autoComplete="off"
+                onChange={(e) => {
+                  if (e.target.value === '') {
+                    searchFilterForm.setValue('searchFilter', e.target.value)
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    searchFilterForm.setValue(
+                      'searchFilter',
+                      (e.target as HTMLInputElement).value
+                    )
+                  }
+                }}
+                className={styles['search-input']}
+                InputExtension={
+                  <Button
+                    type="submit"
+                    className={styles['search-button']}
+                    disabled={isLoading}
+                  >
+                    Rechercher
+                  </Button>
                 }
-              }}
-              className={styles['search-input']}
-              InputExtension={
-                <Button
-                  type="submit"
-                  className={styles['search-button']}
-                  disabled={isLoading}
-                >
-                  Rechercher
-                </Button>
-              }
-            />
-          </form>
+              />
+            </form>
 
-          {isLoading ? (
-            <SkeletonLoader />
-          ) : (
-            <>
-              <p className={styles['visually-hidden']} role="status">
-                {offers && pluralize(offers.length, 'offre vitrine trouvée')}
-              </p>
-              <form onSubmit={handleSubmitSelection(handleOnSubmit)}>
-                <RadioButtonGroup
-                  name="templateOfferId"
-                  variant="detailed"
-                  label={
-                    searchFilterForm.watch('searchFilter').length < 1
+            {isLoading ? (
+              <SkeletonLoader />
+            ) : (
+              <>
+                <p className={styles['visually-hidden']} role="status">
+                  {offers && pluralize(offers.length, 'offre vitrine trouvée')}
+                </p>
+                <form onSubmit={handleSubmitSelection(handleOnSubmit)}>
+                  <p className={styles['legend']}>
+                    {searchFilterForm.watch('searchFilter').length < 1
                       ? 'Les dernières offres vitrines créées'
                       : `${offers && pluralize(offers.length, 'offre')}` +
-                        ' vitrine'
-                  }
-                  options={
-                    offers
-                      ? offers.slice(0, 5).map((offer) => ({
-                          value: offer.id.toString(),
-                          label: offer.name,
-                          description: offer.venue.name,
-                          variant: 'detailed',
-                          image: offer.imageUrl as string,
-                          imageSize: 'm',
+                        ' vitrine'}
+                  </p>
+                  <ul className={styles['list']}>
+                    {(offers || []).slice(0, 5).map((offer) => (
+                      <li key={offer.id}>
+                        <CardLink
+                          label={offer.name}
+                          description={offer.venue.name}
+                          to=""
+                          onClick={() => {
+                            templateOfferForm.setValue(
+                              'templateOfferId',
+                              offer.id.toString()
+                            )
+                            handleOnSubmit()
+                          }}
+                        />
+                      </li>
+                    ))}
+                  </ul>
 
-                          sizing: 'fill',
-                        }))
-                      : []
-                  }
-                  checkedOption={templateOfferForm.watch('templateOfferId')}
-                  onChange={(e) => {
-                    templateOfferForm.setValue(
-                      'templateOfferId',
-                      e.target.value
-                    )
-                  }}
-                />
-                {offers && offers.length < 1 && (
-                  <div className={styles['search-no-results']}>
-                    <SvgIcon
-                      src={strokeSearchIcon}
-                      alt="Illustration de recherche"
-                      className={styles['search-no-results-icon']}
-                      width="124"
-                    />
-                    <p className={styles['search-no-results-text']}>
-                      Aucune offre trouvée pour votre recherche
-                    </p>
-                  </div>
-                )}
+                  {offers && offers.length < 1 && (
+                    <div className={styles['search-no-results']}>
+                      <SvgIcon
+                        src={strokeSearchIcon}
+                        alt="Illustration de recherche"
+                        className={styles['search-no-results-icon']}
+                        width="124"
+                      />
+                      <p className={styles['search-no-results-text']}>
+                        Aucune offre trouvée pour votre recherche
+                      </p>
+                    </div>
+                  )}
 
-                <ActionsBarSticky>
-                  <ActionsBarSticky.Left>
-                    <ButtonLink
-                      variant={ButtonVariant.SECONDARY}
-                      to={computeCollectiveOffersUrl({})}
-                    >
-                      Annuler et quitter
-                    </ButtonLink>
-                  </ActionsBarSticky.Left>
-                  <ActionsBarSticky.Right>
-                    <Button type="submit" disabled={false}>
-                      Étape suivante
-                    </Button>
-                  </ActionsBarSticky.Right>
-                </ActionsBarSticky>
-              </form>
-            </>
-          )}
-        </div>
+                  <ActionsBarSticky>
+                    <ActionsBarSticky.Left>
+                      <ButtonLink
+                        variant={ButtonVariant.SECONDARY}
+                        to={computeCollectiveOffersUrl({})}
+                      >
+                        Retour à la liste des offres
+                      </ButtonLink>
+                    </ActionsBarSticky.Left>
+                  </ActionsBarSticky>
+                </form>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </Layout>
   )
