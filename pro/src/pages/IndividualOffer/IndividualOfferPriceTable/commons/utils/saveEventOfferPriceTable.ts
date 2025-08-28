@@ -16,7 +16,6 @@ export const saveEventOfferPriceTable = async (
 ) => {
   try {
     await api.patchOffer(offer.id, { isDuo: formValues.isDuo })
-
     await api.postPriceCategories(offer.id, toPriceCategoryBody(formValues))
   } catch (error) {
     return handleError(error, FAILED_PATCH_OFFER_USER_MESSAGE)

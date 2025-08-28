@@ -77,6 +77,7 @@ export const IndividualOfferPriceTableScreen = ({
   const form = useForm({
     context: schemaValidationContext,
     defaultValues: toFormValues(
+      offer,
       offer.isEvent ? (offer.priceCategories ?? []) : offerStocks,
       schemaValidationContext
     ),
