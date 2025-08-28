@@ -11,6 +11,7 @@ import {
   type CollectiveOfferResponseModel,
   type CollectiveOffersStockResponseModel,
   CollectiveOfferType,
+  type GetOffererAddressResponseModel,
 } from '@/apiClient/v1'
 import {
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
@@ -21,8 +22,9 @@ import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeC
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
-  venueListItemFactory,
+  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
+import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
@@ -32,17 +34,26 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { TemplateCollectiveOffers } from '../TemplateCollectiveOffers'
 
 const proVenues = [
-  venueListItemFactory({
+  makeVenueListItem({
     id: 1,
     name: 'Ma venue',
     offererName: 'Mon offerer',
     isVirtual: false,
   }),
-  venueListItemFactory({
+  makeVenueListItem({
     id: 2,
     name: 'Ma venue virtuelle',
     offererName: 'Mon offerer',
     isVirtual: true,
+  }),
+]
+
+const offererAddress: GetOffererAddressResponseModel[] = [
+  offererAddressFactory({
+    label: 'Label',
+  }),
+  offererAddressFactory({
+    city: 'New York',
   }),
 ]
 
@@ -88,6 +99,7 @@ describe('TemplateCollectiveOffers', () => {
       ...defaultGetOffererResponseModel,
       name: 'Mon offerer',
     })
+    vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
   })
 
   afterEach(() => {
@@ -125,13 +137,15 @@ describe('TemplateCollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
             2,
             undefined,
-            '1',
+            undefined,
             [CollectiveOfferDisplayedStatus.REJECTED],
             undefined,
             undefined,
             undefined,
             undefined,
             CollectiveOfferType.TEMPLATE,
+            undefined,
+            undefined,
             undefined
           )
         })
@@ -161,13 +175,15 @@ describe('TemplateCollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'Any word',
-            '1',
+            undefined,
             undefined,
             undefined,
             undefined,
             undefined,
             undefined,
             CollectiveOfferType.TEMPLATE,
+            undefined,
+            undefined,
             undefined
           )
         })
@@ -185,13 +201,15 @@ describe('TemplateCollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
-            '1',
+            undefined,
             undefined,
             undefined,
             undefined,
             '2020-12-25',
             undefined,
             CollectiveOfferType.TEMPLATE,
+            undefined,
+            undefined,
             undefined
           )
         })
@@ -208,13 +226,15 @@ describe('TemplateCollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
-            '1',
+            undefined,
             undefined,
             undefined,
             undefined,
             undefined,
             '2020-12-27',
             CollectiveOfferType.TEMPLATE,
+            undefined,
+            undefined,
             undefined
           )
         })
