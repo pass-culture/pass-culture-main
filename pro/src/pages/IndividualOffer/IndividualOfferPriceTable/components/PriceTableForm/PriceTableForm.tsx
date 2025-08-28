@@ -28,7 +28,7 @@ import type { PriceTableFormContext } from '../../commons/types'
 import { getFieldsSpecs } from '../../commons/utils/getFieldsSpecs'
 import styles from './PriceTableForm.module.scss'
 
-interface PriceTableFormProps {
+export interface PriceTableFormProps {
   isCaledonian: boolean
   isReadOnly?: boolean
   mode: OFFER_WIZARD_MODE
@@ -143,25 +143,25 @@ export const PriceTableForm = ({
 
   return (
     <>
-      {entryIndexToConfirmAndRemove !== null && (
-        <DialogStockThingDeleteConfirm
-          onConfirm={() => removeEntry(entryIndexToConfirmAndRemove)}
-          onCancel={() => setEntryIndexToConfirmAndRemove(null)}
-          isDialogOpen
-        />
-      )}
+      <DialogStockThingDeleteConfirm
+        onConfirm={() =>
+          entryIndexToConfirmAndRemove
+            ? removeEntry(entryIndexToConfirmAndRemove)
+            : null
+        }
+        onCancel={() => setEntryIndexToConfirmAndRemove(null)}
+        isDialogOpen={entryIndexToConfirmAndRemove !== null}
+      />
 
-      {activationCodeEntryIndexToUpload !== null && (
-        <ActivationCodeFormDialog
-          onSubmit={uploadActivationCodes}
-          onCancel={() => setActivationCodeEntryIndexToUpload(null)}
-          today={nowAsDate}
-          minExpirationDate={minExpirationDate}
-          isDialogOpen
-          activationCodeButtonRef={activationCodeButtonRef}
-          departmentCode={getDepartmentCode(offer)}
-        />
-      )}
+      <ActivationCodeFormDialog
+        onSubmit={uploadActivationCodes}
+        onCancel={() => setActivationCodeEntryIndexToUpload(null)}
+        today={nowAsDate}
+        minExpirationDate={minExpirationDate}
+        isDialogOpen={activationCodeEntryIndexToUpload !== null}
+        activationCodeButtonRef={activationCodeButtonRef}
+        departmentCode={getDepartmentCode(offer)}
+      />
 
       {fields.map((field, index) => (
         <div key={field.id} className={styles['row']}>
@@ -177,14 +177,13 @@ export const PriceTableForm = ({
 
           <PriceInput
             {...register(`entries.${index}.price`)}
-            data-testid={`price-row-${index}-price`}
             disabled={isReadOnly}
             error={errors.entries?.[index]?.price?.message}
             label="Prix"
             rightIcon={isCaledonian ? strokeFrancIcon : strokeEuroIcon}
             showFreeCheckbox
             updatePriceValue={(value) =>
-              void setValue(`entries.${index}.price`, Number(value), {
+              setValue(`entries.${index}.price`, Number(value), {
                 shouldDirty: true,
               })
             }
@@ -198,7 +197,7 @@ export const PriceTableForm = ({
               label="Stock"
               minimum={minQuantity}
               onChange={(e) =>
-                void setValue(
+                setValue(
                   `entries.${index}.quantity`,
                   toNumberOrNull(e.target.value),
                   {
@@ -214,12 +213,19 @@ export const PriceTableForm = ({
           {!offer.isEvent && offer.isDigital && (
             <ListIconButton
               className={styles['button-action']}
-              dataTestid="action-addActivationCode"
               icon={fullCodeIcon}
               onClick={() => setActivationCodeEntryIndexToUpload(index)}
               readOnly={isReadOnly}
               ref={activationCodeButtonRef}
               tooltipContent="Ajouter des codes d'activation"
+            />
+          )}
+          {fields.length > 1 && (
+            <ListIconButton
+              className={styles['button-action']}
+              icon={fullTrashIcon}
+              onClick={() => askForRemovalConfirmationOrRemove(index)}
+              tooltipContent="Supprimer ce tarif"
             />
           )}
 
@@ -255,15 +261,6 @@ export const PriceTableForm = ({
                 />
               </>
             )}
-
-          {fields.length > 1 && (
-            <ListIconButton
-              className={styles['button-action']}
-              icon={fullTrashIcon}
-              onClick={() => askForRemovalConfirmationOrRemove(index)}
-              tooltipContent="Supprimer ce tarif"
-            />
-          )}
         </div>
       ))}
 
