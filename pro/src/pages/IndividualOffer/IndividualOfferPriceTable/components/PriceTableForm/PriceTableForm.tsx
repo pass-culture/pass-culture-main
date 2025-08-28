@@ -168,15 +168,15 @@ export const PriceTableForm = ({
           {offer.isEvent && (
             <TextInput
               {...register(`entries.${index}.label`)}
-              className={styles['field-layout-xsmall']}
+              className={styles['input-label']}
               disabled={fields.length <= 1 || isReadOnly}
+              error={errors.entries?.[index]?.label?.message}
               label="Intitulé du tarif"
             />
           )}
 
           <PriceInput
             {...register(`entries.${index}.price`)}
-            className={styles['field-layout-xsmall']}
             data-testid={`price-row-${index}-price`}
             disabled={isReadOnly}
             error={errors.entries?.[index]?.price?.message}

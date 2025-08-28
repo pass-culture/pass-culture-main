@@ -7,6 +7,10 @@
   flex-direction: column;
   margin-top: rem.torem(16px);
 
+  > .input-label {
+    width: rem.torem(264px);
+  }
+
   > .input-readonly {
     &--first {
       margin-left: rem.torem(32px);
