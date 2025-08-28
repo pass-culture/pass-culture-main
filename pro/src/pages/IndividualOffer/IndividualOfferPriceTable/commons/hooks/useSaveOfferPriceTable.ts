@@ -65,6 +65,7 @@ export const useSaveOfferPriceTable = ({
           setError: form.setError,
         })
       }
+      await mutate([GET_OFFER_QUERY_KEY, offer.id])
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error.message)
