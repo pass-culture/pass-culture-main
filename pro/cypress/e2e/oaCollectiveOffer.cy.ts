@@ -151,7 +151,12 @@ describe('Create collective offers with OA', () => {
     logInAndGoToPage(login, '/offre/creation')
     cy.findByText('À un groupe scolaire').click()
     fillBasicOfferForm()
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
     fillOfferDetails()
+    cy.findByRole('heading', {
+      name: 'Indiquez le prix et la date de votre offre',
+    })
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     // label of image is not seen
     cy.checkA11y(
