@@ -1,0 +1,11 @@
+{
+	"baseUrl": "http://localhost:3001",
+	"public": [ "/", "/connexion", "/inscription", "/inscription/compte/creation", "/inscription/compte/confirmation", "/inscription/confirmation", "/email_validation", "/demande-mot-de-passe", "/demande-mot-de-passe/EXEMPLE_TOKEN", "/accessibilite", "/accessibilite/engagements", "/accessibilite/declaration", "/accessibilite/schema-pluriannuel", "/404" ],
+	"auth": [ "/accueil", "/guichet", "/reservations", "/reservations/collectives", "/offres", "/offres/collectives", "/offres/vitrines", "/offre/creation", "/profil", "/collaborateurs", "/remboursements", "/remboursements/informations-bancaires", "/remboursements/revenus", "/plan-du-site", "/inscription/structure" ],
+	"crawlFrom": [ "/offres", "/offres/collectives", "/reservations", "/reservations/collectives", "/offres/vitrines", "/guichet" ],
+	"excludePathStartsWith": [ "/adage-iframe" ],
+	"maxCrawlLinksPerPage": 50,
+	"readySelector": "main",
+	"loaderSelector": "[data-testid='spinner']",
+	"extraWaitMs": 800
+}

@@ -7,6 +7,7 @@ export default defineConfig({
   e2e: {
     setupNodeEvents(on, config) {
       cypressFailFast(on, config)
+
       on(
         'after:spec',
         (spec: Cypress.Spec, results: CypressCommandLine.RunResult) => {
@@ -22,9 +23,17 @@ export default defineConfig({
           }
         }
       )
-      // allureCypress(on, config, {
-      //   resultsDir: '../../allure-results',
-      // })
+
+      // ✅ Task utilisée par la spec (cy.task('log', ...))
+      on('task', {
+        log(message: unknown) {
+          // s'affiche dans la console du runner
+          // retourner une valeur "truthy" pour signaler le succès
+          console.log(message)
+          return null
+        },
+      })
+
       // Make sure to return the config object as it might have been modified by the plugin.
       return config
     },

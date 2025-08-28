@@ -1,0 +1,1454 @@
+[
+  {
+    "url": "http://localhost:3001/",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Connectez-vous - pass Culture Pro",
+    "h1": [
+      "Connectez-vous"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2352,
+    "flags": [
+      "REDIRECT",
+      "TITLE_DUPLICATE"
+    ],
+    "links": [
+      "http://localhost:3001/connexion#",
+      "http://localhost:3001/connexion#content",
+      "http://localhost:3001/connexion",
+      "http://localhost:3001/demande-mot-de-passe",
+      "http://localhost:3001/inscription/compte/creation",
+      "http://localhost:3001/accessibilite"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/connexion",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Connectez-vous - pass Culture Pro",
+    "h1": [
+      "Connectez-vous"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2241,
+    "flags": [
+      "REDIRECT",
+      "TITLE_DUPLICATE"
+    ],
+    "links": [
+      "http://localhost:3001/connexion#",
+      "http://localhost:3001/connexion#content",
+      "http://localhost:3001/connexion",
+      "http://localhost:3001/demande-mot-de-passe",
+      "http://localhost:3001/inscription/compte/creation",
+      "http://localhost:3001/accessibilite"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/inscription",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Créer un compte - pass Culture Pro",
+    "h1": [
+      "Créez votre compte"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2424,
+    "flags": [
+      "REDIRECT",
+      "TITLE_DUPLICATE"
+    ],
+    "links": [
+      "http://localhost:3001/inscription/compte/creation#",
+      "http://localhost:3001/inscription/compte/creation#content",
+      "http://localhost:3001/connexion",
+      "http://localhost:3001/connexion",
+      "http://localhost:3001/accessibilite"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/inscription/compte/creation",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Créer un compte - pass Culture Pro",
+    "h1": [
+      "Créez votre compte"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2351,
+    "flags": [
+      "REDIRECT",
+      "TITLE_DUPLICATE"
+    ],
+    "links": [
+      "http://localhost:3001/inscription/compte/creation#",
+      "http://localhost:3001/inscription/compte/creation#content",
+      "http://localhost:3001/connexion",
+      "http://localhost:3001/connexion",
+      "http://localhost:3001/accessibilite"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/inscription/compte/confirmation",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Validez votre adresse email - pass Culture Pro",
+    "h1": [
+      "Validez votre adresse email"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2603,
+    "flags": [
+      "REDIRECT",
+      "TITLE_DUPLICATE"
+    ],
+    "links": [
+      "http://localhost:3001/inscription/compte/confirmation#",
+      "http://localhost:3001/inscription/compte/confirmation#content",
+      "http://localhost:3001/connexion",
+      "http://localhost:3001/accessibilite"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/inscription/confirmation",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Validez votre adresse email - pass Culture Pro",
+    "h1": [
+      "Validez votre adresse email"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2258,
+    "flags": [
+      "REDIRECT",
+      "TITLE_DUPLICATE"
+    ],
+    "links": [
+      "http://localhost:3001/inscription/compte/confirmation#",
+      "http://localhost:3001/inscription/compte/confirmation#content",
+      "http://localhost:3001/connexion",
+      "http://localhost:3001/accessibilite"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/email_validation",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Valider l’adresse email - pass Culture Pro",
+    "h1": [
+      "Votre lien a expiré !"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2314,
+    "flags": [
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/email_validation#",
+      "http://localhost:3001/email_validation#content",
+      "http://localhost:3001/",
+      "http://localhost:3001/accessibilite"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/demande-mot-de-passe",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Réinitialisez votre mot de passe - pass Culture Pro",
+    "h1": [
+      "Réinitialisez votre mot de passe"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2467,
+    "flags": [
+      "REDIRECT",
+      "TITLE_DUPLICATE"
+    ],
+    "links": [
+      "http://localhost:3001/demande-mot-de-passe#",
+      "http://localhost:3001/demande-mot-de-passe#content",
+      "http://localhost:3001/connexion",
+      "http://localhost:3001/connexion",
+      "http://localhost:3001/accessibilite"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/demande-mot-de-passe/EXEMPLE_TOKEN",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Réinitialisez votre mot de passe - pass Culture Pro",
+    "h1": [
+      "Réinitialisez votre mot de passe"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2291,
+    "flags": [
+      "REDIRECT",
+      "TITLE_DUPLICATE"
+    ],
+    "links": [
+      "http://localhost:3001/demande-mot-de-passe#",
+      "http://localhost:3001/demande-mot-de-passe#content",
+      "http://localhost:3001/connexion",
+      "http://localhost:3001/connexion",
+      "http://localhost:3001/accessibilite"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/accessibilite",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Informations d’accessibilité - pass Culture Pro",
+    "h1": [
+      "Informations d’accessibilité"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2404,
+    "flags": [
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/accessibilite#",
+      "http://localhost:3001/accessibilite#content",
+      "http://localhost:3001/accessibilite/engagements",
+      "http://localhost:3001/accessibilite/declaration",
+      "http://localhost:3001/accessibilite/schema-pluriannuel",
+      "http://localhost:3001/connexion",
+      "http://localhost:3001/accessibilite"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/accessibilite/engagements",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Les engagements du pass Culture - pass Culture Pro",
+    "h1": [
+      "Les engagements du pass Culture pour l’accessibilité numérique"
+    ],
+    "h2": [
+      "L’inclusion au coeur de la stratégie technique",
+      "Collaboration et sensibilisation"
+    ],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2515,
+    "flags": [
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/accessibilite/engagements#",
+      "http://localhost:3001/accessibilite/engagements#content",
+      "http://localhost:3001/accessibilite/",
+      "http://localhost:3001/accessibilite/schema-pluriannuel",
+      "http://localhost:3001/accessibilite"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/accessibilite/declaration",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Déclaration d'accessibilité - pass Culture Pro",
+    "h1": [
+      "Déclaration d’accessibilité"
+    ],
+    "h2": [
+      "État de conformité",
+      "Contenus non accessibles",
+      "Établissement de cette déclaration d’accessibilité",
+      "Retour d’information et contact",
+      "Voies de recours"
+    ],
+    "h3": [
+      "Résultat des tests",
+      "Non conformité",
+      "Dérogations pour charge disproportionnée",
+      "Contenus non soumis à l’obligation d’accessibilité",
+      "Technologies utilisées pour la réalisation du site",
+      "Environnement de test",
+      "Les outils utilisés lors de l’évaluation",
+      "Pages du site ayant fait l’objet de la vérification de conformité"
+    ],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2279,
+    "flags": [
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/accessibilite/declaration#",
+      "http://localhost:3001/accessibilite/declaration#content",
+      "http://localhost:3001/accessibilite/",
+      "http://localhost:3001/accessibilite/schema-pluriannuel",
+      "http://localhost:3001/accessibilite/schema-pluriannuel",
+      "http://localhost:3001/accessibilite"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/accessibilite/schema-pluriannuel",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Schéma pluriannuel - pass Culture Pro",
+    "h1": [
+      "Schéma pluriannuel d’accessibilité 2024 - 2025"
+    ],
+    "h2": [
+      "INTRODUCTION",
+      "DÉFINITION DE L’ACCESSIBILITÉ NUMÉRIQUE",
+      "POLITIQUE D’ACCESSIBILITÉ",
+      "RESSOURCES HUMAINES ET FINANCIÈRES AFFECTÉES À L’ACCESSIBILITÉ NUMÉRIQUE",
+      "ORGANISATION DE LA PRISE EN COMPTE DE L’ACCESSIBILITÉ NUMÉRIQUE",
+      "PÉRIMÈTRE TECHNIQUE ET FONCTIONNEL",
+      "ANNEXE 1 : PÉRIMÈTRE TECHNIQUE ET FONCTIONNEL"
+    ],
+    "h3": [
+      "Plan annuel 2024",
+      "Plan annuel 2025"
+    ],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2365,
+    "flags": [
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/accessibilite/schema-pluriannuel#",
+      "http://localhost:3001/accessibilite/schema-pluriannuel#content",
+      "http://localhost:3001/accessibilite/",
+      "http://localhost:3001/accessibilite"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/404",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Connectez-vous - pass Culture Pro",
+    "h1": [
+      "Connectez-vous"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2385,
+    "flags": [
+      "REDIRECT",
+      "TITLE_DUPLICATE"
+    ],
+    "links": [
+      "http://localhost:3001/connexion?de=%2F404#",
+      "http://localhost:3001/connexion?de=%2F404#content",
+      "http://localhost:3001/connexion",
+      "http://localhost:3001/demande-mot-de-passe",
+      "http://localhost:3001/inscription/compte/creation",
+      "http://localhost:3001/accessibilite"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/accueil",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Espace acteurs culturels - pass Culture Pro",
+    "h1": [
+      "Respect de votre vie privée",
+      "Bienvenue sur votre espace partenaire"
+    ],
+    "h2": [
+      "Présence sur l’application pass Culture"
+    ],
+    "h3": [
+      "Vos offres publiées",
+      "Votre page partenaire",
+      "Terrain vague",
+      "Offres numériques"
+    ],
+    "h4": [
+      "Grand public",
+      "Enseignants"
+    ],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 9095,
+    "flags": [
+      "MULTIPLE_H1",
+      "REDIRECT",
+      "SLOW_RENDER"
+    ],
+    "links": [
+      "http://localhost:3001/accueil#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/accueil#lateral-panel",
+      "http://localhost:3001/remboursements/informations-bancaires?structure=882",
+      "http://localhost:3001/offres?structure=882&status=active",
+      "http://localhost:3001/offres/collectives?structure=882&status=active",
+      "http://localhost:3001/structures/882/lieux/891/parametres",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/structures/882/lieux/892",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/guichet",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Guichet - pass Culture Pro",
+    "h1": [
+      "Respect de votre vie privée",
+      "Guichet"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2365,
+    "flags": [
+      "MULTIPLE_H1",
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/guichet#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/guichet#lateral-panel",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/reservations",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Réservations individuelles - pass Culture Pro",
+    "h1": [
+      "Respect de votre vie privée",
+      "Réservations individuelles"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2348,
+    "flags": [
+      "MULTIPLE_H1",
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/reservations#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/reservations#lateral-panel",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/reservations/collectives",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Réservations collectives - pass Culture Pro",
+    "h1": [
+      "Respect de votre vie privée",
+      "Réservations collectives"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2488,
+    "flags": [
+      "MULTIPLE_H1",
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/reservations/collectives#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/reservations/collectives#lateral-panel",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/offres",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Offres individuelles - pass Culture Pro",
+    "h1": [
+      "Offres individuelles"
+    ],
+    "h2": [
+      "Liste des offres"
+    ],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2336,
+    "flags": [
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/offres#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/offres#lateral-panel",
+      "http://localhost:3001/offre/individuelle/1799/creation/details",
+      "http://localhost:3001/offre/individuelle/1798/creation/details",
+      "http://localhost:3001/offre/individuelle/1781/recapitulatif/details",
+      "http://localhost:3001/offre/individuelle/1780/recapitulatif/details",
+      "http://localhost:3001/offre/individuelle/1779/recapitulatif/details",
+      "http://localhost:3001/offre/individuelle/1778/recapitulatif/details",
+      "http://localhost:3001/offre/individuelle/1777/recapitulatif/details",
+      "http://localhost:3001/offre/individuelle/1734/recapitulatif/details",
+      "http://localhost:3001/offre/individuelle/1733/recapitulatif/details",
+      "http://localhost:3001/offre/individuelle/1732/recapitulatif/details",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/offres/collectives",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Offres collectives - pass Culture Pro",
+    "h1": [
+      "Offres collectives"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2800,
+    "flags": [
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/offres/collectives#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/offres/collectives#lateral-panel",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/offres/vitrines",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Offres vitrines - pass Culture Pro",
+    "h1": [
+      "Offres vitrines"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2708,
+    "flags": [
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/offres/vitrines#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/offres/vitrines#lateral-panel",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/offre/creation",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Choix de la nature de l’offre - Créer une offre - pass Culture Pro",
+    "h1": [
+      "Créer une offre"
+    ],
+    "h2": [
+      "À qui destinez-vous cette offre ?",
+      "Votre offre est"
+    ],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2515,
+    "flags": [
+      "TITLE_TOO_LONG",
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/offre/creation#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/offre/creation#lateral-panel",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/profil",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Profil - pass Culture Pro",
+    "h1": [
+      "Profil"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2959,
+    "flags": [
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/profil#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/profil#lateral-panel",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/collaborateurs",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Collaborateurs - pass Culture Pro",
+    "h1": [
+      "Collaborateurs"
+    ],
+    "h2": [
+      "Liste des collaborateurs"
+    ],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2591,
+    "flags": [
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/collaborateurs#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/collaborateurs#lateral-panel",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/remboursements",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Gestion financière - pass Culture Pro",
+    "h1": [
+      "Gestion financière"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2644,
+    "flags": [
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/remboursements?reimbursementPoint=all&periodStart=2025-07-27&periodEnd=2025-08-27#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/remboursements?reimbursementPoint=all&periodStart=2025-07-27&periodEnd=2025-08-27#lateral-panel",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/remboursements/informations-bancaires",
+      "http://localhost:3001/remboursements/revenus",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/remboursements/informations-bancaires",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Informations bancaires - pass Culture Pro",
+    "h1": [
+      "Gestion financière"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2607,
+    "flags": [
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/remboursements/informations-bancaires#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/remboursements/informations-bancaires#lateral-panel",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/remboursements/informations-bancaires",
+      "http://localhost:3001/remboursements/revenus",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/remboursements/revenus",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Chiffre d’affaires - pass Culture Pro",
+    "h1": [
+      "Gestion financière"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2453,
+    "flags": [
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/remboursements/revenus#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/remboursements/revenus#lateral-panel",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/remboursements/informations-bancaires",
+      "http://localhost:3001/remboursements/revenus",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/plan-du-site",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Plan du site - pass Culture Pro",
+    "h1": [
+      "Plan du site"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2613,
+    "flags": [
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/plan-du-site#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/plan-du-site#lateral-panel",
+      "http://localhost:3001/offre/creation?structure=882",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/remboursements/informations-bancaires",
+      "http://localhost:3001/remboursements/revenus",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/profil",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/inscription/structure",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Parcours de souscription - pass Culture Pro",
+    "h1": [],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2741,
+    "flags": [
+      "NO_H1",
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/inscription/structure#",
+      "http://localhost:3001/inscription/structure#content",
+      "http://localhost:3001/accueil"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/offre/individuelle/1779/recapitulatif/details",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Détails de l’offre - Consulter une offre individuelle - pass Culture Pro",
+    "h1": [
+      "Récapitulatif"
+    ],
+    "h2": [
+      "Détails de l’offre",
+      "Aperçu dans l’app"
+    ],
+    "h3": [
+      "A propos de votre offre",
+      "Type d’offre"
+    ],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2782,
+    "flags": [
+      "TITLE_TOO_LONG",
+      "REDIRECT",
+      "TITLE_DUPLICATE"
+    ],
+    "links": [
+      "http://localhost:3001/offre/individuelle/1779/recapitulatif/details#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/offre/individuelle/1779/recapitulatif/details#lateral-panel",
+      "http://localhost:3001/offre/individuelle/1779/recapitulatif/details",
+      "http://localhost:3001/offre/individuelle/1779/pratiques",
+      "http://localhost:3001/offre/individuelle/1779/stocks",
+      "http://localhost:3001/offre/individuelle/1779/reservations",
+      "http://localhost:3001/offre/individuelle/1779/edition/details",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/offre/individuelle/1779/recapitulatif/details",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Détails de l’offre - Consulter une offre individuelle - pass Culture Pro",
+    "h1": [
+      "Récapitulatif"
+    ],
+    "h2": [
+      "Détails de l’offre",
+      "Aperçu dans l’app"
+    ],
+    "h3": [
+      "A propos de votre offre",
+      "Type d’offre"
+    ],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2667,
+    "flags": [
+      "TITLE_TOO_LONG",
+      "REDIRECT",
+      "TITLE_DUPLICATE"
+    ],
+    "links": [
+      "http://localhost:3001/offre/individuelle/1779/recapitulatif/details#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/offre/individuelle/1779/recapitulatif/details#lateral-panel",
+      "http://localhost:3001/offre/individuelle/1779/recapitulatif/details",
+      "http://localhost:3001/offre/individuelle/1779/pratiques",
+      "http://localhost:3001/offre/individuelle/1779/stocks",
+      "http://localhost:3001/offre/individuelle/1779/reservations",
+      "http://localhost:3001/offre/individuelle/1779/edition/details",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Gérer ma page sur l’application - pass Culture Pro",
+    "h1": [
+      "Page sur l’application"
+    ],
+    "h2": [
+      "Terrain vague",
+      "Vos informations pour le grand public"
+    ],
+    "h3": [
+      "À propos de votre activité",
+      "Accueil du public",
+      "Informations de contact"
+    ],
+    "h4": [
+      "Adresse et horaires",
+      "Modalités d’accessibilité via acceslibre"
+    ],
+    "h5": [
+      "Handicap moteur",
+      "Handicap cognitif",
+      "Handicap auditif",
+      "Handicap visuel"
+    ],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2720,
+    "flags": [
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire#lateral-panel",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire/parametres",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire/edition",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/structures/882/lieux/891/collectif",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Gérer ma page sur ADAGE - pass Culture Pro",
+    "h1": [
+      "Page dans ADAGE"
+    ],
+    "h2": [
+      "Terrain vague"
+    ],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2531,
+    "flags": [
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/structures/882/lieux/891/collectif#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/structures/882/lieux/891/collectif#lateral-panel",
+      "http://localhost:3001/structures/882/lieux/891/collectif/parametres",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/offre/individuelle/1779/pratiques",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Informations pratiques - Consulter une offre individuelle - pass Culture Pro",
+    "h1": [
+      "Récapitulatif"
+    ],
+    "h2": [
+      "Informations pratiques"
+    ],
+    "h3": [
+      "Localisation de l’offre",
+      "Retrait de l’offre",
+      "Modalités d’accessibilité",
+      "Lien de réservation externe en l’absence de crédit",
+      "Notification des réservations"
+    ],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2613,
+    "flags": [
+      "TITLE_TOO_LONG",
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/offre/individuelle/1779/pratiques#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/offre/individuelle/1779/pratiques#lateral-panel",
+      "http://localhost:3001/offre/individuelle/1779/recapitulatif/details",
+      "http://localhost:3001/offre/individuelle/1779/pratiques",
+      "http://localhost:3001/offre/individuelle/1779/stocks",
+      "http://localhost:3001/offre/individuelle/1779/reservations",
+      "http://localhost:3001/offre/individuelle/1779/edition/pratiques",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/offre/individuelle/1779/stocks",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Stocks et prix - Consulter une offre individuelle - pass Culture Pro",
+    "h1": [
+      "Récapitulatif"
+    ],
+    "h2": [
+      "Stocks et prix"
+    ],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 2895,
+    "flags": [
+      "TITLE_TOO_LONG",
+      "REDIRECT"
+    ],
+    "links": [
+      "http://localhost:3001/offre/individuelle/1779/stocks#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/offre/individuelle/1779/stocks#lateral-panel",
+      "http://localhost:3001/offre/individuelle/1779/recapitulatif/details",
+      "http://localhost:3001/offre/individuelle/1779/pratiques",
+      "http://localhost:3001/offre/individuelle/1779/stocks",
+      "http://localhost:3001/offre/individuelle/1779/reservations",
+      "http://localhost:3001/offre/individuelle/1779/edition/stocks",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/offre/individuelle/1779/reservations",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Réservations - Consulter une offre individuelle - pass Culture Pro",
+    "h1": [
+      "Récapitulatif"
+    ],
+    "h2": [],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 3130,
+    "flags": [
+      "TITLE_TOO_LONG",
+      "REDIRECT",
+      "SLOW_RENDER"
+    ],
+    "links": [
+      "http://localhost:3001/offre/individuelle/1779/reservations#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/offre/individuelle/1779/reservations#lateral-panel",
+      "http://localhost:3001/offre/individuelle/1779/recapitulatif/details",
+      "http://localhost:3001/offre/individuelle/1779/pratiques",
+      "http://localhost:3001/offre/individuelle/1779/stocks",
+      "http://localhost:3001/offre/individuelle/1779/reservations",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/offre/individuelle/1779/edition/details",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Détails de l’offre - Modifier une offre individuelle - pass Culture Pro",
+    "h1": [
+      "Modifier l’offre"
+    ],
+    "h2": [
+      "À propos de votre offre",
+      "Illustrez votre offre",
+      "Type d’offre"
+    ],
+    "h3": [],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 3133,
+    "flags": [
+      "TITLE_TOO_LONG",
+      "REDIRECT",
+      "SLOW_RENDER"
+    ],
+    "links": [
+      "http://localhost:3001/offre/individuelle/1779/edition/details#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/structures/882/lieux/891/page-partenaire",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/882/lieux/891/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/offre/individuelle/1779/edition/details#lateral-panel",
+      "http://localhost:3001/offre/individuelle/1779/edition/details",
+      "http://localhost:3001/offre/individuelle/1779/edition/pratiques",
+      "http://localhost:3001/offre/individuelle/1779/edition/stocks",
+      "http://localhost:3001/offre/individuelle/1779/edition/details",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  },
+  {
+    "url": "http://localhost:3001/offre/163/collectif/recapitulatif",
+    "finalUrl": "http://localhost:3001/__cypress/iframes/cypress%2Fe2e%2Fseo%2Fextract_headings.cy.ts?browserFamily=chromium",
+    "title": "Récapitulatif - Modifier une offre collective réservable - pass Culture Pro",
+    "h1": [
+      "Récapitulatif REIMBURSED offer 22 pour eac_2_lieu [BON EAC]"
+    ],
+    "h2": [
+      "Détails de l’offre",
+      "Dates & Prix",
+      "Établissement et enseignant"
+    ],
+    "h3": [
+      "Structure de rattachement de votre offre",
+      "Type d’offre",
+      "Informations artistiques",
+      "Image de l’offre",
+      "Localisation de l’événement",
+      "Participants",
+      "Modalités d’accessibilité",
+      "Contact",
+      "Notifications des réservations",
+      "Conditions de réservation"
+    ],
+    "h4": [],
+    "h5": [],
+    "h6": [],
+    "lang": "fr",
+    "redirect": true,
+    "renderedMs": 7793,
+    "flags": [
+      "TITLE_TOO_LONG",
+      "REDIRECT",
+      "SLOW_RENDER"
+    ],
+    "links": [
+      "http://localhost:3001/offre/163/collectif/recapitulatif#content",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offre/creation",
+      "http://localhost:3001/accueil",
+      "http://localhost:3001/offres",
+      "http://localhost:3001/reservations",
+      "http://localhost:3001/guichet",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/reservations/collectives",
+      "http://localhost:3001/structures/887/lieux/896/collectif",
+      "http://localhost:3001/remboursements",
+      "http://localhost:3001/collaborateurs",
+      "http://localhost:3001/offre/163/collectif/recapitulatif#lateral-panel",
+      "http://localhost:3001/offre/163/collectif/apercu",
+      "http://localhost:3001/reservations/collectives?page=1&offerEventDate=2025-08-12&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=63",
+      "http://localhost:3001/offres/collectives",
+      "http://localhost:3001/accessibilite",
+      "http://localhost:3001/plan-du-site"
+    ]
+  }
+]
