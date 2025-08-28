@@ -9,6 +9,7 @@ import {
 
 const props = {
   rowId: 'offer-row-1',
+  isTemplate: true,
   className: 'custom-class',
   educationalInstitution: {
     id: 1,
@@ -61,7 +62,7 @@ describe('OfferInstitutionCell', () => {
     expect(screen.getByRole('cell')).toHaveTextContent('COLLEGE Rouen')
   })
 
-  it('should display "Tous les établissements" when institution name and postal code are empty', () => {
+  it('should display "Tous les établissements" for OfferTemplate when institution name and postal code are empty', () => {
     renderOfferInstitutionCell({
       ...props,
       educationalInstitution: {
@@ -76,6 +77,18 @@ describe('OfferInstitutionCell', () => {
     expect(screen.getByRole('cell')).toHaveTextContent(
       'Tous les établissements'
     )
+  })
+
+  it('should display "-" for Offer when institution name and postal code are empty', () => {
+    props.educationalInstitution.name = ''
+    props.educationalInstitution.postalCode = ''
+    props.educationalInstitution.institutionType = ''
+    props.educationalInstitution.city = ''
+    props.isTemplate = false
+
+    renderOfferInstitutionCell(props)
+
+    expect(screen.getByRole('cell')).toHaveTextContent('-')
   })
 
   it('should include custom class and headers attribute', () => {
