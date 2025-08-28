@@ -1,18 +1,23 @@
 import type { Dispatch, FormEvent, SetStateAction } from 'react'
 
 import {
+  CollectiveLocationType,
   CollectiveOfferDisplayedStatus,
   EacFormat,
+  GetOffererAddressesWithOffersOption,
   type GetOffererResponseModel,
 } from '@/apiClient/v1'
 import {
   ALL_FORMATS_OPTION,
+  ALL_OFFERER_ADDRESS_OPTION,
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
 } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import type { SelectOption } from '@/commons/custom_types/form'
+import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OffersTableSearch } from '@/components/OffersTable/OffersTableSearch/OffersTableSearch'
+import { formatAndOrderAddresses } from '@/repository/venuesService'
 import { MultiSelect } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
 import { Select } from '@/ui-kit/form/Select/Select'
@@ -67,6 +72,26 @@ export const TemplateOffersSearchFilters = ({
   offerer,
   disableAllFilters,
 }: TemplateOffersSearchFiltersProps): JSX.Element => {
+  const offererAddressQuery = useOffererAddresses(
+    GetOffererAddressesWithOffersOption.COLLECTIVE_OFFER_TEMPLATES_ONLY
+  )
+  const offererAddresses = formatAndOrderAddresses(offererAddressQuery.data)
+
+  const locationOptions = [
+    {
+      value: CollectiveLocationType.TO_BE_DEFINED,
+      label: 'À déterminer',
+    },
+    {
+      value: CollectiveLocationType.SCHOOL,
+      label: 'En établissement scolaire',
+    },
+    ...offererAddresses.map((address) => ({
+      value: address.value,
+      label: address.label,
+    })),
+  ]
+
   const formats: SelectOption[] = Object.values(EacFormat).map((format) => ({
     value: format,
     label: format,
@@ -121,6 +146,34 @@ export const TemplateOffersSearchFilters = ({
     resetFilters()
   }
 
+  const handleLocationChange = (value: string) => {
+    switch (value) {
+      case CollectiveLocationType.TO_BE_DEFINED:
+        updateSearchFilters({
+          locationType: CollectiveLocationType.TO_BE_DEFINED,
+          offererAddressId: undefined,
+        })
+        break
+      case CollectiveLocationType.SCHOOL:
+        updateSearchFilters({
+          locationType: CollectiveLocationType.SCHOOL,
+          offererAddressId: undefined,
+        })
+        break
+      case 'all':
+        updateSearchFilters({
+          locationType: undefined,
+          offererAddressId: undefined,
+        })
+        break
+      default:
+        updateSearchFilters({
+          locationType: CollectiveLocationType.ADDRESS,
+          offererAddressId: value,
+        })
+    }
+  }
+
   return (
     <OffersTableSearch
       type="template"
@@ -164,6 +217,25 @@ export const TemplateOffersSearchFilters = ({
         </div>
         <Select
           className={styles['filter-container']}
+          defaultOption={ALL_OFFERER_ADDRESS_OPTION}
+          onChange={(event) => handleLocationChange(event.currentTarget.value)}
+          disabled={disableAllFilters}
+          name="location"
+          options={locationOptions}
+          value={
+            selectedFilters.locationType ===
+            CollectiveLocationType.TO_BE_DEFINED
+              ? CollectiveLocationType.TO_BE_DEFINED
+              : selectedFilters.locationType === CollectiveLocationType.SCHOOL
+                ? CollectiveLocationType.SCHOOL
+                : selectedFilters.offererAddressId != null
+                  ? String(selectedFilters.offererAddressId)
+                  : 'all'
+          }
+          label="Localisation"
+        />
+        <Select
+          className={styles['filter-container']}
           defaultOption={ALL_FORMATS_OPTION}
           onChange={storeSelectedFormat}
           disabled={disableAllFilters}
@@ -172,16 +244,16 @@ export const TemplateOffersSearchFilters = ({
           options={formats}
           value={selectedFilters.format}
         />
-        <FieldLayout label="Période de l’évènement" name="period" isOptional>
-          <PeriodSelector
-            onBeginningDateChange={onBeginningDateChange}
-            onEndingDateChange={onEndingDateChange}
-            isDisabled={disableAllFilters}
-            periodBeginningDate={selectedFilters.periodBeginningDate}
-            periodEndingDate={selectedFilters.periodEndingDate}
-          />
-        </FieldLayout>
       </FormLayout.Row>
+      <FieldLayout label="Période de l’évènement" name="period" isOptional>
+        <PeriodSelector
+          onBeginningDateChange={onBeginningDateChange}
+          onEndingDateChange={onEndingDateChange}
+          isDisabled={disableAllFilters}
+          periodBeginningDate={selectedFilters.periodBeginningDate}
+          periodEndingDate={selectedFilters.periodEndingDate}
+        />
+      </FieldLayout>
     </OffersTableSearch>
   )
 }

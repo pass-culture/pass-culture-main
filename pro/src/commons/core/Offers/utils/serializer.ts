@@ -4,6 +4,7 @@ import type {
   ListCollectiveOffersQueryModel,
   ListOffersQueryModel,
 } from '@/apiClient/v1'
+import { CollectiveOfferType } from '@/apiClient/v1'
 import { CollectiveLocationType } from '@/apiClient/v1/models/CollectiveLocationType'
 
 import { DEFAULT_SEARCH_FILTERS } from '../constants'
@@ -44,7 +45,8 @@ export const serializeApiFilters = (
 
 export const serializeApiCollectiveFilters = (
   searchFilters: Partial<CollectiveSearchFiltersParams>,
-  defaultFilters: CollectiveSearchFiltersParams
+  defaultFilters: CollectiveSearchFiltersParams,
+  isNewOffersAndBookingsActive?: boolean
 ): ListCollectiveOffersQueryModel => {
   const listOffersQueryKeys = [
     'nameOrIsbn',
@@ -88,6 +90,32 @@ export const serializeApiCollectiveFilters = (
           }
         default:
           return accumulator
+      }
+    }
+
+    if (isNewOffersAndBookingsActive && field === 'offererId') {
+      return {
+        ...accumulator,
+        offererId: undefined,
+      }
+    }
+
+    if (isNewOffersAndBookingsActive && field === 'venueId') {
+      return {
+        ...accumulator,
+        venueId: undefined,
+      }
+    }
+
+    if (isNewOffersAndBookingsActive && field === 'collectiveOfferType') {
+      return {
+        ...accumulator,
+        collectiveOfferType:
+          defaultFilters.collectiveOfferType === 'offer'
+            ? CollectiveOfferType.OFFER
+            : defaultFilters.collectiveOfferType === 'template'
+              ? CollectiveOfferType.TEMPLATE
+              : null,
       }
     }
 
