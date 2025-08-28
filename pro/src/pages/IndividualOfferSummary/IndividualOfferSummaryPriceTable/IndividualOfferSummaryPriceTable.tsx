@@ -1,23 +1,37 @@
+import useSWR from 'swr'
+
+import { api } from '@/apiClient/api'
+import { GET_STOCKS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from '@/commons/core/Offers/constants'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
-import { IndividualOfferSummaryStocksScreen } from '../IndividualOfferSummaryStocks/components/IndividualOfferSummaryStocksScreen/IndividualOfferSummaryStocksScreen'
+import { IndividualOfferSummaryPriceTableScreen } from './components/IndividualOfferSummaryPriceTableScreen'
 
 export const IndividualOfferSummaryPriceTable = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
-  const { offer } = useIndividualOfferContext()
+  const { offer, offerId } = useIndividualOfferContext()
+  assertOrFrontendError(offerId, '`offerId` is undefined.')
 
-  if (offer === null) {
+  const getStocksQuery = useSWR([GET_STOCKS_QUERY_KEY, offerId], () =>
+    api.getStocks(offerId)
+  )
+
+  // TODO (igabriele, 2025-08-28): Handle API errors.
+  if (!offer || getStocksQuery.isLoading || !getStocksQuery.data) {
     return <Spinner />
   }
 
   return (
     <IndividualOfferLayout mode={mode} offer={offer} title="Récapitulatif">
-      <IndividualOfferSummaryStocksScreen />
+      <IndividualOfferSummaryPriceTableScreen
+        offer={offer}
+        offerStocks={getStocksQuery.data.stocks}
+      />
       <ActionBar
         isDisabled={false}
         step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY}

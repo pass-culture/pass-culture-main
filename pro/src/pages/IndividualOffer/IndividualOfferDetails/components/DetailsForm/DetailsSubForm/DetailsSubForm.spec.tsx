@@ -28,6 +28,7 @@ const contextValue: IndividualOfferContextValues = {
   setIsEvent: vi.fn(),
   isAccessibilityFilled: false,
   setIsAccessibilityFilled: vi.fn(),
+  hasPublishedOfferWithSameEan: false,
 }
 
 type RequiredProps = 'isEanSearchDisplayed' | 'isProductBased' | 'isOfferCD'

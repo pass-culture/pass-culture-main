@@ -67,7 +67,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const notify = useNotification()
-  const { subCategories, publishedOfferWithSameEAN } =
+  const { subCategories, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
   const { mutate } = useSWRConfig()
   const { logEvent } = useAnalytics()
@@ -350,7 +350,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     setIsActivationCodeFormVisible(false)
   }
 
-  const readOnlyFields = publishedOfferWithSameEAN
+  const readOnlyFields = hasPublishedOfferWithSameEan
     ? Object.keys(STOCK_THING_FORM_DEFAULT_VALUES)
     : getFormReadOnlyFields(offer, stocks, watch())
 
@@ -502,7 +502,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   />
                 </>
               )}
-              {!publishedOfferWithSameEAN && (
+              {!hasPublishedOfferWithSameEan && (
                 <div className={styles['button-actions']}>
                   {actions.map((action) => (
                     <ListIconButton
@@ -540,7 +540,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
           onClickPrevious={handlePreviousStepOrBackToReadOnly}
           step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS}
           isDisabled={
-            isSubmitting || isDisabled || Boolean(publishedOfferWithSameEAN)
+            isSubmitting || isDisabled || hasPublishedOfferWithSameEan
           }
           dirtyForm={isDirty}
           isEvent={false}

@@ -99,7 +99,6 @@ describe('IndividualOfferContextProvider', () => {
       expect(result.current.isEvent).toBeNull()
       expect(result.current.offer).toBeNull()
       expect(result.current.offerId).toBeNull()
-      expect(result.current.publishedOfferWithSameEAN).toBeUndefined()
       expect(result.current.subCategories.length).toBeGreaterThan(0)
     })
 
@@ -150,7 +149,6 @@ describe('IndividualOfferContextProvider', () => {
       expect(result.current.isEvent).toBe(false)
       expect(result.current.offer?.id).toBe(1)
       expect(result.current.offerId).toBe(1)
-      expect(result.current.publishedOfferWithSameEAN).toBeUndefined()
       expect(result.current.subCategories.length).toBeGreaterThan(0)
     })
 
@@ -184,7 +182,6 @@ describe('IndividualOfferContextProvider', () => {
       expect(api.getActiveVenueOfferByEan).toHaveBeenCalledExactlyOnceWith(4, 2)
 
       expect(result.current.hasPublishedOfferWithSameEan).toBe(true)
-      expect(result.current.publishedOfferWithSameEAN?.id).toBe(5)
     })
 
     it('should check for EAN duplicate and set hasPublishedOfferWithSameEan to false when there is none', async () => {
@@ -204,7 +201,6 @@ describe('IndividualOfferContextProvider', () => {
       expect(api.getActiveVenueOfferByEan).toHaveBeenCalledWith(4, 2)
 
       expect(result.current.hasPublishedOfferWithSameEan).toBe(false)
-      expect(result.current.publishedOfferWithSameEAN).toBeUndefined()
     })
 
     it('should both expose isEvent from offer and ignore any setIsEvent override', async () => {

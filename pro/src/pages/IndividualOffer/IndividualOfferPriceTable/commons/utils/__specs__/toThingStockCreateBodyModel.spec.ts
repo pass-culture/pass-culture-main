@@ -76,4 +76,46 @@ describe('toThingStockCreateBodyModel', () => {
 
     expect(result.bookingLimitDatetime).toBeNull()
   })
+
+  it('should fallback price to 0 and quantity to null', () => {
+    const localFormValues: PriceTableFormValues = {
+      ...formValuesBase,
+      entries: [
+        {
+          ...formValuesBase.entries[0],
+          price: 0,
+          quantity: undefined as unknown as number,
+          activationCodes: [],
+          activationCodesExpirationDatetime: '',
+        },
+      ],
+    }
+
+    const result = toThingStockCreateBodyModel(localFormValues, {
+      departementCode,
+    })
+
+    expect(result.price).toBe(0)
+    expect(result.quantity).toBeNull()
+  })
+
+  it('should not set activationCodesExpirationDatetime when invalid/empty expiration', () => {
+    const localFormValues: PriceTableFormValues = {
+      ...formValuesBase,
+      entries: [
+        {
+          ...formValuesBase.entries[0],
+          activationCodes: ['X'],
+          activationCodesExpirationDatetime: '',
+        },
+      ],
+    }
+
+    const result = toThingStockCreateBodyModel(localFormValues, {
+      departementCode,
+    })
+
+    expect(result.activationCodes).toEqual(['X'])
+    expect(result).not.toHaveProperty('activationCodesExpirationDatetime')
+  })
 })

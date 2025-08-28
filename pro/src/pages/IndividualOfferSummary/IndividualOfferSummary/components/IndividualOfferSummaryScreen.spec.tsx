@@ -102,6 +102,7 @@ const renderIndividualOfferSummaryScreen: RenderComponentFunction<
   })
   const contextValues: IndividualOfferContextValues = {
     categories: MOCKED_CATEGORIES,
+    hasPublishedOfferWithSameEan: false,
     isEvent: false,
     isAccessibilityFilled: false,
     offer,
@@ -189,6 +190,7 @@ describe('IndividualOfferSummaryScreen', () => {
   })
   const contextValuesBase: IndividualOfferContextValues = {
     categories: MOCKED_CATEGORIES,
+    hasPublishedOfferWithSameEan: false,
     isAccessibilityFilled: false,
     isEvent: false,
     offer: offerBase,

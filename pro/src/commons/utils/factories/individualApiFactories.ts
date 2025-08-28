@@ -184,6 +184,7 @@ export const individualOfferContextValuesFactory = (
   return {
     offer,
     categories: [],
+    hasPublishedOfferWithSameEan: false,
     subCategories: [],
     isEvent: null,
     setIsEvent: () => {},
