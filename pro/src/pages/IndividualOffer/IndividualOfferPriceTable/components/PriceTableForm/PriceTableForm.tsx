@@ -7,6 +7,7 @@ import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { toNumberOrNull } from '@/commons/utils/toNumberOrNull'
 import { DialogStockThingDeleteConfirm } from '@/components/IndividualOffer/DialogStockDeleteConfirm/DialogStockThingDeleteConfirm'
+import { ActivationCodeFormDialog } from '@/components/IndividualOffer/StocksThing/ActivationCodeFormDialog/ActivationCodeFormDialog'
 import fullCodeIcon from '@/icons/full-code.svg'
 import fulleMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
@@ -25,7 +26,6 @@ import {
 } from '../../commons/schemas'
 import type { PriceTableFormContext } from '../../commons/types'
 import { getFieldsSpecs } from '../../commons/utils/getFieldsSpecs'
-import { ActivationCodeFormDialog } from '../ActivationCodeFormDialog/ActivationCodeFormDialog'
 import styles from './PriceTableForm.module.scss'
 
 interface PriceTableFormProps {
@@ -173,6 +173,7 @@ export const PriceTableForm = ({
               label="Intitulé du tarif"
             />
           )}
+
           <PriceInput
             {...register(`entries.${index}.price`)}
             className={styles['field-layout-xsmall']}
@@ -188,6 +189,7 @@ export const PriceTableForm = ({
               })
             }
           />
+
           {!offer.isEvent && (
             <QuantityInput
               className={styles['field-layout-small']}
@@ -208,8 +210,10 @@ export const PriceTableForm = ({
               value={watch(`entries.${index}.quantity`)}
             />
           )}
+
           {!offer.isEvent && offer.isDigital && (
             <ListIconButton
+              className={styles['button-action']}
               dataTestid="action-addActivationCode"
               icon={fullCodeIcon}
               onClick={() => setActivationCodeEntryIndexToUpload(index)}
@@ -237,6 +241,7 @@ export const PriceTableForm = ({
                       undefined)
                 }
               />
+
               <TextInput
                 {...register(`entries.${index}.bookingsQuantity`)}
                 className={styles['field-layout-shrink']}

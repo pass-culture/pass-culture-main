@@ -9,6 +9,7 @@ import type {
 } from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -34,8 +35,8 @@ import type { PriceTableFormContext } from '../commons/types'
 import { saveEventOfferPriceTable } from '../commons/utils/saveEventOfferPriceTable'
 import { saveNonEventOfferPriceTable } from '../commons/utils/saveNonEventOfferPriceTable'
 import { toFormValues } from '../commons/utils/toFormValues'
-import { ActivationCodeCallout } from './ActivationCodeCallout/ActivationCodeCallout'
-import styles from './IndividualOfferPriceTableScreen.module.scss'
+import { ActivationCodeCallout } from './ActivationCodeCallout'
+import { NonRefundableCallout } from './NonRefundableCallout'
 import { PriceTableForm } from './PriceTableForm/PriceTableForm'
 
 interface IndividualOfferPriceTableScreenProps {
@@ -166,7 +167,9 @@ export const IndividualOfferPriceTableScreen = ({
             <FormLayout.MandatoryInfo />
 
             <FormLayout.Section title="Tarifs">
-              <ActivationCodeCallout />
+              {offerSubcategory.reimbursementRule ===
+                REIMBURSEMENT_RULES.NOT_REIMBURSED && <NonRefundableCallout />}
+              {offer.isDigital && <ActivationCodeCallout />}
 
               <PriceTableForm
                 isCaledonian={isCaledonian}
@@ -180,10 +183,7 @@ export const IndividualOfferPriceTableScreen = ({
 
           {offer.isEvent && (
             <FormLayout fullWidthActions>
-              <FormLayout.Section
-                className={styles['duo-section']}
-                title="Réservations “Duo”"
-              >
+              <FormLayout.Section title="Réservations “Duo”">
                 <DuoCheckbox
                   {...form.register('isDuo')}
                   checked={Boolean(form.watch('isDuo'))}

@@ -20,16 +20,19 @@ export const PriceTableEntryValidationSchema = yup.object().shape({
   id: yup.number().transform(readonly).optional(),
   bookingsQuantity: yup.number().transform(readonly).optional(),
   offerId: yup.number().transform(readonly).defined(),
-  // `string` can only be the value "unlimited"
   remainingQuantity: yup
-    .mixed<number | string>()
+    .mixed<number | string>() // `number | "unlimited"`
     .nullable()
     .transform(readonly),
 
   // -------------------------------------------------------------------------
   // Updatable Data
 
-  activationCodes: yup.array().nullable().default(null).defined(),
+  activationCodes: yup
+    .array(yup.string().defined())
+    .nullable()
+    .default(null)
+    .defined(),
   activationCodesExpirationDatetime: nonEmptyStringOrNull()
     .test((v) => (v ? isValid(new Date(v)) : true))
     .transform((curr, orig) => (orig === '' ? undefined : curr))

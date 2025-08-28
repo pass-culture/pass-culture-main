@@ -5,7 +5,11 @@
   align-items: flex-start;
   display: flex;
   flex-direction: column;
-  margin-bottom: rem.torem(16px);
+  margin-top: rem.torem(16px);
+}
+
+.button-action {
+  margin-top: rem.torem(37px);
 }
 
 @media (min-width: size.$tablet) {
