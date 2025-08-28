@@ -61,7 +61,9 @@ export const RequestFormDialog = ({
 
   const hookForm = useForm<RequestFormValues>({
     defaultValues: initialValues,
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver<RequestFormValues, unknown, unknown>(
+      validationSchema
+    ),
   })
 
   const {

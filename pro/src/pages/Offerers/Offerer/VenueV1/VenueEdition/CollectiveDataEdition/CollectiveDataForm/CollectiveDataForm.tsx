@@ -68,7 +68,9 @@ export const CollectiveDataForm = ({
     formState: { errors, isDirty, isSubmitting },
   } = useForm<CollectiveDataFormValues>({
     defaultValues: initialValues,
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver<CollectiveDataFormValues, unknown, unknown>(
+      validationSchema
+    ),
     mode: 'onBlur',
   })
 

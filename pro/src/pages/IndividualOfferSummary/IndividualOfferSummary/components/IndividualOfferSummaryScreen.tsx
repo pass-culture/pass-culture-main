@@ -129,7 +129,9 @@ export const IndividualOfferSummaryScreen = () => {
       bookingAllowedDate: '',
       bookingAllowedTime: '',
     },
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver<EventPublicationFormValues, unknown, unknown>(
+      validationSchema
+    ),
   })
 
   if (offer === null) {

@@ -136,9 +136,11 @@ export const PriceCategoriesScreen = ({
   )?.canBeDuo
 
   const defaultValues = computeInitialValues(offer, isCaledonian)
-  const hookForm = useForm({
+  const hookForm = useForm<PriceCategoriesFormValues>({
     defaultValues,
-    resolver: yupResolver(getValidationSchema(isCaledonian)),
+    resolver: yupResolver<PriceCategoriesFormValues, unknown, unknown>(
+      getValidationSchema(isCaledonian)
+    ),
     mode: 'onBlur',
   })
 

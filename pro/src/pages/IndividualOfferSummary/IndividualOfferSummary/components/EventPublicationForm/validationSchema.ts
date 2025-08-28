@@ -4,6 +4,8 @@ import * as yup from 'yup'
 import { isDateValid } from '@/commons/utils/date'
 import { buildDateTime } from '@/components/IndividualOffer/StocksEventEdition/serializers'
 
+import type { EventPublicationFormValues } from './types'
+
 function isDateInFuture(value: string) {
   const dateTime = isDateValid(value) && buildDateTime(value, '00:00')
 
@@ -91,7 +93,7 @@ export const bookingAllowedTimeValidationSchema = (schema: yup.StringSchema) =>
         ),
   })
 
-export const validationSchema = yup.object().shape({
+export const validationSchema = yup.object<EventPublicationFormValues>().shape({
   publicationMode: yup.string<'now' | 'later'>().required(),
   publicationDate: publicationDateValidationSchema(yup.string()),
   publicationTime: publicationTimeValidationSchema(yup.string()),

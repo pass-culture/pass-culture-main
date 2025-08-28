@@ -93,7 +93,7 @@ export const OfferEducationalStock = <
 
   const form = useForm({
     defaultValues: initialValues,
-    resolver: yupResolver<OfferEducationalStockFormValues>(
+    resolver: yupResolver<OfferEducationalStockFormValues, unknown, unknown>(
       generateValidationSchema(
         preventPriceIncrease,
         initialValues.totalPrice,

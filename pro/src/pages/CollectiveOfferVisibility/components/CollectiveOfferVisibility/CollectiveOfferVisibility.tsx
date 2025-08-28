@@ -174,7 +174,9 @@ export const CollectiveOfferVisibilityScreen = ({
 
   const form = useForm<VisibilityFormValues>({
     defaultValues: initialValues,
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver<VisibilityFormValues, unknown, unknown>(
+      validationSchema
+    ),
   })
 
   const {

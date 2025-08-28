@@ -95,7 +95,7 @@ export const getValidationSchema = ({
           .oneOf(Object.values(WithdrawalTypeEnum))
           .required('Veuillez sélectionner l’une de ces options'),
     }),
-    withDrawalDetails: yup.string(),
+    withdrawalDetails: yup.string(),
     ...maybeLocationSchema,
   })
 }

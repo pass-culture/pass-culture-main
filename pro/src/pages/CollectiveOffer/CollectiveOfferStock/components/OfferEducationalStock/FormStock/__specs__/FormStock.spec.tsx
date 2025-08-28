@@ -34,7 +34,7 @@ function renderFormStock({
   function FormStockWrapper() {
     const form = useForm({
       defaultValues: initialValues,
-      resolver: yupResolver<OfferEducationalStockFormValues>(
+      resolver: yupResolver<OfferEducationalStockFormValues, unknown, unknown>(
         generateValidationSchema(
           preventPriceIncrease,
           initialValues.totalPrice,

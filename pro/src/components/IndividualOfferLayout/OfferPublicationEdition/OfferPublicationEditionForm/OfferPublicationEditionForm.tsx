@@ -91,7 +91,9 @@ export function OfferPublicationEditionForm({
 
   const form = useForm<EventPublicationEditionFormValues>({
     defaultValues: getDefaultValuesFromOffer(offer, publicationHoursOptions),
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver<EventPublicationEditionFormValues, unknown, unknown>(
+      validationSchema
+    ),
     mode: 'onBlur',
   })
 

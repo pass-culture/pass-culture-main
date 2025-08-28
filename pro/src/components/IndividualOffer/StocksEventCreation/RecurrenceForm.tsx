@@ -288,7 +288,9 @@ export const RecurrenceForm = ({
 
   const methods = useForm<RecurrenceFormValues>({
     defaultValues: computeInitialValues(priceCategoryOptions),
-    resolver: yupResolver(getValidationSchema()),
+    resolver: yupResolver<RecurrenceFormValues, unknown, unknown>(
+      getValidationSchema()
+    ),
     mode: 'onTouched',
   })
 

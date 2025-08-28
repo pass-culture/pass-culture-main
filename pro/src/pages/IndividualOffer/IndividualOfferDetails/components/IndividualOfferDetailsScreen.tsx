@@ -120,7 +120,7 @@ export const IndividualOfferDetailsScreen = ({
 
   const form = useForm<DetailsFormValues>({
     defaultValues: initialValues,
-    resolver: yupResolver<DetailsFormValues>(
+    resolver: yupResolver<DetailsFormValues, unknown, unknown>(
       getValidationSchema(isOfferVirtual)
     ),
     mode: 'onBlur',
