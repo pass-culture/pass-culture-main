@@ -15,7 +15,7 @@ import { IndividualOfferInformationsScreen } from './components/IndividualOfferI
 // TODO (igabriele, 2025-08-14): Replace this page with `<IndividualOfferLocation />` once `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF is enabled in production.
 const IndividualOfferInformations = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
-  const { offer, publishedOfferWithSameEAN } = useIndividualOfferContext()
+  const { offer, hasPublishedOfferWithSameEan } = useIndividualOfferContext()
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
@@ -44,7 +44,7 @@ const IndividualOfferInformations = (): JSX.Element | null => {
       offer={offer}
       title={getTitle(mode)}
       mode={mode}
-      venueHasPublishedOfferWithSameEan={Boolean(publishedOfferWithSameEAN)}
+      venueHasPublishedOfferWithSameEan={hasPublishedOfferWithSameEan}
     >
       <IndividualOfferInformationsScreen
         offer={offer}

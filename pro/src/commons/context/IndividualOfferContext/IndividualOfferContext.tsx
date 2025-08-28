@@ -6,7 +6,6 @@ import useSWR, { useSWRConfig } from 'swr'
 import { api } from '@/apiClient/api'
 import type {
   CategoryResponseModel,
-  GetActiveEANOfferResponseModel,
   GetIndividualOfferWithAddressResponseModel,
   SubcategoryResponseModel,
 } from '@/apiClient/v1'
@@ -32,10 +31,7 @@ export interface IndividualOfferContextValues {
   isAccessibilityFilled: boolean
   setIsAccessibilityFilled: (isAccessibilityFilled: boolean) => void
   /** Real boolean guarded by early `<Splinner />` return while fetching offer data in context provider. */
-  // TODO (igabriele, 2025-08-19): Remove the `?` in another PR.
-  hasPublishedOfferWithSameEan?: boolean
-  /** @deprecated Use `hasPublishedOfferWithSameEan` instead. */
-  publishedOfferWithSameEAN?: GetActiveEANOfferResponseModel
+  hasPublishedOfferWithSameEan: boolean
 }
 
 export const IndividualOfferContext =
@@ -144,7 +140,6 @@ export const IndividualOfferContextProvider = ({
         isEvent: offer?.isEvent ?? isControlledEvent,
         offer: offer ?? null,
         offerId,
-        publishedOfferWithSameEAN,
         setIsAccessibilityFilled,
         setIsEvent,
         subCategories: categoriesQuery.data.subcategories,

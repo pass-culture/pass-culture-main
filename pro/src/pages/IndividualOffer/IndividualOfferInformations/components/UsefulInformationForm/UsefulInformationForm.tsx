@@ -1,7 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 
 import {
-  type GetActiveEANOfferResponseModel,
   type VenueListItemResponseModel,
   WithdrawalTypeEnum,
 } from '@/apiClient/v1'
@@ -36,13 +35,13 @@ import { WithdrawalReminder } from './WithdrawalReminder'
 export interface UsefulInformationFormProps {
   conditionalFields: string[]
   selectedVenue: VenueListItemResponseModel | undefined // It is the selected venue at step 1 (Qui propose l'offre)
-  publishedOfferWithSameEAN?: GetActiveEANOfferResponseModel
+  hasPublishedOfferWithSameEan?: boolean
 }
 
 export const UsefulInformationForm = ({
   conditionalFields,
   selectedVenue,
-  publishedOfferWithSameEAN,
+  hasPublishedOfferWithSameEan,
 }: UsefulInformationFormProps): JSX.Element => {
   const {
     register,
@@ -81,7 +80,7 @@ export const UsefulInformationForm = ({
     subCategories
   )
 
-  const readOnlyFields = publishedOfferWithSameEAN
+  const readOnlyFields = hasPublishedOfferWithSameEan
     ? Object.keys(DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES)
     : getFormReadOnlyFields(offer)
 

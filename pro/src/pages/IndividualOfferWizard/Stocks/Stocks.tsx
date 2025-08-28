@@ -8,7 +8,7 @@ import { getTitle } from '@/components/IndividualOfferLayout/utils/getTitle'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 export const Stocks = (): JSX.Element | null => {
-  const { offer, publishedOfferWithSameEAN } = useIndividualOfferContext()
+  const { offer, hasPublishedOfferWithSameEan } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
 
   // Here we display a spinner because when the router transitions from
@@ -38,7 +38,7 @@ export const Stocks = (): JSX.Element | null => {
       offer={offer}
       title={getTitle(mode)}
       mode={mode}
-      venueHasPublishedOfferWithSameEan={Boolean(publishedOfferWithSameEAN)}
+      venueHasPublishedOfferWithSameEan={hasPublishedOfferWithSameEan}
     >
       {getStocksLayoutContent()}
     </IndividualOfferLayout>

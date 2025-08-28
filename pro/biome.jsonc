@@ -50,6 +50,7 @@
   "files": {
     "includes": [
       "**",
+      "!coverage",
       "!scripts/customRequest.ts",
       "!src/apiClient/adage",
       "!src/apiClient/v1"

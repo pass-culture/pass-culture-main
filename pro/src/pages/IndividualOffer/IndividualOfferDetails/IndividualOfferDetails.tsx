@@ -16,7 +16,7 @@ import { IndividualOfferDetailsScreenNext } from './components/IndividualOfferDe
 
 const IndividualOfferDetails = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
-  const { offer, publishedOfferWithSameEAN } = useIndividualOfferContext()
+  const { offer, hasPublishedOfferWithSameEan } = useIndividualOfferContext()
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
@@ -42,7 +42,7 @@ const IndividualOfferDetails = (): JSX.Element | null => {
       offer={offer}
       title={getTitle(mode)}
       mode={mode}
-      venueHasPublishedOfferWithSameEan={Boolean(publishedOfferWithSameEAN)}
+      venueHasPublishedOfferWithSameEan={hasPublishedOfferWithSameEan}
     >
       {isNewOfferCreationFlowFeatureActive ? (
         <IndividualOfferDetailsScreenNext venues={venuesQuery.data.venues} />

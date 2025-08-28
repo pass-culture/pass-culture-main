@@ -81,7 +81,7 @@ export const IndividualOfferDetailsScreen = ({
   const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
   const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
 
-  const { categories, subCategories, offer, publishedOfferWithSameEAN } =
+  const { categories, subCategories, offer, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
   const initialImageOffer = getIndividualOfferImage(offer)
   const {
@@ -347,7 +347,7 @@ export const IndividualOfferDetailsScreen = ({
             isDisabled={
               form.formState.isSubmitting ||
               Boolean(offer && isOfferDisabled(offer.status)) ||
-              Boolean(publishedOfferWithSameEAN)
+              hasPublishedOfferWithSameEan
             }
             dirtyForm={form.formState.isDirty || offer === null}
           />

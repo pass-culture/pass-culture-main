@@ -906,9 +906,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
           const context = individualOfferContextValuesFactory({
             categories: MOCK_DATA.categories,
             subCategories: MOCK_DATA.subCategories,
-            publishedOfferWithSameEAN: getIndividualOfferFactory({
-              subcategoryId: SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
-            }),
+            hasPublishedOfferWithSameEan: true,
             offer: getIndividualOfferFactory({
               subcategoryId:
                 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE' as SubcategoryIdEnum,

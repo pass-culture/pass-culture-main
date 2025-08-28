@@ -42,6 +42,7 @@ const renderPriceCategories = (
     setIsEvent: () => {},
     isAccessibilityFilled: false,
     setIsAccessibilityFilled: () => {},
+    hasPublishedOfferWithSameEan: false,
   }
 
   return renderWithProviders(

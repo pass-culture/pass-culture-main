@@ -57,8 +57,11 @@ export const IndividualOfferInformationsScreen = ({
   const notify = useNotification()
   const mode = useOfferWizardMode()
   const { mutate } = useSWRConfig()
-  const { subCategories, publishedOfferWithSameEAN, setIsAccessibilityFilled } =
-    useIndividualOfferContext()
+  const {
+    subCategories,
+    hasPublishedOfferWithSameEan,
+    setIsAccessibilityFilled,
+  } = useIndividualOfferContext()
 
   const saveEditionChangesButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -273,7 +276,7 @@ export const IndividualOfferInformationsScreen = ({
             <UsefulInformationForm
               selectedVenue={selectedVenue}
               conditionalFields={conditionalFields}
-              publishedOfferWithSameEAN={publishedOfferWithSameEAN}
+              hasPublishedOfferWithSameEan={hasPublishedOfferWithSameEan}
             />
           </FormLayout>
           <ActionBar
@@ -282,7 +285,7 @@ export const IndividualOfferInformationsScreen = ({
             isDisabled={
               form.formState.isSubmitting ||
               isOfferDisabled(offer.status) ||
-              Boolean(publishedOfferWithSameEAN)
+              hasPublishedOfferWithSameEan
             }
             dirtyForm={form.formState.isDirty}
             saveEditionChangesButtonRef={saveEditionChangesButtonRef}

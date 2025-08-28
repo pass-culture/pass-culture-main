@@ -21,13 +21,13 @@ import styles from './PriceCategoriesSection.module.scss'
 interface Props {
   offer: GetIndividualOfferResponseModel
   canBeDuo?: boolean
-  shouldShowDivider: boolean
+  shouldShowDivider?: boolean
 }
 
 export const PriceCategoriesSection = ({
   offer,
   canBeDuo,
-  shouldShowDivider,
+  shouldShowDivider = false,
 }: Props) => {
   const mode = useOfferWizardMode()
   const { pathname } = useLocation()

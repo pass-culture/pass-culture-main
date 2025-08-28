@@ -37,6 +37,7 @@ const renderPriceCategoriesForm = (
     setIsEvent: () => {},
     isAccessibilityFilled: false,
     setIsAccessibilityFilled: () => {},
+    hasPublishedOfferWithSameEan: false,
   }
   return renderWithProviders(
     <IndividualOfferContext.Provider value={context}>

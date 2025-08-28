@@ -52,7 +52,7 @@ export const IndividualOfferSummaryScreen = () => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
-  const { offer, subCategories, publishedOfferWithSameEAN } =
+  const { offer, subCategories, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
   const [searchParams, setSearchParams] = useSearchParams()
   const currentOfferer = useSelector(selectCurrentOfferer)
@@ -250,8 +250,7 @@ export const IndividualOfferSummaryScreen = () => {
           isDisabled={
             (mode !== OFFER_WIZARD_MODE.CREATION
               ? false
-              : methods.formState.isSubmitting) ||
-            Boolean(publishedOfferWithSameEAN)
+              : methods.formState.isSubmitting) || hasPublishedOfferWithSameEan
           }
         />
         <RedirectToBankAccountDialog

@@ -8,7 +8,7 @@ import { IndividualOfferMediaScreen } from './components/IndividualOfferMediaScr
 
 const IndividualOfferMedia = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
-  const { offer, publishedOfferWithSameEAN } = useIndividualOfferContext()
+  const { offer, hasPublishedOfferWithSameEan } = useIndividualOfferContext()
 
   if (!offer) {
     return <Spinner />
@@ -19,7 +19,7 @@ const IndividualOfferMedia = (): JSX.Element | null => {
       offer={offer}
       title={getTitle(mode)}
       mode={mode}
-      venueHasPublishedOfferWithSameEan={Boolean(publishedOfferWithSameEAN)}
+      venueHasPublishedOfferWithSameEan={hasPublishedOfferWithSameEan}
     >
       <IndividualOfferMediaScreen offer={offer} />
     </IndividualOfferLayout>

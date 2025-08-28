@@ -73,7 +73,7 @@ export const IndividualOfferDetailsScreenNext = ({
     categories,
     subCategories,
     offer: initialOffer,
-    publishedOfferWithSameEAN,
+    hasPublishedOfferWithSameEan,
   } = useIndividualOfferContext()
   const initialOfferImage = getIndividualOfferImage(initialOffer)
   const {
@@ -326,7 +326,7 @@ export const IndividualOfferDetailsScreenNext = ({
             isDisabled={
               form.formState.isSubmitting ||
               Boolean(initialOffer && isOfferDisabled(initialOffer.status)) ||
-              Boolean(publishedOfferWithSameEAN)
+              hasPublishedOfferWithSameEan
             }
             onClickPrevious={handlePreviousStepOrBackToReadOnly}
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS}

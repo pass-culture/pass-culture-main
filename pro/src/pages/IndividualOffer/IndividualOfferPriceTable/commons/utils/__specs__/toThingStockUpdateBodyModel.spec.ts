@@ -86,4 +86,22 @@ describe('toThingStockUpdateBodyModel', () => {
 
     expect(result.quantity).toBeNull()
   })
+
+  it('should fallback price to 0', () => {
+    const localFormValues: PriceTableFormValues = {
+      ...formValuesBase,
+      entries: [
+        {
+          ...formValuesBase.entries[0],
+          price: 0,
+        },
+      ],
+    }
+
+    const result = toThingStockUpdateBodyModel(localFormValues, {
+      departementCode,
+    })
+
+    expect(result.price).toBe(0)
+  })
 })

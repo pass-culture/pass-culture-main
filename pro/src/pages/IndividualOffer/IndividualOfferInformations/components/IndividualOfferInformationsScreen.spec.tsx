@@ -288,7 +288,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     renderUsefulInformationScreen(
       offlineOfferProps,
       individualOfferContextValuesFactory({
-        publishedOfferWithSameEAN: getIndividualOfferFactory(),
+        hasPublishedOfferWithSameEan: true,
       })
     )
 
