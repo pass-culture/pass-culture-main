@@ -43,7 +43,10 @@ yup.addMethod(
         })
 
         const validationErrors = duplicateIndices.map((duplicateIndex) =>
-          this.createError({ path: `${this.path}[${duplicateIndex}]`, message })
+          this.createError({
+            path: `${this.path}[${duplicateIndex}].${key}`,
+            message,
+          })
         )
 
         return new yup.ValidationError(validationErrors)
