@@ -77,8 +77,7 @@
     }
 
     &-description {
-      word-break: break-word;
-      white-space: pre-line;
+      overflow-wrap: anywhere;
       line-height: rem.torem(24px);
     }
 

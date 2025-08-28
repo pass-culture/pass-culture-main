@@ -32,8 +32,8 @@
 
 // <tbody>
 .table-body {
-  // In mobile-view, it takes labels from "data-label" in order to construct à left-column with that content
   .table-cell[data-label] {
+    // In mobile-view, it takes labels from "data-label" in order to construct à left-column with that content
     display: contents; // ignores <td> with [data-label], so their children can be used as grid items
 
     // ::before is the left column
@@ -73,11 +73,11 @@
 .column-booking-id {
   min-width: rem.torem(60px);
   white-space: initial;
-  word-break: break-word;
 }
 
 .column-offer-name {
-  word-break: break-word;
+  word-break: normal;
+  overflow-wrap: anywhere;
 
   .offer-details-wrapper {
     display: flex;
@@ -94,24 +94,18 @@
   }
 }
 
-.column-collective-offer-name {
-  word-break: break-word;
-}
-
-.column-beneficiary {
-  word-break: break-word;
+.column-collective-offer-name,
+.column-beneficiary,
+.column-booking-token {
+  overflow-wrap: anywhere;
 }
 
 .column-institution {
-  word-break: break-word;
+  overflow-wrap: anywhere;
 
   .institution-cell-subtitle {
     color: var(--color-text-subtle);
   }
-}
-
-.column-booking-token {
-  word-break: break-word;
 }
 
 .visually-hidden {
@@ -119,8 +113,8 @@
 }
 
 @media (min-width: size.$tablet) {
-  // <thead>
   .table-header {
+    // <thead>
     @include a11y.visually-hidden-reset;
   }
 

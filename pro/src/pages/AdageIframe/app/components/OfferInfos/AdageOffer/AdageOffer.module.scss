@@ -64,7 +64,7 @@
     display: flex;
     flex-direction: column;
     gap: rem.torem(16px);
-    word-break: break-word;
+    overflow-wrap: anywhere;
 
     &-item {
       &-subtitle {
@@ -103,7 +103,7 @@
   }
 }
 
-@container offer (width >= #{size.$tablet}) {
+@container offer (width >=#{size.$tablet}) {
   .offer-header {
     flex-direction: row;
     align-items: unset;

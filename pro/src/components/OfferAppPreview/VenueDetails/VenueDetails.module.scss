@@ -34,7 +34,7 @@
   @include fonts.body-xs;
 
   margin-bottom: rem.torem(16px);
-  word-break: break-word;
+  overflow-wrap: anywhere;
 
   &:last-child {
     margin-bottom: 0;
