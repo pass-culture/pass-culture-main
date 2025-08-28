@@ -26,11 +26,7 @@ export const IndividualOfferPriceTable = () => {
   }
 
   return (
-    <IndividualOfferLayout
-      offer={offer}
-      title={`${getTitle(mode)} NEW`}
-      mode={mode}
-    >
+    <IndividualOfferLayout offer={offer} title={getTitle(mode)} mode={mode}>
       <IndividualOfferPriceTableScreen
         offer={offer}
         offerStocks={offerStocksQuery.data.stocks}
