@@ -38,7 +38,7 @@
     @include fonts.title4;
 
     max-width: rem.torem(224px);
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
     text-align: center;
     padding: rem.torem(0) rem.torem(15px);
     margin-bottom: rem.torem(22px);
@@ -52,7 +52,6 @@
     @include fonts.body-xs;
 
     padding: rem.torem(0) rem.torem(15px) rem.torem(15px);
-    word-break: break-word;
-    white-space: break-spaces;
+    overflow-wrap: anywhere;
   }
 }

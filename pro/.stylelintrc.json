@@ -3,6 +3,7 @@
   "rules": {
     "no-descending-specificity": null,
     "scss/operator-no-newline-after": null,
+    "scss/operator-no-unspaced": null,
     "font-family-no-missing-generic-family-keyword": null,
     "selector-max-type": [
       0,

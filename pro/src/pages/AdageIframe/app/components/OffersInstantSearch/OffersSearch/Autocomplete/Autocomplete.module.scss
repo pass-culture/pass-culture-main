@@ -106,7 +106,7 @@
         gap: rem.torem(8px);
         align-items: center;
         cursor: pointer;
-        word-break: break-word;
+        overflow-wrap: anywhere;
         width: 100%;
         padding: rem.torem(8px);
 
