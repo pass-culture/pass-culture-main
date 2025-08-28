@@ -183,3 +183,8 @@
      title="Visualiser le ticket Zendesk de la demande"
      class="link-primary">{{ zendesk_id }} <i class="bi bi-box-arrow-up-right"></i></a>
 {% endmacro %}
+{% macro build_artist_details_link(artist, text_attr="name") %}
+  <a href="{{ url_for('backoffice_web.artist.get_artist_details', artist_id=artist.id) }}"
+     class="link-primary"
+     title="Page de l'artiste">{{ artist[text_attr] }}</a>
+{% endmacro %}
