@@ -15,7 +15,6 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as user_models
 from pcapi.core.users import repository as users_repo
 from pcapi.models import db
-from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.auth.forms.forms import SigninForm
 from pcapi.utils import requests
@@ -172,7 +171,8 @@ def discord_signin_post() -> str | Response | None:
         )
     except (ReCaptchaException, InvalidRecaptchaTokenException) as exc:
         logger.warning("Recaptcha failed: %s", str(exc))
-        raise ApiErrors({"recaptcha": "Erreur recaptcha"}, 401)
+        form.error_message = "La vérification a échoué. Recharge la page et réessaie"
+        return render_template("discord_signin.html", form=form)
 
     try:
         user = users_repo.get_user_with_credentials(email, password, allow_inactive=True)
