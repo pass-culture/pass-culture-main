@@ -105,7 +105,7 @@ export const IndividualOfferDetailsScreenNext = ({
 
   const form = useForm<DetailsFormValues>({
     defaultValues: getInitialValues(),
-    resolver: yupResolver<DetailsFormValues>(
+    resolver: yupResolver<DetailsFormValues, unknown, unknown>(
       getValidationSchemaForNewOfferCreationFlow()
     ),
     mode: 'onBlur',

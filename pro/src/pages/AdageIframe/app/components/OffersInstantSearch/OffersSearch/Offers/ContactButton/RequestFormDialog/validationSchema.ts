@@ -3,6 +3,8 @@ import * as yup from 'yup'
 
 import { emailSchema } from '@/commons/utils/isValidEmail'
 
+import type { RequestFormValues } from './type'
+
 const isPhoneValid = (phone: string | undefined): boolean => {
   if (!phone) {
     return true
@@ -13,7 +15,7 @@ const isPhoneValid = (phone: string | undefined): boolean => {
   return Boolean(isValid)
 }
 
-export const validationSchema = yup.object().shape({
+export const validationSchema = yup.object<RequestFormValues>().shape({
   teacherEmail: yup
     .string()
     .max(120)
@@ -25,6 +27,7 @@ export const validationSchema = yup.object().shape({
     test: isPhoneValid,
   }),
   offerDate: yup.string(),
+  offerTime: yup.string(),
   nbStudents: yup
     .number()
     .transform((value) => (Number.isNaN(value) ? undefined : value))

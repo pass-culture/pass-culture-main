@@ -168,8 +168,8 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   // so this is a workaround to pass its value.
   const stockId = stocks.length > 0 ? stocks[0].id : undefined
 
-  const hookForm = useForm({
-    resolver: yupResolver(
+  const hookForm = useForm<StockThingFormValues>({
+    resolver: yupResolver<StockThingFormValues, unknown, unknown>(
       getValidationSchema(mode, bookingsQuantity, stockId, isCaledonian)
     ),
     defaultValues: buildInitialValues(offer, stocks),

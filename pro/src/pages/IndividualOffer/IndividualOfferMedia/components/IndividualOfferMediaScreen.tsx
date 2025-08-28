@@ -72,7 +72,7 @@ export const IndividualOfferMediaScreen = ({
 
   const form = useForm<IndividualOfferMediaFormValues>({
     defaultValues: { videoUrl: offer.videoUrl ?? '' },
-    resolver: yupResolver<IndividualOfferMediaFormValues>(
+    resolver: yupResolver<IndividualOfferMediaFormValues, unknown, unknown>(
       getValidationSchema()
     ),
     mode: 'onBlur',

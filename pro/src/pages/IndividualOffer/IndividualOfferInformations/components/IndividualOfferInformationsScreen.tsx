@@ -99,7 +99,9 @@ export const IndividualOfferInformationsScreen = ({
   const form = useForm<UsefulInformationFormValues>({
     defaultValues: initialValues,
     mode: 'all',
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver<UsefulInformationFormValues, unknown, unknown>(
+      validationSchema
+    ),
   })
 
   const onSubmit = async (): Promise<void> => {

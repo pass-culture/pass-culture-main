@@ -51,7 +51,9 @@ export function StocksCalendarTableEditStock({
 
   const form = useForm<EditStockFormValues>({
     defaultValues: getStockFormDefaultValues(stock, departmentCode),
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver<EditStockFormValues, unknown, unknown>(
+      validationSchema
+    ),
   })
 
   const formValues = form.watch()

@@ -206,7 +206,7 @@ export const OfferEducational = ({
 
   const form = useForm<OfferEducationalFormValues>({
     defaultValues: initialValues,
-    resolver: yupResolver(
+    resolver: yupResolver<OfferEducationalFormValues, unknown, unknown>(
       getOfferEducationalValidationSchema(isCollectiveOaActive)
     ),
     shouldFocusError: false,
