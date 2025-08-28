@@ -2584,10 +2584,7 @@ class GetVenueHistoryTest(GetEndpointHelper):
         assert len(rows) == 1
 
         assert rows[0]["Type"] == "Régularisation des partenaires culturels"
-        assert (
-            rows[0]["Commentaire"]
-            == f"Transfert des éléments du partenaire culturel {venue.id}. Informations modifiées : Permanent : ajout de : Oui"
-        )
+        assert rows[0]["Commentaire"] == "Informations modifiées : Permanent : ajout de : Oui"
 
     def test_venue_history_without_fraud_permission(self, client, read_only_bo_user):
         venue = offerers_factories.VenueFactory()
