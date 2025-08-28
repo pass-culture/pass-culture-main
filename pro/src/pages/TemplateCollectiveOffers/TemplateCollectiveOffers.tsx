@@ -74,30 +74,26 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   const offersQuery = useSWR(
     collectiveOffersQueryKeys,
     () => {
-      const {
-        nameOrIsbn,
-        offererId,
-        venueId,
-        status,
-        creationMode,
-        periodBeginningDate,
-        periodEndingDate,
-        format,
-      } = serializeApiCollectiveFilters(
-        apiFilters,
-        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
-      )
+      const params = {
+        ...serializeApiCollectiveFilters(
+          apiFilters,
+          DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
+        ),
+        collectiveOfferType: CollectiveOfferType.TEMPLATE,
+      }
 
       return api.getCollectiveOffers(
-        nameOrIsbn,
-        offererId,
-        status,
-        venueId,
-        creationMode,
-        periodBeginningDate,
-        periodEndingDate,
-        CollectiveOfferType.TEMPLATE,
-        format
+        params.nameOrIsbn,
+        params.offererId,
+        params.status,
+        params.venueId,
+        params.creationMode,
+        params.periodBeginningDate,
+        params.periodEndingDate,
+        params.collectiveOfferType,
+        params.format,
+        params.locationType,
+        params.offererAddressId
       )
     },
     { fallbackData: [] }
