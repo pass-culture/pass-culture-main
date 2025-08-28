@@ -2,17 +2,26 @@
 
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from '@/commons/core/Offers/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
+import { IndividualOfferSummaryPriceTable } from '../IndividualOfferSummaryPriceTable/IndividualOfferSummaryPriceTable'
 import { IndividualOfferSummaryStocksCalendarScreen } from './components/IndividualOfferSummaryStocksCalendarScreen/IndividualOfferSummaryStocksCalendarScreen'
 import { IndividualOfferSummaryStocksScreen } from './components/IndividualOfferSummaryStocksScreen/IndividualOfferSummaryStocksScreen'
 
 const IndividualOfferSummaryStocks = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { offer } = useIndividualOfferContext()
+  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
+
+  if (isNewOfferCreationFlowFeatureActive) {
+    return <IndividualOfferSummaryPriceTable />
+  }
 
   if (offer === null) {
     return <Spinner />
