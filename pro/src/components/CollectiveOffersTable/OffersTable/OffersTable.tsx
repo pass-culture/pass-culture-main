@@ -18,6 +18,7 @@ type OffersTableProps = {
   areAllOffersSelected: boolean
   isAtLeastOneOfferChecked: boolean
   toggleSelectAllCheckboxes: () => void
+  downloadButton?: React.ReactNode
 }
 
 export const OffersTable = ({
@@ -31,6 +32,7 @@ export const OffersTable = ({
   areAllOffersSelected,
   isAtLeastOneOfferChecked,
   toggleSelectAllCheckboxes,
+  downloadButton,
 }: OffersTableProps) => {
   const isSelectAllIndeterminate =
     !areAllOffersSelected && isAtLeastOneOfferChecked
@@ -46,17 +48,20 @@ export const OffersTable = ({
         )}
         {hasOffers && (
           <div className={styles['offers-table-title']}>
-            <h2
-              id="offers-table-title"
-              className={styles['offers-table-title-heading']}
-            >
-              Liste des offres
-            </h2>
             <div>
-              {`${getOffersCountToDisplay(offersCount)} ${
-                offersCount <= 1 ? 'offre' : 'offres'
-              }`}
+              <h2
+                id="offers-table-title"
+                className={styles['offers-table-title-heading']}
+              >
+                Liste des offres
+              </h2>
+              <div>
+                {`${getOffersCountToDisplay(offersCount)} ${
+                  offersCount <= 1 ? 'offre' : 'offres'
+                }`}
+              </div>
             </div>
+            {downloadButton}
           </div>
         )}
       </div>
