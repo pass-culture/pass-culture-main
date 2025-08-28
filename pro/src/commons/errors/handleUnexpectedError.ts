@@ -48,6 +48,5 @@ export function handleUnexpectedError(
     captureException(error)
   })
 
-  // eslint-disable-next-line no-console
   console.error(error)
 }
