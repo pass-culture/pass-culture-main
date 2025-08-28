@@ -1768,6 +1768,13 @@
   resolved "https://registry.yarnpkg.com/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.46.3.tgz#3d9ed4f8b9f2be7500565515d863c409eaceeb70"
   integrity sha512-fi3cPxCnu3ZeM3EwKZPgXbWoGzm2XHgB/WShKI81uj8wG0+laobmqy5wbgEwzstlbLu4MyO8C19FyhhWseYKNQ==
 
+"@sentry-internal/browser-utils@10.7.0":
+  version "10.7.0"
+  resolved "https://registry.yarnpkg.com/@sentry-internal/browser-utils/-/browser-utils-10.7.0.tgz#5edfcd84f8d0745be4e06cff2c4edd01d2a2493f"
+  integrity sha512-M5L1XKVkhRhIV2nfUwNxBoqir4SVDcHdqRBq+k1EK6Z6DCVF9GMTiLg46+egBwgUDlAAGIQImdKgtJTH/47Z9g==
+  dependencies:
+    "@sentry/core" "10.7.0"
+
 "@sentry-internal/browser-utils@9.46.0":
   version "9.46.0"
   resolved "https://registry.yarnpkg.com/@sentry-internal/browser-utils/-/browser-utils-9.46.0.tgz#d53baeebc4d0f3cd3a3fb3ccbad865ef32a83f5c"
@@ -1775,12 +1782,27 @@
   dependencies:
     "@sentry/core" "9.46.0"
 
+"@sentry-internal/feedback@10.7.0":
+  version "10.7.0"
+  resolved "https://registry.yarnpkg.com/@sentry-internal/feedback/-/feedback-10.7.0.tgz#9d3b23d4ed19b219a2885939931f114c106baa7d"
+  integrity sha512-wTyoLjEKz6dwl9uyy5wfwmrlM59WmUM1DXMSyGr6j6ncDA9iPmoftU4O4+Kirkk8mRYoc0fHxjp21Z5BYtAehw==
+  dependencies:
+    "@sentry/core" "10.7.0"
+
 "@sentry-internal/feedback@9.46.0":
   version "9.46.0"
   resolved "https://registry.yarnpkg.com/@sentry-internal/feedback/-/feedback-9.46.0.tgz#f2bea2c882d57c251df1bd3f9ca77305c39424ca"
   integrity sha512-KLRy3OolDkGdPItQ3obtBU2RqDt9+KE8z7r7Gsu7c6A6A89m8ZVlrxee3hPQt6qp0YY0P8WazpedU3DYTtaT8w==
   dependencies:
     "@sentry/core" "9.46.0"
+
+"@sentry-internal/replay-canvas@10.7.0":
+  version "10.7.0"
+  resolved "https://registry.yarnpkg.com/@sentry-internal/replay-canvas/-/replay-canvas-10.7.0.tgz#936c441a460092df49ef1abd2093131e74f11d01"
+  integrity sha512-68jJfqa8r9UPGO4+S2IthkhhohTItgHjVj7S7dH5g1YUHUS1N03dZMrDMc2jOAhWURi3EOqmCkSjd2xxogRUVQ==
+  dependencies:
+    "@sentry-internal/replay" "10.7.0"
+    "@sentry/core" "10.7.0"
 
 "@sentry-internal/replay-canvas@9.46.0":
   version "9.46.0"
@@ -1790,6 +1812,14 @@
     "@sentry-internal/replay" "9.46.0"
     "@sentry/core" "9.46.0"
 
+"@sentry-internal/replay@10.7.0":
+  version "10.7.0"
+  resolved "https://registry.yarnpkg.com/@sentry-internal/replay/-/replay-10.7.0.tgz#f357c838d3973be7335d031a183fb1d05da6b2a3"
+  integrity sha512-lKK7NGSy20c0ArBQtGWP+ITMantNGOAeeILG2c2VaOxJUTe5EH3OcelHMNPEFTTXnYZt7RzMT03Tzmzto2LBdg==
+  dependencies:
+    "@sentry-internal/browser-utils" "10.7.0"
+    "@sentry/core" "10.7.0"
+
 "@sentry-internal/replay@9.46.0":
   version "9.46.0"
   resolved "https://registry.yarnpkg.com/@sentry-internal/replay/-/replay-9.46.0.tgz#5156c00f95fa6be036cd642c427be66f0feee707"
@@ -1798,7 +1828,7 @@
     "@sentry-internal/browser-utils" "9.46.0"
     "@sentry/core" "9.46.0"
 
-"@sentry/browser@9.46.0", "@sentry/browser@^9.35.0":
+"@sentry/browser@9.46.0":
   version "9.46.0"
   resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-9.46.0.tgz#9fcc136cc0a076f3e897fde09cf2740cdcacc5ab"
   integrity sha512-NOnCTQCM0NFuwbyt4DYWDNO2zOTj1mCf43hJqGDFb1XM9F++7zAmSNnCx4UrEoBTiFOy40McJwBBk9D1blSktA==
@@ -1808,6 +1838,22 @@
     "@sentry-internal/replay" "9.46.0"
     "@sentry-internal/replay-canvas" "9.46.0"
     "@sentry/core" "9.46.0"
+
+"@sentry/browser@^10.7.0":
+  version "10.7.0"
+  resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-10.7.0.tgz#1e437bf8a5a85ca4e62436d4543c1d80b81ff844"
+  integrity sha512-KPnKOIKFqxCpRMydyH8dn+MrPai2BEc+easWf8p3IWgUCx70+tZs5AXc0yWRgcXT534284waMnky2isn6Jbkvg==
+  dependencies:
+    "@sentry-internal/browser-utils" "10.7.0"
+    "@sentry-internal/feedback" "10.7.0"
+    "@sentry-internal/replay" "10.7.0"
+    "@sentry-internal/replay-canvas" "10.7.0"
+    "@sentry/core" "10.7.0"
+
+"@sentry/core@10.7.0":
+  version "10.7.0"
+  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-10.7.0.tgz#4a371b3449879956be665a6747c6792d14205b5a"
+  integrity sha512-y1Ni71O6TqeSi2Ug78StkVLHnybHZVYhnbYtj2w4g89XnQcqo4GUeR8dQRQBJpCX98UrHw22OAE8BXtKb03yXw==
 
 "@sentry/core@9.46.0":
   version "9.46.0"
