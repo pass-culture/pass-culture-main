@@ -8,6 +8,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
@@ -20,6 +21,9 @@ import styles from './IndividualOfferSummaryStocksScreen.module.scss'
 export const IndividualOfferSummaryStocksScreen = () => {
   const { offer, subCategories } = useIndividualOfferContext()
   const notify = useNotification()
+  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
 
   const getStocksQuery = useSWR(
     offer?.id ? [GET_STOCKS_QUERY_KEY, offer.id] : null,
@@ -51,9 +55,13 @@ export const IndividualOfferSummaryStocksScreen = () => {
 
   return (
     <SummarySection
-      title="Stocks et prix"
+      title={isNewOfferCreationFlowFeatureActive ? 'Tarifs' : 'Stocks et prix'}
       editLink={editLink}
-      aria-label="Modifier les stocks et prix"
+      aria-label={
+        isNewOfferCreationFlowFeatureActive
+          ? 'Modifier les tarifs'
+          : 'Modifier les stocks et prix'
+      }
     >
       {stockWarningText && (
         <SummaryDescriptionList
