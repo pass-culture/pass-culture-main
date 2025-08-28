@@ -45,7 +45,10 @@ export const OfferEventDateCell = ({
     }
 
     if (!offerDatetimes?.start || !offerDatetimes.end) {
-      return ['Toute l’année scolaire']
+      if (offer.isShowcase) {
+        return ['Toute l’année scolaire']
+      }
+      return ['-']
     }
     const offerStartDate = getOfferDate(
       offerDatetimes.start,

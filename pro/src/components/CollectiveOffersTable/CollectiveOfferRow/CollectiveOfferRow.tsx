@@ -123,6 +123,7 @@ export const CollectiveOfferRow = ({
         {!isTemplateTable && (
           <OfferInstitutionCell
             rowId={rowId}
+            isTemplate={offer.isShowcase}
             educationalInstitution={offer.educationalInstitution}
             className={styles['collective-cell-institution']}
           />
