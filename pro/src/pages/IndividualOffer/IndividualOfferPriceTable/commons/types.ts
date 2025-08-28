@@ -3,30 +3,18 @@ import type {
   EditPriceCategoryModel,
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
-  PriceCategoryResponseModel,
   ThingStockCreateBodyModel,
   ThingStockUpdateBodyModel,
 } from '@/apiClient/v1'
 import type { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 
-type UpdatabledPriceTableEntryFormValues = Partial<
+export type PriceTableEntryModel = Partial<
   CreatePriceCategoryModel &
     EditPriceCategoryModel &
     ThingStockCreateBodyModel &
-    ThingStockUpdateBodyModel
+    ThingStockUpdateBodyModel &
+    GetOfferStockResponseModel
 >
-
-type ReadonlyPriceTableEntryFormValues = Readonly<
-  Partial<
-    Omit<
-      PriceCategoryResponseModel & GetOfferStockResponseModel,
-      keyof UpdatabledPriceTableEntryFormValues
-    >
-  >
->
-
-export type PriceTableEntryApiValues = UpdatabledPriceTableEntryFormValues &
-  ReadonlyPriceTableEntryFormValues
 
 export interface PriceTableFormContext {
   isCaledonian: boolean

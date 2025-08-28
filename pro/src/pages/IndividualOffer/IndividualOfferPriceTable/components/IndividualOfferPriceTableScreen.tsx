@@ -21,6 +21,7 @@ import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
+import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 
 import { useSaveOfferPriceTable } from '../commons/hooks/useSaveOfferPriceTable'
@@ -111,6 +112,8 @@ export const IndividualOfferPriceTableScreen = ({
           onSubmit={form.handleSubmit(saveAndContinue)}
           data-testid="stock-thing-form"
         >
+          <ScrollToFirstHookFormErrorAfterSubmit />
+
           <FormLayout>
             <FormLayout.MandatoryInfo />
 

@@ -11,7 +11,7 @@ import {
   PRICE_TABLE_ENTRY_MAX_PRICE_IN_XPF,
   PRICE_TABLE_ENTRY_MAX_QUANTITY,
 } from './constants'
-import type { PriceTableEntryApiValues, PriceTableFormContext } from './types'
+import type { PriceTableEntryModel, PriceTableFormContext } from './types'
 
 export const PriceTableEntryValidationSchema = yup.object().shape({
   // -------------------------------------------------------------------------
@@ -43,7 +43,7 @@ export const PriceTableEntryValidationSchema = yup.object().shape({
     .when(['$mode', 'id'], (vals, schema) => {
       const [mode, id] = vals as [
         PriceTableFormContext['mode'],
-        PriceTableEntryApiValues['id'],
+        PriceTableEntryModel['id'],
       ]
 
       return mode === OFFER_WIZARD_MODE.CREATION || id !== undefined
@@ -74,7 +74,7 @@ export const PriceTableEntryValidationSchema = yup.object().shape({
       const [isCaledonian, mode, id] = vals as [
         PriceTableFormContext['isCaledonian'],
         PriceTableFormContext['mode'],
-        PriceTableEntryApiValues['id'],
+        PriceTableEntryModel['id'],
       ]
 
       if (mode === OFFER_WIZARD_MODE.CREATION || id !== undefined) {
@@ -108,8 +108,8 @@ export const PriceTableEntryValidationSchema = yup.object().shape({
     .when(['$mode', 'id', 'bookingsQuantity'], (vals, schema) => {
       const [mode, id, bookingsQuantity] = vals as [
         PriceTableFormContext['mode'],
-        PriceTableEntryApiValues['id'],
-        PriceTableEntryApiValues['bookingsQuantity'],
+        PriceTableEntryModel['id'],
+        PriceTableEntryModel['bookingsQuantity'],
       ]
 
       if (mode === OFFER_WIZARD_MODE.CREATION || id !== undefined) {
