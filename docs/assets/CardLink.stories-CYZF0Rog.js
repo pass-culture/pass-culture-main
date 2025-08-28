@@ -1,0 +1,16 @@
+import{V as y}from"./index-QnyK0pSJ.js";import{s as b}from"./stroke-thing-O6UIROL8.js";import{j as e}from"./jsx-runtime-DF2Pcvd1.js";import{c as i}from"./index-DeARc5FM.js";import{L as h}from"./chunk-PVWAREVJ-Bt0DAUl0.js";import{S as x}from"./SvgIcon-DfLnDDE5.js";import"./index-B2-qRKKC.js";import"./_commonjsHelpers-Cpj98o6Y.js";const q=""+new URL("stroke-prof-ZrEoXdFu.svg",import.meta.url).href,N="_cardlink_pkuek_1",n={cardlink:N,"cardlink-body":"_cardlink-body_pkuek_10","cardlink-icon":"_cardlink-icon_pkuek_17","cardlink-content":"_cardlink-content_pkuek_23","cardlink-link":"_cardlink-link_pkuek_28","cardlink-button":"_cardlink-button_pkuek_28","cardlink-description":"_cardlink-description_pkuek_42","cardlink-vertical":"_cardlink-vertical_pkuek_67"},t=({className:s,to:o,icon:l,label:c,description:d,direction:g="horizontal",onClick:u})=>e.jsx("div",{className:i(n.cardlink,g==="vertical"&&n["cardlink-vertical"],s),"data-testid":"cardlink",children:e.jsxs("div",{className:n["cardlink-body"],children:[l&&e.jsx(x,{src:l,className:n["cardlink-icon"],alt:""}),e.jsxs("div",{className:n["cardlink-content"],children:[e.jsxs("p",{children:[o&&e.jsx(h,{to:o,className:i(n["cardlink-link"]),children:c}),u&&e.jsx("button",{type:"button",className:i(n["cardlink-button"]),onClick:u,children:c})]}),d&&e.jsx("p",{className:n["cardlink-description"],children:d})]})]})});try{t.displayName="CardLink",t.__docgenInfo={description:"",displayName:"CardLink",props:{className:{defaultValue:null,description:"",name:"className",required:!1,type:{name:"string"}},icon:{defaultValue:null,description:"",name:"icon",required:!1,type:{name:"string"}},label:{defaultValue:null,description:"",name:"label",required:!0,type:{name:"string"}},description:{defaultValue:null,description:"",name:"description",required:!1,type:{name:"string"}},direction:{defaultValue:{value:"horizontal"},description:"",name:"direction",required:!1,type:{name:"enum",value:[{value:'"horizontal"'},{value:'"vertical"'}]}},to:{defaultValue:null,description:"",name:"to",required:!1,type:{name:"string"}},onClick:{defaultValue:null,description:"",name:"onClick",required:!1,type:{name:"(() => void) | ((() => void) & (() => void))"}}}}}catch{}const E={title:"@/ui-kit/CardLink",decorators:[y],component:t},r={args:{to:"/",label:"Un bien physique",description:"Livre, instrument de musique, abonnement, cartes et pass…",icon:b}},a={args:{to:"/",label:"À un groupe scolaire",description:"Pour les enseignants, les élèves, les parents…",icon:q,direction:"vertical"}};var p,m,k;r.parameters={...r.parameters,docs:{...(p=r.parameters)==null?void 0:p.docs,source:{originalSource:`{
+  args: {
+    to: '/',
+    label: 'Un bien physique',
+    description: 'Livre, instrument de musique, abonnement, cartes et pass…',
+    icon: strokeThingIcon
+  }
+}`,...(k=(m=r.parameters)==null?void 0:m.docs)==null?void 0:k.source}}};var _,f,v;a.parameters={...a.parameters,docs:{...(_=a.parameters)==null?void 0:_.docs,source:{originalSource:`{
+  args: {
+    to: '/',
+    label: 'À un groupe scolaire',
+    description: 'Pour les enseignants, les élèves, les parents…',
+    icon: strokeProfIcon,
+    direction: 'vertical'
+  }
+}`,...(v=(f=a.parameters)==null?void 0:f.docs)==null?void 0:v.source}}};const U=["Default","Vertical"];export{r as Default,a as Vertical,U as __namedExportsOrder,E as default};
