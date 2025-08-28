@@ -425,13 +425,23 @@ class SQLFunctionsTest:
 
     def test_wallet_balance_multiple_deposits(self):
         user = users_factories.UserFactory(age=18)
-        users_factories.DepositGrantFactory(user=user, type=finance_models.DepositType.GRANT_15_17)
-        users_factories.DepositGrantFactory(user=user, type=finance_models.DepositType.GRANT_18)
+        expiration_date = datetime.utcnow() + relativedelta(years=3)
+        users_factories.DepositGrantFactory(
+            user=user,
+            type=finance_models.DepositType.GRANT_15_17,
+            expirationDate=expiration_date,
+            amount=decimal.Decimal("3"),
+        )
+        newest_deposit = users_factories.DepositGrantFactory(
+            user=user,
+            type=finance_models.DepositType.GRANT_18,
+            expirationDate=expiration_date + relativedelta(weeks=1),
+            amount=decimal.Decimal("123"),
+        )
 
-        with pytest.raises(sa_exc.ProgrammingError) as exc:
-            db.session.query(sa.func.get_wallet_balance(user.id, False)).first()[0]
+        (wallet_balance,) = db.session.query(sa.func.get_wallet_balance(user.id, False)).first()
 
-        assert "more than one row returned by a subquery" in str(exc.value)
+        assert wallet_balance == newest_deposit.amount
 
     def test_wallet_balance_expired_deposit(self):
         with time_machine.travel(datetime.utcnow() - relativedelta(years=2, days=2)):
