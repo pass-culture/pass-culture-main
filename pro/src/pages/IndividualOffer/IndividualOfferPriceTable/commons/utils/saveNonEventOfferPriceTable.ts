@@ -1,15 +1,12 @@
 import type { UseFormSetError } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
-import {
-  getHumanReadableApiError,
-  isErrorAPIError,
-  serializeApiErrors,
-} from '@/apiClient/helpers'
+import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
-import { FrontendError } from '@/commons/errors/FrontendError'
+import { handleError } from '@/commons/errors/handleError'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 
+import { FAILED_PATCH_OFFER_USER_MESSAGE } from '../constants'
 import type { PriceTableFormValues } from '../schemas'
 import { toThingStockCreateBodyModel } from './toThingStockCreateBodyModel'
 import { toThingStockUpdateBodyModel } from './toThingStockUpdateBodyModel'
@@ -28,14 +25,9 @@ export const saveNonEventOfferPriceTable = async (
 
   try {
     await api.patchOffer(offer.id, { isDuo: formValues.isDuo })
-  } catch {
-    throw new FrontendError(
-      'Une erreur est survenue lors de la création de votre offre'
-    )
-  }
 
-  try {
     const departementCode = getDepartmentCode(offer)
+
     if (firstEntry.id) {
       await api.updateThingStock(
         firstEntry.id,
@@ -56,12 +48,12 @@ export const saveNonEventOfferPriceTable = async (
         })
       }
 
-      // For this error, we want to display a custom error on the price field
       if (serializedApiErrors.priceLimitationRule) {
         setError('entries.0.price', { type: 'custom', message: 'Non valide' })
       }
     }
-    throw new FrontendError(getHumanReadableApiError(error))
+
+    return handleError(error, FAILED_PATCH_OFFER_USER_MESSAGE)
   }
 
   await Promise.all([api.getOffer(offer.id), api.getStocks(offer.id)])
