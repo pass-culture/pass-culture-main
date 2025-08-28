@@ -108,10 +108,7 @@ export const IndividualOfferPriceTableScreen = ({
   return (
     <>
       <FormProvider {...form}>
-        <form
-          onSubmit={form.handleSubmit(saveAndContinue)}
-          data-testid="stock-thing-form"
-        >
+        <form onSubmit={form.handleSubmit(saveAndContinue)}>
           <ScrollToFirstHookFormErrorAfterSubmit />
 
           <FormLayout>

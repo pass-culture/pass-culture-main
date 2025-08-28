@@ -115,7 +115,7 @@ describe('yup.array().uniqueBy', () => {
         .filter((path): path is string => Boolean(path))
         .sort()
 
-      expect(errorPaths).toEqual(['[2]', '[3]'])
+      expect(errorPaths).toEqual(['[2].code', '[3].code'])
       expect(
         validationError.inner.every(
           (innerError) => innerError.message === 'Codes must be unique'
