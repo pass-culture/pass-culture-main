@@ -222,7 +222,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.VENUE_REGULARIZATION,
     FeatureToggle.SEND_ALL_EMAILS_TO_EHP,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
-    FeatureToggle.WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE,
     FeatureToggle.WIP_ADD_VIDEO,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS,
     FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION,
@@ -241,7 +240,12 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     # Please keep alphabetic order
 )
 
-if settings.IS_PROD or settings.IS_STAGING:
+if settings.IS_PROD:
+    FEATURES_DISABLED_BY_DEFAULT += (
+        FeatureToggle.WIP_FREE_ELIGIBILITY,
+        FeatureToggle.WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE,
+    )
+if settings.IS_STAGING:
     FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_FREE_ELIGIBILITY,)
 
 
