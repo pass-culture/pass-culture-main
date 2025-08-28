@@ -6,11 +6,25 @@
   display: flex;
   flex-direction: column;
   margin-top: rem.torem(16px);
+
+  > .input-readonly {
+    &--first {
+      margin-left: rem.torem(32px);
+    }
+
+    &,
+    &--first {
+      > span {
+        margin-top: rem.torem(7.5px);
+      }
+    }
+  }
+
+  .button-action {
+    margin-top: rem.torem(37px);
+  }
 }
 
-.button-action {
-  margin-top: rem.torem(37px);
-}
 
 @media (min-width: size.$tablet) {
   .row {

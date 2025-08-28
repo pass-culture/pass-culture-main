@@ -164,7 +164,7 @@ export const PriceTableForm = ({
       )}
 
       {fields.map((field, index) => (
-        <div key={field.id} className={styles.row}>
+        <div key={field.id} className={styles['row']}>
           {offer.isEvent && (
             <TextInput
               {...register(`entries.${index}.label`)}
@@ -223,36 +223,38 @@ export const PriceTableForm = ({
             />
           )}
 
-          {mode === OFFER_WIZARD_MODE.EDITION && entries.length > 0 && (
-            <>
-              <TextInput
-                className={styles['field-layout-shrink']}
-                hasLabelLineBreak={false}
-                isOptional
-                label="Stock restant"
-                name="availableStock"
-                readOnly
-                smallLabel
-                value={
-                  getValues(`entries.${index}.remainingQuantity`) ===
-                  'unlimited'
-                    ? 'Illimité'
-                    : (getValues(`entries.${index}.remainingQuantity`) ??
-                      undefined)
-                }
-              />
+          {!offer.isEvent &&
+            mode === OFFER_WIZARD_MODE.EDITION &&
+            entries.length > 0 && (
+              <>
+                <TextInput
+                  className={styles['input-readonly--first']}
+                  hasLabelLineBreak={false}
+                  isOptional
+                  label="Stock restant"
+                  name="availableStock"
+                  readOnly
+                  smallLabel
+                  value={
+                    getValues(`entries.${index}.remainingQuantity`) ===
+                    'unlimited'
+                      ? 'Illimité'
+                      : (getValues(`entries.${index}.remainingQuantity`) ??
+                        undefined)
+                  }
+                />
 
-              <TextInput
-                {...register(`entries.${index}.bookingsQuantity`)}
-                className={styles['field-layout-shrink']}
-                isOptional
-                label="Réservations"
-                readOnly
-                smallLabel
-                value={getValues(`entries.${index}.bookingsQuantity`) || 0}
-              />
-            </>
-          )}
+                <TextInput
+                  {...register(`entries.${index}.bookingsQuantity`)}
+                  className={styles['input-readonly']}
+                  isOptional
+                  label="Réservations"
+                  readOnly
+                  smallLabel
+                  value={getValues(`entries.${index}.bookingsQuantity`) || 0}
+                />
+              </>
+            )}
 
           {fields.length > 1 && (
             <ListIconButton
@@ -266,9 +268,8 @@ export const PriceTableForm = ({
       ))}
 
       {offer.isEvent && (
-        <div className={styles.row}>
+        <div className={styles['row']}>
           <Button
-            className={styles['button-action']}
             disabled={isReadOnly}
             icon={fulleMoreIcon}
             onClick={addEntry}
