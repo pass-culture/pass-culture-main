@@ -1,6 +1,7 @@
 import type { CastOptions } from 'yup'
 
 import type {
+  GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
   PriceCategoryResponseModel,
 } from '@/apiClient/v1'
@@ -13,14 +14,17 @@ import {
 import type { PriceTableFormContext } from '../types'
 
 export function toFormValues(
+  offer: GetIndividualOfferWithAddressResponseModel,
   priceCategories: PriceCategoryResponseModel[],
   context: PriceTableFormContext
 ): PriceTableFormValues
 export function toFormValues(
+  offer: GetIndividualOfferWithAddressResponseModel,
   offerStocks: GetOfferStockResponseModel[],
   context: PriceTableFormContext
 ): PriceTableFormValues
 export function toFormValues(
+  offer: GetIndividualOfferWithAddressResponseModel,
   priceCategoriesOrOfferStocks:
     | PriceCategoryResponseModel[]
     | GetOfferStockResponseModel[],
@@ -28,6 +32,7 @@ export function toFormValues(
 ): PriceTableFormValues
 
 export function toFormValues(
+  offer: GetIndividualOfferWithAddressResponseModel,
   priceCategoriesOrOfferStocks:
     | PriceCategoryResponseModel[]
     | GetOfferStockResponseModel[],
@@ -41,6 +46,7 @@ export function toFormValues(
 
   return PriceTableValidationSchema.cast(
     {
+      ...offer,
       entries:
         priceCategoriesOrOfferStocks.length > 0
           ? priceCategoriesOrOfferStocks.map((entry) => ({
