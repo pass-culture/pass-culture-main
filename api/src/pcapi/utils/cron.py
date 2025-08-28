@@ -51,7 +51,7 @@ def log_cron_with_transaction(func: typing.Callable) -> typing.Callable:
 
         status = None  # avoid "used-before-assignment" linter warning in `finally`
         try:
-            result = func(*args, **kwargs)
+            result = cron_require_feature(FeatureToggle.ENABLE_ALL_CRON)(func)(*args, **kwargs)
             # Check if there is something to commit. This avoids idle-in-transaction timeout exception in cron tasks
             # which takes long time and do not write anything in database (e.g. sendinblue automation tasks only read
             # database and often take more than one hour in production).
@@ -80,7 +80,7 @@ def log_cron(func: typing.Callable) -> typing.Callable:
 
         status = None  # avoid "used-before-assignment" linter warning in `finally`
         try:
-            result = func(*args, **kwargs)
+            result = cron_require_feature(FeatureToggle.ENABLE_ALL_CRON)(func)(*args, **kwargs)
             status = CronStatus.ENDED
         except Exception as exception:
             status = CronStatus.FAILED
