@@ -96,9 +96,10 @@ class DiscordSigninTest:
         }
 
         response = self.post_to_endpoint(client, form=form_data)
+        assert response.status_code == 200
 
-        assert response.status_code == 401
-        assert response.json == {"recaptcha": "Erreur recaptcha"}
+        response_data = response.data.decode("utf-8")
+        assert "La vérification a échoué. Recharge la page et réessaie" in response_data
 
     @unittest.mock.patch(
         "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
