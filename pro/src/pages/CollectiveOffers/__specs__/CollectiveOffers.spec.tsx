@@ -46,7 +46,7 @@ const proVenues = [
 ]
 
 const LABELS = {
-  nameSearchInput: /Nom de l’offre/,
+  nameSearchInput: "Nom de l'offre",
 }
 
 const renderOffers = async (

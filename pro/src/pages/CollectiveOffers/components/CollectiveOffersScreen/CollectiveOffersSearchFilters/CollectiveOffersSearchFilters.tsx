@@ -161,7 +161,7 @@ export const CollectiveOffersSearchFilters = ({
       isDisabled={disableAllFilters}
       hasActiveFilters={hasFilters}
       nameInputProps={{
-        label: 'Nom de l’offre',
+        label: "Nom de l'offre",
         disabled: disableAllFilters,
         onChange: (event) =>
           updateSearchFilters({ nameOrIsbn: event.currentTarget.value }),
