@@ -1,6 +1,7 @@
 import cn from 'classnames'
 
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { BackToNavLink } from '@/components/BackToNavLink/BackToNavLink'
 import fullValidateIcon from '@/icons/full-validate.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
@@ -116,6 +117,9 @@ export const CollectiveOfferConfirmationScreen = ({
   isShowcase,
   institutionDisplayName,
 }: CollectiveOfferConfirmationProps): JSX.Element => {
+  const isNewCollectiveOffersStructureActive = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
+  )
   const { title, description, icon } = mapOfferStatusToData(
     offerStatus,
     isShowcase,
@@ -141,7 +145,11 @@ export const CollectiveOfferConfirmationScreen = ({
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
             className={styles['confirmation-action']}
-            to="/offres/collectives"
+            to={
+              isShowcase && isNewCollectiveOffersStructureActive
+                ? '/offres/vitrines'
+                : '/offres/collectives'
+            }
           >
             Voir mes offres
           </ButtonLink>
