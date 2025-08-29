@@ -3759,7 +3759,6 @@ def mark_bank_account_without_continuation(ds_application_id: int) -> None:
         return
 
     bank_account.status = models.BankAccountApplicationStatus.WITHOUT_CONTINUATION
-    bank_account.dateLastStatusUpdate = now
     if bank_account.statusHistory:
         current_status_history = bank_account.statusHistory[0]
         current_status_history.timespan = db_utils.make_timerange(current_status_history.timespan.lower, now)

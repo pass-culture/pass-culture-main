@@ -63,7 +63,6 @@ describe('ReimbursementBankAccount', () => {
       dsApplicationId: 6,
       status: BankAccountApplicationStatus.ACCEPTE,
       dateCreated: '2023-09-22T12:44:05.410448',
-      dateLastStatusUpdate: null,
       linkedVenues: [{ id: 315, commonName: 'Le Petit Rintintin' }],
     }
 
@@ -87,7 +86,7 @@ describe('ReimbursementBankAccount', () => {
     expect(screen.getByText(/en cours de validation/)).toBeInTheDocument()
     expect(screen.getByText('Voir le dossier')).toBeInTheDocument()
     expect(
-      screen.queryByText('Structure rattéchée à ce compte bancaire')
+      screen.queryByText('Structure rattachée à ce compte bancaire')
     ).not.toBeInTheDocument()
   })
 
@@ -102,7 +101,7 @@ describe('ReimbursementBankAccount', () => {
     expect(screen.getByText(/informations manquantes/)).toBeInTheDocument()
     expect(screen.getByText(/Compléter le dossier/)).toBeInTheDocument()
     expect(
-      screen.queryByText('Structure rattéchée à ce compte bancaire')
+      screen.queryByText('Structure rattachée à ce compte bancaire')
     ).not.toBeInTheDocument()
   })
 
