@@ -214,7 +214,6 @@ class Returns200Test:
             "bankAccount": {
                 "bic": bank_account_link.bankAccount.bic,
                 "dateCreated": format_into_utc_date(bank_account_link.bankAccount.dateCreated),
-                "dateLastStatusUpdate": bank_account_link.bankAccount.dateLastStatusUpdate,
                 "dsApplicationId": bank_account_link.bankAccount.dsApplicationId,
                 "id": bank_account_link.bankAccount.id,
                 "isActive": bank_account_link.bankAccount.isActive,
