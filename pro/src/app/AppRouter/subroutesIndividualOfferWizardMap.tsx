@@ -126,6 +126,31 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     path: '/offre/individuelle/:offerId/stocks',
     title: 'Stocks et prix - Consulter une offre individuelle',
   },
+  // Booking form pages
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferPracticalInfos/IndividualOfferPracticalInfos'
+      ),
+    path: '/offre/individuelle/:offerId/creation/informations_pratiques',
+    title: 'Informations pratiques - Créer une offre individuelle',
+  },
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferPracticalInfos/IndividualOfferPracticalInfos'
+      ),
+    path: '/offre/individuelle/:offerId/edition/informations_pratiques',
+    title: 'Informations pratiques - Modifier une offre individuelle',
+  },
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOfferSummary/IndividualOfferSummaryPracticalInfos/IndividualOfferSummaryPracticalInfos'
+      ),
+    path: '/offre/individuelle/:offerId/informations_pratiques',
+    title: 'Informations pratiques - Consulter une offre individuelle',
+  },
   // Booking summary page
   {
     lazy: () =>
@@ -214,6 +239,15 @@ export const routesOnboardingIndividualOfferWizard: RouteConfig[] = [
     path: '/onboarding/offre/individuelle/:offerId/creation/tarifs',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
     title: 'Tarifs - Créer une offre individuelle - Onboarding',
+  },
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferPracticalInfos/IndividualOfferPracticalInfos'
+      ),
+    path: '/onboarding/offre/individuelle/:offerId/creation/informations_pratiques',
+    title: 'Informations pratiques - Créer une offre individuelle - Onboarding',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {
     lazy: () => import('@/pages/IndividualOfferWizard/Stocks/Stocks'),

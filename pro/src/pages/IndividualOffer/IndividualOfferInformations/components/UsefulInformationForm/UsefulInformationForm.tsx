@@ -39,6 +39,19 @@ export interface UsefulInformationFormProps {
   publishedOfferWithSameEAN?: GetActiveEANOfferResponseModel
 }
 
+export function getFirstWithdrawalTypeEnumValue(value: string) {
+  switch (value) {
+    case WithdrawalTypeEnum.BY_EMAIL:
+      return ticketSentDateOptions[0].value
+
+    case WithdrawalTypeEnum.ON_SITE:
+      return ticketWithdrawalHourOptions[0].value
+
+    default:
+      return undefined
+  }
+}
+
 export const UsefulInformationForm = ({
   conditionalFields,
   selectedVenue,
@@ -89,19 +102,6 @@ export const UsefulInformationForm = ({
     offerSubCategory?.reimbursementRule === REIMBURSEMENT_RULES.NOT_REIMBURSED
   const displayWithdrawalReminder =
     !offerSubCategory?.isEvent && !isOfferSubcategoryOnline
-
-  const getFirstWithdrawalTypeEnumValue = (value: string) => {
-    switch (value) {
-      case WithdrawalTypeEnum.BY_EMAIL:
-        return ticketSentDateOptions[0].value
-
-      case WithdrawalTypeEnum.ON_SITE:
-        return ticketWithdrawalHourOptions[0].value
-
-      default:
-        return undefined
-    }
-  }
 
   if (!selectedVenue) {
     return <Spinner />
