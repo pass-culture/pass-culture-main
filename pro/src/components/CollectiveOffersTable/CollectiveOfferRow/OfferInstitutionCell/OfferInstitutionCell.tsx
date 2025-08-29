@@ -7,12 +7,14 @@ import styles from '../Cells.module.scss'
 
 export interface OfferInstitutionCellProps {
   rowId: string
+  isTemplate: boolean
   educationalInstitution?: EducationalInstitutionResponseModel | null
   className?: string
 }
 
 export const OfferInstitutionCell = ({
   rowId,
+  isTemplate,
   educationalInstitution,
   className,
 }: OfferInstitutionCellProps) => {
@@ -27,7 +29,11 @@ export const OfferInstitutionCell = ({
       return `${institutionType} ${city}`
     }
 
-    return 'Tous les établissements'
+    if (isTemplate) {
+      return 'Tous les établissements'
+    }
+
+    return '-'
   }
 
   return (
@@ -35,6 +41,7 @@ export const OfferInstitutionCell = ({
       // biome-ignore lint/a11y: accepted for assistive tech
       role="cell"
       className={classNames(
+        'cell-institution',
         styles['offers-table-cell'],
         styles['institution-column'],
         className

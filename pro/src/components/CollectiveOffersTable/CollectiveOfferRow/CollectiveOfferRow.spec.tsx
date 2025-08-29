@@ -171,13 +171,15 @@ describe('CollectiveOfferRow', () => {
   })
 
   describe('offer institution', () => {
-    it('should display "Tous les établissements" when offer is not assigned to a specific institution', () => {
-      renderOfferItem({
+    it('should display "-" when offer is not assigned to a specific institution', () => {
+      const { container } = renderOfferItem({
         ...props,
         offer: collectiveOfferFactory({ booking: null, stocks }),
       })
 
-      expect(screen.getByText('Tous les établissements')).toBeInTheDocument()
+      const cell = container.querySelector('td.cell-institution')
+
+      expect(cell).toHaveTextContent('-')
     })
 
     it('should display institution name when offer is assigned to a specific institution', () => {
@@ -650,12 +652,14 @@ describe('CollectiveOfferRow', () => {
     expect(row?.className).toContain('is-first-row')
   })
 
-  it('should display "Tous les établissements" if educationalInstitution is null', () => {
+  it('should display "-" if educationalInstitution is null', () => {
     props.offer.educationalInstitution = null
 
-    renderOfferItem(props)
+    const { container } = renderOfferItem(props)
 
-    expect(screen.getByText('Tous les établissements')).toBeInTheDocument()
+    const cell = container.querySelector('td.cell-institution')
+
+    expect(cell).toHaveTextContent('-')
   })
 
   it('should use only the first stock for bookingLimitDate', () => {

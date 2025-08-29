@@ -22,7 +22,7 @@ const renderOfferNameCell = (props: OfferEventDateCellProps) =>
     }
   )
 
-describe('OfferNameCell', () => {
+describe('OfferEventDateCell', () => {
   it('should display 1 date when start and end dates are the same', () => {
     const eventOffer = collectiveOfferFactory({
       isShowcase: false,
@@ -60,7 +60,7 @@ describe('OfferNameCell', () => {
     expect(screen.getByText('au 06/09/2024')).toBeInTheDocument()
   })
 
-  it('should display "Toute l’année scolaire" when dates are not defined', () => {
+  it('should display "Toute l’année scolaire" for OfferTemplate when dates are not defined', () => {
     const eventOffer = collectiveOfferFactory({
       isShowcase: true,
       name: 'Offre nom',
@@ -73,5 +73,20 @@ describe('OfferNameCell', () => {
     })
 
     expect(screen.getByText('Toute l’année scolaire')).toBeInTheDocument()
+  })
+
+  it('should display "-" for Offer when dates are not defined', () => {
+    const eventOffer = collectiveOfferFactory({
+      isShowcase: false,
+      name: 'Offre nom',
+      dates: null,
+    })
+
+    renderOfferNameCell({
+      offer: eventOffer,
+      rowId: 'rowId',
+    })
+
+    expect(screen.getByText('-')).toBeInTheDocument()
   })
 })
