@@ -357,9 +357,9 @@ class DMSGraphQLClient:
         state: dms_models.GraphQLApplicationStates | None = None,
         since: datetime.datetime | None = None,
         page_token: str | None = None,
-        archived: bool = False,
+        archived: bool | None = False,  # None means: both archived and not archived
     ) -> Generator[dict, None, None]:
-        variables: dict[str, int | str] = {
+        variables: dict[str, int | str | None] = {
             "demarcheNumber": procedure_number,
             "archived": archived,
         }
@@ -386,6 +386,7 @@ class DMSGraphQLClient:
                 state=state,
                 since=since,
                 page_token=dossiers["pageInfo"]["endCursor"],
+                archived=archived,
             )
 
     def get_eac_nodes_siret_states(
