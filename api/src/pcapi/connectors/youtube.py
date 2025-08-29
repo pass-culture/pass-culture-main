@@ -33,10 +33,10 @@ def get_video_metadata(video_id: str) -> YoutubeVideoMetadata | None:
         api_response = YoutubeApiResponse.parse_obj(response.json())
     except requests.exceptions.RequestException as e:
         logger.error("Error fetching YouTube video metadata for video_id %s: %s", video_id, e)
-        return None
+        raise requests.ExternalAPIException(True)
     except ValidationError as e:
         logger.error("Error validating YouTube API response for video_id %s: %s", video_id, e)
-        return None
+        raise requests.ExternalAPIException(True)
 
     if not api_response.items:
         logger.warning("No items found for YouTube video_id %s", video_id)
