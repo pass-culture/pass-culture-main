@@ -1,7 +1,6 @@
-import re
-
 from pydantic.v1 import HttpUrl
 
+from pcapi.core.offers import api
 from pcapi.models.api_errors import ApiErrors
 
 
@@ -13,14 +12,11 @@ def check_offer_name_length_is_valid(offer_name: str) -> None:
         raise api_error
 
 
-def check_video_url(video_url: HttpUrl | None) -> None:
+def check_video_url(video_url: HttpUrl | None) -> str | None:
     if not video_url:
-        return
-    youtube_pattern = re.compile(
-        r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?([a-zA-Z0-9_-]{11})"
-    )
+        return None
 
-    is_youtube = youtube_pattern.match(video_url)
-
-    if not is_youtube:
+    video_id = api.extract_youtube_video_id(str(video_url))
+    if not video_id:
         raise ApiErrors(errors={"videoUrl": ["Veuillez renseigner une URL provenant de la plateforme Youtube"]})
+    return video_id
