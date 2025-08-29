@@ -125,10 +125,11 @@
         ]
     ],
     "numericAttributesForFiltering": [
+        "offer.dates",
+        "offer.last30DaysBookings",
+        "offer.likes",
         "offer.prices",
         "offer.releaseDate",
-        "offer.dates",
-        "offer.times",
-        "offer.last30DaysBookings"
+        "offer.times"
     ]
 }
