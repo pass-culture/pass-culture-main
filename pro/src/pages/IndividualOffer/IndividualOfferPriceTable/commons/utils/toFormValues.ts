@@ -1,3 +1,4 @@
+import { format } from 'date-fns'
 import type { CastOptions } from 'yup'
 
 import type {
@@ -5,6 +6,9 @@ import type {
   GetOfferStockResponseModel,
   PriceCategoryResponseModel,
 } from '@/apiClient/v1'
+import { FORMAT_ISO_DATE_ONLY, isDateValid } from '@/commons/utils/date'
+import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
+import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
 
 import {
   PriceTableEntryValidationSchema,
@@ -12,6 +16,12 @@ import {
   PriceTableValidationSchema,
 } from '../schemas'
 import type { PriceTableFormContext } from '../types'
+
+const isGetOfferStockResponseModel = (
+  entry: PriceCategoryResponseModel | GetOfferStockResponseModel
+): entry is GetOfferStockResponseModel => {
+  return 'quantity' in entry
+}
 
 export function toFormValues(
   offer: GetIndividualOfferWithAddressResponseModel,
@@ -51,6 +61,26 @@ export function toFormValues(
         priceCategoriesOrOfferStocks.length > 0
           ? priceCategoriesOrOfferStocks.map((entry) => ({
               ...entry,
+              activationCodesExpirationDatetime:
+                isGetOfferStockResponseModel(entry) &&
+                entry.activationCodesExpirationDatetime &&
+                isDateValid(entry.activationCodesExpirationDatetime)
+                  ? format(
+                      new Date(entry.activationCodesExpirationDatetime),
+                      FORMAT_ISO_DATE_ONLY
+                    )
+                  : null,
+              bookingLimitDatetime:
+                isGetOfferStockResponseModel(entry) &&
+                entry.bookingLimitDatetime
+                  ? format(
+                      getLocalDepartementDateTimeFromUtc(
+                        entry.bookingLimitDatetime,
+                        getDepartmentCode(offer)
+                      ),
+                      FORMAT_ISO_DATE_ONLY
+                    )
+                  : null,
               offerId: context.offer.id,
             }))
           : [

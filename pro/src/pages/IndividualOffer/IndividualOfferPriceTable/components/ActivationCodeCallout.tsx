@@ -11,7 +11,6 @@ export const ActivationCodeCallout = () => (
         href: 'https://aide.passculture.app/hc/fr/articles/4411991970705--Acteurs-culturels-Comment-cr%C3%A9er-une-offre-num%C3%A9rique-avec-des-codes-d-activation',
         isExternal: true,
         label: 'Comment gérer les codes d’activation ?',
-        target: '_blank',
       },
     ]}
     variant={CalloutVariant.INFO}

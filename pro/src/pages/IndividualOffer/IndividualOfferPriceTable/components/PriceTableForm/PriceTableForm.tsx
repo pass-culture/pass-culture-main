@@ -4,6 +4,7 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { isDateValid } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { toNumberOrNull } from '@/commons/utils/toNumberOrNull'
 import { DialogStockThingDeleteConfirm } from '@/components/IndividualOffer/DialogStockDeleteConfirm/DialogStockThingDeleteConfirm'
@@ -15,6 +16,7 @@ import strokeEuroIcon from '@/icons/stroke-euro.svg'
 import strokeFrancIcon from '@/icons/stroke-franc.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
+import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { PriceInput } from '@/ui-kit/form/PriceInput/PriceInput'
 import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
@@ -25,7 +27,7 @@ import {
   type PriceTableFormValues,
 } from '../../commons/schemas'
 import type { PriceTableFormContext } from '../../commons/types'
-import { getFieldsSpecs } from '../../commons/utils/getFieldsSpecs'
+import { makeFieldConstraints } from '../../commons/utils/makeFieldConstraints'
 import styles from './PriceTableForm.module.scss'
 
 export interface PriceTableFormProps {
@@ -64,13 +66,15 @@ export const PriceTableForm = ({
   const [entryIndexToConfirmAndRemove, setEntryIndexToConfirmAndRemove] =
     useState<number | null>(null)
 
-  const entries = watch('entries')
-
-  const { minExpirationDate, minQuantity, nowAsDate } = getFieldsSpecs({
-    entries,
+  const { computeEntryConstraints, nowAsDate } = makeFieldConstraints({
     offer,
     mode,
   })
+
+  const firstEntry = watch('entries.0')
+  const activationCodesExpirationDatetimeMin = firstEntry
+    ? computeEntryConstraints(firstEntry).activationCodesExpirationDatetimeMin
+    : null
 
   const addEntry = () => {
     const newRow = PriceTableEntryValidationSchema.cast(
@@ -144,94 +148,120 @@ export const PriceTableForm = ({
   return (
     <>
       <DialogStockThingDeleteConfirm
+        isDialogOpen={entryIndexToConfirmAndRemove !== null}
+        onCancel={() => setEntryIndexToConfirmAndRemove(null)}
         onConfirm={() =>
           entryIndexToConfirmAndRemove
             ? removeEntry(entryIndexToConfirmAndRemove)
             : null
         }
-        onCancel={() => setEntryIndexToConfirmAndRemove(null)}
-        isDialogOpen={entryIndexToConfirmAndRemove !== null}
       />
 
       <ActivationCodeFormDialog
-        onSubmit={uploadActivationCodes}
-        onCancel={() => setActivationCodeEntryIndexToUpload(null)}
-        today={nowAsDate}
-        minExpirationDate={minExpirationDate}
-        isDialogOpen={activationCodeEntryIndexToUpload !== null}
         activationCodeButtonRef={activationCodeButtonRef}
         departmentCode={getDepartmentCode(offer)}
+        isDialogOpen={activationCodeEntryIndexToUpload !== null}
+        minExpirationDate={activationCodesExpirationDatetimeMin}
+        onCancel={() => setActivationCodeEntryIndexToUpload(null)}
+        onSubmit={uploadActivationCodes}
+        today={nowAsDate}
       />
 
-      {fields.map((field, index) => (
-        <div key={field.id} className={styles['row']}>
-          {offer.isEvent && (
-            <TextInput
-              {...register(`entries.${index}.label`)}
-              className={styles['input-label']}
-              disabled={fields.length <= 1 || isReadOnly}
-              error={errors.entries?.[index]?.label?.message}
-              label="Intitulé du tarif"
-            />
-          )}
+      {fields.map((field, index) => {
+        const entry = watch(`entries.${index}`)
 
-          <PriceInput
-            {...register(`entries.${index}.price`)}
-            disabled={isReadOnly}
-            error={errors.entries?.[index]?.price?.message}
-            label="Prix"
-            rightIcon={isCaledonian ? strokeFrancIcon : strokeEuroIcon}
-            showFreeCheckbox
-            updatePriceValue={(value) =>
-              setValue(`entries.${index}.price`, Number(value), {
-                shouldDirty: true,
-              })
-            }
-          />
+        return (
+          <div key={field.id} className={styles['row']}>
+            {offer.isEvent && (
+              <TextInput
+                {...register(`entries.${index}.label`)}
+                className={styles['input-label']}
+                disabled={fields.length <= 1 || isReadOnly}
+                error={errors.entries?.[index]?.label?.message}
+                label="Intitulé du tarif"
+              />
+            )}
 
-          {!offer.isEvent && (
-            <QuantityInput
-              className={styles['field-layout-small']}
+            <PriceInput
+              {...register(`entries.${index}.price`)}
               disabled={isReadOnly}
-              error={errors.entries?.[index]?.quantity?.message}
-              label="Stock"
-              minimum={minQuantity}
-              onChange={(e) =>
-                setValue(
-                  `entries.${index}.quantity`,
-                  toNumberOrNull(e.target.value),
-                  {
-                    shouldDirty: true,
-                  }
-                )
+              error={errors.entries?.[index]?.price?.message}
+              label="Prix"
+              rightIcon={isCaledonian ? strokeFrancIcon : strokeEuroIcon}
+              showFreeCheckbox
+              updatePriceValue={(value) =>
+                setValue(`entries.${index}.price`, Number(value), {
+                  shouldDirty: true,
+                })
               }
-              required
-              value={watch(`entries.${index}.quantity`)}
             />
-          )}
 
-          {!offer.isEvent && offer.isDigital && (
-            <ListIconButton
-              className={styles['button-action']}
-              icon={fullCodeIcon}
-              onClick={() => setActivationCodeEntryIndexToUpload(index)}
-              readOnly={isReadOnly}
-              ref={activationCodeButtonRef}
-              tooltipContent="Ajouter des codes d'activation"
-            />
-          )}
-          {fields.length > 1 && (
-            <ListIconButton
-              className={styles['button-action']}
-              icon={fullTrashIcon}
-              onClick={() => askForRemovalConfirmationOrRemove(index)}
-              tooltipContent="Supprimer ce tarif"
-            />
-          )}
+            {!offer.isEvent && (
+              <DatePicker
+                {...register(`entries.${index}.bookingLimitDatetime`)}
+                disabled={isReadOnly}
+                error={errors.entries?.[index]?.bookingLimitDatetime?.message}
+                label="Date limite de réservation"
+                maxDate={computeEntryConstraints(entry).bookingLimitDatetimeMax}
+                minDate={computeEntryConstraints(entry).bookingLimitDatetimeMin}
+              />
+            )}
 
-          {!offer.isEvent &&
-            mode === OFFER_WIZARD_MODE.EDITION &&
-            entries.length > 0 && (
+            {isDateValid(entry.activationCodesExpirationDatetime) && (
+              <DatePicker
+                disabled
+                error={
+                  errors.entries?.[index]?.activationCodesExpirationDatetime
+                    ?.message
+                }
+                label="Date d'expiration"
+                name={`entries.${index}.activationCodesExpirationDatetime`}
+                required
+                value={entry.activationCodesExpirationDatetime ?? undefined}
+              />
+            )}
+
+            {!offer.isEvent && (
+              <QuantityInput
+                className={styles['field-layout-small']}
+                disabled={isReadOnly}
+                error={errors.entries?.[index]?.quantity?.message}
+                label="Stock"
+                minimum={computeEntryConstraints(entry).quantityMin}
+                onChange={(e) =>
+                  setValue(
+                    `entries.${index}.quantity`,
+                    toNumberOrNull(e.target.value),
+                    {
+                      shouldDirty: true,
+                    }
+                  )
+                }
+                required
+                value={entry.quantity}
+              />
+            )}
+
+            {!offer.isEvent && offer.isDigital && (
+              <ListIconButton
+                className={styles['button-action']}
+                icon={fullCodeIcon}
+                onClick={() => setActivationCodeEntryIndexToUpload(index)}
+                readOnly={isReadOnly}
+                ref={activationCodeButtonRef}
+                tooltipContent="Ajouter des codes d'activation"
+              />
+            )}
+            {fields.length > 1 && (
+              <ListIconButton
+                className={styles['button-action']}
+                icon={fullTrashIcon}
+                onClick={() => askForRemovalConfirmationOrRemove(index)}
+                tooltipContent="Supprimer ce tarif"
+              />
+            )}
+
+            {!offer.isEvent && mode === OFFER_WIZARD_MODE.EDITION && (
               <>
                 <TextInput
                   className={styles['input-readonly--first']}
@@ -242,11 +272,9 @@ export const PriceTableForm = ({
                   readOnly
                   smallLabel
                   value={
-                    getValues(`entries.${index}.remainingQuantity`) ===
-                    'unlimited'
+                    entry.remainingQuantity === 'unlimited'
                       ? 'Illimité'
-                      : (getValues(`entries.${index}.remainingQuantity`) ??
-                        undefined)
+                      : (entry.remainingQuantity ?? undefined)
                   }
                 />
 
@@ -257,12 +285,13 @@ export const PriceTableForm = ({
                   label="Réservations"
                   readOnly
                   smallLabel
-                  value={getValues(`entries.${index}.bookingsQuantity`) || 0}
+                  value={entry.bookingsQuantity ?? 0}
                 />
               </>
             )}
-        </div>
-      ))}
+          </div>
+        )
+      })}
 
       {offer.isEvent && (
         <div className={styles['row']}>
