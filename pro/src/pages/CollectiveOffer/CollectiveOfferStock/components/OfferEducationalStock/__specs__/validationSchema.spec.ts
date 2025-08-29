@@ -7,9 +7,9 @@ import { generateValidationSchema } from '../validationSchema'
 
 describe('validationSchema', () => {
   const values = {
-    startDatetime: addDays(new Date(), 2).toISOString().split('T')[0],
-    endDatetime: addDays(new Date(), 3).toISOString().split('T')[0],
-    bookingLimitDatetime: addDays(new Date(), 1).toISOString().split('T')[0],
+    startDatetime: '2050-09-01',
+    endDatetime: '2050-09-02',
+    bookingLimitDatetime: '2050-08-31',
     eventTime: '14:00',
     numberOfPlaces: 56,
     priceDetail: 'Détails sur le prix',
