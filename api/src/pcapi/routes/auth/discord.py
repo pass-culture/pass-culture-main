@@ -119,8 +119,10 @@ def discord_call_back() -> str | Response | None:
 
 
 def update_discord_user(user_id: str, discord_id: str) -> None:
-    already_linked_user = db.session.query(user_models.DiscordUser).filter_by(discordId=discord_id).first()
-    if already_linked_user:
+    already_linked_user: user_models.DiscordUser | None = (
+        db.session.query(user_models.DiscordUser).filter_by(discordId=discord_id).first()
+    )
+    if already_linked_user and already_linked_user.userId != int(user_id):
         raise users_exceptions.DiscordUserAlreadyLinked()
 
     user: user_models.User = db.session.get(user_models.User, user_id)
