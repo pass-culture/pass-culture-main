@@ -12,13 +12,14 @@
     </tr>
   </thead>
   <tbody>
-    {% for bank_account in bank_accounts %}
+    {% for row in rows %}
+      {% set bank_account = row.BankAccount %}
       <tr>
         <th scope="row"></th>
         <td class="fw-bolder">{{ links.build_bank_account_name_to_details_link(bank_account, text_attr="id") }}</td>
         <td class="text-break">{{ build_connect_as_link(connect_as[bank_account.id], bank_account.label, "link-primary") }}</td>
         <td>{{ bank_account.status | format_dms_application_status_badge }}</td>
-        <td>{{ bank_account.dateLastStatusUpdate | format_date_time }}</td>
+        <td>{{ row.date_last_status_update | format_date_time }}</td>
       </tr>
     {% endfor %}
   </tbody>
