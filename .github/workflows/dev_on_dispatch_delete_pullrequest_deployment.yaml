@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -69,7 +69,7 @@ jobs:
           fi
 
       - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
           workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
