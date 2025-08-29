@@ -308,6 +308,50 @@ class DiscordSigninTest:
 
         assert db.session.query(DiscordUser).filter_by(userId=not_eligible_user.id).count() == 0
 
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
+    def test_discord_account_already_linked_to_same_user(
+        self, mock_add_to_server, mock_get_user_id, client, db_session
+    ):
+        user = users_factories.BeneficiaryFactory()
+        discord_user = users_factories.DiscordUserFactory(
+            user=user, discordId="discord_user_id", hasAccess=True, isBanned=False
+        )
+
+        response = client.get(url_for("auth.discord_success", user_id=str(user.id), access_token="access_token"))
+        assert response.status_code == 303
+
+        assert mock_get_user_id.call_count == 1
+        assert mock_get_user_id.call_args[0][0] == "access_token"
+
+        assert mock_add_to_server.call_count == 1
+        assert mock_add_to_server.call_args[0][0] == "access_token"
+        assert mock_add_to_server.call_args[0][1] == "discord_user_id"
+
+        db.session.refresh(discord_user)
+        assert discord_user.discordId == "discord_user_id"
+
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
+    def test_discord_account_already_linked_to_another_user(
+        self, mock_add_to_server, mock_get_user_id, client, db_session
+    ):
+        user = users_factories.BeneficiaryFactory()
+        another_user = users_factories.BeneficiaryFactory()
+        users_factories.DiscordUserFactory(user=user, discordId="discord_user_id", hasAccess=True, isBanned=False)
+
+        response = client.get(
+            url_for("auth.discord_success", user_id=str(another_user.id), access_token="access_token")
+        )
+        assert response.status_code == 303
+        response_data = response.data.decode("utf-8")
+        assert "Ce compte Discord est déjà lié à un autre compte pass Culture." in response_data
+
+        assert mock_get_user_id.call_count == 1
+        assert mock_get_user_id.call_args[0][0] == "access_token"
+
+        assert mock_add_to_server.call_count == 0
+
     @pytest.mark.features(DISCORD_ENABLE_NEW_ACCESS=False)
     def test_discord_signin_disabled(self, client):
         response = client.get(url_for("auth.discord_signin"))
