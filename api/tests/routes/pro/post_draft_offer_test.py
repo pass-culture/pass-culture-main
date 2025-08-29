@@ -388,7 +388,7 @@ class Returns400Test:
             (
                 {"videoUrl": "https://video.com"},
                 400,
-                {"videoUrl": ["Veuillez renseigner une url provenant de la plateforme Youtube"]},
+                {"videoUrl": ["Veuillez renseigner une URL provenant de la plateforme Youtube"]},
             ),
             # 404
             (
