@@ -1,0 +1,6 @@
+- Icons gauche/droite
+- Bouton par dessus l'input (ex: oeil pour afficher/masquer le mdp)
+- Types d'input couverts : text OK, search ?, password ?, email ?, url ?, tel ? règles spéciales ?
+- Si type couvert, quelles règles spécifiques ?
+- Absence de label
+- Contenu aligné avec l'input à droite 
