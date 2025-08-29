@@ -124,7 +124,6 @@ class BankAccountResponseModel(BaseModel):
     dsApplicationId: int | None
     status: finance_models.BankAccountApplicationStatus
     dateCreated: datetime.datetime
-    dateLastStatusUpdate: datetime.datetime | None
     linkedVenues: list[LinkedVenues]
 
     class Config:

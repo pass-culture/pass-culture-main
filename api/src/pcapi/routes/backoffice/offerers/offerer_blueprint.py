@@ -1134,31 +1134,41 @@ def get_collective_dms_applications(offerer_id: int) -> utils.BackofficeResponse
 
 @offerer_blueprint.route("/bank-accounts", methods=["GET"])
 def get_bank_accounts(offerer_id: int) -> utils.BackofficeResponse:
-    bank_accounts = (
-        db.session.query(finance_models.BankAccount)
-        .filter_by(offererId=offerer_id)
+    rows = (
+        db.session.query(
+            finance_models.BankAccount,
+            sa.func.lower(finance_models.BankAccountStatusHistory.timespan).label("date_last_status_update"),
+        )
+        .outerjoin(
+            finance_models.BankAccountStatusHistory,
+            finance_models.BankAccountStatusHistory.bankAccountId == finance_models.BankAccount.id,
+        )
+        .filter(
+            finance_models.BankAccount.offererId == offerer_id,
+            sa.func.upper(finance_models.BankAccountStatusHistory.timespan).is_(None),
+        )
         .options(
             sa_orm.load_only(
                 finance_models.BankAccount.id,
                 finance_models.BankAccount.label,
                 finance_models.BankAccount.status,
-                finance_models.BankAccount.dateLastStatusUpdate,
                 finance_models.BankAccount.offererId,
             ),
         )
-        .order_by(finance_models.BankAccount.dateLastStatusUpdate.desc())
+        .order_by(sa.func.lower(finance_models.BankAccountStatusHistory.timespan).desc().nulls_last())
         .all()
     )
     connect_as = {}
-    for bank_account in bank_accounts:
-        connect_as[bank_account.id] = get_connect_as(
-            object_id=bank_account.id,
+
+    for row in rows:
+        connect_as[row.BankAccount.id] = get_connect_as(
+            object_id=row.BankAccount.id,
             object_type="bank_account",
-            pc_pro_path=urls.build_pc_pro_bank_account_path(bank_account),
+            pc_pro_path=urls.build_pc_pro_bank_account_path(row.BankAccount),
         )
     return render_template(
         "offerer/get/details/bank_accounts.html",
-        bank_accounts=bank_accounts,
+        rows=rows,
         connect_as=connect_as,
     )
 

@@ -7,7 +7,6 @@ import type { LinkedVenues } from './LinkedVenues';
 export type BankAccountResponseModel = {
   bic: string;
   dateCreated: string;
-  dateLastStatusUpdate?: string | null;
   dsApplicationId?: number | null;
   id: number;
   isActive: boolean;

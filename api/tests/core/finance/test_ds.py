@@ -170,7 +170,9 @@ class MarkWithoutApplicationTooOldApplicationsTest:
 
         bank_account = db.session.query(BankAccount).filter_by(dsApplicationId=application_id).one()
         assert bank_account.status == BankAccountApplicationStatus.WITHOUT_CONTINUATION
-        assert bank_account.dateLastStatusUpdate.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
+        assert bank_account.statusHistory[0].timespan.lower.timestamp() == pytest.approx(
+            datetime.datetime.utcnow().timestamp()
+        )
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
@@ -223,7 +225,9 @@ class MarkWithoutApplicationTooOldApplicationsTest:
 
         bank_account = db.session.query(BankAccount).filter_by(dsApplicationId=application_id).one()
         assert bank_account.status == BankAccountApplicationStatus.WITHOUT_CONTINUATION
-        assert bank_account.dateLastStatusUpdate.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
+        assert bank_account.statusHistory[0].timespan.lower.timestamp() == pytest.approx(
+            datetime.datetime.utcnow().timestamp()
+        )
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.mark_without_continuation")
@@ -497,7 +501,6 @@ class MarkWithoutApplicationTooOldApplicationsTest:
 
         bank_account = db.session.query(BankAccount).filter_by(dsApplicationId=application_id).one()
         assert bank_account.status == BankAccountApplicationStatus.WITHOUT_CONTINUATION
-        assert bank_account.dateLastStatusUpdate.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
         assert bank_account.venueLinks
         assert len(bank_account.statusHistory) == 2
         for status_history in bank_account.statusHistory:

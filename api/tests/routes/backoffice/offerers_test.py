@@ -1996,18 +1996,42 @@ class GetOffererBankAccountTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_get_bank_accounts(self, authenticated_client, offerer):
+        now = datetime.datetime.utcnow()
         offerer = offerers_factories.OffererFactory()
         bank1 = finance_factories.BankAccountFactory(
             offerer=offerer,
             label="Premier compte",
             status=finance_models.BankAccountApplicationStatus.ACCEPTED,
-            dateLastStatusUpdate=datetime.datetime.utcnow(),
         )
+        finance_factories.BankAccountStatusHistoryFactory(
+            bankAccount=bank1,
+            status=finance_models.BankAccountApplicationStatus.ACCEPTED,
+            timespan=[
+                now - datetime.timedelta(days=3),
+            ],
+        )
+
         bank2 = finance_factories.BankAccountFactory(
             offerer=offerer,
             label="Deuxième compte",
             status=finance_models.BankAccountApplicationStatus.ON_GOING,
-            dateLastStatusUpdate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        )
+        finance_factories.BankAccountStatusHistoryFactory(
+            bankAccount=bank2,
+            status=finance_models.BankAccountApplicationStatus.DRAFT,
+            timespan=[now - datetime.timedelta(days=13), now - datetime.timedelta(days=2)],
+        )
+        finance_factories.BankAccountStatusHistoryFactory(
+            bankAccount=bank2,
+            status=finance_models.BankAccountApplicationStatus.ON_GOING,
+            timespan=[
+                now - datetime.timedelta(days=2),
+            ],
+        )
+        bank_with_no_history = finance_factories.BankAccountFactory(
+            offerer=offerer,
+            label="Compte sans histoire",
+            status=finance_models.BankAccountApplicationStatus.ACCEPTED,
         )
         finance_factories.BankAccountFactory()  # not listed
 
@@ -2018,17 +2042,26 @@ class GetOffererBankAccountTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 2
+        assert len(rows) == 3
 
-        assert rows[0]["ID"] == str(bank1.id)
-        assert rows[0]["Intitulé du compte bancaire"] == bank1.label
-        assert rows[0]["Statut du dossier DMS CB"] == "Accepté"
-        assert rows[0]["Date de dernière mise à jour"].startswith(bank1.dateLastStatusUpdate.strftime("%d/%m/%Y à"))
+        assert rows[0]["ID"] == str(bank2.id)
+        assert rows[0]["Intitulé du compte bancaire"] == bank2.label
+        assert rows[0]["Statut du dossier DMS CB"] == "En instruction"
+        assert rows[0]["Date de dernière mise à jour"].startswith(
+            (now - datetime.timedelta(days=2)).strftime("%d/%m/%Y à")
+        )
 
-        assert rows[1]["ID"] == str(bank2.id)
-        assert rows[1]["Intitulé du compte bancaire"] == bank2.label
-        assert rows[1]["Statut du dossier DMS CB"] == "En instruction"
-        assert rows[1]["Date de dernière mise à jour"].startswith(bank2.dateLastStatusUpdate.strftime("%d/%m/%Y à"))
+        assert rows[1]["ID"] == str(bank1.id)
+        assert rows[1]["Intitulé du compte bancaire"] == bank1.label
+        assert rows[1]["Statut du dossier DMS CB"] == "Accepté"
+        assert rows[1]["Date de dernière mise à jour"].startswith(
+            (now - datetime.timedelta(days=3)).strftime("%d/%m/%Y à")
+        )
+
+        assert rows[2]["ID"] == str(bank_with_no_history.id)
+        assert rows[2]["Intitulé du compte bancaire"] == bank_with_no_history.label
+        assert rows[2]["Statut du dossier DMS CB"] == "Accepté"
+        assert rows[2]["Date de dernière mise à jour"] == ""
 
 
 class CommentOffererTest(PostEndpointHelper):

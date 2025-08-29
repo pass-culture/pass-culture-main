@@ -262,7 +262,6 @@ class BankAccount(PcObject, Base, Model, DeactivableMixin):
         sa.Enum(BankAccountApplicationStatus), nullable=False
     )
     dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
-    dateLastStatusUpdate: datetime.datetime = sa.Column(sa.DateTime)
     venueLinks: sa_orm.Mapped[list["offerers_models.VenueBankAccountLink"]] = sa_orm.relationship(
         "VenueBankAccountLink", back_populates="bankAccount", passive_deletes=True
     )
