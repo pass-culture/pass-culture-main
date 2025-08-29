@@ -81,6 +81,7 @@ import type { OffererEligibilityResponseModel } from '../models/OffererEligibili
 import type { OffererStatsResponseModel } from '../models/OffererStatsResponseModel';
 import type { OfferOpeningHoursSchema } from '../models/OfferOpeningHoursSchema';
 import type { OfferStatus } from '../models/OfferStatus';
+import type { OfferVideo } from '../models/OfferVideo';
 import type { PatchAllOffersActiveStatusBodyModel } from '../models/PatchAllOffersActiveStatusBodyModel';
 import type { PatchCollectiveOfferActiveStatusBodyModel } from '../models/PatchCollectiveOfferActiveStatusBodyModel';
 import type { PatchCollectiveOfferArchiveBodyModel } from '../models/PatchCollectiveOfferArchiveBodyModel';
@@ -1330,6 +1331,27 @@ export class DefaultService {
       url: '/finance/combined-invoices',
       query: {
         'invoiceReferences': invoiceReferences,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_offer_video_metadata <GET>
+   * @param videoUrl
+   * @returns OfferVideo OK
+   * @throws ApiError
+   */
+  public getOfferVideoMetadata(
+    videoUrl: string,
+  ): CancelablePromise<OfferVideo> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/get-offer-video-data',
+      query: {
+        'videoUrl': videoUrl,
       },
       errors: {
         403: `Forbidden`,

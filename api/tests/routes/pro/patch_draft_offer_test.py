@@ -487,7 +487,7 @@ class Returns400Test:
             ),
             (
                 {"videoUrl": "http://coucou.com"},
-                {"videoUrl": ["Veuillez renseigner une url provenant de la plateforme Youtube"]},
+                {"videoUrl": ["Veuillez renseigner une URL provenant de la plateforme Youtube"]},
             ),
         ],
     )

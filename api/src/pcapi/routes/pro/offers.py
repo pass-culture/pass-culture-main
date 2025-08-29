@@ -763,10 +763,11 @@ def get_offer_opening_hours(offer_id: int) -> offers_schemas.OfferOpeningHoursSc
 def get_offer_video_metadata(
     query: offers_serialize.VideoMetatdataQueryModel,
 ) -> offers_serialize.OfferVideo:
-    offers_validation.check_video_url(query.video_url)
-    video_id = offers_api.extract_youtube_video_id(url=query.video_url)
-    # check_video_url ensure we have a valid youtube url. video_id cannot be None, so the next line is to please mypy
-    assert video_id is not None
+    video_id = offers_validation.check_video_url(query.video_url)
+    if video_id is None:
+        raise api_errors.ApiErrors(
+            errors={"videoUrl": ["Veuillez renseigner une URL valide. Ex : https://exemple.com"]}
+        )
     try:
         video_metadata = youtube.get_video_metadata(video_id=video_id)
     except requests.ExternalAPIException:
