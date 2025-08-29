@@ -11,7 +11,6 @@ export const NonRefundableCallout = () => (
         href: 'https://aide.passculture.app/hc/fr/articles/6043184068252',
         isExternal: true,
         label: 'Quelles sont les offres éligibles au remboursement ?',
-        target: '_blank',
       },
     ]}
     variant={CalloutVariant.WARNING}
