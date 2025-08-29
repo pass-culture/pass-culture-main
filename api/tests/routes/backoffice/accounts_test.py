@@ -1411,7 +1411,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     def test_update_field(self, legit_user, authenticated_client):
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryFactory(postalCode="29000")
         old_email = user.email
         old_phone_number = user.phoneNumber
         old_postal_code = user.postalCode
