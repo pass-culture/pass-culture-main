@@ -32,7 +32,7 @@ vi.mock('react-router', async () => ({
 }))
 
 const LABELS = {
-  nameSearchInput: /Nom de l’offre/,
+  nameSearchInput: "Nom de l'offre",
 }
 
 const renderOffers = async (

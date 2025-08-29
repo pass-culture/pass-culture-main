@@ -22,6 +22,7 @@ import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
 import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersTable } from '@/components/CollectiveOffersTable/CollectiveOffersTable'
+import { DownloadBookableOffersButton } from '@/components/CollectiveOffersTable/DownloadBookableOffersButton'
 import { NoData } from '@/components/NoData/NoData'
 import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
 import { Pagination } from '@/ui-kit/Pagination/Pagination'
@@ -188,6 +189,13 @@ export const CollectiveOffersScreen = ({
             currentSortingColumn={currentSortingColumn}
             currentSortingMode={currentSortingMode}
             currentPageItems={currentPageItems}
+            downloadButton={
+              <DownloadBookableOffersButton
+                isDisabled={userHasNoOffers}
+                filters={selectedFilters}
+                defaultFilters={defaultCollectiveFilters}
+              />
+            }
           />
           {hasOffers && (
             <div className={styles['offers-pagination']}>

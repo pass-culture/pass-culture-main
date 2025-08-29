@@ -33,6 +33,7 @@ type CollectiveOffersTableProps = {
   currentSortingMode: SortingMode
   currentPageItems: CollectiveOfferResponseModel[]
   isTemplateTable?: boolean
+  downloadButton?: React.ReactNode
 }
 
 export const CollectiveOffersTable = ({
@@ -52,6 +53,7 @@ export const CollectiveOffersTable = ({
   currentSortingMode,
   currentPageItems,
   isTemplateTable,
+  downloadButton,
 }: CollectiveOffersTableProps) => {
   const isNewCollectiveOffersStructureActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
@@ -90,6 +92,7 @@ export const CollectiveOffersTable = ({
       areAllOffersSelected={areAllOffersSelected}
       isAtLeastOneOfferChecked={isAtLeastOneOfferChecked}
       toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
+      downloadButton={downloadButton}
     >
       <OffersTableHead columns={columns} />
 
