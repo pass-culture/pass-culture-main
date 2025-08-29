@@ -11,7 +11,8 @@ export const hasProperty = <T extends string>(
     return false
   }
 
-  return Boolean(Object.hasOwn(element, property))
+  // biome-ignore lint/suspicious/noPrototypeBuiltins: We cannot use hasOwn due to lack of support
+  return Boolean(element.hasOwnProperty(property))
 }
 
 export const hasProperties = <T extends string>(
