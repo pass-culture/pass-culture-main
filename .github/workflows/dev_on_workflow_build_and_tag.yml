@@ -59,7 +59,7 @@ jobs:
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
             COSIGN_KMS_KEY:passculture-metier-ehp/cosign_kms_key
       - name: "Checkout ref"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ inputs.base_ref }}
       - name: "Configure git author"
