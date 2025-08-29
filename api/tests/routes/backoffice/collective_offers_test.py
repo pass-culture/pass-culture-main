@@ -49,6 +49,7 @@ pytestmark = [
 def collective_offers_fixture() -> tuple:
     last_year = educational_factories.create_educational_year(datetime.datetime.utcnow() - datetime.timedelta(days=365))
     current_year = educational_factories.create_educational_year(datetime.datetime.utcnow())
+    next_year = educational_factories.create_educational_year(datetime.datetime.utcnow() + datetime.timedelta(days=365))
     institution_1 = educational_factories.EducationalInstitutionFactory()
     institution_2 = educational_factories.EducationalInstitutionFactory(postalCode="97600", city="MAMOUDZOU")
     educational_factories.EducationalDepositFactory(
@@ -59,6 +60,11 @@ def collective_offers_fixture() -> tuple:
     educational_factories.EducationalDepositFactory(
         educationalInstitution=institution_1,
         educationalYear=current_year,
+        ministry=educational_models.Ministry.EDUCATION_NATIONALE.name,
+    )
+    educational_factories.EducationalDepositFactory(
+        educationalInstitution=institution_1,
+        educationalYear=next_year,
         ministry=educational_models.Ministry.EDUCATION_NATIONALE.name,
     )
     educational_factories.EducationalDepositFactory(
@@ -211,7 +217,9 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Entité juridique"] == collective_offers[1].venue.managingOfferer.name
         assert rows[0]["Partenaire culturel"] == collective_offers[1].venue.name
         assert rows[0]["Ministère"] == "MENjs"
-        first_year = educational_factories._get_educational_year_beginning(datetime.datetime.utcnow())
+        first_year = educational_factories._get_educational_year_beginning(
+            datetime.datetime.utcnow() + datetime.timedelta(days=3)
+        )
         assert rows[0]["Année"] == f"{first_year}-{first_year + 1}"
 
     def test_list_collective_offers_by_several_filters(self, authenticated_client, collective_offers):
