@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { CollectiveOfferConfirmationScreen } from '../CollectiveOfferConfirmation'
+import { CollectiveOfferConfirmationScreen } from './CollectiveOfferConfirmation'
 
 describe('CollectiveOfferConfirmation', () => {
   it('should render confirmation page when offer is pending', () => {
@@ -90,5 +90,37 @@ describe('CollectiveOfferConfirmation', () => {
     expect(
       screen.getByText('Quelle est la prochaine étape ?')
     ).toBeInTheDocument()
+  })
+
+  it('should link to /offres/vitrines when isShowcase and isNewCollectiveOffersStructureActive are true', () => {
+    renderWithProviders(
+      <CollectiveOfferConfirmationScreen
+        offererId={1}
+        offerStatus={CollectiveOfferDisplayedStatus.PUBLISHED}
+        isShowcase={true}
+        institutionDisplayName=""
+      />,
+      {
+        features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'],
+      }
+    )
+    const link = screen.getByRole('link', { name: /voir mes offres/i })
+    expect(link).toHaveAttribute('href', '/offres/vitrines')
+  })
+
+  it('should link to /offres/collectives when isShowcase is false', () => {
+    renderWithProviders(
+      <CollectiveOfferConfirmationScreen
+        offererId={1}
+        offerStatus={CollectiveOfferDisplayedStatus.PUBLISHED}
+        isShowcase={false}
+        institutionDisplayName=""
+      />,
+      {
+        features: [],
+      }
+    )
+    const link = screen.getByRole('link', { name: /voir mes offres/i })
+    expect(link).toHaveAttribute('href', '/offres/collectives')
   })
 })
