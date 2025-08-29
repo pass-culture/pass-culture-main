@@ -6,12 +6,18 @@ import { api } from '@/apiClient/api'
 import type {
   CollectiveOfferResponseModel,
   CollectiveOffersStockResponseModel,
+  GetOffererAddressResponseModel,
+  VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import { DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  makeVenueListItem,
+} from '@/commons/utils/factories/individualApiFactories'
+import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
@@ -24,6 +30,39 @@ vi.mock('react-router', async () => ({
   ...(await vi.importActual('react-router')),
   useNavigate: vi.fn(),
 }))
+
+vi.mock('@/commons/hooks/useActiveFeature', () => ({
+  useActiveFeature: vi.fn(),
+}))
+
+const mockVenuesResponse: { venues: VenueListItemResponseModel[] } = {
+  venues: [
+    makeVenueListItem({
+      id: 1,
+      name: 'First Venue',
+      isPermanent: true,
+      hasCreatedOffer: true,
+    }),
+    makeVenueListItem({
+      id: 2,
+      name: 'Second Venue',
+      isPermanent: true,
+      hasCreatedOffer: true,
+    }),
+  ],
+}
+
+vi.mock('@/apiClient/api', () => {
+  return {
+    api: {
+      getCollectiveOffers: vi.fn(),
+      getOfferer: vi.fn(),
+      listOfferersNames: vi.fn(),
+      getVenues: vi.fn(() => mockVenuesResponse),
+      getOffererAddresses: vi.fn(),
+    },
+  }
+})
 
 const renderOffers = async (
   filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
@@ -74,6 +113,16 @@ describe('route TemplateCollectiveOffers', () => {
       remainingQuantity: 1,
     },
   ]
+
+  const offererAddress: GetOffererAddressResponseModel[] = [
+    offererAddressFactory({
+      label: 'Label',
+    }),
+    offererAddressFactory({
+      city: 'New York',
+    }),
+  ]
+
   const mockNavigate = vi.fn()
 
   beforeEach(() => {
@@ -84,6 +133,7 @@ describe('route TemplateCollectiveOffers', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
     })
+    vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
   })
 
   afterEach(() => {
@@ -202,6 +252,77 @@ describe('route TemplateCollectiveOffers', () => {
         {
           replace: true,
         }
+      )
+    })
+
+    const getMockedAddresses = () => [
+      offererAddressFactory({ label: 'Label' }),
+      offererAddressFactory({ city: 'New York' }),
+    ]
+
+    const setupAddresses = () => {
+      const offererAddress = getMockedAddresses()
+      vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
+      return offererAddress
+    }
+
+    it('should have locationType value in the url when user filters by localisation', async () => {
+      setupAddresses()
+      await renderOffers()
+      await userEvent.selectOptions(screen.getByLabelText('Localisation'), [
+        await screen.findByRole('option', {
+          name: 'En établissement scolaire',
+        }),
+      ])
+      await userEvent.click(screen.getByText('Rechercher'))
+      expect(mockNavigate).toHaveBeenCalledWith(
+        '/offres/vitrines?locationType=SCHOOL',
+        { replace: true }
+      )
+    })
+
+    it('should have offererAddressId value in the url when user filters by address', async () => {
+      setupAddresses()
+      await renderOffers()
+      const option = await screen.findByRole('option', {
+        name: 'Label - 1 Rue de paris 75001 Paris',
+      })
+      await userEvent.selectOptions(screen.getByLabelText('Localisation'), [
+        option,
+      ])
+      await userEvent.click(screen.getByText('Rechercher'))
+
+      expect(mockNavigate).toHaveBeenCalledWith(
+        `/offres/vitrines?locationType=ADDRESS&offererAddressId=5`,
+        { replace: true }
+      )
+    })
+
+    it('should remove locationType and offererAddressId from url when user selects "Toutes"', async () => {
+      setupAddresses()
+      await renderOffers()
+      await userEvent.selectOptions(screen.getByLabelText('Localisation'), [
+        await screen.findByRole('option', { name: 'Toutes' }),
+      ])
+      await userEvent.click(screen.getByText('Rechercher'))
+      expect(mockNavigate).toHaveBeenCalledWith('/offres/vitrines', {
+        replace: true,
+      })
+    })
+
+    it('should have locationType value in the url when user filters by "À déterminer"', async () => {
+      setupAddresses()
+      await renderOffers()
+      const option = await screen.findByRole('option', {
+        name: 'À déterminer',
+      })
+      await userEvent.selectOptions(screen.getByLabelText('Localisation'), [
+        option,
+      ])
+      await userEvent.click(screen.getByText('Rechercher'))
+      expect(mockNavigate).toHaveBeenCalledWith(
+        '/offres/vitrines?locationType=TO_BE_DEFINED',
+        { replace: true }
       )
     })
   })

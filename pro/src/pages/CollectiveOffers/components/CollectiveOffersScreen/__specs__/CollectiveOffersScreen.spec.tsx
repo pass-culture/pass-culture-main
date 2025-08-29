@@ -7,11 +7,7 @@ import {
   type SharedCurrentUserResponseModel,
   UserRole,
 } from '@/apiClient/v1'
-import {
-  ALL_OFFERERS_OPTION,
-  ALL_VENUES_OPTION,
-  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-} from '@/commons/core/Offers/constants'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
@@ -44,25 +40,6 @@ const renderOffers = (
   })
 }
 
-const proVenues = [
-  {
-    id: 'JI',
-    name: 'Ma venue',
-    offererName: 'Mon offerer',
-    isVirtual: false,
-  },
-  {
-    id: 'JQ',
-    name: 'Ma venue virtuelle',
-    offererName: 'Mon offerer',
-    isVirtual: true,
-  },
-]
-const proVenuesOptions = [
-  { value: 'JI', label: 'Ma venue' },
-  { value: 'JQ', label: 'Mon offerer - Offre numérique' },
-]
-
 vi.mock('@/commons/utils/date', async () => {
   return {
     ...(await vi.importActual('@/commons/utils/date')),
@@ -76,6 +53,7 @@ vi.mock('@/apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn().mockReturnValue({}),
     deleteDraftOffers: vi.fn(),
+    getVenues: vi.fn(),
   },
 }))
 
@@ -100,7 +78,6 @@ describe('CollectiveOffersScreen', () => {
       urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
       initialSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
       redirectWithUrlFilters: vi.fn(),
-      venues: proVenuesOptions,
     }
 
     const notifsImport = (await vi.importActual(
@@ -181,52 +158,6 @@ describe('CollectiveOffersScreen', () => {
       screen.getByRole('checkbox', { name: offersRecap[0].name })
     ).toBeInTheDocument()
     expect(await screen.findByText('100+ offres')).toBeInTheDocument()
-  })
-
-  it('should render venue filter with default option selected and given venues as options', () => {
-    const expectedSelectOptions = [
-      {
-        id: [ALL_VENUES_OPTION.value],
-        value: ALL_OFFERERS_OPTION.label,
-      },
-      { id: [proVenues[0].id], value: proVenues[0].name },
-      {
-        id: [proVenues[1].id],
-        value: `${proVenues[1].offererName} - Offre numérique`,
-      },
-    ]
-
-    renderOffers(props)
-
-    const defaultOption = screen.getByDisplayValue(
-      expectedSelectOptions[0].value
-    )
-    expect(defaultOption).toBeInTheDocument()
-
-    const firstVenueOption = screen.getByRole('option', {
-      name: expectedSelectOptions[1].value,
-    })
-    expect(firstVenueOption).toBeInTheDocument()
-
-    const secondVenueOption = screen.getByRole('option', {
-      name: expectedSelectOptions[2].value,
-    })
-    expect(secondVenueOption).toBeInTheDocument()
-  })
-
-  it('should render venue filter with given venue selected', () => {
-    const expectedSelectOptions = [
-      { id: [proVenues[0].id], value: proVenues[0].name },
-    ]
-    const filters = {
-      ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-      venueId: proVenues[0].id,
-    }
-
-    renderOffers({ ...props, initialSearchFilters: filters })
-
-    const venueSelect = screen.getByDisplayValue(expectedSelectOptions[0].value)
-    expect(venueSelect).toBeInTheDocument()
   })
 
   it('should display event period filter with no default option', () => {

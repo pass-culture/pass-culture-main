@@ -1,12 +1,18 @@
 import type { Dispatch, FormEvent, SetStateAction } from 'react'
+import useSWR from 'swr'
 
+import { api } from '@/apiClient/api'
 import {
+  CollectiveLocationType,
   CollectiveOfferDisplayedStatus,
   EacFormat,
+  GetOffererAddressesWithOffersOption,
   type GetOffererResponseModel,
 } from '@/apiClient/v1'
+import { GET_VENUES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   ALL_FORMATS_OPTION,
+  ALL_OFFERER_ADDRESS_OPTION,
   ALL_OFFERERS_OPTION,
   COLLECTIVE_OFFER_TYPES_OPTIONS,
 } from '@/commons/core/Offers/constants'
@@ -16,9 +22,14 @@ import type {
   CollectiveSearchFiltersParams,
 } from '@/commons/core/Offers/types'
 import type { SelectOption } from '@/commons/custom_types/form'
+import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OffersTableSearch } from '@/components/OffersTable/OffersTableSearch/OffersTableSearch'
+import {
+  formatAndOrderAddresses,
+  formatAndOrderVenues,
+} from '@/repository/venuesService'
 import { MultiSelect } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
 import { Select } from '@/ui-kit/form/Select/Select'
@@ -26,7 +37,7 @@ import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import styles from '../CollectiveOffersScreen.module.scss'
 
-interface CollectiveOffersSearchFiltersProps {
+export interface CollectiveOffersSearchFiltersProps {
   hasFilters: boolean
   applyFilters: (filters: CollectiveSearchFiltersParams) => void
   offerer: GetOffererResponseModel | null
@@ -34,7 +45,6 @@ interface CollectiveOffersSearchFiltersProps {
   setSelectedFilters: Dispatch<SetStateAction<CollectiveSearchFiltersParams>>
   disableAllFilters: boolean
   resetFilters: () => void
-  venues: SelectOption[]
   searchButtonRef?: React.RefObject<HTMLButtonElement>
 }
 
@@ -46,7 +56,6 @@ export const CollectiveOffersSearchFilters = ({
   resetFilters,
   offerer,
   disableAllFilters,
-  venues,
   searchButtonRef,
 }: CollectiveOffersSearchFiltersProps): JSX.Element => {
   const isNewOffersAndBookingsActive = useActiveFeature(
@@ -54,6 +63,34 @@ export const CollectiveOffersSearchFilters = ({
   )
 
   const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
+
+  const { data } = useSWR(
+    [GET_VENUES_QUERY_KEY, offerer?.id],
+    ([, offererIdParam]) => api.getVenues(null, null, offererIdParam),
+    { fallbackData: { venues: [] } }
+  )
+
+  const venues = formatAndOrderVenues(data.venues ?? [])
+
+  const offererAddressQuery = useOffererAddresses(
+    GetOffererAddressesWithOffersOption.COLLECTIVE_OFFERS_ONLY
+  )
+  const offererAddresses = formatAndOrderAddresses(offererAddressQuery.data)
+
+  const locationOptions = [
+    {
+      value: CollectiveLocationType.TO_BE_DEFINED,
+      label: 'À déterminer',
+    },
+    {
+      value: CollectiveLocationType.SCHOOL,
+      label: 'En établissement scolaire',
+    },
+    ...offererAddresses.map((address) => ({
+      ...address,
+      value: address.value,
+    })),
+  ]
 
   const formats: SelectOption[] = Object.values(EacFormat).map((format) => ({
     value: format,
@@ -154,6 +191,34 @@ export const CollectiveOffersSearchFilters = ({
     resetFilters()
   }
 
+  const handleLocationChange = (value: string) => {
+    switch (value) {
+      case CollectiveLocationType.TO_BE_DEFINED:
+        updateSearchFilters({
+          locationType: CollectiveLocationType.TO_BE_DEFINED,
+          offererAddressId: undefined,
+        })
+        break
+      case CollectiveLocationType.SCHOOL:
+        updateSearchFilters({
+          locationType: CollectiveLocationType.SCHOOL,
+          offererAddressId: undefined,
+        })
+        break
+      case 'all':
+        updateSearchFilters({
+          locationType: undefined,
+          offererAddressId: undefined,
+        })
+        break
+      default:
+        updateSearchFilters({
+          locationType: CollectiveLocationType.ADDRESS,
+          offererAddressId: value,
+        })
+    }
+  }
+
   return (
     <OffersTableSearch
       type="collective"
@@ -207,12 +272,33 @@ export const CollectiveOffersSearchFilters = ({
             disabled={disableAllFilters}
             name="structure"
             options={venues}
-            value={selectedFilters.venueId}
+            value={selectedFilters.venueId ?? 'all'}
             label="Structure"
           />
         )}
+        {isNewOffersAndBookingsActive && (
+          <Select
+            className={styles['filter-container']}
+            defaultOption={ALL_OFFERER_ADDRESS_OPTION}
+            onChange={(event) =>
+              handleLocationChange(event.currentTarget.value)
+            }
+            disabled={disableAllFilters}
+            name="location"
+            options={locationOptions}
+            value={
+              selectedFilters.offererAddressId !== undefined &&
+              selectedFilters.offererAddressId !== null
+                ? String(selectedFilters.offererAddressId)
+                : selectedFilters.locationType !== undefined &&
+                    selectedFilters.locationType !== null
+                  ? String(selectedFilters.locationType)
+                  : 'all'
+            }
+            label="Localisation"
+          />
+        )}
         <Select
-          className={styles['filter-container']}
           defaultOption={ALL_FORMATS_OPTION}
           onChange={(event) =>
             updateSearchFilters({
@@ -241,29 +327,16 @@ export const CollectiveOffersSearchFilters = ({
             label="Type de l’offre"
           />
         )}
-        {isNewOffersAndBookingsActive && (
-          <FieldLayout label="Période de l’évènement" name="period" isOptional>
-            <PeriodSelector
-              onBeginningDateChange={onBeginningDateChange}
-              onEndingDateChange={onEndingDateChange}
-              isDisabled={disableAllFilters}
-              periodBeginningDate={selectedFilters.periodBeginningDate}
-              periodEndingDate={selectedFilters.periodEndingDate}
-            />
-          </FieldLayout>
-        )}
       </FormLayout.Row>
-      {!isNewOffersAndBookingsActive && (
-        <FieldLayout label="Période de l’évènement" name="period" isOptional>
-          <PeriodSelector
-            onBeginningDateChange={onBeginningDateChange}
-            onEndingDateChange={onEndingDateChange}
-            isDisabled={disableAllFilters}
-            periodBeginningDate={selectedFilters.periodBeginningDate}
-            periodEndingDate={selectedFilters.periodEndingDate}
-          />
-        </FieldLayout>
-      )}
+      <FieldLayout label="Période de l’évènement" name="period" isOptional>
+        <PeriodSelector
+          onBeginningDateChange={onBeginningDateChange}
+          onEndingDateChange={onEndingDateChange}
+          isDisabled={disableAllFilters}
+          periodBeginningDate={selectedFilters.periodBeginningDate}
+          periodEndingDate={selectedFilters.periodEndingDate}
+        />
+      </FieldLayout>
     </OffersTableSearch>
   )
 }

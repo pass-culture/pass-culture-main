@@ -13,7 +13,6 @@ import {
 import { useDefaultCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useDefaultCollectiveSearchFilters'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
-import type { SelectOption } from '@/commons/custom_types/form'
 import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
@@ -40,7 +39,6 @@ export type CollectiveOffersScreenProps = {
     }
   ) => void
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
-  venues: SelectOption[]
   offers: CollectiveOfferResponseModel[]
 }
 
@@ -51,7 +49,6 @@ export const CollectiveOffersScreen = ({
   initialSearchFilters,
   redirectWithUrlFilters,
   urlSearchFilters,
-  venues,
   offers,
 }: CollectiveOffersScreenProps): JSX.Element => {
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('collective')
@@ -165,7 +162,6 @@ export const CollectiveOffersScreen = ({
         resetFilters={() => resetFilters(false)}
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
-        venues={venues}
         searchButtonRef={searchButtonRef}
       />
       {userHasNoOffers ? (
