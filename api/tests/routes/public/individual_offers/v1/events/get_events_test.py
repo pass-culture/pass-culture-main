@@ -46,7 +46,8 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
 
     def test_get_first_page_old_behavior_when_permission_system_not_enforced(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offers = offers_factories.EventOfferFactory.create_batch(6, venue=venue_provider.venue)
+        stocks = offers_factories.EventStockFactory.create_batch(6, offer__venue=venue_provider.venue)
+        offers = [stock.offer for stock in stocks]
         offers_factories.ThingOfferFactory.create_batch(3, venue=venue_provider.venue)  # not returned
 
         venue_id = venue_provider.venueId
@@ -54,11 +55,12 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
             response = self.make_request(plain_api_key, query_params={"venueId": venue_id, "limit": 5})
             assert response.status_code == 200
 
-        assert [event["id"] for event in response.json["events"]] == [offer.id for offer in offers[0:5]]
+        assert {event["id"] for event in response.json["events"]} == {offer.id for offer in offers[0:5]}
 
     def test_get_first_page(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offers = offers_factories.EventOfferFactory.create_batch(6, venue=venue_provider.venue)
+        stocks = offers_factories.EventStockFactory.create_batch(6, offer__venue=venue_provider.venue)
+        offers = [stock.offer for stock in stocks]
         offers_factories.ThingOfferFactory.create_batch(3, venue=venue_provider.venue)  # not returned
 
         venue_id = venue_provider.venueId
@@ -82,10 +84,10 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
         )
         offers_factories.PriceCategoryFactory(offer=offer, price=decimal.Decimal("400.12"))
         offers_factories.EventStockFactory(offer=offer, price=decimal.Decimal("400.12"))
-        offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            subcategoryId=subcategories.CONCERT.id,
-            withdrawalType=offers_models.WithdrawalTypeEnum.ON_SITE,
+        offers_factories.EventStockFactory(
+            offer__venue=venue_provider.venue,
+            offer__subcategoryId=subcategories.CONCERT.id,
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.ON_SITE,
         )
 
         with testing.assert_num_queries(self.num_queries):
@@ -96,15 +98,15 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
     def test_get_events_without_sub_types(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue_id = venue_provider.venueId
-        offers_factories.EventOfferFactory(
-            subcategoryId=subcategories.CONCERT.id,
-            venue=venue_provider.venue,
-            extraData={"musicType": "800"},
+        offers_factories.EventStockFactory(
+            offer__subcategoryId=subcategories.CONCERT.id,
+            offer__venue=venue_provider.venue,
+            offer__extraData={"musicType": "800"},
         )
-        offers_factories.EventOfferFactory(
-            subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
-            venue=venue_provider.venue,
-            extraData={"showType": "800"},
+        offers_factories.EventStockFactory(
+            offer__subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
+            offer__venue=venue_provider.venue,
+            offer__extraData={"showType": "800"},
         )
 
         with testing.assert_num_queries(self.num_queries):
@@ -118,17 +120,17 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
         id_at_provider_3 = "unIdCheumDeOuf"
 
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event_1 = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            idAtProvider=id_at_provider_1,
-        )
-        event_2 = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            idAtProvider=id_at_provider_2,
-        )
-        offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            idAtProvider=id_at_provider_3,
+        event_1 = offers_factories.EventStockFactory(
+            offer__venue=venue_provider.venue,
+            offer__idAtProvider=id_at_provider_1,
+        ).offer
+        event_2 = offers_factories.EventStockFactory(
+            offer__venue=venue_provider.venue,
+            offer__idAtProvider=id_at_provider_2,
+        ).offer
+        offers_factories.EventStockFactory(
+            offer__venue=venue_provider.venue,
+            offer__idAtProvider=id_at_provider_3,
         )
 
         venue_id = venue_provider.venueId
@@ -150,9 +152,12 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
         offerer_address_1 = offerers_factories.OffererAddressFactory(offerer=venue_provider.venue.managingOfferer)
         offerer_address_2 = offerers_factories.OffererAddressFactory(offerer=venue_provider.venue.managingOfferer)
         offerer_address_3 = offerers_factories.OffererAddressFactory(address=offerer_address_1.address)
-        offer1 = offers_factories.EventOfferFactory(venue=venue_provider.venue, offererAddress=offerer_address_1)
-        offers_factories.EventOfferFactory(venue=venue_provider.venue, offererAddress=offerer_address_2)
-        offers_factories.EventOfferFactory(offererAddress=offerer_address_3)
+
+        offer1 = offers_factories.EventStockFactory(
+            offer__venue=venue_provider.venue, offer__offererAddress=offerer_address_1
+        ).offer
+        offers_factories.EventStockFactory(offer__venue=venue_provider.venue, offer__offererAddress=offerer_address_2)
+        offers_factories.EventStockFactory(offer__offererAddress=offerer_address_3)
 
         with testing.assert_num_queries(self.num_queries):
             response = self.make_request(plain_api_key, query_params={"addressId": offerer_address_1.addressId})

@@ -518,7 +518,7 @@ def _cancel_bookings_of_user_on_requested_account_suspension(
         bookings_query = (
             bookings_query.join(bookings_models.Booking.stock)
             .join(offers_models.Stock.offer)
-            .filter(sa.func.not_(offers_models.Offer.isEvent))
+            .filter(sa.not_(offers_models.Offer.hasEventSubcategory))
         )
     else:
         return 0

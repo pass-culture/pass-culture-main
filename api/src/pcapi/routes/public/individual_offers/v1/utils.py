@@ -103,7 +103,6 @@ def get_filtered_offers_linked_to_provider(
         .join(offerers_models.Venue)
         .join(providers_models.VenueProvider)
         .filter(providers_models.VenueProvider.provider == current_api_key.provider)
-        .filter(offers_models.Offer.isEvent == is_event)
         .filter(offers_models.Offer.id >= query_filters.firstIndex)
         .order_by(offers_models.Offer.id)
         .options(
@@ -112,6 +111,15 @@ def get_filtered_offers_linked_to_provider(
             )
         )
     )
+
+    if is_event:
+        offers_query = (
+            offers_query.join(offers_models.Stock)
+            .filter(offers_models.Offer.hasEventSubcategory)
+            .filter(offers_models.Stock.beginningDatetime != None)
+        )
+    else:
+        offers_query = offers_query.filter(sa.not_(offers_models.Offer.hasEventSubcategory))
 
     if query_filters.venue_id:
         offers_query = offers_query.filter(offers_models.Offer.venueId == query_filters.venue_id)
@@ -170,7 +178,7 @@ def save_image(image_body: serialization.ImageBody, offer: offers_models.Offer) 
 def get_event_with_details(event_id: int) -> offers_models.Offer | None:
     return (
         retrieve_offer_query(event_id)
-        .filter(offers_models.Offer.isEvent)
+        .filter(offers_models.Offer.hasEventSubcategory)
         .outerjoin(offers_models.Offer.stocks.and_(sa.not_(offers_models.Stock.isEventExpired)))
         .options(sa_orm.contains_eager(offers_models.Offer.stocks))
         .options(

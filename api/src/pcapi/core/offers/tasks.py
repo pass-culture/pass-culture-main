@@ -127,11 +127,18 @@ def _get_existing_offers(
     ean_to_create_or_update: set[str],
     venue: offerers_models.Venue,
 ) -> list[offers_models.Offer]:
+    non_event_stocks_join_query = (
+        db.session.query(offers_models.Stock.offerId).filter(offers_models.Stock.beginningDatetime == None)
+    ).subquery()
+
     subquery = (
         db.session.query(
             sa.func.max(offers_models.Offer.id).label("max_id"),
         )
-        .filter(offers_models.Offer.isEvent == False)
+        # no timestamped stock nor event subcategory -> not an event
+        .join(non_event_stocks_join_query, non_event_stocks_join_query.c.offerId == offers_models.Offer.id)
+        .filter(non_event_stocks_join_query.c.offerId != None)
+        .filter(sa.not_(offers_models.Offer.hasEventSubcategory))
         .filter(offers_models.Offer.venue == venue)
         .filter(offers_models.Offer.ean.in_(ean_to_create_or_update))
         .group_by(

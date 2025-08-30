@@ -12,6 +12,7 @@ from pcapi.core import testing
 from pcapi.core.categories import subcategories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -383,7 +384,9 @@ class Returns200Test:
             offer=event_offer, beginningDatetime=datetime.datetime(2022, 9, 21, 13, 19)
         )
         authenticated_client = client.with_session_auth(email=pro.email)
-        with testing.assert_num_queries(self.number_of_queries - 1):  # FF WIP_REFACTO_FUTURE_OFFER
+        # -1 FF WIP_REFACTO_FUTURE_OFFER
+        # +1 FF WIP_NEW_OFFER_IS_EVENT_DEFINITION
+        with testing.assert_num_queries(self.number_of_queries):
             response = authenticated_client.get("/offers")
             assert response.status_code == 200
 
@@ -539,20 +542,22 @@ class Returns200Test:
             address__banId="75112_0877_00008",
         )
 
-        event_offer1 = offers_factories.EventOfferFactory(
-            name="The Weeknd",
-            subcategoryId=subcategories.CONCERT.id,
-            venue=venue,
-            offererAddress=offerer_address1,
-            publicationDatetime=datetime.datetime(2022, 10, 21, 13, 19),
-        )
-        event_offer2 = offers_factories.EventOfferFactory(
-            name="Taylor Swift",
-            subcategoryId=subcategories.CONCERT.id,
-            venue=venue,
-            offererAddress=offerer_address1,
-            publicationDatetime=datetime.datetime(2022, 11, 21, 13, 19),
-        )
+        event_offer1 = offers_factories.EventStockFactory(
+            quantity=0,
+            offer__name="The Weeknd",
+            offer__subcategoryId=subcategories.CONCERT.id,
+            offer__venue=venue,
+            offer__offererAddress=offerer_address1,
+            offer__publicationDatetime=datetime.datetime(2022, 10, 21, 13, 19),
+        ).offer
+        event_offer2 = offers_factories.EventStockFactory(
+            quantity=0,
+            offer__name="Taylor Swift",
+            offer__subcategoryId=subcategories.CONCERT.id,
+            offer__venue=venue,
+            offer__offererAddress=offerer_address1,
+            offer__publicationDatetime=datetime.datetime(2022, 11, 21, 13, 19),
+        ).offer
 
         offerer_address2 = offerers_factories.OffererAddressFactory(
             label="La Cigale",
@@ -561,13 +566,12 @@ class Returns200Test:
             address__banId="75118_8288_00120",
         )
 
-        event_offer3 = offers_factories.EventOfferFactory(
-            name="Philippine Lavrey",
-            subcategoryId=subcategories.CONCERT.id,
-            venue=venue,
-            offererAddress=offerer_address2,
+        offers_factories.EventStockFactory(
+            offer__name="Philippine Lavrey",
+            offer__subcategoryId=subcategories.CONCERT.id,
+            offer__venue=venue,
+            offer__offererAddress=offerer_address2,
         )
-        offers_factories.EventStockFactory(offer=event_offer3)
         offerer_address1_id = offerer_address1.id
         authenticated_client = client.with_session_auth(email=pro.email)
         with testing.assert_num_queries(self.number_of_queries):
@@ -590,7 +594,16 @@ class Returns200Test:
                 "name": event_offer2.name,
                 "productIsbn": None,
                 "status": "SOLD_OUT",
-                "stocks": [],
+                "stocks": [
+                    {
+                        "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                        "bookingQuantity": stock.dnBookedQuantity,
+                        "hasBookingLimitDatetimePassed": stock.hasBookingLimitDatetimePassed,
+                        "id": stock.id,
+                        "remainingQuantity": stock.remainingQuantity,
+                    }
+                    for stock in event_offer2.stocks
+                ],
                 "subcategoryId": "CONCERT",
                 "thumbUrl": None,
                 "venue": {
@@ -635,7 +648,16 @@ class Returns200Test:
                 "name": event_offer1.name,
                 "productIsbn": None,
                 "status": "SOLD_OUT",
-                "stocks": [],
+                "stocks": [
+                    {
+                        "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                        "bookingQuantity": stock.dnBookedQuantity,
+                        "hasBookingLimitDatetimePassed": stock.hasBookingLimitDatetimePassed,
+                        "id": stock.id,
+                        "remainingQuantity": stock.remainingQuantity,
+                    }
+                    for stock in event_offer1.stocks
+                ],
                 "subcategoryId": "CONCERT",
                 "thumbUrl": None,
                 "venue": {
@@ -680,13 +702,14 @@ class Returns200Test:
             address__banId="75112_0877_00008",
         )
 
-        event_offer1 = offers_factories.EventOfferFactory(
-            name="The Weeknd",
-            subcategoryId=subcategories.CONCERT.id,
-            venue=venue,
-            offererAddress=offerer_address1,
-            publicationDatetime=datetime.datetime(2022, 11, 21, 13, 19),
-        )
+        event_offer1 = offers_factories.EventStockFactory(
+            quantity=0,
+            offer__name="The Weeknd",
+            offer__subcategoryId=subcategories.CONCERT.id,
+            offer__venue=venue,
+            offer__offererAddress=offerer_address1,
+            offer__publicationDatetime=datetime.datetime(2022, 11, 21, 13, 19),
+        ).offer
 
         offerer_id = offerer.id
         authenticated_client = client.with_session_auth(email=pro.email)
@@ -706,7 +729,16 @@ class Returns200Test:
                 "isThing": False,
                 "isEducational": False,
                 "name": "The Weeknd",
-                "stocks": [],
+                "stocks": [
+                    {
+                        "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                        "bookingQuantity": stock.dnBookedQuantity,
+                        "hasBookingLimitDatetimePassed": stock.hasBookingLimitDatetimePassed,
+                        "id": stock.id,
+                        "remainingQuantity": stock.remainingQuantity,
+                    }
+                    for stock in event_offer1.stocks
+                ],
                 "thumbUrl": None,
                 "productIsbn": None,
                 "subcategoryId": "CONCERT",
@@ -758,13 +790,14 @@ class Returns200Test:
             managingOfferer=offerer, offererAddress=offerer_address1, name="Best Place to be"
         )
 
-        event_offer1 = offers_factories.EventOfferFactory(
-            name="The Weeknd",
-            subcategoryId=subcategories.CONCERT.id,
-            venue=venue,
-            offererAddress=None,
-            publicationDatetime=datetime.datetime(2022, 11, 21, 13, 19),
-        )
+        event_offer1 = offers_factories.EventStockFactory(
+            quantity=0,
+            offer__name="The Weeknd",
+            offer__subcategoryId=subcategories.CONCERT.id,
+            offer__venue=venue,
+            offer__offererAddress=None,
+            offer__publicationDatetime=datetime.datetime(2022, 11, 21, 13, 19),
+        ).offer
         offerer_id = offerer.id
         authenticated_client = client.with_session_auth(email=pro.email)
         with testing.assert_num_queries(self.number_of_queries):
@@ -782,7 +815,16 @@ class Returns200Test:
                 "isThing": False,
                 "isEducational": False,
                 "name": "The Weeknd",
-                "stocks": [],
+                "stocks": [
+                    {
+                        "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                        "bookingQuantity": stock.dnBookedQuantity,
+                        "hasBookingLimitDatetimePassed": event_offer1.hasBookingLimitDatetimesPassed,
+                        "remainingQuantity": stock.remainingQuantity,
+                        "id": stock.id,
+                    }
+                    for stock in event_offer1.stocks
+                ],
                 "thumbUrl": None,
                 "productIsbn": None,
                 "subcategoryId": "CONCERT",
