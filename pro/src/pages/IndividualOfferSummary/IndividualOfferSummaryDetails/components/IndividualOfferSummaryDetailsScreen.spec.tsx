@@ -188,6 +188,19 @@ describe('<IndividualOfferSummaryDetailsScreen />', () => {
         screen.queryByText(LABELS.headings.accessibility)
       ).not.toBeInTheDocument()
     })
+
+    it('should display the offer URL when offer is digital', () => {
+      const offer = {
+        ...offerBase,
+        isDigital: true,
+        url: 'https://example.com/mon-offre',
+      }
+
+      renderIndividualOfferSummaryDetailsScreen({ props: { offer } })
+
+      expect(screen.getByText(/URL d’accès à l’offre/i)).toBeInTheDocument()
+      expect(screen.getByText(offer.url)).toBeInTheDocument()
+    })
   })
 
   describe('with `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF', () => {
@@ -215,6 +228,24 @@ describe('<IndividualOfferSummaryDetailsScreen />', () => {
       ).not.toBeInTheDocument()
       expect(screen.getByText('Moteur')).toBeInTheDocument()
       expect(screen.queryByText('Visuel')).not.toBeInTheDocument()
+    })
+
+    it('should NOT display the offer URL when offer is digital', () => {
+      const offer = {
+        ...offerBase,
+        isDigital: true,
+        url: 'https://example.com/mon-offre',
+      }
+
+      renderIndividualOfferSummaryDetailsScreen({
+        props: { offer },
+        options,
+      })
+
+      expect(
+        screen.queryByText(/URL d’accès à l’offre/i)
+      ).not.toBeInTheDocument()
+      expect(screen.queryByText(offer.url)).not.toBeInTheDocument()
     })
   })
 })

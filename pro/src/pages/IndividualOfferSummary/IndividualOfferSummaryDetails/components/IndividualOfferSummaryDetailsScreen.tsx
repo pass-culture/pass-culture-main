@@ -77,7 +77,7 @@ export function IndividualOfferSummaryDetailsScreen({
       ),
     },
   ].concat(
-    offer.isDigital
+    !isNewOfferCreationFlowFeatureActive && offer.isDigital
       ? {
           title: 'URL d’accès à l’offre',
           text: offer.url || ' - ',
