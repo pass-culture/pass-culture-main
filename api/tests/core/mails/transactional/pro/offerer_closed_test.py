@@ -33,6 +33,7 @@ class SendOffererClosedEmailTest:
             assert mail["To"] == user_offerer.user.email
             assert mail["template"] == asdict(TransactionalEmail.OFFERER_CLOSED.value)
             assert mail["params"] == {
+                "IS_ESCAPE_GAME": False,
                 "OFFERER_NAME": offerer.name,
                 "SIREN": offerer.siren,
                 "END_DATE": "vendredi 7 mars 2025",
@@ -59,6 +60,7 @@ class SendOffererClosedEmailTest:
         assert mails_testing.outbox[0]["To"] == user_offerer.user.email
         assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.OFFERER_CLOSED.value)
         assert mails_testing.outbox[0]["params"] == {
+            "IS_ESCAPE_GAME": False,
             "OFFERER_NAME": offerer.name,
             "SIREN": offerer.siren,
             "END_DATE": "lundi 17 mars 2025",
@@ -85,6 +87,7 @@ class SendOffererClosedEmailTest:
         assert mails_testing.outbox[0]["To"] == user_offerer.user.email
         assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.OFFERER_CLOSED.value)
         assert mails_testing.outbox[0]["params"] == {
+            "IS_ESCAPE_GAME": False,
             "OFFERER_NAME": offerer.name,
             "SIREN": offerer.siren,
             "END_DATE": "lundi 17 mars 2025",
@@ -108,6 +111,7 @@ class SendOffererClosedEmailTest:
         assert mails_testing.outbox[0]["To"] == user_offerer.user.email
         assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.OFFERER_CLOSED.value)
         assert mails_testing.outbox[0]["params"] == {
+            "IS_ESCAPE_GAME": False,
             "OFFERER_NAME": offerer.name,
             "SIREN": offerer.siren,
             "END_DATE": "lundi 17 mars 2025",
@@ -133,6 +137,7 @@ class SendOffererClosedEmailTest:
             assert mail["To"] == user_offerer.user.email
             assert mail["template"] == asdict(TransactionalEmail.OFFERER_CLOSED_MANUALLY.value)
             assert mail["params"] == {
+                "IS_ESCAPE_GAME": False,
                 "OFFERER_NAME": offerer.name,
                 "SIREN": offerer.siren,
                 "END_DATE": "",
