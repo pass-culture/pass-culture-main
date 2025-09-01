@@ -11,7 +11,7 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import { getSuccessMessage } from '@/components/IndividualOffer/utils/getSuccessMessage'
+import { getSuccessMessage } from '@/pages/IndividualOffer/commons/getSuccessMessage'
 
 import type { PriceTableFormValues } from '../schemas'
 import { saveEventOfferPriceTable } from '../utils/saveEventOfferPriceTable'
