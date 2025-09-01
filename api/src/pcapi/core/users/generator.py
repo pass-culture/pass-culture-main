@@ -37,6 +37,14 @@ class GenerateUserData:
     postal_code: str | None = None
 
 
+def _get_activity_from_age(age: int) -> users_models.ActivityEnum:
+    if age < 18:  # 15, 16, 17
+        return users_models.ActivityEnum.HIGH_SCHOOL_STUDENT
+    elif age < 20:  # 18, 19
+        return users_models.ActivityEnum.STUDENT
+    return users_models.ActivityEnum.APPRENTICE_STUDENT  # 20
+
+
 def generate_user(user_data: GenerateUserData) -> users_models.User:
     if not settings.ENABLE_TEST_USER_GENERATION:
         generation_exception = exceptions.UserGenerationForbiddenException()
@@ -57,6 +65,7 @@ def generate_user(user_data: GenerateUserData) -> users_models.User:
         beneficiaryFraudChecks__type=user_data.id_provider.value,
         beneficiaryFraudChecks__dateCreated=user_data.date_created,
         dateCreated=user_data.date_created,
+        activity=_get_activity_from_age(user_data.age).value,
         **({"postalCode": user_data.postal_code} if (user_data.postal_code and factory_has_postal_code) else {}),
     )
 

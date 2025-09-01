@@ -182,6 +182,27 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
         user = db.session.query(users_models.User).get(user_id)
         assert user.postalCode is None
 
+    @pytest.mark.settings(ENABLE_TEST_USER_GENERATION=1)
+    @pytest.mark.parametrize(
+        "age, expected_activity",
+        [
+            (15, users_models.ActivityEnum.HIGH_SCHOOL_STUDENT.value),
+            (16, users_models.ActivityEnum.HIGH_SCHOOL_STUDENT.value),
+            (17, users_models.ActivityEnum.HIGH_SCHOOL_STUDENT.value),
+            (18, users_models.ActivityEnum.STUDENT.value),
+            (19, users_models.ActivityEnum.STUDENT.value),
+            (20, users_models.ActivityEnum.APPRENTICE_STUDENT.value),
+        ],
+    )
+    def test_user_activity(self, authenticated_client, age, expected_activity):
+        form = {"age": age, "id_provider": "UBBLE", "step": "EMAIL_VALIDATION"}
+        response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
+        assert response.status_code == 200
+        query_args = response.request.args.to_dict()
+        user_id = query_args["userId"]
+        user = db.session.query(users_models.User).get(user_id)
+        assert user.activity == expected_activity
+
 
 class UserDeletionPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissionHelper):
     endpoint = "backoffice_web.dev.delete_user"
