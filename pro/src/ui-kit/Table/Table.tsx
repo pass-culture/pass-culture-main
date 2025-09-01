@@ -17,7 +17,7 @@ export enum TableVariant {
 
 type NoResultProps = {
   message: string
-  subtitle: string
+  subtitle?: string
   resetMessage?: string
   onFilterReset: () => void
 }
@@ -226,8 +226,9 @@ export function Table<
               </th>
             )}
             {columns.map((col, index) => {
-              if (col.headerHidden) return null
-
+              if (col.headerHidden) {
+                return null
+              }
               const headerContent = col.header ?? col.label ?? ''
 
               return (

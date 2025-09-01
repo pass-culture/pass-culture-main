@@ -1,3 +1,13 @@
+@use "styles/mixins/_size.scss" as size;
+
 .beneficiary-subtitle {
   color: var(--color-text-subtle);
+}
+
+@media (max-width: size.$tablet) {
+  .beneficiary-subtitle {
+    display: block;
+    overflow-wrap: break-word;
+    max-width: 200px;
+  }
 }

@@ -9,7 +9,7 @@ import styles from './TableNoFilterResult.module.scss'
 interface NoResultsProps {
   colSpan: number
   message: string
-  subtitle: string
+  subtitle?: string
   resetMessage?: string
   resetFilters: () => void
 }
