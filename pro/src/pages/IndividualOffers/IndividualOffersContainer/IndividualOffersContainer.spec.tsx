@@ -474,7 +474,48 @@ describe('IndividualOffersScreen', () => {
   })
 
   describe('on click on select all offers checkbox', () => {
+    it('should apply bulk actions to all pages when "Tout sélectionner" is used', async () => {
+      // Many offers to ensure multiple pages are implied
+      const manyOffers = Array.from({ length: 20 }, (_, i) =>
+        listOffersOfferFactory({
+          name: `Offer ${i + 1}`,
+          isActive: false,
+          status: OfferStatus.INACTIVE,
+        })
+      )
+
+      const patchSpy = vi.spyOn(api, 'patchAllOffersActiveStatus')
+
+      renderOffers({
+        ...props,
+        offers: manyOffers,
+      })
+
+      // Select all across all pages
+      await userEvent.click(screen.getByLabelText('Tout sélectionner'))
+
+      // Trigger a bulk action that should target all selected offers (across pages)
+      await userEvent.click(screen.getByText('Publier'))
+
+      // Expect a bulk, filter-based call (not per-page / per-id)
+      expect(patchSpy).toHaveBeenCalledTimes(1)
+      expect(patchSpy).toHaveBeenCalledWith({
+        categoryId: null,
+        creationMode: null,
+        isActive: true,
+        nameOrIsbn: null,
+        offererAddressId: null,
+        offererId: '1',
+        periodBeginningDate: null,
+        periodEndingDate: null,
+        status: null,
+        venueId: null,
+      })
+    })
+
     it('should activate only inactive offers when trying to activate draft or active offers', async () => {
+      const patchSpy = vi.spyOn(api, 'patchAllOffersActiveStatus')
+
       const offers = [
         listOffersOfferFactory({
           isActive: false,
@@ -501,7 +542,7 @@ describe('IndividualOffersScreen', () => {
       expect(mockNotifyInfo).toHaveBeenCalledWith(
         'Une offre est en cours d’activation, veuillez rafraichir dans quelques instants'
       )
-      expect(api.patchAllOffersActiveStatus).toHaveBeenCalledWith({
+      expect(patchSpy).toHaveBeenCalledWith({
         categoryId: null,
         creationMode: null,
         isActive: true,

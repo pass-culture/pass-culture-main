@@ -192,6 +192,7 @@ export const IndividualOffersContainer = ({
         <Table
           columns={columns}
           data={currentPageOffersSubset}
+          allData={offers}
           isLoading={isLoading}
           variant={TableVariant.COLLAPSE}
           selectable={true}
