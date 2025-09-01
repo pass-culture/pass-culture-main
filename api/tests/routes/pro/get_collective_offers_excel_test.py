@@ -8,6 +8,7 @@ import pytz
 from pcapi.core import testing
 from pcapi.core.educational import factories
 from pcapi.core.educational import models
+from pcapi.core.educational.utils import format_collective_offer_displayed_status
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.factories import ProFactory
@@ -79,7 +80,7 @@ class Returns200Test:
         assert row_values == [
             offer.name,
             offer.id,
-            offer.displayedStatus.value,
+            format_collective_offer_displayed_status(offer.displayedStatus).lower(),
             "À une adresse précise",
             offer.offererAddress.address.fullAddress,
             venue.common_name,
@@ -119,7 +120,7 @@ class Returns200Test:
         assert row_values == [
             "Special name &@🤡%",
             offer.id,
-            offer.displayedStatus.value,
+            format_collective_offer_displayed_status(offer.displayedStatus).lower(),
             "À déterminer avec l'enseignant",
             "Chez toi",
             venue.common_name,
@@ -163,7 +164,7 @@ class Returns200Test:
             assert row_values == [
                 offer.name,
                 offer.id,
-                "BOOKED",
+                "réservée",
                 "En établissement scolaire",
                 None,
                 venue.common_name,

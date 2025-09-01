@@ -8,6 +8,7 @@
     "python.testing.pytestArgs": [
     "-vv",
     "-s",
+    "--color=yes",
     "-W ignore::DeprecationWarning"
   ]
 }

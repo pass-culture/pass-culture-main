@@ -27,6 +27,7 @@ from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.utils import format_collective_offer_displayed_status
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
@@ -714,38 +715,6 @@ def format_offer_status(status: offer_mixin.OfferStatus) -> str:
             return "En pause"
         case _:
             return status.value
-
-
-def format_collective_offer_displayed_status(
-    displayed_status: educational_models.CollectiveOfferDisplayedStatus,
-) -> str:
-    match displayed_status:
-        case educational_models.CollectiveOfferDisplayedStatus.PUBLISHED:
-            return "Publiée"
-        case educational_models.CollectiveOfferDisplayedStatus.UNDER_REVIEW:
-            return "En instruction"
-        case educational_models.CollectiveOfferDisplayedStatus.REJECTED:
-            return "Non conforme"
-        case educational_models.CollectiveOfferDisplayedStatus.PREBOOKED:
-            return "Préréservée"
-        case educational_models.CollectiveOfferDisplayedStatus.BOOKED:
-            return "Réservée"
-        case educational_models.CollectiveOfferDisplayedStatus.HIDDEN:
-            return "En pause"
-        case educational_models.CollectiveOfferDisplayedStatus.EXPIRED:
-            return "Expirée"
-        case educational_models.CollectiveOfferDisplayedStatus.ENDED:
-            return "Terminée"
-        case educational_models.CollectiveOfferDisplayedStatus.CANCELLED:
-            return "Annulée"
-        case educational_models.CollectiveOfferDisplayedStatus.REIMBURSED:
-            return "Remboursée"
-        case educational_models.CollectiveOfferDisplayedStatus.ARCHIVED:
-            return "Archivée"
-        case educational_models.CollectiveOfferDisplayedStatus.DRAFT:
-            return "Brouillon"
-        case _:
-            return displayed_status.value
 
 
 def format_offer_category(subcategory_id: str) -> str:

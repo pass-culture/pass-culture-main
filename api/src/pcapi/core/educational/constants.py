@@ -1,5 +1,8 @@
+import typing
 from datetime import datetime
 from itertools import chain
+
+from pcapi.core.educational import models
 
 
 INSTITUTION_TYPES = {
@@ -196,3 +199,18 @@ ALL_INTERVENTION_AREA = [
 ]
 
 MEG_BEGINNING_DATE = datetime(2023, 9, 1)
+
+COLLECTIVE_OFFER_DISPLAYED_STATUS_LABELS: typing.Dict[models.CollectiveOfferDisplayedStatus, str] = {
+    models.CollectiveOfferDisplayedStatus.PUBLISHED: "Publiée",
+    models.CollectiveOfferDisplayedStatus.UNDER_REVIEW: "En instruction",
+    models.CollectiveOfferDisplayedStatus.REJECTED: "Non conforme",
+    models.CollectiveOfferDisplayedStatus.PREBOOKED: "Préréservée",
+    models.CollectiveOfferDisplayedStatus.BOOKED: "Réservée",
+    models.CollectiveOfferDisplayedStatus.HIDDEN: "En pause",
+    models.CollectiveOfferDisplayedStatus.EXPIRED: "Expirée",
+    models.CollectiveOfferDisplayedStatus.ENDED: "Terminée",
+    models.CollectiveOfferDisplayedStatus.CANCELLED: "Annulée",
+    models.CollectiveOfferDisplayedStatus.REIMBURSED: "Remboursée",
+    models.CollectiveOfferDisplayedStatus.ARCHIVED: "Archivée",
+    models.CollectiveOfferDisplayedStatus.DRAFT: "Brouillon",
+}
