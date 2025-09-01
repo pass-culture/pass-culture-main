@@ -60,6 +60,7 @@ PRO_API_URL = os.environ.get("PRO_API_URL", API_URL)
 # Applications urls
 WEBAPP_V2_URL = os.environ.get("WEBAPP_V2_URL")
 WEBAPP_V2_REDIRECT_URL = os.environ.get("WEBAPP_V2_REDIRECT_URL")
+LOCAL_WEBAPP_URL = os.environ.get("LOCAL_WEBAPP_URL")
 PRO_URL = os.environ.get("PRO_URL", "").rstrip("/")
 FIREBASE_DYNAMIC_LINKS_URL = os.environ.get("FIREBASE_DYNAMIC_LINKS_URL")
 

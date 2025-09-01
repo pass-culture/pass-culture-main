@@ -32,7 +32,15 @@
                 <a href="{{ link_to_app }}"
                    target="_blank">
                   <div class="mb-1">
-                    <span class="fw-bold">Aller sur l'app en tant que {{ user.firstName or "User" }} {{ user.lastName or user.id }}</span>
+                    <span class="fw-bold">Aller sur l'app en tant que {{ user.full_name }}</span>
+                  </div>
+                </a>
+              {% endif %}
+              {% if link_to_local_app %}
+                <a href="{{ link_to_local_app }}"
+                   target="_blank">
+                  <div class="mb-1">
+                    <span class="fw-bold">Aller sur l'app locale en tant que {{ user.full_name }} (pour l'équipe dev)</span>
                   </div>
                 </a>
               {% endif %}
