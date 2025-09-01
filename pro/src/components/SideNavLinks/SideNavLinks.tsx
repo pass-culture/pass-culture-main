@@ -384,25 +384,29 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   }
                 >
                   <span className={styles['nav-links-item-without-icon']}>
-                    Offres
+                    {isNewCollectiveOffersStructureEnabled
+                      ? 'Offres réservables'
+                      : 'Offres'}
                   </span>
                 </NavLink>
               </li>
-              <li>
-                <NavLink
-                  to="/reservations/collectives"
-                  end
-                  className={({ isActive }) =>
-                    classnames(styles['nav-links-item'], {
-                      [styles['nav-links-item-active']]: isActive,
-                    })
-                  }
-                >
-                  <span className={styles['nav-links-item-without-icon']}>
-                    Réservations
-                  </span>
-                </NavLink>
-              </li>
+              {!isNewCollectiveOffersStructureEnabled && (
+                <li>
+                  <NavLink
+                    to="/reservations/collectives"
+                    end
+                    className={({ isActive }) =>
+                      classnames(styles['nav-links-item'], {
+                        [styles['nav-links-item-active']]: isActive,
+                      })
+                    }
+                  >
+                    <span className={styles['nav-links-item-without-icon']}>
+                      Réservations
+                    </span>
+                  </NavLink>
+                </li>
+              )}
               {venueId && (
                 <li>
                   <NavLink

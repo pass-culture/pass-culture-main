@@ -55,7 +55,7 @@ describe('SideNavLinks', () => {
     expect(screen.getAllByRole('link', { name: 'Offres' })).toHaveLength(2)
   })
 
-  it('should show template offers link in collective offer section link when FF is enabled', async () => {
+  it('should show template and bookable offers links and hide bookings link in collective offer section link when FF is enabled', async () => {
     renderSideNavLinks({
       features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'],
     })
@@ -66,10 +66,12 @@ describe('SideNavLinks', () => {
     expect(
       screen.getByRole('link', { name: 'Offres vitrines' })
     ).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Offres' })).toBeInTheDocument()
     expect(
-      screen.getByRole('link', { name: 'Réservations' })
+      screen.getByRole('link', { name: 'Offres réservables' })
     ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('link', { name: 'Réservations' })
+    ).not.toBeInTheDocument()
   })
 
   it('should not show template offers link in collective offer section link when FF is disabled', async () => {
