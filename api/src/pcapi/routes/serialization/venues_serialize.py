@@ -21,6 +21,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
 from pcapi.core.offers.validation import ACCEPTED_THUMBNAIL_FORMATS
+from pcapi.core.opening_hours import api as opening_hours_api
 from pcapi.core.opening_hours import schemas as opening_hours_schemas
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -212,6 +213,12 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
         if key == "isCaledonian":
             return venue.is_caledonian
 
+        if key == "openingHours":
+            opening_hours = venue.openingHours
+            if opening_hours and isinstance(opening_hours, list):
+                return opening_hours_api.format_opening_hours(opening_hours)
+            return typing.cast(opening_hours_schemas.WeekdayOpeningHoursTimespans | None, opening_hours)
+
         return super().get(key, default)
 
 
@@ -248,6 +255,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     address: address_serialize.AddressResponseIsLinkedToVenueModel | None
     hasActiveIndividualOffer: bool
     isCaledonian: bool
+    openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None
 
     class Config:
         orm_mode = True

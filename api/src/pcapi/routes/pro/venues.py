@@ -44,6 +44,7 @@ def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
         .filter(models.Venue.id == venue_id)
         .options(sa_orm.joinedload(models.Venue.contact))
         .options(sa_orm.joinedload(models.Venue.managingOfferer))
+        .options(sa_orm.joinedload(models.Venue.openingHours))
         .options(
             sa_orm.selectinload(models.Venue.pricing_point_links).joinedload(models.VenuePricingPointLink.pricingPoint)
         )

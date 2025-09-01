@@ -653,8 +653,7 @@ class Returns200Test:
         assert len(venue.action_history) == 1
 
         tuesday_opening_hours = response.json["openingHours"].get("TUESDAY")
-        assert tuesday_opening_hours[0] == {"open": "10:00", "close": "13:00"}
-        assert tuesday_opening_hours[1] == {"open": "14:00", "close": "19:30"}
+        assert tuesday_opening_hours == [["10:00", "13:00"], ["14:00", "19:30"]]
 
         assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
         assert venue.action_history[0].extraData == {
