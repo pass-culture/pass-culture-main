@@ -143,6 +143,7 @@ export const IndividualOfferLocationScreen = ({
               updateOffer(formValues, shouldSendMail)
             )()
           }
+          refToFocusOnClose={saveEditionChangesButtonRef}
         />
       )}
 

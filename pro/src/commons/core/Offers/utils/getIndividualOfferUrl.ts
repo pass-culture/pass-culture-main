@@ -38,6 +38,14 @@ const routes = {
     [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/tarifs`,
     [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/tarifs`,
   },
+  [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS]: {
+    [OFFER_WIZARD_MODE.CREATION]:
+      '/offre/individuelle/:offerId/creation/informations_pratiques',
+    [OFFER_WIZARD_MODE.EDITION]:
+      '/offre/individuelle/:offerId/edition/informations_pratiques',
+    [OFFER_WIZARD_MODE.READ_ONLY]:
+      '/offre/individuelle/:offerId/informations_pratiques',
+  },
   [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY]: {
     [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/recapitulatif`,
     [OFFER_WIZARD_MODE.EDITION]: ``,

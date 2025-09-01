@@ -42,7 +42,7 @@ export const useSaveOfferPriceTable = ({
           ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
           : offer.isEvent
             ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
-            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
+            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
       mode:
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
       isOnboarding,

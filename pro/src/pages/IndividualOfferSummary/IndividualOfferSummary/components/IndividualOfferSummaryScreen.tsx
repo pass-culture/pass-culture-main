@@ -57,6 +57,9 @@ export const IndividualOfferSummaryScreen = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const currentOfferer = useSelector(selectCurrentOfferer)
   const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
+  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
 
   const onPublish = async (values: EventPublicationFormValues) => {
     // Edition mode offers are already published
@@ -157,7 +160,9 @@ export const IndividualOfferSummaryScreen = () => {
     navigate(
       getIndividualOfferUrl({
         offerId: offer.id,
-        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+        step: isNewOfferCreationFlowFeatureActive
+          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS
+          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
         mode,
         isOnboarding,
       })

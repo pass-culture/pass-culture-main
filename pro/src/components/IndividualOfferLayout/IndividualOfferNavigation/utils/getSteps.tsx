@@ -89,6 +89,11 @@ export const getSteps = ({
         significativeProperty: 'priceCategories',
       })
     }
+    steps.push({
+      id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
+      label: 'Informations pratiques',
+      significativeProperty: null,
+    })
   } else {
     // This part will disappear once the FF is enabled in production.
     if (isEvent) {

@@ -1,0 +1,5 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.email-row {
+  margin-top: rem.torem(16px);
+}
