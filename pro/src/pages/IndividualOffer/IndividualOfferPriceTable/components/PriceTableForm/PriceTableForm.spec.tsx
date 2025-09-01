@@ -11,9 +11,9 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import type { PriceTableFormValues } from '../../../commons/schemas'
-import type { PriceTableFormContext } from '../../../commons/types'
-import { PriceTableForm, type PriceTableFormProps } from '../PriceTableForm'
+import type { PriceTableFormValues } from '../../commons/schemas'
+import type { PriceTableFormContext } from '../../commons/types'
+import { PriceTableForm, type PriceTableFormProps } from './PriceTableForm'
 
 vi.mock(
   '@/components/IndividualOffer/StocksThing/ActivationCodeFormDialog/ActivationCodeFileChecker',
