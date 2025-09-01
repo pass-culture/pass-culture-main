@@ -57,7 +57,7 @@ def get_jwt_token() -> str:
                         "response_text": response.text,
                     },
                 )
-                raise requests.ExternalAPIException(True, {"status_code": response.status_code})
+            raise requests.ExternalAPIException(True, {"status_code": response.status_code})
 
         return response.json()["token"]
 

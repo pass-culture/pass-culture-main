@@ -10,6 +10,7 @@ from pcapi.connectors import titelive
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.core.categories import subcategories
 from pcapi.utils import date as date_utils
+from pcapi.utils.requests import ExternalAPIException
 
 from tests.connectors.titelive import fixtures
 
@@ -31,6 +32,15 @@ class TiteliveTest:
         self._configure_mock(requests_mock)
 
         assert titelive.get_jwt_token() == "XYZ"
+
+    def test_get_jwt_token_error_500(self, requests_mock):
+        requests_mock.post(
+            f"{settings.TITELIVE_EPAGINE_API_AUTH_URL}/login/test@example.com/token",
+            status_code=500,
+        )
+
+        with pytest.raises(ExternalAPIException):
+            titelive.get_jwt_token()
 
     def test_get_by_ean13(self, requests_mock):
         ean = "9782070455379"
