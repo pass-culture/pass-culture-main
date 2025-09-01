@@ -171,4 +171,121 @@ describe('<Table />', () => {
       screen.getByText('Les justificatifs apparaîtront ici une fois édités.')
     ).toBeInTheDocument()
   })
+
+  it('select-all selects every row from allData (across pages), not just the current page', async () => {
+    const handleSelection = vi.fn()
+
+    const allData = [
+      ...data,
+      { id: 3, name: 'Gamma', value: 3 },
+      { id: 4, name: 'Delta', value: 4 },
+    ]
+
+    renderTable({
+      selectable: true,
+      allData,
+      onSelectionChange: handleSelection,
+    })
+
+    await userEvent.click(screen.getByLabelText(/Tout sélectionner/i))
+
+    expect(handleSelection).toHaveBeenLastCalledWith(allData)
+
+    await userEvent.click(screen.getByLabelText(/Tout désélectionner/i))
+    expect(handleSelection).toHaveBeenLastCalledWith([])
+  })
+
+  it('header checkbox reflects allData and skips non-selectable rows', async () => {
+    const handleSelection = vi.fn()
+
+    const page = [
+      { id: 1, name: 'A', value: 1 },
+      { id: 2, name: 'B', value: 2 },
+    ]
+    const allData = [
+      ...page,
+      { id: 3, name: 'C', value: 3 },
+      { id: 4, name: 'D', value: 4 },
+    ]
+
+    renderTable({
+      selectable: true,
+      data: page,
+      allData,
+      isRowSelectable: (r) => r.value % 2 === 1,
+      onSelectionChange: handleSelection,
+    })
+
+    const header = screen.getByRole('checkbox', { name: /tout sélectionner/i })
+    expect(header).not.toBeChecked()
+
+    await userEvent.click(screen.getByLabelText('A'))
+
+    await userEvent.click(header)
+
+    expect(handleSelection).toHaveBeenLastCalledWith([
+      { id: 1, name: 'A', value: 1 },
+      { id: 3, name: 'C', value: 3 },
+    ])
+    expect(header).toBeChecked()
+  })
+
+  it('respects headerHidden, bodyHidden and headerColSpan', () => {
+    const cols: Column<RowType>[] = [
+      {
+        id: 'hiddenHead',
+        label: 'H',
+        headerHidden: true,
+        ordererField: 'name',
+      },
+      { id: 'span', label: 'Span', headerColSpan: 2, ordererField: 'value' },
+      {
+        id: 'hiddenBody',
+        label: 'HiddenBody',
+        bodyHidden: true,
+        ordererField: 'name',
+      },
+    ]
+
+    renderTable({ columns: cols })
+
+    expect(
+      screen.queryByRole('columnheader', { name: 'H' })
+    ).not.toBeInTheDocument()
+
+    expect(screen.getByRole('columnheader', { name: 'Span' })).toHaveAttribute(
+      'colspan',
+      '2'
+    )
+
+    const dataRow = screen.getAllByRole('row')[1]
+    expect(within(dataRow).queryByText('HiddenBody')).not.toBeInTheDocument()
+  })
+
+  it('applies sticky header and variant classes', () => {
+    const { container, rerender } = renderTable({
+      isSticky: true,
+      variant: TableVariant.SEPARATE,
+    })
+    expect(container.querySelector('thead tr')).toHaveClass(
+      'table-header-sticky'
+    )
+    expect(container.querySelector('table')).toHaveClass('table-separate')
+
+    rerender(
+      <Table
+        columns={columns}
+        data={data}
+        isLoading={false}
+        variant={TableVariant.COLLAPSE}
+        noResult={{ message: 'Aucun résultat trouvé', onFilterReset: vi.fn() }}
+        noData={{
+          hasNoData: false,
+          message: { icon: '', title: '', subtitle: '' },
+        }}
+      />
+    )
+
+    expect(container.querySelector('table')).toHaveClass('table-collapse')
+  })
 })

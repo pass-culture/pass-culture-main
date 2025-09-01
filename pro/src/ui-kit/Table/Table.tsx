@@ -45,6 +45,7 @@ interface TableProps<T extends { id: string | number }> {
   title?: string
   columns: Column<T>[]
   data: T[]
+  allData?: T[]
   selectable?: boolean
   className?: string
   isLoading: boolean
@@ -84,6 +85,7 @@ export function Table<
   title = 'Tableau de données',
   columns,
   data,
+  allData,
   selectable = false,
   selectedNumber,
   selectedIds: controlledSelectedIds,
@@ -97,6 +99,8 @@ export function Table<
   getFullRowContent,
   isRowSelectable,
 }: TableProps<T>) {
+  const fullScope = allData ?? data
+
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<unknown>()
 
@@ -113,23 +117,24 @@ export function Table<
     if (!isControlled) {
       setUncontrolledSelectedIds(newSelectedIds)
     }
-    onSelectionChange?.(data.filter((r) => newSelectedIds.has(r.id)))
+    // 🔁 notify with rows from the FULL scope (all pages)
+    onSelectionChange?.(fullScope.filter((r) => newSelectedIds.has(r.id)))
   }
 
   function sortTableColumn(col: unknown) {
     onColumnHeaderClick(col)
   }
 
-  const selectableRows = useMemo(
-    () => (isRowSelectable ? data.filter(isRowSelectable) : data),
-    [data, isRowSelectable]
+  const selectableRowsAll = useMemo(
+    () => (isRowSelectable ? fullScope.filter(isRowSelectable) : fullScope),
+    [fullScope, isRowSelectable]
   )
 
   const toggleSelectAll = () => {
-    if (selectedIds.size === selectableRows.length) {
+    if (selectedIds.size === selectableRowsAll.length) {
       updateSelectedIds(new Set())
     } else {
-      updateSelectedIds(new Set(selectableRows.map((r) => r.id)))
+      updateSelectedIds(new Set(selectableRowsAll.map((r) => r.id)))
     }
   }
 
@@ -164,6 +169,18 @@ export function Table<
     })
   }, [data, currentSortingColumn, currentSortingMode, columns])
 
+  // Header checkbox state based on ALL pages
+  const headerChecked =
+    selectedIds.size === selectableRowsAll.length &&
+    selectableRowsAll.length > 0
+
+  const headerIndeterminate =
+    selectedIds.size > 0 && selectedIds.size < selectableRowsAll.length
+
+  const headerLabel = headerChecked
+    ? 'Tout désélectionner'
+    : 'Tout sélectionner'
+
   if (noData.hasNoData) {
     return <TableNoData noData={noData.message} />
   }
@@ -173,24 +190,14 @@ export function Table<
       {selectable && (
         <div className={styles['table-select-all']}>
           <Checkbox
-            label={
-              selectedIds.size < selectableRows.length
-                ? 'Tout sélectionner'
-                : 'Tout désélectionner'
-            }
-            checked={
-              selectedIds.size === selectableRows.length &&
-              selectableRows.length > 0
-            }
+            label={headerLabel}
+            checked={headerChecked}
+            indeterminate={headerIndeterminate}
             onChange={toggleSelectAll}
-            indeterminate={
-              selectedIds.size > 0 && selectedIds.size < selectableRows.length
-            }
           />
           <span className={styles['visually-hidden']}>
             Sélectionner toutes les lignes
           </span>
-
           <div>{selectedNumber}</div>
         </div>
       )}
