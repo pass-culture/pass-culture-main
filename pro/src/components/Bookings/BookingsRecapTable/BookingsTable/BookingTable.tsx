@@ -1,12 +1,15 @@
-import {
+// ./BookingsRecapTable/BookingsDataTable.tsx
+
+import { useEffect, useMemo, useState } from 'react'
+
+import type {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from '@/apiClient/v1'
 import { Audience } from '@/commons/core/shared/types'
-import strokeNoBooking from '@/icons/stroke-no-booking.svg'
-import { Column, Table, TableVariant } from '@/ui-kit/Table/Table'
-import { ReactNode, useEffect, useMemo, useState } from 'react'
-import { BookingsFilters } from '../types'
+import { Table, TableVariant } from '@/ui-kit/Table/Table'
+
+import type { BookingsFilters } from '../types'
 import styles from './BookingsTable.module.scss'
 import { useCollectiveBookingsColumns } from './ColumnsCollectiveBooking'
 import { useBookingsTableColumnsByIndex } from './ColumnsIndividualBooking'
@@ -21,8 +24,8 @@ type Props<T extends AnyBooking> = {
   /** source bookings list for header/columns context (usually the unfiltered list) */
   allBookings: T[]
   bookingStatuses: string[]
-  onUpdateGlobalFilters?: (updated: Partial<BookingsFilters>) => void
-  onResetAllFilters?: () => void
+  onUpdateGlobalFilters: (updated: Partial<BookingsFilters>) => void
+  onResetAllFilters: () => void
   /** bookingId from URL to open by default (if present) */
   defaultBookingId?: string
 }
@@ -42,7 +45,7 @@ export function BookingsTable<T extends AnyBooking>({
     () =>
       bookings.map(
         (b, i) =>
-          ({ ...(b as object), id: i }) as T & {
+          ({ ...(b as object), id: i }) as BookingRecapResponseModel & {
             id: number
           }
       ),
@@ -75,7 +78,7 @@ export function BookingsTable<T extends AnyBooking>({
   // Columns by audience
   const { columns: individualColumns, getFullRowContentIndividual } =
     useBookingsTableColumnsByIndex({
-      bookings: allBookings as BookingRecapResponseModel[],
+      bookings: allBookings, // context list
       bookingStatuses,
       updateGlobalFilters: onUpdateGlobalFilters,
       expandedIds: expanded,
@@ -84,7 +87,7 @@ export function BookingsTable<T extends AnyBooking>({
 
   const { columns: collectiveColumns, getFullRowContentCollective } =
     useCollectiveBookingsColumns({
-      bookings: allBookings as CollectiveBookingResponseModel[], // context list
+      bookings: allBookings, // context list
       bookingStatuses,
       updateGlobalFilters: onUpdateGlobalFilters,
       expandedIds: expanded,
@@ -102,17 +105,17 @@ export function BookingsTable<T extends AnyBooking>({
         title={tableTitle}
         columns={
           audience === Audience.INDIVIDUAL
-            ? (individualColumns as unknown as Column<T & { id: number }>[])
-            : (collectiveColumns as unknown as Column<T & { id: number }>[])
+            ? individualColumns
+            : collectiveColumns
         }
         data={rows}
         isLoading={isLoading}
         variant={TableVariant.COLLAPSE}
         noData={{
-          hasNoData: bookings.length === 0,
+          hasNoData: false,
           message: {
-            icon: strokeNoBooking,
-            title: 'Vous n’avez pas encore de réservations',
+            icon: '',
+            title: 'Vous n’avez aucune réservation pour le moment',
             subtitle: '',
           },
         }}
@@ -123,12 +126,8 @@ export function BookingsTable<T extends AnyBooking>({
         }}
         getFullRowContent={
           audience === Audience.INDIVIDUAL
-            ? (getFullRowContentIndividual as unknown as (
-                row: T & { id: number }
-              ) => ReactNode)
-            : (getFullRowContentCollective as unknown as (
-                row: T & { id: number }
-              ) => ReactNode)
+            ? getFullRowContentIndividual
+            : getFullRowContentCollective
         }
       />
     </div>

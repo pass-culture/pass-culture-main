@@ -1,13 +1,16 @@
-import { useEffect, useState } from 'react'
+// ./BookingsRecapTable/BookingsRecapTable.tsx
+
+import { useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router'
 
 import type {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from '@/apiClient/v1'
-import { Audience } from '@/commons/core/shared/types'
-
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import type { Audience } from '@/commons/core/shared/types'
 import { pluralize } from '@/commons/utils/pluralize'
+
 import styles from './BookingRecapTable.module.scss'
 import { BookingsTable } from './BookingsTable/BookingTable'
 import {
@@ -25,9 +28,7 @@ interface BookingsRecapTableProps<
 > {
   bookingsRecap: T[]
   isLoading: boolean
-  locationState?: {
-    statuses: string[]
-  }
+  locationState?: { statuses: string[] }
   audience: Audience
   resetBookings?: () => void
 }
@@ -38,22 +39,25 @@ export const BookingsRecapTable = <
   isLoading,
   locationState,
   audience,
-  bookingsRecap: bookings,
+  resetBookings,
+  bookingsRecap: bookings, // source list
 }: BookingsRecapTableProps<T>) => {
-  const [filteredBookings, setFilteredBookings] = useState(bookings)
-
+  const { logEvent } = useAnalytics()
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
+
+  // default expanded by bookingId from URL (if any)
   const [defaultBookingId, setDefaultBookingId] = useState(
     queryParams.get('bookingId') || EMPTY_FILTER_VALUE
   )
 
+  // table-level filters (omnisearch, status…)
   const [filters, setFilters] = useState<BookingsFilters>({
     bookingBeneficiary: EMPTY_FILTER_VALUE,
     bookingToken: EMPTY_FILTER_VALUE,
     offerISBN: EMPTY_FILTER_VALUE,
     offerName: EMPTY_FILTER_VALUE,
-    bookingStatus: locationState?.statuses.length
+    bookingStatus: locationState?.statuses?.length
       ? locationState.statuses
       : [...ALL_BOOKING_STATUS],
     selectedOmniSearchCriteria: defaultBookingId
@@ -64,26 +68,23 @@ export const BookingsRecapTable = <
     bookingId: defaultBookingId,
   })
 
+  // derive filtered list
+  const filteredBookings = useMemo(
+    () => filterBookingsRecap(bookings, filters),
+    [bookings, filters]
+  )
+
+  // keep filtered in sync when source list changes
   useEffect(() => {
-    applyFilters()
+    // nothing to do; useMemo handles it
   }, [bookings])
 
-  const updateGlobalFilters = (updatedFilters: Partial<BookingsFilters>) => {
-    setFilters((filters) => {
-      const newFilters = { ...filters, ...updatedFilters }
-      applyFilters(newFilters)
-      return newFilters
-    })
-  }
-
-  const applyFilters = (filtersBookingResults?: BookingsFilters) => {
-    const filtersToApply = filtersBookingResults || filters
-    const bookingsRecapFiltered = filterBookingsRecap(bookings, filtersToApply)
-    setFilteredBookings(bookingsRecapFiltered)
+  const updateGlobalFilters = (updated: Partial<BookingsFilters>) => {
+    setFilters((prev) => ({ ...prev, ...updated }))
   }
 
   const resetAllFilters = () => {
-    const filtersBookingResults = {
+    const base: BookingsFilters = {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingToken: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,
@@ -94,8 +95,8 @@ export const BookingsRecapTable = <
       selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
       bookingId: EMPTY_FILTER_VALUE,
     }
-    setFilters(filtersBookingResults)
-    applyFilters(filtersBookingResults)
+    setDefaultBookingId('')
+    setFilters(base)
   }
 
   const updateFilters = (
@@ -109,16 +110,12 @@ export const BookingsRecapTable = <
     if (selectedOmniSearchCriteria === bookingIdOmnisearchFilter.id) {
       setDefaultBookingId('')
     }
-    setFilters((filters) => ({
-      ...filters,
+    setFilters((prev) => ({
+      ...prev,
       ...updatedFilter,
       keywords,
       selectedOmniSearchCriteria,
     }))
-    applyFilters({
-      ...filters,
-      ...updatedFilter,
-    })
   }
 
   return (
@@ -132,11 +129,13 @@ export const BookingsRecapTable = <
           audience={audience}
         />
       </div>
+
       {filteredBookings.length !== 0 && (
         <div className={styles['bookings-header']}>
           {pluralize(filteredBookings.length, 'réservation')}
         </div>
       )}
+
       <BookingsTable
         key={`table-${audience}`}
         audience={audience}
