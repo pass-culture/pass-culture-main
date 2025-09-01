@@ -9,6 +9,7 @@ import styles from './TableNoFilterResult.module.scss'
 interface NoResultsProps {
   colSpan: number
   message: string
+  subtitle: string
   resetMessage?: string
   resetFilters: () => void
 }
@@ -16,6 +17,7 @@ interface NoResultsProps {
 export const TableNoFilterResult = ({
   colSpan = 1,
   message = 'Pas de résultat pour votre recherche',
+  subtitle = 'Vous pouvez modifier votre recherche ou',
   resetMessage = 'Réinitialiser les filtres',
   resetFilters,
 }: NoResultsProps): JSX.Element => (
@@ -29,9 +31,7 @@ export const TableNoFilterResult = ({
           width="124"
         />
         <p className={styles['search-no-results-title4']}>{message}</p>
-        <p className={styles['search-no-results-text']}>
-          Vous pouvez modifier votre recherche ou
-        </p>
+        <p className={styles['search-no-results-text']}>{subtitle}</p>
         <Button
           variant={ButtonVariant.TERNARYBRAND}
           icon={fullRefresh}
