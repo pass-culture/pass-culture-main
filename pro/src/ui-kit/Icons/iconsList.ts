@@ -124,6 +124,7 @@ import strokeTrashIcon from '@/icons/stroke-trash.svg'
 import strokeUserIcon from '@/icons/stroke-user.svg'
 import strokeValidIcon from '@/icons/stroke-valid.svg'
 import strokeVenueIcon from '@/icons/stroke-venue.svg'
+import strokeVideoIcon from '@/icons/stroke-video.svg'
 import strokeVirtualEventIcon from '@/icons/stroke-virtual-event.svg'
 import strokeVirtualThingIcon from '@/icons/stroke-virtual-thing.svg'
 import strokeVisualArtIcon from '@/icons/stroke-visual-art.svg'
@@ -270,6 +271,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeAddCalendarIcon },
   { src: strokePictureIcon, viewBox: '0 0 58 58' },
   { src: strokeNoImageIcon },
+  { src: strokeVideoIcon },
 ]
 
 export const otherIcons: IconListItem[] = [

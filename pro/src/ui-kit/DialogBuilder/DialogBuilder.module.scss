@@ -28,11 +28,20 @@ $animation-timing-function: ease-in-out;
   }
 }
 
+.dialog-builder-title-container {
+  display: flex;
+  align-items: baseline;
+
+  img {
+    height: rem.torem(17px);
+  }
+}
+
 .dialog-builder-title {
   @include fonts.title3;
 
   margin-bottom: rem.torem(16px);
-  padding-right: rem.torem(24px);
+  padding-right: rem.torem(16px);
 }
 
 .dialog-builder-section {

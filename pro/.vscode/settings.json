@@ -9,5 +9,8 @@
   "stylelint.validate": ["css", "scss"],
   "[scss]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
   }
 }
