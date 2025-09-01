@@ -374,6 +374,12 @@ class BaseOfferResponseGetterDict(GetterDict):
                 durationSeconds=offer.metaData.videoDuration,
             )
 
+        if key == "openingHours":
+            opening_hours = offer.openingHours
+            if opening_hours and isinstance(opening_hours, list):
+                return opening_hours_api.format_opening_hours(opening_hours)
+            return cast(opening_hours_schemas.WeekdayOpeningHoursTimespans | None, opening_hours)
+
         return super().get(key, default)
 
 
@@ -481,16 +487,6 @@ class BaseOfferResponse(ConfiguredBaseModel):
 
     class Config:
         getter_dict = BaseOfferResponseGetterDict
-
-    @validator("openingHours", pre=True)
-    def transform_opening_hours(
-        cls,
-        opening_hours: list[offerers_models.OpeningHours] | opening_hours_schemas.WeekdayOpeningHoursTimespans | None,
-    ) -> opening_hours_schemas.WeekdayOpeningHoursTimespans | None:
-        # data might already have been parsed
-        if opening_hours and isinstance(opening_hours, list):
-            return opening_hours_api.format_offer_opening_hours(opening_hours)
-        return cast(opening_hours_schemas.WeekdayOpeningHoursTimespans | None, opening_hours)
 
 
 class OfferResponse(BaseOfferResponse):

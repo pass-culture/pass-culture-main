@@ -733,7 +733,7 @@ def upsert_offer_opening_hours(
     opening_hours_api.upsert_opening_hours(offer, opening_hours=body.openingHours)
 
     offer = offers_repository.get_offer_by_id(offer.id, load_options={"openingHours"})
-    opening_hours = opening_hours_api.format_offer_opening_hours(offer.openingHours)
+    opening_hours = opening_hours_api.format_opening_hours(offer.openingHours)
     return offers_schemas.OfferOpeningHoursSchema(openingHours=opening_hours)
 
 
@@ -749,7 +749,7 @@ def get_offer_opening_hours(offer_id: int) -> offers_schemas.OfferOpeningHoursSc
     offer = offers_repository.get_offer_by_id(offer_id, load_options={"venue", "openingHours"})
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    opening_hours = opening_hours_api.format_offer_opening_hours(offer.openingHours)
+    opening_hours = opening_hours_api.format_opening_hours(offer.openingHours)
     return offers_schemas.OfferOpeningHoursSchema(openingHours=opening_hours)
 
 

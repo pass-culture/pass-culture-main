@@ -4,6 +4,7 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.opening_hours.api as opening_hours_api
 import pcapi.core.users.factories as users_factories
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core import testing
@@ -163,7 +164,7 @@ class Returns200Test:
             "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
             "motorDisabilityCompliant": venue.motorDisabilityCompliant,
             "name": venue.name,
-            "openingHours": venue.opening_hours,
+            "openingHours": opening_hours_api.format_opening_hours(venue.openingHours),
             "postalCode": venue.postalCode,
             "publicName": venue.publicName,
             "siret": venue.siret,
@@ -593,10 +594,7 @@ class Returns200Test:
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
-        assert response.json["openingHours"]["THURSDAY"] == [
-            {"open": "10:00", "close": "13:00"},
-            {"open": "14:00", "close": "19:30"},
-        ]
+        assert response.json["openingHours"]["THURSDAY"] == [["10:00", "13:00"], ["14:00", "19:30"]]
 
     def should_sort_opening_hours(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
@@ -624,10 +622,7 @@ class Returns200Test:
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
-        assert response.json["openingHours"]["SATURDAY"] == [
-            {"open": "10:00", "close": "13:00"},
-            {"open": "14:00", "close": "19:00"},
-        ]
+        assert response.json["openingHours"]["SATURDAY"] == [["10:00", "13:00"], ["14:00", "19:00"]]
 
     def should_return_none_when_venue_has_no_accessibility_provider(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")

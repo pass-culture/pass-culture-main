@@ -67,6 +67,7 @@ class VenueResponse(base.BaseVenueResponse):
     bannerMeta: offerers_schemas.BannerMetaModel | None
     timezone: str
     contact: VenueContactModel | None
+    openingHours: dict | None
 
     class Config:
         getter_dict = VenueResponseGetterDict

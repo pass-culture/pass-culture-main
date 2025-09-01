@@ -14,6 +14,7 @@ import type { LegalStatusResponseModel } from './LegalStatusResponseModel';
 import type { StudentLevels } from './StudentLevels';
 import type { VenueContactModel } from './VenueContactModel';
 import type { VenueTypeCode } from './VenueTypeCode';
+import type { WeekdayOpeningHoursTimespans } from './WeekdayOpeningHoursTimespans';
 export type GetVenueResponseModel = {
   adageInscriptionDate?: string | null;
   address?: AddressResponseIsLinkedToVenueModel | null;
@@ -58,7 +59,7 @@ export type GetVenueResponseModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
-  openingHours?: Record<string, any> | null;
+  openingHours?: WeekdayOpeningHoursTimespans | null;
   postalCode?: string | null;
   pricingPoint?: GetVenuePricingPointResponseModel | null;
   publicName?: string | null;
