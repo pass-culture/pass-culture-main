@@ -15,7 +15,7 @@ from . import api_entreprise_test_data
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_without_address():
-    siren = "123456789"
+    siren = "123456782"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}",
@@ -24,7 +24,7 @@ def test_get_siren_without_address():
         siren_info = api.get_siren(siren, with_address=False)
         assert siren_info.siren == siren
         assert siren_info.name == "LE PETIT RINTINTIN"
-        assert siren_info.head_office_siret == "12345678900012"
+        assert siren_info.head_office_siret == "12345678200012"
         assert siren_info.ape_code == "4761Z"
         assert siren_info.ape_label == "Commerce de détail de livres en magasin spécialisé"
         assert siren_info.legal_category_code == "5710"
@@ -37,7 +37,7 @@ def test_get_siren_without_address():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_with_address():
-    siren = "123456789"
+    siren = "123456782"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}/siege_social",
@@ -46,7 +46,7 @@ def test_get_siren_with_address():
         siren_info = api.get_siren(siren)
         assert siren_info.siren == siren
         assert siren_info.name == "LE PETIT RINTINTIN"
-        assert siren_info.head_office_siret == "12345678900012"
+        assert siren_info.head_office_siret == "12345678200012"
         assert siren_info.ape_code == "4761Z"
         assert siren_info.ape_label == "Commerce de détail de livres en magasin spécialisé"
         assert siren_info.legal_category_code == "5710"
@@ -65,7 +65,7 @@ def test_get_siren_with_address():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_of_entreprise_individuelle():
-    siren = "111222333"
+    siren = "111222337"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}/siege_social",
@@ -74,7 +74,7 @@ def test_get_siren_of_entreprise_individuelle():
         siren_info = api.get_siren(siren)
         assert siren_info.siren == siren
         assert siren_info.name == "MARIE SKLODOWSKA CURIE"
-        assert siren_info.head_office_siret == "11122233300022"
+        assert siren_info.head_office_siret == "11122233700022"
         assert siren_info.ape_code == "7219Z"
         assert siren_info.ape_label == "Recherche-développement en autres sciences physiques et naturelles"
         assert siren_info.legal_category_code == "1000"
@@ -89,7 +89,7 @@ def test_get_siren_of_entreprise_individuelle():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_with_non_public_data():
-    siren = "123456789"
+    siren = "123456782"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}",
@@ -101,7 +101,7 @@ def test_get_siren_with_non_public_data():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_with_non_public_data_do_not_raise():
-    siren = "987654321"
+    siren = "987654324"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}/siege_social",
@@ -110,7 +110,7 @@ def test_get_siren_with_non_public_data_do_not_raise():
         siren_info = api.get_siren(siren, raise_if_non_public=False)
         assert siren_info.siren == siren
         assert siren_info.name == "GEORGE DUPIN SAND"
-        assert siren_info.head_office_siret == "98765432100016"
+        assert siren_info.head_office_siret == "98765432400019"
         assert siren_info.ape_code == "9003B"
         assert siren_info.ape_label == "Autre création artistique"
         assert siren_info.legal_category_code == "1000"
@@ -125,7 +125,7 @@ def test_get_siren_with_non_public_data_do_not_raise():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_of_inactive_company():
-    siren = "777899888"
+    siren = "777899881"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}",
@@ -134,7 +134,7 @@ def test_get_siren_of_inactive_company():
         siren_info = api.get_siren(siren, with_address=False)
         assert siren_info.siren == siren
         assert siren_info.name == "LE RIDEAU FERME"
-        assert siren_info.head_office_siret == "77789988800021"
+        assert siren_info.head_office_siret == "77789988100021"
         assert siren_info.ape_code == "9001Z"
         assert siren_info.ape_label == "Arts du spectacle vivant"
         assert siren_info.legal_category_code == "5499"
@@ -161,7 +161,7 @@ def test_get_siren_without_ape():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_without_creation_date():
-    siren = "123456789"
+    siren = "123456782"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}",
@@ -175,7 +175,7 @@ def test_get_siren_without_creation_date():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_invalid_parameter():
-    siren = "111111111"
+    siren = "111111118"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}/siege_social",
@@ -193,6 +193,19 @@ def test_get_siren_pass_culture():
     with pytest.raises(exceptions.EntrepriseException) as error:
         api.get_siren(siren)
     assert str(error.value) == "Pass Culture"
+
+
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+def test_get_invalid_siren():
+    siren = "111111111"
+
+    with pytest.raises(exceptions.InvalidFormatException) as error:
+        api.get_siren(siren)
+    assert str(error.value) == "SIREN invalide"
+
+    with pytest.raises(exceptions.InvalidFormatException) as error:
+        api.get_siren_open_data(siren)
+    assert str(error.value) == "SIREN invalide"
 
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
@@ -216,7 +229,7 @@ def test_get_siren_reached_rate_limit():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siret():
-    siret = "12345678900017"
+    siret = "12345678200010"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/{siret}",
@@ -241,7 +254,7 @@ def test_get_siret():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siret_of_entreprise_individuelle():
-    siret = "12345678900045"
+    siret = "12345678200044"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/{siret}",
@@ -262,7 +275,7 @@ def test_get_siret_of_entreprise_individuelle():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siret_with_non_public_data():
-    siret = "12345678900017"
+    siret = "12345678200010"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/{siret}",
@@ -274,7 +287,7 @@ def test_get_siret_with_non_public_data():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siret_with_non_public_data_do_not_raise():
-    siret = "12345678900017"
+    siret = "12345678200010"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/{siret}",
@@ -295,7 +308,7 @@ def test_get_siret_with_non_public_data_do_not_raise():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siret_of_inactive_company():
-    siret = "77789988800021"
+    siret = "77789988100026"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/{siret}",
@@ -312,6 +325,27 @@ def test_get_siret_of_inactive_company():
         assert siret_info.legal_category_code == "5499"
         assert siret_info.active is False
         assert siret_info.diffusible is True
+
+
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+def test_get_siret_pass_culture():
+    siren = settings.PASS_CULTURE_SIRET
+    with pytest.raises(exceptions.EntrepriseException) as error:
+        api.get_siret(siren)
+    assert str(error.value) == "Pass Culture"
+
+
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+def test_get_invalid_siret():
+    siret = "11111111822222"
+
+    with pytest.raises(exceptions.InvalidFormatException) as error:
+        api.get_siret(siret)
+    assert str(error.value) == "SIRET invalide"
+
+    with pytest.raises(exceptions.InvalidFormatException) as error:
+        api.get_siret_open_data(siret)
+    assert str(error.value) == "SIRET invalide"
 
 
 @pytest.mark.parametrize(
@@ -332,7 +366,7 @@ def test_get_siret_of_inactive_company():
 )
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_error_handling(status_code, expected_exception):
-    siret = "invalid"
+    siret = "11111111800019"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/{siret}",
@@ -344,7 +378,7 @@ def test_error_handling(status_code, expected_exception):
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_error_handling_on_non_json_response():
-    siret = "anything"
+    siret = "11111111800019"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/{siret}",
@@ -357,7 +391,7 @@ def test_error_handling_on_non_json_response():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_rcs_registered():
-    siren = "123456789"
+    siren = "123456782"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/infogreffe/rcs/unites_legales/{siren}/extrait_kbis",
@@ -380,7 +414,7 @@ def test_get_rcs_registered():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_rcs_deregistered():
-    siren = "123456789"
+    siren = "123456782"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/infogreffe/rcs/unites_legales/{siren}/extrait_kbis",
@@ -403,7 +437,7 @@ def test_get_rcs_deregistered():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_rcs_not_registered():
-    siren = "123456789"
+    siren = "123456782"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v3/infogreffe/rcs/unites_legales/{siren}/extrait_kbis",
@@ -416,7 +450,7 @@ def test_get_rcs_not_registered():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_urssaf_ok():
-    siren = "123456789"
+    siren = "123456782"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v4/urssaf/unites_legales/{siren}/attestation_vigilance",
@@ -437,7 +471,7 @@ def test_get_urssaf_ok():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_urssaf_refused():
-    siren = "123456789"
+    siren = "123456782"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v4/urssaf/unites_legales/{siren}/attestation_vigilance",
@@ -457,7 +491,7 @@ def test_get_urssaf_refused():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_urssaf_not_found():
-    siren = "123456789"
+    siren = "123456782"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v4/urssaf/unites_legales/{siren}/attestation_vigilance",
@@ -471,7 +505,7 @@ def test_get_urssaf_not_found():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_dgfip_ok():
-    siren = "123456789"
+    siren = "123456782"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v4/dgfip/unites_legales/{siren}/attestation_fiscale",
@@ -483,7 +517,7 @@ def test_get_dgfip_ok():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_dgfip_entreprise_individuelle():
-    siren = "123456789"
+    siren = "123456782"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v4/dgfip/unites_legales/{siren}/attestation_fiscale",
@@ -501,7 +535,7 @@ def test_get_dgfip_entreprise_individuelle():
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_dgfip_inactive_company():
-    siren = "123456789"
+    siren = "123456782"
     with requests_mock.Mocker() as mock:
         mock.get(
             f"https://entreprise.api.gouv.fr/v4/dgfip/unites_legales/{siren}/attestation_fiscale",
@@ -521,7 +555,7 @@ def test_get_dgfip_inactive_company():
 @unittest.mock.patch("flask.current_app.redis_client.set")
 @unittest.mock.patch("flask.current_app.redis_client.ttl", return_value=-1)
 def test_check_rate_limit_ok(mock_redis_client_ttl, mock_redis_client_set, mock_sleep, caplog):
-    siren = "123456789"
+    siren = "123456782"
     with requests_mock.Mocker() as mock:
         mock_request = mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}",
@@ -547,7 +581,7 @@ def test_check_rate_limit_ok(mock_redis_client_ttl, mock_redis_client_set, mock_
 @pytest.mark.parametrize("seconds", [15, 0])
 @unittest.mock.patch("flask.current_app.redis_client.set")
 def test_check_rate_limit_near_limit(mock_redis_client_set, seconds, caplog):
-    siren = "123456789"
+    siren = "123456782"
     reset_timestamp = int(time.time()) + seconds
     with requests_mock.Mocker() as mock:
         mock_request = mock.get(
@@ -581,7 +615,7 @@ def test_check_rate_limit_near_limit(mock_redis_client_set, seconds, caplog):
 @unittest.mock.patch("flask.current_app.redis_client.set")
 @unittest.mock.patch("flask.current_app.redis_client.ttl", side_effect=[20, -1])
 def test_rate_limit_locked(mock_redis_client_ttl, mock_redis_client_set, mock_sleep):
-    siren = "123456789"
+    siren = "123456782"
     with requests_mock.Mocker() as mock:
         mock_request = mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}",
@@ -605,7 +639,7 @@ def test_rate_limit_locked(mock_redis_client_ttl, mock_redis_client_set, mock_sl
 @unittest.mock.patch("flask.current_app.redis_client.set")
 @unittest.mock.patch("flask.current_app.redis_client.ttl", return_value=20)
 def test_rate_limit_locked_over_timeout(mock_redis_client_ttl, mock_redis_client_set, mock_sleep):
-    siren = "123456789"
+    siren = "123456782"
     with requests_mock.Mocker() as mock:
         mock_request = mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}",

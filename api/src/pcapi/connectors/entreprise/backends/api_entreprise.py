@@ -26,6 +26,7 @@ from pcapi.core import logging as pcapi_logging
 from pcapi.utils import cache as cache_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils import requests
+from pcapi.utils import siren as siren_utils
 
 
 logger = logging.getLogger(__name__)
@@ -88,10 +89,19 @@ class EntrepriseBackend(BaseBackend):
             slept_time += time_to_sleep
 
     def _check_siren_can_be_requested(self, siren: str) -> None:
+        if not siren_utils.is_valid_siren(siren):
+            raise exceptions.InvalidFormatException("SIREN invalide")
+
         # Pass Culture also acts as an offerer which organizes events.
         # Avoid HTTP 422 Unprocessable Content "Le paramètre recipient est identique au SIRET/SIREN appelé."
         if siren == settings.PASS_CULTURE_SIRET[:9]:
             raise exceptions.EntrepriseException("Pass Culture")
+
+    def _check_siret_can_be_requested(self, siret: str) -> None:
+        if not siren_utils.is_valid_siret(siret):
+            raise exceptions.InvalidFormatException("SIRET invalide")
+
+        self._check_siren_can_be_requested(siret[:9])
 
     def _get(self, subpath: str) -> dict:
         if not settings.ENTREPRISE_API_URL:
@@ -299,7 +309,7 @@ class EntrepriseBackend(BaseBackend):
         """
         Documentation: https://entreprise.api.gouv.fr/catalogue/insee/etablissements_diffusibles
         """
-        self._check_siren_can_be_requested(siret[:9])
+        self._check_siret_can_be_requested(siret)
         subpath = f"/v3/insee/sirene/etablissements/diffusibles/{siret}"
         data = self._cached_get(subpath)["data"]
 
@@ -319,7 +329,7 @@ class EntrepriseBackend(BaseBackend):
         """
         Documentation: https://entreprise.api.gouv.fr/catalogue/insee/etablissements
         """
-        self._check_siren_can_be_requested(siret[:9])
+        self._check_siret_can_be_requested(siret)
         subpath = f"/v3/insee/sirene/etablissements/{siret}"
         data = self._cached_get(subpath)["data"]
 

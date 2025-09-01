@@ -258,7 +258,7 @@ class Returns400Test:
 
     @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
     def test_inactive_siret(self, requests_mock, client):
-        siret = "77789988800021"
+        siret = "77789988100026"
         REQUEST_BODY["siret"] = siret
 
         requests_mock.get(
