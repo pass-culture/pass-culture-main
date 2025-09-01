@@ -20,6 +20,10 @@ export type DialogBuilderProps = {
    */
   title?: string
   /**
+   * An image for the title.
+   */
+  imageTitle?: React.ReactNode
+  /**
    * The content to be displayed inside the dialog.
    */
   children: React.ReactNode
@@ -75,6 +79,7 @@ export type DialogBuilderProps = {
 export function DialogBuilder({
   trigger,
   title,
+  imageTitle = null,
   children,
   defaultOpen = false,
   onOpenChange,
@@ -139,7 +144,10 @@ export function DialogBuilder({
             <section className={styles['dialog-builder-section']}>
               {title && (
                 <Dialog.Title asChild>
-                  <h1 className={styles['dialog-builder-title']}>{title}</h1>
+                  <div className={styles['dialog-builder-title-container']}>
+                    <h1 className={styles['dialog-builder-title']}>{title}</h1>
+                    {imageTitle}
+                  </div>
                 </Dialog.Title>
               )}
               {children}

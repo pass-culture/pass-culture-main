@@ -1,0 +1,25 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.modal-video {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+}
+
+.modal-video-content {
+  flex-grow: 1;
+}
+
+.modal-video-input {
+  margin-top: rem.torem(32px);
+}
+
+.modal-video-footer {
+  display: flex;
+  justify-content: flex-start;
+  padding-left: rem.torem(6px);
+  padding-right: rem.torem(12px);
+  gap: rem.torem(32px);
+}
