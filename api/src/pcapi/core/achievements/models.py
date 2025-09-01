@@ -34,7 +34,7 @@ class Achievement(PcObject, Base, Model):
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
     user: sa_orm.Mapped["User"] = sa_orm.relationship("User", foreign_keys=[userId], backref="achievements")
 
-    bookingId: int = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), nullable=False)
+    bookingId: int = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), nullable=False, index=True)
     booking: sa_orm.Mapped["Booking"] = sa_orm.relationship("Booking", foreign_keys=[bookingId], backref="achievements")
 
     name: AchievementEnum = sa.Column(db_utils.MagicEnum(AchievementEnum), nullable=False)
