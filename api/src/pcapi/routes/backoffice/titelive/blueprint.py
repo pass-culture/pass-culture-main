@@ -57,8 +57,7 @@ def search_titelive() -> utils.BackofficeResponse:
         form.ean.errors.append("Erreur API Tite Live: timeout")
         return render_template("titelive/search_result.html", form=form, dst=url_for(".search_titelive")), 400
     except requests.ExternalAPIException as e:
-        status_code = e.args[0]["status_code"]
-        form.ean.errors.append(f"Erreur API Tite Live: {status_code}")
+        form.ean.errors.append(f"Erreur API Tite Live: {e.args}")
         return render_template("titelive/search_result.html", form=form, dst=url_for(".search_titelive")), 400
 
     try:
