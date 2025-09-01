@@ -1,10 +1,8 @@
-import cn from 'classnames'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 import type { BookingRecapResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { Audience } from '@/commons/core/shared/types'
 import { SortingMode, useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
 import type { BookingsFilters } from '@/components/Bookings/BookingsRecapTable/types'
@@ -14,12 +12,10 @@ import {
   sortByOfferName,
 } from '@/components/Bookings/BookingsRecapTable/utils/sortingFunctions'
 import { Pagination } from '@/ui-kit/Pagination/Pagination'
-import { SortArrow } from '@/ui-kit/SortArrow/SortArrow'
 
-import { FilterByBookingStatus } from '../Filters/FilterByBookingStatus'
-import { NoFilteredBookings } from '../NoFilteredBookings/NoFilteredBookings'
+import { Table, TableVariant } from '@/ui-kit/Table/Table'
 import styles from './BookingsTable.module.scss'
-import { IndividualTableRow } from './IndividualTableRow'
+import { useBookingsTableColumnsByIndex } from './ColumnsIndividualBooking'
 
 enum IndividualBookingsSortingColumn {
   OFFER_NAME = 'OFFER_NAME',
@@ -78,7 +74,13 @@ export const IndividualBookingsTable = ({
     bookings,
     currentSortingColumn,
     currentSortingMode
+  ).map(
+    (b, i) =>
+      ({ ...(b as object), id: i }) as BookingRecapResponseModel & {
+        id: number
+      }
   )
+
   const { page, setPage, previousPage, nextPage, pageCount, currentPageItems } =
     usePagination(sortedBookings, BOOKINGS_PER_PAGE)
 
@@ -88,122 +90,53 @@ export const IndividualBookingsTable = ({
 
   const { logEvent } = useAnalytics()
 
+  // Expand/collapse state by row index
+  const [expanded, setExpanded] = useState<Set<number>>(new Set())
+
+  console.log(expanded)
+
+  const toggle = (i: string | number) =>
+    setExpanded((prev) => {
+      const numeric = typeof i === 'string' ? parseInt(i, 10) : i
+      const next = new Set(prev)
+      next.has(numeric) ? next.delete(numeric) : next.add(numeric)
+      return next
+    })
+
+  // Columns by audience
+  const { columns, getFullRowContentIndividual } =
+    useBookingsTableColumnsByIndex({
+      bookings: sortedBookings,
+      bookingStatuses,
+      updateGlobalFilters: updateGlobalFilters,
+      expandedIds: expanded,
+      onToggle: toggle,
+    })
+
   return (
     <div className={styles['table-wrapper']}>
-      {currentPageItems.length !== 0 && (
-        <table className={styles['table']}>
-          <thead className={styles['table-header']}>
-            <tr>
-              <th
-                scope="col"
-                className={cn(
-                  styles['column-offer-name'],
-                  styles['table-header-cell']
-                )}
-              >
-                <span>Nom de l’offre</span>
-
-                <SortArrow
-                  onClick={() =>
-                    onColumnHeaderClick(
-                      IndividualBookingsSortingColumn.OFFER_NAME
-                    )
-                  }
-                  sortingMode={
-                    currentSortingColumn ===
-                    IndividualBookingsSortingColumn.OFFER_NAME
-                      ? currentSortingMode
-                      : SortingMode.NONE
-                  }
-                />
-              </th>
-
-              <th
-                scope="col"
-                className={cn(
-                  styles['column-beneficiary'],
-                  styles['table-header-cell']
-                )}
-              >
-                <span>Bénéficiaire</span>
-
-                <SortArrow
-                  onClick={() =>
-                    onColumnHeaderClick(
-                      IndividualBookingsSortingColumn.BENEFICIARY_NAME
-                    )
-                  }
-                  sortingMode={
-                    currentSortingColumn ===
-                    IndividualBookingsSortingColumn.BENEFICIARY_NAME
-                      ? currentSortingMode
-                      : SortingMode.NONE
-                  }
-                />
-              </th>
-
-              <th
-                scope="col"
-                className={cn(
-                  styles['column-booking-date'],
-                  styles['table-header-cell']
-                )}
-              >
-                <span>Réservation</span>
-
-                <SortArrow
-                  onClick={() =>
-                    onColumnHeaderClick(
-                      IndividualBookingsSortingColumn.BOOKING_DATE
-                    )
-                  }
-                  sortingMode={
-                    currentSortingColumn ===
-                    IndividualBookingsSortingColumn.BOOKING_DATE
-                      ? currentSortingMode
-                      : SortingMode.NONE
-                  }
-                />
-              </th>
-
-              <th
-                scope="col"
-                className={cn(
-                  styles['column-booking-token'],
-                  styles['table-header-cell']
-                )}
-              >
-                Contremarque
-              </th>
-
-              <th
-                scope="col"
-                className={cn(
-                  styles['column-booking-status'],
-                  styles['table-header-cell']
-                )}
-              >
-                <FilterByBookingStatus
-                  bookingStatuses={bookingStatuses}
-                  bookingsRecap={bookings}
-                  updateGlobalFilters={updateGlobalFilters}
-                  audience={Audience.INDIVIDUAL}
-                />
-              </th>
-            </tr>
-          </thead>
-
-          <tbody className={styles['table-body']}>
-            {currentPageItems.map((booking, index) => (
-              <IndividualTableRow key={index} booking={booking} index={index} />
-            ))}
-          </tbody>
-        </table>
-      )}
-
-      {currentPageItems.length === 0 && (
-        <NoFilteredBookings resetFilters={resetFilters} />
-      )}
+      <Table
+        columns={columns}
+        data={currentPageItems}
+        isLoading={false}
+        variant={TableVariant.COLLAPSE}
+        noResult={{
+          message: 'Aucune réservation trouvée pour votre recherche',
+          subtitle:
+            'Vous pouvez modifier vos filtres et lancer une nouvelle recherche ou',
+          resetMessage: 'Afficher toutes les réservations',
+          onFilterReset: resetFilters,
+        }}
+        noData={{
+          hasNoData: false,
+          message: {
+            icon: 'strokeNoBookingIcon',
+            title: 'Vous n’avez aucune réservation pour le moment',
+            subtitle: '',
+          },
+        }}
+        getFullRowContent={getFullRowContentIndividual}
+      />
 
       <Pagination
         currentPage={page}
