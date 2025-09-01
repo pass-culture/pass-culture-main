@@ -329,14 +329,16 @@ export const CollectiveActionsCells = ({
       headers={`${rowId} ${getCellsDefinition().ACTIONS.id}`}
     >
       <div className={styles['actions-column-container']}>
-        {shouldDisplayBookingLink && offer.booking && (
-          <BookingLinkCell
-            bookingId={offer.booking.id}
-            bookingStatus={offer.booking.booking_status}
-            offerEventDate={offer.stocks[0].startDatetime}
-            offerId={offer.id}
-          />
-        )}
+        {shouldDisplayBookingLink &&
+          offer.booking &&
+          !isNewOffersAndBookingsActive && (
+            <BookingLinkCell
+              bookingId={offer.booking.id}
+              bookingStatus={offer.booking.booking_status}
+              offerEventDate={offer.stocks[0].startDatetime}
+              offerId={offer.id}
+            />
+          )}
         {!noActionsAllowed && (
           <DropdownMenuWrapper
             title="Voir les actions"
@@ -344,36 +346,38 @@ export const CollectiveActionsCells = ({
             triggerTooltip
             dropdownTriggerRef={dropdownTriggerRef}
           >
-            {shouldDisplayBookingLink && offer.booking && (
-              <>
-                <DropdownMenu.Item className={styles['menu-item']} asChild>
-                  <ButtonLink
-                    to={bookingLink}
-                    icon={fullNextIcon}
-                    onClick={() =>
-                      logEvent(
-                        CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
-                        {
-                          from: location.pathname,
-                          offerId: offer.id,
-                          offerType: 'collective',
-                          offererId: selectedOffererId?.toString(),
-                        }
-                      )
-                    }
-                  >
-                    Voir la{' '}
-                    {offer.booking.booking_status ===
-                    CollectiveBookingStatus.PENDING
-                      ? 'préréservation'
-                      : 'réservation'}
-                  </ButtonLink>
-                </DropdownMenu.Item>
-                <DropdownMenu.Separator
-                  className={cn(styles['separator'], styles['tablet-only'])}
-                />
-              </>
-            )}
+            {shouldDisplayBookingLink &&
+              offer.booking &&
+              !isNewOffersAndBookingsActive && (
+                <>
+                  <DropdownMenu.Item className={styles['menu-item']} asChild>
+                    <ButtonLink
+                      to={bookingLink}
+                      icon={fullNextIcon}
+                      onClick={() =>
+                        logEvent(
+                          CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
+                          {
+                            from: location.pathname,
+                            offerId: offer.id,
+                            offerType: 'collective',
+                            offererId: selectedOffererId?.toString(),
+                          }
+                        )
+                      }
+                    >
+                      Voir la{' '}
+                      {offer.booking.booking_status ===
+                      CollectiveBookingStatus.PENDING
+                        ? 'préréservation'
+                        : 'réservation'}
+                    </ButtonLink>
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Separator
+                    className={cn(styles['separator'], styles['tablet-only'])}
+                  />
+                </>
+              )}
             {canDuplicateOffer && (
               <DropdownMenu.Item
                 className={styles['menu-item']}
