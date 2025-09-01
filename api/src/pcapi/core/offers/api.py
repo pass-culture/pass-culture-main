@@ -264,11 +264,14 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
 
     if "videoUrl" in fields:
         new_video_url = fields.pop("videoUrl")
-        if offer.metaData:
-            offer.metaData.videoUrl = new_video_url
+        if not new_video_url:
+            if offer.metaData:
+                db.session.delete(offer.metaData)
         else:
-            offer.metaData = models.OfferMetaData(offer=offer, videoUrl=new_video_url)
-        db.session.add(offer.metaData)
+            if not offer.metaData:
+                offer.metaData = models.OfferMetaData(offer=offer)
+            offer.metaData.videoUrl = new_video_url
+            db.session.add(offer.metaData)
 
     body_ean = body.extra_data.get("ean", None) if body.extra_data else None
     if body_ean:

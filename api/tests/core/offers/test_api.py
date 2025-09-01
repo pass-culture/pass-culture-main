@@ -1317,8 +1317,9 @@ class UpdateDraftOfferTest:
         )
         offer = api.update_draft_offer(offer, body)
         db.session.flush()
+        db.session.refresh(offer)
 
-        assert offer.metaData.videoUrl is None
+        assert offer.metaData is None
 
     def test_cannot_update_if_ean_in_name(self):
         offer = factories.OfferFactory(
