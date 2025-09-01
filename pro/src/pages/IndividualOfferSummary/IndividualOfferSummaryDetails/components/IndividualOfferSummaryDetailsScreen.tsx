@@ -9,7 +9,9 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { Markdown } from '@/components/Markdown/Markdown'
 import { OfferAppPreview } from '@/components/OfferAppPreview/OfferAppPreview'
@@ -30,7 +32,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './IndividualOfferSummaryDetailsScreen.module.scss'
 
-type IndividualOfferSummaryDetailsScreenProps = {
+export interface IndividualOfferSummaryDetailsScreenProps {
   offer: GetIndividualOfferWithAddressResponseModel
 }
 
@@ -39,6 +41,9 @@ export function IndividualOfferSummaryDetailsScreen({
 }: Readonly<IndividualOfferSummaryDetailsScreenProps>) {
   const mode = useOfferWizardMode()
   const { categories, subCategories } = useIndividualOfferContext()
+  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
 
   const musicTypesQuery = useSWR(
     GET_MUSIC_TYPES_QUERY_KEY,
@@ -170,6 +175,7 @@ export function IndividualOfferSummaryDetailsScreen({
             sont liées à l’EAN renseigné.
           </Callout>
         )}
+
         <SummarySection
           title="Détails de l’offre"
           {...(cannotEditDetails
@@ -194,8 +200,16 @@ export function IndividualOfferSummaryDetailsScreen({
               <SummaryDescriptionList descriptions={artisticInfoDescriptions} />
             </SummarySubSection>
           )}
+          {isNewOfferCreationFlowFeatureActive && (
+            <AccessibilitySummarySection
+              accessibleItem={offer}
+              accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
+              shouldShowDivider
+            />
+          )}
         </SummarySection>
       </SummaryContent>
+
       <SummaryAside>
         <div className={styles['title-container']}>
           <SvgIcon

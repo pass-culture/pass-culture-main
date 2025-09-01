@@ -23,17 +23,10 @@ import {
   MOCKED_SUBCATEGORY,
 } from '@/pages/IndividualOffer/commons/__mocks__/constants'
 
-import { IndividualOfferPriceTableScreen } from '../IndividualOfferPriceTableScreen'
+import { IndividualOfferPriceTableScreen } from './IndividualOfferPriceTableScreen'
 
 vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
   useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.CREATION),
-}))
-
-// Spy hook to only observe call (we don't mock SWR or URL helpers)
-vi.mock('../commons/hooks/useSaveOfferPriceTable', () => ({
-  useSaveOfferPriceTable: vi.fn(() => ({
-    saveAndContinue: vi.fn(async () => undefined),
-  })),
 }))
 
 interface ScreenProps {

@@ -50,8 +50,15 @@ export const MOCKED_SUBCATEGORY = {
     onlineOfflinePlatform: CATEGORY_STATUS.ONLINE_OR_OFFLINE,
   }),
   NON_EVENT_OFFLINE: typedSubcategoryFactory({
+    id: SubcategoryIdEnum.ABO_PRATIQUE_ART,
+    categoryId: MOCKED_CATEGORY.A.id,
+    isEvent: false,
+    onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
+  }),
+  NON_EVENT_OFFLINE_WITH_EAN: typedSubcategoryFactory({
     id: SubcategoryIdEnum.LIVRE_PAPIER,
     categoryId: MOCKED_CATEGORY.A.id,
+    conditionalFields: ['ean'],
     isEvent: false,
     onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
   }),
