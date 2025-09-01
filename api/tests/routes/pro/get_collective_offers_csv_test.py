@@ -8,6 +8,7 @@ import pytz
 from pcapi.core import testing
 from pcapi.core.educational import factories
 from pcapi.core.educational import models
+from pcapi.core.educational.utils import format_collective_offer_displayed_status
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.factories import ProFactory
@@ -77,7 +78,7 @@ class Returns200Test:
             "Numéro de l'offre": offer.id,
             "Type de localisation de l'offre": "À une adresse précise",
             "Localisation de l'offre": offer.offererAddress.address.fullAddress,
-            "Statut de l'offre": offer.displayedStatus.value,
+            "Statut de l'offre": format_collective_offer_displayed_status(offer.displayedStatus).lower(),
             "Etablissement": offer.institution.full_name,
             "Code postal de l'établissement": offer.institution.postalCode,
             "UAI de l'établissement": offer.institution.institutionId,
@@ -115,7 +116,7 @@ class Returns200Test:
         assert reader[0] == {
             "Nom de l'offre": "Special name &@🤡%",
             "Numéro de l'offre": offer.id,
-            "Statut de l'offre": offer.displayedStatus.value,
+            "Statut de l'offre": format_collective_offer_displayed_status(offer.displayedStatus).lower(),
             "Type de localisation de l'offre": "À déterminer avec l'enseignant",
             "Localisation de l'offre": "Chez toi",
             "Structure": venue.common_name,
@@ -155,7 +156,7 @@ class Returns200Test:
             assert row == {
                 "Nom de l'offre": offer.name,
                 "Numéro de l'offre": offer.id,
-                "Statut de l'offre": "BOOKED",
+                "Statut de l'offre": "réservée",
                 "Type de localisation de l'offre": "En établissement scolaire",
                 "Localisation de l'offre": "",
                 "Structure": venue.common_name,

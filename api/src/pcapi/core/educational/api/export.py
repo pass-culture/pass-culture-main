@@ -9,6 +9,7 @@ import sqlalchemy.orm as sa_orm
 import xlsxwriter
 
 from pcapi.core.educational import models
+from pcapi.core.educational.utils import format_collective_offer_displayed_status
 from pcapi.core.offerers import models as offerers_models
 from pcapi.utils import date as date_utils
 from pcapi.utils import export as utils_export
@@ -103,7 +104,7 @@ def _get_collective_offer_export_data(
     result = CollectiveOfferExportData(
         offer_name=collective_offer.name,
         offer_id=collective_offer.id,
-        offer_status=collective_offer.displayedStatus.value,
+        offer_status=format_collective_offer_displayed_status(collective_offer.displayedStatus).lower(),
         offer_location_type=FORMAT_LOCATION_TYPE[collective_offer.locationType],
         offer_location=_format_location(collective_offer),
         venue_common_name=venue.common_name,

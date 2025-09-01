@@ -8,6 +8,7 @@ from psycopg2.extras import DateTimeRange
 
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
+from pcapi.core.educational.constants import COLLECTIVE_OFFER_DISPLAYED_STATUS_LABELS
 from pcapi.core.users.utils import ALGORITHM_RS_256
 from pcapi.utils import requests
 
@@ -123,3 +124,9 @@ def get_collective_offer_full_address(offer: models.CollectiveOffer | models.Col
 
         case _:
             return None
+
+
+def format_collective_offer_displayed_status(
+    displayed_status: models.CollectiveOfferDisplayedStatus,
+) -> str:
+    return COLLECTIVE_OFFER_DISPLAYED_STATUS_LABELS.get(displayed_status) or displayed_status.value
