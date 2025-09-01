@@ -1191,6 +1191,7 @@ class CreateDraftOfferTest:
         assert offer.validation == models.OfferValidationStatus.DRAFT
         assert not offer.product
         assert db.session.query(models.Offer).count() == 1
+        assert offer.metaData is None
 
     def test_cannot_create_draft_offer_with_ean_in_name(self):
         venue = offerers_factories.VenueFactory()
@@ -1317,7 +1318,7 @@ class UpdateDraftOfferTest:
         offer = api.update_draft_offer(offer, body)
         db.session.flush()
 
-        assert offer.metaData.videoUrl == None
+        assert offer.metaData.videoUrl is None
 
     def test_cannot_update_if_ean_in_name(self):
         offer = factories.OfferFactory(
@@ -1389,6 +1390,7 @@ class CreateOfferTest:
         assert offer.visualDisabilityCompliant
         assert offer.validation == models.OfferValidationStatus.DRAFT
         assert offer.extraData == {}
+        assert offer.metaData is None
         assert not offer.bookingEmail
         assert db.session.query(models.Offer).count() == 1
         assert offer.offererAddress == offerer_address

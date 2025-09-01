@@ -246,8 +246,11 @@ def create_draft_offer(
         validation=models.OfferValidationStatus.DRAFT,
         product=product,
     )
-    offer_metadata = models.OfferMetaData(offer=offer, videoUrl=body.video_url)
-    db.session.add_all([offer, offer_metadata])
+
+    if body.video_url:
+        offer_metadata = models.OfferMetaData(offer=offer, videoUrl=body.video_url)
+        db.session.add(offer_metadata)
+    db.session.add(offer)
     db.session.flush()
 
     update_external_pro(venue.bookingEmail)
