@@ -251,7 +251,7 @@ def test_create_offerer_action_is_logged(client):
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_with_inactive_siren(requests_mock, client):
-    siren = "123456789"
+    siren = "777899881"
     requests_mock.get(
         f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/diffusibles/{siren}/siege_social",
         json=api_entreprise_test_data.RESPONSE_SIRET_INACTIVE_COMPANY,
