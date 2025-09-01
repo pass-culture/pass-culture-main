@@ -31,6 +31,7 @@ from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.utils import crypto
+from pcapi.utils import regions
 from pcapi.utils import repository
 
 from . import models
@@ -191,6 +192,9 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
     lastName = factory.Faker("last_name", locale="en_UK")
     postalCode: str | factory.declarations.BaseDeclaration = factory.LazyAttribute(
         lambda o: f"{random.randint(10, 959) * 100:05}"
+    )
+    departementCode: str | factory.declarations.BaseDeclaration = factory.LazyAttribute(
+        lambda o: regions.get_department_code_from_city_code(o.postalCode) if o.postalCode else None
     )
 
     @classmethod

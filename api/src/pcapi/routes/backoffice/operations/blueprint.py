@@ -248,6 +248,7 @@ def _get_response_rows_query() -> sa.orm.Query:
             users_models.User.firstName,
             users_models.User.lastName,
             users_models.User.roles,
+            users_models.User.departementCode,
         )
         .contains_eager(users_models.User.deposits)
         .load_only(
@@ -276,6 +277,9 @@ def _get_special_event_responses(
             end = date.today() - relativedelta(years=int(age))
             age_filters.append(users_models.User.validatedBirthDate.between(start, end))
         response_rows_filters.append(sa.or_(*age_filters))
+
+    if response_departments_data := response_form.department.data:
+        response_rows_filters.append(users_models.User.departementCode.in_(response_departments_data))
 
     response_rows_query = response_rows_query.filter(*response_rows_filters)
     response_rows_query = search_utils.apply_filter_on_beneficiary_status(

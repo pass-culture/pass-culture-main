@@ -251,9 +251,9 @@ class User(PcObject, Base, Model, DeactivableMixin):
         # Index to be used with ORDER BY id LIMIT 21,
         # otherwise an index on the single email domain is not used by the query planner
         sa.Index("ix_user_email_domain_and_id", sa.func.email_domain(email), "id"),
+        sa.Index("ix_user_validatedBirthDate", validatedBirthDate),
+        sa.Index("ix_user_departementCode", departementCode, postgresql_where=departementCode.is_not(None)),
     )
-
-    sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
 
     def __init__(self, **kwargs: typing.Any) -> None:
         kwargs.setdefault("roles", [])
