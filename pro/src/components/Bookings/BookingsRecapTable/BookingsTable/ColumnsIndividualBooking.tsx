@@ -136,7 +136,9 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
   ]
 
   const getFullRowContentIndividual = (row: BookingRow) => {
-    if (!expandedIds?.has(row.id)) return null
+    if (!expandedIds?.has(row.id)) {
+      return null
+    }
     return (
       <div className={styles['table-fullrow-content']}>
         <div>

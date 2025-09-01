@@ -12,8 +12,8 @@ import {
   sortByOfferName,
 } from '@/components/Bookings/BookingsRecapTable/utils/sortingFunctions'
 import { Pagination } from '@/ui-kit/Pagination/Pagination'
-
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
+
 import styles from './BookingsTable.module.scss'
 import { useBookingsTableColumnsByIndex } from './ColumnsIndividualBooking'
 
@@ -67,7 +67,7 @@ export const IndividualBookingsTable = ({
   updateGlobalFilters,
   resetFilters,
 }: IndividualBookingsTableProps): JSX.Element => {
-  const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
+  const { currentSortingColumn, currentSortingMode } =
     useColumnSorting<IndividualBookingsSortingColumn>()
 
   const sortedBookings = sortBookings(
@@ -90,10 +90,7 @@ export const IndividualBookingsTable = ({
 
   const { logEvent } = useAnalytics()
 
-  // Expand/collapse state by row index
   const [expanded, setExpanded] = useState<Set<number>>(new Set())
-
-  console.log(expanded)
 
   const toggle = (i: string | number) =>
     setExpanded((prev) => {
@@ -103,7 +100,6 @@ export const IndividualBookingsTable = ({
       return next
     })
 
-  // Columns by audience
   const { columns, getFullRowContentIndividual } =
     useBookingsTableColumnsByIndex({
       bookings: sortedBookings,
