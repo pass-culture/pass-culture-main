@@ -290,6 +290,7 @@ class GetEventDetailsTest(GetEndpointHelper):
 
         assert rows[0]["ID"] == str(no_user_incomplete_response.id)
         assert rows[0]["Candidat"] == no_user_incomplete_response.email
+        assert rows[0]["Dép."] == ""
         assert rows[0]["État de la candidature"] == "Nouvelle"
         assert rows[0]["Candidatures totales"] == "-"
         assert rows[0]["Participations effectives"] == "-"
@@ -298,6 +299,7 @@ class GetEventDetailsTest(GetEndpointHelper):
 
         assert rows[1]["ID"] == str(full_response.id)
         assert rows[1]["Candidat"] == f"{full_response.user.full_name} ({full_response.user.id})"
+        assert rows[1]["Dép."] == str(full_response.user.departementCode)
         assert rows[1]["État de la candidature"] == "À contacter"
         assert rows[1]["Candidatures totales"] == "1"
         assert rows[1]["Participations effectives"] == "0"
@@ -399,6 +401,22 @@ class GetEventDetailsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["ID"] == str(event_response.id)
+
+    def test_filter_event_responses_by_department(self, authenticated_client):
+        event = operations_factories.SpecialEventFactory()
+        operations_factories.SpecialEventResponseFactory(event=event, user__postalCode="75008")
+        response_1 = operations_factories.SpecialEventResponseFactory(event=event, user__postalCode="74400")
+        response_2 = operations_factories.SpecialEventResponseFactory(event=event, user__postalCode="97304")
+        operations_factories.SpecialEventResponseFactory(event=event, user__postalCode="97439")
+
+        url = url_for(self.endpoint, special_event_id=event.id, department=["74", "973"])
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert {row["ID"] for row in rows} == {str(response_1.id), str(response_2.id)}
 
     def test_filter_event_responses_by_eligibility(self, authenticated_client):
         event = operations_factories.SpecialEventFactory(

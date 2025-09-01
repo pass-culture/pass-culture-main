@@ -9,6 +9,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.operations import models
 from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_special_event_response_status_str
+from pcapi.routes.backoffice.forms import constants
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import search
 from pcapi.routes.backoffice.forms import utils
@@ -113,6 +114,7 @@ class OperationResponseForm(utils.PCForm):
         "Éligibilité", choices=utils.choices_from_enum(search.AccountSearchFilter)
     )
     age = fields.PCSelectMultipleField("Âge", choices=tuple([(i, f"{i} ans") for i in range(14, 21)]))
+    department = fields.PCSelectMultipleField("Départements", choices=constants.area_choices)
     page = wtforms.HiddenField("page", default="1", validators=(wtforms.validators.Optional(),))
     limit = fields.PCLimitField(
         "Nombre maximum de résultats",
