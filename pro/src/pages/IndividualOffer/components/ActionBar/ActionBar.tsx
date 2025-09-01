@@ -149,6 +149,7 @@ export const ActionBar = ({
               iconPosition={IconPositionEnum.RIGHT}
               disabled={isDisabled}
               onClick={onClickNext}
+              ref={saveEditionChangesButtonRef}
             >
               Enregistrer et continuer
             </Button>

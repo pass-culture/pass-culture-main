@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -11,13 +11,15 @@ import styles from './UpdateWarningDialog.module.scss'
 interface UpdateWarningDialogProps {
   onCancel: () => void
   onConfirm: (shouldSendMail: boolean) => void
+  refToFocusOnClose?: React.RefObject<HTMLButtonElement>
+  message?: string
 }
 export const UpdateWarningDialog = ({
   onCancel,
   onConfirm,
+  refToFocusOnClose,
+  message,
 }: UpdateWarningDialogProps): JSX.Element => {
-  const saveEditionChangesButtonRef = useRef<HTMLButtonElement>(null)
-
   const [shouldSendMail, setShouldSendMail] = useState(true)
 
   return (
@@ -28,10 +30,10 @@ export const UpdateWarningDialog = ({
       onConfirm={() => onConfirm(shouldSendMail)}
       open
       title="Les changements vont s’appliquer à l’ensemble des réservations en cours associées"
-      refToFocusOnClose={saveEditionChangesButtonRef}
+      refToFocusOnClose={refToFocusOnClose}
     >
       <div className={styles['update-oa-wrapper']}>
-        <div>Vous avez modifié la localisation.</div>
+        <div>{message ?? 'Vous avez modifié la localisation.'}</div>
 
         <Callout variant={CalloutVariant.WARNING}>
           Si vous souhaitez que les réservations en cours conservent les données

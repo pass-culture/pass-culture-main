@@ -139,7 +139,7 @@ describe('useSaveOfferPriceTable', () => {
     expect(saveNonEventOfferPriceTable).toHaveBeenCalled()
     expect(useNavigateMock).toHaveBeenCalledWith(
       expect.stringMatching(
-        `/offre/individuelle/${offer.id}/creation/recapitulatif$`
+        `/offre/individuelle/${offer.id}/creation/informations_pratiques$`
       )
     )
   })
