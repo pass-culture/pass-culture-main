@@ -615,6 +615,14 @@ class Returns400Test:
                     ]
                 },
             ),
+            (
+                {"durationMinutes": 1440},
+                {
+                    "durationMinutes": [
+                        "La durée doit être inférieure à 24 heures. Pour les événements durant 24 heures ou plus (par exemple, un pass festival de 3 jours), veuillez laisser ce champ vide."
+                    ]
+                },
+            ),
         ],
     )
     def when_sending_incorrect_patch_body(self, patch_body, expected_response_json, client):

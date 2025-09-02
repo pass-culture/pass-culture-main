@@ -1120,9 +1120,18 @@ class Returns400Test:
                 {"withdrawalType": WithdrawalTypeEnum.NO_TICKET.value},
                 {"offer": ["Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"]},
             ),
+            (
+                {"subcategoryId": subcategories.FESTIVAL_MUSIQUE.id},
+                {"durationMinutes": 1440},
+                {
+                    "durationMinutes": [
+                        "La durée doit être inférieure à 24 heures. Pour les événements durant 24 heures ou plus (par exemple, un pass festival de 3 jours), veuillez laisser ce champ vide."
+                    ]
+                },
+            ),
         ],
     )
-    def when_sending_incorrect_patch_body_to_thing_offer(self, offer_data, patch_body, expected_response_json, client):
+    def when_sending_incorrect_patch_body_to_offer(self, offer_data, patch_body, expected_response_json, client):
         default_offer_data = {
             "subcategoryId": subcategories.CARTE_MUSEE.id,
             "name": "New name",
