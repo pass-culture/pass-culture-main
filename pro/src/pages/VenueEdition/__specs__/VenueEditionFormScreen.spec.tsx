@@ -392,8 +392,8 @@ describe('VenueEditionFormScreen', () => {
         ...baseVenue,
         openingHours: {
           MONDAY: [
-            { open: '09:00', close: '12:00' },
-            { open: '13:00', close: '18:00' },
+            ['09:00', '12:00'],
+            ['13:00', '18:00'],
           ],
         },
       })

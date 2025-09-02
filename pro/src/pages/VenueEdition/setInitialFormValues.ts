@@ -1,39 +1,7 @@
-import type {
-  GetVenueResponseModel,
-  WeekdayOpeningHoursTimespans,
-} from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { AccessibilityEnum } from '@/commons/core/shared/types'
-import { OPENING_HOURS_DAYS } from '@/commons/utils/date'
 
 import type { VenueEditionFormValues } from './types'
-
-export function getOpeningHoursFromGetVenueResponseOpeningHours(
-  openingHours: GetVenueResponseModel['openingHours']
-): WeekdayOpeningHoursTimespans | null {
-  //  This function exists because the model for the openingHours on `getVenue`
-  // is not he same as the model used elswhere for opening hours
-  //  TODO : delete this function when `GetVenueResponseModel.openingHours` model is `WeekdayOpeningHoursTimespans`
-  if (!openingHours) {
-    return null
-  }
-
-  const formattedOpeningHours: WeekdayOpeningHoursTimespans = {}
-
-  OPENING_HOURS_DAYS.forEach((day) => {
-    if (openingHours[day] && openingHours[day].length > 0) {
-      formattedOpeningHours[day] = openingHours[day].map(
-        (timespan: { open: string; close: string }) => [
-          timespan.open,
-          timespan.close,
-        ]
-      )
-    } else {
-      formattedOpeningHours[day] = null
-    }
-  })
-
-  return formattedOpeningHours
-}
 
 export const setInitialFormValues = (
   venue: GetVenueResponseModel
@@ -52,9 +20,7 @@ export const setInitialFormValues = (
     phoneNumber: venue.contact?.phoneNumber || '',
     webSite: venue.contact?.website || '',
     isOpenToPublic: venue.isOpenToPublic.toString() || '',
-    openingHours: getOpeningHoursFromGetVenueResponseOpeningHours(
-      venue.openingHours
-    ),
+    openingHours: venue.openingHours ?? null,
   }
 }
 
