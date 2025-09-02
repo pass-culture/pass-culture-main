@@ -14,6 +14,8 @@ import os
 from decimal import Decimal
 from functools import partial
 
+from pydantic import BaseModel
+
 from pcapi.app import app
 from pcapi.core import search
 from pcapi.core.external import zendesk_sell
@@ -150,7 +152,12 @@ def create_or_get_address(address_data: dict) -> geography_models.Address:
     return address
 
 
-def create_offerer_and_venue(data: dict, not_dry: bool) -> offerers_models.Offerer:
+class ImportCounters(BaseModel):
+    already_existing_venues: int = 0
+    already_existing_offerers: int = 0
+
+
+def create_offerer_and_venue(data: dict, not_dry: bool, counters: ImportCounters) -> offerers_models.Offerer:
     """Crée un offerer et sa venue correspondante."""
     ridet = data["ridet"].strip().replace(" ", "").replace(".", "")
     venue_name = data["venue_name"]
@@ -165,6 +172,7 @@ def create_offerer_and_venue(data: dict, not_dry: bool) -> offerers_models.Offer
 
     if existing_offerer:
         logger.info(f"Offerer existant trouvé: {existing_offerer.name} (SIREN: {siren})")
+        counters.already_existing_offerers += 1
         offerer = existing_offerer
     else:
         offerer = offerers_models.Offerer(
@@ -191,6 +199,7 @@ def create_offerer_and_venue(data: dict, not_dry: bool) -> offerers_models.Offer
     if existing_venue:
         logger.info(f"Venue existante trouvée: {existing_venue.name} (SIRET: {existing_venue.siret})")
         venue = existing_venue
+        counters.already_existing_venues += 1
     else:
         address_data = {
             "address": data["address"],
@@ -289,13 +298,17 @@ def main(filename: str, not_dry: bool) -> None:
         return
 
     created_venues = 0
+    counters = ImportCounters(
+        already_existing_venues=0,
+        already_existing_offerers=0,
+    )
     errors = 0
 
     for idx, row in enumerate(data_rows):
         try:
             logger.info(f"Traitement de l'entrée {idx + 1}/{len(data_rows)}: {row['venue_name']}")
 
-            offerer = create_offerer_and_venue(row, not_dry)
+            offerer = create_offerer_and_venue(row, not_dry, counters)
 
             on_commit(partial(update_zendesk_offerer, offerer.id))
 
@@ -311,6 +324,8 @@ def main(filename: str, not_dry: bool) -> None:
 
     logger.info("Import terminé:")
     logger.info(f"- Venues créées: {created_venues}")
+    logger.info(f"- Venues déjà existant: {counters.already_existing_venues}")
+    logger.info(f"- Offerer déjà existant: {counters.already_existing_offerers}")
     logger.info(f"- Erreurs: {errors}")
 
     if not not_dry:
