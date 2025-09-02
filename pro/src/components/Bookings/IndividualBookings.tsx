@@ -60,22 +60,20 @@ export const IndividualBookings = <T extends BookingRecapResponseModel>({
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const {
-    initialAppliedFilters,
     appliedPreFilters,
     selectedPreFilters,
-    // wereBookingsRequested,
-    // setWereBookingsRequested,
     urlParams,
     hasPreFilters,
     isRefreshRequired,
     updateSelectedFilters,
     applyNow,
-    resetPreFilters,
     resetAndApplyPreFilters,
     updateUrl,
+    wereBookingsRequested,
+    setWereBookingsRequested,
   } = useBookingsFilters({ audience })
 
-  // Venues
+  // Venues & addresses
   const venuesQuery = useSWR(
     [GET_VENUES_QUERY_KEY, selectedOffererId],
     ([, maybeOffererId]) => api.getVenues(undefined, false, maybeOffererId)
@@ -87,65 +85,66 @@ export const IndividualBookings = <T extends BookingRecapResponseModel>({
     })
   )
 
-  // Addresses
   const offererAddressQuery = useOffererAddresses()
   const offererAddresses = formatAndOrderAddresses(offererAddressQuery.data)
-
-  const { data: hasBookingsQuery } = useSWR(
-    [GET_HAS_BOOKINGS_QUERY_KEY, audience],
-    () => getUserHasBookingsAdapter(),
-    { fallbackData: false }
-  )
 
   // Bookings
   const { data: bookingsQuery = [], isLoading } = useSWR(
     [GET_BOOKINGS_QUERY_KEY, audience, appliedPreFilters],
     async ([, , filterParams]) => {
-      // setWereBookingsRequested(true)
+      setWereBookingsRequested(true)
       const { bookings, pages, currentPage } = await getFilteredBookingsAdapter(
         {
           ...filterParams,
         }
       )
-
       if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
         notify.information(
           'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
         )
       }
-
       return bookings
     },
     { fallbackData: [] }
   )
 
-  const resetPreFiltersWithLog = () => {
-    resetPreFilters()
+  const hasBookingsQuery = useSWR(
+    [GET_HAS_BOOKINGS_QUERY_KEY, audience],
+    () => getUserHasBookingsAdapter(),
+    { fallbackData: true }
+  )
 
-    logEvent(Events.CLICKED_RESET_FILTERS, { from: location.pathname })
-  }
-
+  // Omni-search state
   const queryParams = new URLSearchParams(location.search)
   const [defaultBookingId, setDefaultBookingId] = useState(
     queryParams.get('bookingId') || EMPTY_FILTER_VALUE
   )
 
-  const [filters, setFilters] = useState<BookingsFilters>({
+  const baseOmniFilters: BookingsFilters = {
     bookingBeneficiary: EMPTY_FILTER_VALUE,
     bookingToken: EMPTY_FILTER_VALUE,
     offerISBN: EMPTY_FILTER_VALUE,
     offerName: EMPTY_FILTER_VALUE,
+    bookingInstitution: EMPTY_FILTER_VALUE,
     bookingStatus: locationState?.statuses?.length
       ? locationState.statuses
       : [...ALL_BOOKING_STATUS],
+    keywords: '',
+    selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
+    bookingId: EMPTY_FILTER_VALUE,
+  }
+
+  const [filters, setFilters] = useState<BookingsFilters>({
+    ...baseOmniFilters,
+    // initialize from query if present
     selectedOmniSearchCriteria: defaultBookingId
       ? bookingIdOmnisearchFilter.id
       : DEFAULT_OMNISEARCH_CRITERIA,
     keywords: defaultBookingId,
-    bookingInstitution: EMPTY_FILTER_VALUE,
     bookingId: defaultBookingId,
   })
 
+  // Derive filtered list
   const filteredBookings = useMemo(
     () => filterBookingsRecap(bookingsQuery, filters),
     [bookingsQuery, filters]
@@ -174,6 +173,26 @@ export const IndividualBookings = <T extends BookingRecapResponseModel>({
     }))
   }
 
+  // 🔁 Reset omni + prefilters together
+  const resetOmniFilters = () => {
+    setDefaultBookingId('')
+    setFilters({ ...baseOmniFilters })
+  }
+
+  const resetAll = () => {
+    resetOmniFilters()
+    resetAndApplyPreFilters()
+    logEvent(Events.CLICKED_RESET_FILTERS, { from: location.pathname })
+  }
+
+  const resetPreFiltersWithLog = () => {
+    // When the user resets the prefilters from the PreFilters button,
+    // also clear the omni search so everything is clean.
+    resetAll()
+  }
+
+  const hasBookings = wereBookingsRequested && bookingsQuery.length !== 0
+
   return (
     <div>
       <PreFilters
@@ -185,7 +204,7 @@ export const IndividualBookings = <T extends BookingRecapResponseModel>({
         resetPreFilters={resetPreFiltersWithLog}
         audience={audience}
         hasResult={bookingsQuery.length > 0}
-        isFiltersDisabled={!hasBookingsQuery}
+        isFiltersDisabled={!hasBookings}
         isLocalLoading={venuesQuery.isLoading}
         isTableLoading={isLoading}
         venues={venues}
@@ -208,7 +227,7 @@ export const IndividualBookings = <T extends BookingRecapResponseModel>({
             bookingsRecapFilteredLength={filteredBookings.length}
             isLoading={isLoading}
             queryBookingId={defaultBookingId}
-            resetBookings={resetAndApplyPreFilters}
+            resetBookings={resetAll}
           />
         )}
 
@@ -216,9 +235,9 @@ export const IndividualBookings = <T extends BookingRecapResponseModel>({
           bookings={filteredBookings}
           bookingStatuses={filters.bookingStatus}
           updateGlobalFilters={updateGlobalFilters}
-          resetFilters={resetAndApplyPreFilters}
+          resetFilters={resetAll}
           isLoading={isLoading}
-          hasBookings={filteredBookings.length > 0}
+          hasBookings={hasBookings}
         />
       </div>
     </div>
