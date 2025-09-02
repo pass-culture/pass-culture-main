@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
   // https://biomejs.dev/guides/big-projects/#monorepo
   "root": false,
   "extends": "//",
@@ -204,6 +204,19 @@
   },
 
   "overrides": [
+    // -------------------------------------------------------------------------
+    // package.json
+    // We don't want Biome linting to conflict with Yarn `JSON.stringify` formatting when Yarn updates version or dependencies.
+
+    {
+      "includes": ["package.json"],
+      "json": {
+        "formatter": {
+          "expand": "always"
+        }
+      }
+    },
+
     // -------------------------------------------------------------------------
     // CSS
 
