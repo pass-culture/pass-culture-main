@@ -933,6 +933,10 @@ class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
         return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
 
     @property
+    def canBeEvent(self) -> bool:
+        return self.subcategory.is_event
+
+    @property
     def isEventLinkedToTicketingService(self) -> bool:
         return self.isEvent and self.withdrawalType == WithdrawalTypeEnum.IN_APP
 

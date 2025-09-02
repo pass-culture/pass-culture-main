@@ -19,6 +19,7 @@ export type GetIndividualOfferWithAddressResponseModel = {
   bookingContact?: string | null;
   bookingEmail?: string | null;
   bookingsCount?: number | null;
+  canBeEvent: boolean;
   dateCreated: string;
   description?: string | null;
   durationMinutes?: number | null;
