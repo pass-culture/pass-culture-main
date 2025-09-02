@@ -896,9 +896,7 @@ def add_last_booking_status_to_collective_offer_query(query: sa_orm.Query) -> ty
     return subquery, query_with_booking
 
 
-def get_collective_offers_for_filters(
-    filters: schemas.CollectiveOffersFilter, offers_limit: int
-) -> list[models.CollectiveOffer]:
+def get_collective_offers_for_filters(filters: schemas.CollectiveOffersFilter) -> list[models.CollectiveOffer]:
     query = get_collective_offers_by_filters(filters=filters)
 
     query = query.order_by(models.CollectiveOffer.dateCreated.desc())
@@ -918,7 +916,6 @@ def get_collective_offers_for_filters(
             )
         )
         .options(sa_orm.joinedload(models.CollectiveOffer.institution))
-        .limit(offers_limit)
         .populate_existing()
         .all()
     )
@@ -926,7 +923,7 @@ def get_collective_offers_for_filters(
 
 
 def get_collective_offers_template_for_filters(
-    filters: schemas.CollectiveOffersFilter, offers_limit: int
+    filters: schemas.CollectiveOffersFilter,
 ) -> list[models.CollectiveOfferTemplate]:
     query = get_collective_offers_template_by_filters(filters=filters)
 
@@ -942,7 +939,6 @@ def get_collective_offers_template_for_filters(
             ),
             *_get_collective_offer_template_address_joinedload_with_expression(),
         )
-        .limit(offers_limit)
         .populate_existing()
         .all()
     )
