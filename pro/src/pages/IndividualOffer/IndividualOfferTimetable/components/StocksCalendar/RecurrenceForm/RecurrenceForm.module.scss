@@ -93,12 +93,6 @@
   margin-top: calc((size.$input-min-height - var(--typography-body-line-height)) / 2);
 }
 
-@media (min-width: size.$tablet) {
-  .align-icon {
-    @include size.input-center-with-top-margin(size.$button-icon-size);
-  }
-}
-
 .mandatory {
   @include fonts.body-accent-xs;
 

@@ -1,0 +1,21 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.sticky {
+  z-index: 10;
+
+  &-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: rem.torem(16px);
+    flex-wrap: wrap;
+    width: 100%;
+
+    &-buttons {
+      display: flex;
+      align-items: center;
+      gap: rem.torem(16px);
+      flex-wrap: wrap;
+    }
+  }
+}

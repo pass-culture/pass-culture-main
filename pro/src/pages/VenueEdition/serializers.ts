@@ -56,14 +56,20 @@ function serializeOpeningHours(
     return null
   }
 
-  const openingHours: WeekdayOpeningHoursTimespans = {}
+  return cleanOpeningHours(formValues.openingHours)
+}
+
+export function cleanOpeningHours(
+  openingHours: WeekdayOpeningHoursTimespans | null
+) {
+  //  React hook form creates empty arrays for each day of the week, while the api must receive null
+  //  for week days without opening hours
+  const cleanedOpeningHours: WeekdayOpeningHoursTimespans = {}
   OPENING_HOURS_DAYS.forEach((day) => {
-    openingHours[day] =
-      !formValues.openingHours ||
-      !formValues.openingHours[day] ||
-      formValues.openingHours[day].length === 0
+    cleanedOpeningHours[day] =
+      !openingHours || !openingHours[day] || openingHours[day].length === 0
         ? null
-        : formValues.openingHours[day]
+        : openingHours[day]
   })
-  return openingHours
+  return cleanedOpeningHours
 }

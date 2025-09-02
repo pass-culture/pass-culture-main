@@ -24,30 +24,35 @@ const accessibilityTestAndShape = (schema: any) => {
 
 const openingHoursDaySchema = yup
   .array()
+  //  TODO  : Maybe there is an easier way to check for validations (having an array of array makes it complicated to read)
+  //  The solution could be to have a global function for the whole array that keeps track of the global context
   .of(
-    yup.array().required().of(
-      yup
-        .string()
-        //  Custom tests are necessary to get the index of the required field
-        .test('first-time-required', 'Heure obligatoire', function (value) {
-          return Boolean(!this.path.endsWith('[0]') || value)
-        })
-        .test('second-time-required', 'Heure obligatoire', function (value) {
-          return Boolean(!this.path.endsWith('[1]') || value)
-        })
-        .test(
-          'first-time-before',
-          'Plage horaire incohérente',
-          function (value) {
-            return (
-              !value ||
-              !this.parent[1] ||
-              this.path.endsWith('[1]') ||
-              value < this.parent[1]
-            )
-          }
-        )
-    )
+    yup
+      .array()
+      .required()
+      .of(
+        yup
+          .string()
+          //  Custom tests are necessary to get the index of the required field
+          .test('first-time-required', 'Heure obligatoire', function (value) {
+            return Boolean(!this.path.endsWith('[0]') || value)
+          })
+          .test('second-time-required', 'Heure obligatoire', function (value) {
+            return Boolean(!this.path.endsWith('[1]') || value)
+          })
+          .test(
+            'first-time-before',
+            'Plage horaire incohérente',
+            function (value) {
+              return (
+                !value ||
+                !this.parent[1] ||
+                this.path.endsWith('[1]') ||
+                value < this.parent[1]
+              )
+            }
+          )
+      )
   )
   .test(
     'second-span-first-time-after-first-span-second-time',

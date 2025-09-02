@@ -31,7 +31,7 @@ import {
 import type { IndividualOfferContextValues } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
-import type { StocksEvent } from '@/components/IndividualOffer/StocksEventCreation/form/types'
+import type { StocksEvent } from '@/pages/IndividualOffer/IndividualOfferTimetable/components/StocksCalendar/form/types'
 
 import { listOffersVenueFactory } from './collectiveApiFactories'
 

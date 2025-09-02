@@ -40,6 +40,8 @@ export const DayCheckbox = forwardRef(
   ) => {
     const errorId = useId()
 
+    const inputId = useId()
+
     return (
       <div
         className={classNames(
@@ -49,8 +51,9 @@ export const DayCheckbox = forwardRef(
         )}
       >
         {/* The tooltip already adds a aria-labelledby atribute to the input tag */}
-        <label className={styles['checkbox-label']} aria-hidden={true}>
-          {label}
+        <label className={styles['checkbox-label']} htmlFor={inputId}>
+          <span aria-hidden="true">{label}</span>
+          <span className={styles['visually-hidden']}>{tooltipContent}</span>
         </label>
         <Tooltip content={tooltipContent}>
           <input
@@ -63,6 +66,7 @@ export const DayCheckbox = forwardRef(
             onBlur={onBlur}
             checked={checked}
             disabled={disabled}
+            id={inputId}
           />
         </Tooltip>
 

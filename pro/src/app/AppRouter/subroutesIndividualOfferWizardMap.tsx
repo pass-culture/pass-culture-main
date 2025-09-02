@@ -113,12 +113,18 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   },
   // Stocks pages
   {
-    lazy: () => import('@/pages/IndividualOfferWizard/Stocks/Stocks'),
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferTimetable/IndividualOfferTimetable'
+      ),
     path: '/offre/individuelle/:offerId/creation/stocks',
     title: 'Stocks et prix - Créer une offre individuelle',
   },
   {
-    lazy: () => import('@/pages/IndividualOfferWizard/Stocks/Stocks'),
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferTimetable/IndividualOfferTimetable'
+      ),
     path: '/offre/individuelle/:offerId/edition/stocks',
     title: 'Stocks et prix - Modifier une offre individuelle',
   },
@@ -255,7 +261,10 @@ export const routesOnboardingIndividualOfferWizard: RouteConfig[] = [
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {
-    lazy: () => import('@/pages/IndividualOfferWizard/Stocks/Stocks'),
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferTimetable/IndividualOfferTimetable'
+      ),
     path: '/onboarding/offre/individuelle/:offerId/creation/stocks',
     title: 'Stocks et prix - Créer une offre individuelle - Onboarding',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
