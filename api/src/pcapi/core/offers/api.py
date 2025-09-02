@@ -311,6 +311,10 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
             offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api=True, offer=offer, ean=body_ean
         )
 
+    if "durationMinutes" in updates:
+        duration_minutes = get_field(offer, updates, "durationMinutes", aliases=aliases)
+        validation.check_duration_minutes(duration_minutes, is_from_private_api=True)
+
     changes = {key: {"old": getattr(offer, key), "new": new_value} for key, new_value in updates.items()}
     on_commit(partial(logger.info, "update draft offer", extra={"offer": offer.id, "changes": changes}))
 
@@ -351,6 +355,7 @@ def create_offer(
     validation.check_can_input_id_at_provider(provider, body.id_at_provider)
     validation.check_can_input_id_at_provider_for_this_venue(venue.id, body.id_at_provider)
     validation.check_offer_name_does_not_contain_ean(body.name)
+    validation.check_duration_minutes(body.duration_minutes, is_from_private_api)
 
     fields = body.dict(by_alias=True)
 
@@ -482,6 +487,10 @@ def update_offer(
             booking_contact=booking_contact,
             provider=offer.lastProvider,
         )
+
+    if "durationMinutes" in updates:
+        duration_minutes = get_field(offer, updates, "durationMinutes", aliases=aliases)
+        validation.check_duration_minutes(duration_minutes, is_from_private_api)
 
     validation.check_validation_status(offer)
     if offer.lastProvider is not None:

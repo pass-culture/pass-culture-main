@@ -393,6 +393,15 @@ class Returns400Test:
                 400,
                 {"videoUrl": ["Veuillez renseigner une URL provenant de la plateforme Youtube"]},
             ),
+            (
+                {"durationMinutes": 1440},
+                400,
+                {
+                    "durationMinutes": [
+                        "La durée doit être inférieure à 24 heures. Pour les événements durant 24 heures ou plus (par exemple, un pass festival de 3 jours), veuillez laisser ce champ vide."
+                    ]
+                },
+            ),
             # 404
             (
                 {"venueId": 1234642646},
