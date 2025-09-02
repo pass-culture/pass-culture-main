@@ -11,6 +11,15 @@ describe('BookedBanner', () => {
     departmentCode: '75',
   }
 
+  beforeEach(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2025-09-01T12:00:00.000Z'))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('should display the "not cancellable anymore" message if cancellationLimitDate is in the past', () => {
     const cancellationLimitDate = subDays(new Date(), 1).toISOString()
     renderWithProviders(

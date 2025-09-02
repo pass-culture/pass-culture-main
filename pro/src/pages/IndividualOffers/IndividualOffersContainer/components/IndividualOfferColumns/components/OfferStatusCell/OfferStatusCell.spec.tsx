@@ -22,10 +22,22 @@ const defaultProps: OfferStatusCellProps = {
   offer: listOffersOfferFactory(),
 }
 
-const dayInTheFuture = addDays(new Date(), 2).toISOString()
-const dayInThePast = subDays(new Date(), 2).toISOString()
-
 describe('OfferStatusCell', () => {
+  let dayInTheFuture: string
+  let dayInThePast: string
+
+  beforeEach(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2025-09-01T12:00:00.000Z'))
+
+    dayInTheFuture = addDays(new Date(), 2).toISOString()
+    dayInThePast = subDays(new Date(), 2).toISOString()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('should show the date of publication if the FF WIP_REFACTO_FUTURE_OFFER is enabled', () => {
     renderOfferStatusCell(
       {
