@@ -50,10 +50,26 @@ export const removeTime = (date: Date): Date => {
   return date
 }
 
-export const isDateValid = (
-  date?: Date | null | string
-): date is Date | string =>
-  isValid(typeof date === 'string' ? new Date(date) : date)
+export function isDateValid(date: string | null | undefined): date is string
+export function isDateValid(date: Date | null | undefined): date is Date
+export function isDateValid(
+  date: Date | string | null | undefined
+): date is string | Date
+
+export function isDateValid(
+  date: Date | string | null | undefined
+): date is Date | string {
+  if (!date) {
+    return false
+  }
+
+  if (typeof date === 'string') {
+    // Construct a Date; date-fns isValid catches NaN dates
+    return isValid(new Date(date))
+  }
+
+  return isValid(date)
+}
 
 export const getToday = () => new Date()
 

@@ -22,6 +22,7 @@ import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
 
+import { PRICE_TABLE_ENTRY_MAX_LABEL_LENGTH } from '../../commons/constants'
 import {
   PriceTableEntryValidationSchema,
   type PriceTableFormValues,
@@ -175,15 +176,18 @@ export const PriceTableForm = ({
             {offer.isEvent && (
               <TextInput
                 {...register(`entries.${index}.label`)}
+                autoComplete="off"
                 className={styles['input-label']}
                 disabled={fields.length <= 1 || isReadOnly}
                 error={errors.entries?.[index]?.label?.message}
                 label="Intitulé du tarif"
+                maxLength={PRICE_TABLE_ENTRY_MAX_LABEL_LENGTH}
               />
             )}
 
             <PriceInput
               {...register(`entries.${index}.price`)}
+              className={styles['input-price']}
               disabled={isReadOnly}
               error={errors.entries?.[index]?.price?.message}
               label="Prix"
@@ -199,6 +203,7 @@ export const PriceTableForm = ({
             {!offer.isEvent && (
               <DatePicker
                 {...register(`entries.${index}.bookingLimitDatetime`)}
+                className={styles['input-booking-limit-datetime']}
                 disabled={isReadOnly}
                 error={errors.entries?.[index]?.bookingLimitDatetime?.message}
                 label="Date limite de réservation"
@@ -209,6 +214,7 @@ export const PriceTableForm = ({
 
             {isDateValid(entry.activationCodesExpirationDatetime) && (
               <DatePicker
+                className={styles['input-activation-codes-expiration-datetime']}
                 disabled
                 error={
                   errors.entries?.[index]?.activationCodesExpirationDatetime
@@ -223,7 +229,7 @@ export const PriceTableForm = ({
 
             {!offer.isEvent && (
               <QuantityInput
-                className={styles['field-layout-small']}
+                className={styles['input-stock']}
                 disabled={isReadOnly}
                 error={errors.entries?.[index]?.quantity?.message}
                 label="Stock"
@@ -239,25 +245,6 @@ export const PriceTableForm = ({
                 }
                 required
                 value={entry.quantity}
-              />
-            )}
-
-            {!offer.isEvent && offer.isDigital && (
-              <ListIconButton
-                className={styles['button-action']}
-                icon={fullCodeIcon}
-                onClick={() => setActivationCodeEntryIndexToUpload(index)}
-                readOnly={isReadOnly}
-                ref={activationCodeButtonRef}
-                tooltipContent="Ajouter des codes d'activation"
-              />
-            )}
-            {fields.length > 1 && (
-              <ListIconButton
-                className={styles['button-action']}
-                icon={fullTrashIcon}
-                onClick={() => askForRemovalConfirmationOrRemove(index)}
-                tooltipContent="Supprimer ce tarif"
               />
             )}
 
@@ -288,6 +275,25 @@ export const PriceTableForm = ({
                   value={entry.bookingsQuantity ?? 0}
                 />
               </>
+            )}
+
+            {!offer.isEvent && offer.isDigital && (
+              <ListIconButton
+                className={styles['button-action']}
+                icon={fullCodeIcon}
+                onClick={() => setActivationCodeEntryIndexToUpload(index)}
+                readOnly={isReadOnly}
+                ref={activationCodeButtonRef}
+                tooltipContent="Ajouter des codes d'activation"
+              />
+            )}
+            {fields.length > 1 && (
+              <ListIconButton
+                className={styles['button-action']}
+                icon={fullTrashIcon}
+                onClick={() => askForRemovalConfirmationOrRemove(index)}
+                tooltipContent="Supprimer ce tarif"
+              />
             )}
           </div>
         )
