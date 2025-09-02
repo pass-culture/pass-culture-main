@@ -123,4 +123,72 @@ describe('yup.array().uniqueBy', () => {
       ).toBe(true)
     }
   })
+
+  describe('with computeKey third parameter', () => {
+    it('should return true when base key duplicates exist but composite key is unique', () => {
+      const schema = yup
+        .array()
+        .of(nullableOptionalMixedSchema)
+        .uniqueBy('code', 'Codes must be unique', (item: unknown) => {
+          if (
+            item &&
+            typeof item === 'object' &&
+            'code' in item &&
+            'lang' in item
+          ) {
+            const obj = item as { code?: string | number; lang?: string }
+            return `${obj.code}|${obj.lang}`
+          }
+          return ''
+        })
+
+      const testData = [
+        { code: 'A', lang: 'fr' },
+        { code: 'A', lang: 'en' }, // same code, different lang => composite unique
+      ]
+
+      expect(schema.isValidSync(testData)).toBe(true)
+    })
+
+    it('should return false when composite key duplicates exist and set error path using provided key', () => {
+      const schema = yup
+        .array()
+        .of(nullableOptionalMixedSchema)
+        .uniqueBy('code', 'Codes must be unique', (item: unknown) => {
+          if (
+            item &&
+            typeof item === 'object' &&
+            'code' in item &&
+            'lang' in item
+          ) {
+            const obj = item as { code?: string | number; lang?: string }
+            return `${obj.code}|${obj.lang}`
+          }
+          return ''
+        })
+
+      const testData = [
+        { code: 'A', lang: 'fr' },
+        { code: 'A', lang: 'en' },
+        { code: 'A', lang: 'fr' }, // duplicate of first composite key
+      ]
+
+      try {
+        schema.validateSync(testData, { abortEarly: false })
+        expect(true).toBe(false)
+      } catch (error: unknown) {
+        const validationError = error as yup.ValidationError
+        const errorPaths = (
+          validationError.inner?.length
+            ? validationError.inner
+            : [validationError]
+        )
+          .map((errorDetail) => errorDetail.path)
+          .filter((path): path is string => Boolean(path))
+          .sort()
+
+        expect(errorPaths).toEqual(['[2].code'])
+      }
+    })
+  })
 })

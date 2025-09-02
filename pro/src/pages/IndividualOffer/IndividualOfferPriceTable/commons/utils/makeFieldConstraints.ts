@@ -6,8 +6,8 @@ import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
 
 import type { PriceTableEntryFormValues } from '../schemas'
 
-const getBookingLimitDateMax = (date: Date | undefined) => {
-  if (date === undefined) {
+const getBookingLimitDateMax = (date: Date | null) => {
+  if (!date) {
     return undefined
   }
 
@@ -15,6 +15,16 @@ const getBookingLimitDateMax = (date: Date | undefined) => {
   result.setDate(result.getDate() - 7)
 
   return result
+}
+
+const toDateIfValid = (value: string | null) => {
+  if (!isDateValid(value)) {
+    return null
+  }
+
+  const [y, m, d] = getYearMonthDay(value)
+
+  return new Date(y, m, d)
 }
 
 export const makeFieldConstraints = ({
@@ -30,49 +40,21 @@ export const makeFieldConstraints = ({
   )
 
   const computeEntryConstraints = (entry: PriceTableEntryFormValues) => {
-    const [
-      bookingLimitDatetimeYear,
-      bookingLimitDatetimeMonth,
-      bookingLimitDatetimeDay,
-    ] = getYearMonthDay(entry.bookingLimitDatetime ?? '')
-    const [
-      activationCodesExpirationDatetimeYear,
-      activationCodesExpirationDatetimeMonth,
-      activationCodesExpirationDatetimeDay,
-    ] = getYearMonthDay(entry.activationCodesExpirationDatetime ?? '')
-
-    const activationCodesExpirationDatetimeMin = isDateValid(
-      entry.bookingLimitDatetime
+    const activationCodesExpirationDate = toDateIfValid(
+      entry.activationCodesExpirationDatetime
     )
-      ? new Date(
-          bookingLimitDatetimeYear,
-          bookingLimitDatetimeMonth,
-          bookingLimitDatetimeDay
-        )
-      : null
-
-    const activationCodesExpirationDatetimeAsDate: Date | undefined =
-      isDateValid(entry.activationCodesExpirationDatetime)
-        ? new Date(
-            activationCodesExpirationDatetimeYear,
-            activationCodesExpirationDatetimeMonth,
-            activationCodesExpirationDatetimeDay
-          )
-        : undefined
-
-    const bookingLimitDatetimeMax = getBookingLimitDateMax(
-      activationCodesExpirationDatetimeAsDate
-    )
-
-    const quantityMin =
-      mode === OFFER_WIZARD_MODE.EDITION ? (entry.bookingsQuantity ?? 0) : 1
 
     return {
-      activationCodesExpirationDatetimeMin,
+      activationCodesExpirationDatetimeMin: toDateIfValid(
+        entry.bookingLimitDatetime
+      ),
       bookingLimitDatetimeMin: nowAsDate,
-      bookingLimitDatetimeMax,
+      bookingLimitDatetimeMax: getBookingLimitDateMax(
+        activationCodesExpirationDate
+      ),
       nowAsDate,
-      quantityMin,
+      quantityMin:
+        mode === OFFER_WIZARD_MODE.EDITION ? (entry.bookingsQuantity ?? 0) : 1,
     }
   }
 

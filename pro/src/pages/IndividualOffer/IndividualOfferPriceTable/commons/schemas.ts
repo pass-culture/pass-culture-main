@@ -152,7 +152,8 @@ export const PriceTableValidationSchema = yup.object().shape({
     .defined()
     .uniqueBy(
       'label',
-      'Plusieurs tarifs sont identiques, veuillez changer l’intitulé ou le prix'
+      'Plusieurs tarifs sont identiques, veuillez changer l’intitulé ou le prix',
+      (item) => `${item.label}-${item.price}`
     ),
   isDuo: yup
     .boolean()

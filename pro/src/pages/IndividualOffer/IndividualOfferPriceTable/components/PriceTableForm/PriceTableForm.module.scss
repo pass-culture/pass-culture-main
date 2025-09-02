@@ -8,12 +8,22 @@
   margin-top: rem.torem(16px);
 
   > .input-label {
-    width: rem.torem(264px);
+    width: rem.torem(424px);
+  }
+
+  .input-price,
+  .input-stock {
+    width: rem.torem(200px);
+  }
+
+  > .input-booking-limit-datetime,
+  > .input-activation-codes-expiration-datetime {
+    width: rem.torem(224px);
   }
 
   > .input-readonly {
     &--first {
-      margin-left: rem.torem(32px);
+      margin-left: rem.torem(16px);
     }
 
     &,

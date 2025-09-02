@@ -22,5 +22,6 @@ export const toBookingLimitDatetime = (
     endOfDay(dateObject),
     departementCode
   )
+
   return toISOStringWithoutMilliseconds(utc)
 }

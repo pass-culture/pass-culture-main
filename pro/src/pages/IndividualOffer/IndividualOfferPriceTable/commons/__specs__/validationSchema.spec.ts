@@ -10,13 +10,13 @@ import {
 } from '../schemas'
 import type { PriceTableFormContext } from '../types'
 
-// Helper to build context + run validation similarly to other schema spec patterns
 const buildContext = (
   overrides: Partial<PriceTableFormContext> = {}
 ): PriceTableFormContext => {
   const offer = getIndividualOfferFactory({
     isEvent: overrides.offer?.isEvent ?? true,
   })
+
   return {
     isCaledonian: false,
     mode: OFFER_WIZARD_MODE.CREATION,
@@ -69,10 +69,13 @@ describe('PriceTableValidationSchema', () => {
       expectedErrors: ['Veuillez renseigner un intitulé de tarif'],
     },
     {
-      description: 'duplicate labels produce uniqueness error',
+      description: 'duplicate labels with same prices produce uniqueness error',
       formValues: {
         ...baseFormValues,
-        entries: [baseEntry, { ...baseEntry, offerId: baseEntry.offerId }],
+        entries: [
+          { ...baseEntry, label: 'Duplicate Label and Price', price: 12 },
+          { ...baseEntry, label: 'Duplicate Label and Price', price: 12 },
+        ],
       },
       context: baseContext,
       expectedErrors: [
@@ -150,8 +153,10 @@ describe('PriceTableValidationSchema', () => {
           error instanceof yup.ValidationError,
           'Expected yup.ValidationError'
         )
+
         collected.push(...error.errors)
       }
+
       expect(collected).toEqual(expectedErrors)
     })
   })

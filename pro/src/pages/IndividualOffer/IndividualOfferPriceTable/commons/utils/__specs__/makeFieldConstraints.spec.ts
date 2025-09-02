@@ -40,7 +40,7 @@ describe('makeFieldConstraints', () => {
     remainingQuantity: null,
   }
 
-  describe('matrix – CREATION mode', () => {
+  describe('when mode is CREATION', () => {
     const mode = OFFER_WIZARD_MODE.CREATION
 
     const creationCases: TestCase[] = [
@@ -110,7 +110,7 @@ describe('makeFieldConstraints', () => {
     })
   })
 
-  describe('matrix – EDITION mode', () => {
+  describe('when mode is EDITION', () => {
     const mode = OFFER_WIZARD_MODE.EDITION
 
     const editionCases: TestCase[] = [
