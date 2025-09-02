@@ -16,7 +16,7 @@ def check_video_url(video_url: HttpUrl | None) -> str | None:
     if not video_url:
         return None
 
-    video_id = api.extract_youtube_video_id(str(video_url))
+    video_id = api.extract_youtube_video_id(video_url)
     if not video_id:
         raise ApiErrors(errors={"videoUrl": ["Veuillez renseigner une URL provenant de la plateforme Youtube"]})
     return video_id
