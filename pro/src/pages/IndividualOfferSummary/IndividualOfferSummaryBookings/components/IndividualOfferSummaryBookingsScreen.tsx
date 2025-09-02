@@ -17,7 +17,7 @@ import { IndividualBookingsTable } from '@/components/Bookings/BookingsRecapTabl
 import { DEFAULT_OMNISEARCH_CRITERIA } from '@/components/Bookings/BookingsRecapTable/Filters/constants'
 import { filterBookingsRecap } from '@/components/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import strokeBookingHold from '@/icons/stroke-booking-hold.svg'
-import { getFilteredIndividualBookingsAdapter } from '@/pages/Bookings/adapters/getFilteredIndividualBookingsAdapter'
+import { getFilteredIndividualBookingsAdapter } from '@/pages/IndividualBookings/adapters/getFilteredIndividualBookingsAdapter'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
