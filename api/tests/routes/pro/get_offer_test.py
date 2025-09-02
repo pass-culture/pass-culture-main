@@ -171,6 +171,7 @@ class Returns200Test:
             "isDuo": False,
             "isEditable": True,
             "isEvent": True,
+            "canBeEvent": True,
             "isHeadlineOffer": False,
             "isNational": False,
             "isThing": False,

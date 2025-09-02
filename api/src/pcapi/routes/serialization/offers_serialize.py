@@ -244,6 +244,7 @@ class ListOffersOfferResponseModel(BaseModel):
     isActive: bool
     isEditable: bool
     isEvent: bool
+    canBeEvent: bool
     isThing: bool
     isEducational: bool
     isHeadlineOffer: bool
@@ -457,6 +458,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     isDuo: bool
     isEditable: bool
     isEvent: bool
+    canBeEvent: bool
     isNational: bool
     isThing: bool
     id: int

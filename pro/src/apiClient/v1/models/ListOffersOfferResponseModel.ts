@@ -11,6 +11,7 @@ export type ListOffersOfferResponseModel = {
   address?: AddressResponseIsLinkedToVenueModel | null;
   bookingAllowedDatetime?: string | null;
   bookingsCount?: number | null;
+  canBeEvent: boolean;
   hasBookingLimitDatetimesPassed: boolean;
   id: number;
   isActive: boolean;
