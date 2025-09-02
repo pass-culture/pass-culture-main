@@ -19,8 +19,8 @@ describe('Venue edition payload serializer', () => {
       ...defaultGetVenue,
       openingHours: {
         MONDAY: [
-          { open: '01:00', close: '09:00' },
-          { open: '10:00', close: '11:00' },
+          ['01:00', '09:00'],
+          ['10:00', '11:00'],
         ],
       },
     })

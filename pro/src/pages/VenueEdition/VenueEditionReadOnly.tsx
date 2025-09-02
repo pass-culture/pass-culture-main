@@ -3,7 +3,7 @@ import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathTo
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
-import { OpeningHoursReadOnly } from '@/pages/VenueEdition/OpeningHoursReadOnly/OpeningHoursReadOnly'
+import { OpeningHoursAndAddressReadOnly } from '@/pages/VenueEdition/OpeningHoursAndAddressReadOnly/OpeningHoursAndAddressReadOnly'
 
 import { AccessibilityReadOnly } from './AccessibilityReadOnly/AccessibilityReadOnly'
 
@@ -40,7 +40,7 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         )}
         {venue.isOpenToPublic && (
           <>
-            <OpeningHoursReadOnly
+            <OpeningHoursAndAddressReadOnly
               openingHours={venue.openingHours}
               address={venue.address}
             />
