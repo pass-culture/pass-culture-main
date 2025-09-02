@@ -4,6 +4,7 @@ import decimal
 import difflib
 import enum
 import functools
+import json
 import logging
 import re
 import time
@@ -264,14 +265,25 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
 
     if "videoUrl" in fields:
         new_video_url = fields.pop("videoUrl")
-        if not new_video_url:
-            if offer.metaData:
-                db.session.delete(offer.metaData)
-        else:
-            if not offer.metaData:
-                offer.metaData = models.OfferMetaData(offer=offer)
-            offer.metaData.videoUrl = new_video_url
-            db.session.add(offer.metaData)
+
+        if new_video_url:
+            video_id = extract_youtube_video_id(str(new_video_url))
+            video_metadata = None
+            if video_id is not None:
+                cached_video_metadata = current_app.redis_client.get(video_id)
+                if cached_video_metadata is not None:
+                    video_metadata = json.loads(cached_video_metadata)
+            if video_metadata is not None:
+                if offer.metaData is None:
+                    offer.metaData = models.OfferMetaData(offer=offer)
+                offer.metaData.videoExternalId = video_id
+                offer.metaData.videoTitle = video_metadata["title"]
+                offer.metaData.videoThumbnailUrl = video_metadata["thumbnail_url"]
+                offer.metaData.videoDuration = video_metadata["duration"]
+                offer.metaData.videoUrl = new_video_url
+                db.session.add(offer.metaData)
+        elif offer.metaData:
+            db.session.delete(offer.metaData)
 
     body_ean = body.extra_data.get("ean", None) if body.extra_data else None
     if body_ean:
