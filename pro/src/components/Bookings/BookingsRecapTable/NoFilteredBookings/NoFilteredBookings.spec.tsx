@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { NoFilteredBookings } from '../NoFilteredBookings'
+import { NoFilteredBookings } from './NoFilteredBookings'
 
 describe('components | NoFilteredBookings', () => {
   it('should reset filters when clicking on reset button', async () => {
