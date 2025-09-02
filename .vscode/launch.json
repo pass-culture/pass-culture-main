@@ -72,6 +72,23 @@
             "type": "debugpy",
             "justMyCode": false
         },
+        {
+            "name": "Attach to python script",
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "${workspaceFolder}"
+                }
+            ],
+            "connect": {
+                "host": "localhost",
+                "port": 10006
+            },
+            "request": "attach",
+            "subProcess": true,
+            "type": "debugpy",
+            "justMyCode": false
+        },
         // Debug a local python script (without docker)
         // To use the default path value, create the file api/src/pcapi/scripts/local_debug_script.py
         // To access Flask app features, add this in your python file:

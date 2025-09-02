@@ -1,0 +1,1 @@
+python src/pcapi/scripts/import_nc_users/main.py --filename=nouvelle_caledonie_usser_20250902.csv
