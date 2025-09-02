@@ -1,4 +1,5 @@
 import datetime
+import json
 
 import pytest
 
@@ -9,6 +10,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers.schemas import VenueTypeCode
+from pcapi.core.offers import api
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferStatus
 from pcapi.core.providers.repository import get_provider_by_local_class
@@ -18,7 +20,7 @@ from pcapi.utils.date import format_into_utc_date
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    def test_patch_draft_offer(self, client):
+    def test_patch_draft_offer(self, app, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
@@ -29,13 +31,25 @@ class Returns200Test:
             url="http://example.com/offer",
         )
 
+        video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
         data = {
             "name": "New name",
             "description": "New description",
             "subcategoryId": subcategories.ABO_PLATEFORME_VIDEO.id,
             "extraData": {"gtl_id": "07000000"},
-            "videoUrl": "https://www.youtube.com/watch?v=WtM4OW2qVjY",
+            "videoUrl": video_url,
         }
+        video_id = api.extract_youtube_video_id(video_url)
+        app.redis_client.set(
+            f"youtube_video_{video_id}",
+            json.dumps(
+                {
+                    "title": "Title",
+                    "thumbnail_url": "thumbnail url",
+                    "duration": 100,
+                }
+            ),
+        )
         response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
         assert response.status_code == 200
         assert response.json["id"] == offer.id
@@ -410,15 +424,26 @@ class Returns200Test:
 
         assert not updated_offer.product
 
-    def test_update_offer_accepts_video_url_for_product_offer(self, client):
+    def test_update_offer_accepts_video_url_for_product_offer(self, app, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         product = offers_factories.ProductFactory()
         offer = offers_factories.OfferFactory(venue=venue, product=product)
 
-        data = {
-            "videoUrl": "https://www.youtube.com/watch?v=l73rmrLTHQc",
-        }
+        video_url = "https://www.youtube.com/watch?v=l73rmrLTHQc"
+        video_id = api.extract_youtube_video_id(video_url)
+        app.redis_client.set(
+            f"youtube_video_{video_id}",
+            json.dumps(
+                {
+                    "title": "Title",
+                    "thumbnail_url": "thumbnail url",
+                    "duration": 100,
+                }
+            ),
+        )
+
+        data = {"videoUrl": video_url}
         response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
 
         assert response.status_code == 200
@@ -426,7 +451,7 @@ class Returns200Test:
         updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.metaData.videoUrl == "https://www.youtube.com/watch?v=l73rmrLTHQc"
 
-    def test_update_offer_accepts_video_url_for_synchronized_offer(self, client):
+    def test_update_offer_accepts_video_url_for_synchronized_offer(self, app, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         provider = providers_factories.PublicApiProviderFactory()
@@ -436,9 +461,20 @@ class Returns200Test:
             idAtProvider="id_at_provider",
         )
 
-        data = {
-            "videoUrl": "https://www.youtube.com/watch?v=l73rmrLTHQc",
-        }
+        video_url = "https://www.youtube.com/watch?v=l73rmrLTHQc"
+        video_id = api.extract_youtube_video_id(video_url)
+        app.redis_client.set(
+            f"youtube_video_{video_id}",
+            json.dumps(
+                {
+                    "title": "Title",
+                    "thumbnail_url": "thumbnail url",
+                    "duration": 100,
+                }
+            ),
+        )
+
+        data = {"videoUrl": video_url}
         response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
 
         assert response.status_code == 200

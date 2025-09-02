@@ -51,7 +51,7 @@ class Returns200Test:
             "thumbnailUrl": "https://example.com/high.jpg",
             "duration": 100,
         }
-        assert json.loads(current_app.redis_client.get("test_video_id")) == {
+        assert json.loads(current_app.redis_client.get("youtube_video_test_video_id")) == {
             "title": "Test Video",
             "thumbnail_url": "https://example.com/high.jpg",
             "duration": 100,

@@ -785,7 +785,7 @@ def get_offer_video_metadata(
             "duration": video_metadata.duration,
         }
     )
-    current_app.redis_client.set(video_metadata.id, json_video_metadata)
+    current_app.redis_client.set(f"youtube_video_{video_metadata.id}", json_video_metadata)
     return offers_serialize.OfferVideo(
         id=video_metadata.id,
         title=video_metadata.title,

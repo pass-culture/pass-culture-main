@@ -4,6 +4,7 @@ import decimal
 import difflib
 import enum
 import functools
+import json
 import logging
 import re
 import time
@@ -260,23 +261,32 @@ def create_draft_offer(
     return offer
 
 
+def remove_video_data_from_offer_metadata(offer_meta_data: offers_models.OfferMetaData) -> None:
+    video_metadata_fields = ["videoDuration", "videoExternalId", "videoThumbnailUrl", "videoTitle", "videoUrl"]
+    for field in video_metadata_fields:
+        setattr(offer_meta_data, field, None)
+
+
 def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOfferBodyModel) -> models.Offer:
     aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
 
-    if "videoUrl" in fields:
-        new_video_url = fields.pop("videoUrl")
-        if not new_video_url:
-            if offer.metaData:
-                db.session.delete(offer.metaData)
-                logger.info(
-                    "Video has been deleted from offer",
-                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": offer.metaData.videoUrl},
-                    technical_message_id="offer.video.deleted",
-                )
-        else:
-            if not offer.metaData:
+    new_video_url = fields.pop("videoUrl", None)
+    if new_video_url:
+        video_id = extract_youtube_video_id(new_video_url)
+        video_metadata = None
+        cached_video_metadata = current_app.redis_client.get(f"youtube_video_{video_id}")
+        if cached_video_metadata is not None:
+            video_metadata = json.loads(cached_video_metadata)
+        if video_metadata is not None:
+            if offer.metaData is None:
                 offer.metaData = models.OfferMetaData(offer=offer)
+                logger.info(
+                    "Video has been added to offer",
+                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": new_video_url},
+                    technical_message_id="offer.video.added",
+                )
+            elif offer.metaData.videoUrl is None:
                 logger.info(
                     "Video has been added to offer",
                     extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": new_video_url},
@@ -288,8 +298,19 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
                     extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": new_video_url},
                     technical_message_id="offer.video.updated",
                 )
+            offer.metaData.videoExternalId = video_id
+            offer.metaData.videoTitle = video_metadata["title"]
+            offer.metaData.videoThumbnailUrl = video_metadata["thumbnail_url"]
+            offer.metaData.videoDuration = video_metadata["duration"]
             offer.metaData.videoUrl = new_video_url
             db.session.add(offer.metaData)
+    elif offer.metaData:
+        remove_video_data_from_offer_metadata(offer.metaData)
+        logger.info(
+            "Video has been deleted from offer",
+            extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": offer.metaData.videoUrl},
+            technical_message_id="offer.video.deleted",
+        )
 
     body_ean = body.extra_data.get("ean", None) if body.extra_data else None
     if body_ean:

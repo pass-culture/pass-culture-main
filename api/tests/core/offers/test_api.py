@@ -1,5 +1,6 @@
 import copy
 import decimal
+import json
 import logging
 import os
 import pathlib
@@ -1306,20 +1307,57 @@ class UpdateDraftOfferTest:
         assert offer.name == "New name"
         assert offer.description == "New description"
 
+    def test_new_video_url(self, app):
+        video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
+        video_id = api.extract_youtube_video_id(str(video_url))
+        app.redis_client.set(
+            f"youtube_video_{video_id}",
+            json.dumps(
+                {
+                    "title": "Title",
+                    "thumbnail_url": "thumbnail url",
+                    "duration": 100,
+                }
+            ),
+        )
+        offer = factories.OfferFactory(
+            name="Name",
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            description="description",
+        )
+        body = offers_schemas.PatchDraftOfferBodyModel(videoUrl=video_url)
+        offer = api.update_draft_offer(offer, body)
+        db.session.flush()
+
+        assert offer.metaData.videoExternalId == "WtM4OW2qVjY"
+        assert offer.metaData.videoTitle == "Title"
+        assert offer.metaData.videoThumbnailUrl == "thumbnail url"
+        assert offer.metaData.videoDuration == 100
+        assert offer.metaData.videoUrl == video_url
+
+    def test_new_video_url_without_metadata_in_redis_cache(self, app):
+        video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
+        offer = factories.OfferFactory(
+            name="Name",
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            description="description",
+        )
+        body = offers_schemas.PatchDraftOfferBodyModel(videoUrl=video_url)
+        offer = api.update_draft_offer(offer, body)
+        db.session.flush()
+
+        assert offer.metaData is None
+
     def test_can_delete_video_url(self):
         meta_data = factories.OfferMetaDataFactory(videoUrl="https://www.youtube.com/watch?v=WtM4OW2qVjY")
 
-        offer = factories.OfferFactory(
-            metaData=meta_data,
-        )
-        body = offers_schemas.PatchDraftOfferBodyModel(
-            videoUrl="",
-        )
+        offer = factories.OfferFactory(metaData=meta_data)
+        body = offers_schemas.PatchDraftOfferBodyModel(videoUrl="")
         offer = api.update_draft_offer(offer, body)
         db.session.flush()
         db.session.refresh(offer)
 
-        assert offer.metaData is None
+        assert offer.metaData.videoUrl is None
 
     def test_cannot_update_if_ean_in_name(self):
         offer = factories.OfferFactory(
