@@ -44,7 +44,7 @@ export const OfferNameCell = ({
       >
         {displayThumb && (
           <div className={styles['title-column-thumb']}>
-            <Thumb url={offer.imageUrl} />
+            <Thumb url={offer.imageUrl} size="small" />
           </div>
         )}
         <div>

@@ -18,6 +18,7 @@ interface ThumbProps {
    * The accessible label of the image or fallback icon.
    */
   alt?: string
+  size?: 'default' | 'small'
 }
 
 /**
@@ -27,9 +28,16 @@ export const Thumb = ({
   url = '',
   className,
   alt = '',
+  size,
 }: ThumbProps): JSX.Element => {
+  const isSmall = size === 'small'
+
   return (
-    <div className={styles['thumb-container']}>
+    <div
+      className={cn(styles['thumb-container'], {
+        [styles['thumb-container-small']]: isSmall,
+      })}
+    >
       {url ? (
         <img
           className={cn(styles['offer-thumb'], className)}
@@ -41,7 +49,7 @@ export const Thumb = ({
         <SvgIcon
           alt={alt}
           src={strokeOfferIcon}
-          width="48"
+          width={isSmall ? '34' : '48'}
           data-testid="thumb-icon"
           className={cn(styles['default-thumb'], className)}
         />
