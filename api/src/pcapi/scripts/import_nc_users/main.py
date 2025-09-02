@@ -12,9 +12,10 @@ import logging
 import os
 import typing
 
+from pydantic import BaseModel
+
 from pcapi.app import app
 from pcapi.core.external.attributes import api as external_attributes_api
-from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import api as users_api
@@ -37,11 +38,20 @@ class UserRow(typing.TypedDict):
     email: str
 
 
-def create_pro(user_row: UserRow, offerer: offerers_models.Offerer, row_number: int) -> None:
+class ImportCounter(BaseModel):
+    total: int = 0
+    created: int = 0
+    already_present: int = 0
+    already_linked: int = 0
+
+
+def create_pro(user_row: UserRow, offerer: offerers_models.Offerer, row_number: int, counters: ImportCounter) -> None:
     user_in_db = db.session.query(users_models.User).filter_by(email=user_row["email"]).one_or_none()
 
+    counters.total += 1
     if user_in_db is not None:
         logger.info("User already present for row %s", row_number)
+        counters.already_present += 1
 
         user_offerer_in_db = (
             db.session.query(offerers_models.UserOfferer).filter_by(offerer=offerer, user=user_in_db).one_or_none()
@@ -49,6 +59,7 @@ def create_pro(user_row: UserRow, offerer: offerers_models.Offerer, row_number: 
 
         if user_offerer_in_db is not None:
             logger.info("User already linked to offerer for row %s", row_number)
+            counters.already_linked += 1
         else:
             offerers_api.grant_user_offerer_access(offerer=offerer, user=user_in_db)
 
@@ -68,16 +79,14 @@ def create_pro(user_row: UserRow, offerer: offerers_models.Offerer, row_number: 
     ### Validate the email
     users_api.validate_pro_user_email(pro_user)
 
-    ### Reset the password
-    reset_token = users_api.create_reset_password_token(pro_user)
-    transactional_mails.send_reset_password_email_to_pro(reset_token)  # this is done on_commit
-
     ### Link user to offerer
     offerers_api.grant_user_offerer_access(offerer=offerer, user=pro_user)
     pro_user.add_pro_role()
 
     ### Update external tools
     external_attributes_api.update_external_pro(pro_user.email)  # this is done on_commit
+
+    counters.created += 1
 
 
 @atomic()
@@ -88,6 +97,8 @@ def main(filename: str, not_dry: bool) -> None:
         reader = csv.DictReader(f, delimiter=",")
 
         rows = list(reader)
+
+    counters = ImportCounter()
 
     for i, row in enumerate(rows):
         user_row: UserRow = {
@@ -102,7 +113,9 @@ def main(filename: str, not_dry: bool) -> None:
 
         offerer: offerers_models.Offerer = db.session.query(offerers_models.Offerer).filter_by(siren=siren).one()
 
-        create_pro(user_row=user_row, offerer=offerer, row_number=i + 1)
+        create_pro(user_row=user_row, offerer=offerer, row_number=i + 1, counters=counters)
+
+    logger.info("Import counters: %s", counters.model_dump(mode="json"))
 
     if not not_dry:
         mark_transaction_as_invalid()
