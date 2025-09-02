@@ -103,24 +103,17 @@ def unindex_expired_or_archived_collective_offers_template(process_all_expired: 
 def list_collective_offers_for_pro_user(
     filters: schemas.CollectiveOffersFilter, offer_type: collective_offers_serialize.CollectiveOfferType | None = None
 ) -> list[models.CollectiveOffer | models.CollectiveOfferTemplate]:
-    offers = []
+    all_offers = []
     if offer_type != collective_offers_serialize.CollectiveOfferType.template:
-        offers = repository.get_collective_offers_for_filters(filters=filters, offers_limit=OFFERS_RECAP_LIMIT)
-        if offer_type is not None:
-            return offers
-    templates = []
+        offers = repository.get_collective_offers_for_filters(filters=filters)
+        all_offers.extend(offers)
     if offer_type != collective_offers_serialize.CollectiveOfferType.offer:
-        templates = repository.get_collective_offers_template_for_filters(
-            filters=filters, offers_limit=OFFERS_RECAP_LIMIT
-        )
-        if offer_type is not None:
-            return templates
+        templates = repository.get_collective_offers_template_for_filters(filters=filters)
+        all_offers.extend(templates)
 
-    merged_offers = offers + templates
+    all_offers.sort(key=lambda offer: offer.get_sort_criterion(), reverse=True)
 
-    merged_offers.sort(key=lambda offer: offer.get_sort_criterion(), reverse=True)
-
-    return merged_offers[0:OFFERS_RECAP_LIMIT]
+    return all_offers[0:OFFERS_RECAP_LIMIT]
 
 
 def get_educational_domains_from_ids(educational_domain_ids: list[int] | None) -> list[models.EducationalDomain]:

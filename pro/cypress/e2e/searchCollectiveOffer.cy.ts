@@ -163,7 +163,6 @@ describe('Search collective offers', () => {
     cy.stepLog({ message: '5 results should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
-      ['', '', offerArchived.name, '', offerArchived.venueName, '', 'archivée'],
       [
         '',
         '',
@@ -192,6 +191,7 @@ describe('Search collective offers', () => {
         '',
         'publiée',
       ],
+      ['', '', offerArchived.name, '', offerArchived.venueName, '', 'archivée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)

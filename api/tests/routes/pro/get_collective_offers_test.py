@@ -232,7 +232,6 @@ class Returns200Test:
         assert response_json[0]["isActive"] is False
 
     def test_get_passed_booking_limit_datetime_not_beginning_datetime(self, client):
-        # Given
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
@@ -243,20 +242,17 @@ class Returns200Test:
             collectiveOffer__venue=venue,
         )
 
-        # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers?status=EXPIRED")
             assert response.status_code == 200
 
-        # Then
         response_json = response.json
         assert len(response_json) == 1
         assert response_json[0]["displayedStatus"] == "EXPIRED"
         assert response_json[0]["id"] == stock.collectiveOffer.id
 
     def test_if_collective_offer_is_public_api(self, client):
-        # Given
         provider = providers_factories.ProviderFactory()
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
@@ -265,7 +261,6 @@ class Returns200Test:
         institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.CollectiveOfferFactory(venue=venue, institution=institution, provider=provider)
 
-        # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers")
@@ -418,7 +413,6 @@ class Returns200Test:
         )
 
     def test_mix_collective_offer_and_template_no_user(self, client):
-        # Given
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -429,19 +423,16 @@ class Returns200Test:
         educational_factories.CollectiveOfferTemplateFactory(venue=venue, dateCreated=datetime.datetime.utcnow())
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers")
             assert response.status_code == 200
 
-        # Then
         response_json = response.json
         assert isinstance(response_json, list)
         assert len(response_json) == 0
 
     def test_with_date_filters(self, client):
-        # Given
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
@@ -459,13 +450,11 @@ class Returns200Test:
             collectiveOffer=offer, startDatetime=datetime.datetime(2022, 10, 10)
         )
 
-        # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(self.expected_num_queries):
             response = client.get("/collective/offers?periodBeginningDate=2022-10-10&periodEndingDate=2022-10-11")
             assert response.status_code == 200
 
-        # Then
         response_json = response.json
         assert isinstance(response_json, list)
         assert len(response_json) == 1
@@ -574,7 +563,6 @@ class Returns200Test:
         assert {offer["id"] for offer in response_json} == {offer_booked.id, offer_prebooked.id}
 
     def test_select_only_collective_offer(self, client):
-        # Given
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
@@ -583,13 +571,11 @@ class Returns200Test:
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
         educational_factories.CollectiveOfferTemplateFactory(venue=venue)
 
-        # When
         client = client.with_session_auth(user.email)
         with assert_num_queries(3):  # user + session + collective_offers
             response = client.get("/collective/offers?collectiveOfferType=offer")
             assert response.status_code == 200
 
-        # Then
         response_json = response.json
         assert isinstance(response_json, list)
         assert len(response_json) == 1
@@ -599,7 +585,6 @@ class Returns200Test:
         assert response_json[0]["isShowcase"] is False
 
     def test_select_only_collective_offer_template(self, client):
-        # Given
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
@@ -610,13 +595,11 @@ class Returns200Test:
         )
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        # When
         client = client.with_session_auth(user.email)
-        with assert_num_queries(3):  # session + user + collective_offer_template
+        with assert_num_queries(3):
             response = client.get("/collective/offers?collectiveOfferType=template")
             assert response.status_code == 200
 
-        # Then
         response_json = response.json
         assert isinstance(response_json, list)
         assert len(response_json) == 1
@@ -626,41 +609,34 @@ class Returns200Test:
         assert response_json[0]["isShowcase"] is True
 
     def test_offers_sorting(self, client):
-        # Given
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
-        # Fresher
         offer_created_10_days_ago = educational_factories.CollectiveOfferFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=10)
         )
 
-        # Oldest
         offer_created_30_days_ago = educational_factories.CollectiveOfferFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=30)
         )
 
-        # Older
         offer_created_20_days_ago = educational_factories.CollectiveOfferFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=20)
         )
 
-        # Archived offer
         archived_offer = educational_factories.CollectiveOfferFactory(
             dateArchived=datetime.datetime.utcnow(),
             venue=venue,
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=15),
         )
 
-        # average template
         template_created_14_days_ago = educational_factories.CollectiveOfferTemplateFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=14)
         )
 
-        # Offer that needs confirmation
         offer_requiring_attention = educational_factories.CollectiveOfferFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=35)
         )
@@ -670,7 +646,6 @@ class Returns200Test:
         )
         _booking = educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock)
 
-        # Published offer that needs urgent confirmation
         published_offer_requiring_urgent_attention = educational_factories.CollectiveOfferFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=35)
         )
@@ -679,7 +654,6 @@ class Returns200Test:
             bookingLimitDatetime=tomorrow, collectiveOffer=published_offer_requiring_urgent_attention
         )
 
-        # Offer that needs urgent confirmation
         offer_requiring_urgent_attention = educational_factories.CollectiveOfferFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=35)
         )
@@ -689,7 +663,6 @@ class Returns200Test:
         )
         _booking = educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock)
 
-        # Offer already booked
         offer_booked = educational_factories.CollectiveOfferFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=34)
         )
@@ -699,28 +672,23 @@ class Returns200Test:
         )
         _booking = educational_factories.ConfirmedCollectiveBookingFactory(collectiveStock=stock)
 
-        # Offer that needs confirmation that can be waited
         offer_requiring_not_urgent_confirmation = educational_factories.CollectiveOfferFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=35)
         )
-        # 10 days > 7 days
         futur_far = datetime.datetime.utcnow() + datetime.timedelta(days=10)
         stock = educational_factories.CollectiveStockFactory(
             bookingLimitDatetime=futur_far, collectiveOffer=offer_requiring_not_urgent_confirmation
         )
         _booking = educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock)
 
-        # When
         response = client.with_session_auth(user.email).get("/collective/offers")
 
-        # Then
         response_json = response.json
         assert response.status_code == 200
         assert isinstance(response_json, list)
 
         ids = [o["id"] for o in response_json]
 
-        # in first the most fresh
         assert ids == [
             offer_requiring_urgent_attention.id,
             published_offer_requiring_urgent_attention.id,
@@ -734,6 +702,107 @@ class Returns200Test:
             archived_offer.id,
         ]
 
+    def test_collective_offers_only_sorting(self, client):
+        user = users_factories.UserFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        # IMPORTANT: When offers have the same urgency score, they are sorted by dateCreated (most recent first)
+
+        archived_offer = educational_factories.CollectiveOfferFactory(
+            dateArchived=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            venue=venue,
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=15),
+        )
+        educational_factories.CollectiveStockFactory(collectiveOffer=archived_offer)
+
+        old_offer = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=30)
+        )
+        educational_factories.CollectiveStockFactory(
+            collectiveOffer=old_offer, bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=20)
+        )
+
+        recent_offer = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=5)
+        )
+        educational_factories.CollectiveStockFactory(
+            collectiveOffer=recent_offer, bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=15)
+        )
+
+        booked_offer = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=10)
+        )
+        stock_booked = educational_factories.CollectiveStockFactory(
+            collectiveOffer=booked_offer, bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5)
+        )
+        educational_factories.ConfirmedCollectiveBookingFactory(collectiveStock=stock_booked)
+
+        # Not urgent (booking limit > 7 days)
+        pending_not_urgent_offer = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=12)
+        )
+        stock_pending_not_urgent = educational_factories.CollectiveStockFactory(
+            collectiveOffer=pending_not_urgent_offer,
+            bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=10),
+        )
+        educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock_pending_not_urgent)
+
+        # Medium urgency (booking limit between 2-7 days)
+        pending_medium_offer = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8)
+        )
+        stock_pending_medium = educational_factories.CollectiveStockFactory(
+            collectiveOffer=pending_medium_offer,
+            bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=4),
+        )
+        educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock_pending_medium)
+
+        # Expiring soon, created more recently than pending_urgent_offer
+        expiring_soon_offer = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=6)
+        )
+        educational_factories.CollectiveStockFactory(
+            collectiveOffer=expiring_soon_offer,
+            bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(hours=20),
+        )
+
+        # Urgent, created less recently than expiring_soon_offer
+        pending_urgent_offer = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=7)
+        )
+        stock_pending_urgent = educational_factories.CollectiveStockFactory(
+            collectiveOffer=pending_urgent_offer,
+            bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=1),
+        )
+        educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock_pending_urgent)
+
+        response = client.with_session_auth(user.email).get("/collective/offers?collectiveOfferType=offer")
+
+        response_json = response.json
+        assert response.status_code == 200
+        assert isinstance(response_json, list)
+        assert len(response_json) == 8
+
+        ids = [o["id"] for o in response_json]
+
+        # Sorting logic:
+        # 1. Non-archived offers come before archived ones
+        # 2. Offers with PREBOOKED or PUBLISHED status and booking limit < 7 days are prioritized by urgency
+        # 3. When same urgency, sorted by dateCreated (most recent first)
+        # 4. Archived offers are always last
+        assert ids == [
+            expiring_soon_offer.id,
+            pending_urgent_offer.id,
+            pending_medium_offer.id,
+            recent_offer.id,
+            booked_offer.id,
+            pending_not_urgent_offer.id,
+            old_offer.id,
+            archived_offer.id,
+        ]
+
     @pytest.mark.parametrize(
         "status",
         set(educational_models.CollectiveOfferDisplayedStatus)
@@ -743,7 +812,7 @@ class Returns200Test:
         offer = educational_factories.create_collective_offer_by_status(status)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        # add an offer with another status that will not be present in the result
+        # Add an offer with another status that will not be present in the result
         other_status = next((s for s in educational_models.CollectiveOfferDisplayedStatus if s != status))
         educational_factories.create_collective_offer_by_status(status=other_status, venue=offer.venue)
 
@@ -775,7 +844,7 @@ class Returns200Test:
         offer = educational_factories.create_collective_offer_template_by_status(status)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        # add an offer with another status that will not be present in the result
+        # Add an offer with another status that will not be present in the result
         other_status = next((s for s in educational_models.COLLECTIVE_OFFER_TEMPLATE_STATUSES if s != status))
         educational_factories.create_collective_offer_template_by_status(other_status, venue=offer.venue)
 
