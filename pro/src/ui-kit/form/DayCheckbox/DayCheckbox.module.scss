@@ -2,6 +2,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_outline.scss" as outline;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 $checkbox-size: rem.torem(40px);
 
@@ -75,4 +76,8 @@ $checkbox-size: rem.torem(40px);
       border: rem.torem(2px) solid var(--color-text-subtle);
     }
   }
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }

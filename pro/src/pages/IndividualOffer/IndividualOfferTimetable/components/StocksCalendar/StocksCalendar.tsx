@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { type Dispatch, type SetStateAction, useState } from 'react'
 import useSWR, { mutate } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -7,22 +7,36 @@ import {
   type GetIndividualOfferWithAddressResponseModel,
   StocksOrderedBy,
 } from '@/apiClient/v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_OFFER_QUERY_KEY,
   GET_STOCKS_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
-import type { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { pluralize } from '@/commons/utils/pluralize'
 import { convertTimeFromVenueTimezoneToUtc } from '@/commons/utils/timezone'
+import strokeAddCalendarIcon from '@/icons/stroke-add-calendar.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
+import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { Pagination } from '@/ui-kit/Pagination/Pagination'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import type { StocksTableFilters, StocksTableSort } from '../form/types'
+import { onSubmit } from './form/onSubmit'
+import type {
+  RecurrenceFormValues,
+  StocksTableFilters,
+  StocksTableSort,
+} from './form/types'
+import { RecurrenceForm } from './RecurrenceForm/RecurrenceForm'
 import styles from './StocksCalendar.module.scss'
 import { StocksCalendarActionsBar } from './StocksCalendarActionsBar/StocksCalendarActionsBar'
 import { StocksCalendarFilters } from './StocksCalendarFilters/StocksCalendarFilters'
-import { StocksCalendarLayout } from './StocksCalendarLayout/StocksCalendarLayout'
 import { StocksCalendarTable } from './StocksCalendarTable/StocksCalendarTable'
 
 const STOCKS_PER_PAGE = 20
@@ -30,9 +44,14 @@ const STOCKS_PER_PAGE = 20
 export type StocksCalendarProps = {
   offer: GetIndividualOfferWithAddressResponseModel
   mode: OFFER_WIZARD_MODE
+  timetableTypeRadioGroupShown: boolean
 }
 
-export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
+export function StocksCalendar({
+  offer,
+  mode,
+  timetableTypeRadioGroupShown,
+}: StocksCalendarProps) {
   const [page, setPage] = useState(1)
   const [checkedStocks, setCheckedStocks] = useState(new Set<number>())
   const [appliedFilters, setAppliedFilters] = useState<StocksTableFilters>({})
@@ -40,6 +59,9 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
     sort: StocksOrderedBy.DATE,
   })
   const notify = useNotification()
+  const { logEvent } = useAnalytics()
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const departmentCode = getDepartmentCode(offer)
 
@@ -117,23 +139,85 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
     }
   }
 
+  const handleSubmitRecurrenceFormDrawer = async (
+    values: RecurrenceFormValues
+  ) => {
+    const departmentCode = getDepartmentCode(offer)
+
+    logEvent(Events.CLICKED_VALIDATE_ADD_RECURRENCE_DATES, {
+      recurrenceType: values.recurrenceType,
+      offerId: offer.id,
+      venueId: offer.venue.id,
+    })
+
+    await onSubmit(values, departmentCode, offer.id, notify)
+
+    await mutate(queryKeys, data, {
+      revalidate: true,
+    })
+    await mutate([GET_OFFER_QUERY_KEY, offer.id])
+
+    setIsDialogOpen(false)
+  }
+
   const stocks = data?.stocks || []
 
   return (
-    <StocksCalendarLayout
-      offer={offer}
-      isLoading={isLoading}
-      mode={mode}
-      hasStocks={Boolean(data?.hasStocks)}
-      onAfterCloseDialog={async () => {
-        await mutate(queryKeys, data, {
-          revalidate: true,
-        })
-        await mutate([GET_OFFER_QUERY_KEY, offer.id])
-      }}
-    >
+    <>
+      {mode !== OFFER_WIZARD_MODE.READ_ONLY && (
+        //  When the mode is read only, the title is already inside the SummarySection layout
+        <div className={styles['header']}>
+          {timetableTypeRadioGroupShown ? (
+            <h3 className={styles['subtitle']}>Dates et capacités</h3>
+          ) : (
+            <h2 className={styles['title']}>Dates et capacités</h2>
+          )}
+          {offer.hasStocks && !isOfferSynchronized(offer) && (
+            <DialogBuilderButton
+              triggerLabel="Ajouter une ou plusieurs dates"
+              triggerVariant={ButtonVariant.SECONDARY}
+              offer={offer}
+              handleSubmitRecurrenceFormDrawer={
+                handleSubmitRecurrenceFormDrawer
+              }
+              isDialogOpen={isDialogOpen}
+              setIsDialogOpen={setIsDialogOpen}
+            />
+          )}
+        </div>
+      )}
+      {isLoading && offer.hasStocks && (
+        <Spinner className={styles['spinner']} />
+      )}
+      {!offer.hasStocks && (
+        <div className={styles['no-stocks-content']}>
+          {isOfferSynchronized(offer) ? (
+            <p>Aucune date à afficher</p>
+          ) : (
+            <>
+              <div className={styles['icon-container']}>
+                <SvgIcon
+                  alt=""
+                  className={styles['icon']}
+                  src={strokeAddCalendarIcon}
+                />
+              </div>
+              <DialogBuilderButton
+                triggerLabel="Définir le calendrier"
+                triggerVariant={ButtonVariant.PRIMARY}
+                offer={offer}
+                handleSubmitRecurrenceFormDrawer={
+                  handleSubmitRecurrenceFormDrawer
+                }
+                isDialogOpen={isDialogOpen}
+                setIsDialogOpen={setIsDialogOpen}
+              />
+            </>
+          )}
+        </div>
+      )}
       <div className={styles['container']}>
-        {data?.hasStocks && (
+        {data?.hasStocks && !isLoading && (
           <div className={styles['content']}>
             <div className={styles['filters']}>
               <StocksCalendarFilters
@@ -194,6 +278,43 @@ export function StocksCalendar({ offer, mode }: StocksCalendarProps) {
           offerId={offer.id}
         />
       </div>
-    </StocksCalendarLayout>
+    </>
+  )
+}
+
+function DialogBuilderButton({
+  triggerLabel,
+  triggerVariant,
+  isDialogOpen,
+  setIsDialogOpen,
+  offer,
+  handleSubmitRecurrenceFormDrawer,
+}: {
+  triggerLabel: string
+  triggerVariant: ButtonVariant
+  isDialogOpen: boolean
+  setIsDialogOpen: Dispatch<SetStateAction<boolean>>
+  offer: GetIndividualOfferWithAddressResponseModel
+  handleSubmitRecurrenceFormDrawer: (
+    values: RecurrenceFormValues
+  ) => Promise<void>
+}) {
+  return (
+    <DialogBuilder
+      trigger={
+        <Button variant={triggerVariant} className={styles['button']}>
+          {triggerLabel}
+        </Button>
+      }
+      open={isDialogOpen}
+      onOpenChange={setIsDialogOpen}
+      variant="drawer"
+      title={triggerLabel}
+    >
+      <RecurrenceForm
+        priceCategories={offer.priceCategories ?? []}
+        handleSubmit={handleSubmitRecurrenceFormDrawer}
+      />
+    </DialogBuilder>
   )
 }

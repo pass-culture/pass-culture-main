@@ -43,6 +43,7 @@ function renderStocksCalendar(
       <StocksCalendar
         offer={getIndividualOfferFactory()}
         mode={OFFER_WIZARD_MODE.CREATION}
+        timetableTypeRadioGroupShown={false}
         {...props}
       />
       <Notification />
@@ -59,7 +60,7 @@ describe('StocksCalendar', () => {
     })
 
     expect(
-      screen.getByRole('button', { name: 'Définir le calendrier' })
+      screen.getByRole('button', { name: 'Ajouter une ou plusieurs dates' })
     ).toBeInTheDocument()
   })
 
@@ -71,12 +72,12 @@ describe('StocksCalendar', () => {
     })
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Définir le calendrier' })
+      screen.getByRole('button', { name: 'Ajouter une ou plusieurs dates' })
     )
 
     expect(
       screen.getByRole('heading', {
-        name: 'Définir le calendrier de votre offre',
+        name: 'Ajouter une ou plusieurs dates',
       })
     ).toBeInTheDocument()
   })
@@ -94,7 +95,7 @@ describe('StocksCalendar', () => {
 
     expect(
       screen.getByRole('heading', {
-        name: 'Définir le calendrier de votre offre',
+        name: 'Ajouter une ou plusieurs dates',
       })
     ).toBeInTheDocument()
   })
@@ -153,7 +154,7 @@ describe('StocksCalendar', () => {
     })
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Définir le calendrier' })
+      screen.getByRole('button', { name: 'Ajouter une ou plusieurs dates' })
     )
 
     await userEvent.type(
@@ -169,7 +170,7 @@ describe('StocksCalendar', () => {
 
     expect(
       screen.queryByRole('heading', {
-        name: 'Définir le calendrier de votre offre',
+        name: 'Ajouter une ou plusieurs dates',
       })
     ).not.toBeInTheDocument()
   })
@@ -219,7 +220,7 @@ describe('StocksCalendar', () => {
       expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
     })
 
-    expect(screen.queryByText(/ dates/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/0 dates/)).not.toBeInTheDocument()
   })
 
   it('should update a specific stock', async () => {
@@ -264,7 +265,7 @@ describe('StocksCalendar', () => {
     })
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Définir le calendrier' })
+      screen.getByRole('button', { name: 'Ajouter une ou plusieurs dates' })
     )
 
     await userEvent.type(

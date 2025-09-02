@@ -18,15 +18,12 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullMoreIcon from '@/icons/full-more.svg'
-import fullTrashIcon from '@/icons/full-trash.svg'
 import { getPriceCategoryOptions } from '@/pages/IndividualOffer/commons/getPriceCategoryOptions'
 import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { DayCheckbox } from '@/ui-kit/form/DayCheckbox/DayCheckbox'
-import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
@@ -34,21 +31,17 @@ import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 
-import { computeInitialValues } from './form/computeInitialValues'
-import { isLastWeekOfMonth } from './form/recurrenceUtils'
+import { QuantityPerPriceCategory } from '../../QuantityPerPriceCategory/QuantityPerPriceCategory'
+import { computeInitialValues } from '../form/computeInitialValues'
+import { isLastWeekOfMonth } from '../form/recurrenceUtils'
 import {
   MonthlyOption,
-  type QuantityPerPriceCategoryForm,
   RecurrenceDays,
   type RecurrenceFormValues,
   RecurrenceType,
-} from './form/types'
-import { getValidationSchema } from './form/validationSchema'
+} from '../form/types'
+import { getValidationSchema } from '../form/validationSchema'
 import styles from './RecurrenceForm.module.scss'
-
-const INITIAL_QUANTITY_PER_PRICE_CATEGORY: QuantityPerPriceCategoryForm = {
-  priceCategory: '',
-}
 
 export interface RecurrenceFormProps {
   priceCategories: PriceCategoryResponseModel[]
@@ -188,87 +181,11 @@ const PriceCategoriesForm = ({
 }: {
   priceCategoryOptions: SelectOption<number>[]
 }): JSX.Element => {
-  const { register, watch, setValue, formState } =
-    useFormContext<RecurrenceFormValues>()
-
-  const { fields, append, remove } = useFieldArray({
-    name: 'quantityPerPriceCategories',
-  })
-
   return (
     <fieldset>
       <div className={styles['section']}>
         <h2 className={styles['legend']}>Places et tarifs par horaire</h2>
-        {fields.map((field, index) => (
-          <FormLayout.Row
-            key={field.id}
-            inline
-            mdSpaceAfter
-            testId={`wrapper-quantityPerPriceCategories.${index}`}
-          >
-            <QuantityInput
-              label="Nombre de places"
-              className={styles['quantity-input']}
-              minimum={1}
-              name={`quantityPerPriceCategories.${index}.quantity`}
-              error={
-                formState.errors.quantityPerPriceCategories?.[index]?.quantity
-                  ?.message
-              }
-              value={
-                watch(`quantityPerPriceCategories.${index}.quantity`) ||
-                undefined
-              }
-              onChange={(e) => {
-                setValue(
-                  `quantityPerPriceCategories.${index}.quantity`,
-                  e.target.value ? Number(e.target.value) : undefined
-                )
-              }}
-            />
-            <Select
-              label="Tarif"
-              options={priceCategoryOptions}
-              defaultOption={{
-                label: 'Sélectionner un tarif',
-                value: '',
-              }}
-              required
-              error={
-                formState.errors.quantityPerPriceCategories?.[index]
-                  ?.priceCategory?.message
-              }
-              className={styles['price-category-input']}
-              {...register(`quantityPerPriceCategories.${index}.priceCategory`)}
-            />
-
-            <div className={styles['align-icon']}>
-              {watch('quantityPerPriceCategories').length > 1 && (
-                <Button
-                  variant={ButtonVariant.TERNARY}
-                  icon={fullTrashIcon}
-                  iconPosition={IconPositionEnum.CENTER}
-                  onClick={() => remove(index)}
-                  tooltipContent="Supprimer les places"
-                />
-              )}
-            </div>
-          </FormLayout.Row>
-        ))}
-        {watch('quantityPerPriceCategories').length <
-          priceCategoryOptions.length && (
-          <ButtonLink
-            variant={ButtonVariant.TERNARY}
-            icon={fullMoreIcon}
-            onClick={() => append(INITIAL_QUANTITY_PER_PRICE_CATEGORY)}
-            to={`#quantityPerPriceCategories[${
-              watch('quantityPerPriceCategories').length - 1
-            }].quantity`}
-            isExternal
-          >
-            Ajouter d’autres places et tarifs
-          </ButtonLink>
-        )}
+        <QuantityPerPriceCategory priceCategoryOptions={priceCategoryOptions} />
       </div>
     </fieldset>
   )
