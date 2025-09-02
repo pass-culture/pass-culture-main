@@ -67,6 +67,7 @@ def get_collective_offers(
     capped_offers = api_offer.list_collective_offers_for_pro_user(
         filters=filters, offer_type=query.collective_offer_type
     )
+    capped_offers.sort(key=lambda offer: offer.get_sort_criterion(), reverse=True)
 
     return collective_offers_serialize.ListCollectiveOffersResponseModel(
         __root__=collective_offers_serialize.serialize_collective_offers_capped(capped_offers)

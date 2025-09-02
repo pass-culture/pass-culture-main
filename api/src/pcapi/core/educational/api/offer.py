@@ -118,8 +118,6 @@ def list_collective_offers_for_pro_user(
 
     merged_offers = offers + templates
 
-    merged_offers.sort(key=lambda offer: offer.get_sort_criterion(), reverse=True)
-
     return merged_offers[0:OFFERS_RECAP_LIMIT]
 
 
