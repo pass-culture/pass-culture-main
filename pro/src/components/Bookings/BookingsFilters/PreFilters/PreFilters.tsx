@@ -39,7 +39,6 @@ export interface PreFiltersProps {
   hasResult: boolean
   isFiltersDisabled: boolean
   isTableLoading: boolean
-  wereBookingsRequested: boolean
   isLocalLoading: boolean
   resetPreFilters: () => void
   urlParams?: PreFiltersParams

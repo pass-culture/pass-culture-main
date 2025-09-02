@@ -5,6 +5,7 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { usePagination } from '@/commons/hooks/usePagination'
 import type { BookingsFilters } from '@/components/Bookings/BookingsFilters/types'
+import strokeNoBookingIcon from '@/icons/stroke-no-booking.svg'
 import { Pagination } from '@/ui-kit/Pagination/Pagination'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
@@ -19,6 +20,7 @@ export interface IndividualBookingsTableProps {
   updateGlobalFilters: (updatedFilters: Partial<BookingsFilters>) => void
   resetFilters: () => void
   isLoading: boolean
+  hasBookings: boolean
 }
 
 export const IndividualBookingsTable = ({
@@ -27,6 +29,7 @@ export const IndividualBookingsTable = ({
   updateGlobalFilters,
   resetFilters,
   isLoading,
+  hasBookings,
 }: IndividualBookingsTableProps): JSX.Element => {
   const bookingsWithId = bookings.map(
     (b, i) =>
@@ -78,9 +81,9 @@ export const IndividualBookingsTable = ({
           onFilterReset: resetFilters,
         }}
         noData={{
-          hasNoData: false,
+          hasNoData: !hasBookings,
           message: {
-            icon: 'strokeNoBookingIcon',
+            icon: strokeNoBookingIcon,
             title: 'Vous n’avez aucune réservation pour le moment',
             subtitle: '',
           },

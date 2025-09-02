@@ -31,6 +31,7 @@ describe('IndividualBookingsTable', () => {
       bookingStatuses: [],
       updateGlobalFilters: vi.fn(),
       resetFilters: vi.fn(),
+      isLoading: false,
     }
 
     renderIndividualBookingTable(props)
@@ -46,6 +47,7 @@ describe('IndividualBookingsTable', () => {
       bookingStatuses: [],
       updateGlobalFilters: vi.fn(),
       resetFilters: vi.fn(),
+      isLoading: false,
     }
 
     renderIndividualBookingTable(props)

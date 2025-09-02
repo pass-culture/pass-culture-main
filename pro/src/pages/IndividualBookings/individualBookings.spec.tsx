@@ -129,17 +129,6 @@ describe('components | BookingsRecap | Pro user', () => {
     expect(eventDateFilter).not.toHaveValue()
   })
 
-  it('should ask user to select a pre-filter before clicking on "Afficher"', async () => {
-    renderBookingsRecap()
-    await waitForCompleteLoading()
-
-    expect(api.getBookingsPro).not.toHaveBeenCalled()
-    const choosePreFiltersMessage = screen.getByText(
-      'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Afficher »'
-    )
-    expect(choosePreFiltersMessage).toBeInTheDocument()
-  })
-
   it('should request bookings of venue requested by user when user clicks on "Afficher"', async () => {
     const bookingRecap = bookingRecapFactory()
     const spyGetBookingsPro = vi
