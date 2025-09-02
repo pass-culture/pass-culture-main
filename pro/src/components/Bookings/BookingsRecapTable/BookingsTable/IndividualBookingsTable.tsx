@@ -134,22 +134,24 @@ export const IndividualBookingsTable = ({
         getFullRowContent={getFullRowContentIndividual}
       />
 
-      <Pagination
-        currentPage={page}
-        pageCount={pageCount}
-        onPreviousPageClick={() => {
-          previousPage()
-          logEvent(Events.CLICKED_PAGINATION_PREVIOUS_PAGE, {
-            from: location.pathname,
-          })
-        }}
-        onNextPageClick={() => {
-          nextPage()
-          logEvent(Events.CLICKED_PAGINATION_NEXT_PAGE, {
-            from: location.pathname,
-          })
-        }}
-      />
+      <div className={styles['table-pagination']}>
+        <Pagination
+          currentPage={page}
+          pageCount={pageCount}
+          onPreviousPageClick={() => {
+            previousPage()
+            logEvent(Events.CLICKED_PAGINATION_PREVIOUS_PAGE, {
+              from: location.pathname,
+            })
+          }}
+          onNextPageClick={() => {
+            nextPage()
+            logEvent(Events.CLICKED_PAGINATION_NEXT_PAGE, {
+              from: location.pathname,
+            })
+          }}
+        />
+      </div>
     </div>
   )
 }
