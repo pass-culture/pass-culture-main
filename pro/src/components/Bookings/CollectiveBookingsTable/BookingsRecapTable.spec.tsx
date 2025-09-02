@@ -12,7 +12,7 @@ import {
 } from '@/commons/utils/factories/collectiveApiFactories'
 import { bookingRecapFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import * as filterBookingsRecap from '@/components/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
+import * as filterBookingsRecap from '@/components/Bookings/BookingsFilters/utils/filterBookingsRecap'
 
 import { BookingsRecapTable } from './BookingsRecapTable'
 import {

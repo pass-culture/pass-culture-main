@@ -12,15 +12,15 @@ import strokeDuoIcon from '@/icons/stroke-duo.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import type { Column } from '@/ui-kit/Table/Table'
 
-import { FilterByBookingStatus } from '../Filters/FilterByBookingStatus'
-import type { BookingsFilters } from '../types'
-import styles from './BookingsTable.module.scss'
+import { FilterByBookingStatus } from '../BookingsFilters/Filters/FilterByBookingStatus'
+import type { BookingsFilters } from '../BookingsFilters/types'
 import { BeneficiaryCell } from './Cells/BeneficiaryCell'
 import { BookingDateCell } from './Cells/BookingDateCell'
 import { BookingOfferCell } from './Cells/BookingOfferCell'
+import { IndividualBookingStatusCell } from './Cells/BookingStatusCell'
 import { BookingStatusCellHistory } from './Cells/BookingStatusCellHistory'
 import { DetailsButtonCell } from './Cells/DetailsButtonCell'
-import { IndividualBookingStatusCell } from './Cells/IndividualBookingStatusCell'
+import styles from './IndividualBookingsTable.module.scss'
 
 type BookingRow = BookingRecapResponseModel & { id: number }
 const priceText = (amount: number) => (amount ? formatPrice(amount) : 'Gratuit')

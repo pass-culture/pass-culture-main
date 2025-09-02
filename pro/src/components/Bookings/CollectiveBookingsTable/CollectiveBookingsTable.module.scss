@@ -1,0 +1,169 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_a11y.scss" as a11y;
+
+// <div>
+.table-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+// <table>
+.table {
+  margin-bottom: rem.torem(10px);
+}
+
+// <thead>
+.table-header {
+  @include fonts.body-accent-xs;
+  @include a11y.visually-hidden;
+
+  text-align: left;
+}
+
+// <th>
+.table-header-cell {
+  @include fonts.body-accent-xs;
+
+  padding: rem.torem(8px);
+  white-space: nowrap;
+}
+
+// <tbody>
+.table-body {
+  .table-cell[data-label] {
+    // In mobile-view, it takes labels from "data-label" in order to construct à left-column with that content
+    display: contents; // ignores <td> with [data-label], so their children can be used as grid items
+
+    // ::before is the left column
+    &::before {
+      grid-column: 1;
+      content: attr(data-label) " : ";
+      margin: rem.torem(8px) rem.torem(8px) rem.torem(8px);
+    }
+
+    // the cell content wrapper is the right column
+    .cell-item-wrapper {
+      grid-column: 2;
+      margin: rem.torem(8px);
+    }
+  }
+}
+
+// <tr>
+.table-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  border-top: rem.torem(1px) solid var(--color-border-subtle);
+  padding: rem.torem(16px) 0;
+
+  &:first-child {
+    margin-top: rem.torem(16px);
+  }
+}
+
+// <td>
+.table-cell {
+  @include fonts.body;
+
+  padding: rem.torem(8px);
+}
+
+.column-booking-id {
+  min-width: rem.torem(60px);
+  white-space: initial;
+}
+
+.column-offer-name {
+  word-break: normal;
+  overflow-wrap: anywhere;
+
+  .offer-details-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  .bookings-duo-icon {
+    width: rem.torem(24px);
+    height: rem.torem(24px);
+    position: relative;
+    top: rem.torem(-2px);
+    margin-left: rem.torem(8px);
+  }
+}
+
+.column-collective-offer-name,
+.column-beneficiary,
+.column-booking-token {
+  overflow-wrap: anywhere;
+}
+
+.column-institution {
+  overflow-wrap: anywhere;
+
+  .institution-cell-subtitle {
+    color: var(--color-text-subtle);
+  }
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
+}
+
+@media (min-width: size.$tablet) {
+  .table-header {
+    // <thead>
+    @include a11y.visually-hidden-reset;
+  }
+
+  // <tbody>
+  .table-body {
+    .table-cell[data-label] {
+      display: table-cell;
+
+      &::before {
+        display: none;
+      }
+
+      .cell-item-wrapper {
+        margin-left: 0;
+      }
+    }
+  }
+
+  // <tr>
+  .table-row {
+    display: table-row;
+  }
+
+  .column-offer-name {
+    .offer-details-wrapper {
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .details-cell {
+    padding-bottom: rem.torem(16px);
+  }
+}
+
+.details-cell {
+  padding: 0 0 rem.torem(24px) rem.torem(8px);
+  overflow: hidden;
+}
+
+.details-title {
+  @include fonts.body-accent;
+}
+
+.details-content {
+  @include fonts.body-xs;
+}
+
+.loader {
+  padding: rem.torem(24px) rem.torem(16px);
+  margin: auto;
+}

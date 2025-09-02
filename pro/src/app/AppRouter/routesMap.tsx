@@ -86,7 +86,7 @@ export const routes: RouteConfig[] = [
     title: 'Guichet',
   },
   {
-    lazy: () => import('@/pages/IndividualBookings/individualBookings'),
+    lazy: () => import('@/pages/IndividualBookings/IndividualBookings'),
     path: '/reservations',
     title: 'Réservations individuelles',
   },

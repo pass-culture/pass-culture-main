@@ -26,7 +26,7 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 
-import { Bookings } from './individualBookings'
+import { Bookings } from './IndividualBookings'
 
 vi.mock('@/apiClient/api', () => ({
   api: {

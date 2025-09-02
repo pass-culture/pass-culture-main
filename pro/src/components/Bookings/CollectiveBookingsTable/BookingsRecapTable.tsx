@@ -1,40 +1,23 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 
-import type {
-  BookingRecapResponseModel,
-  CollectiveBookingResponseModel,
-} from '@/apiClient/v1'
-import { Audience } from '@/commons/core/shared/types'
+import type { CollectiveBookingResponseModel } from '@/apiClient/v1'
+import type { Audience } from '@/commons/core/shared/types'
 
-import { isCollectiveBooking } from './BookingsTable/Cells/BookingOfferCell'
-import { CollectiveBookingsTable } from './BookingsTable/CollectiveBookingsTable'
-import { IndividualBookingsTable } from './BookingsTable/IndividualBookingsTable'
 import {
   ALL_BOOKING_STATUS,
   bookingIdOmnisearchFilter,
   DEFAULT_OMNISEARCH_CRITERIA,
   EMPTY_FILTER_VALUE,
-} from './Filters/constants'
-import { FilterByOmniSearch } from './Filters/FilterByOmniSearch'
-import styles from './Filters/Filters.module.scss'
-import { Header } from './Header/Header'
-import type { BookingsFilters } from './types'
-import { filterBookingsRecap } from './utils/filterBookingsRecap'
+} from '../BookingsFilters/Filters/constants'
+import { FilterByOmniSearch } from '../BookingsFilters/Filters/FilterByOmniSearch'
+import type { BookingsFilters } from '../BookingsFilters/types'
+import { filterBookingsRecap } from '../BookingsFilters/utils/filterBookingsRecap'
+import { CollectiveBookingsTable } from '../CollectiveBookingsTable/CollectiveBookingsTable'
+import { Header } from '../Header/Header'
+import styles from './CollectiveBookingsTable.module.scss'
 
-const areCollectiveBookings = (
-  bookings: (BookingRecapResponseModel | CollectiveBookingResponseModel)[]
-): bookings is CollectiveBookingResponseModel[] =>
-  bookings.every(isCollectiveBooking)
-
-const areIndividualBookings = (
-  bookings: (BookingRecapResponseModel | CollectiveBookingResponseModel)[]
-): bookings is BookingRecapResponseModel[] =>
-  bookings.every((booking) => !isCollectiveBooking(booking))
-
-interface BookingsRecapTableProps<
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
-> {
+interface BookingsRecapTableProps<T extends CollectiveBookingResponseModel> {
   bookingsRecap: T[]
   isLoading: boolean
   locationState?: {
@@ -44,9 +27,7 @@ interface BookingsRecapTableProps<
   resetBookings: () => void
 }
 
-export const BookingsRecapTable = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
->({
+export const BookingsRecapTable = <T extends CollectiveBookingResponseModel>({
   bookingsRecap,
   isLoading,
   locationState,
@@ -155,25 +136,14 @@ export const BookingsRecapTable = <
           resetBookings={resetBookings}
         />
       )}
-      {audience === Audience.INDIVIDUAL &&
-        areIndividualBookings(filteredBookings) && (
-          <IndividualBookingsTable
-            bookings={filteredBookings}
-            bookingStatuses={filters.bookingStatus}
-            updateGlobalFilters={updateGlobalFilters}
-            resetFilters={resetAllFilters}
-          />
-        )}
-      {audience === Audience.COLLECTIVE &&
-        areCollectiveBookings(filteredBookings) && (
-          <CollectiveBookingsTable
-            bookings={filteredBookings}
-            bookingStatuses={filters.bookingStatus}
-            updateGlobalFilters={updateGlobalFilters}
-            defaultOpenedBookingId={defaultBookingId}
-            resetFilters={resetAllFilters}
-          />
-        )}
+
+      <CollectiveBookingsTable
+        bookings={filteredBookings}
+        bookingStatuses={filters.bookingStatus}
+        updateGlobalFilters={updateGlobalFilters}
+        defaultOpenedBookingId={defaultBookingId}
+        resetFilters={resetAllFilters}
+      />
     </div>
   )
 }

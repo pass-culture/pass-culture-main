@@ -7,10 +7,7 @@ import {
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import type {
-  BookingRecapResponseModel,
-  CollectiveBookingResponseModel,
-} from '@/apiClient/v1'
+import type { CollectiveBookingResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_BOOKINGS_QUERY_KEY,
@@ -27,13 +24,13 @@ import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isEqual } from '@/commons/utils/isEqual'
 import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 import { NoData } from '@/components/NoData/NoData'
-import { ChoosePreFiltersMessage } from '@/pages/IndividualBookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import { NoBookingsForPreFiltersMessage } from '@/pages/IndividualBookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
-import { BookingsRecapTable } from './BookingsRecapTable/BookingsRecapTable'
-import { PreFilters } from './PreFilters/PreFilters'
-import { useBookingsFilters } from './useBookingsFilters'
+import { ChoosePreFiltersMessage } from './BookingsFilters/PreFilters/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
+import { PreFilters } from './BookingsFilters/PreFilters/PreFilters'
+import { useBookingsFilters } from './BookingsFilters/useBookingsFilters'
+import { BookingsRecapTable } from './CollectiveBookingsTable/BookingsRecapTable'
 
 type BookingsProps<T> = {
   locationState?: { statuses: string[] }
@@ -46,9 +43,7 @@ type BookingsProps<T> = {
 
 const MAX_LOADED_PAGES = 5
 
-export const BookingsContainer = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
->({
+export const BookingsContainer = <T extends CollectiveBookingResponseModel>({
   locationState,
   audience,
   getFilteredBookingsAdapter,

@@ -6,7 +6,7 @@ import { Layout } from '@/app/App/layout/Layout'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { buildBookingsRecapQuery } from '@/commons/core/Bookings/utils'
 import { Audience } from '@/commons/core/shared/types'
-import { BookingsContainer } from '@/components/Bookings/Bookings'
+import { BookingsContainer } from '@/components/Bookings/CollectiveBookings'
 
 const MAX_LOADED_PAGES = 5
 

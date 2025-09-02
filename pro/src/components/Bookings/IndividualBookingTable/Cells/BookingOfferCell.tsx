@@ -1,13 +1,9 @@
 import cn from 'classnames'
 import { format } from 'date-fns-tz'
 
-import type {
-  BookingRecapResponseModel,
-  CollectiveBookingResponseModel,
-} from '@/apiClient/v1'
+import { type BookingRecapResponseModel, OfferStatus } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
-  OFFER_STATUS_PENDING,
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
@@ -25,21 +21,18 @@ import {
   getDate,
   getRemainingTime,
   shouldDisplayWarning,
-} from '@/components/Bookings/BookingsRecapTable/utils/utils'
+} from '@/components/Bookings/BookingsFilters/utils/utils'
 import fullErrorIcon from '@/icons/full-error.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
+import { isCollectiveBooking } from '../../CollectiveBookingsTable/Cells/BookingOfferCell'
 import styles from './BookingOfferCell.module.scss'
 
 export interface BookingOfferCellProps {
-  booking: BookingRecapResponseModel | CollectiveBookingResponseModel
+  booking: BookingRecapResponseModel
   className?: string
   isCaledonian?: boolean
 }
-
-export const isCollectiveBooking = (
-  booking: BookingRecapResponseModel | CollectiveBookingResponseModel
-): booking is CollectiveBookingResponseModel => booking.stock.offerIsEducational
 
 export const BookingOfferCell = ({
   booking,
@@ -54,9 +47,7 @@ export const BookingOfferCell = ({
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
       })
 
-  const eventBeginningDatetime = isCollectiveBooking(booking)
-    ? booking.stock.eventStartDatetime
-    : booking.stock.eventBeginningDatetime
+  const eventBeginningDatetime = booking.stock.eventBeginningDatetime
 
   const eventDatetimeFormatted = eventBeginningDatetime
     ? format(
@@ -67,7 +58,7 @@ export const BookingOfferCell = ({
 
   const shouldShowCollectiveWarning =
     isCollectiveBooking(booking) &&
-    booking.bookingStatus.toUpperCase() === OFFER_STATUS_PENDING &&
+    booking.bookingStatus.toUpperCase() === OfferStatus.PENDING &&
     shouldDisplayWarning(booking.stock)
 
   const formattedPacificFrancPrice = formatPacificFranc(
@@ -112,23 +103,21 @@ export const BookingOfferCell = ({
           </div>
         ))}
 
-      {!isCollectiveBooking(booking) && (
-        <div className={styles['tarif']}>
-          {booking.bookingPriceCategoryLabel
-            ? `${booking.bookingPriceCategoryLabel} - ${
-                isCaledonian
-                  ? formattedPacificFrancPrice
-                  : formatPrice(booking.bookingAmount)
-              }`
-            : isCaledonian
-              ? formattedPacificFrancPrice
-              : formatPrice(booking.bookingAmount, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                  trailingZeroDisplay: 'stripIfInteger',
-                })}
-        </div>
-      )}
+      <div className={styles['tarif']}>
+        {booking.bookingPriceCategoryLabel
+          ? `${booking.bookingPriceCategoryLabel} - ${
+              isCaledonian
+                ? formattedPacificFrancPrice
+                : formatPrice(booking.bookingAmount)
+            }`
+          : isCaledonian
+            ? formattedPacificFrancPrice
+            : formatPrice(booking.bookingAmount, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+                trailingZeroDisplay: 'stripIfInteger',
+              })}
+      </div>
     </div>
   )
 }
