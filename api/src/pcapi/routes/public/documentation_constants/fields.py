@@ -232,7 +232,10 @@ class _FIELDS:
         description="Indicated whether a ticket is mandatory to access to the event. True if it is the case, False otherwise. The ticket will be sent by you, the provider and you must have developed the pass Culture ticketing interface to do so.",
         example=False,
     )
-    EVENT_DURATION = Field(description="Event duration in minutes", example=60)
+    EVENT_DURATION = Field(
+        description="Event duration in minutes. It must be under 1440 minutes (24 hours). For events lasting 24 hours or more (e.g., a 3-day festival pass), please leave this field empty.",
+        example=60,
+    )
     EVENT_STOCKS = Field(
         description="A list of stocks to associate with an event. Each stock represents a unique combination of a date and a price category. To add stocks for multiple price categories on the same date, you must create a separate stock entry for each category.",
         max_items=Offer.MAX_STOCKS_PER_OFFER,

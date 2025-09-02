@@ -1133,6 +1133,19 @@ class Returns400Test:
                 {"subcategoryId": subcategories.FESTIVAL_ART_VISUEL.id, "withdrawalType": "in_app"},
                 {"withdrawalType": ["Withdrawal type cannot be in_app for manually created offers"]},
             ),
+            (
+                {
+                    "subcategoryId": subcategories.FESTIVAL_MUSIQUE.id,
+                    "bookingContact": "booking@conta.ct",
+                    "withdrawalType": "no_ticket",
+                    "durationMinutes": 1440,
+                },
+                {
+                    "durationMinutes": [
+                        "La durée doit être inférieure à 24 heures. Pour les événements durant 24 heures ou plus (par exemple, un pass festival de 3 jours), veuillez laisser ce champ vide."
+                    ]
+                },
+            ),
         ],
     )
     def test_fail_if_json_incorrect(self, client, input_json, expected_json):

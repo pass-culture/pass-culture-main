@@ -353,6 +353,15 @@ class Returns400Test:
                 404,
                 {},
             ),
+            (
+                {"durationMinutes": 1440},
+                400,
+                {
+                    "durationMinutes": [
+                        "La durée doit être inférieure à 24 heures. Pour les événements durant 24 heures ou plus (par exemple, un pass festival de 3 jours), veuillez laisser ce champ vide."
+                    ]
+                },
+            ),
         ],
     )
     def test_fail_when_json_body_has_incorrect_values(self, partial_body, expected_status_code, expected_json, client):

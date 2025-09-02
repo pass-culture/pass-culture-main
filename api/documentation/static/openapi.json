@@ -2679,11 +2679,11 @@
                         "type": "boolean"
                     },
                     "eventDuration": {
-                        "description": "Event duration in minutes",
-                        "example": 60,
-                        "nullable": true,
-                        "title": "Eventduration",
-                        "type": "integer"
+                      "description": "Event duration in minutes. It must be under 1440 minutes (24 hours). For events lasting 24 hours or more (e.g., a 3-day festival pass), please leave this field empty.",
+                      "example": 60,
+                      "nullable": true,
+                      "title": "Eventduration",
+                      "type": "integer"
                     },
                     "externalTicketOfficeUrl": {
                         "description": "Link displayed to users wishing to book the offer but who do not have credit.",
@@ -2952,11 +2952,11 @@
                         "type": "boolean"
                     },
                     "eventDuration": {
-                        "description": "Event duration in minutes",
-                        "example": 60,
-                        "nullable": true,
-                        "title": "Eventduration",
-                        "type": "integer"
+                      "description": "Event duration in minutes. It must be under 1440 minutes (24 hours). For events lasting 24 hours or more (e.g., a 3-day festival pass), please leave this field empty.",
+                      "example": 60,
+                      "nullable": true,
+                      "title": "Eventduration",
+                      "type": "integer"
                     },
                     "idAtProvider": {
                         "description": "Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
@@ -3219,11 +3219,11 @@
                         "type": "boolean"
                     },
                     "eventDuration": {
-                        "description": "Event duration in minutes",
-                        "example": 60,
-                        "nullable": true,
-                        "title": "Eventduration",
-                        "type": "integer"
+                      "description": "Event duration in minutes. It must be under 1440 minutes (24 hours). For events lasting 24 hours or more (e.g., a 3-day festival pass), please leave this field empty.",
+                      "example": 60,
+                      "nullable": true,
+                      "title": "Eventduration",
+                      "type": "integer"
                     },
                     "externalTicketOfficeUrl": {
                         "description": "Link displayed to users wishing to book the offer but who do not have credit.",

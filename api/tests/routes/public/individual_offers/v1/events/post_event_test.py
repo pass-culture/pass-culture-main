@@ -855,3 +855,17 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 400
         assert response.json == {"location.venueId": ["Resource cannot be found"]}
+
+    def test_should_raise_error_if_duration_is_superior_to_twenty_four_hours(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        payload = self._get_base_payload(venue_provider.venueId)
+        payload["eventDuration"] = 24 * 60
+
+        response = self.make_request(plain_api_key, json_body=payload)
+        assert response.status_code == 400
+        assert response.json == {
+            "eventDuration": [
+                "The duration must be under 1440 minutes (24 hours). For events lasting 24 hours or more (e.g., a 3-day festival pass), please leave this field empty."
+            ]
+        }
