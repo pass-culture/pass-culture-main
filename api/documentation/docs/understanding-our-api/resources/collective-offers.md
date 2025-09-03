@@ -156,11 +156,9 @@ Here are the allowed actions depending on the offer status:
 
 ### Current state of developments
 
-Those limitations are currently enforced **only** on the following endpoints:
-
-* [**Archive collective offers**](/rest-api#tag/Collective-Offers/operation/ArchiveCollectiveOffers)
-
 The new status is available in the `offerStatus` field.
+
+`offerStatus` determines the actions that are allowed on the offer.
 
 ## 📍 Offers location
 
