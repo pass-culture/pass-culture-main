@@ -4,7 +4,7 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import {
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
   GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY,
@@ -73,14 +73,14 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
 
   if (isLoading || !informations) {
     return (
-      <Layout>
+      <BasicLayout>
         <Spinner />
-      </Layout>
+      </BasicLayout>
     )
   }
 
   return (
-    <Layout mainHeading="Récapitulatif de la demande">
+    <BasicLayout mainHeading="Récapitulatif de la demande">
       <div className={styles['eac-section']}>
         Vous avez reçu une demande de création d’offres de la part d’un
         établissement scolaire. Vous pouvez créer une offre à partir des
@@ -165,7 +165,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
           </Button>
         </ActionsBarSticky.Right>
       </ActionsBarSticky>
-    </Layout>
+    </BasicLayout>
   )
 }
 

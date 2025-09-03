@@ -7,7 +7,7 @@ import { api } from '@/apiClient/api'
 import { isError } from '@/apiClient/helpers'
 import type { StructureDataBodyModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { MainHeading } from '@/app/App/layout/Layout'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {

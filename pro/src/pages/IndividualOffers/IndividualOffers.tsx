@@ -5,7 +5,7 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { GetOffererAddressesWithOffersOption } from '@/apiClient/v1'
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import {
   GET_CATEGORIES_QUERY_KEY,
   GET_OFFERS_QUERY_KEY,
@@ -123,7 +123,7 @@ export const IndividualOffers = (): JSX.Element => {
 
   return (
     <HeadlineOfferContextProvider>
-      <Layout
+      <BasicLayout
         mainHeading="Offres individuelles"
         {...(isVideoFeatureEnabled
           ? {
@@ -170,7 +170,7 @@ export const IndividualOffers = (): JSX.Element => {
           redirectWithSelectedFilters={redirectWithSelectedFilters}
           offererAddresses={offererAddresses}
         />
-      </Layout>
+      </BasicLayout>
     </HeadlineOfferContextProvider>
   )
 }

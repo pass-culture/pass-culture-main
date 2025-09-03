@@ -4,7 +4,7 @@ import { generatePath, useLocation, useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import {
   GET_VENUE_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
@@ -115,9 +115,9 @@ export const VenueEdition = (): JSX.Element | null => {
     !venueTypes
   ) {
     return (
-      <Layout>
+      <BasicLayout>
         <Spinner />
-      </Layout>
+      </BasicLayout>
     )
   }
 
@@ -148,7 +148,7 @@ export const VenueEdition = (): JSX.Element | null => {
         : 'Page adresse'
 
   return (
-    <Layout mainHeading={titleText}>
+    <BasicLayout mainHeading={titleText}>
       <div>
         <FormLayout>
           {context !== 'address' && venuesOptions.length > 1 && (
@@ -214,7 +214,7 @@ export const VenueEdition = (): JSX.Element | null => {
           <VenueEditionFormScreen venue={venue} />
         )}
       </div>
-    </Layout>
+    </BasicLayout>
   )
 }
 

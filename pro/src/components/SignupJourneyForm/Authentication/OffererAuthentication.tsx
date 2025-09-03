@@ -3,7 +3,7 @@ import { useCallback, useEffect } from 'react'
 import { FormProvider, type Resolver, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
-import { MainHeading } from '@/app/App/layout/Layout'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'

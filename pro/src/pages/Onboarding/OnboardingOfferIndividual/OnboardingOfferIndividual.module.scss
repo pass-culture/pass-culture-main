@@ -12,10 +12,6 @@
   align-items: center;
 }
 
-.offers-title {
-  margin-bottom: rem.torem(16px);
-}
-
 .offers-subtitle {
   @include fonts.title3;
 
@@ -49,7 +45,7 @@
 
   // TODO: Fixing <FormLayout.Section> 's description container that have a min-height, even though the prop is empty
   // It would be better to fix the <FormLayout.Section> component itself, but it's a bit too much work for now
-  &>div:empty {
+  & > div:empty {
     display: none;
   }
 }

@@ -2,10 +2,10 @@ import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { Outlet } from 'react-router'
 
-import { Layout } from '@/app/App/layout/Layout'
+import { Header } from '@/app/App/layouts/components/Header/Header'
+import { FunnelLayout } from '@/app/App/layouts/funnels/FunnelLayout/FunnelLayout'
 import { SignupJourneyContextProvider } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
-import { Header } from '@/components/Header/Header'
 import { SignupJourneyFormLayout } from '@/components/SignupJourneyFormLayout/SignupJourneyFormLayout'
 
 export const SignupJourneyRoutes = () => {
@@ -23,14 +23,14 @@ export const SignupJourneyRoutes = () => {
     }
   }, [])
   return (
-    <Layout layout="funnel">
+    <FunnelLayout>
       <Header disableHomeLink={!currentUser?.hasUserOfferer} />
       <SignupJourneyContextProvider>
         <SignupJourneyFormLayout>
           <Outlet />
         </SignupJourneyFormLayout>
       </SignupJourneyContextProvider>
-    </Layout>
+    </FunnelLayout>
   )
 }
 
