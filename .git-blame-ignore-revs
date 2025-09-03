@@ -49,3 +49,6 @@ b607e44bd874dc3f830dae3ca1f983914fb761cb
 # fix + revert: temporary change to fix CI
 df60db93ede71742a13f898cfeccb91927dbed63
 c2eee4de37ec816d876d340399c1b96ac863f124
+
+# Update educational imports
+36c6621f6b4e9130063c4c83f7afa437eed83bfa
