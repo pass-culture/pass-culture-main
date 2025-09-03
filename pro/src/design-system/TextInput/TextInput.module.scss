@@ -1,0 +1,140 @@
+@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use 'styles/mixins/_outline.scss' as outline;
+
+$icon-dimension: rem.torem(20px);
+
+.container {
+    display: grid;
+    grid-template-columns: minmax(100px, 1fr);
+    grid-template-rows: repeat(3, auto);
+}
+
+.header {
+    grid-area: 1 / 1;
+}
+
+.label {
+    margin-bottom: var(--size-spacing-xs);
+    display: block;
+
+    &-mandatory-asterisk {
+        margin-left: var(--size-spacing-s);
+    }
+}
+
+.input {
+    outline: none;
+    appearance: none;
+    width: 100%;
+    background-color: var(--color-background-default);
+    color: var(--color-text-default);
+    height: var(--size-spacing-xxxl);
+    padding: var(--size-spacing-s) var(--size-spacing-m);
+    border-radius: var(--size-border-radius-m);
+    border: rem.torem(1px) solid var(--color-border-default);
+
+    &:focus-visible {
+        border-color: var(--color-border-focused);
+    }
+
+    &:hover {
+        border-color: var(--color-border-brand-secondary);
+    }
+}
+
+.input-container {
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    grid-area: 2 / 1;
+}
+
+//  ICON 
+.input-icon {
+    position: absolute;
+    height: $icon-dimension;
+    width: $icon-dimension;
+    left: var(--size-spacing-m);
+    color: var(--color-icon-subtle);
+}
+
+.has-icon .input {
+    padding-left: calc(var(--size-spacing-m) + $icon-dimension + var(--size-spacing-s));
+}
+
+//  BUTTON
+.input-button {
+    position: absolute;
+    height: $icon-dimension;
+    width: $icon-dimension;
+    right: var(--size-spacing-m);
+}
+
+.has-button .input {
+    padding-right: calc(var(--size-spacing-m) + $icon-dimension + var(--size-spacing-s));
+}
+
+
+//  FOOTER
+.footer {
+    display: flex;
+    grid-area: 3 / 1;
+
+    &-error {
+        flex-grow: 1;
+        color: var(--color-text-error);
+
+        &-content {
+            @include fonts.body-accent-s;
+
+            display: flex;
+            align-items: center;
+
+            &-icon {
+                width: var(--typography-body-font-size);
+                height: var(--typography-body-font-size);
+                margin-right: var(--size-spacing-xs);
+                flex-shrink: 0;
+            }
+        }
+    }
+}
+
+.has-footer .footer {
+    margin-top: var(--size-spacing-xs);
+}
+
+//  DESCRIPTION
+.container.has-description {
+    .label {
+        margin-bottom: var(--size-spacing-xxs);
+    }
+}
+
+.description {
+    @include fonts.body-accent-xs;
+
+    color: var(--color-text-subtle);
+    margin-bottom: var(--size-spacing-xs);
+}
+
+//  ERROR
+.input[aria-invalid="true"] {
+    border-color: var(--color-border-error);
+}
+
+//  DISABLED
+.input:disabled {
+    border-color: var(--color-border-disabled);
+    background-color: var(--color-background-disabled);
+}
+
+//  EXTENSION
+.extension {
+    grid-area: 2 / 2;
+    display: flex;
+    align-items: center;
+    margin-left: var(--size-spacing-m);
+}
