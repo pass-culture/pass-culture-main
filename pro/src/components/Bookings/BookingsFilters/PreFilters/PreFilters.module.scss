@@ -39,7 +39,7 @@
 }
 
 .button-group {
-  margin-bottom: rem.torem(48px);
+  margin-bottom: rem.torem(32px);
   position: relative;
 
   &-buttons {
@@ -72,11 +72,9 @@
   }
 }
 
-.pf-refresh-message {
+.refresh-message {
   @include fonts.body;
-
-  color: var(--color-text-error);
-  text-align: center;
+  margin-bottom: rem.torem(16px);
 }
 
 .reset-filters-wrapper {

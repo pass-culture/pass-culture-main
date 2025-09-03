@@ -135,7 +135,6 @@ export const BookingsContainer = <T extends CollectiveBookingResponseModel>({
         isRefreshRequired={isRefreshRequired}
         applyNow={applyNow}
         resetPreFilters={resetPreFiltersWithLog}
-        wereBookingsRequested={wereBookingsRequested}
         audience={audience}
         hasResult={(bookingsQuery ?? []).length > 0}
         isFiltersDisabled={!hasBookingsQuery.data}

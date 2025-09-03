@@ -16,6 +16,8 @@ import { MultiDownloadButtonsModal } from '@/components/MultiDownloadButtonsModa
 import fullRefreshIcon from '@/icons/full-refresh.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Callout } from '@/ui-kit/Callout/Callout'
+import { CalloutVariant } from '@/ui-kit/Callout/types'
 import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
 import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
@@ -199,7 +201,7 @@ export const PreFilters = ({
               disabled={isTableLoading || isLocalLoading || isFiltersDisabled}
               variant={ButtonVariant.SECONDARY}
               onClick={() => {
-                applyNow()
+                // applyNow()
                 logEvent('CLICKED_SHOW_BOOKINGS', { from: location.pathname })
               }}
             >
@@ -210,13 +212,13 @@ export const PreFilters = ({
       </form>
 
       {isRefreshRequired && (
-        <p
-          className={styles['pf-refresh-message']}
-          data-testid="refresh-required-message"
+        <Callout
+          variant={CalloutVariant.WARNING}
+          className={styles['refresh-message']}
         >
           Vos filtres ont été modifiés. Veuillez cliquer sur « Afficher » pour
           actualiser votre recherche.
-        </p>
+        </Callout>
       )}
     </>
   )

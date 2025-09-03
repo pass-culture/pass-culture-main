@@ -12,7 +12,6 @@ import type { BookingRecapResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_BOOKINGS_QUERY_KEY,
-  GET_HAS_BOOKINGS_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
@@ -29,6 +28,7 @@ import {
   EMPTY_FILTER_VALUE,
 } from './BookingsFilters/Filters/constants'
 import { FilterByOmniSearch } from './BookingsFilters/Filters/FilterByOmniSearch'
+import { ChoosePreFiltersMessage } from './BookingsFilters/PreFilters/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import { PreFilters } from './BookingsFilters/PreFilters/PreFilters'
 import type { BookingsFilters } from './BookingsFilters/types'
 import { useBookingsFilters } from './BookingsFilters/useBookingsFilters'
@@ -42,7 +42,6 @@ type BookingsProps<T> = {
   getFilteredBookingsAdapter: (
     params: PreFiltersParams & { page?: number }
   ) => Promise<{ bookings: T[]; pages: number; currentPage: number }>
-  getUserHasBookingsAdapter: () => Promise<boolean>
 }
 
 const MAX_LOADED_PAGES = 5
@@ -51,7 +50,6 @@ export const IndividualBookings = <T extends BookingRecapResponseModel>({
   locationState,
   audience,
   getFilteredBookingsAdapter,
-  getUserHasBookingsAdapter,
 }: BookingsProps<T>): JSX.Element => {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
@@ -60,17 +58,17 @@ export const IndividualBookings = <T extends BookingRecapResponseModel>({
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const {
+    initialAppliedFilters,
     appliedPreFilters,
     selectedPreFilters,
     urlParams,
     hasPreFilters,
     isRefreshRequired,
+    setWereBookingsRequested,
     updateSelectedFilters,
     applyNow,
     resetAndApplyPreFilters,
     updateUrl,
-    wereBookingsRequested,
-    setWereBookingsRequested,
   } = useBookingsFilters({ audience })
 
   // Venues & addresses
@@ -106,12 +104,6 @@ export const IndividualBookings = <T extends BookingRecapResponseModel>({
       return bookings
     },
     { fallbackData: [] }
-  )
-
-  const hasBookingsQuery = useSWR(
-    [GET_HAS_BOOKINGS_QUERY_KEY, audience],
-    () => getUserHasBookingsAdapter(),
-    { fallbackData: true }
   )
 
   // Omni-search state
@@ -191,7 +183,7 @@ export const IndividualBookings = <T extends BookingRecapResponseModel>({
     resetAll()
   }
 
-  const hasBookings = wereBookingsRequested && bookingsQuery.length !== 0
+  const hasBookings = bookingsQuery.length !== 0
 
   return (
     <div>
@@ -204,7 +196,7 @@ export const IndividualBookings = <T extends BookingRecapResponseModel>({
         resetPreFilters={resetPreFiltersWithLog}
         audience={audience}
         hasResult={bookingsQuery.length > 0}
-        isFiltersDisabled={!hasBookings}
+        isFiltersDisabled={hasPreFilters && isLoading}
         isLocalLoading={venuesQuery.isLoading}
         isTableLoading={isLoading}
         venues={venues}
@@ -212,34 +204,38 @@ export const IndividualBookings = <T extends BookingRecapResponseModel>({
         urlParams={urlParams}
         updateUrl={updateUrl}
       />
-      <div>
-        {bookingsQuery.length > 0 && (
-          <FilterByOmniSearch
-            isDisabled={isLoading}
-            keywords={filters.keywords}
-            selectedOmniSearchCriteria={filters.selectedOmniSearchCriteria}
-            updateFilters={updateFilters}
-            audience={audience}
-          />
-        )}
-        {filteredBookings.length !== 0 && (
-          <Header
-            bookingsRecapFilteredLength={filteredBookings.length}
-            isLoading={isLoading}
-            queryBookingId={defaultBookingId}
-            resetBookings={resetAll}
-          />
-        )}
+      {!hasPreFilters ? (
+        <ChoosePreFiltersMessage />
+      ) : (
+        <div>
+          {hasBookings && (
+            <FilterByOmniSearch
+              isDisabled={isLoading}
+              keywords={filters.keywords}
+              selectedOmniSearchCriteria={filters.selectedOmniSearchCriteria}
+              updateFilters={updateFilters}
+              audience={audience}
+            />
+          )}
+          {hasBookings && (
+            <Header
+              bookingsRecapFilteredLength={filteredBookings.length}
+              isLoading={isLoading}
+              queryBookingId={defaultBookingId}
+              resetBookings={resetAll}
+            />
+          )}
 
-        <IndividualBookingsTable
-          bookings={filteredBookings}
-          bookingStatuses={filters.bookingStatus}
-          updateGlobalFilters={updateGlobalFilters}
-          resetFilters={resetAll}
-          isLoading={isLoading}
-          hasBookings={hasBookings}
-        />
-      </div>
+          <IndividualBookingsTable
+            bookings={filteredBookings}
+            bookingStatuses={filters.bookingStatus}
+            updateGlobalFilters={updateGlobalFilters}
+            resetFilters={resetAll}
+            isLoading={isLoading}
+            hasNoBookings={!hasPreFilters && !hasBookings}
+          />
+        </div>
+      )}
     </div>
   )
 }

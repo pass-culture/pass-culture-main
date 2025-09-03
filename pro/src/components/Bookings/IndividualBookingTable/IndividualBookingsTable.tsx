@@ -20,7 +20,7 @@ export interface IndividualBookingsTableProps {
   updateGlobalFilters: (updatedFilters: Partial<BookingsFilters>) => void
   resetFilters: () => void
   isLoading: boolean
-  hasBookings: boolean
+  hasNoBookings: boolean
 }
 
 export const IndividualBookingsTable = ({
@@ -29,7 +29,7 @@ export const IndividualBookingsTable = ({
   updateGlobalFilters,
   resetFilters,
   isLoading,
-  hasBookings,
+  hasNoBookings,
 }: IndividualBookingsTableProps): JSX.Element => {
   const bookingsWithId = bookings.map(
     (b, i) =>
@@ -81,7 +81,7 @@ export const IndividualBookingsTable = ({
           onFilterReset: resetFilters,
         }}
         noData={{
-          hasNoData: !hasBookings,
+          hasNoData: hasNoBookings,
           message: {
             icon: strokeNoBookingIcon,
             title: 'Vous n’avez aucune réservation pour le moment',

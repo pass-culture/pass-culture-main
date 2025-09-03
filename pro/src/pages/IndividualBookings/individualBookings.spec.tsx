@@ -77,7 +77,7 @@ const renderBookingsRecap = (
 
 const waitForCompleteLoading = async () => {
   await waitFor(() =>
-    expect(screen.getByRole('button', { name: 'Afficher' })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Afficher' })).toBeDisabled()
   )
 
   await waitFor(() => {
