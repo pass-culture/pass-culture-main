@@ -417,9 +417,9 @@ def _format_time(time_to_format: datetime.time) -> str:
 
 class IndividualOfferResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "videoUrl":
+        if key == "videoData":
             meta_data = self._obj.metaData
-            return meta_data.videoUrl if meta_data else None
+            return VideoData.from_orm(meta_data)
         if key == "extraData" and self._obj.product:
             self._obj.ean = self._obj.product.ean
         if key == "extraData" and self._obj.ean:
@@ -436,6 +436,13 @@ class IndividualOfferWithAddressResponseGetterDict(IndividualOfferResponseGetter
         if key == "isHeadlineOffer":
             return self._obj.is_headline_offer
         return super().get(key, default)
+
+
+class VideoData(ConfiguredBaseModel):
+    videoUrl: HttpUrl | None
+    videoTitle: str | None
+    videoThumbnailUrl: str | None
+    videoDuration: int | None
 
 
 class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
@@ -474,7 +481,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     withdrawalType: offers_models.WithdrawalTypeEnum | None
     status: OfferStatus
     isNonFreeOffer: bool | None
-    videoUrl: str | None
+    videoData: VideoData
 
     class Config:
         orm_mode = True

@@ -8,6 +8,7 @@ import type { GetOfferVenueResponseModel } from './GetOfferVenueResponseModel';
 import type { OfferStatus } from './OfferStatus';
 import type { PriceCategoryResponseModel } from './PriceCategoryResponseModel';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
+import type { VideoData } from './VideoData';
 import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
 export type GetIndividualOfferResponseModel = {
   activeMediation?: GetOfferMediationResponseModel | null;
@@ -45,7 +46,7 @@ export type GetIndividualOfferResponseModel = {
   thumbUrl?: string | null;
   url?: string | null;
   venue: GetOfferVenueResponseModel;
-  videoUrl?: string | null;
+  videoData: VideoData;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDelay?: number | null;
   withdrawalDetails?: string | null;
