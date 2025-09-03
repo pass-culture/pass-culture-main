@@ -104,6 +104,8 @@ class Returns201Test:
         data = {
             "name": "Celeste",
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "description": "Un super livre",
+            "durationMinutes": 120,
             "venueId": venue.id,
             "productId": product.id,
             "extraData": {"ean": "9782123456803"},
@@ -125,6 +127,7 @@ class Returns201Test:
         assert "ean" not in offer.extraData
         assert offer.product == product
         assert offer._description is None
+        assert offer._durationMinutes is None
         assert offer.description == product.description
 
     def test_create_offer_other_than_cd_without_EAN_code_should_succeed_for_record_store(self, client):
