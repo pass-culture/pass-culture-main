@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import {
   GET_VENUE_PROVIDERS_QUERY_KEY,
   GET_VENUE_QUERY_KEY,
@@ -55,14 +55,14 @@ const VenueSettings = (): JSX.Element | null => {
     !venueProviders
   ) {
     return (
-      <Layout>
+      <BasicLayout>
         <Spinner />
-      </Layout>
+      </BasicLayout>
     )
   }
 
   return (
-    <Layout
+    <BasicLayout
       mainHeading="Paramètres généraux"
       mainTopElement={
         <Button
@@ -81,7 +81,7 @@ const VenueSettings = (): JSX.Element | null => {
         venue={venue}
         venueProviders={venueProviders}
       />
-    </Layout>
+    </BasicLayout>
   )
 }
 

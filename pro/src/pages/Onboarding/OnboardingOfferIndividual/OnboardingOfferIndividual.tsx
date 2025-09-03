@@ -3,7 +3,7 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1/models/OfferStatus'
-import { MainHeading } from '@/app/App/layout/Layout'
+import { OnboardingLayout } from '@/app/App/layouts/funnels/OnboardingLayout/OnboardingLayout'
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -19,7 +19,6 @@ import connectStrokeIcon from '@/icons/stroke-connect.svg'
 import { CardLink } from '@/ui-kit/CardLink/CardLink'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
-import { OnboardingLayout } from '../components/OnboardingLayout/OnboardingLayout'
 import { DraftOffers } from './DraftOffers/DraftOffers'
 import styles from './OnboardingOfferIndividual.module.scss'
 
@@ -61,16 +60,15 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
     : '/onboarding'
 
   return (
-    <OnboardingLayout verticallyCentered={draftOffers.length <= 1}>
-      {/* eslint-disable-next-line react/forbid-elements */}
-      <MainHeading
-        mainHeading="Offre à destination des jeunes"
-        className={styles['offers-title']}
-      />
+    <OnboardingLayout
+      mainHeading="Offre à destination des jeunes"
+      verticallyCentered={draftOffers.length <= 1}
+      isStickyActionBarInChild
+      isEntryScreen
+    >
       <h2 className={styles['offers-subtitle']}>
         Comment souhaitez-vous créer votre 1ère offre ?
       </h2>
-
       <FormLayout>
         <FormLayout.Section className={styles['form-section']}>
           <div className={styles['offer-choices']}>

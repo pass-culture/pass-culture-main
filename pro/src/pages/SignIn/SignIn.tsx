@@ -6,7 +6,7 @@ import { Navigate, useSearchParams } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from '@/apiClient/helpers'
-import { Layout } from '@/app/App/layout/Layout'
+import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
 import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
@@ -130,12 +130,12 @@ export const SignIn = (): JSX.Element => {
   return shouldRedirect ? (
     <Navigate to="/" replace />
   ) : (
-    <Layout layout="sign-up" mainHeading="Connectez-vous">
+    <SignUpLayout mainHeading="Connectez-vous">
       <MandatoryInfo areAllFieldsMandatory={true} />
       <FormProvider {...hookForm}>
         <SigninForm onSubmit={hookForm.handleSubmit(onSubmit)} />
       </FormProvider>
-    </Layout>
+    </SignUpLayout>
   )
 }
 

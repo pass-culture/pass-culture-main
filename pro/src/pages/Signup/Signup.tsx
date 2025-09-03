@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from 'react-router'
 
-import { Layout } from '@/app/App/layout/Layout'
+import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 
 import { SignupUnavailable } from './SignupUnavailable/SignupUnavailable'
@@ -20,9 +20,9 @@ export const Signup = () => {
   const mainHeading = mainHeadingsMap.get(location.pathname)
 
   return (
-    <Layout layout="sign-up" mainHeading={mainHeading}>
+    <SignUpLayout mainHeading={mainHeading}>
       {isProAccountCreationEnabled ? <Outlet /> : <SignupUnavailable />}
-    </Layout>
+    </SignUpLayout>
   )
 }
 

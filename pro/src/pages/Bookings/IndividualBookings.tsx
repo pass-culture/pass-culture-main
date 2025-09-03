@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router'
 
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { Audience } from '@/commons/core/shared/types'
 import { IndividualBookingsComponent } from '@/components/Bookings/IndividualBookings'
 
@@ -10,13 +10,13 @@ export const IndividualBookings = (): JSX.Element => {
   const location = useLocation()
 
   return (
-    <Layout mainHeading="Réservations individuelles">
+    <BasicLayout mainHeading="Réservations individuelles">
       <IndividualBookingsComponent
         audience={Audience.INDIVIDUAL}
         getFilteredBookingsAdapter={getFilteredIndividualBookingsAdapter}
         locationState={location.state}
       />
-    </Layout>
+    </BasicLayout>
   )
 }
 

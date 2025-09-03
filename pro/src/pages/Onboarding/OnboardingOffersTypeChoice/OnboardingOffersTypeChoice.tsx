@@ -1,23 +1,19 @@
-import { MainHeading } from '@/app/App/layout/Layout'
+import { OnboardingLayout } from '@/app/App/layouts/funnels/OnboardingLayout/OnboardingLayout'
 import { OnboardingOffersChoice } from '@/components/OnboardingOffersChoice/OnboardingOffersChoice'
 
-import { OnboardingLayout } from '../components/OnboardingLayout/OnboardingLayout'
 import styles from './OnboardingOffersTypeChoice.module.scss'
 
 export const OnboardingOffersTypeChoice = () => {
   return (
-    <OnboardingLayout verticallyCentered stickyActionsAndFooter={false}>
+    <OnboardingLayout
+      mainHeading="Bienvenue sur le pass Culture Pro !"
+      verticallyCentered
+      isEntryScreen
+    >
       <div className={styles['onboarding-offer-container']}>
-        <div className={styles['onboarding-offer-header']}>
-          {/* eslint-disable-next-line react/forbid-elements */}
-          <MainHeading
-            mainHeading="Bienvenue sur le pass Culture Pro !"
-            className={styles['onboarding-offer-main-heading-wrapper']}
-          />
-          <h2 className={styles['onboarding-offer-header-subtitle']}>
-            Où souhaitez-vous diffuser votre première offre ?
-          </h2>
-        </div>
+        <h2 className={styles['onboarding-offer-header-subtitle']}>
+          Où souhaitez-vous diffuser votre première offre ?
+        </h2>
         <OnboardingOffersChoice />
       </div>
     </OnboardingLayout>

@@ -2,7 +2,7 @@ import { useLocation } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import type { CollectiveBookingResponseModel } from '@/apiClient/v1'
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { buildBookingsRecapQuery } from '@/commons/core/Bookings/utils'
 import { Audience } from '@/commons/core/shared/types'
@@ -63,14 +63,14 @@ const CollectiveBookings = (): JSX.Element => {
   }
 
   return (
-    <Layout mainHeading="Réservations collectives">
+    <BasicLayout mainHeading="Réservations collectives">
       <CollectiveBookingsComponent
         audience={Audience.COLLECTIVE}
         getFilteredBookingsAdapter={getFilteredCollectiveBookingsAdapter}
         getUserHasBookingsAdapter={getUserHasCollectiveBookingsAdapter}
         locationState={location.state}
       />
-    </Layout>
+    </BasicLayout>
   )
 }
 

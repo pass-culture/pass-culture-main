@@ -11,7 +11,7 @@ import {
   type GetCollectiveOfferResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
@@ -202,7 +202,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
     : getLocationForOfferVenue(offer.offerVenue)
 
   return (
-    <Layout layout={'sticky-actions'} areMainHeadingAndBackToNavLinkInChild>
+    <BasicLayout areMainHeadingAndBackToNavLinkInChild isStickyActionBarInChild>
       <div className={styles['header-title']}>
         <div className={styles['title-and-back-to-nav-link']}>
           <h1 className={styles['title']}>{offer.name}</h1>
@@ -393,6 +393,6 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
           archiveButtonRef.current ? archiveButtonRef : duplicateButtonRef
         }
       />
-    </Layout>
+    </BasicLayout>
   )
 }

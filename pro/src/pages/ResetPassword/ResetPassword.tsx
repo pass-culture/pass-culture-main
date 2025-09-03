@@ -4,7 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { type Params, useNavigate, useParams } from 'react-router'
 
 import { api } from '@/apiClient/api'
-import { Layout } from '@/app/App/layout/Layout'
+import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useRedirectLoggedUser } from '@/commons/hooks/useRedirectLoggedUser'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -69,7 +69,7 @@ export const ResetPassword = (): JSX.Element => {
   }
 
   return (
-    <Layout layout="sign-up" mainHeading="Réinitialisez votre mot de passe">
+    <SignUpLayout mainHeading="Réinitialisez votre mot de passe">
       <div>
         <section>
           <p className={styles['mandatory-info']}>
@@ -81,7 +81,7 @@ export const ResetPassword = (): JSX.Element => {
           </FormProvider>
         </section>
       </div>
-    </Layout>
+    </SignUpLayout>
   )
 }
 

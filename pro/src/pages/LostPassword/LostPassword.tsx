@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
-import { Layout } from '@/app/App/layout/Layout'
+import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
 import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
@@ -72,7 +72,7 @@ export const LostPassword = (): JSX.Element => {
     : 'Réinitialisez votre mot de passe'
 
   return (
-    <Layout layout="sign-up" mainHeading={mainHeading}>
+    <SignUpLayout mainHeading={mainHeading}>
       {email ? (
         <section className={styles['change-password-request-success']}>
           <p className={styles['change-password-request-success-body']}>
@@ -125,7 +125,7 @@ export const LostPassword = (): JSX.Element => {
           </form>
         </section>
       )}
-    </Layout>
+    </SignUpLayout>
   )
 }
 

@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
@@ -30,9 +30,9 @@ export const CollectiveOfferCreation = ({
 
   if (!isReady) {
     return (
-      <Layout layout={'sticky-actions'}>
+      <BasicLayout isStickyActionBarInChild>
         <Spinner />
-      </Layout>
+      </BasicLayout>
     )
   }
 
