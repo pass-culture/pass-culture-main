@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { downloadBookableOffersFile } from '@/components/CollectiveOffersTable/utils/downloadBookableOffersFile'
 import fullDownloadIcon from '@/icons/full-download.svg'
@@ -19,9 +20,13 @@ export const DownloadBookableOffersButton = ({
   isDisabled,
   filters,
   defaultFilters,
-}: DownloadBookableOffersButtonProps): JSX.Element => {
+}: DownloadBookableOffersButtonProps) => {
   const notify = useNotification()
   const [isDownloading, setIsDownloading] = useState(false)
+
+  const isNewCollectiveOffersStructureActive = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
+  )
 
   const downloadHandler = async (type: 'CSV' | 'XLS'): Promise<void> => {
     setIsDownloading(true)
@@ -33,6 +38,10 @@ export const DownloadBookableOffersButton = ({
     }
 
     setIsDownloading(false)
+  }
+
+  if (!isNewCollectiveOffersStructureActive) {
+    return null
   }
 
   return (
