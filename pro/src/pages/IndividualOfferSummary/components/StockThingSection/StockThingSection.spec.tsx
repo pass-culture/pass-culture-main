@@ -48,6 +48,6 @@ describe('StockThingSection', () => {
       <StockThingSection stock={stock} canBeDuo={false} isDuo={false} />
     )
 
-    expect(screen.getByText(/2385 F/)).toBeInTheDocument()
+    expect(screen.getByText(/2 385 F/)).toBeInTheDocument()
   })
 })

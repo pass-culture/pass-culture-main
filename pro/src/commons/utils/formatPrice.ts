@@ -4,7 +4,7 @@
 import { isError } from '@/apiClient/helpers'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 
-type ResolvedNumberFormatOptions = Intl.NumberFormatOptions & {
+export type ResolvedNumberFormatOptions = Intl.NumberFormatOptions & {
   roundingPriority?: 'auto' | 'morePrecision' | 'lessPrecision' | undefined
   roundingIncrement?:
     | 1

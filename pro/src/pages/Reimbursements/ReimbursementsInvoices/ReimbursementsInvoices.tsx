@@ -1,3 +1,4 @@
+import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { format, subMonths } from 'date-fns'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -25,6 +26,7 @@ import { InvoiceTable } from './InvoiceTable/InvoiceTable'
 export const ReimbursementsInvoices = (): JSX.Element => {
   const [, setSearchParams] = useSearchParams()
   const selectedOffererId = useSelector(selectCurrentOffererId)
+  const { data: selectedOfferer } = useOfferer(selectedOffererId)
 
   const INITIAL_FILTERS = useMemo(() => {
     const today = getToday()
@@ -132,6 +134,7 @@ export const ReimbursementsInvoices = (): JSX.Element => {
         data={invoices}
         hasInvoice={hasInvoice}
         isLoading={hasInvoiceQuery.isLoading}
+        isCaledonian={selectedOfferer?.isCaledonian}
         onFilterReset={handleResetFilters}
       />
     </>

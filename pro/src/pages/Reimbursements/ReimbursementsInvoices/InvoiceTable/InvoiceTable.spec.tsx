@@ -159,4 +159,33 @@ describe('InvoiceTable', () => {
       'Vous ne pouvez pas télécharger plus de 24 documents en une fois.'
     )
   })
+
+  it('should display invoice signed amount in Euro', () => {
+    render(
+      <InvoiceTable
+        data={invoices}
+        isLoading={false}
+        onFilterReset={vi.fn()}
+        hasInvoice={true}
+      />
+    )
+
+    expect(screen.getByText('+150,00 €')).toBeInTheDocument()
+    expect(screen.getByText('-50,00 €')).toBeInTheDocument()
+  })
+
+  it('should display invoice signed amount in pacific francs', () => {
+    render(
+      <InvoiceTable
+        data={invoices}
+        isLoading={false}
+        onFilterReset={vi.fn()}
+        hasInvoice={true}
+        isCaledonian={true}
+      />
+    )
+
+    expect(screen.getByText('17 900 F')).toBeInTheDocument()
+    expect(screen.getByText('-5 965 F')).toBeInTheDocument()
+  })
 })

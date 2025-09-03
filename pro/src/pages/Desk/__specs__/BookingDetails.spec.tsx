@@ -61,7 +61,7 @@ describe('BookingDetails', () => {
       booking: { ...defaultGetBookingResponse, price: 10, quantity: 1 },
     })
 
-    expect(screen.getByText('1234 F')).toBeInTheDocument()
+    expect(screen.getByText('1 234 F')).toBeInTheDocument()
   })
 
   it('should display price in CFP for caledonian user (quantity 2)', () => {
@@ -75,7 +75,7 @@ describe('BookingDetails', () => {
       booking: { ...defaultGetBookingResponse, price: 10, quantity: 2 },
     })
 
-    expect(screen.getByText('2468 F')).toBeInTheDocument()
+    expect(screen.getByText('2 468 F')).toBeInTheDocument()
     expect(
       screen.getByRole('img', { name: 'Réservation DUO' })
     ).toBeInTheDocument()
