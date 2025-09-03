@@ -268,6 +268,7 @@ export type { VenuesEducationalStatusResponseModel } from './models/VenuesEducat
 export { VenueTypeCode } from './models/VenueTypeCode';
 export type { VenueTypeListResponseModel } from './models/VenueTypeListResponseModel';
 export type { VenueTypeResponseModel } from './models/VenueTypeResponseModel';
+export type { VideoData } from './models/VideoData';
 export type { VideoMetatdataQueryModel } from './models/VideoMetatdataQueryModel';
 export type { VisualDisabilityModel } from './models/VisualDisabilityModel';
 export type { WeekdayOpeningHoursTimespans } from './models/WeekdayOpeningHoursTimespans';

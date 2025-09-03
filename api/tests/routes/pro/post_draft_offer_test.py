@@ -70,7 +70,7 @@ class Returns201Test:
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
         assert response.status_code == 201
-        assert response.json["videoUrl"] == "https://www.youtube.com/watch?v=WtM4OW2qVjY"
+        assert response.json["videoData"]["videoUrl"] == "https://www.youtube.com/watch?v=WtM4OW2qVjY"
 
     def test_created_offer_should_have_is_duo_set_to_true_if_subcategory_is_event_and_can_be_duo(self, client):
         venue = offerers_factories.VenueFactory()

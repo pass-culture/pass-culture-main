@@ -218,7 +218,12 @@ class Returns200Test:
                 "publicName": "La petite librairie",
                 "visualDisabilityCompliant": False,
             },
-            "videoUrl": "https://www.youtube.com/watch?v=WtM4OW2qVjY",
+            "videoData": {
+                "videoDuration": None,
+                "videoThumbnailUrl": None,
+                "videoTitle": None,
+                "videoUrl": "https://www.youtube.com/watch?v=WtM4OW2qVjY",
+            },
             "withdrawalDetails": "Veuillez chercher votre billet au guichet",
             "withdrawalType": "on_site",
             "withdrawalDelay": 60 * 30,
