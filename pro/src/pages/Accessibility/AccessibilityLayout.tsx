@@ -1,30 +1,35 @@
 import { useSelector } from 'react-redux'
 
-import { Layout, type LayoutProps } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { LoggedOutLayout } from '@/app/App/layouts/logged-out/LoggedOutLayout/LoggedOutLayout'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import fullBackIcon from '@/icons/full-back.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 
 import styles from './AccessibilityLayout.module.scss'
 
-export interface AccessibilityLayoutProps extends LayoutProps {
+export interface AccessibilityLayoutProps {
+  children?: React.ReactNode
+  /**
+   * Name of the page to display in the main heading.
+   * Make sure that only one heading is displayed per page.
+   */
+  mainHeading: React.ReactNode
   showBackToSignInButton?: boolean
 }
 
 export const AccessibilityLayout = ({
   children,
-  showBackToSignInButton,
   mainHeading,
+  showBackToSignInButton,
 }: AccessibilityLayoutProps) => {
   const user = useSelector(selectCurrentUser)
   const isUserConnected = !!user
 
   return isUserConnected ? (
-    <Layout mainHeading={mainHeading} layout="basic">
-      {children}
-    </Layout>
+    <BasicLayout mainHeading={mainHeading}>{children}</BasicLayout>
   ) : (
-    <Layout mainHeading={mainHeading} layout="logged-out">
+    <LoggedOutLayout mainHeading={mainHeading}>
       <section className={styles['layout']} data-testid="logged-out-section">
         <div className={styles['content']}>{children}</div>
         {showBackToSignInButton && (
@@ -37,6 +42,6 @@ export const AccessibilityLayout = ({
           </ButtonLink>
         )}
       </section>
-    </Layout>
+    </LoggedOutLayout>
   )
 }

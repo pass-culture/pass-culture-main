@@ -1,0 +1,22 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+$connect-as-header-height: rem.torem(52px);
+
+.connect-as {
+  height: $connect-as-header-height;
+  background-color: var(--color-background-subtle);
+  display: flex;
+  padding: rem.torem(16px);
+  min-width: 100%;
+
+  &-icon {
+    color: var(--color-icon-subtle);
+  }
+
+  &-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+}

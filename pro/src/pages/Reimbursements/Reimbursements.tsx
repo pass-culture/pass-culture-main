@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router'
 
 import type { GetOffererResponseModel } from '@/apiClient/v1'
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { ReimbursementsTabs } from '@/components/ReimbursementsTabs/ReimbursementsTabs'
@@ -23,21 +23,21 @@ export const Reimbursements = (): JSX.Element => {
 
   if (isOffererLoading || offererApiError) {
     return (
-      <Layout>
+      <BasicLayout>
         <Spinner />
-      </Layout>
+      </BasicLayout>
     )
   }
 
   return (
-    <Layout mainHeading="Gestion financière">
+    <BasicLayout mainHeading="Gestion financière">
       <div className={styles['reimbursements-container']}>
         <div>
           <ReimbursementsTabs selectedOfferer={selectedOfferer} />
           <Outlet context={{ selectedOfferer }} />
         </div>
       </div>
-    </Layout>
+    </BasicLayout>
   )
 }
 

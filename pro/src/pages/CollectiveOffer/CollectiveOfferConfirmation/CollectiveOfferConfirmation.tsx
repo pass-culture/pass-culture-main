@@ -1,4 +1,4 @@
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { CollectiveOfferConfirmationScreen } from '@/pages/CollectiveOffer/CollectiveOfferConfirmation/CollectiveOfferConfirmation/CollectiveOfferConfirmation'
@@ -26,7 +26,7 @@ const CollectiveOfferConfirmation = ({
   }
 
   return (
-    <Layout areMainHeadingAndBackToNavLinkInChild>
+    <BasicLayout areMainHeadingAndBackToNavLinkInChild>
       <CollectiveOfferConfirmationScreen
         isShowcase={offer.isTemplate}
         offerStatus={offer.displayedStatus}
@@ -34,7 +34,7 @@ const CollectiveOfferConfirmation = ({
         institutionDisplayName={getInstitutionDisplayName()}
       />
       <RouteLeavingGuardCollectiveOfferCreation when={false} />
-    </Layout>
+    </BasicLayout>
   )
 }
 

@@ -7,7 +7,7 @@ import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformation/CollectiveBudgetCallout'
@@ -72,8 +72,7 @@ export const CollectiveOfferLayout = ({
   }
 
   return (
-    <Layout
-      layout={'sticky-actions'}
+    <BasicLayout
       mainHeading={
         <div className={styles['eac-layout-heading-wrapper']}>
           {isTemplate && <Tag label="Offre vitrine" />}
@@ -81,6 +80,7 @@ export const CollectiveOfferLayout = ({
         </div>
       }
       mainSubHeading={subTitle}
+      isStickyActionBarInChild
     >
       {isCreation && (
         <CollectiveBudgetCallout
@@ -110,6 +110,6 @@ export const CollectiveOfferLayout = ({
       )}
       {children}
       <HelpLink />
-    </Layout>
+    </BasicLayout>
   )
 }
