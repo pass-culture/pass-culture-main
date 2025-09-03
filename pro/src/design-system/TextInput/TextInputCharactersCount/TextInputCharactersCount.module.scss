@@ -1,0 +1,12 @@
+@use 'styles/mixins/_a11y.scss' as a11y;
+@use 'styles/mixins/_fonts.scss' as fonts;
+
+.characters-count {
+    @include fonts.body-accent-s;
+
+    color: var(--color-text-subtle);
+}
+
+.visually-hidden {
+    @include a11y.visually-hidden;
+}
