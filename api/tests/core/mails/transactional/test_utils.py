@@ -25,7 +25,7 @@ class FormatPriceTest:
         ],
     )
     def test_format_price_in_euros(self, price, expected, factory):
-        target = factory()
+        target = factory(postalCode="63170")
         assert format_price(price, target) == expected
 
     @pytest.mark.parametrize(
