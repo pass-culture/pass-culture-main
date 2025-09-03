@@ -47,19 +47,31 @@ const filters: CollectiveSearchFiltersParams = {
   format: EacFormat.CONCERT,
 }
 
+const renderDownloadButton = (
+  {
+    isDisabled = false,
+    filtersProp = filters,
+    defaultFiltersProp = defaultFilters,
+  } = {},
+  features = ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE']
+) => {
+  return renderWithProviders(
+    <DownloadBookableOffersButton
+      isDisabled={isDisabled}
+      filters={filtersProp}
+      defaultFilters={defaultFiltersProp}
+    />,
+    { features }
+  )
+}
+
 describe('DownloadBookableOffersButton', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   it('should render download button with dropdown options', async () => {
-    renderWithProviders(
-      <DownloadBookableOffersButton
-        isDisabled={false}
-        filters={filters}
-        defaultFilters={defaultFilters}
-      />
-    )
+    renderDownloadButton()
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
     expect(downloadButton).toBeInTheDocument()
@@ -75,14 +87,26 @@ describe('DownloadBookableOffersButton', () => {
     ).toBeInTheDocument()
   })
 
-  it('should be disabled when isDisabled prop is true', () => {
-    renderWithProviders(
-      <DownloadBookableOffersButton
-        isDisabled={true}
-        filters={filters}
-        defaultFilters={defaultFilters}
-      />
+  it('should not render download button when WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is not active', () => {
+    renderDownloadButton(
+      {
+        isDisabled: false,
+        filtersProp: filters,
+        defaultFiltersProp: defaultFilters,
+      },
+      []
     )
+
+    const downloadButton = screen.queryByRole('button', { name: 'Télécharger' })
+    expect(downloadButton).not.toBeInTheDocument()
+  })
+
+  it('should be disabled when isDisabled prop is true', () => {
+    renderDownloadButton({
+      isDisabled: true,
+      filtersProp: filters,
+      defaultFiltersProp: defaultFilters,
+    })
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
     expect(downloadButton).toBeDisabled()
@@ -93,13 +117,7 @@ describe('DownloadBookableOffersButton', () => {
       .spyOn(api, 'getCollectiveOffersCsv')
       .mockResolvedValueOnce('csv,data')
 
-    renderWithProviders(
-      <DownloadBookableOffersButton
-        isDisabled={false}
-        filters={filters}
-        defaultFilters={defaultFilters}
-      />
-    )
+    renderDownloadButton()
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
     await userEvent.click(downloadButton)
@@ -129,13 +147,7 @@ describe('DownloadBookableOffersButton', () => {
       .spyOn(api, 'getCollectiveOffersExcel')
       .mockResolvedValueOnce(new Blob())
 
-    renderWithProviders(
-      <DownloadBookableOffersButton
-        isDisabled={false}
-        filters={filters}
-        defaultFilters={defaultFilters}
-      />
-    )
+    renderDownloadButton()
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
     await userEvent.click(downloadButton)
@@ -165,13 +177,7 @@ describe('DownloadBookableOffersButton', () => {
       new Error('Download failed')
     )
 
-    renderWithProviders(
-      <DownloadBookableOffersButton
-        isDisabled={false}
-        filters={filters}
-        defaultFilters={defaultFilters}
-      />
-    )
+    renderDownloadButton()
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
     await userEvent.click(downloadButton)
@@ -196,13 +202,7 @@ describe('DownloadBookableOffersButton', () => {
       downloadPromise as any
     )
 
-    renderWithProviders(
-      <DownloadBookableOffersButton
-        isDisabled={false}
-        filters={filters}
-        defaultFilters={defaultFilters}
-      />
-    )
+    renderDownloadButton()
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
     await userEvent.click(downloadButton)
