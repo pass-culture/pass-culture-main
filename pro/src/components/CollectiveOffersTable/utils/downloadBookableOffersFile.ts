@@ -22,6 +22,8 @@ export const downloadBookableOffersFile = async (
     periodEndingDate,
     collectiveOfferType,
     format: offerFormat,
+    locationType,
+    offererAddressId,
   } = serializeApiCollectiveFilters(filters, defaultFilters)
 
   const apiParams = [
@@ -34,8 +36,8 @@ export const downloadBookableOffersFile = async (
     periodEndingDate,
     collectiveOfferType,
     offerFormat,
-    null, // locationType
-    null, // offererAddressId
+    locationType,
+    offererAddressId,
   ] as const
 
   const dateTime = format(new Date(), 'yyyyMMdd')

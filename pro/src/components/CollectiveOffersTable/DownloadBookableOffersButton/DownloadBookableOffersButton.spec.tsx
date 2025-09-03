@@ -4,6 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { EacFormat } from '@/apiClient/adage'
 import { api } from '@/apiClient/api'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import { CollectiveLocationType } from '@/apiClient/v1/models/CollectiveLocationType'
 import { ALL_FORMATS } from '@/commons/core/Offers/constants'
 import {
   CollectiveOfferTypeEnum,
@@ -137,8 +138,8 @@ describe('DownloadBookableOffersButton', () => {
       '2023-12-31',
       'offer',
       'Concert',
-      null,
-      null
+      undefined,
+      undefined
     )
   })
 
@@ -167,8 +168,8 @@ describe('DownloadBookableOffersButton', () => {
       '2023-12-31',
       'offer',
       'Concert',
-      null,
-      null
+      undefined,
+      undefined
     )
   })
 
@@ -219,7 +220,7 @@ describe('DownloadBookableOffersButton', () => {
 
     // Resolve the download
     await act(async () => {
-      resolveDownload!('csv,data')
+      resolveDownload('csv,data')
       await downloadPromise
     })
 
@@ -227,5 +228,84 @@ describe('DownloadBookableOffersButton', () => {
     await waitFor(() => {
       expect(downloadButton).toBeEnabled()
     })
+  })
+
+  it('should include location filter when locationType is ADDRESS', async () => {
+    const mockGetCollectiveOffersCsv = vi
+      .spyOn(api, 'getCollectiveOffersCsv')
+      .mockResolvedValueOnce('csv,data')
+
+    const filtersWithLocation: CollectiveSearchFiltersParams = {
+      ...filters,
+      locationType: CollectiveLocationType.ADDRESS,
+      offererAddressId: '123',
+    }
+
+    renderDownloadButton({
+      isDisabled: false,
+      filtersProp: filtersWithLocation,
+      defaultFiltersProp: defaultFilters,
+    })
+
+    const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
+    await userEvent.click(downloadButton)
+
+    const csvButton = screen.getByRole('menuitem', {
+      name: 'Fichier CSV (.csv)',
+    })
+    await userEvent.click(csvButton)
+
+    expect(mockGetCollectiveOffersCsv).toHaveBeenCalledWith(
+      'test offer',
+      '1',
+      ['PUBLISHED'],
+      '2',
+      undefined,
+      '2023-01-01',
+      '2023-12-31',
+      'offer',
+      'Concert',
+      CollectiveLocationType.ADDRESS,
+      123
+    )
+  })
+
+  it('should include location filter when locationType is SCHOOL', async () => {
+    const mockGetCollectiveOffersExcel = vi
+      .spyOn(api, 'getCollectiveOffersExcel')
+      .mockResolvedValueOnce(new Blob())
+
+    const filtersWithLocation: CollectiveSearchFiltersParams = {
+      ...filters,
+      locationType: CollectiveLocationType.SCHOOL,
+    }
+
+    renderDownloadButton({
+      isDisabled: false,
+      filtersProp: filtersWithLocation,
+      defaultFiltersProp: defaultFilters,
+    })
+
+    const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
+    await userEvent.click(downloadButton)
+
+    const excelButton = screen.getByRole('menuitem', {
+      name: 'Microsoft Excel (.xls)',
+    })
+    await userEvent.click(excelButton)
+
+    expect(mockGetCollectiveOffersExcel).toHaveBeenCalledWith(
+      'test offer',
+      '1',
+      ['PUBLISHED'],
+      '2',
+      undefined,
+      '2023-01-01',
+      '2023-12-31',
+      'offer',
+      'Concert',
+      CollectiveLocationType.SCHOOL,
+      null
+    )
   })
 })
