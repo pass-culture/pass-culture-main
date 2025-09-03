@@ -239,6 +239,8 @@ def create_draft_offer(
     fields.update({"isDuo": bool(subcategory and subcategory.is_event and subcategory.can_be_duo)})
     if product:
         fields.pop("extraData", None)
+        fields.pop("description", None)
+        fields.pop("durationMinutes", None)
 
     offer = models.Offer(
         **fields,
