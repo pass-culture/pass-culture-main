@@ -1,7 +1,8 @@
 import { useSelector } from 'react-redux'
 import { Navigate, useLocation } from 'react-router'
 
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { OnboardingLayout } from '@/app/App/layouts/funnels/OnboardingLayout/OnboardingLayout'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
@@ -26,19 +27,25 @@ export const OfferType = (): JSX.Element => {
     return <Navigate to="/accueil" />
   }
 
-  return (
-    <Layout
-      mainHeading={`Créer une offre${collectiveOnly ? ' collective' : ''}`}
+  const mainHeading = `Créer une offre${collectiveOnly ? ' collective' : ''}`
+  const children = <OfferTypeScreen collectiveOnly={collectiveOnly} />
+
+  return isOnboarding ? (
+    <OnboardingLayout mainHeading={mainHeading} isStickyActionBarInChild>
+      {children}
+    </OnboardingLayout>
+  ) : (
+    <BasicLayout
+      mainHeading={mainHeading}
       mainTopElement={
-        !isOnboarding &&
         offerer?.allowedOnAdage && (
           <CollectiveBudgetCallout pageName="offer-creation-hub" />
         )
       }
-      layout={isOnboarding ? 'sticky-onboarding' : 'sticky-actions'}
+      isStickyActionBarInChild
     >
-      <OfferTypeScreen collectiveOnly={collectiveOnly} />
-    </Layout>
+      {children}
+    </BasicLayout>
   )
 }
 

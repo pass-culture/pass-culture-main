@@ -1,4 +1,4 @@
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import {
   isCollectiveOfferTemplate,
   Mode,
@@ -27,9 +27,9 @@ export const CollectiveOfferEdition = ({
 
   if (!isReady) {
     return (
-      <Layout layout={'sticky-actions'}>
+      <BasicLayout isStickyActionBarInChild>
         <Spinner />
-      </Layout>
+      </BasicLayout>
     )
   }
 

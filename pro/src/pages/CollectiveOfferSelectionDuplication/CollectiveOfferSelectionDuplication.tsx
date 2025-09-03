@@ -9,7 +9,7 @@ import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferType,
 } from '@/apiClient/v1'
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
@@ -132,19 +132,22 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
 
   if (isCreatingNewOffer) {
     return (
-      <Layout
-        layout={'sticky-actions'}
+      <BasicLayout
         mainHeading="Créer une offre réservable"
+        isStickyActionBarInChild
       >
         <div className="container">
           <Spinner message="Création de la nouvelle offre réservable en cours" />
         </div>
-      </Layout>
+      </BasicLayout>
     )
   }
 
   return (
-    <Layout layout={'sticky-actions'} mainHeading="Créer une offre réservable">
+    <BasicLayout
+      mainHeading="Créer une offre réservable"
+      isStickyActionBarInChild
+    >
       <div className="container">
         <div className={styles['search-container']}>
           <form
@@ -255,7 +258,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
           )}
         </div>
       </div>
-    </Layout>
+    </BasicLayout>
   )
 }
 

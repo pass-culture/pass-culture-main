@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux'
 import { useLocation } from 'react-router'
 
 import { api } from '@/apiClient/api'
-import { Layout } from '@/app/App/layout/Layout'
+import { LoggedOutLayout } from '@/app/App/layouts/logged-out/LoggedOutLayout/LoggedOutLayout'
 import { updateUser } from '@/commons/store/user/reducer'
 import { parse } from '@/commons/utils/query-string'
 
@@ -44,12 +44,11 @@ const EmailChangeValidation = (): JSX.Element => {
   }
 
   return (
-    <Layout
-      layout="logged-out"
+    <LoggedOutLayout
       mainHeading={isSuccess ? 'Et voilà !' : 'Votre lien a expiré !'}
     >
       <EmailChangeValidationScreen isSuccess={isSuccess} />
-    </Layout>
+    </LoggedOutLayout>
   )
 }
 

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import {
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   DEFAULT_PAGE,
@@ -98,14 +98,14 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
 
   if (offersQuery.isLoading) {
     return (
-      <Layout>
+      <BasicLayout>
         <Spinner />
-      </Layout>
+      </BasicLayout>
     )
   }
 
   return (
-    <Layout mainHeading="Offres vitrines">
+    <BasicLayout mainHeading="Offres vitrines">
       <TemplateCollectiveOffersScreen
         currentPageNumber={currentPageNumber}
         initialSearchFilters={apiFilters}
@@ -115,7 +115,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
         redirectWithUrlFilters={redirectWithUrlFilters}
         urlSearchFilters={urlSearchFilters}
       />
-    </Layout>
+    </BasicLayout>
   )
 }
 

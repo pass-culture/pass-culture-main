@@ -10,17 +10,6 @@
   justify-content: flex-start;
 }
 
-.onboarding-offer-header {
-  display: flex;
-  flex-direction: column;
-  gap: rem.torem(8px);
-  align-items: flex-start;
-}
-
-.onboarding-offer-main-heading-wrapper {
-  margin-bottom: rem.torem(16px);
-}
-
 .onboarding-offer-header-subtitle {
   @include fonts.title3;
 }

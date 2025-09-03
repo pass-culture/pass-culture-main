@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { DEFAULT_PAGE } from '@/commons/core/Offers/constants'
 import { useDefaultCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useDefaultCollectiveSearchFilters'
 import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
@@ -101,7 +101,7 @@ export const CollectiveOffers = (): JSX.Element => {
   )
 
   return (
-    <Layout
+    <BasicLayout
       mainHeading={
         isNewOffersAndBookingsActive
           ? 'Offres réservables'
@@ -123,7 +123,7 @@ export const CollectiveOffers = (): JSX.Element => {
           urlSearchFilters={urlSearchFilters}
         />
       )}
-    </Layout>
+    </BasicLayout>
   )
 }
 

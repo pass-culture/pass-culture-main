@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import type { GetBookingResponse } from '@/apiClient/v1'
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { Button } from '@/ui-kit/Button/Button'
 import { Callout } from '@/ui-kit/Callout/Callout'
@@ -139,7 +139,7 @@ export const Desk = (): JSX.Element => {
   const tokenRegister = register('token')
   return (
     <HeadlineOfferContextProvider>
-      <Layout mainHeading="Guichet">
+      <BasicLayout mainHeading="Guichet">
         <p className={styles.advice}>
           Saisissez les contremarques présentées par les bénéficiaires afin de
           les valider ou de les invalider.
@@ -200,7 +200,7 @@ export const Desk = (): JSX.Element => {
             format numérique.
           </Callout>
         </div>
-      </Layout>
+      </BasicLayout>
     </HeadlineOfferContextProvider>
   )
 }

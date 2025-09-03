@@ -18,7 +18,9 @@ const renderAccessibilityLayout: RenderComponentFunction<
   AccessibilityLayoutProps
 > = ({ options = {}, props = {} }) =>
   renderWithProviders(
-    <AccessibilityLayout {...props}>Children</AccessibilityLayout>,
+    <AccessibilityLayout mainHeading="Accessibilité" {...props}>
+      Children
+    </AccessibilityLayout>,
     options
   )
 
