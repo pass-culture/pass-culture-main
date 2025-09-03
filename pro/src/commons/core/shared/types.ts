@@ -45,3 +45,8 @@ export interface AddressFormValues {
   latitude: string
   longitude: string
 }
+
+export enum CurrencyEnum {
+  EUR = 'EUR',
+  XPF = 'XPF',
+}

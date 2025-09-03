@@ -1,3 +1,4 @@
+import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { format, subMonths } from 'date-fns'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -10,6 +11,7 @@ import {
   GET_INVOICES_QUERY_KEY,
   GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
+import { CurrencyEnum } from '@/commons/core/shared/types'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FORMAT_ISO_DATE_ONLY, getToday } from '@/commons/utils/date'
 import { isEqual } from '@/commons/utils/isEqual'
@@ -25,6 +27,7 @@ import { InvoiceTable } from './InvoiceTable/InvoiceTable'
 export const ReimbursementsInvoices = (): JSX.Element => {
   const [, setSearchParams] = useSearchParams()
   const selectedOffererId = useSelector(selectCurrentOffererId)
+  const { data: selectedOfferer } = useOfferer(selectedOffererId)
 
   const INITIAL_FILTERS = useMemo(() => {
     const today = getToday()
@@ -132,6 +135,9 @@ export const ReimbursementsInvoices = (): JSX.Element => {
         data={invoices}
         hasInvoice={hasInvoice}
         isLoading={hasInvoiceQuery.isLoading}
+        currency={
+          selectedOfferer?.isCaledonian ? CurrencyEnum.XPF : CurrencyEnum.EUR
+        }
         onFilterReset={handleResetFilters}
       />
     </>

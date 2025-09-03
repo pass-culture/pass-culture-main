@@ -5,6 +5,7 @@ import { vi } from 'vitest'
 import * as apiModule from '@/apiClient/api'
 import type { InvoiceResponseV2Model } from '@/apiClient/v1'
 import * as analyticsHook from '@/app/App/analytics/firebase'
+import { CurrencyEnum } from '@/commons/core/shared/types'
 import * as useNotification from '@/commons/hooks/useNotification'
 
 import { InvoiceTable } from './InvoiceTable'
@@ -158,5 +159,20 @@ describe('InvoiceTable', () => {
     expect(notifyError).toHaveBeenCalledWith(
       'Vous ne pouvez pas télécharger plus de 24 documents en une fois.'
     )
+  })
+
+  it('display correct currency based on devise prop', () => {
+    render(
+      <InvoiceTable
+        data={invoices}
+        isLoading={false}
+        onFilterReset={vi.fn()}
+        hasInvoice={true}
+        currency={CurrencyEnum.XPF}
+      />
+    )
+
+    expect(screen.getByText('+17 900 F')).toBeInTheDocument()
+    expect(screen.getByText('-5 965 F')).toBeInTheDocument()
   })
 })
