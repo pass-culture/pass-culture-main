@@ -47,14 +47,14 @@ export const OfferNameCell = ({
             <Thumb url={offer.imageUrl} size="small" />
           </div>
         )}
-        <div>
+        <div className={styles['title-column-name']}>
           {offer.isShowcase && <Tag label="Offre vitrine" />}
-          <div className={styles['title-column-name']}>
-            {!offer.isShowcase && isNewCollectiveOffersStructureActive ? (
-              <span>{`N°${offer.id}`}</span>
-            ) : null}
-            <span>{offer.name}</span>
-          </div>
+          {!offer.isShowcase && isNewCollectiveOffersStructureActive ? (
+            <span
+              className={styles['title-column-offer-id']}
+            >{`N°${offer.id}`}</span>
+          ) : null}
+          <span>{offer.name}</span>
         </div>
       </Link>
     </th>

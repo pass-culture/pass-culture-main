@@ -37,9 +37,12 @@
 
 .title-column {
   &-name {
+    @include fonts.body-accent;
+
     display: flex;
     flex-direction: column;
     overflow-wrap: anywhere;
+    text-align: left;
   }
 
   &-thumb {
@@ -53,9 +56,17 @@
     justify-content: center;
     gap: rem.torem(8px) rem.torem(24px);
   }
+
+  &-offer-id {
+    @include fonts.body-accent-xs;
+
+    color: var(--color-text-subtle);
+  }
 }
 
 .institution-column {
+  @include fonts.body-accent-xs;
+
   min-width: rem.torem(160px);
 }
 
@@ -213,6 +224,8 @@
 }
 
 .offer-event {
+  @include fonts.body-accent-xs;
+
   min-width: rem.torem(120px);
   display: flex;
   flex-direction: column;
@@ -229,6 +242,8 @@
 }
 
 .price-and-participants-column {
+  @include fonts.body-accent-xs;
+
   min-width: rem.torem(140px);
 }
 
@@ -239,5 +254,8 @@
 }
 
 .location-column {
+  @include fonts.body-accent-xs;
+
   min-width: rem.torem(130px);
+  color: var(--color-text-subtle);
 }
