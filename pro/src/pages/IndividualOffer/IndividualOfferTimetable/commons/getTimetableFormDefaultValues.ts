@@ -11,15 +11,18 @@ export function getTimetableFormDefaultValues({
   openingHours,
   stocks,
   offer,
+  isOhoFFEnabled,
 }: {
   openingHours?: WeekdayOpeningHoursTimespans | null
   stocks?: GetOfferStockResponseModel[]
   offer: GetIndividualOfferWithAddressResponseModel
+  isOhoFFEnabled: boolean
 }) {
   return {
-    timetableType: areOpeningHoursEmpty(openingHours)
-      ? 'calendar'
-      : 'openingHours',
+    timetableType:
+      !isOhoFFEnabled || areOpeningHoursEmpty(openingHours)
+        ? 'calendar'
+        : 'openingHours',
     openingHours: openingHours,
     hasStartDate: HasDateEnum.NO, //  TODO : retrieve the openingHours startDate when it exists on the model
     hasEndDate: HasDateEnum.NO, //  TODO : retrieve the openingHours endDate when it exists on the model

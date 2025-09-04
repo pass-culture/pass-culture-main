@@ -39,7 +39,6 @@ export function TimetableOpeningHours({
     form.formState.errors.openingHours?.message
 
   const priceCategoryOptions = getPriceCategoryOptions(offer.priceCategories)
-
   return (
     <>
       <MandatoryInfo />

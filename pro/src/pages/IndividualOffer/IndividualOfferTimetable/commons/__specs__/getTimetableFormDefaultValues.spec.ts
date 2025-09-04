@@ -27,6 +27,7 @@ describe('getTimetableFormDefaultValues', () => {
         openingHours: defaultOpeningHours,
         stocks: [],
         offer: defualtOffer,
+        isOhoFFEnabled: true,
       })
     ).toEqual(
       expect.objectContaining({
@@ -46,6 +47,7 @@ describe('getTimetableFormDefaultValues', () => {
           getOfferStockFactory({ id: 2 }),
         ],
         offer: defualtOffer,
+        isOhoFFEnabled: true,
       })
     ).toEqual(
       expect.objectContaining({
@@ -60,6 +62,7 @@ describe('getTimetableFormDefaultValues', () => {
         openingHours: { ...defaultOpeningHours, MONDAY: [['12:12', '15:15']] },
         stocks: [getOfferStockFactory({ id: 1 })],
         offer: defualtOffer,
+        isOhoFFEnabled: true,
       })
     ).toEqual(
       expect.objectContaining({
