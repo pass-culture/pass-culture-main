@@ -22,7 +22,7 @@ describe('resetReactHookFormAddressFields', () => {
       ['latitude', ''],
       ['longitude', ''],
       ['coords', ''],
-      ['banId', ''],
+      ['banId', null],
       ['inseeCode', null],
       ['search-addressAutocomplete', ''],
       ['addressAutocomplete', ''],
