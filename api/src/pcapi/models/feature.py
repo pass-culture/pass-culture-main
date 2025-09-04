@@ -169,6 +169,7 @@ class FeatureToggle(enum.Enum):
         "Autoriser l'ajout de nouvelle structure seulement pour les collectivités"
     )
     WIP_ENABLE_NEW_OFFER_CREATION_FLOW = "Activer le nouveau parcours de création d'offre"
+    WIP_ENABLE_OHO = "Activer la création d'offre individuelle sur plages horaires"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -237,7 +238,8 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE,
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
-    FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW,  # Not implemented yet
+    FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW,
+    FeatureToggle.WIP_ENABLE_OHO,
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API,
     FeatureToggle.WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST,
