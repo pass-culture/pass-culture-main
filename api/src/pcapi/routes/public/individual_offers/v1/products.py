@@ -374,7 +374,7 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
     """
     offer: offers_models.Offer | None = (
         utils.retrieve_offer_relations_query(utils.retrieve_offer_query(product_id))
-        .filter(sa.not_(offers_models.Offer.isEvent))
+        .filter(sa.not_(offers_models.Offer.hasEventSubcategory))
         .one_or_none()
     )
     if not offer:
@@ -409,7 +409,7 @@ def get_product_by_ean(
     utils.check_venue_id_is_tied_to_api_key(query.venueId)
     offers: list[offers_models.Offer] | None = (
         utils.retrieve_offer_relations_query(_retrieve_offer_by_eans_query(query.eans, query.venueId))  # type: ignore[arg-type]
-        .filter(sa.not_(offers_models.Offer.isEvent))
+        .filter(sa.not_(offers_models.Offer.hasEventSubcategory))
         .all()
     )
 
@@ -582,7 +582,7 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
     query = utils.retrieve_offer_query(body.offer_id)
     query = utils.retrieve_offer_relations_query(query)
     query = utils.load_venue_and_provider_query(query)
-    query = query.filter(sa.not_(offers_models.Offer.isEvent))
+    query = query.filter(sa.not_(offers_models.Offer.hasEventSubcategory))
 
     offer = query.one_or_none()
 

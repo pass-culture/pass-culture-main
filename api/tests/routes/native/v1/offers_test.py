@@ -48,6 +48,7 @@ class OffersTest:
     nb_queries = 1  # select offer
     nb_queries += 1  # select stocks
     nb_queries += 1  # select opening hours
+    nb_queries += 1  # select features (including WIP_NEW_OFFER_IS_EVENT_DEFINITION)
     nb_queries += 1  # select mediations
     nb_queries += 1  # select chronicles
 
@@ -359,25 +360,12 @@ class OffersTest:
         offer_id = offer.id
         setattr(features, ff_name, ff_value)
 
-        # 1. select offer
-        # 2. select product with artists
-        # 3. select stocks
-        # 4. select mediations
-        # 5. check cinema venue_provider exists
-        # 6. check offer is from current cinema provider
-        # 7. select active cinema provider
-        # 8. update offer
-        # 9. select chronicles
-        # 10. selecte features
-        # 11. reload offer
-
         nb_queries = self.nb_queries
         nb_queries += 1  # product with artists
         nb_queries += 1  # check cinema venue_provider exists
         nb_queries += 1  # check offer is from current cinema provider
         nb_queries += 1  # select active cinema provider
         nb_queries += 1  # update offer
-        nb_queries += 1  # select features
         nb_queries += 1  # reload offer
         with assert_num_queries(nb_queries):
             with assert_no_duplicated_queries():
@@ -412,7 +400,7 @@ class OffersTest:
         stock = offers_factories.StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2000, 1, 1))
         offer_id = stock.offer.id
 
-        with assert_num_queries(self.nb_queries + 1):  # activation_code
+        with assert_num_queries(self.nb_queries + 1):  # activation code
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
                 assert response.status_code == 200
@@ -485,7 +473,6 @@ class OffersTest:
         nb_queries += 1  # check cinema venue_provider exists
         nb_queries += 1  # select active cinema provider
         nb_queries += 1  # select cinema_provider_pivot
-        nb_queries += 1  # select feature
         nb_queries += 1  # update stock
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v1/offer/{offer_id}")
@@ -538,7 +525,6 @@ class OffersTest:
         nb_queries += 1  # select EXISTS venue_provider
         nb_queries += 1  # select EXISTS provider
         nb_queries += 1  # select cinema_provider_pivot
-        nb_queries += 1  # select feature
         nb_queries += 1  # select EXISTS provider
         nb_queries += 1  # select boost_cinema_details
         nb_queries += 1  # update stock
@@ -591,7 +577,6 @@ class OffersTest:
         nb_queries += 1  # select EXISTS venue_provider
         nb_queries += 1  # select EXISTS provider
         nb_queries += 1  # select cinema_provider_pivot
-        nb_queries += 1  # select feature
         nb_queries += 1  # select EXISTS provider
         nb_queries += 1  # select cgr_cinema_details
         nb_queries += 1  # update stock
@@ -627,7 +612,6 @@ class OffersTest:
         nb_query += 1  # check cinema venue_provider exists
         nb_query += 1  # select active cinema provider
         nb_query += 1  # update offer
-        nb_query += 1  # select feature
 
         with assert_num_queries(nb_query):
             response = client.get(f"/native/v1/offer/{offer_id}")
@@ -2031,6 +2015,7 @@ class OffersStocksV2Test:
         payload = {"offer_ids": [offer.id]}
 
         nb_queries = 1  # select offer
+        nb_queries += 1  # select WIP_NEW_OFFER_IS_EVENT_DEFINITION FF
         nb_queries += 1  # select stocks
         nb_queries += 1  # select opening hours
         nb_queries += 1  # select mediations

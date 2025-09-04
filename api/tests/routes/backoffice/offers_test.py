@@ -2491,7 +2491,9 @@ class EditOfferVenueTest(PostEndpointHelper):
     ):
         source_venue, destination_venue, _, _ = venues_in_same_offerer
         offerer_address = offerers_factories.OffererAddressFactory(offerer=source_venue.managingOfferer)
-        offer = offers_factories.EventOfferFactory(venue=source_venue, offererAddress=offerer_address)
+        offer = offers_factories.EventStockFactory(
+            offer__venue=source_venue, offer__offererAddress=offerer_address
+        ).offer
 
         response = self.post_to_endpoint(
             authenticated_client,
@@ -2519,7 +2521,8 @@ class GetOfferStockEditFormTest(GetEndpointHelper):
     expected_num_queries = 5
 
     def test_get_stock_edit_form(self, authenticated_client):
-        booking = bookings_factories.UsedBookingFactory(stock__offer__subcategoryId=subcategories.CONFERENCE.id)
+        stock = offers_factories.EventStockFactory(offer__subcategoryId=subcategories.CONFERENCE.id)
+        booking = bookings_factories.UsedBookingFactory(stock=stock)
 
         form_url = url_for(self.endpoint, offer_id=booking.stock.offer.id, stock_id=booking.stock.id)
         with assert_num_queries(self.expected_num_queries):
@@ -2576,8 +2579,8 @@ class ConfirmOfferStockTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
     def test_confirm_edit_bookings_by_value(self, authenticated_client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
-        stock_to_edit = offers_factories.StockFactory(
+        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        stock_to_edit = offers_factories.EventStockFactory(
             offer=offer,
             price=decimal.Decimal("10"),
         )
@@ -2608,8 +2611,8 @@ class ConfirmOfferStockTest(PostEndpointHelper):
         )
 
     def test_confirm_edit_bookings_by_percent(self, authenticated_client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
-        stock_to_edit = offers_factories.StockFactory(
+        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        stock_to_edit = offers_factories.EventStockFactory(
             offer=offer,
             price=decimal.Decimal("10"),
         )
@@ -2640,8 +2643,8 @@ class ConfirmOfferStockTest(PostEndpointHelper):
         )
 
     def test_confirm_edit_bookings_with_value_higher_than_bookings(self, authenticated_client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
-        stock_to_edit = offers_factories.StockFactory(
+        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        stock_to_edit = offers_factories.EventStockFactory(
             offer=offer,
             price=decimal.Decimal("10"),
         )
@@ -2729,9 +2732,9 @@ class EditOfferStockTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
     def test_offer_stock_edit_used_booking(self, authenticated_client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.CONFERENCE.id)
         venue = offer.venue
-        stock_to_edit = offers_factories.StockFactory(
+        stock_to_edit = offers_factories.EventStockFactory(
             offer=offer,
             price=decimal.Decimal("123.45"),
         )
@@ -2739,7 +2742,7 @@ class EditOfferStockTest(PostEndpointHelper):
             stock=stock_to_edit,
             amount=decimal.Decimal("123.45"),
         )
-        stock_untouched = offers_factories.StockFactory(
+        stock_untouched = offers_factories.EventStockFactory(
             offer=offer,
             price=decimal.Decimal("123.45"),
         )
@@ -2794,8 +2797,8 @@ class EditOfferStockTest(PostEndpointHelper):
         assert db.session.query(finance_models.Pricing).filter_by(id=later_pricing_id).count() == 0
 
     def test_offer_stock_edit_with_french_decimal(self, authenticated_client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
-        stock_to_edit = offers_factories.StockFactory(
+        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        stock_to_edit = offers_factories.EventStockFactory(
             offer=offer,
             price=decimal.Decimal("123.45"),
         )
@@ -2817,8 +2820,8 @@ class EditOfferStockTest(PostEndpointHelper):
         assert booking_to_edit.amount == decimal.Decimal("50.1")
 
     def test_offer_stock_edit_confirmed_booking(self, authenticated_client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
-        stock_to_edit = offers_factories.StockFactory(
+        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        stock_to_edit = offers_factories.EventStockFactory(
             offer=offer,
             price=decimal.Decimal("123.45"),
         )
@@ -2840,8 +2843,8 @@ class EditOfferStockTest(PostEndpointHelper):
         assert booking_to_edit.amount == decimal.Decimal("50.1")
 
     def test_offer_stock_edit_confirmed_booking_percent(self, authenticated_client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
-        stock_to_edit = offers_factories.StockFactory(
+        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        stock_to_edit = offers_factories.EventStockFactory(
             offer=offer,
             price=decimal.Decimal("123.45"),
         )
@@ -2965,7 +2968,7 @@ class EditOfferStockTest(PostEndpointHelper):
         assert event.booking.stock.price == decimal.Decimal("123.45")
 
     def test_offer_stock_edit_raising_price(self, authenticated_client, app):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        offer = offers_factories.EventStockFactory(offer__subcategoryId=subcategories.CONFERENCE.id).offer
         venue = offer.venue
         event = finance_factories.FinanceEventFactory(
             booking__amount=decimal.Decimal("123.45"),
@@ -3003,7 +3006,7 @@ class EditOfferStockTest(PostEndpointHelper):
         assert event.booking.stock.price == decimal.Decimal("123.45")
 
     def test_offer_stock_edit_raising_price_percent(self, authenticated_client, app):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        offer = offers_factories.EventStockFactory(offer__subcategoryId=subcategories.CONFERENCE.id).offer
         venue = offer.venue
         event = finance_factories.FinanceEventFactory(
             booking__amount=decimal.Decimal("123.45"),
@@ -3041,7 +3044,7 @@ class EditOfferStockTest(PostEndpointHelper):
         assert event.booking.stock.price == decimal.Decimal("123.45")
 
     def test_offer_stock_edit_both_price_percent(self, authenticated_client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        offer = offers_factories.EventStockFactory(offer__subcategoryId=subcategories.CONFERENCE.id).offer
         venue = offer.venue
         event = finance_factories.FinanceEventFactory(
             booking__amount=decimal.Decimal("123.45"),
@@ -3082,7 +3085,7 @@ class EditOfferStockTest(PostEndpointHelper):
         assert event.booking.stock.price == decimal.Decimal("123.45")
 
     def test_edit_stock_withprice_higher_than_booking(self, authenticated_client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        offer = offers_factories.EventStockFactory(offer__subcategoryId=subcategories.CONFERENCE.id).offer
         venue = offer.venue
         event = finance_factories.FinanceEventFactory(
             booking__amount=decimal.Decimal("5.00"),
@@ -3123,7 +3126,7 @@ class EditOfferStockTest(PostEndpointHelper):
         )
         label = price_category.priceCategoryLabel.label
         offer = price_category.offer
-        stock_to_edit = offers_factories.StockFactory(
+        stock_to_edit = offers_factories.EventStockFactory(
             offer=offer,
             price=decimal.Decimal("123.45"),
             priceCategory=price_category,
@@ -3154,12 +3157,12 @@ class EditOfferStockTest(PostEndpointHelper):
         )
         label = price_category.priceCategoryLabel.label
         offer = price_category.offer
-        stock_to_edit = offers_factories.StockFactory(
+        stock_to_edit = offers_factories.EventStockFactory(
             offer=offer,
             price=decimal.Decimal("123.45"),
             priceCategory=price_category,
         )
-        other_stock = offers_factories.StockFactory(
+        other_stock = offers_factories.EventStockFactory(
             offer=offer,
             price=decimal.Decimal("123.45"),
             priceCategory=price_category,
@@ -3999,7 +4002,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
     def test_get_event_offer(self, legit_user, authenticated_client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.VenueFactory.create_batch(2, managingOfferer=venue.managingOfferer, pricing_point=venue)
-        offer = offers_factories.EventOfferFactory(venue=venue)
+        offer = offers_factories.EventStockFactory(offer__venue=venue).offer
 
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
         # Additional queries to check if "Modifier le partenaire culturel" should be displayed or not":

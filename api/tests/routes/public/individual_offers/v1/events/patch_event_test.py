@@ -51,10 +51,14 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
             shared_data["publicationDatetime"] = publication_datetime
 
         if digital:
-            return offers_factories.DigitalOfferFactory(**shared_data, subcategoryId="LIVESTREAM_MUSIQUE")
-        return offers_factories.EventOfferFactory(
-            **shared_data, subcategoryId="CONCERT", extraData={"gtl_id": "02000000"}
-        )
+            return offers_factories.EventStockFactory(
+                offer=offers_factories.DigitalOfferFactory(**shared_data, subcategoryId="LIVESTREAM_MUSIQUE")
+            ).offer
+        return offers_factories.EventStockFactory(
+            offer=offers_factories.EventOfferFactory(
+                **shared_data, subcategoryId="CONCERT", extraData={"gtl_id": "02000000"}
+            )
+        ).offer
 
     def test_should_raise_404_because_has_no_access_to_venue(self):
         plain_api_key, _ = self.setup_provider()
@@ -81,12 +85,12 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
     @pytest.mark.features(WIP_REFACTO_FUTURE_OFFER=True)
     def test_activate_offer_default_publication_datetime(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-        offer = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            lastProvider=venue_provider.provider,
-            publicationDatetime=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1),
-            isActive=False,
-        )
+        offer = offers_factories.EventStockFactory(
+            offer__venue=venue_provider.venue,
+            offer__lastProvider=venue_provider.provider,
+            offer__publicationDatetime=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1),
+            offer__isActive=False,
+        ).offer
 
         now = datetime.datetime.now(datetime.timezone.utc)
         with time_machine.travel(now, tick=False):
@@ -98,17 +102,17 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
 
     def test_sets_field_to_none_and_leaves_other_unchanged(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = offers_factories.EventOfferFactory(
-            subcategoryId="CONCERT",
-            venue=venue_provider.venue,
-            withdrawalDetails="Des conditions de retrait sur la sellette",
-            withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
-            withdrawalDelay=86400,
-            bookingContact="contact@example.com",
-            bookingEmail="notify@example.com",
-            lastProvider=venue_provider.provider,
-            extraData={"gtl_id": "03000000"},
-        )
+        offer = offers_factories.EventStockFactory(
+            offer__subcategoryId="CONCERT",
+            offer__venue=venue_provider.venue,
+            offer__withdrawalDetails="Des conditions de retrait sur la sellette",
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
+            offer__withdrawalDelay=86400,
+            offer__bookingContact="contact@example.com",
+            offer__bookingEmail="notify@example.com",
+            offer__lastProvider=venue_provider.provider,
+            offer__extraData={"gtl_id": "03000000"},
+        ).offer
 
         response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body={"itemCollectionDetails": None})
 
@@ -121,14 +125,14 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
 
     def test_sets_accessibility_partially(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=True,
-            lastProvider=venue_provider.provider,
-        )
+        offer = offers_factories.EventStockFactory(
+            offer__venue=venue_provider.venue,
+            offer__audioDisabilityCompliant=True,
+            offer__mentalDisabilityCompliant=True,
+            offer__motorDisabilityCompliant=True,
+            offer__visualDisabilityCompliant=True,
+            offer__lastProvider=venue_provider.provider,
+        ).offer
 
         response = self.make_request(
             plain_api_key,
@@ -150,20 +154,20 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
 
     def test_update_extra_data_partially(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            subcategoryId="FESTIVAL_ART_VISUEL",
-            extraData={
+        offer = offers_factories.EventStockFactory(
+            offer__venue=venue_provider.venue,
+            offer__subcategoryId="FESTIVAL_ART_VISUEL",
+            offer__extraData={
                 "author": "Maurice",
                 "stageDirector": "Robert",
                 "performer": "Pink Pâtisserie",
             },
-            lastProvider=venue_provider.provider,
-            withdrawalDelay=86400,
-            withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
-            bookingContact="contact@example.com",
-            bookingEmail="notify@example.com",
-        )
+            offer__lastProvider=venue_provider.provider,
+            offer__withdrawalDelay=86400,
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
+            offer__bookingContact="contact@example.com",
+            offer__bookingEmail="notify@example.com",
+        ).offer
 
         response = self.make_request(
             plain_api_key,
@@ -192,20 +196,20 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
 
     def test_should_update_extra_data_even_if_extra_data_has_an_empty_stage_director(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            subcategoryId="FESTIVAL_ART_VISUEL",
-            extraData={
+        offer = offers_factories.EventStockFactory(
+            offer__venue=venue_provider.venue,
+            offer__subcategoryId="FESTIVAL_ART_VISUEL",
+            offer__extraData={
                 "author": "Maurice",
                 "stageDirector": "",  # faulty stageDirector
                 "performer": "Pink Pâtisserie",
             },
-            lastProvider=venue_provider.provider,
-            withdrawalDelay=86400,
-            withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
-            bookingContact="contact@example.com",
-            bookingEmail="notify@example.com",
-        )
+            offer__lastProvider=venue_provider.provider,
+            offer__withdrawalDelay=86400,
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
+            offer__bookingContact="contact@example.com",
+            offer__bookingEmail="notify@example.com",
+        ).offer
 
         response = self.make_request(
             plain_api_key,
@@ -234,20 +238,20 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
 
     def test_patch_all_fields(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-        offer = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            bookingContact="contact@example.com",
-            bookingEmail="notify@passq.com",
-            subcategoryId="CONCERT",
-            durationMinutes=20,
-            isDuo=False,
-            lastProvider=venue_provider.provider,
-            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
-            withdrawalDelay=86400,
-            withdrawalDetails="Around there",
-            description="A description",
-            extraData={"gtl_id": "02000000"},
-        )
+        offer = offers_factories.EventStockFactory(
+            offer__venue=venue_provider.venue,
+            offer__bookingContact="contact@example.com",
+            offer__bookingEmail="notify@passq.com",
+            offer__subcategoryId="CONCERT",
+            offer__durationMinutes=20,
+            offer__isDuo=False,
+            offer__lastProvider=venue_provider.provider,
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+            offer__withdrawalDelay=86400,
+            offer__withdrawalDetails="Around there",
+            offer__description="A description",
+            offer__extraData={"gtl_id": "02000000"},
+        ).offer
 
         new_name = offer.name + "_updated"
         response = self.make_request(
@@ -358,12 +362,12 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
 
     def test_update_with_non_nullable_fields_does_not_update_them(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-        offer = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            lastProvider=venue_provider.provider,
-            publicationDatetime=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        offer = offers_factories.EventStockFactory(
+            offer__venue=venue_provider.venue,
+            offer__lastProvider=venue_provider.provider,
+            offer__publicationDatetime=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
             - datetime.timedelta(days=1),
-        )
+        ).offer
 
         response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body={"isActive": None})
         assert response.status_code == 200

@@ -85,6 +85,9 @@ class FeatureToggle(enum.Enum):
     ENABLE_NATIVE_CULTURAL_SURVEY = (
         "Active le Questionnaire des pratiques initiales natif (non TypeForm) sur l'app native et décli web"
     )
+    WIP_NEW_OFFER_IS_EVENT_DEFINITION = (
+        "Active la nouvelle définition de Offer.isEvent (qui colle davantage à la réalité)"
+    )
     ENABLE_OFFERS_AUTO_CLEANUP = "Active la suppression automatique des offres obsolètes"
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"

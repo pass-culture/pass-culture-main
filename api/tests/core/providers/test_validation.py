@@ -29,10 +29,11 @@ class CheckTicketingUrlsCanBeUnsetTest:
         provider = factories.PublicApiProviderFactory()
         venue = offerers_factories.VenueFactory()
         factories.VenueProviderFactory(provider=provider, venue=venue)
-        event_offer = offers_factories.EventOfferFactory(
-            lastProvider=provider, venue=venue, withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP
-        )
-        offers_factories.StockFactory(offer=event_offer)
+        event_offer = offers_factories.EventStockFactory(
+            offer__lastProvider=provider,
+            offer__venue=venue,
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+        ).offer
 
         with pytest.raises(exceptions.ProviderException) as e:
             validation.check_ticketing_urls_can_be_unset(provider)
@@ -57,12 +58,11 @@ class CheckTicketingUrlsCanBeUnsetTest:
         provider_without_ticketing_urls = factories.ProviderFactory()
         venue = offerers_factories.VenueFactory()
         factories.VenueProviderFactory(provider=provider_without_ticketing_urls, venue=venue)
-        event_offer = offers_factories.EventOfferFactory(
-            lastProvider=provider_without_ticketing_urls,
-            venue=venue,
-            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
-        )
-        offers_factories.StockFactory(offer=event_offer)
+        event_offer = offers_factories.EventStockFactory(
+            offer__lastProvider=provider_without_ticketing_urls,
+            offer__venue=venue,
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+        ).offer
 
         with pytest.raises(exceptions.ProviderException) as e:
             validation.check_ticketing_urls_can_be_unset(provider=provider_without_ticketing_urls, venue=venue)

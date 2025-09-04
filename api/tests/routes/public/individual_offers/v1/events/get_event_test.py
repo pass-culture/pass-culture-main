@@ -34,7 +34,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
 
     num_queries_full = num_queries + 1  # fetch product
 
-    def setup_base_resource(self, venue=None, **offer_kwargs) -> offers_models.Offer:
+    def setup_base_resource(self, venue=None, **kwargs) -> offers_models.Offer:
         venue = venue or self.setup_venue()
         product = offers_factories.ProductFactory(
             thumbCount=1,
@@ -44,10 +44,10 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
             extraData=None,
         )
 
-        offer_kwargs = offer_kwargs if offer_kwargs else {}
-        return offers_factories.EventOfferFactory(
-            venue=venue, product=product, idAtProvider="Oh le bel id <3", **offer_kwargs
-        )
+        kwargs = kwargs if kwargs else {}
+        return offers_factories.EventStockFactory(
+            offer__venue=venue, offer__product=product, offer__idAtProvider="Oh le bel id <3", **kwargs
+        ).offer
 
     def test_should_raise_404_because_has_no_access_to_venue(self: TestClient):
         plain_api_key, _ = self.setup_provider()
@@ -68,7 +68,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
     @time_machine.travel(datetime(2025, 6, 25, 12, 30, tzinfo=timezone.utc), tick=False)
     def test_get_event(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = self.setup_base_resource(venue=venue_provider.venue)
+        offer = self.setup_base_resource(venue=venue_provider.venue, priceCategory=None, quantity=0)
         offer_id = offer.id
 
         with testing.assert_num_queries(self.num_queries_full):
@@ -109,7 +109,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         publication_date = datetime.utcnow().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
-        offer = self.setup_base_resource(venue=venue_provider.venue, publicationDatetime=publication_date)
+        offer = self.setup_base_resource(venue=venue_provider.venue, offer__publicationDatetime=publication_date)
         offer_id = offer.id
 
         with testing.assert_num_queries(self.num_queries_full):
@@ -120,10 +120,10 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
 
     def test_event_with_not_selectable_category_can_be_retrieved(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            subcategoryId=subcategories.DECOUVERTE_METIERS.id,
-        )
+        offer = offers_factories.EventStockFactory(
+            offer__venue=venue_provider.venue,
+            offer__subcategoryId=subcategories.DECOUVERTE_METIERS.id,
+        ).offer
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = self.make_request(plain_api_key, path_params={"offer_id": offer_id})
@@ -133,11 +133,11 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
 
     def test_get_event_without_ticket(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer_id = offers_factories.EventOfferFactory(
-            subcategoryId=subcategories.CONCERT.id,
-            venue=venue_provider.venue,
-            withdrawalType=offers_models.WithdrawalTypeEnum.ON_SITE,
-        ).id
+        offer_id = offers_factories.EventStockFactory(
+            offer__subcategoryId=subcategories.CONCERT.id,
+            offer__venue=venue_provider.venue,
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.ON_SITE,
+        ).offer.id
 
         with testing.assert_num_queries(self.num_queries):
             response = self.make_request(plain_api_key, path_params={"offer_id": offer_id})
@@ -147,11 +147,11 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
 
     def test_get_music_offer_without_music_type(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer_id = offers_factories.EventOfferFactory(
-            subcategoryId=subcategories.CONCERT.id,
-            extraData=None,
-            venue=venue_provider.venue,
-        ).id
+        offer_id = offers_factories.EventStockFactory(
+            offer__subcategoryId=subcategories.CONCERT.id,
+            offer__extraData=None,
+            offer__venue=venue_provider.venue,
+        ).offer.id
 
         with testing.assert_num_queries(self.num_queries):
             response = self.make_request(plain_api_key, path_params={"offer_id": offer_id})
@@ -165,10 +165,10 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
 
     def test_ticket_collection_in_app(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer_id = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
-        ).id
+        offer_id = offers_factories.EventStockFactory(
+            offer__venue=venue_provider.venue,
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+        ).offer.id
 
         with testing.assert_num_queries(self.num_queries):
             response = self.make_request(plain_api_key, path_params={"offer_id": offer_id})
@@ -178,10 +178,10 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
 
     def test_ticket_collection_no_ticket(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offer_id = offers_factories.EventOfferFactory(
-            venue=venue_provider.venue,
-            withdrawalType=offers_models.WithdrawalTypeEnum.NO_TICKET,
-        ).id
+        offer_id = offers_factories.EventStockFactory(
+            offer__venue=venue_provider.venue,
+            offer__withdrawalType=offers_models.WithdrawalTypeEnum.NO_TICKET,
+        ).offer.id
 
         with testing.assert_num_queries(self.num_queries):
             response = self.make_request(plain_api_key, path_params={"offer_id": offer_id})
