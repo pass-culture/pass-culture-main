@@ -1,4 +1,4 @@
-import type { BookingsFilters } from "../types";
+import type { BookingsFilters } from '../types'
 
 export type BookingOmniSearchFilters = Pick<
   BookingsFilters,
