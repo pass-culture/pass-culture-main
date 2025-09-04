@@ -1,4 +1,5 @@
-name: "0 [on_dispatch/CD] Create hotfix release"
+# This workflow tags a HF version and deploy it to staging
+name: "0 [on_dispatch/CD] Create hotfix and deploy release"
 
 run-name: "Create a hotfix release from ${{ github.ref }}"
 
@@ -98,6 +99,26 @@ jobs:
       REF: v${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
+  deploy-staging:
+    name: "Deploy on staging environnement"
+    needs: [build-and-tag-version, find-hotfix-tag-number]
+    uses: ./.github/workflows/dev_on_workflow_deploy.yml
+    with:
+      environment: staging
+      app_version: v${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}
+      cluster_scope: metier
+      cluster_environment: ehp
+      workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
+      apply_algolia_config: true
+      deploy_api: true
+      deploy_pro: true
+      doc-api-entrypoint: "api/documentation"
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+
   slack-notification:
     runs-on: ubuntu-22.04
     needs:
@@ -106,6 +127,7 @@ jobs:
       - create-pro-staging-release
       - create-pro-integration-release
       - create-pro-production-release
+      - deploy-staging
     if: always()
     env:
       TAG_NAME: v${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}
@@ -126,11 +148,11 @@ jobs:
         id: "slack-text"
         run: |
           if [ "${{ env.WORKFLOW_CONCLUSION }}" == "success" ]; then
-            echo text="La pose du tag *${{ env.TAG_NAME }}* a réussi. Vous pouvez maintenant le <https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_dispatch_release_deploy.yml|déployer> :rocket:" | tee -a $GITHUB_OUTPUT
+            echo text="Le déploiement de *${{ env.TAG_NAME }}* a réussi :rocket:" | tee -a $GITHUB_OUTPUT
           elif [ "${{ env.WORKFLOW_CONCLUSION }}" == "cancelled" ]; then
-            echo text="La pose du tag a été annulée. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" | tee -a $GITHUB_OUTPUT
+            echo text="Le déploiement a été annulée. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" | tee -a $GITHUB_OUTPUT
           else
-            echo text="La pose du tag *${{ env.TAG_NAME }}* a échoué :x: Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" | tee -a $GITHUB_OUTPUT
+            echo text="Le déploiement *${{ env.TAG_NAME }}* a échoué :x: Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" | tee -a $GITHUB_OUTPUT
           fi
       - name: "Post on #shérif"
         if: always()
