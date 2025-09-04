@@ -1667,16 +1667,6 @@ def get_all_offer_template_by_redactor_id(redactor_id: int) -> list[models.Colle
     )
 
 
-def get_venue_base_query() -> sa_orm.Query:
-    return (
-        db.session.query(offerers_models.Venue)
-        .filter(
-            offerers_models.Venue.adageId.is_not(None),
-        )
-        .options(sa_orm.joinedload(offerers_models.Venue.adage_addresses))
-    )
-
-
 def fetch_venue_for_new_offer(venue_id: int, requested_provider_id: int) -> offerers_models.Venue:
     query = (
         db.session.query(offerers_models.Venue)
