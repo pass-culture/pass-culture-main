@@ -7,10 +7,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import {
-  convertEuroToPacificFranc,
-  formatPacificFranc,
-} from '@/commons/utils/convertEuroToPacificFranc'
+import { convertPrice } from '@/commons/utils/convertPrice'
 import {
   FORMAT_DD_MM_YYYY_HH_mm,
   toDateStrippedOfTimezone,
@@ -39,6 +36,7 @@ export const BookingOfferCell = ({
       })
 
   const eventBeginningDatetime = booking.stock.eventBeginningDatetime
+  const currency = isCaledonian ? 'XPF' : 'EUR'
 
   const eventDatetimeFormatted = eventBeginningDatetime
     ? format(
@@ -46,10 +44,6 @@ export const BookingOfferCell = ({
         FORMAT_DD_MM_YYYY_HH_mm
       )
     : null
-
-  const formattedPacificFrancPrice = formatPacificFranc(
-    convertEuroToPacificFranc(booking.bookingAmount)
-  )
 
   return (
     <div className={cn(className)}>
@@ -70,18 +64,15 @@ export const BookingOfferCell = ({
 
       <div className={styles['tarif']}>
         {booking.bookingPriceCategoryLabel
-          ? `${booking.bookingPriceCategoryLabel} - ${
-              isCaledonian
-                ? formattedPacificFrancPrice
-                : formatPrice(booking.bookingAmount)
-            }`
-          : isCaledonian
-            ? formattedPacificFrancPrice
-            : formatPrice(booking.bookingAmount, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-                trailingZeroDisplay: 'stripIfInteger',
-              })}
+          ? `${booking.bookingPriceCategoryLabel} - ${formatPrice(
+              convertPrice(booking.bookingAmount, { to: currency }),
+              { currency }
+            )}`
+          : formatPrice(convertPrice(booking.bookingAmount, { to: currency }), {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+              trailingZeroDisplay: 'stripIfInteger',
+            })}
       </div>
     </div>
   )

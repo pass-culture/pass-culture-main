@@ -4,6 +4,8 @@
 import { isError } from '@/apiClient/helpers'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 
+import type { CurrencyCode } from '../core/shared/types'
+
 export type ResolvedNumberFormatOptions = Intl.NumberFormatOptions & {
   roundingPriority?: 'auto' | 'morePrecision' | 'lessPrecision' | undefined
   roundingIncrement?:
@@ -35,35 +37,82 @@ export type ResolvedNumberFormatOptions = Intl.NumberFormatOptions & {
     | 'halfEven'
     | undefined
   trailingZeroDisplay?: 'auto' | 'stripIfInteger' | undefined
+  currency?: CurrencyCode
 }
 
 export function formatPrice(
   price: number,
   options?: ResolvedNumberFormatOptions
 ) {
-  let formattedPrice = ''
+  switch (options?.currency) {
+    case 'EUR':
+      return formatPriceEuro(price, options ?? {})
+    case 'XPF':
+      return formatPriceXpf(price, options ?? {})
+    default:
+      throw new Error(`Currency ${options?.currency} is not supported.`)
+  }
+}
+
+function isNumberFormatSupported() {
   try {
-    formattedPrice = Intl.NumberFormat('fr-FR', {
+    new Intl.NumberFormat('fr-FR', {
       style: 'currency',
       currency: 'EUR',
-      ...options,
-    }).format(price)
-  } catch (e) {
-    // Safari 14.1.2 throws an exception here.
+    }).format(1234.5)
+    return true
+  } catch (err) {
     if (
-      isError(e) &&
-      e.message.includes(
+      isError(err) &&
+      err.message.includes(
         'Failed to initialize NumberFormat since used feature is not supported in the linked ICU version'
       )
     ) {
-      formattedPrice =
-        price
-          .toFixed(2)
-          .replace(/\d(?=(\d{3})+\.)/g, '$& ') // space after each group of 3
-          .replace('.', ',') + ' €'
-    } else {
-      sendSentryCustomError(e)
+      return false
     }
+    sendSentryCustomError(err)
+    return false
   }
-  return formattedPrice
+}
+
+export function formatPriceEuro(
+  price: number,
+  options: ResolvedNumberFormatOptions
+) {
+  if (isNumberFormatSupported()) {
+    return Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      ...options,
+      currency: 'EUR',
+    }).format(price)
+  }
+  return (
+    price
+      .toFixed(2)
+      .replace(/\d(?=(\d{3})+\.)/g, '$&\u202f') // space after each group of 3
+      .replace('.', ',') + '\xa0€'
+  )
+}
+
+export function formatPriceXpf(
+  price: number,
+  options: ResolvedNumberFormatOptions
+) {
+  if (isNumberFormatSupported()) {
+    return Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      ...options,
+      maximumFractionDigits: 0,
+      minimumFractionDigits: 0,
+      currency: 'XPF',
+    })
+      .format(price)
+      .replace('FCFP', 'F')
+  }
+  return (
+    price
+      .toFixed(2)
+      .replace(/\d(?=(\d{3})+\.)/g, '$&\u202f') // space after each group of 3
+      .replace(/\.\d*/, ',') + '\xa0F'
+  )
 }

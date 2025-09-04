@@ -3,9 +3,10 @@ import { format } from 'date-fns'
 import { useState } from 'react'
 
 import type { InvoiceResponseV2Model } from '@/apiClient/v1'
-import { CurrencyEnum } from '@/commons/core/shared/types'
+import type { CurrencyCode } from '@/commons/core/shared/types'
+import { convertPrice } from '@/commons/utils/convertPrice'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
-import { formatPriceByCurrency } from '@/commons/utils/formatPriceByCurrency'
+import { formatPrice } from '@/commons/utils/formatPrice'
 import strokeLessIcon from '@/icons/stroke-less.svg'
 import strokeMoreIcon from '@/icons/stroke-more.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
@@ -80,13 +81,10 @@ const columns: Column<ExtendedInvoiceResponseV2Model>[] = [
           [styles['negative-amount']]: invoice.amount < 0,
         })}
       >
-        {formatPriceByCurrency(
-          invoice.amount,
-          { from: CurrencyEnum.EUR, to: invoice.currency },
-          {
-            signDisplay: 'always',
-          }
-        )}
+        {formatPrice(convertPrice(invoice.amount, { to: invoice.currency }), {
+          signDisplay: 'always',
+          currency: invoice.currency,
+        })}
       </div>
     ),
   },
@@ -105,20 +103,20 @@ type InvoiceTableProps = {
   data: InvoiceResponseV2Model[]
   hasInvoice: boolean
   isLoading: boolean
-  currency?: CurrencyEnum
+  currency?: CurrencyCode
   onFilterReset: () => void
 }
 
 type ExtendedInvoiceResponseV2Model = InvoiceResponseV2Model & {
   id: string
-  currency: CurrencyEnum
+  currency: CurrencyCode
 }
 
 export const InvoiceTable = ({
   data,
   hasInvoice,
   isLoading,
-  currency = CurrencyEnum.EUR,
+  currency = 'EUR',
   onFilterReset,
 }: InvoiceTableProps) => {
   const [checkedInvoices, setCheckedInvoices] = useState<string[]>([])
