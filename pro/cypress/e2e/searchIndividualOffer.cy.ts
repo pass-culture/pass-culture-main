@@ -71,7 +71,7 @@ describe('Search individual offers', () => {
   it('I should be able to search with a EAN and see expected results', () => {
     const ean = '1234567891234'
 
-    cy.stepLog({ message: 'I search with the text:' + ean })
+    cy.stepLog({ message: `I search with the text:${ean}` })
     cy.findByRole('searchbox', { name: /Nom de l’offre/ }).type(ean)
 
     cy.stepLog({ message: 'I validate my filters' })

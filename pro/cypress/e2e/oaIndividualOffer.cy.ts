@@ -38,7 +38,7 @@ describe('Create individual offers with OA', () => {
   })
 
   it('I should be able to create an individual offer (event)', () => {
-    const eventName = 'Offer with OA (event) ' + (Cypress.currentRetry + 1)
+    const eventName = `Offer with OA (event) ${Cypress.currentRetry + 1}`
     cy.stepLog({
       message: 'I want to create "Un évènement physique daté" offer',
     })
@@ -196,7 +196,7 @@ describe('Create individual offers with OA', () => {
   })
 
   it('I should be able to create an individual offer (thing)', () => {
-    const offerTitle = 'Offer with OA (thing) ' + (Cypress.currentRetry + 1)
+    const offerTitle = `Offer with OA (thing) ${Cypress.currentRetry + 1}`
     const offerDesc =
       'Une quête pour obtenir la question ultime sur la vie, l’univers et tout le reste.'
 

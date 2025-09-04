@@ -133,7 +133,7 @@ Cypress.Commands.add('stepLog', ({ message }) => {
 Cypress.Commands.add('a11yLog', (violations) => {
   createCustomLogStyles('A11Y', '#ffa079') //  Orange
 
-  violations.map((violation) => {
+  violations.forEach((violation) => {
     Cypress.log({
       name: `A11Y`,
       message: violation.description,
@@ -147,7 +147,7 @@ Cypress.Commands.add(
   (
     method: 'GET' | 'POST',
     url: string,
-    onRequest: (response: any) => void,
+    onRequest: (response: unknown) => void,
     retry: boolean = true
   ) => {
     cy.request({

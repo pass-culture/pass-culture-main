@@ -88,7 +88,7 @@ describe('Adage confirmation', () => {
         'http://localhost:5001/sandboxes/get_unique_email',
         (response) => {
           expect(response.status).to.eq(200)
-          expect(response.body.To).to.eq(email1 + ', ' + email2)
+          expect(response.body.To).to.eq(`${email1}, ${email2}`)
           expect(response.body.params.BOOKING_ID).to.eq(bookingId)
         }
       )

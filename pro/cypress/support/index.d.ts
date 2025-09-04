@@ -48,7 +48,7 @@ declare namespace Cypress {
     sandboxCall(
       method: 'GET' | 'POST',
       url: string,
-      onRequest: (response: any) => void,
+      onRequest: (response: unknown) => void,
       retry?: boolean
     ): Chainable
 
