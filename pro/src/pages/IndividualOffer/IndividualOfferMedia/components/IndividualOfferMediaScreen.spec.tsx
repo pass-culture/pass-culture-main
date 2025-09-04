@@ -262,7 +262,7 @@ describe('IndividualOfferMediaScreen', () => {
 
     it('should call the patch offer api when the video url has been deleted (empty string)', async () => {
       const knownOffer = getIndividualOfferFactory({
-        videoUrl: MOCK_DATA.videoUrl,
+        videoData: { videoUrl: MOCK_DATA.videoUrl },
       })
       await renderIndividualOfferMediaScreen({ props: { offer: knownOffer } })
 

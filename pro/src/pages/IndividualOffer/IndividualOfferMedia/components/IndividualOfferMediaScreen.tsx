@@ -71,7 +71,7 @@ export const IndividualOfferMediaScreen = ({
   const isProductBased = isOfferProductBased(offer)
 
   const form = useForm<IndividualOfferMediaFormValues>({
-    defaultValues: { videoUrl: offer.videoUrl ?? '' },
+    defaultValues: { videoUrl: offer.videoData.videoUrl ?? '' },
     resolver: yupResolver<IndividualOfferMediaFormValues, unknown, unknown>(
       getValidationSchema()
     ),
