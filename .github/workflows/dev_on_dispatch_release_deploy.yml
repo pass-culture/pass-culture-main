@@ -58,7 +58,9 @@ jobs:
       - name: "Get app version"
         id: "app-version"
         run: echo APP_VERSION="$(cat ./api/version.txt)" | tee -a $GITHUB_OUTPUT
-
+  
+  # DELETE THIS : mgeoffray 2025-09-04
+  # As soon as we are confident in our staging automatic deployments 
   deploy-ehp:
     name: "Deploy on EHP environnement"
     needs: version
