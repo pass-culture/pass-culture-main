@@ -26,7 +26,7 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 
-import { Bookings } from './Bookings'
+import { IndividualBookings } from './IndividualBookings'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -64,7 +64,7 @@ const renderBookingsRecap = (
 ) => {
   return renderWithProviders(
     <>
-      <Bookings />
+      <IndividualBookings />
       <Notification />
     </>,
     {

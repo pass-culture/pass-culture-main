@@ -14,13 +14,13 @@ import type { Column } from '@/ui-kit/Table/Table'
 
 import { FilterByBookingStatus } from '../Filters/FilterByBookingStatus'
 import type { BookingsFilters } from '../types'
-import styles from './BookingsTable.module.scss'
 import { BeneficiaryCell } from './Cells/BeneficiaryCell'
 import { BookingDateCell } from './Cells/BookingDateCell'
 import { BookingOfferCell } from './Cells/BookingOfferCell'
+import { BookingStatusCell } from './Cells/BookingStatusCell'
 import { BookingStatusCellHistory } from './Cells/BookingStatusCellHistory'
 import { DetailsButtonCell } from './Cells/DetailsButtonCell'
-import { IndividualBookingStatusCell } from './Cells/IndividualBookingStatusCell'
+import styles from './IndividualBookingsTable.module.scss'
 
 type BookingRow = BookingRecapResponseModel & { id: number }
 const priceText = (amount: number) => (amount ? formatPrice(amount) : 'Gratuit')
@@ -115,7 +115,7 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
         />
       ) : undefined,
       render: (row) => (
-        <IndividualBookingStatusCell
+        <BookingStatusCell
           booking={row}
           className={styles['cell-item-wrapper']}
         />

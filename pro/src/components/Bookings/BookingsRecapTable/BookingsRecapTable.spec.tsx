@@ -10,7 +10,6 @@ import {
   collectiveBookingCollectiveStockFactory,
   collectiveBookingFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
-import { bookingRecapFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import * as filterBookingsRecap from '@/components/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 
@@ -24,14 +23,6 @@ vi.mock('@/commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 Element.prototype.scrollIntoView = vi.fn()
-
-const bookingBeneficiaryCustom = {
-  beneficiary: {
-    lastname: 'Parjeot',
-    firstname: 'Micheline',
-    email: 'michelinedu72@example.com',
-  },
-}
 
 const bookingInstitutionCustom = {
   institution: {
@@ -50,7 +41,7 @@ describe('components | BookingsRecapTable', () => {
 
   const defaultProps: Props = {
     isLoading: false,
-    audience: Audience.INDIVIDUAL,
+    audience: Audience.COLLECTIVE,
     resetBookings: vi.fn(),
     bookingsRecap: [],
   }
@@ -66,27 +57,31 @@ describe('components | BookingsRecapTable', () => {
 
   it('should filter when filters change', async () => {
     const bookingsRecap = [
-      bookingRecapFactory(bookingBeneficiaryCustom),
-      bookingRecapFactory(),
+      collectiveBookingFactory(bookingInstitutionCustom),
+      collectiveBookingFactory(),
     ]
     const props: Props = {
       ...defaultProps,
       bookingsRecap: bookingsRecap,
     }
+
     renderBookingRecap(props)
 
     // 2 lines = 12 cells
     expect(screen.getAllByRole('cell')).toHaveLength(12)
 
-    await userEvent.type(screen.getByRole('searchbox'), 'Le nom de l’offre 2')
+    await userEvent.type(
+      screen.getByRole('searchbox'),
+      'ma super offre collective'
+    )
     await waitFor(() => {
       // 1 line = 6 cells
-      expect(screen.getAllByRole('cell')).toHaveLength(6)
+      expect(screen.getAllByRole('cell')).toHaveLength(12)
     })
 
     await userEvent.selectOptions(
       screen.getByRole('combobox'),
-      screen.getByRole('option', { name: 'Bénéficiaire' })
+      screen.getByRole('option', { name: 'Établissement' })
     )
     await userEvent.clear(screen.getByRole('searchbox'))
 
@@ -94,7 +89,7 @@ describe('components | BookingsRecapTable', () => {
       // 2 lines = 12 cells
       expect(screen.getAllByRole('cell')).toHaveLength(12)
     })
-    await userEvent.type(screen.getByRole('searchbox'), 'Parjeot')
+    await userEvent.type(screen.getByRole('searchbox'), 'COLLEGE BELLEVUE')
     await waitFor(() => {
       // 1 line = 5
       expect(screen.getAllByRole('cell')).toHaveLength(6)
@@ -105,7 +100,7 @@ describe('components | BookingsRecapTable', () => {
     // Given
     const props: Props = {
       ...defaultProps,
-      bookingsRecap: [bookingRecapFactory()],
+      bookingsRecap: [collectiveBookingFactory()],
       locationState: {
         statuses: ['booked', 'cancelled'],
       },
@@ -325,7 +320,10 @@ describe('components | BookingsRecapTable', () => {
 
   it('should render the expected table with max given number of hits per page', () => {
     // Given
-    const bookingsRecap = [bookingRecapFactory(), bookingRecapFactory()]
+    const bookingsRecap = [
+      collectiveBookingFactory(),
+      collectiveBookingFactory(),
+    ]
     vi.spyOn(filterBookingsRecap, 'filterBookingsRecap').mockReturnValue(
       bookingsRecap
     )
@@ -340,10 +338,10 @@ describe('components | BookingsRecapTable', () => {
     // Then
     const cells = screen.getAllByRole('columnheader')
     expect(cells).toHaveLength(6)
-    expect(cells[0]).toHaveTextContent('Nom de l’offre')
-    expect(cells[1]).toHaveTextContent('Bénéficiaire')
-    expect(cells[2]).toHaveTextContent('Réservation')
-    expect(cells[3]).toHaveTextContent('Contremarque')
+    expect(cells[0]).toHaveTextContent('Réservation')
+    expect(cells[1]).toHaveTextContent('Nom de l’offre')
+    expect(cells[2]).toHaveTextContent('Établissement')
+    expect(cells[3]).toHaveTextContent('Places et prix')
     expect(cells[4]).toHaveTextContent('Statut')
   })
 
@@ -393,7 +391,7 @@ describe('components | BookingsRecapTable', () => {
   it('should reset filters when clicking on "Afficher toutes les réservations"', async () => {
     const props: Props = {
       ...defaultProps,
-      bookingsRecap: [bookingRecapFactory()],
+      bookingsRecap: [collectiveBookingFactory()],
     }
 
     renderBookingRecap(props)
@@ -412,7 +410,10 @@ describe('components | BookingsRecapTable', () => {
 
   it('should not show pagination when applying filters with no result', async () => {
     // given
-    const bookingsRecap = [bookingRecapFactory(), bookingRecapFactory()]
+    const bookingsRecap = [
+      collectiveBookingFactory(),
+      collectiveBookingFactory(),
+    ]
     const props: Props = { ...defaultProps, bookingsRecap: bookingsRecap }
     renderBookingRecap(props)
 

@@ -46,7 +46,9 @@ type BookingsProps<T> = {
 
 const MAX_LOADED_PAGES = 5
 
-export const CollectiveBookings = <T extends CollectiveBookingResponseModel>({
+export const CollectiveBookingsComponent = <
+  T extends CollectiveBookingResponseModel,
+>({
   locationState,
   audience,
   getFilteredBookingsAdapter,
