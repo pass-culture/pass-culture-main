@@ -47,5 +47,6 @@ export const useRedirectLoggedUser = () => {
       dispatch(updateUser(null))
       dispatch(updateCurrentOfferer(null))
     }
-  }, [currentUser])
+  }, [currentUser, dispatch, // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        navigate, redirectToUrl])
 }

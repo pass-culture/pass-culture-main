@@ -283,13 +283,13 @@ export const Autocomplete = ({
           querySuggestionsPlugin,
         ],
       }),
-    [refine, isLocalStorageEnabled]
+    [refine, isLocalStorageEnabled, dispatch, instantSearchUiState, querySuggestionsPlugin, recentSearchesPlugin, refresh, venuesSuggestionsPlugin]
   )
 
   useEffect(() => {
     autocomplete.setQuery(initialQuery)
     refine(initialQuery)
-  }, [initialQuery])
+  }, [initialQuery, autocomplete.setQuery, refine])
 
   const { getEnvironmentProps } = autocomplete
 
@@ -315,7 +315,7 @@ export const Autocomplete = ({
       window.removeEventListener('touchstart', onTouchStart)
       window.removeEventListener('touchmove', onTouchMove)
     }
-  }, [getEnvironmentProps, instantSearchUiState.isOpen])
+  }, [getEnvironmentProps])
 
   const { source: recentSearchesSource, items: recentSearchesItems } =
     (!instantSearchUiState.query &&

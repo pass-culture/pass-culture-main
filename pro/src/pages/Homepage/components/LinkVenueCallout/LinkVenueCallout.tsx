@@ -18,8 +18,7 @@ export const LinkVenueCallout = ({
   const location = useLocation()
 
   const displayCallout =
-    offerer &&
-    offerer.hasValidBankAccount &&
+    offerer?.hasValidBankAccount &&
     offerer.venuesWithNonFreeOffersWithoutBankAccounts.length > 0
 
   if (!displayCallout) {
@@ -31,7 +30,7 @@ export const LinkVenueCallout = ({
       links={[
         {
           href:
-            '/remboursements/informations-bancaires?structure=' + offerer.id,
+            `/remboursements/informations-bancaires?structure=${offerer.id}`,
           label: 'Gérer le rattachement de mes structures',
           onClick: () => {
             logEvent(BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT, {

@@ -200,7 +200,7 @@ export const MultiSelect = forwardRef(
       return () => {
         document.removeEventListener('keydown', handleKeyDown)
       }
-    }, [])
+    }, [handleKeyDown])
 
     useOnClickOrFocusOutside(containerRef, () => setIsOpen(false))
 

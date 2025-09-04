@@ -101,7 +101,7 @@ export const StoreProvider = ({
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getStoreInitialState()
-  }, [isAdageIframe, dispatch])
+  }, [isAdageIframe, dispatch, currentOfferer])
 
   if (!isStoreInitialized) {
     return (

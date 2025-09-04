@@ -103,7 +103,7 @@ export const IndividualOfferPriceCategoriesScreen = ({
   useEffect(() => {
     const newValues = computeInitialValues(offer, isCaledonian)
     hookForm.reset(newValues)
-  }, [isCaledonian, offer])
+  }, [isCaledonian, offer, hookForm.reset])
 
   const { fields, append, remove } = useFieldArray({
     control,

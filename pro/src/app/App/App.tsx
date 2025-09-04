@@ -79,7 +79,8 @@ export const App = (): JSX.Element | null => {
         { replace: true }
       )
     }
-  }, [])
+  }, [dispatch, // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      navigate, notify.error, searchParams.delete, searchParams.get, searchParams.toString])
 
   // Analytics
   const { consentedToBeamer, consentedToFirebase } = useOrejime()

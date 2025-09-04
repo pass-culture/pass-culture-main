@@ -17,7 +17,7 @@ export const BankAccountHasPendingCorrectionCallout = ({
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
-  const displayCallout = offerer && offerer.hasBankAccountWithPendingCorrections
+  const displayCallout = offerer?.hasBankAccountWithPendingCorrections
 
   if (!displayCallout) {
     return null
@@ -28,7 +28,7 @@ export const BankAccountHasPendingCorrectionCallout = ({
       links={[
         {
           href:
-            '/remboursements/informations-bancaires?structure=' + offerer.id,
+            `/remboursements/informations-bancaires?structure=${offerer.id}`,
           label: 'Voir les corrections attendues',
           onClick: () => {
             logEvent(

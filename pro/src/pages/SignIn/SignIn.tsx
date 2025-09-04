@@ -59,7 +59,7 @@ export const SignIn = (): JSX.Element => {
       notify.error(searchParams.get('message'))
       setSearchParams('')
     }
-  }, [searchParams])
+  }, [searchParams, notify.error, notify.success, setSearchParams])
 
   const onSubmit = async (values: SigninFormValues) => {
     const { email, password } = values

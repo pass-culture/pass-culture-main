@@ -68,7 +68,7 @@ describe('Didactic Onboarding feature', () => {
           { method: 'GET', url: '/offerers/*/eligibility' },
           (req) => {
             // Get offerer ID from the URL
-            const offererId = req.url.match(/\/offerers\/(\d+)\//)![1]
+            const offererId = req.url.match(/\/offerers\/(\d+)\//)?.[1]
             // Mock response with an onboarded status to True
             req.reply({
               statusCode: 200,

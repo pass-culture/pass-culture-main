@@ -21,7 +21,7 @@ export const serializeApiErrors = (
     )
     const errorIndexes = errorKeys
       .map((err) => Number(err.split(`${key}.`)[1]))
-      .filter((num) => !isNaN(num))
+      .filter((num) => !Number.isNaN(num))
 
     const errorValues = []
     //  Recontruct an array up to the biggest index with an error in the list of errors on that field
@@ -60,14 +60,13 @@ export const getHumanReadableApiError = (
 
   const { body } = error
 
-  if (body instanceof Array && body.length > 0) {
+  if (Array.isArray(body) && body.length > 0) {
     return body.map((bodyValue) => Object.values(bodyValue).join(' ')).join(' ')
   }
 
   if (body instanceof Object && Object.keys(body).length > 0) {
     return Object.values(body)
-      .map((bodyValue) =>
-        bodyValue instanceof Array ? bodyValue.join(' ') : bodyValue
+      .map((bodyValue) =>Array.isArray(bodyValue) ? bodyValue.join(' ') : bodyValue
       )
       .join(' ')
   }

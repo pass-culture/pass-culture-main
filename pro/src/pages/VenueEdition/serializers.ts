@@ -46,8 +46,7 @@ function serializeOpeningHours(
     !alreadyHasOpeningHours &&
     !OPENING_HOURS_DAYS.some(
       (d) =>
-        formValues.openingHours &&
-        formValues.openingHours[d] &&
+        formValues.openingHours?.[d] &&
         formValues.openingHours[d].length > 0
     )
   ) {

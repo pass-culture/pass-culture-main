@@ -84,12 +84,10 @@ const DefaultBoxFormLayout = (args: BoxFormLayoutProps) => {
             </BoxFormLayout.Fields>
           </>
         ) : (
-          <>
-            <BoxFormLayout.Header
+          <BoxFormLayout.Header
               subtitle={'Je suis le sous-titre'}
               title="Adresse email"
             />
-          </>
         )}
       </BoxRounded>
     </BoxFormLayout>

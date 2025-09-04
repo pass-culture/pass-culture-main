@@ -234,7 +234,7 @@ describe('Income', () => {
 
       // Years are sorted in descending order, so the last/most recent year
       // is the first item of the list of filters.
-      const mostRecentYear = years.sort((a, b) => parseInt(b) - parseInt(a))[0]
+      const mostRecentYear = years.sort((a, b) => parseInt(b, 10) - parseInt(a, 10))[0]
       expect(
         screen.getByRole('button', {
           name: `Afficher les revenus de l'année ${mostRecentYear}`,
@@ -263,7 +263,7 @@ describe('Income', () => {
       const years = [...Object.keys(MOCK_DATA.incomeByYear)]
       // Years are sorted in descending order, so the last/most recent year
       // is the first item of the list of filters.
-      const mostRecentYear = years.sort((a, b) => parseInt(b) - parseInt(a))[0]
+      const mostRecentYear = years.sort((a, b) => parseInt(b, 10) - parseInt(a, 10))[0]
       expect(
         screen.getByRole('button', {
           name: `Afficher les revenus de l'année ${mostRecentYear}`,

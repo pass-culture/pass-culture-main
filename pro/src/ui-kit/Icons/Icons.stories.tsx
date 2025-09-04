@@ -9,7 +9,7 @@ import styles from './Icons.module.scss'
 import { fullIcons, otherIcons, strokeIcons } from './iconsList'
 
 const fuzzyMatch = (pattern: string, str: string) => {
-  pattern = '.*' + pattern.toLowerCase().split('').join('.*') + '.*'
+  pattern = `.*${pattern.toLowerCase().split('').join('.*')}.*`
   const re = new RegExp(pattern)
   return re.test(str.toLowerCase())
 }

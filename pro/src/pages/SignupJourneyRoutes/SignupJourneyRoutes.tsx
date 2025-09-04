@@ -23,8 +23,7 @@ export const SignupJourneyRoutes = () => {
     }
   }, [])
   return (
-    <>
-      <Layout layout="funnel">
+    <Layout layout="funnel">
         <Header disableHomeLink={!currentUser?.hasUserOfferer} />
         <SignupJourneyContextProvider>
           <SignupJourneyFormLayout>
@@ -32,7 +31,6 @@ export const SignupJourneyRoutes = () => {
           </SignupJourneyFormLayout>
         </SignupJourneyContextProvider>
       </Layout>
-    </>
   )
 }
 

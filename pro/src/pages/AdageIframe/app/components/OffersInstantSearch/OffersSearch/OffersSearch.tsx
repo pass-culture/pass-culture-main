@@ -83,7 +83,8 @@ export const OffersSearch = ({
         mainOffersSearchResults.queryID
       )
     }
-  }, [mainOffersSearchResults?.queryID])
+  }, [mainOffersSearchResults?.queryID, mainOffersSearchResults, // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      logFiltersOnSearch])
 
   const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
   const isUserInMarseilleProgram = (adageUser.programs ?? []).some(
@@ -195,7 +196,7 @@ export const OffersSearch = ({
       onSubmit()
       setIsUserTriggered(false)
     }
-  }, [localisationFilterState, isUserTriggered])
+  }, [localisationFilterState, isUserTriggered, onSubmit])
 
   const offerFilterRef = useRef<HTMLDivElement>(null)
   const [isOfferFiltersVisible] = useIsElementVisible(offerFilterRef)

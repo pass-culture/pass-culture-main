@@ -139,7 +139,7 @@ export const OfferEducationalForm = ({
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       handleOffererValues()
     })
-  }, [userOfferer?.id])
+  }, [userOfferer?.id, mode, setValue, userOfferer, formState.defaultValues?.venueId])
 
   const logOnImageDropOrSelected = () => {
     logEvent(Events.DRAG_OR_SELECTED_IMAGE, {

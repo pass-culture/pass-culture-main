@@ -33,10 +33,8 @@ const activeOffer = (institutionDisplayName?: string) => ({
           <b>{institutionDisplayName}</b>
         </>
       ) : (
-        <>
-          des établissement scolaires qui sont dans la ou les zones de mobilité
-          sélectionnées.
-        </>
+        "des établissement scolaires qui sont dans la ou les zones de mobilité
+          sélectionnées."
       )}
     </>
   ),

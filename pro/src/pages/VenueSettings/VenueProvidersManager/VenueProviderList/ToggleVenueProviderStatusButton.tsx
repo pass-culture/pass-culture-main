@@ -51,8 +51,7 @@ export const ToggleVenueProviderStatusButton = ({
   }
 
   return (
-    <>
-      <ToggleVenueProviderStatusDialog
+    <ToggleVenueProviderStatusDialog
         onCancel={() => setIsModalOpen(false)}
         onConfirm={updateVenueProviderStatus}
         isLoading={isLoading}
@@ -80,6 +79,5 @@ export const ToggleVenueProviderStatusButton = ({
           )
         }
       />
-    </>
   )
 }

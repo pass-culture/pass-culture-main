@@ -163,7 +163,7 @@ export const IndividualOffersContainer = ({
         offererAddresses={offererAddresses}
         searchButtonRef={searchButtonRef}
       />
-      <>
+      
         <HeadlineOffer />
 
         <div role="status">
@@ -240,7 +240,7 @@ export const IndividualOffersContainer = ({
             />
           )}
         </div>
-      </>
+      
     </div>
   )
 }

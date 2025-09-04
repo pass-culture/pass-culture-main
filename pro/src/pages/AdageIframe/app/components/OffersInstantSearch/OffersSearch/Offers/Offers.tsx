@@ -125,7 +125,7 @@ export const Offers = ({
         isMobile: isMobileScreen,
       })
     }
-  }, [isMobileScreen])
+  }, [isMobileScreen, adageViewType, location.pathname])
 
   useEffect(() => {
     if (isMobileScreen) {

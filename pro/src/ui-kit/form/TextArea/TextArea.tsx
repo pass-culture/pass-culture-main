@@ -158,7 +158,8 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     useEffect(() => {
       // Set the textarea height after the first render to fit the initial content
       updateTextAreaHeight()
-    }, [textValue])
+    }, [// Set the textarea height after the first render to fit the initial content
+      updateTextAreaHeight])
 
     // Constructing aria-describedby attribute
     const describedBy = [`field-characters-count-description-${name}`, errorId]
@@ -173,7 +174,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         textAreaRef.current.focus()
         textAreaRef.current.setSelectionRange(128, 128)
       }
-      onPressTemplateButton && onPressTemplateButton()
+      onPressTemplateButton?.()
     }
 
     return (

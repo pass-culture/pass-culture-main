@@ -138,7 +138,7 @@ export const IndividualActionsCells = ({
           triggerTooltip
           dropdownTriggerRef={dropdownTriggerRef}
         >
-          <>
+          
             <EditOfferCell editionOfferLink={editionOfferLink} />
             {offer.status === OFFER_STATUS_DRAFT ? (
               <DeleteDraftCell
@@ -161,7 +161,7 @@ export const IndividualActionsCells = ({
                 }
               />
             )}
-          </>
+          
         </DropdownMenuWrapper>
       </div>
       <ConfirmDialog

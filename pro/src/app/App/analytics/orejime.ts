@@ -70,7 +70,7 @@ export const useOrejime = () => {
       setConsentedToFirebase(false)
       setConsentedToBeamer(false)
     }
-  }, [location.pathname])
+  }, [location.pathname, addListener])
 
   return { consentedToBeamer, consentedToFirebase }
 }

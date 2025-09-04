@@ -37,7 +37,8 @@ export const UserEmail = ({
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getPendingEmailRequest()
-  }, [])
+  }, [// eslint-disable-next-line @typescript-eslint/no-floating-promises
+    getPendingEmailRequest])
 
   return (
     <BoxFormLayout>

@@ -21,7 +21,7 @@ export const App = (): JSX.Element => {
   const [user, setUser] = useState<AuthenticatedResponse | null>()
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
-  const notification = useNotification()
+  const _notification = useNotification()
 
   const params = new URLSearchParams(window.location.search)
   const siret = params.get('siret')
@@ -63,7 +63,8 @@ export const App = (): JSX.Element => {
         source: siret || venueId ? 'partnersMap' : 'homepage',
       })
     }
-  }, [notification, siret, venueId])
+  }, [siret, venueId, // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      logCatalogView])
 
   if (isLoading) {
     return <LoaderPage />

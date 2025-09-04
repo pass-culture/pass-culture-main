@@ -145,9 +145,9 @@ export const FormLocation = ({
                     disabled={disableForm}
                   >
                     {isManualEdition ? (
-                      <>Revenir à la sélection automatique</>
+                      "Revenir à la sélection automatique"
                     ) : (
-                      <>Vous ne trouvez pas votre adresse ?</>
+                      "Vous ne trouvez pas votre adresse ?"
                     )}
                   </Button>
                   {isManualEdition && (

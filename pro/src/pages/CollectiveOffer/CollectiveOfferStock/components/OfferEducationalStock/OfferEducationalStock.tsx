@@ -139,7 +139,7 @@ export const OfferEducationalStock = <
               pas validé la réservation.
             </Callout>
             <FormLayout.Section title="Indiquez le prix et la date de votre offre">
-              <>
+              
                 <p className={styles['description-text']}>
                   Indiquez le prix total TTC de l’évènement et le nombre de
                   personnes qui y participeront.
@@ -155,7 +155,7 @@ export const OfferEducationalStock = <
                   canEditDates={canEditDates}
                   preventPriceIncrease={preventPriceIncrease}
                 />
-              </>
+              
 
               <FormLayout.Row>
                 <TextArea
@@ -172,7 +172,7 @@ export const OfferEducationalStock = <
               </FormLayout.Row>
             </FormLayout.Section>
             <FormLayout.Section title="Conditions de réservation">
-              <>
+              
                 <p className={styles['description-text']}>
                   Indiquez la date limite avant laquelle l’offre doit être
                   réservée par l’enseignant puis par le chef d’établissement. À
@@ -195,7 +195,7 @@ export const OfferEducationalStock = <
                     asterisk={false}
                   />
                 </FormLayout.Row>
-              </>
+              
             </FormLayout.Section>
             <ActionsBarSticky>
               <ActionsBarSticky.Left>

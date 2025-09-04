@@ -81,7 +81,7 @@ export function DropdownMenuWrapper({
         ref={dropdownTriggerRef}
       >
         {triggerTooltip ? (
-          <ListIconButton icon={icon} tooltipContent={<>{title}</>} />
+          <ListIconButton icon={icon} tooltipContent={title} />
         ) : (
           <SvgIcon
             src={icon}

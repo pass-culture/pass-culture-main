@@ -19,7 +19,7 @@ export const generateSiretValidationSchema = (
   isVenueVirtual: boolean,
   isSiretValued: boolean,
   siren?: string | null,
-  initialSiret?: string
+  _initialSiret?: string
 ) => {
   const siretValidationSchema = {
     siret: isVenueVirtual

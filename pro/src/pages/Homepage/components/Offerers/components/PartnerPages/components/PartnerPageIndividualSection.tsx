@@ -59,7 +59,7 @@ export function PartnerPageIndividualSection({
       >
         Gérer votre page pour le grand public
       </ButtonLink>
-      <>
+      
         <ButtonLink
           variant={ButtonVariant.TERNARY}
           icon={fullLinkIcon}
@@ -80,7 +80,7 @@ export function PartnerPageIndividualSection({
         >
           Copier le lien de la page
         </Button>
-      </>
+      
     </section>
   )
 }

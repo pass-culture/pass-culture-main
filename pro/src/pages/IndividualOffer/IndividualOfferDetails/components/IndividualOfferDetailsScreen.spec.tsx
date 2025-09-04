@@ -734,10 +734,10 @@ describe('IndividualOfferDetailsScreen', () => {
           },
           contextValue: context,
           initialRoute:
-            getIndividualOfferPath({
+            `${getIndividualOfferPath({
               step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
               mode: OFFER_WIZARD_MODE.CREATION,
-            }) + '?offer-type=PHYSICAL_GOOD',
+            })}?offer-type=PHYSICAL_GOOD`,
         })
 
         await waitFor(() => {
@@ -761,10 +761,10 @@ describe('IndividualOfferDetailsScreen', () => {
           },
           contextValue: context,
           initialRoute:
-            getIndividualOfferPath({
+            `${getIndividualOfferPath({
               step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
               mode: OFFER_WIZARD_MODE.CREATION,
-            }) + '?offer-type=PHYSICAL_GOOD',
+            })}?offer-type=PHYSICAL_GOOD`,
         })
         expect(screen.queryByText(eanSearchTitle)).not.toBeInTheDocument()
       })
@@ -800,10 +800,10 @@ describe('IndividualOfferDetailsScreen', () => {
             },
             contextValue: context,
             initialRoute:
-              getIndividualOfferPath({
+              `${getIndividualOfferPath({
                 step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
                 mode: OFFER_WIZARD_MODE.CREATION,
-              }) + '?offer-type=PHYSICAL_GOOD',
+              })}?offer-type=PHYSICAL_GOOD`,
           })
           const button = screen.getByRole('button', {
             name: eanSearchButtonLabel,
@@ -858,10 +858,10 @@ describe('IndividualOfferDetailsScreen', () => {
             },
             contextValue: context,
             initialRoute:
-              getIndividualOfferPath({
+              `${getIndividualOfferPath({
                 step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
                 mode: OFFER_WIZARD_MODE.CREATION,
-              }) + '?offer-type=PHYSICAL_GOOD',
+              })}?offer-type=PHYSICAL_GOOD`,
           })
           const button = screen.getByRole('button', {
             name: eanSearchButtonLabel,
@@ -912,10 +912,10 @@ describe('IndividualOfferDetailsScreen', () => {
             },
             contextValue: context,
             initialRoute:
-              getIndividualOfferPath({
+              `${getIndividualOfferPath({
                 step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
                 mode: OFFER_WIZARD_MODE.CREATION,
-              }) + '?offer-type=PHYSICAL_GOOD',
+              })}?offer-type=PHYSICAL_GOOD`,
           })
 
           await waitFor(() => {
@@ -949,10 +949,10 @@ describe('IndividualOfferDetailsScreen', () => {
             },
             contextValue: context,
             initialRoute:
-              getIndividualOfferPath({
+              `${getIndividualOfferPath({
                 step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
                 mode: OFFER_WIZARD_MODE.CREATION,
-              }) + '?offer-type=PHYSICAL_GOOD',
+              })}?offer-type=PHYSICAL_GOOD`,
           })
           await waitFor(() => {
             expect(screen.getByText(eanSearchTitle)).toBeInTheDocument()
@@ -977,10 +977,10 @@ describe('IndividualOfferDetailsScreen', () => {
             },
             contextValue: context,
             initialRoute:
-              getIndividualOfferPath({
+              `${getIndividualOfferPath({
                 step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
                 mode: OFFER_WIZARD_MODE.CREATION,
-              }) + '?offer-type=PHYSICAL_GOOD',
+              })}?offer-type=PHYSICAL_GOOD`,
           })
           expect(screen.queryByText(eanSearchTitle)).not.toBeInTheDocument()
         })

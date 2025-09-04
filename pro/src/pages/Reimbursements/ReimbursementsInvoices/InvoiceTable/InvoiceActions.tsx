@@ -58,7 +58,7 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
       triggerIcon={fullThreeDotsIcon}
       triggerTooltip
     >
-      <>
+      
         <DropdownItem
           title="Télécharger le justificatif comptable (.pdf)"
           onSelect={() => downloadPDFFile(invoice.url)}
@@ -75,7 +75,7 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
             Télécharger le détail des réservations (.csv)
           </Button>
         </DropdownItem>
-      </>
+      
     </DropdownMenuWrapper>
   )
 }

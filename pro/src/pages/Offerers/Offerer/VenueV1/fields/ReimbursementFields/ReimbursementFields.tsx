@@ -29,11 +29,10 @@ export const ReimbursementFields = ({
         node.scrollIntoView()
       }, 200)
     }
-  }, [])
+  }, [scrollToSection])
 
   return (
-    <>
-      <div ref={scrollToReimbursementSection} id="reimbursement-section">
+    <div ref={scrollToReimbursementSection} id="reimbursement-section">
         <FormLayout.Section title="Barème de remboursement">
           {!venueHaveSiret && !offererHaveVenueWithSiret ? (
             <Callout
@@ -48,14 +47,11 @@ export const ReimbursementFields = ({
               devez avoir, au minimum, une structure rattachée à un SIRET.
             </Callout>
           ) : (
-            <>
-              {!venueHaveSiret && (
+            !venueHaveSiret && (
                 <PricingPoint offerer={offerer} venue={venue} />
-              )}
-            </>
+              )
           )}
         </FormLayout.Section>
       </div>
-    </>
   )
 }

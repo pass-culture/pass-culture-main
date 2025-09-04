@@ -82,10 +82,10 @@ export const Button = forwardRef(
             width="20"
           />
         )}
-        <>
+        
           {isLoading && loadingDiv}
           {children}
-        </>
+        
         {icon && !isLoading && iconPosition === IconPositionEnum.RIGHT && (
           <SvgIcon
             src={icon}

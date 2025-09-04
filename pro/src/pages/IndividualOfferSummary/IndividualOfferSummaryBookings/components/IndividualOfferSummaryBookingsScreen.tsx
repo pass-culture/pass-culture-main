@@ -63,7 +63,7 @@ export const IndividualOfferSummaryBookingsScreen = ({
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadBookings()
-  }, [setBookings, offer.id])
+  }, [offer.id])
 
   if (bookings?.length === 0) {
     return (

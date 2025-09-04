@@ -59,10 +59,8 @@ export const OffererBanners = ({
         </strong>
         <br />
         {hasAtLeastOnePhysicalVenue ? (
-          <>
-            Vos offres seront publiées sous réserve de validation de votre
-            structure.
-          </>
+          "Vos offres seront publiées sous réserve de validation de votre
+            structure."
         ) : (
           <>
             Nous vous invitons à créer une structure afin de pouvoir proposer

@@ -37,7 +37,7 @@ const EmailChangeValidation = (): JSX.Element => {
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     changeEmail()
-  }, [])
+  }, [dispatch, location.search])
 
   if (isSuccess === undefined) {
     return <></>

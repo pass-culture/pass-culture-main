@@ -11,5 +11,5 @@ export const useLogEventOnUnload = (logEvent: () => void) => {
     return () => {
       window.removeEventListener('beforeunload', onUnload)
     }
-  }, [logEventRef])
+  }, [])
 }

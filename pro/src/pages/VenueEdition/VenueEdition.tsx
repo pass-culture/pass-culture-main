@@ -78,7 +78,8 @@ export const VenueEdition = (): JSX.Element | null => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate('/accueil')
     }
-  }, [selectedOffererId, offererId])
+  }, [selectedOffererId, offererId, // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      navigate])
 
   useEffect(() => {
     if (context === 'partnerPage' && offerer) {

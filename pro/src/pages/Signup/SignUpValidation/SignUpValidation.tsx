@@ -44,7 +44,7 @@ export const SignupValidation = (): JSX.Element | null => {
             // TODO: if we use notify, the notification doesn't appear,
             // we have to send the message and status with get parameters
             setUrlToRedirect(
-              '/connexion?accountValidation=false&message=' + errors.global
+              `/connexion?accountValidation=false&message=${errors.global}`
             )
           } else {
             setUrlToRedirect('/connexion')

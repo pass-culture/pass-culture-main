@@ -119,7 +119,7 @@ export const VenueSettingsForm = ({
                 />
               </FormLayout.Row>
 
-              <>
+              
                 <FormLayout.Row>
                   <Button
                     variant={ButtonVariant.QUATERNARY}
@@ -127,14 +127,14 @@ export const VenueSettingsForm = ({
                     onClick={toggleManuallySetAddress}
                   >
                     {manuallySetAddress ? (
-                      <>Revenir à la sélection automatique</>
+                      "Revenir à la sélection automatique"
                     ) : (
-                      <>Vous ne trouvez pas votre adresse ?</>
+                      "Vous ne trouvez pas votre adresse ?"
                     )}
                   </Button>
                 </FormLayout.Row>
                 {manuallySetAddress && <AddressManual />}
-              </>
+              
             </>
           )}
         </FormLayout.Section>

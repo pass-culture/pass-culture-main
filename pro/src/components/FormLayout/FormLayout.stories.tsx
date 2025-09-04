@@ -98,10 +98,10 @@ const DesignedFormLayout = (args: FormLayoutProps) => (
         </FormLayout.Row>
         <FormLayout.SubSection title="Sub section title">
           <FormLayout.Row inline sideComponent={<DemoInformationBox />}>
-            <>
+            
               <TextInput label="Prénom" name="firstname" />
               <TextInput label="Nom" name="lastname" />
-            </>
+            
           </FormLayout.Row>
         </FormLayout.SubSection>
       </FormLayout.Section>

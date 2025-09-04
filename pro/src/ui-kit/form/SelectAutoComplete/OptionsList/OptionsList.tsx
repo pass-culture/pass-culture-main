@@ -35,7 +35,6 @@ export const OptionsList = ({
         data-testid="list"
         id={`list-${fieldName}`}
         ref={listRef}
-        role="listbox"
       >
         {filteredOptions.map(
           ({ value, label }: SelectOption, index: number) => {
@@ -54,7 +53,6 @@ export const OptionsList = ({
                 key={`option-display-${value}`}
                 onMouseEnter={() => setHoveredOptionIndex(index)}
                 onFocus={() => setHoveredOptionIndex(index)}
-                role="option"
                 tabIndex={-1}
               >
                 <span

@@ -78,7 +78,7 @@ export const BookingsRecapTable = <
 
   useEffect(() => {
     applyFilters()
-  }, [bookingsRecap])
+  }, [applyFilters])
 
   const updateGlobalFilters = (updatedFilters: Partial<BookingsFilters>) => {
     setFilters((filters) => {

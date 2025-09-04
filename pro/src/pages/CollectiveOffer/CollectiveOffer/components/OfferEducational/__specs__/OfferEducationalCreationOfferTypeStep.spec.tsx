@@ -201,7 +201,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
       )
 
       const title =
-        'a valid title ' + Array.from({ length: 50 }).map(() => 'test ')
+        `a valid title ${Array.from({ length: 50 }).map(() => 'test ')}`
       await userEvent.type(titleInput, title)
 
       expect(screen.getByTestId('counter-title')).toHaveTextContent(

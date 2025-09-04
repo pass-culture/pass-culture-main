@@ -50,12 +50,10 @@ export const BookedBanner = ({
     >
       <div>
         {isCancellationLimitDateInPast ? (
-          <>
-            La réservation n’est plus annulable par l’établissement scolaire. De
+          "La réservation n’est plus annulable par l’établissement scolaire. De
             votre côté, vous pouvez annuler la réservation ou modifier à la
             baisse le prix ou le nombre de participants jusqu’à 48 heures après
-            la date de l’évènement.
-          </>
+            la date de l’évènement."
         ) : (
           <>
             Le chef d’établissement a confirmé la préréservation de l’offre. À

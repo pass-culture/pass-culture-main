@@ -29,7 +29,7 @@ export const OffersTableHead = ({
   columns,
 }: OffersTableHeadProps): JSX.Element => {
   return (
-    <thead role="rowgroup" className={styles['offers-thead']}>
+    <thead className={styles['offers-thead']}>
       <tr>
         <th
           role="columnheader"

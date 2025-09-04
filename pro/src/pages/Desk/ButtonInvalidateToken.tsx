@@ -26,8 +26,7 @@ export const ButtonInvalidateToken = ({
   }
 
   return (
-    <>
-      <ConfirmDialog
+    <ConfirmDialog
         cancelText="Annuler"
         confirmText="Continuer"
         onCancel={closeDialog}
@@ -43,6 +42,5 @@ export const ButtonInvalidateToken = ({
           réservation ne vous sera pas remboursée.
         </p>
       </ConfirmDialog>
-    </>
   )
 }

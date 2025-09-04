@@ -117,7 +117,7 @@ export const IndividualOfferMediaScreen = ({
             {
               revalidate: false,
               populateCache: (
-                thumbnailResult: CreateThumbnailResponseModel | void,
+                thumbnailResult: CreateThumbnailResponseModel | undefined,
                 offer
               ) => {
                 // If defined, the result comes from a thumbnail

@@ -154,7 +154,7 @@ export const AdageMultiselect = ({
     setSortedOptions(
       (sortOptions ?? defaultSortOptions)(options, selectedItems)
     )
-  }, [isOpen])
+  }, [options, selectedItems, setDownshiftInputValue, sortOptions])
 
   return (
     <div className={styles['container']}>

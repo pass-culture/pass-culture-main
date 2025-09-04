@@ -46,8 +46,7 @@ export const initializeSentry = () => {
       }
       // Not really sure if these are sent to sentry or not.
       if (
-        event.sdkProcessingMetadata &&
-        event.sdkProcessingMetadata.normalizedRequest
+        event.sdkProcessingMetadata?.normalizedRequest
       ) {
         event.sdkProcessingMetadata.normalizedRequest.url =
           removeTokenFromFrontURL(
@@ -77,8 +76,7 @@ export const initializeSentry = () => {
       }
       // Not really sure if these are sent to sentry or not.
       if (
-        transactionEvent.sdkProcessingMetadata &&
-        transactionEvent.sdkProcessingMetadata.normalizedRequest
+        transactionEvent.sdkProcessingMetadata?.normalizedRequest
       ) {
         transactionEvent.sdkProcessingMetadata.normalizedRequest.url =
           removeTokenFromFrontURL(
@@ -171,7 +169,7 @@ export const useSentry = () => {
   const currentUser = useSelector(selectCurrentUser)
 
   useEffect(() => {
-    if (currentUser && currentUser.id) {
+    if (currentUser?.id) {
       Sentry.setUser({ id: currentUser.id.toString() })
     }
   }, [currentUser])

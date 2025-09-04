@@ -26,8 +26,7 @@ export const MultiSelectTrigger = ({
   error,
 }: MultiSelectTriggerProps): JSX.Element => {
   return (
-    <>
-      <button
+    <button
         type="button"
         className={cn(styles['trigger'], {
           [styles['trigger-selected']]: selectedCount > 0,
@@ -57,6 +56,5 @@ export const MultiSelectTrigger = ({
           src={isOpen ? fullUpIcon : fullDownIcon}
         />
       </button>
-    </>
   )
 }

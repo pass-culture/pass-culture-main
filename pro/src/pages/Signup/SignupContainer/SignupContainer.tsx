@@ -96,7 +96,7 @@ export const SignupContainer = (): JSX.Element => {
     errorsRef.current = errors
   }, [touchedFields, errors])
 
-  const logFormAbort = (): void | undefined => {
+  const logFormAbort = (): undefined | undefined => {
     const filledFields = Object.keys(touchedRef.current)
     if (filledFields.length === 0) {
       return
@@ -126,7 +126,7 @@ export const SignupContainer = (): JSX.Element => {
       }
       logFormAbort()
     }
-  }, [])
+  }, [logFormAbort])
 
   return (
     <section className={styles['content']}>

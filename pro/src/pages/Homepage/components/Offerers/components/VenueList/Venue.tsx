@@ -80,14 +80,14 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
                     : fullDisclosureCloseIcon
                 }
               />
-              <span data-testid={'venue-name-span-' + venue.id}>
+              <span data-testid={`venue-name-span-${venue.id}`}>
                 {venueDisplayName}
               </span>
             </button>
           ) : (
             <div
               className={styles['venue-name']}
-              data-testid={'venue-name-div-' + venue.id}
+              data-testid={`venue-name-div-${venue.id}`}
             >
               {venueDisplayName}
             </div>

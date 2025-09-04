@@ -176,13 +176,13 @@ describe('apiAdresse', () => {
         version: 'draft',
         features: [
           {
-            ...mockApiResponse.features![0],
+            ...mockApiResponse.features?.[0],
             properties: {
-              ...mockApiResponse.features![0].properties,
+              ...mockApiResponse.features?.[0].properties,
               type: 'street' as FeaturePropertyType,
             },
           },
-          mockApiResponse.features![0],
+          mockApiResponse.features?.[0],
         ],
       }
 

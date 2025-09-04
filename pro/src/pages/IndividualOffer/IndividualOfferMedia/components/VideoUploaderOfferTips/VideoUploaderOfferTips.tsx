@@ -5,7 +5,7 @@ import imageVideoTips from './video-tips.png'
 
 export const VideoUploaderTips = () => (
   <TipsBanner decorativeImage={imageVideoTips}>
-    <>
+    
       <p className={styles['hook']}>
         "2 jeunes sur 3 aimeraient voir des vidéos sur les offres culturelles du
         pass Culture."
@@ -16,6 +16,6 @@ export const VideoUploaderTips = () => (
         <li>Aftermovie d’une édition précédente </li>
         <li>Témoignages de participante, auteure, metteuse en scène...</li>
       </ul>
-    </>
+    
   </TipsBanner>
 )

@@ -71,7 +71,7 @@ export const AdageButtonFilter = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [containerRef, handleClickOutside])
+  }, [handleClickOutside])
 
   const clickModalButtonHandler = () => {
     setIsOpen((previousIsOpen) => ({

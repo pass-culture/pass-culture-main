@@ -45,11 +45,7 @@ const renderOffers = async (
 
       <router.Route
         path="/offres"
-        element={
-          <>
-            <h1>Offres individuelles</h1>
-          </>
-        }
+        element={<h1>Offres individuelles</h1>}
       />
     </router.Routes>,
     {

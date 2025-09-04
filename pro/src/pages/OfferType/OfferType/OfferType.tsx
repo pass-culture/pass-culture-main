@@ -160,8 +160,7 @@ export const OfferTypeScreen = ({ collectiveOnly }: OfferTypeScreenProps) => {
     offer.offerType === OFFER_TYPES.EDUCATIONAL && !offerer?.allowedOnAdage
 
   return (
-    <>
-      <div className={styles['offer-type-container']}>
+    <div className={styles['offer-type-container']}>
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <FormLayout>
@@ -207,6 +206,5 @@ export const OfferTypeScreen = ({ collectiveOnly }: OfferTypeScreenProps) => {
           </form>
         </FormProvider>
       </div>
-    </>
   )
 }

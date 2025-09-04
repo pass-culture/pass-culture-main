@@ -28,7 +28,7 @@ export const useQuerySearchFilters = (): Partial<SearchFiltersParams> => {
     // Convert page type to number
     urlFilters.page =
       typeof urlFilters.page === 'string'
-        ? parseInt(urlFilters.page)
+        ? parseInt(urlFilters.page, 10)
         : urlFilters.page
 
     return urlFilters
@@ -55,7 +55,7 @@ export const useQueryCollectiveSearchFilters =
     // Convert page type to number
     urlFilters.page =
       typeof urlFilters.page === 'string'
-        ? parseInt(urlFilters.page)
+        ? parseInt(urlFilters.page, 10)
         : urlFilters.page
 
     if (urlFilters.status && !Array.isArray(urlFilters.status)) {

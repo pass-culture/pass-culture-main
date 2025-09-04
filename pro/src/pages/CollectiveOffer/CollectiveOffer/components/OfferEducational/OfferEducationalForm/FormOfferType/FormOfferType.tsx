@@ -62,7 +62,7 @@ export const FormOfferType = ({
   const [programsOptions, setProgramsOptions] = useState<
     SelectOption<number>[]
   >(() =>
-    domainsValue && domainsValue.length
+    domainsValue?.length
       ? getAssociatedPrograms(domainsValue)
       : []
   )

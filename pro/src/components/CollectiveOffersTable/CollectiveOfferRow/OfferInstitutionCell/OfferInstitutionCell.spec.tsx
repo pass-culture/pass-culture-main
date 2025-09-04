@@ -24,15 +24,13 @@ const props = {
 
 const renderOfferInstitutionCell = (props: OfferInstitutionCellProps) =>
   renderWithProviders(
-    <>
-      <table>
+    <table>
         <tbody>
           <tr>
             <OfferInstitutionCell {...props} />
           </tr>
         </tbody>
       </table>
-    </>
   )
 
 describe('OfferInstitutionCell', () => {

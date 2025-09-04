@@ -115,7 +115,7 @@ export const IndividualOfferDetailsScreenNext = ({
     //  If we go from an offer edition details page to the offer creation,
     // the offerId is then null but the page remains the same so the form would not be reset
     form.reset(getInitialValues())
-  }, [initialOffer?.id, form.reset])
+  }, [form.reset, getInitialValues])
 
   const hasSelectedProduct = !!form.watch('productId')
   const selectedSubcategoryId = form.watch('subcategoryId')

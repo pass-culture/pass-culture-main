@@ -56,7 +56,6 @@ export const AppLayout = (): JSX.Element => {
         return `recherche${search}`
       case 'decouverte':
         return `decouverte${search}`
-      case null:
       default:
         if (redirectToSearch) {
           return `recherche${search}${

@@ -110,7 +110,7 @@ export const PrebookingButton = ({
     setOfferPrebooked?.(true)
     closeModal()
     notification.success('Votre préréservation a été effectuée avec succès')
-  }, [stock.id, offerId, queryId])
+  }, [stock.id, closeModal, institutionOfferCount, isPreview, notification.error, notification.success, setInstitutionOfferCount, setOfferPrebooked])
 
   return canPrebookOffers ? (
     <>

@@ -91,7 +91,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadStocks()
-  }, [])
+  }, [offer, reset])
 
   // validation is tested in getValidationSchema
   // and it's not possible as is to test it here
@@ -275,7 +275,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               /* istanbul ignore next */
               mode === OFFER_WIZARD_MODE.EDITION &&
               stockId !== undefined &&
-              parseInt(getValues('bookingsQuantity') || '0') > 0
+              parseInt(getValues('bookingsQuantity') || '0', 10) > 0
             ) {
               setIsDeleteConfirmVisible(true)
             } else {

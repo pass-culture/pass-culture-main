@@ -57,10 +57,10 @@ export function formatPrice(
       )
     ) {
       formattedPrice =
-        price
+        `${price
           .toFixed(2)
           .replace(/\d(?=(\d{3})+\.)/g, '$& ') // space after each group of 3
-          .replace('.', ',') + ' €'
+          .replace('.', ',')} €`
     } else {
       sendSentryCustomError(e)
     }

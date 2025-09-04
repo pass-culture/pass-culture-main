@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useLocation } from 'react-router'
 
 export const useFocus = (): void => {
-  const location = useLocation()
+  const _location = useLocation()
 
   useEffect(() => {
     /* istanbul ignore next : E2E tested */
@@ -14,5 +14,5 @@ export const useFocus = (): void => {
     } else {
       document.getElementById('unaccessible-top-page')?.focus()
     }
-  }, [location.pathname])
+  }, [])
 }

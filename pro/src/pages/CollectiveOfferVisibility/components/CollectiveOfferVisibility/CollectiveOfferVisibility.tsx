@@ -287,8 +287,7 @@ export const CollectiveOfferVisibilityScreen = ({
                 {isLoadingInstitutions ? (
                   <Spinner />
                 ) : (
-                  <>
-                    <SelectAutocomplete
+                  <SelectAutocomplete
                       name="institution"
                       options={institutionsOptions}
                       label="Nom de l’établissement scolaire ou code UAI"
@@ -311,7 +310,6 @@ export const CollectiveOfferVisibilityScreen = ({
                       }
                       value={watch('institution')}
                     />
-                  </>
                 )}
               </FormLayout.Row>
               <FormLayout.Row className={styles['row-layout']}>

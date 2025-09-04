@@ -90,7 +90,7 @@ export const useCollectiveOfferImageUpload = (
         )
       }
     },
-    [imageOffer, imageToUpload]
+    [imageOffer, imageToUpload, isTemplate, notify.error, offer.imageUrl]
   )
 
   return {

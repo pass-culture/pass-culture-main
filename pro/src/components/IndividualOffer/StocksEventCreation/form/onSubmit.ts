@@ -28,7 +28,7 @@ export const onSubmit = async (
   departmentCode: string,
   offerId: number,
   notify: ReturnType<typeof useNotification>
-): Promise<StocksEvent[] | void> => {
+): Promise<StocksEvent[] | undefined> => {
   const dates = getRecurrenceDates(values)
   const generatedStocks = generateStocksForDates(values, dates, departmentCode)
 
@@ -78,9 +78,9 @@ export const onSubmit = async (
 const getYearMonthDay = (date: string) => {
   const [year, month, day] = date.split('-')
   return {
-    year: parseInt(year),
-    month: parseInt(month) - 1,
-    day: parseInt(day),
+    year: parseInt(year, 10),
+    month: parseInt(month, 10) - 1,
+    day: parseInt(day, 10),
   }
 }
 
@@ -212,7 +212,7 @@ const generateStocksForDates = (
 
             return {
               priceCategoryId: quantityPerPriceCategory.priceCategory
-                ? parseInt(quantityPerPriceCategory.priceCategory)
+                ? parseInt(quantityPerPriceCategory.priceCategory, 10)
                 : 0,
               quantity: quantityPerPriceCategory.quantity || null,
               beginningDatetime,

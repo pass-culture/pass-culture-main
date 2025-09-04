@@ -13,7 +13,7 @@ type IndividualImageOfferContextValues = {
   handleEanImage: (imageUrl?: string) => void
   handleImageOnSubmit: (
     offerId: number
-  ) => Promise<CreateThumbnailResponseModel | void>
+  ) => Promise<CreateThumbnailResponseModel | undefined>
 }
 
 export const useIndividualOfferImageUpload = (

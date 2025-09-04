@@ -71,8 +71,7 @@ export const RadioButton = forwardRef(
     const isVariantDetailed = variant === 'detailed'
 
     return (
-      <>
-        <div
+      <div
           className={cn(styles['radio-button'], {
             [styles['sizing-fill']]: sizing === 'fill',
             [styles['variant-detailed']]: isVariantDetailed,
@@ -117,7 +116,6 @@ export const RadioButton = forwardRef(
             <div className={styles['collapsed']}>{collapsed}</div>
           )}
         </div>
-      </>
     )
   }
 )

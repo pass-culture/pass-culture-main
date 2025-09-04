@@ -138,7 +138,7 @@ export const SelectAutocomplete = forwardRef(
         onReset()
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isDropdownOpen, resetOnOpen])
+    }, [isDropdownOpen, resetOnOpen, onReset])
 
     // Clicking outside the container will close the dropdown
     useEffect(() => {
@@ -153,7 +153,7 @@ export const SelectAutocomplete = forwardRef(
       return () => {
         document.removeEventListener('mousedown', handleClickOutside)
       }
-    }, [containerRef])
+    }, [])
 
     // Handle "onSearch" prop for parent which may want to get the searchField information
     useEffect(() => {
@@ -167,7 +167,7 @@ export const SelectAutocomplete = forwardRef(
 
       onSearch(searchField.trim())
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchField])
+    }, [searchField, onSearch])
 
     // Compute options filter by search, using the default `searchInOptions` function (or a custom one, if provided via the props)
     const filteredOptions = searchInOptions(options, searchField)
@@ -278,7 +278,7 @@ export const SelectAutocomplete = forwardRef(
         optionsLabelById.current?.get(externalValue) ?? externalValue
       )
       setField(externalValue) // Provokes a re-render and also updates the hidden <select> element connected to the "field" (a11y)
-    }, [inputRef, inputValue, ref])
+    }, [inputValue, ref])
 
     // Connect the external reference to the internal one "inputRef", so we can read it's value in the "useEffect" above
     useImperativeHandle(ref, () => inputRef.current as HTMLInputElement)

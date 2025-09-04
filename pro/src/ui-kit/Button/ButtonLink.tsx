@@ -117,7 +117,7 @@ export const ButtonLink = forwardRef(
         {variant === ButtonVariant.BOX ? (
           <div className={styles['button-arrow-content']}>{children}</div>
         ) : (
-          <>{children}</>
+          children
         )}
         {iconPosition === IconPositionEnum.RIGHT && svgIcon}
       </>

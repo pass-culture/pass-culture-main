@@ -79,7 +79,7 @@ export const CollectiveBookingsTable = ({
 
   useEffect(() => {
     setPage(1)
-  }, [bookings, setPage])
+  }, [setPage])
 
   const { logEvent } = useAnalytics()
 

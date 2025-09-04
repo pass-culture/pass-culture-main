@@ -1,5 +1,5 @@
 import { defineConfig } from 'cypress'
-import fs from 'fs'
+import fs from 'node:fs'
 
 import cypressFailFast = require('cypress-fail-fast/plugin')
 
@@ -9,8 +9,8 @@ export default defineConfig({
       cypressFailFast(on, config)
       on(
         'after:spec',
-        (spec: Cypress.Spec, results: CypressCommandLine.RunResult) => {
-          if (results && results.video) {
+        (_spec: Cypress.Spec, results: CypressCommandLine.RunResult) => {
+          if (results?.video) {
             // Do we have failures for any retry attempts?
             const failures = results.tests.some((test) =>
               test.attempts.some((attempt) => attempt.state === 'failed')

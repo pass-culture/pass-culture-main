@@ -146,8 +146,7 @@ export const Income = () => {
               <IncomeError />
             </div>
           ) : (
-            <>
-              {!hasIncomeData ? (
+            !hasIncomeData ? (
                 <IncomeNoData type="income" />
               ) : (
                 <>
@@ -209,8 +208,7 @@ export const Income = () => {
                     </div>
                   )}
                 </>
-              )}
-            </>
+              )
           )}
         </>
       )}

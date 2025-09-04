@@ -145,8 +145,6 @@ const getLineStyle = (
       return cn(styles['line'], styles['line-waiting'])
     case TimelineStepType.DISABLED:
       return cn(styles['line'], styles['line-disabled'])
-    case TimelineStepType.CANCELLED:
-    case TimelineStepType.REFUSED:
     default:
       return undefined
   }

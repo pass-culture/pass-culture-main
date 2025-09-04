@@ -71,8 +71,7 @@ export const PartnerPages = ({
       </p>
 
       {venues.length > 1 && (
-        <>
-          <FieldLayout label="Sélectionnez votre page partenaire" name="venues">
+        <FieldLayout label="Sélectionnez votre page partenaire" name="venues">
             <SelectInput
               name="venues"
               options={venuesOptions}
@@ -87,7 +86,6 @@ export const PartnerPages = ({
               }}
             />
           </FieldLayout>
-        </>
       )}
 
       {venue && (
