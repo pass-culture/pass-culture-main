@@ -25,6 +25,7 @@ import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import { getSuccessMessage } from '@/pages/IndividualOffer/commons/getSuccessMessage'
@@ -32,7 +33,6 @@ import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBa
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { PriceInput } from '@/ui-kit/form/PriceInput/PriceInput'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { DEFAULT_PRICE_TABLE_ENTRY_LABEL_WHEN_SINGLE } from '../../IndividualOfferPriceTable/commons/constants'
 import { arePriceCategoriesChanged } from '../commons/arePriceCategoriesChanged'
@@ -100,7 +100,7 @@ export const IndividualOfferPriceCategoriesScreen = ({
   useEffect(() => {
     const newValues = computeInitialValues(offer, isCaledonian)
     hookForm.reset(newValues)
-  }, [isCaledonian, offer])
+  }, [isCaledonian, offer, hookForm.reset])
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -285,6 +285,7 @@ export const IndividualOfferPriceCategoriesScreen = ({
                 return onDeletePriceCategory(
                   //  TODO : restructure this composant so that this hack is not necessary
                   //  By creating a component for each of the price category lines
+                  // biome-ignore lint/style/noNonNullAssertion: See TODO
                   currentDeletionIndex!,
                   priceCategories
                 )
@@ -307,38 +308,39 @@ export const IndividualOfferPriceCategoriesScreen = ({
                   mdSpaceAfter
                   className={styles['form-layout-row-price-category']}
                 >
-                  <TextInput
-                    {...register(`priceCategories.${index}.label`)}
-                    name={`priceCategories.${index}.label`}
-                    label="Intitulé du tarif"
-                    description="Par exemple : catégorie 2, moins de 18 ans, pass 3 jours..."
-                    maxLength={PRICE_CATEGORY_LABEL_MAX_LENGTH}
-                    count={priceCategories[index]?.label.length}
-                    className={styles['label-input']}
-                    labelClassName={styles['label-input-label']}
-                    disabled={priceCategories.length <= 1 || isDisabled}
-                    error={errors.priceCategories?.[index]?.label?.message}
-                    autoComplete="off"
-                  />
-                  <PriceInput
-                    name={`priceCategories.${index}.price`}
-                    className={styles['price-input']}
-                    value={watch(`priceCategories.${index}.price`)}
-                    label="Prix par personne"
-                    currency={isCaledonian ? 'XPF' : 'EUR'}
-                    disabled={isDisabled}
-                    showFreeCheckbox
-                    hideAsterisk={true}
-                    smallLabel
-                    onChange={(event) => {
-                      setValue(
-                        `priceCategories.${index}.price`,
-                        event.target.valueAsNumber,
-                        { shouldValidate: true, shouldDirty: true }
-                      )
-                    }}
-                    error={errors.priceCategories?.[index]?.price?.message}
-                  />
+                  <div className={styles['label-input']}>
+                    <TextInput
+                      {...register(`priceCategories.${index}.label`)}
+                      label="Intitulé du tarif"
+                      description="Par exemple : catégorie 2, moins de 18 ans, pass 3 jours..."
+                      charactersCount={{
+                        max: PRICE_CATEGORY_LABEL_MAX_LENGTH,
+                        current: priceCategories[index]?.label.length,
+                      }}
+                      disabled={priceCategories.length <= 1 || isDisabled}
+                      error={errors.priceCategories?.[index]?.label?.message}
+                      autoComplete="off"
+                    />
+                  </div>
+                  <div className={styles['price-input']}>
+                    <PriceInput
+                      name={`priceCategories.${index}.price`}
+                      value={watch(`priceCategories.${index}.price`)}
+                      label="Prix par personne"
+                      currency={isCaledonian ? 'XPF' : 'EUR'}
+                      disabled={isDisabled}
+                      showFreeCheckbox
+                      hideAsterisk
+                      onChange={(event) => {
+                        setValue(
+                          `priceCategories.${index}.price`,
+                          event.target.valueAsNumber,
+                          { shouldValidate: true, shouldDirty: true }
+                        )
+                      }}
+                      error={errors.priceCategories?.[index]?.price?.message}
+                    />
+                  </div>
 
                   {mode === OFFER_WIZARD_MODE.CREATION && (
                     <Button

@@ -2,23 +2,19 @@ import React, { type ForwardedRef, useEffect, useRef, useState } from 'react'
 
 import type { Currency } from '@/commons/core/shared/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
-import strokeEuroIcon from '@/icons/stroke-euro.svg'
-import strokeFrancIcon from '@/icons/stroke-franc.svg'
 import {
   TextInput,
   type TextInputProps,
-} from '@/ui-kit/form/TextInput/TextInput'
-
-import styles from './PriceInput.module.scss'
+} from '@/design-system/TextInput/TextInput'
 
 /**
  * Props for the PriceInput component.
  *
- * @extends Pick<TextInputProps, 'name' | 'max' | 'rightIcon' | 'disabled' | 'smallLabel' | 'className'>
+ * @extends Pick<TextInputProps, 'name' | 'max' | 'disabled'>
  */
 export type PriceInputProps = Pick<
   TextInputProps,
-  'name' | 'max' | 'rightIcon' | 'disabled' | 'smallLabel' | 'className'
+  'name' | 'max' | 'disabled' | 'description'
 > & {
   /**
    * A label for the input,
@@ -56,6 +52,7 @@ export type PriceInputProps = Pick<
    * @default EUR
    */
   currency?: Currency
+  description?: string
 }
 
 /**
@@ -72,26 +69,20 @@ export type PriceInputProps = Pick<
  *  label="Price"
  *  name="price"
  *  max={100}
- *  rightIcon={strokeEuroIcon}
  * />
- *
- * @accessibility
- * - **Labels**: Always provide a meaningful label using the `label` prop.
  */
 export const PriceInput = React.forwardRef(
   (
     {
-      className,
       name,
       label,
       value,
       max,
-      rightIcon,
       disabled,
-      smallLabel,
       showFreeCheckbox,
       hideAsterisk = false,
       error,
+      description,
       currency = 'EUR',
       onChange,
       onBlur,
@@ -105,9 +96,9 @@ export const PriceInput = React.forwardRef(
     const initialIsFree = value === 0
     const [isFree, setIsFree] = useState(initialIsFree)
 
-    const currencyIcon = currency === 'XPF' ? strokeFrancIcon : strokeEuroIcon
     const step = currency === 'XPF' ? 1 : 0.01
-    const hasDecimal = currency === 'EUR'
+
+    const labelCurrency = currency === 'XPF' ? '(en F)' : '(en €)'
 
     useEffect(() => {
       // Move focus to the price input if free is unchecked.
@@ -166,30 +157,30 @@ export const PriceInput = React.forwardRef(
       <div ref={ref}>
         <TextInput
           ref={priceRef}
-          data-testid="input-price"
-          className={className}
-          labelClassName={smallLabel ? styles['input-layout-small-label'] : ''}
+          autoComplete="off"
           required={!hideAsterisk}
           name={name}
-          label={label}
-          value={value ?? ''}
+          label={`${label} ${labelCurrency}`}
+          value={value?.toString() ?? ''}
           type="number"
           step={step}
-          hasDecimal={hasDecimal}
           min={0}
           max={max}
-          rightIcon={rightIcon || currencyIcon}
           disabled={disabled}
+          description={description}
           asterisk={!hideAsterisk}
           onChange={onTextInputChange}
           onBlur={onBlur}
-          hasError={!!error}
+          onKeyDown={(event) => {
+            // If the number input should have no decimal, prevent the user from typing "," or "."
+            if (step === 1 && /[,.]/.test(event.key)) {
+              event.preventDefault()
+            }
+          }}
           error={error}
-          {...(showFreeCheckbox ? { InputExtension: inputExtension } : {})}
+          {...(showFreeCheckbox ? { extension: inputExtension } : {})}
         />
       </div>
     )
   }
 )
-
-PriceInput.displayName = 'PriceInput'

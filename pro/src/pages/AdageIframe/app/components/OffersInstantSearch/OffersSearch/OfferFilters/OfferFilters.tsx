@@ -398,7 +398,6 @@ export const OfferFilters = ({
                 <ModalFilterLayout
                   onClean={() => resetModalFilter('domains', [])}
                   onSearch={() => onSearch('domains')}
-                  title="Choisir un domaine artistique"
                 >
                   <AdageMultiselect
                     name="domains"
@@ -425,7 +424,6 @@ export const OfferFilters = ({
                 <ModalFilterLayout
                   onClean={() => resetModalFilter('formats', [])}
                   onSearch={() => onSearch('formats')}
-                  title="Choisir un format"
                 >
                   <AdageMultiselect
                     name="formats"
@@ -452,7 +450,6 @@ export const OfferFilters = ({
                 <ModalFilterLayout
                   onClean={() => resetModalFilter('students', [])}
                   onSearch={() => onSearch('students')}
-                  title="Choisir un niveau scolaire"
                 >
                   <AdageMultiselect
                     name="students"

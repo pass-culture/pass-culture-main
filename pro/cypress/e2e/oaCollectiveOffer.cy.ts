@@ -71,14 +71,14 @@ describe('Create collective offers with OA', () => {
   }
 
   const fillOfferDetails = (data = commonOfferData) => {
-    cy.findByLabelText('Titre de l’offre *').type(data.title)
+    cy.findByLabelText(/Titre de l’offre/).type(data.title)
     cy.findByLabelText(
       'Décrivez ici votre projet et son interêt pédagogique *'
     ).type(data.description)
     cy.findByText('Collège').click()
     cy.findByText('6e').click()
-    cy.findByLabelText('Email *').type(data.email)
-    cy.findByLabelText('Email auquel envoyer les notifications *').type(
+    cy.findAllByLabelText(/Email/).eq(0).type(data.email)
+    cy.findByLabelText(/Email auquel envoyer les notifications/).type(
       data.email
     )
     cy.findByText('Enregistrer et continuer').click()
@@ -88,7 +88,7 @@ describe('Create collective offers with OA', () => {
     cy.findByLabelText('Date de début').type(format(data.date, 'yyyy-MM-dd'))
     cy.findByLabelText('Horaire').type(data.time)
     cy.findByLabelText('Nombre de participants').type(data.participants)
-    cy.findByLabelText('Prix total TTC').type(data.price)
+    cy.findByLabelText(/Prix total TTC/).type(data.price)
     cy.findByLabelText('Informations sur le prix').type(data.priceDescription)
     cy.findByLabelText('Date limite de réservation').type(
       format(data.bookingLimitDate, 'yyyy-MM-dd')
@@ -185,7 +185,7 @@ describe('Create collective offers with OA', () => {
     cy.findByText('À un groupe scolaire').click()
     fillBasicOfferForm()
     cy.findByLabelText('Autre adresse').click()
-    cy.findByLabelText('Adresse postale *').type('10 Rue')
+    cy.findByLabelText(/Adresse postale/).type('10 Rue')
     cy.get('[data-testid="list"] li').first().click()
     fillOfferDetails()
     fillDatesAndPrice()
@@ -203,11 +203,13 @@ describe('Create collective offers with OA', () => {
       'Libellé de mon adresse custom'
     )
     cy.findByText('Vous ne trouvez pas votre adresse ?').click()
-    cy.findAllByLabelText('Adresse postale *').last().type('10 Rue du test')
-    cy.findAllByLabelText('Code postal *').type('75002')
-    cy.findAllByLabelText('Ville *').type('Paris')
+    cy.findAllByLabelText(/Adresse postale/)
+      .last()
+      .type('10 Rue du test')
+    cy.findAllByLabelText(/Code postal/).type('75002')
+    cy.findAllByLabelText(/Ville/).type('Paris')
     // eslint-disable-next-line cypress/unsafe-to-chain-command
-    cy.findAllByLabelText('Coordonnées GPS *')
+    cy.findAllByLabelText(/Coordonnées GPS/)
       .type('48.853320, 2.348979')
       .blur()
     cy.findByText('Vérifiez la localisation en cliquant ici').should(
@@ -256,13 +258,13 @@ describe('Create collective offers with OA', () => {
     cy.findByText('Une offre vitrine').click()
     cy.findByText('Étape suivante').click()
     fillBasicOfferForm()
-    cy.findByLabelText('Titre de l’offre *').type(commonOfferData.title)
+    cy.findByLabelText(/Titre de l’offre/).type(commonOfferData.title)
     cy.findByLabelText(
       'Décrivez ici votre projet et son interêt pédagogique *'
     ).type(commonOfferData.description)
     cy.findByText('Collège').click()
     cy.findByText('6e').click()
-    cy.findByLabelText('Email auquel envoyer les notifications *').type(
+    cy.findByLabelText(/Email auquel envoyer les notifications/).type(
       commonOfferData.email
     )
     cy.findByLabelText('Via un formulaire').click()
@@ -321,8 +323,9 @@ describe('Create collective offers with OA', () => {
     cy.wait('@duplicateOffers')
     cy.findByText(newOfferName).click()
     // eslint-disable-next-line cypress/unsafe-to-chain-command
-    cy.findByLabelText('Titre de l’offre *').clear().type('Offre dupliquée OA')
-    cy.findByLabelText('Email *').type(commonOfferData.email)
+    cy.findByLabelText(/Titre de l’offre/).clear()
+    cy.findByLabelText(/Titre de l’offre/).type('Offre dupliquée OA')
+    cy.findAllByLabelText(/Email/).eq(0).type(commonOfferData.email)
     cy.findByText('Enregistrer et continuer').click()
     fillDatesAndPrice()
     fillInstitution()
@@ -349,7 +352,7 @@ describe('Create collective offers with OA', () => {
     cy.findByLabelText('Intitulé de la localisation')
       .clear()
       .type('Libellé de mon adresse custom')
-    cy.findByLabelText('Adresse postale *').type('10 Rue')
+    cy.findByLabelText(/Adresse postale/).type('10 Rue')
     cy.get('[data-testid="list"] li').first().click()
     cy.findByText('Enregistrer et continuer').click()
     cy.contains('Intitulé : Libellé de mon adresse custom')

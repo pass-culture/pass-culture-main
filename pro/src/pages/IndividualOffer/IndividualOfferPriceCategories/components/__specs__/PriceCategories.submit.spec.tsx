@@ -72,7 +72,7 @@ describe('PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    const priceInput = screen.getByLabelText('Prix par personne')
+    const priceInput = screen.getByLabelText(/Prix par personne/)
     await userEvent.type(priceInput, '20')
     await userEvent.tab()
 
@@ -92,7 +92,7 @@ describe('PriceCategories', () => {
         priceCategories: [priceCategoryFactory({ id: 666 })],
       }),
     })
-    const priceInput = screen.getByLabelText('Prix par personne')
+    const priceInput = screen.getByLabelText(/Prix par personne/)
     await userEvent.type(priceInput, '20')
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
@@ -124,7 +124,7 @@ describe('PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
+    await userEvent.type(screen.getByLabelText(/Prix par personne/), '20')
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
@@ -159,7 +159,7 @@ describe('PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
+    await userEvent.type(screen.getByLabelText(/Prix par personne/), '20')
 
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
@@ -185,7 +185,7 @@ describe('PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
+    await userEvent.type(screen.getByLabelText(/Prix par personne/), '20')
 
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
@@ -217,7 +217,7 @@ describe('PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
+    await userEvent.type(screen.getByLabelText(/Prix par personne/), '20')
 
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
 

@@ -1,22 +1,14 @@
-import classNames from 'classnames'
 import { useEffect, useRef, useState } from 'react'
 
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import {
   TextInput,
   type TextInputProps,
-} from '@/ui-kit/form/TextInput/TextInput'
-
-import styles from './QuantityInput.module.scss'
+} from '@/design-system/TextInput/TextInput'
 
 export type QuantityInputProps = Pick<
   TextInputProps,
-  | 'disabled'
-  | 'className'
-  | 'required'
-  | 'asterisk'
-  | 'smallLabel'
-  | 'className'
+  'disabled' | 'required' | 'asterisk'
 > & {
   /**
    * A label for the text input.
@@ -41,11 +33,11 @@ export type QuantityInputProps = Pick<
   /**
    * The minimum value allowed for the quantity. Make sure it matches validation schema.
    */
-  minimum?: number
+  min?: number
   /**
    * The maximum value allowed for the quantity. Make sure it matches validation schema.
    */
-  maximum?: number
+  max?: number
   error?: string
   ariaLabel?: string
 }
@@ -68,11 +60,10 @@ export const QuantityInput = ({
   onChange,
   onBlur,
   disabled,
-  className,
   required,
   asterisk,
-  minimum = 0,
-  maximum = 1_000_000,
+  min = 0,
+  max = 1_000_000,
   value,
   error,
   ariaLabel,
@@ -102,13 +93,16 @@ export const QuantityInput = ({
   }, [isEmptyValue])
 
   const onQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.value && /[,.]/.test(event.target.value)) {
+      event.target.value = event.target.value.split('.')[0].split(',')[0]
+    }
     onChange?.(event)
 
     setIsUnlimited(event.target.value === '')
   }
 
   const onCheckboxChange = () => {
-    let nextFieldValue = `${minimum}`
+    let nextFieldValue = `${min}`
     if (!isUnlimited) {
       // If the checkbox is going to be checked,
       // we need to clear the quantity field as an empty
@@ -141,21 +135,19 @@ export const QuantityInput = ({
   return (
     <TextInput
       ref={quantityRef}
-      className={classNames(styles['quantity-row'], className)}
       name={quantityName}
       label={label}
       required={required}
       asterisk={asterisk}
       disabled={disabled}
       type="number"
-      hasDecimal={false}
-      min={minimum}
-      max={maximum}
+      min={min}
+      max={max}
       step={1}
-      InputExtension={inputExtension}
+      extension={inputExtension}
       onChange={onQuantityChange}
       onBlur={onBlur}
-      value={isUnlimited ? '' : (value ?? '')}
+      value={isUnlimited ? '' : (value?.toString() ?? '')}
       error={error}
       aria-label={ariaLabel}
     />

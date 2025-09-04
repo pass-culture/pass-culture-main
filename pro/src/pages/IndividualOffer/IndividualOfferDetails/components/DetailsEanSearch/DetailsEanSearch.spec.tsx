@@ -210,24 +210,6 @@ describe('DetailsEanSearch', () => {
         })
       })
 
-      it('should clear the form when the clear button is clicked', async () => {
-        const onEanReset = vi.fn()
-        renderDetailsEanSearch({
-          isDraftOffer: true,
-          wasEanSearchPerformedSuccessfully: true,
-          onEanReset,
-        })
-
-        const clearButton = screen.getByRole('button', {
-          name: clearButtonLabel,
-        })
-
-        expect(clearButton).toBeInTheDocument()
-
-        await userEvent.click(clearButton)
-        expect(onEanReset.mock.calls.length).toBe(1)
-      })
-
       it('should display an error message if POST API ends with an EAN err', async () => {
         const eanSubmitError = 'This EAN is already used'
         renderDetailsEanSearch({

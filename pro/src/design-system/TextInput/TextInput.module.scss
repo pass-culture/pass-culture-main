@@ -70,6 +70,7 @@ $icon-dimension: rem.torem(20px);
     height: $icon-dimension;
     width: $icon-dimension;
     right: var(--size-spacing-m);
+    z-index: 1;
 }
 
 .has-button .input {

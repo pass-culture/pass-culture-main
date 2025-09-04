@@ -40,7 +40,7 @@ export function QuantityPerPriceCategory({
         >
           <QuantityInput
             label="Nombre de places"
-            minimum={1}
+            min={1}
             name={`quantityPerPriceCategories.${index}.quantity`}
             error={
               formState.errors.quantityPerPriceCategories?.[index]?.quantity

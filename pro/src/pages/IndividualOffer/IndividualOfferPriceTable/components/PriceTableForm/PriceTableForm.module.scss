@@ -38,14 +38,14 @@ $icon-button-height: rem.torem(32px);
     flex-direction: row;
     gap: rem.torem(16px);
 
-    > .input-readonly {
+    >.input-readonly {
       &--first {
         margin-left: rem.torem(16px);
       }
 
       &,
       &--first {
-        > span {
+        >span {
           margin-top: rem.torem(7.5px);
         }
       }

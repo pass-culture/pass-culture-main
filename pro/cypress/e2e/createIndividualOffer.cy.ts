@@ -55,7 +55,7 @@ describe('Create individual offers', { testIsolation: false }, () => {
     cy.findByText('Étape suivante').click()
 
     cy.stepLog({ message: 'I fill in event details' })
-    cy.findByLabelText('Titre de l’offre *').type('Le Diner de Devs')
+    cy.findByLabelText(/Titre de l’offre/).type('Le Diner de Devs')
     cy.findByLabelText('Description').type(
       'Une PO invite des développeurs à dîner...'
     )
@@ -83,7 +83,7 @@ describe('Create individual offers', { testIsolation: false }, () => {
 
     cy.stepLog({ message: 'I fill in event useful informations' })
     cy.findByText('Retrait sur place (guichet, comptoir...)').click()
-    cy.findByLabelText('Email de contact communiqué aux bénéficiaires *').type(
+    cy.findByLabelText(/Email de contact communiqué aux bénéficiaires/).type(
       'passculture@example.com'
     )
     cy.injectAxe(DEFAULT_AXE_CONFIG)
@@ -98,30 +98,18 @@ describe('Create individual offers', { testIsolation: false }, () => {
     cy.findByText('Ajouter un tarif').click()
     cy.findByText('Ajouter un tarif').click()
 
-    cy.findByTestId('wrapper-priceCategories.0.label').within(() => {
-      // trouve le premier champ avec le label:
-      cy.findByLabelText('Intitulé du tarif').type('Carré Or')
-    })
-    cy.findByTestId('wrapper-priceCategories.0.price').within(() => {
-      // trouve le premier champ avec le label:
-      cy.findByLabelText('Prix par personne').type('100')
-    })
+    cy.findAllByLabelText('Intitulé du tarif').eq(0).type('Carré Or')
+    cy.findAllByLabelText(/Prix par personne/)
+      .eq(0)
+      .type('100')
 
-    cy.findByTestId('wrapper-priceCategories.1.label').within(() => {
-      // trouve le deuxième champ avec le label:
-      cy.findByLabelText('Intitulé du tarif').type('Fosse Debout')
-    })
-    cy.findByTestId('wrapper-priceCategories.1.price').within(() => {
-      // trouve le deuxième champ avec le label:
-      cy.findByLabelText('Prix par personne').type('10')
-    })
+    cy.findAllByLabelText('Intitulé du tarif').eq(1).type('Fosse Debout')
+    cy.findAllByLabelText(/Prix par personne/)
+      .eq(1)
+      .type('10')
 
-    cy.findByTestId('wrapper-priceCategories.2.label').within(() => {
-      // trouve le troisième champ avec le label:
-      cy.findByLabelText('Intitulé du tarif').type('Fosse Sceptique')
-    })
-    // manque un data-testid ou un accessibility label
-    cy.get('[name="priceCategories.2.price.free"]').click()
+    cy.findAllByLabelText('Intitulé du tarif').eq(2).type('Fosse Sceptique')
+    cy.findAllByRole('checkbox', { name: 'Gratuit' }).eq(2).click()
 
     cy.findByText('Accepter les réservations “Duo“').should('exist')
     cy.injectAxe(DEFAULT_AXE_CONFIG)
@@ -227,7 +215,7 @@ describe('Create individual offers', { testIsolation: false }, () => {
     cy.findByText('Étape suivante').click()
 
     cy.stepLog({ message: 'I fill in details for physical offer' })
-    cy.findByLabelText('Titre de l’offre *').type(offerTitle)
+    cy.findByLabelText(/Titre de l’offre/).type(offerTitle)
     cy.findByLabelText('Description').type(offerDesc)
 
     // Random 13-digit number because we can't use the same EAN twice
@@ -254,7 +242,7 @@ describe('Create individual offers', { testIsolation: false }, () => {
     cy.findByText('Importer').click()
 
     cy.stepLog({ message: 'the details of offer should be correct' })
-    cy.findByLabelText('Titre de l’offre *').should('have.value', offerTitle)
+    cy.findByLabelText(/Titre de l’offre/).should('have.value', offerTitle)
     cy.findByLabelText('Description').should('have.text', offerDesc)
 
     // With a 1.7x zoom, width=470 and height=705
@@ -291,9 +279,9 @@ describe('Create individual offers', { testIsolation: false }, () => {
     })
 
     cy.stepLog({ message: 'I fill in stocks' })
-    cy.get('#price').type('42')
+    cy.findByLabelText(/Prix/).type('42')
     cy.get('[data-testid="bookingLimitDatetime"').type('2042-05-03')
-    cy.get('#quantity').type(stock)
+    cy.findByLabelText(/Quantité/).type(stock)
 
     cy.stepLog({ message: 'I validate stocks step' })
     cy.findByText('Enregistrer et continuer').click()

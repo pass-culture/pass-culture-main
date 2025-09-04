@@ -20,13 +20,13 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OnboardingFormNavigationAction } from '@/components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import {
   MAYBE_APP_USER_APE_CODE,
   MAYBE_HIGHER_EDUCATION_INSTITUTION_CODE,
 } from '@/pages/Signup/SignupContainer/constants'
 import { MaybeAppUserDialog } from '@/pages/Signup/SignupContainer/MaybeAppUserDialog/MaybeAppUserDialog'
 import { Callout } from '@/ui-kit/Callout/Callout'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import { BannerInvisibleSiren } from './BannerInvisibleSiren/BannerInvisibleSiren'
@@ -207,23 +207,24 @@ export const Offerer = (): JSX.Element => {
             </h2>
 
             <FormLayout.Row>
-              <TextInput
-                {...register('siret')}
-                label="Numéro de SIRET à 14 chiffres"
-                type="text"
-                required={true}
-                className={styles['input-siret']}
-                error={errors.siret?.message}
-                onChange={(e) => {
-                  if (
-                    watch('siret').length === 0 ||
-                    e.target.value.replace(/(\d|\s)*/, '').length > 0 ||
-                    e.target.value.length === 14
-                  ) {
-                    setValue('siret', unhumanizeSiret(e.target.value))
-                  }
-                }}
-              />
+              <div className={styles['input-siret']}>
+                <TextInput
+                  {...register('siret')}
+                  label="Numéro de SIRET à 14 chiffres"
+                  type="text"
+                  required
+                  error={errors.siret?.message}
+                  onChange={(e) => {
+                    if (
+                      watch('siret').length === 0 ||
+                      e.target.value.replace(/(\d|\s)*/, '').length > 0 ||
+                      e.target.value.length === 14
+                    ) {
+                      setValue('siret', unhumanizeSiret(e.target.value))
+                    }
+                  }}
+                />
+              </div>
             </FormLayout.Row>
           </FormLayout.Section>
 

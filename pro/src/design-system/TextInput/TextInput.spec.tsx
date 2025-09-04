@@ -74,13 +74,14 @@ describe('TextInput', () => {
     ).toBeInTheDocument()
   })
 
-  it('should disable the input and the icon button if the field is disabled', () => {
+  it('should disable the input and its button if the field is disabled', () => {
     renderTextInput({
       disabled: true,
       iconButton: {
         icon: 'fake/icon',
         label: 'Icon button label',
         onClick: () => {},
+        disabled: true,
       },
     })
 

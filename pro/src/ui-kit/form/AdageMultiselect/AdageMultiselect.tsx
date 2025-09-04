@@ -2,8 +2,8 @@ import { useCombobox } from 'downshift'
 import { useEffect, useId, useState } from 'react'
 
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import strokeSearch from '@/icons/stroke-search.svg'
-import { BaseInput } from '@/ui-kit/form/shared/BaseInput/BaseInput'
 
 import styles from './AdageMultiselect.module.scss'
 
@@ -95,7 +95,6 @@ export const AdageMultiselect = ({
   }, [selectedOptions])
 
   const {
-    getLabelProps,
     getMenuProps,
     getInputProps,
     getItemProps,
@@ -158,23 +157,17 @@ export const AdageMultiselect = ({
 
   return (
     <div className={styles['container']}>
-      <label
-        htmlFor="search"
-        className={styles['visually-hidden']}
-        {...getLabelProps()}
-      >
-        {label}
-      </label>
-      <BaseInput
-        type="search"
-        name="search"
-        className={styles['search-input']}
-        maxLength={filterMaxLength}
-        value={inputValue}
-        aria-describedby={indicationId}
-        leftIcon={strokeSearch}
-        {...getInputProps()}
-      />
+      <div className={styles['search-input']}>
+        <TextInput
+          {...getInputProps()}
+          type="search"
+          charactersCount={{ max: filterMaxLength, current: inputValue.length }}
+          value={inputValue}
+          aria-describedby={indicationId}
+          icon={strokeSearch}
+          label={label}
+        />
+      </div>
       <ul
         className={styles['search-list']}
         {...getMenuProps({

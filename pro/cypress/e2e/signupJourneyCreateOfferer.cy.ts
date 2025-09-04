@@ -49,7 +49,7 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.url().should('contain', '/inscription/structure/recherche')
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
-    cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
+    cy.findByLabelText(/Numéro de SIRET à 14 chiffres/).type(mySiret)
     cy.findByText('Continuer').click()
     cy.wait('@venuesSiret').its('response.statusCode').should('eq', 200)
 
@@ -157,7 +157,7 @@ describe('Signup journey with known offerer...', () => {
 
       cy.stepLog({ message: 'I specify a venue with a SIRET' })
       cy.url().should('contain', '/inscription/structure/recherche')
-      cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
+      cy.findByLabelText(/Numéro de SIRET à 14 chiffres/).type(mySiret)
       cy.findByText('Continuer').click()
       cy.wait('@venuesSiret').its('response.statusCode').should('eq', 200)
 
@@ -219,7 +219,7 @@ describe('Signup journey with known offerer...', () => {
 
       cy.stepLog({ message: 'I specify an offerer with a SIRET' })
       cy.url().should('contain', '/inscription/structure/recherche')
-      cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
+      cy.findByLabelText(/Numéro de SIRET à 14 chiffres/).type(mySiret)
       cy.findByText('Continuer').click()
       cy.wait('@venuesSiret').its('response.statusCode').should('eq', 200)
 
@@ -231,12 +231,12 @@ describe('Signup journey with known offerer...', () => {
 
       cy.stepLog({ message: 'I fill identification form with a new address' })
       cy.url().should('contain', '/inscription/structure/identification')
-      cy.findByLabelText('Adresse postale *').clear()
-      cy.findByLabelText('Adresse postale *').invoke(
+      cy.findByLabelText(/Adresse postale/).clear()
+      cy.findByLabelText(/Adresse postale/).invoke(
         'val',
         MOCKED_BACK_ADDRESS_LABEL.slice(0, MOCKED_BACK_ADDRESS_LABEL.length - 1)
       ) // To avoid being spammed by address search on each chars typed
-      cy.findByLabelText('Adresse postale *').type('s') // previous search was too fast, this one raises suggestions
+      cy.findByLabelText(/Adresse postale/).type('s') // previous search was too fast, this one raises suggestions
       cy.wait('@search5Address')
       cy.findByRole('option', { name: MOCKED_BACK_ADDRESS_LABEL }).click()
       // Make the venue open to public.
@@ -285,7 +285,7 @@ describe('Signup journey with known offerer...', () => {
 
       cy.stepLog({ message: 'I specify an offerer with a SIRET' })
       cy.url().should('contain', '/inscription/structure/recherche')
-      cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
+      cy.findByLabelText(/Numéro de SIRET à 14 chiffres/).type(mySiret)
       cy.findByText('Continuer').click()
       cy.wait('@venuesSiret').its('response.statusCode').should('eq', 200)
 
@@ -390,7 +390,7 @@ function fromOnBoardingPublishMyFirstOffer() {
   // ----------------------
 
   // Set price
-  cy.findByTestId('input-price').type('42')
+  cy.findByLabelText(/Prix/).type('42')
 
   cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
 
