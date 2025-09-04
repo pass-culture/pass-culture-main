@@ -7,8 +7,8 @@ import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { getIsOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/getIsOfferSubcategoryOnline'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import type { LocationFormValues } from '../../commons/types'
 import { PhysicalLocationSubform } from './PhysicalLocationSubform/PhysicalLocationSubform'
@@ -49,7 +49,7 @@ export const LocationForm = ({ offerVenue }: LocationFormProps) => {
             description="Format : https://exemple.com"
             disabled={isFormReadOnly}
             label="URL d’accès à l’offre"
-            type="text"
+            type="url"
             {...register('url')}
             error={errors.url?.message}
             required

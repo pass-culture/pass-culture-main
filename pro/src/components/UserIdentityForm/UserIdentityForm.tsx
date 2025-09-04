@@ -8,10 +8,10 @@ import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { updateUser } from '@/commons/store/user/reducer'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import styles from '../UserPhoneForm/UserForm.module.scss'
 import type { UserIdentityFormValues } from './types'
@@ -75,7 +75,7 @@ export const UserIdentityForm = ({
               <TextInput
                 label="Prénom"
                 error={errors.firstName?.message}
-                required={true}
+                required
                 asterisk={false}
                 {...register('firstName')}
               />
@@ -84,7 +84,7 @@ export const UserIdentityForm = ({
               <TextInput
                 label="Nom"
                 error={errors.lastName?.message}
-                required={true}
+                required
                 asterisk={false}
                 {...register('lastName')}
               />

@@ -1,10 +1,11 @@
 import { type ForwardedRef, forwardRef, useState } from 'react'
 
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullNextIcon from '@/icons/full-next.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
+import { Callout } from '@/ui-kit/Callout/Callout'
 import { suggestEmail } from '@/ui-kit/form/EmailSpellCheckInput/suggestEmail'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import styles from './EmailSpellCheckInput.module.scss'
 
@@ -13,13 +14,10 @@ type EmailSpellCheckInputProps = {
   description: string
   label: string
   onApplyTip(tip: string): void
-  overrideInitialTip?: string | null
-  maxLength?: number
   required?: boolean
-  asterisk?: boolean
   error?: string
-  className?: string
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void
+  currentCount: number
 }
 
 export const EmailSpellCheckInput = forwardRef(
@@ -28,12 +26,10 @@ export const EmailSpellCheckInput = forwardRef(
       name,
       description,
       label,
-      className,
       onApplyTip,
-      maxLength = 255,
       required,
-      asterisk = true,
       error,
+      currentCount,
       ...props
     }: EmailSpellCheckInputProps,
     ref: ForwardedRef<HTMLInputElement>
@@ -69,19 +65,15 @@ export const EmailSpellCheckInput = forwardRef(
           name={name}
           description={description}
           autoComplete="email"
-          className={className}
-          maxLength={maxLength}
+          charactersCount={{ max: 255, current: currentCount }}
           required={required}
-          asterisk={asterisk}
           error={error}
           {...props}
           onBlur={handleEmailValidationOnBlur} // Override props.onBlur() to handle internal behavior that shows the tip
         />
         {emailValidationTip && (
-          <div className={styles['email-validation-error']}>
-            <div className={styles['email-validation-tip']}>
-              Voulez-vous plutôt dire {emailValidationTip} ?
-            </div>
+          <Callout className={styles['email-validation-error']}>
+            <p>Voulez-vous plutôt dire {emailValidationTip} ?</p>
             <Button
               variant={ButtonVariant.TERNARY}
               icon={fullNextIcon}
@@ -94,7 +86,7 @@ export const EmailSpellCheckInput = forwardRef(
             >
               Appliquer la modification
             </Button>
-          </div>
+          </Callout>
         )}
       </>
     )

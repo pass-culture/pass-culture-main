@@ -6,13 +6,13 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OpenToPublicToggle } from '@/components/OpenToPublicToggle/OpenToPublicToggle'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullBackIcon from '@/icons/full-back.svg'
 import fullNextIcon from '@/icons/full-next.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import styles from './OffererAuthenticationForm.module.scss'
 
@@ -73,7 +73,7 @@ export const OffererAuthenticationForm = (): JSX.Element => {
             {...register('name')}
             label="Raison sociale"
             type="text"
-            required={true}
+            required
             disabled
           />
         </FormLayout.Row>
@@ -83,13 +83,11 @@ export const OffererAuthenticationForm = (): JSX.Element => {
             value={offerer?.postalCode}
             name="initial-postalCode"
             label="Code postal"
-            type="text"
             disabled
           />
           <TextInput
             name="initial-city"
             label="Ville"
-            type="text"
             disabled
             value={offerer?.city}
           />
@@ -99,7 +97,6 @@ export const OffererAuthenticationForm = (): JSX.Element => {
         <TextInput
           {...register('publicName')}
           label="Nom public"
-          type="text"
           required={
             !offerer?.isDiffusible && isPartiallyDiffusableSignupEnabled
           }
