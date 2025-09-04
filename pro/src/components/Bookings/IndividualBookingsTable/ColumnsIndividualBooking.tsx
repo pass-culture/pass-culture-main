@@ -1,12 +1,9 @@
 import cn from 'classnames'
 
 import type { BookingRecapResponseModel } from '@/apiClient/v1'
-import { Audience } from '@/commons/core/shared/types'
+import { Audience, type CurrencyCode } from '@/commons/core/shared/types'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
-import {
-  convertEuroToPacificFranc,
-  formatPacificFranc,
-} from '@/commons/utils/convertEuroToPacificFranc'
+import { convertPrice } from '@/commons/utils/convertPrice'
 import { formatPrice } from '@/commons/utils/formatPrice'
 import strokeDuoIcon from '@/icons/stroke-duo.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -23,7 +20,10 @@ import { DetailsButtonCell } from './Cells/DetailsButtonCell'
 import styles from './IndividualBookingsTable.module.scss'
 
 type BookingRow = BookingRecapResponseModel & { id: number }
-const priceText = (amount: number) => (amount ? formatPrice(amount) : 'Gratuit')
+const priceText = (amount: number, currency: CurrencyCode) => {
+  if (!amount) return 'Gratuit'
+  return formatPrice(convertPrice(amount, { to: currency }), { currency })
+}
 
 type Opts = {
   bookings: BookingRecapResponseModel[]
@@ -43,6 +43,7 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
   } = opts
 
   const isCaledonian = useIsCaledonian()
+  const currency: CurrencyCode = isCaledonian ? 'XPF' : 'EUR'
 
   const columns: Column<BookingRow>[] = [
     {
@@ -144,9 +145,7 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
         <div>
           <span className={styles['details-title']}>Prix : </span>
           <span className={styles['details-content']}>
-            {isCaledonian
-              ? formatPacificFranc(convertEuroToPacificFranc(row.bookingAmount))
-              : priceText(row.bookingAmount)}
+            {priceText(row.bookingAmount, currency)}
           </span>
         </div>
         <BookingStatusCellHistory

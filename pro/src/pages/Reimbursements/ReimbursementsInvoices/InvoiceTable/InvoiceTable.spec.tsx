@@ -159,4 +159,19 @@ describe('InvoiceTable', () => {
       'Vous ne pouvez pas télécharger plus de 24 documents en une fois.'
     )
   })
+
+  it('display correct currency based on devise prop', () => {
+    render(
+      <InvoiceTable
+        data={invoices}
+        isLoading={false}
+        onFilterReset={vi.fn()}
+        hasInvoice={true}
+        currency="XPF"
+      />
+    )
+
+    expect(screen.getByText('+17 900 F')).toBeInTheDocument()
+    expect(screen.getByText('-5 965 F')).toBeInTheDocument()
+  })
 })

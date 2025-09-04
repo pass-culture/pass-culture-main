@@ -4,11 +4,9 @@ import type {
   IndividualRevenue,
   TotalRevenue,
 } from '@/apiClient/v1'
-import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
-import {
-  convertEuroToPacificFranc,
-  formatPacificFranc,
-} from '@/commons/utils/convertEuroToPacificFranc'
+import { useCurrency } from '@/commons/hooks/useCurrency'
+import { convertPrice } from '@/commons/utils/convertPrice'
+import { formatPrice } from '@/commons/utils/formatPrice'
 import fullHelpIcon from '@/icons/full-help.svg'
 import { BoxRounded } from '@/ui-kit/BoxRounded/BoxRounded'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -61,7 +59,7 @@ type IncomeResultsBoxProps = {
 }
 
 export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
-  const isCaledonian = useIsCaledonian()
+  const currency = useCurrency()
 
   const totalLabel =
     type === 'revenue'
@@ -83,11 +81,9 @@ export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
       <div className={styles['income-results-box']}>
         <IncomeResultsSubBox
           title={totalLabel}
-          number={
-            isCaledonian
-              ? formatPacificFranc(convertEuroToPacificFranc(total))
-              : total
-          }
+          number={formatPrice(convertPrice(total, { to: currency }), {
+            currency,
+          })}
           help={totalHelp}
         />
         {shouldDisplayIncomeDetails && (

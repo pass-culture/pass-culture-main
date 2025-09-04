@@ -3,6 +3,8 @@ import { format } from 'date-fns'
 import { useState } from 'react'
 
 import type { InvoiceResponseV2Model } from '@/apiClient/v1'
+import type { CurrencyCode } from '@/commons/core/shared/types'
+import { convertPrice } from '@/commons/utils/convertPrice'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import { formatPrice } from '@/commons/utils/formatPrice'
 import strokeLessIcon from '@/icons/stroke-less.svg'
@@ -15,7 +17,7 @@ import { InvoiceActions } from './InvoiceActions'
 import { InvoiceDownloadActionsButton } from './InvoiceDownloadActionsButton'
 import styles from './InvoiceTable.module.scss'
 
-const columns: Column<InvoiceResponseV2Model>[] = [
+const columns: Column<ExtendedInvoiceResponseV2Model>[] = [
   {
     id: 'date',
     label: 'Date du justificatif',
@@ -56,7 +58,7 @@ const columns: Column<InvoiceResponseV2Model>[] = [
     label: 'Point de remboursement',
     sortable: true,
     ordererField: 'bankAccountLabel',
-    render: (invoice: InvoiceResponseV2Model) => (
+    render: (invoice: ExtendedInvoiceResponseV2Model) => (
       <div className={styles['cell-bank-account']}>
         {invoice.bankAccountLabel}
       </div>
@@ -67,20 +69,21 @@ const columns: Column<InvoiceResponseV2Model>[] = [
     label: 'N° de virement',
     sortable: true,
     ordererField: 'cashflowLabels',
-    render: (invoice: InvoiceResponseV2Model) =>
+    render: (invoice: ExtendedInvoiceResponseV2Model) =>
       invoice.amount >= 0 ? invoice.cashflowLabels[0] : 'N/A',
   },
   {
     id: 'amount',
     label: 'Montant remboursé',
-    render: (invoice: InvoiceResponseV2Model) => (
+    render: (invoice: ExtendedInvoiceResponseV2Model) => (
       <div
         className={cn(styles['cell-amount'], {
           [styles['negative-amount']]: invoice.amount < 0,
         })}
       >
-        {formatPrice(invoice.amount, {
+        {formatPrice(convertPrice(invoice.amount, { to: invoice.currency }), {
           signDisplay: 'always',
+          currency: invoice.currency,
         })}
       </div>
     ),
@@ -88,7 +91,7 @@ const columns: Column<InvoiceResponseV2Model>[] = [
   {
     id: 'actions',
     label: 'Actions',
-    render: (invoice: InvoiceResponseV2Model) => (
+    render: (invoice: ExtendedInvoiceResponseV2Model) => (
       <div className={styles['cell-actions']}>
         <InvoiceActions invoice={invoice} />
       </div>
@@ -100,21 +103,29 @@ type InvoiceTableProps = {
   data: InvoiceResponseV2Model[]
   hasInvoice: boolean
   isLoading: boolean
+  currency?: CurrencyCode
   onFilterReset: () => void
+}
+
+type ExtendedInvoiceResponseV2Model = InvoiceResponseV2Model & {
+  id: string
+  currency: CurrencyCode
 }
 
 export const InvoiceTable = ({
   data,
   hasInvoice,
   isLoading,
+  currency = 'EUR',
   onFilterReset,
 }: InvoiceTableProps) => {
   const [checkedInvoices, setCheckedInvoices] = useState<string[]>([])
 
-  const invoices = hasInvoice
+  const invoices: ExtendedInvoiceResponseV2Model[] = hasInvoice
     ? data.map((invoice) => ({
         ...invoice,
         id: invoice.reference,
+        currency,
       }))
     : []
 

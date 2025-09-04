@@ -100,7 +100,7 @@ describe('bookings offer cell', () => {
       bookingPriceCategoryLabel: undefined,
     })
     renderOfferCell({ booking, isCaledonian: true })
-    expect(screen.getByText('1234 F')).toBeInTheDocument()
+    expect(screen.getByText('1 234 F')).toBeInTheDocument()
   })
 
   it('should display price in CFP with label when isCaledonian is true', () => {
@@ -113,6 +113,6 @@ describe('bookings offer cell', () => {
       bookingPriceCategoryLabel: 'Réduit',
     })
     renderOfferCell({ booking, isCaledonian: true })
-    expect(screen.getByText('Réduit - 5678 F')).toBeInTheDocument()
+    expect(screen.getByText('Réduit - 5 678 F')).toBeInTheDocument()
   })
 })

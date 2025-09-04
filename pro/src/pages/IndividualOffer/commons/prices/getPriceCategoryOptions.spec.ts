@@ -51,6 +51,6 @@ describe('getPriceCategoryName', () => {
     ).mockImplementation(() => 2392)
     expect(
       getPriceCategoryName({ id: 1, label: 'Adulte', price: 20 }, true)
-    ).toBe('2392 F - Adulte')
+    ).toBe('2 392 F - Adulte')
   })
 })

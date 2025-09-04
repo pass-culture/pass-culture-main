@@ -21,6 +21,6 @@ describe('IncomeResultsBox', () => {
         income={{ individual: 100, collective: 0, total: 100 }}
       />
     )
-    expect(screen.getByText('1234 F')).toBeInTheDocument()
+    expect(screen.getByText('1 234 F')).toBeInTheDocument()
   })
 })
