@@ -23,7 +23,7 @@ const IndividualOfferSummaryMedia = (): JSX.Element | null => {
           <MediaSection
             offerId={offer.id}
             imageUrl={offer.thumbUrl}
-            videoUrl={offer.videoUrl}
+            videoUrl={offer.videoData.videoUrl}
           />
         </SummaryContent>
       </SummaryLayout>

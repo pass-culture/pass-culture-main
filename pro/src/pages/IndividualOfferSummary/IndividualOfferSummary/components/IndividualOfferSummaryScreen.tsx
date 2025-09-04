@@ -208,7 +208,7 @@ export const IndividualOfferSummaryScreen = () => {
                 {isMediaPageEnabled && (
                   <MediaSection
                     offerId={offer.id}
-                    videoUrl={offer.videoUrl}
+                    videoUrl={offer.videoData.videoUrl}
                     shouldImageBeHidden
                   />
                 )}

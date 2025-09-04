@@ -127,6 +127,9 @@ export const getIndividualOfferFactory = (
       speaker: "Chuck Norris n'a pas besoin de doubleur",
       visa: 'USA',
     },
+    videoData: {
+      videoUrl: undefined,
+    },
     ...customGetIndividualOffer,
   }
 }
