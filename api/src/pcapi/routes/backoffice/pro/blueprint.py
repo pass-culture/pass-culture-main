@@ -52,7 +52,6 @@ class Context:
     """
 
     fetch_rows_func: typing.Callable[[str, list[str]], sa_orm.Query]
-    get_item_base_query: typing.Callable[[int], sa_orm.Query]
     endpoint: str
     row_id_name: str
 
@@ -65,28 +64,24 @@ class Context:
 
 class UserContext(Context):
     fetch_rows_func = users_api.search_pro_account
-    get_item_base_query = users_api.get_pro_account_base_query
     endpoint = "backoffice_web.pro_user.get"
     row_id_name = "user_id"
 
 
 class OffererContext(Context):
     fetch_rows_func = offerers_api.search_offerer
-    get_item_base_query = offerers_api.get_offerer_base_query
     endpoint = "backoffice_web.offerer.get"
     row_id_name = "offerer_id"
 
 
 class VenueContext(Context):
     fetch_rows_func = offerers_api.search_venue
-    get_item_base_query = offerers_api.get_venue_base_query
     endpoint = "backoffice_web.venue.get"
     row_id_name = "venue_id"
 
 
 class BankAccountContext(Context):
     fetch_rows_func = offerers_api.search_bank_account
-    get_item_base_query = offerers_api.get_bank_account_base_query
     endpoint = "backoffice_web.bank_account.get"
     row_id_name = "bank_account_id"
 

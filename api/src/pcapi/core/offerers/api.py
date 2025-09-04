@@ -1870,10 +1870,6 @@ def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) ->
     return offerers
 
 
-def get_offerer_base_query(offerer_id: int) -> sa_orm.Query:
-    return db.session.query(models.Offerer).filter(models.Offerer.id == offerer_id)
-
-
 def search_venue(search_query: str, departments: typing.Iterable[str] = ()) -> sa_orm.Query:
     venues = (
         db.session.query(models.Venue)
@@ -1948,14 +1944,6 @@ def search_venue(search_query: str, departments: typing.Iterable[str] = ()) -> s
     venues = venues.order_by(models.Venue.id)
 
     return venues
-
-
-def get_venue_base_query(venue_id: int) -> sa_orm.Query:
-    return db.session.query(models.Venue).outerjoin(offerers_models.VenueContact).filter(models.Venue.id == venue_id)
-
-
-def get_bank_account_base_query(bank_account_id: int) -> sa_orm.Query:
-    return finance_models.BankAccount.filter(finance_models.BankAccount.id == bank_account_id)
 
 
 def search_bank_account(search_query: str, *_: typing.Any) -> sa_orm.Query:
