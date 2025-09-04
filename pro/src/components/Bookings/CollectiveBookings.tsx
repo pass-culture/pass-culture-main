@@ -8,7 +8,6 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import {
-  type BookingRecapResponseModel,
   type CollectiveBookingResponseModel,
   GetOffererAddressesWithOffersOption,
 } from '@/apiClient/v1'
@@ -20,7 +19,7 @@ import {
 } from '@/commons/config/swrQueryKeys'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { Audience } from '@/commons/core/shared/types'
+import type { Audience } from '@/commons/core/shared/types'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useNotification } from '@/commons/hooks/useNotification'
@@ -47,9 +46,7 @@ type BookingsProps<T> = {
 
 const MAX_LOADED_PAGES = 5
 
-export const BookingsContainer = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
->({
+export const CollectiveBookings = <T extends CollectiveBookingResponseModel>({
   locationState,
   audience,
   getFilteredBookingsAdapter,
@@ -129,8 +126,8 @@ export const BookingsContainer = <
   }
 
   return (
-    <div className="bookings-page">
-      {audience === Audience.COLLECTIVE && offerer?.allowedOnAdage && (
+    <div>
+      {offerer?.allowedOnAdage && (
         <CollectiveBudgetCallout
           variant="COLLECTIVE_TABLE"
           pageName="bookings"
