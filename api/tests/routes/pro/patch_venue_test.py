@@ -1013,6 +1013,21 @@ class Returns200Test:
             ]
         )
 
+    @pytest.mark.parametrize("venue_name, venue_publicName", [("toto", "toto"), ("toto", "bebechat")])
+    def test_update_venue_empty_public_name(self, client, venue_name, venue_publicName):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, name=venue_name, publicName=venue_publicName
+        )
+        data = {
+            "publicName": None,
+        }
+        http_client = client.with_session_auth(email=user_offerer.user.email)
+        response = http_client.patch(f"/venues/{venue.id}", json=data)
+        assert response.status_code == 200
+        db.session.refresh(venue)
+        assert venue.publicName == venue.name  # empty publicname default to name
+
 
 class Returns400Test:
     @pytest.mark.parametrize("data, key", venue_malformed_test_data)

@@ -820,6 +820,11 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         db.session.query(criteria_models.Criterion).filter(criteria_models.Criterion.id.in_(form.tags.data)).all()
     )
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
+    if "publicName" in modifications and not modifications["publicName"]:
+        if venue.publicName == venue.name:
+            del modifications["publicName"]
+        else:
+            modifications["publicName"] = venue.name
 
     try:
         offerers_api.update_venue(
