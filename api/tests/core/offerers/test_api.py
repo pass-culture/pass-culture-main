@@ -184,6 +184,7 @@ class CreateVenueTest:
         assert venue.longitude == 1
         assert venue.managingOfferer == user_offerer.offerer
         assert venue.name == "La Venue"
+        assert venue.publicName == "La Venue"  # empty/non public name copies name
         assert venue.bookingEmail == "venue@example.com"
         assert venue.dmsToken
         assert venue.current_pricing_point_id == venue.id

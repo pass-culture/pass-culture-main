@@ -121,6 +121,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
     }
     location_fields = {"street", "banId", "latitude", "longitude", "postalCode", "city", "inseeCode", "isManualEdition"}
     update_venue_attrs = body.dict(exclude=not_venue_fields, exclude_unset=True)
+
     accessibility_fields = [
         "audioDisabilityCompliant",
         "mentalDisabilityCompliant",
@@ -131,10 +132,14 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         (field in update_venue_attrs and update_venue_attrs[field] != getattr(venue, field))
         for field in accessibility_fields
     )
-
     modifications = {
         field: value for field, value in update_venue_attrs.items() if venue.field_exists_and_has_changed(field, value)
     }
+    if "publicName" in modifications and not modifications["publicName"]:
+        if venue.publicName == venue.name:
+            del modifications["publicName"]
+        else:
+            modifications["publicName"] = venue.name
     update_location_attrs = body.dict(include=location_fields, exclude_unset=True)
     location_modifications = {
         field: value
