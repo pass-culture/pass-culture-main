@@ -1,8 +1,8 @@
-import { useRef } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import type { VenueTypeResponseModel } from '@/apiClient/v1'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import { buildVenueTypesOptions } from '@/pages/VenueEdition/buildVenueTypesOptions'
@@ -11,7 +11,6 @@ import { ButtonVariant } from '@/ui-kit/Button/types'
 import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { Select } from '@/ui-kit/form/Select/Select'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
 
 import styles from './ActivityForm.module.scss'
@@ -36,7 +35,7 @@ export interface ActivityFormProps {
 export const ActivityForm = ({
   venueTypes,
 }: ActivityFormProps): JSX.Element => {
-  const { register, control, formState, watch, setValue, trigger } =
+  const { register, control, formState, watch, setValue, trigger, setFocus } =
     useFormContext<ActivityFormValues>()
 
   const { fields, append, remove } = useFieldArray({
@@ -44,7 +43,6 @@ export const ActivityForm = ({
     name: 'socialUrls',
   })
 
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([])
   const venueTypesOptions = buildVenueTypesOptions(venueTypes)
   const watchSocialUrls = watch('socialUrls')
 
@@ -76,40 +74,38 @@ export const ActivityForm = ({
         />
       </FormLayout.Row>
 
-      <FormLayout.Row mdSpaceAfter>
+      <FormLayout.Row mdSpaceAfter className={styles['url-list']}>
         {fields.map((field, index) => (
           <FormLayout.Row key={field.id}>
-            <TextInput
-              {...register(`socialUrls.${index}.url`)}
-              label="Site internet, réseau social"
-              description="Format : https://www.siteinternet.com"
-              data-testid="activity-form-social-url"
-              type="url"
-              className={styles['url-input']}
-              isLabelHidden={index !== 0}
-              error={formState.errors.socialUrls?.[index]?.url?.message}
-              InputExtension={
-                watchSocialUrls.length > 1 && (
-                  <div
-                    data-error={
-                      formState.errors.socialUrls?.[index] ? 'true' : 'false'
-                    }
-                  >
-                    <ListIconButton
-                      icon={fullTrashIcon}
-                      onClick={() => {
-                        const newIndex = index - 1
-                        inputRefs.current[newIndex]?.focus()
-                        remove(index)
-                      }}
-                      disabled={watchSocialUrls.length <= 1}
-                      className={styles['delete-button']}
-                      tooltipContent={<>Supprimer l’url</>}
-                    />
-                  </div>
-                )
-              }
-            />
+            <div className={styles['url-input']}>
+              <TextInput
+                {...register(`socialUrls.${index}.url`)}
+                label="Site internet, réseau social"
+                description="Format : https://www.siteinternet.com"
+                type="url"
+                error={formState.errors.socialUrls?.[index]?.url?.message}
+                extension={
+                  watchSocialUrls.length > 1 && (
+                    <div
+                      data-error={
+                        formState.errors.socialUrls?.[index] ? 'true' : 'false'
+                      }
+                    >
+                      <ListIconButton
+                        icon={fullTrashIcon}
+                        onClick={() => {
+                          remove(index)
+                          setFocus(`socialUrls.${index - 1}.url`)
+                        }}
+                        disabled={watchSocialUrls.length <= 1}
+                        className={styles['delete-button']}
+                        tooltipContent={<>Supprimer l’url</>}
+                      />
+                    </div>
+                  )
+                }
+              />
+            </div>
           </FormLayout.Row>
         ))}
 

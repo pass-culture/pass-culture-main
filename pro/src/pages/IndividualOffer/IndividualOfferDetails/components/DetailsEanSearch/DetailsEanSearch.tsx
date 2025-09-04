@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 
@@ -8,6 +8,7 @@ import { getError, isErrorAPIError } from '@/apiClient/helpers'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullCloseIcon from '@/icons/full-close.svg'
 import strokeBarcodeIcon from '@/icons/stroke-barcode.svg'
 import type { Product } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
@@ -15,8 +16,6 @@ import { isSubCategoryCD } from '@/pages/IndividualOffer/IndividualOfferDetails/
 import { eanSearchValidationSchema } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
 import { EanSearchCallout } from '@/pages/IndividualOffer/IndividualOfferDetails/components/EanSearchCallout/EanSearchCallout'
 import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import styles from './DetailsEanSearch.module.scss'
 
@@ -43,7 +42,6 @@ export const DetailsEanSearch = ({
   onEanSearch,
   onEanReset,
 }: DetailsEanSearchProps): JSX.Element => {
-  const tooltipId = useId()
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const [wasCleared, setWasCleared] = useState(false)
   const [subcatError, setSubcatError] = useState<string | null>(null)
@@ -141,34 +139,29 @@ export const DetailsEanSearch = ({
         <div className={styles['details-ean-search']}>
           <div className={styles['details-ean-search-container']}>
             <TextInput
-              label={'Scanner ou rechercher un produit par EAN'}
+              label="Scanner ou rechercher un produit par EAN"
               error={cumulativeError}
               disabled={shouldInputBeDisabled}
               required={shouldInputBeRequired}
-              maxLength={13}
               description="Format : EAN à 13 chiffres"
               {...(!displayClearButton
                 ? {
-                    rightIcon: strokeBarcodeIcon,
+                    icon: strokeBarcodeIcon,
                   }
                 : {
-                    rightButton: () => {
-                      return (
-                        <Button
-                          onClick={onEanClear}
-                          aria-describedby={tooltipId}
-                          className={styles['clear-button']}
-                          type="button"
-                          icon={fullCloseIcon}
-                          variant={ButtonVariant.TERNARY}
-                          tooltipContent={<>Effacer</>}
-                        />
-                      )
+                    iconButton: {
+                      icon: fullCloseIcon,
+                      label: 'Effacer',
+                      onClick: onEanClear,
+                      disabled: isLoading,
                     },
                   })}
               {...register('eanSearch')}
-              count={ean?.length}
-              InputExtension={
+              charactersCount={{
+                current: ean?.length || 0,
+                max: 13,
+              }}
+              extension={
                 <Button
                   type="submit"
                   className={styles['details-ean-search-button']}
@@ -180,6 +173,7 @@ export const DetailsEanSearch = ({
             />
           </div>
         </div>
+        {/** biome-ignore lint/a11y/useSemanticElements: What we want here is a role="status", not an output */}
         <div role="status" className={styles['details-ean-search-callout']}>
           {isProductBased && <EanSearchCallout isDraftOffer={isDraftOffer} />}
         </div>

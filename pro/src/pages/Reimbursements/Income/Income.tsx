@@ -127,7 +127,7 @@ export const Income = () => {
                   options={venueValues}
                   defaultOptions={venueValues}
                   hasSearch
-                  searchLabel="Recherche"
+                  searchLabel="Rechercher un partenaire"
                   onSelectedOptionsChanged={(selectedOption) =>
                     onChange(selectedOption)
                   }

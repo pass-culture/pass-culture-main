@@ -59,14 +59,14 @@ describe('components | FilterByOmniSearch', () => {
     renderWithProviders(<FilterByOmniSearch {...props} />)
 
     expect(
-      screen.getByRole('searchbox', { name: 'Texte à rechercher' })
+      screen.getByRole('searchbox', { name: 'Recherche' })
     ).toBeInTheDocument()
   })
 
   it('should apply offerName filter when typing keywords for offer name', async () => {
     props.selectedOmniSearchCriteria = 'offre'
     renderWithProviders(<FilterByOmniSearch {...props} />)
-    screen.getByRole('searchbox', { name: 'Texte à rechercher' }).focus()
+    screen.getByRole('searchbox', { name: 'Recherche' }).focus()
 
     await userEvent.paste('Mon nom d’offre')
 
@@ -87,7 +87,7 @@ describe('components | FilterByOmniSearch', () => {
     props.audience = Audience.COLLECTIVE
     props.selectedOmniSearchCriteria = 'établissement'
     renderWithProviders(<FilterByOmniSearch {...props} />)
-    screen.getByRole('searchbox', { name: 'Texte à rechercher' }).focus()
+    screen.getByRole('searchbox', { name: 'Recherche' }).focus()
 
     await userEvent.paste('Mon nom d’établissement')
 
@@ -111,7 +111,7 @@ describe('components | FilterByOmniSearch', () => {
     props.audience = Audience.COLLECTIVE
     props.selectedOmniSearchCriteria = 'booking_id'
     renderWithProviders(<FilterByOmniSearch {...props} />)
-    screen.getByRole('searchbox', { name: 'Texte à rechercher' }).focus()
+    screen.getByRole('searchbox', { name: 'Recherche' }).focus()
 
     await userEvent.paste('123456789')
 
@@ -134,7 +134,7 @@ describe('components | FilterByOmniSearch', () => {
   it('should apply bookingToken filter when typing keywords for contremarque', async () => {
     props.selectedOmniSearchCriteria = 'contremarque'
     renderWithProviders(<FilterByOmniSearch {...props} />)
-    screen.getByRole('searchbox', { name: 'Texte à rechercher' }).focus()
+    screen.getByRole('searchbox', { name: 'Recherche' }).focus()
 
     await userEvent.paste('AZE123')
 
@@ -157,7 +157,7 @@ describe('components | FilterByOmniSearch', () => {
   it('should apply bookingBeneficiary filter when typing keywords for beneficiary name or email', async () => {
     props.selectedOmniSearchCriteria = 'bénéficiaire'
     renderWithProviders(<FilterByOmniSearch {...props} />)
-    screen.getByRole('searchbox', { name: 'Texte à rechercher' }).focus()
+    screen.getByRole('searchbox', { name: 'Recherche' }).focus()
 
     await userEvent.paste('Firost')
 

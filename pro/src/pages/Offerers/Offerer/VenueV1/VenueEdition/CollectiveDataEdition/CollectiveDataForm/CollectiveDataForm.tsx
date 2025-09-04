@@ -16,6 +16,7 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectInterventionAreas } from '@/commons/utils/selectInterventionAreas'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { RouteLeavingGuardVenueEdition } from '@/pages/VenueEdition/RouteLeavingGuardVenueEdition'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
@@ -24,7 +25,6 @@ import { MultiSelect, type Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import styles from './CollectiveDataForm.module.scss'
 import type { CollectiveDataFormValues } from './type'
@@ -127,7 +127,7 @@ export const CollectiveDataForm = ({
                     watch('collectiveStudents')?.includes(option.label)
                   )}
                   hasSearch
-                  searchLabel="Public cible"
+                  searchLabel="Rechercher un public cible"
                   buttonLabel="Public cible"
                   onSelectedOptionsChanged={(selectedOptions) => {
                     setValue(
@@ -141,6 +141,7 @@ export const CollectiveDataForm = ({
               <FormLayout.Row>
                 <TextInput
                   label="URL de votre site web"
+                  type="url"
                   description="Format : https://exemple.com"
                   {...register('collectiveWebsite')}
                   error={errors.collectiveWebsite?.message}
@@ -158,7 +159,7 @@ export const CollectiveDataForm = ({
                     watch('collectiveDomains')?.includes(option.id)
                   )}
                   hasSearch
-                  searchLabel="Domaines artistiques et culturel"
+                  searchLabel="Rechercher un domaine artistique et culturel"
                   buttonLabel="Domaines artistiques"
                   onSelectedOptionsChanged={(selectedOptions) =>
                     setValue(
@@ -180,7 +181,7 @@ export const CollectiveDataForm = ({
                   )}
                   hasSelectAllOptions
                   hasSearch
-                  searchLabel="Rechercher"
+                  searchLabel="Rechercher une zone de mobilité"
                   buttonLabel="Département(s)"
                   onSelectedOptionsChanged={(
                     selectedOptions,
@@ -224,6 +225,7 @@ export const CollectiveDataForm = ({
               <FormLayout.Row>
                 <TextInput
                   label="Email"
+                  type="email"
                   description="Format : email@exemple.com"
                   {...register('collectiveEmail')}
                   error={errors.collectiveEmail?.message}

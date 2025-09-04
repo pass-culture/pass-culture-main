@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import strokeSearchIcon from 'icons/stroke-search.svg'
 import { useId, useState } from 'react'
 
 import {
@@ -6,12 +7,11 @@ import {
   getStoredFilterConfig,
   useStoredFilterConfig,
 } from '@/components/OffersTable/OffersTableSearch/utils'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { ButtonFilter } from '@/ui-kit/ButtonFilter/ButtonFilter'
-import { BaseInput } from '@/ui-kit/form/shared/BaseInput/BaseInput'
-import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import styles from './OffersTableSearch.module.scss'
 
@@ -21,7 +21,7 @@ export type OffersTableSearchProps = {
   isDisabled: boolean
   hasActiveFilters: boolean
   nameInputProps: {
-    label: JSX.Element | string
+    label: string
     disabled: boolean
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
     value: string
@@ -58,20 +58,17 @@ export const OffersTableSearch = ({
   return (
     <form onSubmit={onSubmit} className={styles['offers-table-search']}>
       <div className={styles['offers-table-search-name-and-toggle-row']}>
-        <FieldLayout
-          className={styles['offers-table-search-input-wrapper']}
-          label={nameInputProps.label}
-          name="offre"
-          isOptional
-        >
-          <BaseInput
+        <div className={styles['offers-table-search-input-wrapper']}>
+          <TextInput
             type="search"
+            icon={strokeSearchIcon}
+            label={nameInputProps.label}
             disabled={nameInputProps.disabled}
             name="offre"
             onChange={nameInputProps.onChange}
             value={nameInputProps.value}
           />
-        </FieldLayout>
+        </div>
         <ButtonFilter
           className={styles['offers-table-search-toggle-button']}
           isActive={hasActiveFilters}

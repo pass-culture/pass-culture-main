@@ -9,6 +9,7 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { isDateValid } from '@/commons/utils/date'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
@@ -17,7 +18,6 @@ import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { createCollectiveRequestPayload } from './createCollectiveRequestPayload'
 import styles from './RequestFormDialog.module.scss'
@@ -298,6 +298,7 @@ export const RequestFormDialog = ({
           <FormLayout.Row mdSpaceAfter>
             <TextInput
               label="Email"
+              type="email"
               {...hookForm.register('teacherEmail')}
               error={hookForm.formState.errors.teacherEmail?.message}
               required

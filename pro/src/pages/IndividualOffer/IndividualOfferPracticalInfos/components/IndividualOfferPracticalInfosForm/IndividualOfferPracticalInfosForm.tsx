@@ -12,10 +12,10 @@ import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import type { IndividualOfferPracticalInfosFormValues } from '../../commons/types'
 import styles from './IndividualOfferPracticalInfosForm.module.scss'
@@ -116,7 +116,7 @@ export function IndividualOfferPracticalInfosForm({
           <TextInput
             {...form.register('externalTicketOfficeUrl')}
             label="URL de votre site ou billetterie"
-            type="text"
+            type="url"
             disabled={isFormDisabled}
             description="Format : https://exemple.com"
             error={form.formState.errors.externalTicketOfficeUrl?.message}
@@ -145,8 +145,12 @@ export function IndividualOfferPracticalInfosForm({
           <FormLayout.Row className={styles['email-row']} mdSpaceAfter>
             <TextInput
               {...form.register('bookingEmail')}
+              type="email"
               label="Email auquel envoyer les notifications"
-              maxLength={90}
+              charactersCount={{
+                max: 90,
+                current: form.watch('bookingEmail')?.length || 0,
+              }}
               disabled={isFormDisabled}
               description="Format : email@exemple.com"
               required

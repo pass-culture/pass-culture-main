@@ -29,10 +29,10 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 import { Divider } from '@/ui-kit/Divider/Divider'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { buildInitialValues } from '../commons/buildInitialValues'
 import { isYoutubeValid } from '../commons/isYoutubeValid'
@@ -118,6 +118,7 @@ export const IndividualOfferMediaScreen = ({
             {
               revalidate: false,
               populateCache: (
+                // biome-ignore lint/suspicious/noConfusingVoidType: needed here
                 thumbnailResult: CreateThumbnailResponseModel | void,
                 offer
               ) => {
@@ -238,25 +239,26 @@ export const IndividualOfferMediaScreen = ({
                 isNew
                 className={styles['media-sub-section']}
               >
-                <TextInput
-                  label="Lien URL Youtube"
-                  className={styles['video-section-input']}
-                  type="text"
-                  description="Format : https://www.youtube.com/watch?v=0R5PZxOgoz8"
-                  error={form.formState.errors.videoUrl?.message}
-                  {...form.register('videoUrl')}
-                  onBlur={(e) => {
-                    const value = e.target.value
-                    form.register('videoUrl').onBlur(e)
-                    if (value && !isYoutubeValid(value)) {
-                      logEvent(Events.OFFER_FORM_VIDEO_URL_ERROR, {
-                        offerId: offer.id,
-                        userId: currentUser?.id,
-                        videoUrl: value,
-                      })
-                    }
-                  }}
-                />
+                <div className={styles['video-section-input']}>
+                  <TextInput
+                    label="Lien URL Youtube"
+                    type="url"
+                    description="Format : https://www.youtube.com/watch?v=0R5PZxOgoz8"
+                    error={form.formState.errors.videoUrl?.message}
+                    {...form.register('videoUrl')}
+                    onBlur={(e) => {
+                      const value = e.target.value
+                      form.register('videoUrl').onBlur(e)
+                      if (value && !isYoutubeValid(value)) {
+                        logEvent(Events.OFFER_FORM_VIDEO_URL_ERROR, {
+                          offerId: offer.id,
+                          userId: currentUser?.id,
+                          videoUrl: value,
+                        })
+                      }
+                    }}
+                  />
+                </div>
                 <VideoUploaderTips />
               </FormLayout.SubSection>
             </FormLayout.Row>

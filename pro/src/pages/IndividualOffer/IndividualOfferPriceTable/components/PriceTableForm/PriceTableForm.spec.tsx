@@ -105,9 +105,9 @@ const LABELS = {
     submitActivationCodes: 'Valider',
   },
   fields: {
-    price: 'Prix *',
-    label: 'Intitulé du tarif',
-    stock: 'Stock',
+    price: /Prix/,
+    label: /Intitulé du tarif/,
+    stock: /Stock/,
   },
 }
 
@@ -288,7 +288,11 @@ describe('PriceTableForm', () => {
     })
     await userEvent.click(confirmButton)
 
-    expect(screen.getAllByLabelText(/Stock/)).toHaveLength(1)
+    expect(
+      screen.queryByRole('button', {
+        name: LABELS.buttons.removeEntry,
+      })
+    ).not.toBeInTheDocument()
   })
 
   it('should upload activation codes and set quantity accordingly', async () => {
@@ -426,7 +430,7 @@ describe('PriceTableForm', () => {
     renderPriceTableForm({ offer })
 
     const priceInput = screen.getByRole('spinbutton', {
-      name: 'Prix *',
+      name: /Prix/,
     }) as HTMLInputElement
     await userEvent.clear(priceInput)
     await userEvent.type(priceInput, '23')
@@ -449,7 +453,7 @@ describe('PriceTableForm', () => {
     renderPriceTableForm({ offer, contextValues: { isCaledonian: true } })
 
     const priceInput = screen.getByRole('spinbutton', {
-      name: 'Prix *',
+      name: /Prix/,
     }) as HTMLInputElement
 
     await userEvent.clear(priceInput)
@@ -657,9 +661,8 @@ describe('PriceTableForm', () => {
     expect(labelInputs[0]).toBeDisabled()
     expect(labelInputs[1]).toBeDisabled()
 
-    const priceInputs = screen.getAllByRole<HTMLInputElement>('spinbutton', {
-      // TODO (igabriele, 2025-09-17): Investigate this label (accessibility).
-      name: 'Prix * Prix *',
+    const priceInputs = screen.getAllByRole('spinbutton', {
+      name: /Prix/,
     })
     expect(priceInputs[0]).toBeDisabled()
   })

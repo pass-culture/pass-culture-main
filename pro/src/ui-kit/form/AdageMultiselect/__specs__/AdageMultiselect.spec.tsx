@@ -34,7 +34,7 @@ describe('AdageMultiselect', () => {
   it('should filter options when user type in input', async () => {
     renderAdageMultiselect()
 
-    const input = screen.getByRole('combobox')
+    const input = screen.getByRole('searchbox')
     await userEvent.type(input, 'Th')
 
     expect(screen.getByText('Théatre')).toBeInTheDocument()
@@ -67,7 +67,7 @@ describe('AdageMultiselect', () => {
   it('should display all options when user erase input value', async () => {
     renderAdageMultiselect()
 
-    const input = screen.getByRole('combobox')
+    const input = screen.getByRole('searchbox')
 
     await userEvent.type(input, 'Th')
 

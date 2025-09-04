@@ -135,9 +135,9 @@ function doLogin(
   }
 
   // Sometimes, the page is loaded with the input disabled
-  cy.get('#email').should('be.enabled')
-  cy.get('#email').type(login)
-  cy.get('#password').type(password)
+  cy.get('input[name="email"]').should('be.enabled')
+  cy.get('input[name="email"]').type(login)
+  cy.get('input[name="password"]').type(password)
   cy.get('button[type=submit]').click()
 
   return cy.wait('@signinUser').then(({ response }) => {

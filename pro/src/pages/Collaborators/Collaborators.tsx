@@ -15,12 +15,12 @@ import { OffererLinkEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 import { validationSchema } from '@/pages/Collaborators/validationSchema'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import styles from './Collaborators.module.scss'
 
@@ -185,25 +185,27 @@ export const Collaborators = (): JSX.Element | null => {
             >
               <FormLayout>
                 <FormLayout.Row className={styles['invitation-email-wrapper']}>
-                  <TextInput
-                    className={styles['invitation-email-field']}
-                    label="Adresse email"
-                    description="Format : email@exemple.com"
-                    error={errors.email?.message}
-                    required={true}
-                    asterisk={false}
-                    {...register('email')}
-                    InputExtension={
-                      <Button
-                        type="submit"
-                        isLoading={isSubmitting}
-                        className={styles['add-member-button']}
-                        data-error={errors.email?.message ? 'true' : 'false'}
-                      >
-                        Inviter
-                      </Button>
-                    }
-                  />
+                  <div className={styles['invitation-email-field']}>
+                    <TextInput
+                      label="Adresse email"
+                      type="email"
+                      description="Format : email@exemple.com"
+                      error={errors.email?.message}
+                      required
+                      asterisk={false}
+                      {...register('email')}
+                      extension={
+                        <Button
+                          type="submit"
+                          isLoading={isSubmitting}
+                          className={styles['add-member-button']}
+                          data-error={errors.email?.message ? 'true' : 'false'}
+                        >
+                          Inviter
+                        </Button>
+                      }
+                    />
+                  </div>
                 </FormLayout.Row>
               </FormLayout>
             </form>

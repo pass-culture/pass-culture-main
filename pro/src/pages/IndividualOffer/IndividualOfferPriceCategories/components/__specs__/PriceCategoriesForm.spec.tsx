@@ -95,7 +95,7 @@ describe('PriceCategories', () => {
     expect(freeCheckboxes[1]).toBeChecked()
     expect(freeCheckboxes[2]).toBeChecked()
 
-    const tarifFields = screen.getAllByLabelText('Prix par personne')
+    const tarifFields = screen.getAllByLabelText(/Prix par personne/)
     expect(tarifFields[0]).toHaveValue(0)
     expect(tarifFields[1]).toHaveValue(0)
     expect(tarifFields[2]).toHaveValue(0)
@@ -117,11 +117,11 @@ describe('PriceCategories', () => {
       priceCategories: [],
     })
 
-    await userEvent.type(screen.getByLabelText('Prix par personne'), '66.7')
+    await userEvent.type(screen.getByLabelText(/Prix par personne/), '66.7')
     await userEvent.click(screen.getByText('Ajouter un tarif'))
 
     await userEvent.type(
-      screen.getAllByLabelText('Prix par personne')[1],
+      screen.getAllByLabelText(/Prix par personne/)[1],
       '666.7'
     )
     await userEvent.click(screen.getByText('Ajouter un tarif'))
@@ -245,7 +245,7 @@ describe('PriceCategories', () => {
     expect(screen.getByTestId('delete-button')).toBeDisabled()
     expect(screen.getByDisplayValue('Tarif unique')).toBeDisabled()
     const nameFields = screen.getAllByLabelText('Intitulé du tarif')
-    const priceFields = screen.getAllByLabelText('Prix par personne')
+    const priceFields = screen.getAllByLabelText(/Prix par personne/)
     await userEvent.type(priceFields[0], '66.7')
 
     // I add a price category line

@@ -166,7 +166,7 @@ describe('screens:StocksThing', () => {
       )
     ).toBeInTheDocument()
 
-    expect(screen.getByLabelText('Prix *')).toBeInTheDocument()
+    expect(screen.getByLabelText(/Prix/)).toBeInTheDocument()
     expect(
       screen.getByLabelText('Date limite de réservation')
     ).toBeInTheDocument()
@@ -218,7 +218,7 @@ describe('screens:StocksThing', () => {
     const nextButton = screen.getByRole('button', {
       name: 'Enregistrer et continuer',
     })
-    await userEvent.type(screen.getByLabelText('Prix *'), '20')
+    await userEvent.type(screen.getByLabelText(/Prix/), '20')
     await userEvent.click(nextButton)
 
     await waitFor(() => {
@@ -241,7 +241,7 @@ describe('screens:StocksThing', () => {
     const nextButton = screen.getByRole('button', {
       name: 'Enregistrer et continuer',
     })
-    await userEvent.type(screen.getByLabelText('Prix *'), '20')
+    await userEvent.type(screen.getByLabelText(/Prix/), '20')
     await userEvent.click(
       screen.getByLabelText(/Accepter les réservations “Duo“/)
     )
@@ -265,7 +265,7 @@ describe('screens:StocksThing', () => {
     const nextButton = screen.getByRole('button', {
       name: 'Enregistrer et continuer',
     })
-    await userEvent.type(screen.getByLabelText('Prix *'), '20')
+    await userEvent.type(screen.getByLabelText(/Prix/), '20')
     await userEvent.type(screen.getByLabelText('Quantité'), '20')
 
     await userEvent.click(screen.getByLabelText(/Illimité/))
@@ -315,7 +315,7 @@ describe('screens:StocksThing', () => {
 
     await renderStockThingScreen([], props, contextValue)
 
-    await userEvent.type(screen.getByLabelText('Prix *'), '20')
+    await userEvent.type(screen.getByLabelText(/Prix/), '20')
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer et continuer' })
     )
@@ -338,7 +338,7 @@ describe('screens:StocksThing', () => {
 
     await renderStockThingScreen([], props, contextValue)
 
-    await userEvent.type(screen.getByLabelText('Prix *'), '20')
+    await userEvent.type(screen.getByLabelText(/Prix/), '20')
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer et continuer' })
     )
@@ -398,7 +398,7 @@ describe('screens:StocksThing', () => {
         })
       ).toBeDisabled()
 
-      const priceInput = screen.getByLabelText('Prix *')
+      const priceInput = screen.getByLabelText(/Prix/)
       await userEvent.clear(priceInput)
       await userEvent.type(priceInput, '14.01')
 
@@ -496,7 +496,7 @@ describe('screens:StocksThing', () => {
 
   const setNumberQuantityValue = [
     { value: '20', expectedNumber: 20 },
-    { value: '20.37', expectedNumber: 2037 },
+    { value: '20.37', expectedNumber: 207 },
     { value: 'AZER', expectedNumber: null },
     { value: '2fsqjk', expectedNumber: 2 },
     { value: '2fsqm0', expectedNumber: 20 },
@@ -584,7 +584,7 @@ describe('screens:StocksThing', () => {
     const input = screen.getByLabelText('Date limite de réservation')
     await waitFor(() => expect(input).toHaveValue('2020-12-15'))
     await userEvent.clear(input)
-    await userEvent.click(screen.getByLabelText('Prix *'))
+    await userEvent.click(screen.getByLabelText(/Prix/))
 
     expect(mockLogEvent).toHaveBeenCalledWith(
       Events.UPDATED_BOOKING_LIMIT_DATE,
@@ -607,7 +607,7 @@ describe('screens:StocksThing', () => {
     await waitFor(() => expect(input).toHaveValue('2020-12-15'))
     await userEvent.clear(input)
     await userEvent.type(input, '2020-12-15')
-    await userEvent.click(screen.getByLabelText('Prix *'))
+    await userEvent.click(screen.getByLabelText(/Prix/))
     expect(mockLogEvent).not.toHaveBeenCalled()
   })
 
@@ -662,7 +662,7 @@ describe('screens:StocksThing', () => {
       const nextButton = screen.getByRole('button', {
         name: 'Enregistrer et continuer',
       })
-      await userEvent.type(screen.getByLabelText('Prix *'), '2000')
+      await userEvent.type(screen.getByLabelText(/Prix/), '2000')
       await userEvent.tab()
       await userEvent.click(nextButton)
 

@@ -352,15 +352,15 @@ describe('Signup', () => {
         })
 
         await userEvent.type(
-          screen.getByLabelText('Adresse email *'),
+          screen.getByLabelText(/Adresse email/),
           'test@example.com'
         )
         await userEvent.type(
-          screen.getByLabelText('Mot de passe *'),
+          screen.getByLabelText(/Mot de passe/),
           'user@AZERTY123'
         )
-        await userEvent.type(screen.getByLabelText('Nom *'), 'Nom')
-        await userEvent.type(screen.getByLabelText('Prénom *'), 'Prénom')
+        await userEvent.type(screen.getByLabelText(/Nom/), 'Nom')
+        await userEvent.type(screen.getByLabelText(/Prénom/), 'Prénom')
 
         // To simulate onBlur event
         await userEvent.tab()

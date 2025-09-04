@@ -7,11 +7,10 @@ import {
 } from '@/commons/core/OfferEducational/types'
 import { isDateValid } from '@/commons/utils/date'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullHelpIcon from '@/icons/full-help.svg'
 import strokeCollaborator from '@/icons/stroke-collaborator.svg'
-import strokeEuroIcon from '@/icons/stroke-euro.svg'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
@@ -78,11 +77,7 @@ export const FormStock = ({
           <span className={styles['label-container']}>
             Date de fin
             <Tooltip content="Le remboursement de votre offre sera effectué 2 à 3 semaines après la fin de votre évènement.">
-              <button
-                type="button"
-                aria-label="Aide pour le remboursement"
-                className={styles['help-button']}
-              >
+              <button type="button" className={styles['help-button']}>
                 <SvgIcon src={fullHelpIcon} />
               </button>
             </Tooltip>
@@ -110,19 +105,18 @@ export const FormStock = ({
         {...register('numberOfPlaces')}
         error={formState.errors.numberOfPlaces?.message}
         type="number"
-        rightIcon={strokeCollaborator}
+        icon={strokeCollaborator}
         required
         asterisk={false}
       />
       <TextInput
         disabled={!canEditDiscount}
-        label={TOTAL_PRICE_LABEL}
+        label={`${TOTAL_PRICE_LABEL} (en €)`}
         {...register('totalPrice')}
         error={formState.errors.totalPrice?.message}
         step={0.01} // allow user to enter a price with cents
         min={0}
         type="number"
-        rightIcon={strokeEuroIcon}
         required
         asterisk={false}
       />

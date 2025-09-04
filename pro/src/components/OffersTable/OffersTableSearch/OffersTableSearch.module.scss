@@ -14,11 +14,9 @@
   }
 
   &-input-wrapper {
-    max-width: rem.torem(500px);
-  }
+    width: rem.torem(500px);
+    max-width: 100%;
 
-  &-toggle-button {
-    margin-bottom: rem.torem(16px);
   }
 
   &-filters {

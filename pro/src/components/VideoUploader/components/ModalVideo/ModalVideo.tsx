@@ -1,12 +1,12 @@
 import * as Dialog from '@radix-ui/react-dialog'
 
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import {
   DialogBuilder,
   type DialogBuilderProps,
 } from '@/ui-kit/DialogBuilder/DialogBuilder'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import youtubeLogo from './assets/youtube-logo.png'
 import styles from './ModalVideo.module.scss'
@@ -28,8 +28,6 @@ export const ModalVideo = ({
           <TextInput
             name="videoUrl"
             label="Lien URL Youtube"
-            className={styles['modal-video-input']}
-            type="text"
             description="Format : https://www.youtube.com/watch?v=0R5PZxOgoz8"
           />
         </div>

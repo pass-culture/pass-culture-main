@@ -105,7 +105,7 @@ export function StocksCalendarTableEditStock({
           <div className={styles['row']}>
             <div className={styles['price-category-row']}>
               <QuantityInput
-                minimum={0}
+                min={0}
                 error={form.formState.errors.remainingQuantity?.message}
                 label="Places restantes"
                 value={remainingQuantity}

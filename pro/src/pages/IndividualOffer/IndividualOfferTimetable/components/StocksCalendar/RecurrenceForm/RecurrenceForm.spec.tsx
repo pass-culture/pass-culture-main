@@ -59,7 +59,9 @@ describe('RecurrenceForm', () => {
     )
     await userEvent.type(screen.getByLabelText('Tarif *'), '21')
     await userEvent.type(
-      screen.getByLabelText('Date limite de réservation', { exact: false }),
+      screen.getByLabelText('Nombre de jours avant le début de l’évènement', {
+        exact: false,
+      }),
       '2'
     )
 
@@ -206,9 +208,12 @@ describe('RecurrenceForm', () => {
   it('should not log an event when the limit date is updated but the value is the same as the initial value', async () => {
     renderRecurrenceForm(defaultProps)
 
-    const input = screen.getByLabelText('Date limite de réservation', {
-      exact: false,
-    })
+    const input = screen.getByLabelText(
+      'Nombre de jours avant le début de l’évènement',
+      {
+        exact: false,
+      }
+    )
     await userEvent.type(input, '12')
     await userEvent.clear(input)
     await userEvent.click(screen.getByLabelText('Tous les jours'))

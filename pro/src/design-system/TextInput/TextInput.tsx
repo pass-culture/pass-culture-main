@@ -5,6 +5,7 @@ import {
   type FocusEventHandler,
   type ForwardedRef,
   forwardRef,
+  type KeyboardEventHandler,
   useId,
 } from 'react'
 
@@ -24,6 +25,7 @@ export type TextInputProps = {
   value?: string
   onChange?: ChangeEventHandler<HTMLInputElement>
   onBlur?: FocusEventHandler<HTMLInputElement>
+  onKeyDown?: KeyboardEventHandler<HTMLInputElement>
   disabled?: boolean
   description?: string
   error?: string
@@ -33,16 +35,14 @@ export type TextInputProps = {
     current: number
     max: number
   }
-<<<<<<< Updated upstream
-=======
   step?: number | string
   min?: number | string
   max?: number | string
->>>>>>> Stashed changes
   icon?: string
   iconButton?: TextInputButtonProps
   extension?: React.ReactNode
   autoComplete?: React.InputHTMLAttributes<HTMLInputElement>['autoComplete']
+  spellCheck?: React.InputHTMLAttributes<HTMLInputElement>['spellCheck']
   describedBy?: string
 }
 
@@ -62,9 +62,13 @@ export const TextInput = forwardRef(
       iconButton,
       onChange,
       onBlur,
+      onKeyDown,
       value,
+      step,
+      min,
       extension,
       autoComplete,
+      spellCheck,
       describedBy,
     }: TextInputProps,
     ref: ForwardedRef<HTMLInputElement>
@@ -116,13 +120,17 @@ export const TextInput = forwardRef(
             name={name}
             onChange={onChange}
             onBlur={onBlur}
+            onKeyDown={onKeyDown}
             value={value}
             maxLength={charactersCount?.max}
             autoComplete={autoComplete}
+            spellCheck={type === 'number' ? 'false' : spellCheck}
+            step={type === 'number' ? step : undefined}
+            min={type === 'number' ? min : undefined}
           />
           {iconButton && (
             <div className={styles['input-button']}>
-              <TextInputButton {...{ disabled: disabled, ...iconButton }} />
+              <TextInputButton {...iconButton} />
             </div>
           )}
         </div>

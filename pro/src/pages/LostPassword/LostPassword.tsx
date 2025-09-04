@@ -15,11 +15,11 @@ import { useRedirectLoggedUser } from '@/commons/hooks/useRedirectLoggedUser'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ReSendEmailCallout } from '@/components/ReSendEmailCallout/ReSendEmailCallout'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullNextIcon from '@/icons/full-next.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import styles from './LostPassword.module.scss'
 import { validationSchema } from './validationSchema'
@@ -88,15 +88,17 @@ export const LostPassword = (): JSX.Element => {
           <form onSubmit={handleSubmit(submitChangePasswordRequest)}>
             <FormLayout>
               <FormLayout.Row>
-                <TextInput
-                  label="Adresse email"
-                  description="Format : email@exemple.com"
-                  error={errors.email?.message}
-                  required={true}
-                  asterisk={false}
-                  className={styles['change-password-request-form-input']}
-                  {...register('email')}
-                />
+                <div className={styles['change-password-request-form-input']}>
+                  <TextInput
+                    label="Adresse email"
+                    description="Format : email@exemple.com"
+                    error={errors.email?.message}
+                    required
+                    asterisk={false}
+                    type="email"
+                    {...register('email')}
+                  />
+                </div>
               </FormLayout.Row>
               <FormLayout.Row>
                 <Button

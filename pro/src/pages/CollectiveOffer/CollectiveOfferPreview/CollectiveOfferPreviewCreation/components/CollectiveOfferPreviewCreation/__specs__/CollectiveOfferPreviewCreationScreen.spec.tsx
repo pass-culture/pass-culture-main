@@ -194,7 +194,7 @@ describe('CollectiveOfferConfirmation', () => {
     const contactButton = await screen.findByText('Contacter le partenaire')
     await userEvent.click(contactButton)
 
-    expect(screen.getByLabelText('Email *')).toBeDisabled()
+    expect(screen.getByLabelText(/Email/)).toBeDisabled()
     expect(screen.getByText('Envoyer ma demande')).toBeDisabled()
   })
 })

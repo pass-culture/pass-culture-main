@@ -93,8 +93,8 @@ describe('QuantityInput', () => {
   })
 
   it('should move focus to the input when the checkbox is unchecked', async () => {
-    const minimum = 10
-    renderQuantityInput({ label: LABELS.input, minimum, value: undefined })
+    const min = 10
+    renderQuantityInput({ label: LABELS.input, min, value: undefined })
 
     const input = screen.getByRole('spinbutton', { name: LABELS.input })
     const checkbox = screen.getByRole('checkbox', { name: LABELS.checkbox })

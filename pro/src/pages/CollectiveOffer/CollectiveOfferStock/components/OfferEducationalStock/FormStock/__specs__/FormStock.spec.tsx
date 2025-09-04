@@ -138,8 +138,8 @@ describe('FormStock', () => {
     await userEvent.click(screen.getByLabelText('Horaire'))
     await waitFor(() => userEvent.type(timeInput, '00:00'))
 
-    await userEvent.type(screen.getByLabelText('Nombre de participants'), '10')
-    await userEvent.type(screen.getByLabelText('Prix total TTC'), '100')
+    await userEvent.type(screen.getByLabelText(/Nombre de participants/), '10')
+    await userEvent.type(screen.getByLabelText(/Prix total TTC/), '100')
 
     await waitFor(() => {
       expect(
@@ -195,8 +195,8 @@ describe('FormStock', () => {
       },
     })
 
-    const priceInput = screen.getByLabelText('Prix total TTC')
-    const placeInput = screen.getByLabelText('Nombre de participants')
+    const priceInput = screen.getByLabelText(/Prix total TTC/)
+    const placeInput = screen.getByLabelText(/Nombre de participants/)
 
     expect(priceInput).toBeDisabled()
     expect(placeInput).toBeDisabled()
@@ -214,7 +214,7 @@ describe('FormStock', () => {
       },
     })
 
-    const priceInput = screen.getByLabelText('Prix total TTC')
+    const priceInput = screen.getByLabelText(/Prix total TTC/)
     await userEvent.clear(priceInput)
     await userEvent.type(priceInput, '10000')
     const saveButton = screen.getByText('Enregistrer')
@@ -263,8 +263,8 @@ describe('FormStock', () => {
     const startDatetimeInput = screen.getByLabelText('Date de début')
     const endDatetimeInput = screen.getAllByLabelText(/Date de fin/)[1]
     const eventTimeInput = screen.getByLabelText('Horaire')
-    const placeInput = screen.getByLabelText('Nombre de participants')
-    const priceInput = screen.getByLabelText('Prix total TTC')
+    const placeInput = screen.getByLabelText(/Nombre de participants/)
+    const priceInput = screen.getByLabelText(/Prix total TTC/)
 
     expect(placeInput).toBeDisabled()
     expect(priceInput).toBeDisabled()
@@ -288,8 +288,8 @@ describe('FormStock', () => {
     const startDatetimeInput = screen.getByLabelText('Date de début')
     const endDatetimeInput = screen.getAllByLabelText(/Date de fin/)[1]
     const eventTimeInput = screen.getByLabelText('Horaire')
-    const placeInput = screen.getByLabelText('Nombre de participants')
-    const priceInput = screen.getByLabelText('Prix total TTC')
+    const placeInput = screen.getByLabelText(/Nombre de participants/)
+    const priceInput = screen.getByLabelText(/Prix total TTC/)
 
     expect(placeInput).not.toBeDisabled()
     expect(priceInput).not.toBeDisabled()

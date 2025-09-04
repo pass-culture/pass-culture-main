@@ -1,13 +1,15 @@
-import { useRef } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullMoreIcon from '@/icons/full-more.svg'
+import fullTrashIcon from '@/icons/full-trash.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
+import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
 
-import { EmailInputRow } from './EmailInputRow/EmailInputRow'
+import { NOTIFICATIONS_EMAIL_LABEL } from '../../constants/labels'
 import styles from './FormNotifications.module.scss'
 
 interface FormNotificationsProps {
@@ -17,14 +19,11 @@ interface FormNotificationsProps {
 export const FormNotifications = ({
   disableForm,
 }: FormNotificationsProps): JSX.Element => {
-  const { watch, getFieldState, setValue } =
+  const { getFieldState, setFocus, register } =
     useFormContext<OfferEducationalFormValues>()
   const { fields, remove, append } = useFieldArray({
     name: 'notificationEmails',
   })
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([])
-
-  const emails = watch('notificationEmails') || []
 
   return (
     <FormLayout.Section
@@ -32,40 +31,41 @@ export const FormNotifications = ({
       className={styles['emails']}
     >
       {fields.map((field, index) => (
-        <EmailInputRow
-          disableForm={disableForm}
-          key={field.id}
-          displayTrash={index > 0}
-          email={watch(`notificationEmails.${index}.email`)}
-          onChange={(e) =>
-            setValue(`notificationEmails.${index}.email`, e.target.value, {
-              shouldValidate: true,
-            })
-          }
-          error={
-            getFieldState(`notificationEmails.${index}.email`).error?.message
-          }
-          ref={(el) => (inputRefs.current[index] = el)}
-          onDelete={() => {
-            const newIndex = index - 1
-            inputRefs.current[newIndex]?.focus()
-
-            remove(index)
-          }}
-          //  The field should autoFocus only if it's the last of the emails list (the one being just added)
-          //  if the list has more than one emails (the first one is always there and cannot appear)
-          //  and if that last email is empty (otherwise it would focus the last email in an edition form with more than one email)
-          autoFocus={
-            self.length - 1 === index && self.length > 1 && !emails[index].email
-          }
-        />
+        <FormLayout.Row className={styles['notification-mail']} key={field.id}>
+          <div className={styles['notification-mail-input']}>
+            <TextInput
+              label={NOTIFICATIONS_EMAIL_LABEL}
+              disabled={disableForm}
+              required
+              {...register(`notificationEmails.${index}.email`)}
+              error={
+                getFieldState(`notificationEmails.${index}.email`).error
+                  ?.message
+              }
+              description="Format : email@exemple.com"
+              extension={
+                index > 0 &&
+                !disableForm && (
+                  <ListIconButton
+                    onClick={() => {
+                      remove(index)
+                      setFocus(`notificationEmails.${index - 1}.email`)
+                    }}
+                    icon={fullTrashIcon}
+                    tooltipContent="Supprimer l’email"
+                  />
+                )
+              }
+            />
+          </div>
+        </FormLayout.Row>
       ))}
-      {!disableForm && emails.length <= 5 && (
+      {!disableForm && fields.length <= 5 && (
         <Button
           variant={ButtonVariant.TERNARY}
           icon={fullMoreIcon}
           onClick={() => {
-            append({ email: '' })
+            append({ email: '' }, { shouldFocus: true })
           }}
           className={styles['add-notification-button']}
         >

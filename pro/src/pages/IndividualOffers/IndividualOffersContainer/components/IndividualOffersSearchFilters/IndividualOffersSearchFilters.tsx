@@ -105,12 +105,6 @@ export const IndividualOffersSearchFilters = ({
     applyFilters(selectedFilters)
   }
 
-  const searchByOfferNameLabel = (
-    <span>
-      Nom de l’offre ou <abbr title="European Article Numbering">EAN-13</abbr>
-    </span>
-  )
-
   return (
     <OffersTableSearch
       type="individual"
@@ -118,7 +112,7 @@ export const IndividualOffersSearchFilters = ({
       onSubmit={requestFilteredOffers}
       isDisabled={disableAllFilters}
       nameInputProps={{
-        label: searchByOfferNameLabel,
+        label: 'Nom de l’offre ou EAN-13 (European Article Numbering)',
         disabled: disableAllFilters,
         onChange: storeNameOrIsbnSearchValue,
         value: selectedFilters.nameOrIsbn,

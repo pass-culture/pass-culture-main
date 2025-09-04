@@ -4,8 +4,8 @@ import { isError } from '@/apiClient/helpers'
 import { getSiretData } from '@/commons/core/Venue/getSiretData'
 import { unhumanizeSiret } from '@/commons/core/Venue/utils'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import type { VenueSettingsFormValues } from '../types'
 import { isSiretStartingWithSiren, valideSiretLength } from './validationSchema'
@@ -88,10 +88,9 @@ export const SiretOrCommentFields = ({
         <TextInput
           {...register('siret')}
           label="SIRET de la structure"
-          type="text"
           onChange={(e) => onSiretChange(e.target.value)}
           error={errors.siret?.message}
-          required={true}
+          required
         />
       ) : (
         <TextArea

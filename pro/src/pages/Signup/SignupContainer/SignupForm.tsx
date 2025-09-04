@@ -7,13 +7,13 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { LegalInfos } from '@/components/LegalInfos/LegalInfos'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import iconFullNext from '@/icons/full-next.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { EmailSpellCheckInput } from '@/ui-kit/form/EmailSpellCheckInput/EmailSpellCheckInput'
 import { PasswordInput } from '@/ui-kit/form/PasswordInput/PasswordInput'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import { ValidationMessageList } from '@/ui-kit/form/ValidationMessageList/ValidationMessageList'
 
 import styles from './SignupContainer.module.scss'
@@ -74,6 +74,7 @@ export const SignupForm = (): JSX.Element => {
             description="Format : email@exemple.com"
             label="Adresse email"
             required
+            currentCount={watch('email').length}
           />
         </FormLayout.Row>
 

@@ -29,8 +29,8 @@ describe('Search for collective bookings', { testIsolation: false }, () => {
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
     cy.stepLog({ message: 'I search for "Offre" with text "Mon offre"' })
-    cy.findByTestId('select-omnisearch-criteria').select('Offre')
-    cy.findByTestId('omnisearch-filter-input-text').type('Mon offre')
+    cy.findByLabelText('Critère').select('Offre')
+    cy.findByLabelText('Recherche').type('Mon offre')
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
@@ -56,8 +56,8 @@ describe('Search for collective bookings', { testIsolation: false }, () => {
     cy.stepLog({
       message: 'I search for "Établissement" with text "Victor Hugo"',
     })
-    cy.findByTestId('select-omnisearch-criteria').select('Établissement')
-    cy.findByTestId('omnisearch-filter-input-text').type('Victor Hugo')
+    cy.findByLabelText('Critère').select('Établissement')
+    cy.findByLabelText('Recherche').type('Victor Hugo')
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
@@ -88,10 +88,8 @@ describe('Search for collective bookings', { testIsolation: false }, () => {
     cy.stepLog({
       message: 'I search for "Numéro de réservation" with text "2"',
     })
-    cy.findByTestId('select-omnisearch-criteria').select(
-      'Numéro de réservation'
-    )
-    cy.findByTestId('omnisearch-filter-input-text').type('2')
+    cy.findByLabelText('Critère').select('Numéro de réservation')
+    cy.findByLabelText('Recherche').type('2')
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
@@ -125,8 +123,8 @@ describe('Search for collective bookings', { testIsolation: false }, () => {
     cy.stepLog({
       message: 'I search for "Établissement" with text "COLLEGE DE LA TOUR"',
     })
-    cy.findByTestId('select-omnisearch-criteria').select('Établissement')
-    cy.findByTestId('omnisearch-filter-input-text').type('COLLEGE DE LA TOUR')
+    cy.findByLabelText('Critère').select('Établissement')
+    cy.findByLabelText('Recherche').type('COLLEGE DE LA TOUR')
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [

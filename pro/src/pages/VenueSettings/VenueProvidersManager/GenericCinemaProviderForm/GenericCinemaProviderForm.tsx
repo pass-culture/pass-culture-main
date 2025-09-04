@@ -6,12 +6,12 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { SynchronizationEvents } from '@/commons/core/FirebaseEvents/constants'
 import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import styles from './GenericCinemaProviderForm.module.scss'
 export interface GenericCinemaProviderFormValues {
@@ -97,25 +97,26 @@ export const GenericCinemaProviderForm = ({
       <div className={styles['cinema-provider-form-content']}>
         {showAdvancedFields && (
           <FormLayout.Row className={styles['form-layout-row']}>
-            <TextInput
-              {...register('price', {
-                required: 'Veuillez renseigner un prix de vente',
-              })}
-              type="number"
-              label="Prix de vente/place"
-              min="1"
-              description="Le prix doit être indiqué en euros."
-              step={0.01}
-              className={styles['price-input']}
-              required
-            />
-            <QuantityInput
-              minimum={1}
-              label="Nombre de places/séance"
-              className={styles['nb-places-input']}
-              value={formValues.quantity ?? undefined}
-              onChange={(e) => setValue('quantity', Number(e.target.value))}
-            />
+            <div className={styles['price-input']}>
+              <TextInput
+                {...register('price', {
+                  required: 'Veuillez renseigner un prix de vente',
+                })}
+                type="number"
+                label="Prix de vente par place (en €)"
+                min={1}
+                step={0.01}
+                required
+              />
+            </div>
+            <div className={styles['nb-places-input']}>
+              <QuantityInput
+                min={1}
+                label="Nombre de places/séance"
+                value={formValues.quantity ?? undefined}
+                onChange={(e) => setValue('quantity', Number(e.target.value))}
+              />
+            </div>
           </FormLayout.Row>
         )}
 
