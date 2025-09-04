@@ -44,7 +44,7 @@ describe('Search collective offers', () => {
 
   it(`I should be able to search with a name and see expected results`, () => {
     cy.stepLog({
-      message: 'I search with the name "' + offerPublished.name + '"',
+      message: `I search with the name "${offerPublished.name}"`,
     })
 
     cy.injectAxe(DEFAULT_AXE_CONFIG)
@@ -77,7 +77,7 @@ describe('Search collective offers', () => {
     cy.findByText('Filtrer').click()
 
     cy.stepLog({
-      message: 'I search with the place "' + offerArchived.venueName + '"',
+      message: `I search with the place "${offerArchived.venueName}"`,
     })
     cy.findByLabelText('Structure').select(offerArchived.venueName)
 
@@ -116,7 +116,7 @@ describe('Search collective offers', () => {
     cy.stepLog({ message: 'I open the filters' })
     cy.findByText('Filtrer').click()
 
-    cy.stepLog({ message: 'I search with the Format "' + formatName + '"' })
+    cy.stepLog({ message: `I search with the Format "${formatName}"` })
     cy.findByLabelText('Format').select(formatName)
 
     cy.stepLog({ message: 'I validate my filters' })
@@ -263,7 +263,7 @@ describe('Search collective offers', () => {
     cy.findByText('Filtrer').click()
 
     cy.stepLog({
-      message: 'I select ' + offerDraft.venueName + ' in "Structure"',
+      message: `I select ${offerDraft.venueName} in "Structure"`,
     })
     cy.findByLabelText('Structure').select(offerDraft.venueName)
 

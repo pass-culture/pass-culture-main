@@ -51,7 +51,7 @@ describe('Edit digital individual offers', () => {
 
       cy.stepLog({ message: 'I update the url link' })
       const randomUrl = `http://myrandomurl.fr/`
-      cy.get('input#url').type('{selectall}{del}' + randomUrl)
+      cy.get('input#url').type(`{selectall}{del}${randomUrl}`)
 
       cy.stepLog({ message: 'I display Informations pratiques tab' })
       cy.findByText('Enregistrer les modifications').click()
@@ -114,11 +114,11 @@ describe('Edit digital individual offers', () => {
 
       cy.findAllByLabelText('Date *')
         .eq(0)
-        .type('{selectall}{del}' + format(newDate, 'yyyy-MM-dd'))
+        .type(`{selectall}{del}${format(newDate, 'yyyy-MM-dd')}`)
 
       cy.findAllByLabelText('Date *')
         .eq(1)
-        .type('{selectall}{del}' + format(newDate, 'yyyy-MM-dd'))
+        .type(`{selectall}{del}${format(newDate, 'yyyy-MM-dd')}`)
 
       cy.stepLog({ message: 'Save modifications' })
       cy.findByText('Valider').click()
