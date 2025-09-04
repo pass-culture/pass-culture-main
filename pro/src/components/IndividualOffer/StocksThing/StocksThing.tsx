@@ -35,16 +35,14 @@ import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { FormLayoutDescription } from '@/components/FormLayout/FormLayoutDescription'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullCodeIcon from '@/icons/full-code.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import strokeEuroIcon from '@/icons/stroke-euro.svg'
-import strokeFrancIcon from '@/icons/stroke-franc.svg'
 import { getSuccessMessage } from '@/pages/IndividualOffer/commons/getSuccessMessage'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { DialogStockThingDeleteConfirm } from '@/pages/IndividualOffer/components/DialogStockThingDeleteConfirm/DialogStockThingDeleteConfirm'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import type { Link } from '@/ui-kit/LinkNodes/LinkNodes'
 import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
 
@@ -406,32 +404,33 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               className={styles['callout-area-margin']}
             />
             <div className={styles.row}>
-              <TextInput
-                name="price"
-                error={errors.price?.message}
-                required
-                label={'Prix'}
-                disabled={readOnlyFields.includes('price')}
-                type="number"
-                data-testid="input-price"
-                rightIcon={isCaledonian ? strokeFrancIcon : strokeEuroIcon}
-                step="0.01"
-                min={0}
-                className={styles['field-layout-xsmall']}
-                value={
-                  isCaledonian
-                    ? isPriceTouched
-                      ? (watch('price') ?? '')
-                      : convertEuroToPacificFranc(Number(euroPrice ?? 0)) || ''
-                    : (watch('price') ?? '')
-                }
-                onChange={(e) => {
-                  setIsPriceTouched(true)
-                  setValue('price', Number(e.target.value), {
-                    shouldDirty: true,
-                  })
-                }}
-              />
+              <div className={styles['field-layout-xsmall']}>
+                <TextInput
+                  name="price"
+                  error={errors.price?.message}
+                  required
+                  label={`Prix (en ${isCaledonian ? 'F' : '€'})`}
+                  disabled={readOnlyFields.includes('price')}
+                  type="number"
+                  step={0.01}
+                  min={0}
+                  value={
+                    isCaledonian
+                      ? isPriceTouched
+                        ? (watch('price') ?? '').toString()
+                        : convertEuroToPacificFranc(
+                            Number(euroPrice ?? 0)
+                          ).toString() || ''
+                      : (watch('price') ?? '').toString()
+                  }
+                  onChange={(e) => {
+                    setIsPriceTouched(true)
+                    setValue('price', Number(e.target.value), {
+                      shouldDirty: true,
+                    })
+                  }}
+                />
+              </div>
               <DatePicker
                 {...register('bookingLimitDatetime')}
                 name="bookingLimitDatetime"
@@ -465,41 +464,39 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   className={styles['field-layout-small']}
                 />
               )}
-              <QuantityInput
-                value={watch('quantity')}
-                error={errors.quantity?.message}
-                label="Quantité"
-                disabled={readOnlyFields.includes('quantity')}
-                onChange={onQuantityChange}
-                className={styles['field-layout-small']}
-                minimum={minQuantity}
-              />
+              <div className={styles['field-layout-small']}>
+                <QuantityInput
+                  value={watch('quantity')}
+                  error={errors.quantity?.message}
+                  label="Quantité"
+                  disabled={readOnlyFields.includes('quantity')}
+                  onChange={onQuantityChange}
+                  min={minQuantity}
+                />
+              </div>
               {mode === OFFER_WIZARD_MODE.EDITION && stocks.length > 0 && (
                 <>
-                  <TextInput
-                    name="availableStock"
-                    value={
-                      getValues('remainingQuantity') === 'unlimited'
-                        ? 'Illimité'
-                        : getValues('remainingQuantity')
-                    }
-                    readOnly
-                    label="Stock restant"
-                    hasLabelLineBreak={false}
-                    isOptional
-                    smallLabel
-                    className={styles['field-layout-shrink']}
-                  />
-                  <TextInput
-                    {...register('bookingsQuantity')}
-                    error={errors.bookingsQuantity?.message}
-                    value={getValues('bookingsQuantity') || 0}
-                    readOnly
-                    label="Réservations"
-                    isOptional
-                    smallLabel
-                    className={styles['field-layout-shrink']}
-                  />
+                  <div className={styles['field-layout-shrink']}>
+                    <TextInput
+                      name="availableStock"
+                      value={
+                        getValues('remainingQuantity') === 'unlimited'
+                          ? 'Illimité'
+                          : getValues('remainingQuantity')
+                      }
+                      disabled
+                      label="Stock restant"
+                    />
+                  </div>
+                  <div className={styles['field-layout-shrink']}>
+                    <TextInput
+                      name="bookingsQuantity"
+                      value={getValues('bookingsQuantity') || '0'}
+                      error={errors.bookingsQuantity?.message}
+                      label="Réservations"
+                      disabled
+                    />
+                  </div>
                 </>
               )}
               {!hasPublishedOfferWithSameEan && (

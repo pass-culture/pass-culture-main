@@ -188,7 +188,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     )
     // ...then he should see the different address fields
     expect(
-      screen.queryByLabelText(/Adresse postale/, { selector: '#street' })
+      screen.getByRole('textbox', { name: /Adresse postale/ })
     ).toBeInTheDocument()
     expect(screen.queryByLabelText(/Code postal/)).toBeInTheDocument()
     expect(screen.queryByLabelText(/Ville/)).toBeInTheDocument()

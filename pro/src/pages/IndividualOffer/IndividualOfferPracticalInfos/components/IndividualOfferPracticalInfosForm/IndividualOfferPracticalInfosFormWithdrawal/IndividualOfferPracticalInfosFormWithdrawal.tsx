@@ -3,13 +3,13 @@ import { useFormContext } from 'react-hook-form'
 import { WithdrawalTypeEnum } from '@/apiClient/v1'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import {
   ticketSentDateOptions,
   ticketWithdrawalHourOptions,
 } from '@/pages/IndividualOffer/IndividualOfferInformations/commons/constants'
 import { getFirstWithdrawalTypeEnumValue } from '@/pages/IndividualOffer/IndividualOfferInformations/components/UsefulInformationForm/UsefulInformationForm'
 import { Select } from '@/ui-kit/form/Select/Select'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import type { IndividualOfferPracticalInfosFormValues } from '../../../commons/types'
 
@@ -96,7 +96,10 @@ export function IndividualOfferPracticalInfosFormWithdrawal({
         <TextInput
           {...form.register('bookingContact')}
           label="Email de contact communiqué aux bénéficiaires"
-          maxLength={90}
+          charactersCount={{
+            max: 90,
+            current: form.watch('bookingContact')?.length || 0,
+          }}
           disabled={isFormDisabled}
           description="Format : email@exemple.com"
           error={form.formState.errors.bookingContact?.message}

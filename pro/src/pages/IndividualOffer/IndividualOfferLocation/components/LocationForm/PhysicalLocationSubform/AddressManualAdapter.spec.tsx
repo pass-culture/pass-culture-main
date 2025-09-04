@@ -92,10 +92,10 @@ const renderAddressManualAdapter = ({
 
 const LABELS = {
   fields: {
-    street: 'Adresse postale *',
-    postalCode: 'Code postal *',
-    city: 'Ville *',
-    coords: 'Coordonnées GPS *',
+    street: /Adresse postale/,
+    postalCode: /Code postal/,
+    city: /Ville/,
+    coords: /Coordonnées GPS/,
   },
 }
 

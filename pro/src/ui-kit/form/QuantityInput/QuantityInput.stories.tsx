@@ -31,14 +31,6 @@ export const Default: Story = {
   },
 }
 
-export const SmallLabel: Story = {
-  args: {
-    name: 'quantity',
-    label: 'Quantité',
-    smallLabel: true,
-  },
-}
-
 export const Required: Story = {
   args: {
     name: 'quantity',
@@ -51,7 +43,7 @@ export const WithinForm: Story = {
   args: {
     name: 'quantity',
     label: 'Quantity',
-    minimum: 10,
+    min: 10,
   },
   decorators: [
     (Story: any) => (

@@ -33,12 +33,9 @@ export type TextInputProps = {
     current: number
     max: number
   }
-<<<<<<< Updated upstream
-=======
   step?: number | string
   min?: number | string
   max?: number | string
->>>>>>> Stashed changes
   icon?: string
   iconButton?: TextInputButtonProps
   extension?: React.ReactNode
@@ -63,6 +60,8 @@ export const TextInput = forwardRef(
       onChange,
       onBlur,
       value,
+      step,
+      min,
       extension,
       autoComplete,
       describedBy,
@@ -119,6 +118,8 @@ export const TextInput = forwardRef(
             value={value}
             maxLength={charactersCount?.max}
             autoComplete={autoComplete}
+            step={type === 'number' ? step : undefined}
+            min={type === 'number' ? min : undefined}
           />
           {iconButton && (
             <div className={styles['input-button']}>

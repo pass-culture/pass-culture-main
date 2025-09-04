@@ -242,10 +242,7 @@ export const IndividualOfferDetailsScreen = ({
   const isEanSearchAvailable =
     isRecordStore(venues) &&
     queryOfferType === INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
-  const isEanSearchDisplayed =
-    isEanSearchAvailable &&
-    mode === OFFER_WIZARD_MODE.CREATION &&
-    (isDraftOffer || isProductBased)
+  const isEanSearchDisplayed = true
   const isEanSearchCalloutAloneDisplayed =
     isEanSearchAvailable &&
     mode === OFFER_WIZARD_MODE.EDITION &&

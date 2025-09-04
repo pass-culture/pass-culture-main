@@ -5,9 +5,10 @@
   align-items: flex-start;
   display: flex;
   flex-direction: column;
+  gap: rem.torem(16px);
   margin-top: rem.torem(16px);
 
-  > .input-label {
+  >.input-label {
     width: rem.torem(424px);
   }
 
@@ -16,22 +17,13 @@
     width: rem.torem(200px);
   }
 
-  > .input-booking-limit-datetime,
-  > .input-activation-codes-expiration-datetime {
+  >.input-booking-limit-datetime,
+  >.input-activation-codes-expiration-datetime {
     width: rem.torem(224px);
   }
 
-  > .input-readonly {
-    &--first {
-      margin-left: rem.torem(16px);
-    }
-
-    &,
-    &--first {
-      > span {
-        margin-top: rem.torem(7.5px);
-      }
-    }
+  >.input-readonly {
+    width: rem.torem(120px);
   }
 
   .button-action {
@@ -43,6 +35,5 @@
 @media (min-width: size.$tablet) {
   .row {
     flex-direction: row;
-    gap: rem.torem(16px);
   }
 }

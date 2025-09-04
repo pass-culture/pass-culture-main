@@ -5,6 +5,7 @@ import { api } from '@/apiClient/api'
 import { GET_MUSIC_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import {
@@ -14,7 +15,6 @@ import {
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
 import { Select } from '@/ui-kit/form/Select/Select'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 
 import styles from './DetailsSubForm.module.scss'
@@ -154,7 +154,10 @@ export const DetailsSubForm = ({
                 {subcategoryConditionalFields.includes('speaker') && (
                   <TextInput
                     label="Intervenant"
-                    maxLength={1000}
+                    charactersCount={{
+                      current: watch('speaker')?.length || 0,
+                      max: 1000,
+                    }}
                     disabled={readOnlyFields.includes('speaker')}
                     {...register('speaker')}
                     error={errors.speaker?.message}
@@ -163,7 +166,10 @@ export const DetailsSubForm = ({
                 {subcategoryConditionalFields.includes('author') && (
                   <TextInput
                     label="Auteur"
-                    maxLength={1000}
+                    charactersCount={{
+                      current: watch('author')?.length || 0,
+                      max: 1000,
+                    }}
                     disabled={readOnlyFields.includes('author')}
                     {...register('author')}
                     error={errors.author?.message}
@@ -172,7 +178,10 @@ export const DetailsSubForm = ({
                 {subcategoryConditionalFields.includes('visa') && (
                   <TextInput
                     label="Visa d’exploitation"
-                    maxLength={1000}
+                    charactersCount={{
+                      current: watch('visa')?.length || 0,
+                      max: 1000,
+                    }}
                     disabled={readOnlyFields.includes('visa')}
                     {...register('visa')}
                     error={errors.visa?.message}
@@ -181,7 +190,10 @@ export const DetailsSubForm = ({
                 {subcategoryConditionalFields.includes('stageDirector') && (
                   <TextInput
                     label="Metteur en scène"
-                    maxLength={1000}
+                    charactersCount={{
+                      current: watch('stageDirector')?.length || 0,
+                      max: 1000,
+                    }}
                     disabled={readOnlyFields.includes('stageDirector')}
                     {...register('stageDirector')}
                     error={errors.stageDirector?.message}
@@ -190,7 +202,10 @@ export const DetailsSubForm = ({
                 {subcategoryConditionalFields.includes('performer') && (
                   <TextInput
                     label="Interprète"
-                    maxLength={1000}
+                    charactersCount={{
+                      current: watch('performer')?.length || 0,
+                      max: 1000,
+                    }}
                     disabled={readOnlyFields.includes('performer')}
                     {...register('performer')}
                     error={errors.performer?.message}
@@ -199,8 +214,10 @@ export const DetailsSubForm = ({
                 {displayEanField && (
                   <TextInput
                     label="EAN-13 (European Article Numbering)"
-                    count={watch('ean')?.length}
-                    maxLength={13}
+                    charactersCount={{
+                      current: watch('ean')?.length || 0,
+                      max: 13,
+                    }}
                     disabled={readOnlyFields.includes('ean')}
                     {...register('ean')}
                     error={errors.ean?.message}

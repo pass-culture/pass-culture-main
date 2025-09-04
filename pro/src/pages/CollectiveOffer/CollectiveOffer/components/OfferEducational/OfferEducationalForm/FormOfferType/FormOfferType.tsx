@@ -14,10 +14,10 @@ import type { SelectOption } from '@/commons/custom_types/form'
 import { useFunctionOnce } from '@/commons/hooks/useFunctionOnce'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MarkdownInfoBox } from '@/components/MarkdownInfoBox/MarkdownInfoBox'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { MultiSelect, type Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
 import type { DomainOption } from '../../useOfferEducationalFormData'
@@ -193,10 +193,9 @@ export const FormOfferType = ({
       <FormLayout.Section title="Dites-nous en plus sur votre offre culturelle">
         <FormLayout.Row className={styles['title']}>
           <TextInput
-            count={watch('title').length}
+            charactersCount={{ max: 110, current: watch('title').length }}
             required
             label="Titre de l’offre"
-            maxLength={110}
             {...register('title')}
             error={getFieldState('title').error?.message}
             disabled={disableForm}

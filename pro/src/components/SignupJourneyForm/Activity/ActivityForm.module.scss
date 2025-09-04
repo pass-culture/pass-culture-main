@@ -11,3 +11,9 @@
 .target-customer-row {
   margin-top: rem.torem(32px);
 }
+
+.url-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-m);
+}

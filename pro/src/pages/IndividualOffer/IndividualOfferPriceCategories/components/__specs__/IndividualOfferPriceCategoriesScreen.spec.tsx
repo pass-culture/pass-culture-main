@@ -91,8 +91,8 @@ describe('IndividualOfferPriceCategoriesScreen', () => {
 
     await userEvent.click(screen.getByText(/ajouter un tarif/i))
 
-    const labelInput = screen.getAllByLabelText('Intitulé du tarif')
-    const priceInput = screen.getAllByLabelText('Prix par personne')
+    const labelInput = screen.getAllByLabelText(/Intitulé du tarif/)
+    const priceInput = screen.getAllByLabelText(/Prix par personne/)
 
     await userEvent.clear(labelInput[1])
     await userEvent.type(labelInput[1], 'Plein tarif')
@@ -114,7 +114,7 @@ describe('IndividualOfferPriceCategoriesScreen', () => {
     await renderPriceCategoriesScreen(apiOffer)
 
     await userEvent.click(screen.getByText(/ajouter un tarif/i))
-    const priceInput = screen.getAllByLabelText('Prix par personne')
+    const priceInput = screen.getAllByLabelText(/Prix par personne/)
 
     await userEvent.clear(priceInput[0])
     await userEvent.type(priceInput[0], '1000')
@@ -149,7 +149,7 @@ describe('IndividualOfferPriceCategoriesScreen', () => {
     await userEvent.click(screen.getByText(/ajouter un tarif/i))
     await userEvent.click(screen.getByText(/ajouter un tarif/i))
 
-    expect(screen.getAllByLabelText('Intitulé du tarif').length).toBe(3)
+    expect(screen.getAllByLabelText(/Intitulé du tarif/).length).toBe(3)
   })
 
   it('toggles Duo checkbox', async () => {
@@ -171,7 +171,7 @@ describe('IndividualOfferPriceCategoriesScreen', () => {
     expect(deleteButtons[0]).toBeDisabled()
 
     const priceLabel = screen.getByRole('textbox', {
-      name: 'Intitulé du tarif',
+      name: /Intitulé du tarif/,
     })
     expect(priceLabel).toBeDisabled()
     expect(priceLabel).toHaveValue('mon label')
@@ -206,7 +206,7 @@ describe('IndividualOfferPriceCategoriesScreen', () => {
 
     await renderPriceCategoriesScreen(offerWithStocks)
 
-    const priceInput = screen.getAllByLabelText('Prix par personne')
+    const priceInput = screen.getAllByLabelText(/Prix par personne/)
     await userEvent.clear(priceInput[0])
     await userEvent.type(priceInput[0], '300')
 
@@ -271,7 +271,7 @@ describe('IndividualOfferPriceCategoriesScreen', () => {
 
     await renderPriceCategoriesScreen(offerWithId)
 
-    const priceInput = screen.getAllByLabelText('Prix par personne')
+    const priceInput = screen.getAllByLabelText(/Prix par personne/)
     await userEvent.clear(priceInput[0])
     await userEvent.type(priceInput[0], '1000')
 

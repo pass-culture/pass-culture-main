@@ -2,7 +2,7 @@
 @use 'styles/mixins/_fonts.scss' as fonts;
 
 .characters-count {
-    @include fonts.body-accent-s;
+    @include fonts.body-accent-xs;
 
     color: var(--color-text-subtle);
 }

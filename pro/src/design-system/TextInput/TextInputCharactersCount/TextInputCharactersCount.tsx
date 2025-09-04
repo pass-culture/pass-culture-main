@@ -2,7 +2,7 @@ import { useDebounce } from 'use-debounce'
 
 import styles from './TextInputCharactersCount.module.scss'
 
-export type TextInputCharactersCountProps = {
+type TextInputCharactersCountProps = {
   current: number
   max: number
   describeById: string

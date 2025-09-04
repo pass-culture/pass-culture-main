@@ -20,10 +20,10 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OnboardingFormNavigationAction } from '@/components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { MAYBE_APP_USER_APE_CODE } from '@/pages/Signup/SignupContainer/constants'
 import { MaybeAppUserDialog } from '@/pages/Signup/SignupContainer/MaybeAppUserDialog/MaybeAppUserDialog'
 import { Callout } from '@/ui-kit/Callout/Callout'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import { BannerInvisibleSiren } from './BannerInvisibleSiren/BannerInvisibleSiren'
@@ -181,17 +181,17 @@ export const Offerer = (): JSX.Element => {
             </h2>
 
             <FormLayout.Row>
-              <TextInput
-                label="Numéro de SIRET à 14 chiffres"
-                type="text"
-                required={true}
-                className={styles['input-siret']}
-                {...register('siret', { required: true })}
-                error={errors.siret?.message}
-                onChange={(e) =>
-                  setValue('siret', humanizeSiret(e.target.value))
-                }
-              />
+              <div className={styles['input-siret']}>
+                <TextInput
+                  label="Numéro de SIRET à 14 chiffres"
+                  required
+                  {...register('siret', { required: true })}
+                  error={errors.siret?.message}
+                  onChange={(e) =>
+                    setValue('siret', humanizeSiret(e.target.value))
+                  }
+                />
+              </div>
             </FormLayout.Row>
           </FormLayout.Section>
 
