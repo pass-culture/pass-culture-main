@@ -14,8 +14,8 @@ import {
 import { Pagination } from '@/ui-kit/Pagination/Pagination'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
-import styles from './BookingsTable.module.scss'
 import { useBookingsTableColumnsByIndex } from './ColumnsIndividualBooking'
+import styles from './IndividualBookingsTable.module.scss'
 
 enum IndividualBookingsSortingColumn {
   OFFER_NAME = 'OFFER_NAME',

@@ -6,15 +6,15 @@ import { Tag } from '@/design-system/Tag/Tag'
 import { getBookingStatusDisplayInformations } from '../../utils/bookingStatusConverter'
 import styles from './BookingStatusCell.module.scss'
 
-export type IndividualBookingStatusCellProps = {
+export type BookingStatusCellProps = {
   booking: BookingRecapResponseModel
   className?: string
 }
 
-export const IndividualBookingStatusCell = ({
+export const BookingStatusCell = ({
   booking,
   className,
-}: IndividualBookingStatusCellProps) => {
+}: BookingStatusCellProps) => {
   const bookingDisplayInfo = getBookingStatusDisplayInformations(
     booking.bookingStatus
   )

@@ -8,13 +8,12 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
-  IndividualBookingStatusCell,
-  type IndividualBookingStatusCellProps,
-} from '../IndividualBookingStatusCell'
+  BookingStatusCell,
+  type BookingStatusCellProps,
+} from '../BookingStatusCell'
 
-const renderIndividualBookingStatusCell = (
-  props: IndividualBookingStatusCellProps
-) => renderWithProviders(<IndividualBookingStatusCell {...props} />)
+const renderIndividualBookingStatusCell = (props: BookingStatusCellProps) =>
+  renderWithProviders(<BookingStatusCell {...props} />)
 
 describe('IndividualBookingsStatusCell', () => {
   it('should display the status label', () => {

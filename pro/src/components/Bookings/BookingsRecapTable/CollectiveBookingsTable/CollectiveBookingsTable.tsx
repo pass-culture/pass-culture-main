@@ -18,7 +18,7 @@ import { SortArrow } from '@/ui-kit/SortArrow/SortArrow'
 
 import { FilterByBookingStatus } from '../Filters/FilterByBookingStatus'
 import { NoFilteredBookings } from '../NoFilteredBookings/NoFilteredBookings'
-import styles from './BookingsTable.module.scss'
+import styles from './CollectiveBookingsTable.module.scss'
 import { CollectiveTableRow } from './CollectiveTableRow'
 
 enum CollectiveBookingsSortingColumn {
