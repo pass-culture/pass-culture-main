@@ -5,15 +5,15 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { SortingMode, useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
-import type { BookingsFilters } from '@/components/Bookings/BookingsRecapTable/types'
+import { Pagination } from '@/ui-kit/Pagination/Pagination'
+import { Table, TableVariant } from '@/ui-kit/Table/Table'
+
+import type { BookingsFilters } from '../Components/types'
 import {
   sortByBeneficiaryName,
   sortByBookingDate,
   sortByOfferName,
-} from '@/components/Bookings/BookingsRecapTable/utils/sortingFunctions'
-import { Pagination } from '@/ui-kit/Pagination/Pagination'
-import { Table, TableVariant } from '@/ui-kit/Table/Table'
-
+} from '../Components/utils/sortingFunctions'
 import { useBookingsTableColumnsByIndex } from './ColumnsIndividualBooking'
 import styles from './IndividualBookingsTable.module.scss'
 

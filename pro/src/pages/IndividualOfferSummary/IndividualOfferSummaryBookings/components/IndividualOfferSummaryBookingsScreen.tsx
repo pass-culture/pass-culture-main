@@ -13,9 +13,9 @@ import {
   EMPTY_FILTER_VALUE,
 } from '@/commons/core/Bookings/constants'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
-import { DEFAULT_OMNISEARCH_CRITERIA } from '@/components/Bookings/BookingsRecapTable/Filters/constants'
-import { IndividualBookingsTable } from '@/components/Bookings/BookingsRecapTable/IndividualBookingsTable/IndividualBookingsTable'
-import { filterBookingsRecap } from '@/components/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
+import { DEFAULT_OMNISEARCH_CRITERIA } from '@/components/Bookings/Components/Filters/constants'
+import { filterBookingsRecap } from '@/components/Bookings/Components/utils/filterBookingsRecap'
+import { IndividualBookingsTable } from '@/components/Bookings/IndividualBookingsTable/IndividualBookingsTable'
 import strokeBookingHold from '@/icons/stroke-booking-hold.svg'
 import { getFilteredIndividualBookingsAdapter } from '@/pages/Bookings/adapters/getFilteredIndividualBookingsAdapter'
 import { Button } from '@/ui-kit/Button/Button'

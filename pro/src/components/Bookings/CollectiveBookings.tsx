@@ -25,15 +25,15 @@ import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isEqual } from '@/commons/utils/isEqual'
+import { ChoosePreFiltersMessage } from '@/components/Bookings/Components/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
+import { NoBookingsForPreFiltersMessage } from '@/components/Bookings/Components/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 import { NoData } from '@/components/NoData/NoData'
-import { ChoosePreFiltersMessage } from '@/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
-import { NoBookingsForPreFiltersMessage } from '@/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
-import { BookingsRecapTable } from './BookingsRecapTable/BookingsRecapTable'
-import { PreFilters } from './PreFilters/PreFilters'
-import { useBookingsFilters } from './useBookingsFilters'
+import { BookingsRecapTable } from './CollectiveBookingsTable/BookingsRecapTable'
+import { PreFilters } from './Components/PreFilters/PreFilters'
+import { useBookingsFilters } from './Components/useBookingsFilters'
 
 type BookingsProps<T> = {
   locationState?: { statuses: string[] }

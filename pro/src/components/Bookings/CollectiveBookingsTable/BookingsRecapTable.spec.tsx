@@ -11,13 +11,13 @@ import {
   collectiveBookingFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import * as filterBookingsRecap from '@/components/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
+import * as filterBookingsRecap from '@/components/Bookings/Components/utils/filterBookingsRecap'
 
-import { BookingsRecapTable } from './BookingsRecapTable'
 import {
   DEFAULT_OMNISEARCH_CRITERIA,
   EMPTY_FILTER_VALUE,
-} from './Filters/constants'
+} from '../Components/Filters/constants'
+import { BookingsRecapTable } from './BookingsRecapTable'
 
 vi.mock('@/commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),

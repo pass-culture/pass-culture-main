@@ -7,17 +7,17 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { Audience } from '@/commons/core/shared/types'
 import { SortingMode, useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
-import type { BookingsFilters } from '@/components/Bookings/BookingsRecapTable/types'
+import { Pagination } from '@/ui-kit/Pagination/Pagination'
+import { SortArrow } from '@/ui-kit/SortArrow/SortArrow'
+
+import { FilterByBookingStatus } from '../Components/Filters/FilterByBookingStatus'
+import { NoFilteredBookings } from '../Components/NoFilteredBookings/NoFilteredBookings'
+import type { BookingsFilters } from '../Components/types'
 import {
   sortByBookingDate,
   sortByInstitutionName,
   sortByOfferName,
-} from '@/components/Bookings/BookingsRecapTable/utils/sortingFunctions'
-import { Pagination } from '@/ui-kit/Pagination/Pagination'
-import { SortArrow } from '@/ui-kit/SortArrow/SortArrow'
-
-import { FilterByBookingStatus } from '../Filters/FilterByBookingStatus'
-import { NoFilteredBookings } from '../NoFilteredBookings/NoFilteredBookings'
+} from '../Components/utils/sortingFunctions'
 import styles from './CollectiveBookingsTable.module.scss'
 import { CollectiveTableRow } from './CollectiveTableRow'
 

@@ -4,18 +4,18 @@ import { useLocation } from 'react-router'
 import type { CollectiveBookingResponseModel } from '@/apiClient/v1'
 import type { Audience } from '@/commons/core/shared/types'
 
-import { CollectiveBookingsTable } from './CollectiveBookingsTable/CollectiveBookingsTable'
 import {
   ALL_BOOKING_STATUS,
   bookingIdOmnisearchFilter,
   DEFAULT_OMNISEARCH_CRITERIA,
   EMPTY_FILTER_VALUE,
-} from './Filters/constants'
-import { FilterByOmniSearch } from './Filters/FilterByOmniSearch'
-import styles from './Filters/Filters.module.scss'
-import { Header } from './Header/Header'
-import type { BookingsFilters } from './types'
-import { filterBookingsRecap } from './utils/filterBookingsRecap'
+} from '../Components/Filters/constants'
+import { FilterByOmniSearch } from '../Components/Filters/FilterByOmniSearch'
+import { Header } from '../Components/Header/Header'
+import type { BookingsFilters } from '../Components/types'
+import { filterBookingsRecap } from '../Components/utils/filterBookingsRecap'
+import { CollectiveBookingsTable } from './CollectiveBookingsTable'
+import styles from './CollectiveBookingsTable.module.scss'
 
 interface BookingsRecapTableProps<T extends CollectiveBookingResponseModel> {
   bookingsRecap: T[]
