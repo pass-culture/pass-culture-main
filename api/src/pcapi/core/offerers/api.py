@@ -1734,12 +1734,18 @@ def can_offerer_create_educational_offer(offerer_id: int) -> bool:
     if settings.CAN_COLLECTIVE_OFFERER_IGNORE_ADAGE:
         return True
 
+    offerer: models.Offerer | None = db.session.query(models.Offerer).filter_by(id=offerer_id).one_or_none()
+    if offerer is None:
+        return False
+
+    if offerer.allowedOnAdage:
+        return True
+
     if offerers_repository.offerer_has_venue_with_adage_id(offerer_id):
         return True
 
-    siren = db.session.query(models.Offerer).filter_by(id=offerer_id).with_entities(models.Offerer.siren).scalar()
     try:
-        response = adage_client.get_adage_offerer(siren)
+        response = adage_client.get_adage_offerer(offerer.siren)
         return len(response) != 0
     except educational_exceptions.CulturalPartnerNotFoundException:
         return False
