@@ -34,22 +34,7 @@ export function IndividualOfferSummaryStocksCalendarScreen({
     >
       {getStockWarningText(offer)}
 
-      {!isOfferDisabled(offer.status) && (
-        <Callout
-          links={[
-            {
-              href: HOW_TO_CANCEL_EVENT_URL,
-              label: 'Comment reporter ou annuler un évènement ?',
-              isExternal: true,
-            },
-          ]}
-        >
-          Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne
-          peuvent pas le faire à moins de 48h de l’évènement. Vous pouvez
-          annuler un évènement en supprimant la ligne de stock associée. Cette
-          action est irréversible.
-        </Callout>
-      )}
+      {!isOfferDisabled(offer.status) && <StocksCalendarCancelBanner />}
 
       <StocksCalendar
         offer={offer}
@@ -59,3 +44,19 @@ export function IndividualOfferSummaryStocksCalendarScreen({
     </SummarySection>
   )
 }
+
+export const StocksCalendarCancelBanner = () => (
+  <Callout
+    links={[
+      {
+        href: HOW_TO_CANCEL_EVENT_URL,
+        label: 'Comment reporter ou annuler un évènement ?',
+        isExternal: true,
+      },
+    ]}
+  >
+    Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas
+    le faire à moins de 48h de l’évènement. Vous pouvez annuler un évènement en
+    supprimant la ligne de stock associée. Cette action est irréversible.
+  </Callout>
+)

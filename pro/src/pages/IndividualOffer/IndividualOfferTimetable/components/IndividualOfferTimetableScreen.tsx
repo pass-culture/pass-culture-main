@@ -22,6 +22,7 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { StocksThing } from '@/components/IndividualOffer/StocksThing/StocksThing'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { StocksCalendar } from '@/pages/IndividualOffer/IndividualOfferTimetable/components/StocksCalendar/StocksCalendar'
+import { StocksCalendarCancelBanner } from '@/pages/IndividualOfferSummary/IndividualOfferSummaryStocks/components/IndividualOfferSummaryStocksCalendarScreen/IndividualOfferSummaryStocksCalendarScreen'
 import { cleanOpeningHours } from '@/pages/VenueEdition/serializers'
 
 import { areOpeningHoursEmpty } from '../commons/areOpeningHoursEmpty'
@@ -31,7 +32,7 @@ import { validationSchema } from '../commons/validationSchema'
 import styles from './IndividualOfferTimetableScreen.module.scss'
 import { TimetableOpeningHours } from './TimetableOpeningHours/TimetableOpeningHours'
 
-type IndividualOfferTimetableScreenProps = {
+export type IndividualOfferTimetableScreenProps = {
   offer: GetIndividualOfferWithAddressResponseModel
   mode: OFFER_WIZARD_MODE
   openingHours?: WeekdayOpeningHoursTimespans | null
@@ -57,6 +58,8 @@ export function IndividualOfferTimetableScreen({
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
 
+  const isOhoFFEnabled = useActiveFeature('WIP_ENABLE_OHO')
+
   const notify = useNotification()
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -67,6 +70,7 @@ export function IndividualOfferTimetableScreen({
       openingHours,
       stocks,
       offer,
+      isOhoFFEnabled,
     }),
     resolver: yupResolver<IndividualOfferTimetableFormValues, unknown, unknown>(
       validationSchema
@@ -80,6 +84,7 @@ export function IndividualOfferTimetableScreen({
 
   const isOfferTimetableTypeEditable =
     isNewOfferCreationFlowFFEnabled &&
+    isOhoFFEnabled &&
     offer.isEvent &&
     !DISABLED_OPENING_HOURS_SUBCATEGORIES.includes(offer.subcategoryId) &&
     mode === OFFER_WIZARD_MODE.CREATION &&
@@ -154,6 +159,11 @@ export function IndividualOfferTimetableScreen({
 
   return (
     <FormProvider {...form}>
+      {!isNewOfferCreationFlowFFEnabled && (
+        <div className={styles['cancel-banner']}>
+          <StocksCalendarCancelBanner />
+        </div>
+      )}
       <form onSubmit={form.handleSubmit(onSubmit)}>
         {isOfferTimetableTypeEditable && (
           <div className={styles['group']}>
