@@ -116,14 +116,14 @@ export const Validation = (): JSX.Element => {
         createVenueWithoutSiret: offerer.createVenueWithoutSiret ?? false,
         phoneNumber: activity.phoneNumber,
         address: {
-          banId: offerer.banId,
+          banId: offerer.banId || null,
           longitude: offerer.longitude ?? 0,
           latitude: offerer.latitude ?? 0,
           city: offerer.city,
           postalCode: offerer.postalCode,
           inseeCode: offerer.inseeCode,
           street: offerer.street,
-          isManualEdition: offerer.manuallySetAddress,
+          isManualEdition: !offerer.banId,
         },
         token,
       }

@@ -3373,6 +3373,7 @@ def find_ban_address_from_insee_address(
     diffusible: bool, insee_address: sirene_models.SireneAddress
 ) -> offerers_schemas.AddressBodyModel | None:
     try:
+        is_manual_address = False
         if diffusible:
             # search for precise address in BAN database
             address_to_query = f"{insee_address.street} {insee_address.postal_code} {insee_address.city}"
@@ -3396,17 +3397,18 @@ def find_ban_address_from_insee_address(
                 city=insee_address.city,
                 postal_code=postal_code_to_query,
                 insee_code=insee_code_to_query,
-                enforce_reliability=True,
+                enforce_reliability=False,
             )
             if ban_address:
                 ban_address.street = geography_constants.NON_DISCLOSED_ADDRESS
+                is_manual_address = True
 
         return (
             None
             if ban_address is None
             else offerers_schemas.AddressBodyModel(
-                isManualEdition=False,
-                banId=offerers_schemas.VenueBanId(ban_address.id),
+                isManualEdition=is_manual_address,
+                banId=offerers_schemas.VenueBanId(ban_address.id) if not is_manual_address else None,
                 city=offerers_schemas.VenueCity(ban_address.city),
                 inseeCode=offerers_schemas.VenueInseeCode(ban_address.citycode),
                 label=ban_address.label,
