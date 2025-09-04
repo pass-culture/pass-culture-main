@@ -298,8 +298,6 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     students: list[str]
     dateCreated: str = fields.COLLECTIVE_OFFER_DATE_CREATED
     hasBookingLimitDatetimesPassed: bool
-    isActive: bool | None = fields.COLLECTIVE_OFFER_IS_ACTIVE
-    isSoldOut: bool = fields.COLLECTIVE_OFFER_IS_SOLD_OUT
     venueId: int = fields.VENUE_ID
     audioDisabilityCompliant: bool | None = fields.AUDIO_DISABILITY_COMPLIANT
     mentalDisabilityCompliant: bool | None = fields.MENTAL_DISABILITY_COMPLIANT
@@ -346,8 +344,6 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             students=[student.name for student in offer.students],
             dateCreated=offer.dateCreated.replace(microsecond=0).isoformat(),
             hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed,
-            isActive=offer.isActive,
-            isSoldOut=offer.isSoldOut,
             venueId=offer.venueId,
             audioDisabilityCompliant=offer.audioDisabilityCompliant,
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
@@ -402,7 +398,6 @@ class PostCollectiveOfferBodyModel(BaseModel):
     visual_disability_compliant: bool = fields.VISUAL_DISABILITY_COMPLIANT_WITH_DEFAULT
     offer_venue: OfferVenueModel | None = fields.COLLECTIVE_OFFER_VENUE
     location: CollectiveOfferLocation | None = fields.COLLECTIVE_OFFER_LOCATION
-    is_active: bool | None = fields.COLLECTIVE_OFFER_IS_ACTIVE
     image_file: str | None = fields.IMAGE_FILE
     image_credit: str | None = fields.IMAGE_CREDIT
     national_program_id: int | None = fields.COLLECTIVE_OFFER_NATIONAL_PROGRAM_ID
@@ -531,7 +526,6 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     motorDisabilityCompliant: bool | None = fields.MOTOR_DISABILITY_COMPLIANT
     visualDisabilityCompliant: bool | None = fields.VISUAL_DISABILITY_COMPLIANT
 
-    isActive: bool | None = fields.COLLECTIVE_OFFER_IS_ACTIVE
     imageCredit: str | None = fields.IMAGE_CREDIT
     imageFile: str | None = fields.IMAGE_FILE
     nationalProgramId: int | None = fields.COLLECTIVE_OFFER_NATIONAL_PROGRAM_ID

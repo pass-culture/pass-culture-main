@@ -79,7 +79,6 @@ def payload_fixture(minimal_payload, venue_provider, domain, institution, nation
         "imageCredit": "pouet",
         "imageFile": image_data.GOOD_IMAGE,
         "endDatetime": minimal_payload["startDatetime"],
-        "isActive": True,
     }
 
 

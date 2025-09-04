@@ -46,7 +46,6 @@ PATCH_NON_NULLABLE_FIELDS = (
     "mentalDisabilityCompliant",
     "motorDisabilityCompliant",
     "visualDisabilityCompliant",
-    "isActive",
     "educationalInstitution",
     "educationalInstitutionId",
     "formats",

@@ -845,7 +845,6 @@ class CheckAllowedActionTest:
             "mentalDisabilityCompliant",
             "motorDisabilityCompliant",
             "visualDisabilityCompliant",
-            "isActive",
             "imageCredit",
             "imageFile",
             "nationalProgramId",

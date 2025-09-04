@@ -15,7 +15,6 @@ The following changes will be applied during **early september 2025**.
 - Offers status
   - A new `offerStatus` has been added which will replace the current `status` field in the coming months. Both status fields are available for a period of time to allow the transition.
   - Note that the `status` field of the collective **booking** will not change.
-  - The `isActive` and `isSoldOut` fields will be removed at the same time, as they are not relevant with the new status.
   - Collective offers that are currently `isActive = false` and do not have a related booking will be archived. This does not apply to offers that are under review or rejected by the validation process.
   - **You can find details on the new status and the allowed actions [here](/docs/understanding-our-api/resources/collective-offers#collective-offer-status-and-allowed-actions).**
 :::
@@ -32,6 +31,7 @@ You will have two dates at your disposal :
 ## September 2025
 
 - The new collective offer status `offerStatus` now determines which actions are allowed on the offer. You can find details on the new status and the allowed actions [here](/docs/understanding-our-api/resources/collective-offers#collective-offer-status-and-allowed-actions).
+- Both `isActive` and `isSoldOut` fields have been removed from all collective endpoints.
 
 ## July 2025
 
