@@ -440,6 +440,8 @@ def create_venue(
 
     data = venue_data.dict(by_alias=True)
     data["dmsToken"] = generate_dms_token()
+    if not data["publicName"] or not (len(data["publicName"])):
+        data["publicName"] = data["name"]
     if venue.is_soft_deleted():
         raise pc_object.DeletedRecordException()
     for key, value in data.items():
