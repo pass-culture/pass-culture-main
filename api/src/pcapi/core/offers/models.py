@@ -695,6 +695,10 @@ class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
         parent_args += [
             sa.UniqueConstraint("idAtProvider", "venueId", name="unique_idAtProvider_venueId"),
             sa.CheckConstraint("ean ~ '^\\d{13}$'", name="check_ean_validity"),
+            sa.CheckConstraint(
+            '"productId" is not null AND description IS NULL and "durationMinutes" is null and "jsonData" is null',
+            name="check_product_id_has_minimal_data",
+        ),
         ]
 
         return tuple(parent_args)
