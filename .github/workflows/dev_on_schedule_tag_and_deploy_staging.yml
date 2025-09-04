@@ -1,0 +1,64 @@
+name: "2 [on_schedule] tag and deploy staging"
+
+on:
+  schedule:
+    # Winter time (CET, UTC+1): from end of October to end of March
+    # 10:30 in France = 09:30 UTC
+    - cron: '30 9 * 10-12 *'
+    - cron: '30 9 * 1-3 *'
+
+    # Summer time (CEST, UTC+2): from end of March to end of October
+    # 10:30 in France = 08:30 UTC
+    - cron: '30 8 * 4-9 *'
+
+
+permissions: write-all
+
+jobs:
+  get-version-and-trigger-release:
+    runs-on: ubuntu-latest
+    outputs:
+      releaseNumber: ${{ steps.version.outputs.releaseNumber }}
+      commitHash: ${{ steps.rc_commit.outputs.commitHash }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch tags
+        run: git fetch --tags
+
+      - name: Get releaseNumber major version
+        id: version
+        run: |
+          # Get all with format vX.X.X, sort them and get the last one
+          latest_tag=$(git tag -l "v[0-9]*.[0-9]*.[0-9]*" | sort -V | tail -n 1)
+
+          # Extract major version
+          major=$(echo "$latest_tag" | sed -E 's/^v([0-9]+)\..*/\1/')
+
+          echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
+          echo "major=$major" >> $GITHUB_OUTPUT
+
+          releaseNumber=$((major + 1))
+          echo "releaseNumber=$releaseNumber" >> $GITHUB_OUTPUT
+
+      - name: Get commit hash from RC tag
+        id: rc_commit
+        run: |
+          rc_tag=$(git tag -l "rc" | tail -n 1)
+          if [ -z "$rc_tag" ]; then
+            echo "Pas de tag RC trouvé"
+            exit 1
+          fi
+          commit_hash=$(git rev-list -n 1 "$rc_tag")
+          echo "commitHash=$commit_hash" >> $GITHUB_OUTPUT
+
+  create-staging-release:
+    needs: get-version-and-trigger-release
+    uses: ./.github/workflows/dev_on_call_release_build.yml
+    secrets:
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    with:
+      releaseNumber: ${{ needs.get-version-and-trigger-release.outputs.releaseNumber }}
+      commitHash: ${{ needs.get-version-and-trigger-release.outputs.commitHash }}
