@@ -198,7 +198,11 @@ def _add_internal_note(
             html_body += Markup('<br/><a href="{}" target="_blank">{}</a><br/>').format(bo_link, bo_link)
         if attributes.venues_ids:
             venue_count = len(set(attributes.venues_ids))
-            html_body += f"{venue_count} lieux identifiés :" if venue_count > 1 else "1 lieu identifié :"
+            html_body += (
+                f"{venue_count} partenaires culturels identifiés :"
+                if venue_count > 1
+                else "1 partenaire culturel identifié :"
+            )
             for bo_link in _get_backoffice_venues_links(attributes.venues_ids):
                 html_body += Markup('<br/><a href="{}" target="_blank">{}</a>').format(bo_link, bo_link)
     else:

@@ -1025,7 +1025,9 @@ def create_venue(offerer_id: int) -> utils.BackofficeResponse:
 
     venue_creation_info = venues_serialize.PostVenueBodyModel(
         address=address_body_model,
-        comment=offerers_schemas.VenueComment("Lieu sans SIRET car dépend du SIRET d'un autre lieu"),
+        comment=offerers_schemas.VenueComment(
+            "Partenaire culturel sans SIRET car dépend du SIRET d'un autre partenaire culturel"
+        ),
         siret=None,
         bookingEmail=offerers_schemas.VenueBookingEmail(attachment_venue.bookingEmail),
         managingOffererId=offerer_id,
