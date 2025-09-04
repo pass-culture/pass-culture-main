@@ -4424,19 +4424,6 @@
                         "title": "Interventionarea",
                         "type": "array"
                     },
-                    "isActive": {
-                        "description": "[\u26a0\ufe0f DEPRECATED] Is your offer active",
-                        "example": true,
-                        "nullable": true,
-                        "title": "Isactive",
-                        "type": "boolean"
-                    },
-                    "isSoldOut": {
-                        "description": "[\u26a0\ufe0f DEPRECATED] Is your offer sold out",
-                        "example": false,
-                        "title": "Issoldout",
-                        "type": "boolean"
-                    },
                     "location": {
                         "anyOf": [
                             {
@@ -4561,7 +4548,6 @@
                     "students",
                     "dateCreated",
                     "hasBookingLimitDatetimesPassed",
-                    "isSoldOut",
                     "venueId",
                     "startDatetime",
                     "endDatetime",
@@ -6074,13 +6060,6 @@
                         "title": "Interventionarea",
                         "type": "array"
                     },
-                    "isActive": {
-                        "description": "[\u26a0\ufe0f DEPRECATED] Is your offer active",
-                        "example": true,
-                        "nullable": true,
-                        "title": "Isactive",
-                        "type": "boolean"
-                    },
                     "location": {
                         "anyOf": [
                             {
@@ -6336,13 +6315,6 @@
                         "nullable": true,
                         "title": "Imagefile",
                         "type": "string"
-                    },
-                    "isActive": {
-                        "description": "[\u26a0\ufe0f DEPRECATED] Is your offer active",
-                        "example": true,
-                        "nullable": true,
-                        "title": "Isactive",
-                        "type": "boolean"
                     },
                     "location": {
                         "anyOf": [

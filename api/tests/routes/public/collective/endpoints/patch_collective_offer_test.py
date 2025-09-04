@@ -127,7 +127,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
                 "otherAddress": None,
             },
             "interventionArea": ["33", "75"],
-            "isActive": False,
             "imageCredit": "a great artist",
             "nationalProgramId": national_program.id,
             # stock part
@@ -168,7 +167,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert offer.mentalDisabilityCompliant is True
         assert offer.motorDisabilityCompliant is True
         assert offer.visualDisabilityCompliant is True
-        assert offer.isActive is False
         assert offer.hasImage is True
         assert offer.imageCredit == "a great artist"
         assert offer.nationalProgramId == national_program.id

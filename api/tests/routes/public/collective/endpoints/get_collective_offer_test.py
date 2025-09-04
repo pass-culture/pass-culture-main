@@ -225,8 +225,6 @@ def expected_serialized_offer(offer):
         "educationalInstitutionId": offer.institutionId,
         "educationalPriceDetail": offer.collectiveStock.priceDetail,
         "interventionArea": offer.interventionArea,
-        "isActive": offer.isActive,
-        "isSoldOut": offer.isSoldOut,
         "numberOfTickets": offer.collectiveStock.numberOfTickets,
         "status": offer.status.name,
         "offerStatus": offer.displayedStatus.value,
