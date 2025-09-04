@@ -439,13 +439,14 @@ def create_venue(
 
     data = venue_data.dict(by_alias=True)
     data["dmsToken"] = generate_dms_token()
+    if not data["publicName"]:
+        data["publicName"] = data["name"]
     if venue.is_soft_deleted():
         raise pc_object.DeletedRecordException()
     for key, value in data.items():
         if key == "contact":
             continue
         setattr(venue, key, value)
-
     # FIXME (dramelet, 05-12-2024) Until those columns are dropped
     # we still have to maintain the historic behavior
     venue.street = data["address"]["street"]  # type: ignore [method-assign]
