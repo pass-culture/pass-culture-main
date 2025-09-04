@@ -1,12 +1,10 @@
 import { screen } from '@testing-library/react'
 import { add } from 'date-fns'
 
-import * as convertEuroToPacificFranc from '@/commons/utils/convertEuroToPacificFranc'
-import { collectiveBookingFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import {
-  bookingRecapFactory,
-  bookingRecapStockFactory,
-} from '@/commons/utils/factories/individualApiFactories'
+  collectiveBookingCollectiveStockFactory,
+  collectiveBookingFactory,
+} from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
@@ -21,13 +19,13 @@ describe('bookings offer cell', () => {
   const offerId = 1
   it('offer name and ean with a link to the offer when stock is a book', () => {
     const props: BookingOfferCellProps = {
-      booking: bookingRecapFactory({
-        stock: bookingRecapStockFactory({
+      booking: collectiveBookingFactory({
+        stock: collectiveBookingCollectiveStockFactory({
           offerId: offerId,
           offerEan: '97834567654',
           offerName: 'La Guitare pour les nuls',
           offerIsEducational: false,
-          eventBeginningDatetime: new Date().toISOString(),
+          eventStartDatetime: new Date().toISOString(),
         }),
       }),
     }
@@ -43,40 +41,22 @@ describe('bookings offer cell', () => {
 
   it('offer name with a link to the offer when stock is a thing', () => {
     const props: BookingOfferCellProps = {
-      booking: bookingRecapFactory({
-        stock: bookingRecapStockFactory({
+      booking: collectiveBookingFactory({
+        stock: {
           offerId: offerId,
           offerName: 'Guitare acoustique',
           offerIsEducational: false,
-          eventBeginningDatetime: new Date().toISOString(),
-        }),
+          eventStartDatetime: new Date().toISOString(),
+          bookingLimitDatetime: '',
+          eventEndDatetime: '',
+          numberOfTickets: 0,
+        },
       }),
     }
 
     renderOfferCell(props)
 
     const offer_name = screen.getByText('Guitare acoustique')
-    const offer_name_link = offer_name.closest('a')
-    expect(offer_name_link?.href).toContain(`offre/individuelle/${offerId}`)
-  })
-
-  it('offer name and event beginning datetime in venue timezone when stock is an event', () => {
-    const props: BookingOfferCellProps = {
-      booking: bookingRecapFactory({
-        stock: bookingRecapStockFactory({
-          eventBeginningDatetime: '2020-05-12T11:03:28.564687+04:00',
-          offerId: offerId,
-          offerName: 'La danse des poireaux',
-          offerIsEducational: false,
-          offerEan: null,
-        }),
-      }),
-    }
-
-    renderOfferCell(props)
-
-    expect(screen.getByText('12/05/2020 11:03')).toBeInTheDocument()
-    const offer_name = screen.getByText('La danse des poireaux')
     const offer_name_link = offer_name.closest('a')
     expect(offer_name_link?.href).toContain(`offre/individuelle/${offerId}`)
   })
@@ -126,42 +106,5 @@ describe('bookings offer cell', () => {
     expect(
       screen.queryByRole('img', { name: 'Attention' })
     ).not.toBeInTheDocument()
-  })
-
-  it('should render tarif informations for individual bookings', () => {
-    const booking = bookingRecapFactory({
-      bookingAmount: 12,
-      bookingPriceCategoryLabel: 'Plein tarif',
-    })
-
-    renderOfferCell({ booking })
-
-    expect(screen.getByText('Plein tarif - 12,00 €')).toBeInTheDocument()
-  })
-
-  it('should display price in CFP when isCaledonian is true and no label', () => {
-    vi.spyOn(
-      convertEuroToPacificFranc,
-      'convertEuroToPacificFranc'
-    ).mockImplementation(() => 1234)
-    const booking = bookingRecapFactory({
-      bookingAmount: 10,
-      bookingPriceCategoryLabel: undefined,
-    })
-    renderOfferCell({ booking, isCaledonian: true })
-    expect(screen.getByText('1234 F')).toBeInTheDocument()
-  })
-
-  it('should display price in CFP with label when isCaledonian is true', () => {
-    vi.spyOn(
-      convertEuroToPacificFranc,
-      'convertEuroToPacificFranc'
-    ).mockImplementation(() => 5678)
-    const booking = bookingRecapFactory({
-      bookingAmount: 20,
-      bookingPriceCategoryLabel: 'Réduit',
-    })
-    renderOfferCell({ booking, isCaledonian: true })
-    expect(screen.getByText('Réduit - 5678 F')).toBeInTheDocument()
   })
 })

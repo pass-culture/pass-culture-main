@@ -54,7 +54,7 @@ const sortBookings = (
   }
 }
 
-export interface IndividualBookingsTableProps {
+interface IndividualBookingsTableProps {
   bookings: BookingRecapResponseModel[]
   bookingStatuses: string[]
   updateGlobalFilters: (updatedFilters: Partial<BookingsFilters>) => void

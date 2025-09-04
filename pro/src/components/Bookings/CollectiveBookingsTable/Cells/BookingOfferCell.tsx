@@ -1,25 +1,19 @@
 import cn from 'classnames'
 import { format } from 'date-fns-tz'
 
-import type {
-  BookingRecapResponseModel,
-  CollectiveBookingResponseModel,
+import {
+  type CollectiveBookingResponseModel,
+  OfferStatus,
 } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
-  OFFER_STATUS_PENDING,
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import {
-  convertEuroToPacificFranc,
-  formatPacificFranc,
-} from '@/commons/utils/convertEuroToPacificFranc'
-import {
   FORMAT_DD_MM_YYYY_HH_mm,
   toDateStrippedOfTimezone,
 } from '@/commons/utils/date'
-import { formatPrice } from '@/commons/utils/formatPrice'
 import { pluralize } from '@/commons/utils/pluralize'
 import {
   getDate,
@@ -32,19 +26,18 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import styles from './BookingOfferCell.module.scss'
 
 export interface BookingOfferCellProps {
-  booking: BookingRecapResponseModel | CollectiveBookingResponseModel
+  booking: CollectiveBookingResponseModel
   className?: string
   isCaledonian?: boolean
 }
 
-export const isCollectiveBooking = (
-  booking: BookingRecapResponseModel | CollectiveBookingResponseModel
+const isCollectiveBooking = (
+  booking: CollectiveBookingResponseModel
 ): booking is CollectiveBookingResponseModel => booking.stock.offerIsEducational
 
 export const BookingOfferCell = ({
   booking,
   className,
-  isCaledonian = false,
 }: BookingOfferCellProps) => {
   const offerUrl = booking.stock.offerIsEducational
     ? `/offre/${booking.stock.offerId}/collectif/recapitulatif`
@@ -54,9 +47,7 @@ export const BookingOfferCell = ({
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
       })
 
-  const eventBeginningDatetime = isCollectiveBooking(booking)
-    ? booking.stock.eventStartDatetime
-    : booking.stock.eventBeginningDatetime
+  const eventBeginningDatetime = booking.stock.eventStartDatetime
 
   const eventDatetimeFormatted = eventBeginningDatetime
     ? format(
@@ -67,12 +58,8 @@ export const BookingOfferCell = ({
 
   const shouldShowCollectiveWarning =
     isCollectiveBooking(booking) &&
-    booking.bookingStatus.toUpperCase() === OFFER_STATUS_PENDING &&
+    booking.bookingStatus.toUpperCase() === OfferStatus.PENDING &&
     shouldDisplayWarning(booking.stock)
-
-  const formattedPacificFrancPrice = formatPacificFranc(
-    convertEuroToPacificFranc(booking.bookingAmount)
-  )
 
   return (
     <div className={cn(className)}>
@@ -111,24 +98,6 @@ export const BookingOfferCell = ({
             </span>
           </div>
         ))}
-
-      {!isCollectiveBooking(booking) && (
-        <div className={styles['tarif']}>
-          {booking.bookingPriceCategoryLabel
-            ? `${booking.bookingPriceCategoryLabel} - ${
-                isCaledonian
-                  ? formattedPacificFrancPrice
-                  : formatPrice(booking.bookingAmount)
-              }`
-            : isCaledonian
-              ? formattedPacificFrancPrice
-              : formatPrice(booking.bookingAmount, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                  trailingZeroDisplay: 'stripIfInteger',
-                })}
-        </div>
-      )}
     </div>
   )
 }
