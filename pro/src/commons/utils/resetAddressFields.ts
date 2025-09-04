@@ -7,7 +7,7 @@ const fieldsNames: Map<keyof AddressFormValues, string | null> = new Map([
   ['latitude', ''],
   ['longitude', ''],
   ['coords', ''],
-  ['banId', ''], // TODO: See with backend if it's preferable to send also "null" to be consistent with "inseeCode"
+  ['banId', null],
   ['inseeCode', null],
   ['search-addressAutocomplete', ''],
   ['addressAutocomplete', ''],
