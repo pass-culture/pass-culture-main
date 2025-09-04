@@ -18,7 +18,6 @@ class Returns200Test:
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        # When
         data = {
             "venueId": venue.id,
             "name": "Celeste",
@@ -40,12 +39,10 @@ class Returns200Test:
         assert not offer.product
 
     def test_create_event_offer(self, client):
-        # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        # When
         data = {
             "venueId": venue.id,
             "bookingContact": "offer@example.com",
@@ -63,7 +60,6 @@ class Returns200Test:
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
-        # Then
         assert response.status_code == 201
         offer_id = response.json["id"]
         offer = db.session.get(Offer, offer_id)
@@ -85,7 +81,6 @@ class Returns200Test:
 
     @pytest.mark.parametrize("oa_label", [None, "some place"])
     def test_create_event_offer_with_existing_offerer_address(self, oa_label, client):
-        # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         # Match the BAN API response
@@ -104,7 +99,6 @@ class Returns200Test:
         )
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        # When
         data = {
             "venueId": venue.id,
             "bookingContact": "offer@example.com",
@@ -132,7 +126,6 @@ class Returns200Test:
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
-        # Then
         assert response.status_code == 201
         offer_id = response.json["id"]
         offer = db.session.get(Offer, offer_id)
@@ -142,13 +135,11 @@ class Returns200Test:
 
     @pytest.mark.parametrize("oa_label", [None, "some place"])
     def test_create_event_offer_with_non_existing_offerer_address(self, oa_label, client):
-        # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerer_address = offerers_factories.OffererAddressFactory(offerer=offerer)
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        # When
         data = {
             "venueId": venue.id,
             "bookingContact": "offer@example.com",
@@ -174,7 +165,6 @@ class Returns200Test:
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
-        # Then
         assert response.status_code == 201
         offer_id = response.json["id"]
         offer = db.session.get(Offer, offer_id)
@@ -184,12 +174,10 @@ class Returns200Test:
 
     @pytest.mark.parametrize("oa_label", [None, "some place"])
     def test_create_event_offer_with_manual_offerer_address(self, oa_label, client):
-        # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        # When
         data = {
             "venueId": venue.id,
             "bookingContact": "offer@example.com",
@@ -216,7 +204,6 @@ class Returns200Test:
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
-        # Then
         assert response.status_code == 201
         offer_id = response.json["id"]
         offer = db.session.get(Offer, offer_id)
@@ -226,12 +213,10 @@ class Returns200Test:
         assert offer.offererAddress.address.isManualEdition is True
 
     def when_creating_new_thing_offer(self, client):
-        # Given
         venue = offerers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        # When
         data = {
             "venueId": venue.id,
             "bookingEmail": "offer@example.com",
@@ -246,7 +231,6 @@ class Returns200Test:
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
-        # Then
         assert response.status_code == 201
         offer_id = response.json["id"]
         offer = db.session.get(Offer, offer_id)
@@ -294,12 +278,10 @@ class Returns200Test:
         assert "ean" not in offer.extraData
 
     def test_withdrawable_event_offer_can_have_no_ticket_to_withdraw(self, client):
-        # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        # When
         data = {
             "venueId": venue.id,
             "name": "La pièce de théâtre",
@@ -315,7 +297,6 @@ class Returns200Test:
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
-        # Then
         offer_id = response.json["id"]
         offer = db.session.get(Offer, offer_id)
         assert offer.withdrawalDetails == "Veuillez récuperer vos billets à l'accueil :)"
@@ -337,10 +318,8 @@ class Returns400Test:
         }
 
     def test_fail_if_venue_is_not_found(self, client):
-        # Given
         offerers_factories.UserOffererFactory(user__email="user@example.com")
 
-        # When
         data = {
             "venueId": 1,
             "bookingEmail": "offer@example.com",
@@ -354,7 +333,6 @@ class Returns400Test:
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
-        # Then
         assert response.status_code == 404
 
     @pytest.mark.parametrize(
@@ -431,11 +409,9 @@ class Returns400Test:
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
     def test_when_user_is_not_attached_to_offerer(self, client):
-        # Given
         users_factories.ProFactory(email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory()
 
-        # When
         data = {
             "venueId": venue.id,
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
@@ -447,7 +423,6 @@ class Returns403Test:
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
-        # Then
         assert response.status_code == 403
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
