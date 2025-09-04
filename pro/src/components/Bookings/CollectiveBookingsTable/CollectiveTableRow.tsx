@@ -10,11 +10,11 @@ import { pluralizeString } from '@/commons/utils/pluralize'
 import { doesUserPreferReducedMotion } from '@/commons/utils/windowMatchMedia'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
-import styles from './BookingsTable.module.scss'
 import { BookingOfferCell } from './Cells/BookingOfferCell'
 import { CollectiveBookingStatusCell } from './Cells/CollectiveBookingStatusCell'
 import { DetailsButtonCell } from './Cells/DetailsButtonCell'
 import { CollectiveBookingDetails } from './CollectiveBookingDetails'
+import styles from './CollectiveBookingsTable.module.scss'
 
 export interface CollectiveTableRowProps {
   booking: CollectiveBookingResponseModel

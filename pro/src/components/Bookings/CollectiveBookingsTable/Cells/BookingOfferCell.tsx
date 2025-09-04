@@ -25,7 +25,7 @@ import {
   getDate,
   getRemainingTime,
   shouldDisplayWarning,
-} from '@/components/Bookings/BookingsRecapTable/utils/utils'
+} from '@/components/Bookings/Components/utils/utils'
 import fullErrorIcon from '@/icons/full-error.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 

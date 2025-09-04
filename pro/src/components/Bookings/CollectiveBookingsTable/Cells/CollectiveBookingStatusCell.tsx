@@ -3,7 +3,7 @@ import cn from 'classnames'
 import type { CollectiveBookingResponseModel } from '@/apiClient/v1'
 import { Tag } from '@/design-system/Tag/Tag'
 
-import { getCollectiveBookingStatusDisplayInformations } from '../../utils/bookingStatusConverter'
+import { getCollectiveBookingStatusDisplayInformations } from '../../Components/utils/bookingStatusConverter'
 import styles from './BookingStatusCell.module.scss'
 
 export type CollectiveBookingStatusCellProps = {

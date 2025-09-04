@@ -25,9 +25,9 @@ import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isEqual } from '@/commons/utils/isEqual'
+import { ChoosePreFiltersMessage } from '@/components/Bookings/Components/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
+import { NoBookingsForPreFiltersMessage } from '@/components/Bookings/Components/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import { NoData } from '@/components/NoData/NoData'
-import { ChoosePreFiltersMessage } from '@/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
-import { NoBookingsForPreFiltersMessage } from '@/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import {
@@ -35,14 +35,14 @@ import {
   bookingIdOmnisearchFilter,
   DEFAULT_OMNISEARCH_CRITERIA,
   EMPTY_FILTER_VALUE,
-} from './BookingsRecapTable/Filters/constants'
-import { FilterByOmniSearch } from './BookingsRecapTable/Filters/FilterByOmniSearch'
-import { Header } from './BookingsRecapTable/Header/Header'
-import { IndividualBookingsTable } from './BookingsRecapTable/IndividualBookingsTable/IndividualBookingsTable'
-import type { BookingsFilters } from './BookingsRecapTable/types'
-import { filterBookingsRecap } from './BookingsRecapTable/utils/filterBookingsRecap'
-import { PreFilters } from './PreFilters/PreFilters'
-import { useBookingsFilters } from './useBookingsFilters'
+} from './Components/Filters/constants'
+import { FilterByOmniSearch } from './Components/Filters/FilterByOmniSearch'
+import { Header } from './Components/Header/Header'
+import { PreFilters } from './Components/PreFilters/PreFilters'
+import type { BookingsFilters } from './Components/types'
+import { useBookingsFilters } from './Components/useBookingsFilters'
+import { filterBookingsRecap } from './Components/utils/filterBookingsRecap'
+import { IndividualBookingsTable } from './IndividualBookingsTable/IndividualBookingsTable'
 
 type BookingsProps<T> = {
   locationState?: { statuses: string[] }

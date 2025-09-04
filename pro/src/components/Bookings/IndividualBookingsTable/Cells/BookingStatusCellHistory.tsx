@@ -6,7 +6,7 @@ import type {
 } from '@/apiClient/v1'
 import { toDateStrippedOfTimezone } from '@/commons/utils/date'
 
-import { getBookingStatusDisplayInformations } from '../../utils/bookingStatusConverter'
+import { getBookingStatusDisplayInformations } from '../../Components/utils/bookingStatusConverter'
 import styles from './BookingStatusCellHistory.module.scss'
 
 const computeDateForStatus = (
