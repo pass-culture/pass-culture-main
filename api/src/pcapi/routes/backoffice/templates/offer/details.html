@@ -223,8 +223,14 @@
             {% if show_price_category %}<th>Tarif</th>{% endif %}
             <th>Prix</th>
             {% if offer.isEvent %}
-              <th>Date / Heure</th>
-              <th>Fin des réservations</th>
+              <th>
+                Date / Heure
+                {% if offer.offererAddress %}({{ offer.offererAddress.address | format_timezone }}){% endif %}
+              </th>
+              <th>
+                Fin des réservations
+                {% if offer.offererAddress %}({{ offer.offererAddress.address | format_timezone }}){% endif %}
+              </th>
             {% endif %}
           </tr>
         </thead>
@@ -274,8 +280,8 @@
                 {% endif %}
               </td>
               {% if offer.isEvent %}
-                <td>{{ stock.beginningDatetime | format_date_time }}</td>
-                <td>{{ stock.bookingLimitDatetime | format_date_time }}</td>
+                <td>{{ stock.beginningDatetime | format_date_time(offer.offererAddress.address) }}</td>
+                <td>{{ stock.bookingLimitDatetime | format_date_time(offer.offererAddress.address) }}</td>
               {% endif %}
             </tr>
           {% endfor %}

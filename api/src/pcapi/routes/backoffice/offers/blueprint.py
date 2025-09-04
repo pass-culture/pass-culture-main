@@ -480,25 +480,25 @@ def _get_offers_by_ids(
         .scalar_subquery()
     )
 
-    offer_event_dates = (
+    offer_event_datetimes = (
         sa.select(
             sa.case(
                 (
                     sa.or_(
                         sa.not_(offers_models.Offer.isEvent),
-                        sa.func.max(offers_models.Stock.beginningDatetime).cast(sa.Date).is_(None),
+                        sa.func.max(offers_models.Stock.beginningDatetime).is_(None),
                     ),
-                    sa.cast(postgresql.array([]), postgresql.ARRAY(sa.Date)),
+                    sa.cast(postgresql.array([]), postgresql.ARRAY(sa.DateTime)),
                 ),
                 (
-                    sa.func.max(offers_models.Stock.beginningDatetime).cast(sa.Date)
-                    == sa.func.min(offers_models.Stock.beginningDatetime).cast(sa.Date),
-                    postgresql.array([sa.func.max(offers_models.Stock.beginningDatetime).cast(sa.Date)]),
+                    sa.func.max(offers_models.Stock.beginningDatetime)
+                    == sa.func.min(offers_models.Stock.beginningDatetime),
+                    postgresql.array([sa.func.max(offers_models.Stock.beginningDatetime)]),
                 ),
                 else_=postgresql.array(
                     [
-                        sa.func.min(offers_models.Stock.beginningDatetime).cast(sa.Date),
-                        sa.func.max(offers_models.Stock.beginningDatetime).cast(sa.Date),
+                        sa.func.min(offers_models.Stock.beginningDatetime),
+                        sa.func.max(offers_models.Stock.beginningDatetime),
                     ]
                 ),
             )
@@ -509,25 +509,25 @@ def _get_offers_by_ids(
         .scalar_subquery()
     )
 
-    offer_booking_limit_dates = (
+    offer_booking_limit_datetimes = (
         sa.select(
             sa.case(
                 (
                     sa.or_(
                         sa.not_(offers_models.Offer.isEvent),
-                        sa.func.max(offers_models.Stock.bookingLimitDatetime).cast(sa.Date).is_(None),
+                        sa.func.max(offers_models.Stock.bookingLimitDatetime).is_(None),
                     ),
-                    sa.cast(postgresql.array([]), postgresql.ARRAY(sa.Date)),
+                    sa.cast(postgresql.array([]), postgresql.ARRAY(sa.DateTime)),
                 ),
                 (
-                    sa.func.max(offers_models.Stock.bookingLimitDatetime).cast(sa.Date)
-                    == sa.func.min(offers_models.Stock.bookingLimitDatetime).cast(sa.Date),
-                    postgresql.array([sa.func.max(offers_models.Stock.bookingLimitDatetime).cast(sa.Date)]),
+                    sa.func.max(offers_models.Stock.bookingLimitDatetime)
+                    == sa.func.min(offers_models.Stock.bookingLimitDatetime),
+                    postgresql.array([sa.func.max(offers_models.Stock.bookingLimitDatetime)]),
                 ),
                 else_=postgresql.array(
                     [
-                        sa.func.min(offers_models.Stock.bookingLimitDatetime).cast(sa.Date),
-                        sa.func.max(offers_models.Stock.bookingLimitDatetime).cast(sa.Date),
+                        sa.func.min(offers_models.Stock.bookingLimitDatetime),
+                        sa.func.max(offers_models.Stock.bookingLimitDatetime),
                     ]
                 ),
             )
@@ -560,8 +560,8 @@ def _get_offers_by_ids(
             offers_models.Offer,
             booked_quantity_subquery.label("booked_quantity"),
             remaining_quantity_case.label("remaining_quantity"),
-            offer_event_dates.label("offer_event_dates"),
-            offer_booking_limit_dates.label("offer_booking_limit_dates"),
+            offer_event_datetimes.label("offer_event_datetimes"),
+            offer_booking_limit_datetimes.label("offer_booking_limit_datetimes"),
             tags_subquery.label("tags"),
             rules_subquery.label("rules"),
             min_max_prices_subquery.label("prices"),
@@ -621,6 +621,10 @@ def _get_offers_by_ids(
             sa_orm.selectinload(offers_models.Offer.lastProvider).load_only(
                 providers_models.Provider.name,
             ),
+            sa_orm.joinedload(offers_models.Offer.offererAddress)
+            .load_only()
+            .joinedload(offerers_models.OffererAddress.address)
+            .load_only(geography_models.Address.timezone),
         )
     )
 
