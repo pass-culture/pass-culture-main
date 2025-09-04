@@ -9,6 +9,11 @@
   background-color: var(--color-background-subtle);
   width: rem.torem(80px);
   height: rem.torem(80px);
+
+  &-small {
+    width: rem.torem(56px);
+    height: rem.torem(56px);
+  }
 }
 
 .offer-thumb {

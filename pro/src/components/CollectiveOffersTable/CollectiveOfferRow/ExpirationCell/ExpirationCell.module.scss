@@ -18,6 +18,7 @@
 
   &.banner-expires-soon {
     background-color: var(--color-background-warning);
+    margin-left: rem.torem(8px);
   }
 
   &-expiration {
