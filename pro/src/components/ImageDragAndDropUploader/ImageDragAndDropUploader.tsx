@@ -48,9 +48,10 @@ export const ImageDragAndDropUploader = ({
   const updateImageRef = useRef<HTMLButtonElement>(null)
   const inputDragAndDropRef = useRef<HTMLInputElement>(null)
 
-  const { croppedImageUrl, originalImageUrl } = initialValues
+  const { croppedImageUrl, originalImageUrl, credit } = initialValues
   const [isModalImageOpen, setIsModalImageOpen] = useState(false)
   const [draftImage, setDraftImage] = useState<File | undefined>(undefined)
+  const [draftCredit, setDraftCredit] = useState<string | undefined>(credit)
   const previousDraftImage = usePrevious(draftImage)
 
   const [refToFocusOnClose, setRefToFocusOnClose] = useState<
@@ -73,17 +74,23 @@ export const ImageDragAndDropUploader = ({
   const onImageDeleteHandler = () => {
     setIsModalImageOpen(false)
     setDraftImage(undefined)
+    setDraftCredit(undefined)
     setRefToFocusOnClose(inputDragAndDropRef)
     onImageDelete()
     notify.success('L’image a bien été supprimée')
   }
 
-  const onImageUploadHandler = (values: OnImageUploadArgs) => {
+  const onImageUploadHandler = (
+    values: OnImageUploadArgs,
+    successMessage: string
+  ) => {
     setIsModalImageOpen(false)
     setDraftImage(values.imageFile)
+    setDraftCredit(values.credit ?? '')
     setRefToFocusOnClose(updateImageRef)
     onImageUpload(values)
-    notify.success('Votre image a bien été importée')
+
+    notify.success(successMessage)
   }
 
   return (
@@ -121,8 +128,9 @@ export const ImageDragAndDropUploader = ({
           onImageUpload={onImageUploadHandler}
           onImageDelete={onImageDeleteHandler}
           initialValues={{
-            draftImage,
             ...initialValues,
+            draftImage,
+            credit: draftCredit,
           }}
           onOpenChange={setIsModalImageOpen}
           open={isModalImageOpen}
