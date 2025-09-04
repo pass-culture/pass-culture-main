@@ -32,6 +32,7 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.geography import models as geography_models
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
@@ -48,11 +49,12 @@ from pcapi.routes.backoffice.accounts import serialization as serialization_acco
 from pcapi.utils import urls
 from pcapi.utils.csr import Csr
 from pcapi.utils.csr import get_csr
+from pcapi.utils.date import METROPOLE_TIMEZONE
 
 
 logger = logging.getLogger(__name__)
 
-PARIS_TZ = pytz.timezone("Europe/Paris")
+PARIS_TZ = pytz.timezone(METROPOLE_TIMEZONE)
 
 ACTION_TYPE_TO_STRING = {
     history_models.ActionType.COMMENT: "Commentaire interne",
@@ -215,24 +217,27 @@ def empty_string_if_null(data: typing.Any | None) -> str:
     return str(data)
 
 
-def format_date(data: datetime.date | datetime.datetime | None, strformat: str = "%d/%m/%Y") -> str:
-    def get_utc_offset(dt: datetime.datetime) -> int:
-        try:
-            return int(dt.astimezone(PARIS_TZ).utcoffset().total_seconds() / 3600)  # type: ignore[union-attr]
-        except AttributeError:
-            return 0
-
+def format_date(
+    data: datetime.date | datetime.datetime | None,
+    strformat: str = "%d/%m/%Y",
+    address: geography_models.Address | None = None,
+) -> str:
     if not data:
         return ""
 
     if isinstance(data, datetime.datetime):
-        adjusted_dt = data + datetime.timedelta(hours=get_utc_offset(data))
+        tz = pytz.timezone(address.timezone) if address else PARIS_TZ
+        try:
+            hours_offset = int(data.astimezone(tz).utcoffset().total_seconds() / 3600)  # type: ignore[union-attr]
+        except AttributeError:
+            hours_offset = 0
+        adjusted_dt = data + datetime.timedelta(hours=hours_offset)
         return adjusted_dt.strftime(strformat)
     return data.strftime(strformat)
 
 
-def format_date_time(data: datetime.date | datetime.datetime) -> str:
-    return format_date(data, strformat="%d/%m/%Y à %Hh%M")
+def format_date_time(data: datetime.date | datetime.datetime, address: geography_models.Address | None = None) -> str:
+    return format_date(data, strformat="%d/%m/%Y à %Hh%M", address=address)
 
 
 def format_string_to_date_time(data: str) -> str:
@@ -258,6 +263,10 @@ def format_timespan(timespan: psycopg2.extras.DateTimeRange) -> str:
     else:
         end = "∞"
     return f"{start} → {end}"
+
+
+def format_timezone(address: geography_models.Address) -> str:
+    return address.timezone.rsplit("/", 1)[-1]
 
 
 def format_amount(
@@ -1908,6 +1917,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_string_to_date_time"] = format_string_to_date_time
     app.jinja_env.filters["format_cutoff_date"] = format_cutoff_date
     app.jinja_env.filters["format_timespan"] = format_timespan
+    app.jinja_env.filters["format_timezone"] = format_timezone
     app.jinja_env.filters["format_deposit_used"] = format_deposit_used
     app.jinja_env.filters["format_active_deposit"] = format_active_deposit
     app.jinja_env.filters["format_validation_status"] = format_validation_status
