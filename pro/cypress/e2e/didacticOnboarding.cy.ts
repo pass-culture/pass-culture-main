@@ -208,7 +208,7 @@ describe('Didactic Onboarding feature', () => {
 
         // Set price
         cy.url().should('contain', '/creation/stocks')
-        cy.findByTestId('input-price').type('42')
+        cy.findByLabelText(/Prix/).type('42')
 
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
         cy.wait(['@getOffer', '@patchOffer'])

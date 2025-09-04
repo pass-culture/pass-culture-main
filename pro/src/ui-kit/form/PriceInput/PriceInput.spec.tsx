@@ -38,7 +38,12 @@ describe('PriceInput', () => {
   it('should render without accessibility violations', async () => {
     const { container } = renderPriceInput({})
 
-    expect(await axe(container)).toHaveNoViolations()
+    expect(
+      //  Ingore the color contrast to avoid an axe-core error cf https://github.com/NickColley/jest-axe/issues/147
+      await axe(container, {
+        rules: { 'color-contrast': { enabled: false } },
+      })
+    ).toHaveNoViolations()
   })
 
   it('should display always display an input', () => {
@@ -137,20 +142,19 @@ describe('PriceInput', () => {
   })
 
   describe('Currency', () => {
-    const setCurrencyValue: Array<{ currency: Currency; icon: string }> = [
-      { currency: 'EUR', icon: 'stroke-euro.svg' },
-      { currency: 'XPF', icon: 'stroke-franc.svg' },
+    const setCurrencyValue: Array<{ currency: Currency; sign: string }> = [
+      { currency: 'EUR', sign: '€' },
+      { currency: 'XPF', sign: 'F' },
     ]
     it.each(setCurrencyValue)(
       `should display the correct currency icon`,
-      ({ currency, icon }) => {
-        const { container } = renderPriceInput({
+      ({ currency, sign }) => {
+        renderPriceInput({
           showFreeCheckbox: false,
           currency: currency,
         })
 
-        const svg = container.querySelector('svg')
-        expect(svg?.innerHTML).toEqual(expect.stringContaining(icon))
+        expect(screen.getByText(`Prix (en ${sign})`)).toBeInTheDocument()
       }
     )
   })

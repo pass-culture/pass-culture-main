@@ -223,7 +223,7 @@ describe('OfferFilters', () => {
     )
 
     expect(
-      screen.getByRole('listbox', { name: 'Rechercher une académie' })
+      screen.getByRole('searchbox', { name: 'Rechercher une académie' })
     ).toBeInTheDocument()
   })
 

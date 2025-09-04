@@ -12,7 +12,7 @@ import { FieldError } from '../FieldError/FieldError'
 import styles from './FieldLayout.module.scss'
 import { FieldLayoutCharacterCount } from './FieldLayoutCharacterCount/FieldLayoutCharacterCount'
 
-export type FieldLayoutBaseProps = {
+type FieldLayoutBaseProps = {
   // These props are display options that are applicable to all fields using FieldLayout
   label: string | JSX.Element
   name: string

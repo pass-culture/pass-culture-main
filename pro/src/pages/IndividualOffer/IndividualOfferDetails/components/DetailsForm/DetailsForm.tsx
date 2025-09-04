@@ -16,6 +16,7 @@ import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MarkdownInfoBox } from '@/components/MarkdownInfoBox/MarkdownInfoBox'
 import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullMoreIcon from '@/icons/full-more.svg'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
@@ -25,7 +26,6 @@ import { CalloutVariant } from '@/ui-kit/Callout/types'
 import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import styles from './DetailsForm.module.scss'
 import { DetailsSubForm } from './DetailsSubForm/DetailsSubForm'
@@ -163,9 +163,8 @@ export const DetailsForm = ({
             )}
             <FormLayout.Row className={styles.row}>
               <TextInput
-                count={watch('name').length}
+                charactersCount={{ current: watch('name').length, max: 90 }}
                 label="Titre de l’offre"
-                maxLength={90}
                 {...register('name')}
                 error={errors.name?.message}
                 required
@@ -192,12 +191,12 @@ export const DetailsForm = ({
               <FormLayout.Row className={styles.row}>
                 <TextInput
                   label="URL d’accès à l’offre"
-                  type="text"
                   description="Format : https://exemple.com"
                   disabled={readOnlyFields.includes('url')}
                   {...register('url')}
                   error={errors.url?.message}
                   required
+                  type="url"
                 />
               </FormLayout.Row>
             )}

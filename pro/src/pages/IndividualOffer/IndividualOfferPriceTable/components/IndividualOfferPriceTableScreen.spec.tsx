@@ -76,8 +76,8 @@ const LABELS = {
   section: 'Tarifs',
   duoSection: 'Réservations “Duo”',
   addRate: 'Ajouter un tarif',
-  price: /Prix\s*\*/,
-  stock: /Stock\s*\*/,
+  price: /Prix/,
+  stock: /Stock/,
   duoCheckbox: 'Réservations “Duo”',
   saveAndContinue: 'Enregistrer et continuer',
   saveEdition: 'Enregistrer les modifications',
@@ -92,7 +92,13 @@ describe('<IndividualOfferPriceTableScreen />', () => {
       expect(
         await screen.findByRole('heading', { name: LABELS.section })
       ).toBeInTheDocument()
-      expect(await axe(container)).toHaveNoViolations()
+
+      expect(
+        //  Ingore the color contrast to avoid an axe-core error cf https://github.com/NickColley/jest-axe/issues/147
+        await axe(container, {
+          rules: { 'color-contrast': { enabled: false } },
+        })
+      ).toHaveNoViolations()
 
       expect(
         screen.getByRole('spinbutton', { name: LABELS.stock })

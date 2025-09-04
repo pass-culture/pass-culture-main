@@ -803,12 +803,13 @@ describe('IndividualOfferDetailsScreen', () => {
               mode: OFFER_WIZARD_MODE.CREATION,
             })}?offer-type=PHYSICAL_GOOD`,
           })
-          const button = screen.getByRole('button', {
-            name: eanSearchButtonLabel,
-          })
           const input = screen.getByRole('textbox', { name: eanInputLabel })
           await userEvent.type(input, ean)
-          await userEvent.click(button)
+          await userEvent.click(
+            screen.getByRole('button', {
+              name: eanSearchButtonLabel,
+            })
+          )
           // Inputs are filled with the product data and image is displayed.
           const nameInputLabel = /Titre de l’offre/
           const inputName = screen.getByRole('textbox', {

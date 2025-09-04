@@ -105,7 +105,7 @@ describe('IndividualOfferPracticalInfosForm', () => {
     await userEvent.click(notificationCheckbox)
 
     expect(
-      screen.getByLabelText('Email auquel envoyer les notifications *')
+      screen.getByLabelText(/Email auquel envoyer les notifications/)
     ).toBeInTheDocument()
   })
 

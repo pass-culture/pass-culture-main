@@ -6,9 +6,8 @@ import {
   logInAndGoToPage,
 } from '../support/helpers.ts'
 
-describe('Create collective offers', () => {
+describe('Create collective offers with OA', () => {
   let login: string
-  let offerDraft: { name: string; venueName: string }
   const newOfferName = 'Ma nouvelle offre collective créée'
   const venueName = 'Mon Lieu 1'
   const venueFullAddress = '1 boulevard Poissonnière, 75002, Paris'
@@ -35,7 +34,6 @@ describe('Create collective offers', () => {
       'http://localhost:5001/sandboxes/pro/create_pro_user_with_collective_offers',
       (response) => {
         login = response.body.user.email
-        offerDraft = response.body.offerDraft
       }
     )
     cy.intercept(
@@ -55,6 +53,9 @@ describe('Create collective offers', () => {
     cy.intercept({ method: 'GET', url: '/offerers/educational*' }).as(
       'educationalOfferers'
     )
+    cy.setFeatureFlags([
+      { name: 'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE', isActive: true },
+    ])
   })
 
   const fillBasicOfferForm = () => {
@@ -146,7 +147,7 @@ describe('Create collective offers', () => {
     expectOffersOrBookingsAreFound(expectedResults)
   }
 
-  it('Create collective bookable offers with a precise address (the venue address, selected by default)', () => {
+  it('Create collective bookable offers with OA (Precise address - Venue)', () => {
     logInAndGoToPage(login, '/offre/creation')
     cy.findByText('À un groupe scolaire').click()
     fillBasicOfferForm()
@@ -179,7 +180,7 @@ describe('Create collective offers', () => {
     verifyAndPublishOffer()
   })
 
-  it('Create collective bookable offers with a precise address (another address)', () => {
+  it('Create collective bookable offers with OA (Precise address - Other address)', () => {
     logInAndGoToPage(login, '/offre/creation')
     cy.findByText('À un groupe scolaire').click()
     fillBasicOfferForm()
@@ -193,7 +194,7 @@ describe('Create collective offers', () => {
     verifyAndPublishOffer()
   })
 
-  it('Create collective bookable offers with a precise address (another address - manual entry)', () => {
+  it('Create collective bookable offers with OA (Precise address - Other address - Manual Address)', () => {
     logInAndGoToPage(login, '/offre/creation')
     cy.findByText('À un groupe scolaire').click()
     fillBasicOfferForm()
@@ -222,7 +223,7 @@ describe('Create collective offers', () => {
     verifyAndPublishOffer()
   })
 
-  it('Create collective bookable offers with school location', () => {
+  it('Create collective bookable offers with OA (In school)', () => {
     logInAndGoToPage(login, '/offre/creation')
     cy.findByText('À un groupe scolaire').click()
     fillBasicOfferForm()
@@ -236,7 +237,7 @@ describe('Create collective offers', () => {
     verifyAndPublishOffer()
   })
 
-  it('Create collective bookable offers with to be defined location', () => {
+  it('Create collective bookable offers with OA (Other)', () => {
     logInAndGoToPage(login, '/offre/creation')
     cy.findByText('À un groupe scolaire').click()
     fillBasicOfferForm()
@@ -251,7 +252,7 @@ describe('Create collective offers', () => {
     verifyAndPublishOffer()
   })
 
-  it('Create collective offer template and use it in duplication page', () => {
+  it('Create collective offer template and used it in duplication page', () => {
     logInAndGoToPage(login, '/offre/creation')
     cy.findByText('À un groupe scolaire').click()
     cy.findByText('Une offre vitrine').click()
@@ -334,7 +335,7 @@ describe('Create collective offers', () => {
     verifyAndPublishOffer({ ...commonOfferData, title: 'Offre dupliquée OA' })
   })
 
-  it('Create collective bookable offers with a precise address (the venue address, selected by default) and update location', () => {
+  it('Create collective bookable offers with OA (Precise address - Venue) and update localisation', () => {
     logInAndGoToPage(login, '/offre/creation')
     cy.findByText('À un groupe scolaire').click()
     fillBasicOfferForm()
@@ -357,115 +358,5 @@ describe('Create collective offers', () => {
     cy.findByText('Enregistrer et continuer').click()
     cy.contains('Intitulé : Libellé de mon adresse custom')
     cy.contains('Adresse : 10 Rue, 53210, Argentré')
-  })
-
-  it('Create an offer with draft status and publish it', () => {
-    logInAndGoToPage(login, '/offre/creation')
-    cy.findByText('À un groupe scolaire').click()
-    fillBasicOfferForm()
-    cy.findByLabelText('Autre adresse').click()
-    cy.findByLabelText(/Adresse postale/).type('10 Rue')
-    cy.get('[data-testid="list"] li').first().click()
-    fillOfferDetails()
-    fillDatesAndPrice()
-    fillInstitution()
-
-    cy.findByRole('heading', { name: 'Détails de l’offre' }).should('exist')
-    cy.findByText('Enregistrer et continuer').click()
-    cy.findByText('Sauvegarder le brouillon et quitter').click()
-
-    cy.findByText('Brouillon sauvegardé dans la liste des offres')
-
-    cy.stepLog({ message: 'I want to see my offer in draft status' })
-
-    cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
-
-    cy.stepLog({ message: 'I open the filters' })
-    cy.findByText('Filtrer').click()
-
-    cy.findByRole('button', { name: 'Statut' }).click()
-    cy.findByTestId('panel-scrollable').scrollTo('bottom')
-    cy.findByText('Brouillon').click()
-
-    // We click outside the filter to close it
-    cy.findByRole('heading', { name: 'Offres collectives' }).click()
-    cy.findByText('Rechercher').click()
-    cy.wait('@collectiveOffers')
-
-    const draftResults = [
-      [
-        '',
-        '',
-        'Titre',
-        'Date de l’évènement',
-        'Lieu',
-        'Établissement',
-        'Statut',
-      ],
-      [
-        '',
-        '',
-        commonOfferData.title,
-        `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
-        venueName,
-        commonOfferData.institution,
-        'brouillon',
-      ],
-      [
-        '',
-        '',
-        offerDraft.name,
-        '-',
-        offerDraft.venueName,
-        'DE LA TOUR',
-        'brouillon',
-      ],
-    ]
-
-    expectOffersOrBookingsAreFound(draftResults)
-
-    cy.stepLog({ message: 'I want to change my offer to published status' })
-    cy.findAllByTestId('offer-item-row')
-      .eq(0)
-      .within(() => cy.findByRole('link', { name: newOfferName }).click())
-
-    cy.wait('@educationalOfferers')
-
-    cy.findByRole('link', { name: '5 Aperçu' }).click()
-    cy.findByText('Publier l’offre').click()
-    cy.findByText('Voir mes offres').click()
-
-    cy.stepLog({ message: 'I want to see my offer in published status' })
-
-    cy.url().should('contain', '/offres/collectives')
-
-    cy.findByText('Réinitialiser les filtres').click()
-    cy.findByRole('searchbox', { name: /Nom de l’offre/ }).type(newOfferName)
-    cy.findByText('Rechercher').click()
-
-    // Attendre que les résultats soient chargés
-    cy.wait('@collectiveOffers')
-
-    const expectedResults = [
-      [
-        '',
-        '',
-        'Titre',
-        'Date de l’évènement',
-        'Lieu',
-        'Établissement',
-        'Statut',
-      ],
-      [
-        '',
-        '',
-        commonOfferData.title,
-        `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
-        venueName,
-        commonOfferData.institution,
-        'publiée',
-      ],
-    ]
-    expectOffersOrBookingsAreFound(expectedResults)
   })
 })

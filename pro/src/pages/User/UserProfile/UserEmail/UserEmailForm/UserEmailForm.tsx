@@ -6,11 +6,11 @@ import { isErrorAPIError } from '@/apiClient/helpers'
 import type { UserResetEmailBodyModel } from '@/apiClient/v1'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { PasswordInput } from '@/ui-kit/form/PasswordInput/PasswordInput'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import styles from './UserEmailForm.module.scss'
 import { validationSchema } from './validationSchema'
@@ -87,7 +87,8 @@ export const UserEmailForm = ({
                 label="Nouvelle adresse email"
                 description="Format : email@exemple.com"
                 error={errors.email?.message}
-                required={true}
+                required
+                type="email"
                 {...register('email')}
                 asterisk={false}
               />

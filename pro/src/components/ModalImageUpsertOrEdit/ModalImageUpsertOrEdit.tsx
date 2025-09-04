@@ -14,6 +14,7 @@ import {
   type UploadImageValues,
 } from '@/commons/utils/imageUploadTypes'
 import { ImageDragAndDrop } from '@/components/ImageDragAndDrop/ImageDragAndDrop'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullDownloadIcon from '@/icons/full-download.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -24,7 +25,6 @@ import {
   DialogBuilder,
   type DialogBuilderProps,
 } from '@/ui-kit/DialogBuilder/DialogBuilder'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ImageEditor } from './components/ImageEditor/ImageEditor'
@@ -342,19 +342,20 @@ export const ModalImageUpsertOrEdit = ({
                   </div>
                 </Callout>
               )}
-              <TextInput
-                count={credit.length}
+              <div
                 className={cn(
                   style['modal-image-crop-credit'],
                   isPaintingImage && style['modal-image-crop-credit-loading']
                 )}
-                label="Crédit de l’image"
-                maxLength={255}
-                value={credit}
-                onChange={(e) => setCredit(e.target.value)}
-                name="credit"
-                type="text"
-              />
+              >
+                <TextInput
+                  label="Crédit de l’image"
+                  name="credit"
+                  charactersCount={{ current: credit.length, max: 255 }}
+                  value={credit}
+                  onChange={(e) => setCredit(e.target.value)}
+                />
+              </div>
             </>
           )}
           {!isLoadingImage && !image && (

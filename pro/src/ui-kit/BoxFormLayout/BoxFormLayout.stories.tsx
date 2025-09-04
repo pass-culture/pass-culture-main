@@ -6,9 +6,9 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { BoxRounded } from '@/ui-kit/BoxRounded/BoxRounded'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { BoxFormLayout, type BoxFormLayoutProps } from './BoxFormLayout'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 
 export default {
   title: '@/ui-kit/BoxFormLayout',

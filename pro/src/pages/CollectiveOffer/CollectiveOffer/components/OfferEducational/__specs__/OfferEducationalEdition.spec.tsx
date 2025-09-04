@@ -18,11 +18,7 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { defaultEditionProps } from '../__tests-utils__/defaultProps'
-import {
-  EMAIL_LABEL,
-  NOTIFICATIONS_EMAIL_LABEL,
-  STRUCTURE_LABEL,
-} from '../constants/labels'
+import { STRUCTURE_LABEL } from '../constants/labels'
 import {
   OfferEducational,
   type OfferEducationalProps,
@@ -69,7 +65,7 @@ describe('screens | OfferEducational: edition', () => {
 
     const inputs = [
       screen.getByLabelText(`Formats`),
-      screen.getByLabelText(`Titre de l’offre *`),
+      screen.getByLabelText(/Titre de l’offre/),
       screen.getByLabelText('Indiquez la durée de l’évènement', {
         exact: false,
       }),
@@ -77,8 +73,8 @@ describe('screens | OfferEducational: edition', () => {
       screen.getByLabelText('Collège'), // one of every option
       screen.getByLabelText('Visuel'), // one of every option
       screen.getByLabelText('Téléphone', { exact: false }),
-      screen.getByLabelText(`${EMAIL_LABEL} *`),
-      screen.getByLabelText(`${NOTIFICATIONS_EMAIL_LABEL} *`),
+      screen.getAllByLabelText(/Email/)[0],
+      screen.getByLabelText(/Email auquel envoyer les notifications/),
     ]
     const submitButton = screen.getByRole('button', {
       name: 'Enregistrer et continuer',

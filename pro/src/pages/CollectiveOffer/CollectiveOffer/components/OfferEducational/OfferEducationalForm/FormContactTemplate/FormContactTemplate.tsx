@@ -1,9 +1,9 @@
 import { useFormContext } from 'react-hook-form'
 
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import styles from './FormContactTemplate.module.scss'
 import { FormContactTemplateCustomForm } from './FormContactTemplateCustomForm/FormContactTemplateCustomForm'
@@ -31,6 +31,7 @@ export const FormContactTemplate = ({
         <div className={styles['contact-checkbox-inner-control']}>
           <TextInput
             label="Adresse email"
+            type="email"
             {...register('email')}
             disabled={disableForm}
             description="Format : email@exemple.com"

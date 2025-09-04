@@ -49,7 +49,7 @@ describe('Create individual offers with OA', () => {
     cy.findByText('Étape suivante').click()
 
     cy.stepLog({ message: 'I fill in event details' })
-    cy.findByLabelText('Titre de l’offre *').type(eventName)
+    cy.findByLabelText(/Titre de l’offre/).type(eventName)
     cy.findByLabelText('Description').type(
       'Une PO invite des développeurs à dîner...'
     )
@@ -77,7 +77,7 @@ describe('Create individual offers with OA', () => {
 
     cy.stepLog({ message: 'I fill in event useful informations' })
     cy.findByText('Retrait sur place (guichet, comptoir...)').click()
-    cy.findByLabelText('Email de contact communiqué aux bénéficiaires *').type(
+    cy.findByLabelText(/Email de contact communiqué aux bénéficiaires/).type(
       'passculture@example.com'
     )
 
@@ -90,7 +90,7 @@ describe('Create individual offers with OA', () => {
     cy.stepLog({ message: 'I fill in prices' })
     cy.findByLabelText('Intitulé du tarif').should('have.value', 'Tarif unique')
 
-    cy.findByLabelText('Prix par personne').type('100')
+    cy.findByLabelText(/Prix par personne/).type('100')
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     // trash icon button is just an image button
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
@@ -184,7 +184,7 @@ describe('Create individual offers with OA', () => {
       'Libellé de mon adresse'
     )
 
-    cy.findByLabelText('Adresse postale *').type(MOCKED_BACK_ADDRESS_LABEL)
+    cy.findByLabelText(/Adresse postale/).type(MOCKED_BACK_ADDRESS_LABEL)
     cy.wait('@search5Address').its('response.statusCode').should('eq', 200)
     cy.findByTestId('list').contains(MOCKED_BACK_ADDRESS_LABEL).click()
     cy.findByText('Enregistrer les modifications').click()
@@ -206,7 +206,7 @@ describe('Create individual offers with OA', () => {
     cy.findByText('Étape suivante').click()
 
     cy.stepLog({ message: 'I fill in details for physical offer' })
-    cy.findByLabelText('Titre de l’offre *').type(offerTitle)
+    cy.findByLabelText(/Titre de l’offre/).type(offerTitle)
     cy.findByLabelText('Description').type(offerDesc)
 
     // Random 13-digit number because we can't use the same EAN twice
@@ -232,7 +232,7 @@ describe('Create individual offers with OA', () => {
     cy.findByText('Importer').click()
 
     cy.stepLog({ message: 'the details of offer should be correct' })
-    cy.findByLabelText('Titre de l’offre *').should('have.value', offerTitle)
+    cy.findByLabelText(/Titre de l’offre/).should('have.value', offerTitle)
     cy.findByLabelText('Description').should('have.text', offerDesc)
 
     // With a 1.7x zoom, width=470 and height=705
@@ -269,9 +269,9 @@ describe('Create individual offers with OA', () => {
     })
 
     cy.stepLog({ message: 'I fill in stocks' })
-    cy.get('#price').type('42')
+    cy.findByLabelText(/Prix/).type('42')
     cy.get('[data-testid="bookingLimitDatetime"').type('2042-05-03')
-    cy.get('#quantity').type('42')
+    cy.findByLabelText(/Quantité/).type('42')
 
     cy.stepLog({ message: 'I validate stocks step' })
     cy.findByText('Enregistrer et continuer').click()
@@ -319,11 +319,13 @@ describe('Create individual offers with OA', () => {
     cy.findByText('Vous ne trouvez pas votre adresse ?').click()
 
     cy.stepLog({ message: 'I want to put a custom address' })
-    cy.findAllByLabelText('Adresse postale *').last().type('Place de la gare')
-    cy.findAllByLabelText('Code postal *').type('123123')
-    cy.findAllByLabelText('Ville *').type('Y')
+    cy.findAllByLabelText(/Adresse postale/)
+      .last()
+      .type('Place de la gare')
+    cy.findAllByLabelText(/Code postal/).type('123123')
+    cy.findAllByLabelText(/Ville/).type('Y')
     // eslint-disable-next-line cypress/unsafe-to-chain-command
-    cy.findAllByLabelText('Coordonnées GPS *')
+    cy.findAllByLabelText(/Coordonnées GPS/)
       .type('48.853320, 2.348979')
       .blur()
     cy.findByText('Vérifiez la localisation en cliquant ici').should(

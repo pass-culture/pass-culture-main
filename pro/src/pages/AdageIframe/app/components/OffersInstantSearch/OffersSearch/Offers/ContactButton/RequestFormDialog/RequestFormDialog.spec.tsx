@@ -52,7 +52,7 @@ describe('RequestFormDialog', () => {
       contactUrl: '',
     })
 
-    expect(screen.getByLabelText('Email *')).toHaveValue('contact@example.com')
+    expect(screen.getByLabelText(/Email/)).toHaveValue('contact@example.com')
   })
 
   it('should only display mail ', () => {
@@ -126,7 +126,7 @@ describe('RequestFormDialog', () => {
 
     expect(screen.getByText('test@example.com')).toBeInTheDocument()
     expect(screen.getByText('0600000000')).toBeInTheDocument()
-    expect(screen.getByLabelText('Email *')).toHaveValue('contact@example.com')
+    expect(screen.getByLabelText(/Email/)).toHaveValue('contact@example.com')
   })
 
   it('should display mail and phone and custom form', () => {

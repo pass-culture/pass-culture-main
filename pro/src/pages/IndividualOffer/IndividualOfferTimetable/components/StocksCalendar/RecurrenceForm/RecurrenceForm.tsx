@@ -16,6 +16,7 @@ import { isDateValid, mapDayToFrench } from '@/commons/utils/date'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullMoreIcon from '@/icons/full-more.svg'
 import { getPriceCategoryOptions } from '@/pages/IndividualOffer/commons/getPriceCategoryOptions'
@@ -26,7 +27,6 @@ import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { DayCheckbox } from '@/ui-kit/form/DayCheckbox/DayCheckbox'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
@@ -366,14 +366,12 @@ export const RecurrenceForm = ({
             <div className={styles['section']}>
               <h2 className={styles['legend']}>Date limite de réservation</h2>
 
-              <div className={styles['booking-date-limit-container']}>
+              <div className={styles['booking-date-limit-input']}>
                 <TextInput
-                  label="Date limite de réservation (en nombre de jours avant le début de l’évènement)"
-                  isLabelHidden
+                  label="Nombre de jours avant le début de l’évènement"
                   type="number"
                   step={1}
                   min={0}
-                  className={styles['booking-date-limit-input']}
                   error={
                     methods.formState.errors.bookingLimitDateInterval?.message
                   }
@@ -390,10 +388,6 @@ export const RecurrenceForm = ({
                     }
                   }}
                 />
-
-                <div className={styles['booking-date-limit-text']}>
-                  jours avant le début de l’évènement
-                </div>
               </div>
             </div>
           </fieldset>

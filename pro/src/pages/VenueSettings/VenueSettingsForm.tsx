@@ -11,6 +11,7 @@ import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFie
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullBackIcon from '@/icons/full-back.svg'
 import fullNextIcon from '@/icons/full-next.svg'
 import { ReimbursementFields } from '@/pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
@@ -21,7 +22,6 @@ import { ButtonVariant } from '@/ui-kit/Button/types'
 import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
 import { Select } from '@/ui-kit/form/Select/Select'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
 import { SiretOrCommentFields } from './SiretOrCommentFields/SiretOrCommentFields'
@@ -168,7 +168,6 @@ export const VenueSettingsForm = ({
           >
             <TextInput
               {...register('bookingEmail')}
-              name="bookingEmail"
               label="Adresse email"
               type="email"
               description="Format : email@exemple.com"

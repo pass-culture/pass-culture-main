@@ -23,10 +23,10 @@ describe('Account creation', () => {
     cy.stepLog({
       message: 'I fill required information in create account form',
     })
-    cy.findByLabelText('Nom *').type('LEMOINE')
-    cy.findByLabelText('Prénom *').type('Jean')
-    cy.findByLabelText('Adresse email *').type(randomEmail)
-    cy.findByLabelText('Mot de passe *').type('user@AZERTY123')
+    cy.findByLabelText(/Nom/).type('LEMOINE')
+    cy.findByLabelText(/Prénom/).type('Jean')
+    cy.findByLabelText(/Adresse email/).type(randomEmail)
+    cy.findByLabelText(/Mot de passe/).type('user@AZERTY123')
 
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 

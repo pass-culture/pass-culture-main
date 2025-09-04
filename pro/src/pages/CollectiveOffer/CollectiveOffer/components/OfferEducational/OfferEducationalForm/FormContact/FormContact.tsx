@@ -1,8 +1,8 @@
 import { useFormContext } from 'react-hook-form'
 
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { EMAIL_LABEL } from '../../constants/labels'
 import styles from './FormContact.module.scss'
@@ -29,6 +29,7 @@ export const FormContact = ({ disableForm }: FormContactProps): JSX.Element => {
         <TextInput
           label={EMAIL_LABEL}
           disabled={disableForm}
+          type="email"
           description="Format : email@exemple.com"
           {...register('email')}
           required

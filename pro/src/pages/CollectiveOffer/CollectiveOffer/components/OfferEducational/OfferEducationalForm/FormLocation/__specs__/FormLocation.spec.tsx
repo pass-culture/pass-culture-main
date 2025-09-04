@@ -211,9 +211,7 @@ describe('FormLocation', () => {
 
     const labelInput = screen.getByLabelText('Intitulé de la localisation')
 
-    const addressInput = screen.getByLabelText(/Adresse postale/, {
-      selector: '#street',
-    })
+    const addressInput = screen.getAllByLabelText(/Adresse postale/)[1]
     const cityInput = screen.getByLabelText(/Ville/)
     const postalCodeInput = screen.getByLabelText(/Code postal/)
     const coordsInput = screen.getByLabelText(/Coordonnées GPS/)
@@ -245,9 +243,7 @@ describe('FormLocation', () => {
     const addressLabelInput = screen.getByLabelText(
       'Intitulé de la localisation'
     )
-    const addressInput = screen.getByLabelText(/Adresse postale/, {
-      selector: '#street',
-    })
+    const addressInput = screen.getAllByLabelText(/Adresse postale/)[1]
     const cityInput = screen.getByLabelText(/Ville/)
     const postalCodeInput = screen.getByLabelText(/Code postal/)
     const coordsInput = screen.getByLabelText(/Coordonnées GPS/)
@@ -278,9 +274,7 @@ describe('FormLocation', () => {
 
     await userEvent.click(showManualAddressFormButton)
 
-    const addressInput = screen.getByLabelText(/Adresse postale/, {
-      selector: '#street',
-    })
+    const addressInput = screen.getAllByLabelText(/Adresse postale/)[1]
     const cityInput = screen.getByLabelText(/Ville/)
     const postalCodeInput = screen.getByLabelText(/Code postal/)
     const coordsInput = screen.getByLabelText(/Coordonnées GPS/)
@@ -356,7 +350,7 @@ describe('FormLocation', () => {
       screen.getByText('Vous ne trouvez pas votre adresse ?')
     )
 
-    expect(screen.getByLabelText('Ville *')).toHaveValue('')
+    expect(screen.getByLabelText(/Ville/)).toHaveValue('')
   })
 
   it('should call scrollIntoView onclick if radio selected is out of screen', async () => {

@@ -42,7 +42,7 @@ describe('Signup journey with not diffusible offerer siret', () => {
 
     cy.stepLog({ message: 'I specify a venue with a SIRET' })
     cy.url().should('contain', '/inscription/structure/recherche')
-    cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
+    cy.findByLabelText(/Numéro de SIRET à 14 chiffres/).type(mySiret)
     cy.findByText('Continuer').click()
     cy.wait('@venuesSiret').its('response.statusCode').should('eq', 200)
 
@@ -51,9 +51,9 @@ describe('Signup journey with not diffusible offerer siret', () => {
     cy.findByText(
       'Certaines informations de votre structure ne sont pas diffusibles.'
     ).should('be.visible')
-    cy.findByLabelText('Nom public *').type(newVenueName)
+    cy.findByLabelText(/Nom public/).type(newVenueName)
     cy.findByLabelText('Non').should('be.checked')
-    cy.findByLabelText('Adresse postale *').should('not.exist')
+    cy.findByLabelText(/Adresse postale/).should('not.exist')
 
     cy.findByText('Étape suivante').click()
     cy.findByText('Étape précédente').click()
@@ -90,16 +90,16 @@ describe('Signup journey with not diffusible offerer siret', () => {
 
     cy.stepLog({ message: 'I specify a venue with a SIRET' })
     cy.url().should('contain', '/inscription/structure/recherche')
-    cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
+    cy.findByLabelText(/Numéro de SIRET à 14 chiffres/).type(mySiret)
     cy.findByText('Continuer').click()
     cy.wait('@venuesSiret').its('response.statusCode').should('eq', 200)
 
     cy.stepLog({ message: 'I fill identification form with a public name' })
     cy.url().should('contain', '/inscription/structure/identification')
-    cy.findByLabelText('Nom public *').type(newVenueName)
+    cy.findByLabelText(/Nom public/).type(newVenueName)
     cy.findByText('Oui').click()
 
-    cy.findByLabelText('Adresse postale *').type(MOCKED_BACK_ADDRESS_LABEL)
+    cy.findByLabelText(/Adresse postale/).type(MOCKED_BACK_ADDRESS_LABEL)
     cy.wait('@search5Address').its('response.statusCode').should('eq', 200)
     cy.findByTestId('list').contains(MOCKED_BACK_ADDRESS_LABEL).click()
 

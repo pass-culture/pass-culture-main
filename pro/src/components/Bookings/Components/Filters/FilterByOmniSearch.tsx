@@ -1,11 +1,12 @@
 import cn from 'classnames'
+import strokeSearchIcon from 'icons/stroke-search.svg'
 import { type ChangeEvent, useId } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { Audience } from '@/commons/core/shared/types'
 import type { SelectOption } from '@/commons/custom_types/form'
-import { BaseInput } from '@/ui-kit/form/shared/BaseInput/BaseInput'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
 
 import type { BookingsFilters } from '../types'
@@ -37,7 +38,7 @@ export const FilterByOmniSearch = ({
 }: FilterByOmniSearchProps) => {
   const { logEvent } = useAnalytics()
 
-  const searchInputId = useId()
+  const criteriaSelectId = useId()
 
   const omnisearchFilters =
     audience === Audience.INDIVIDUAL
@@ -102,34 +103,33 @@ export const FilterByOmniSearch = ({
       <legend className={styles['visually-hidden']}>
         Rechercher dans les réservations
       </legend>
-      <label
-        htmlFor="omnisearch-criteria"
-        className={styles['visually-hidden']}
-      >
-        Informations dans laquelle rechercher
-      </label>
-      <SelectInput
-        name="omnisearch-criteria"
-        className={styles['omnisearch-filter-select']}
-        disabled={isDisabled}
-        data-testid="select-omnisearch-criteria"
-        onBlur={handleOmniSearchCriteriaChange}
-        onChange={handleOmniSearchCriteriaChange}
-        value={selectedOmniSearchCriteria}
-        options={omnisearchFiltersOptions}
-      />
 
-      <label htmlFor={searchInputId} className={styles['visually-hidden']}>
-        Texte à rechercher
-      </label>
-
-      <div className={styles['omnisearch-filter-input-container']}>
-        <BaseInput
-          type="search"
-          className={styles['omnisearch-filter-input']}
+      <div>
+        <label
+          className={styles['omnisearch-criteria-label']}
+          htmlFor={criteriaSelectId}
+        >
+          Critère
+        </label>
+        <SelectInput
+          name="omnisearch-criteria"
+          className={styles['omnisearch-filter-select']}
           disabled={isDisabled}
-          id={searchInputId}
-          data-testid="omnisearch-filter-input-text"
+          id={criteriaSelectId}
+          onBlur={handleOmniSearchCriteriaChange}
+          onChange={handleOmniSearchCriteriaChange}
+          value={selectedOmniSearchCriteria}
+          options={omnisearchFiltersOptions}
+        />
+      </div>
+
+      <div className={styles['omnisearch-search-input']}>
+        <TextInput
+          type="search"
+          name="search"
+          label="Recherche"
+          icon={strokeSearchIcon}
+          disabled={isDisabled}
           onChange={handleOmniSearchChange}
           value={keywords}
         />

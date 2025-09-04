@@ -16,6 +16,7 @@ import { isDateValid } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { toNumberOrNull } from '@/commons/utils/toNumberOrNull'
 import { ActivationCodeFormDialog } from '@/components/IndividualOffer/StocksThing/ActivationCodeFormDialog/ActivationCodeFormDialog'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullCodeIcon from '@/icons/full-code.svg'
 import fulleMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
@@ -25,7 +26,6 @@ import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { PriceInput } from '@/ui-kit/form/PriceInput/PriceInput'
 import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
 
 import {
@@ -219,40 +219,52 @@ export const PriceTableForm = ({
             })}
           >
             {offer.isEvent && (
-              <TextInput
-                {...register(`entries.${index}.label`)}
-                autoComplete="off"
-                className={styles['input-label']}
-                disabled={
-                  fields.length <= 1 ||
-                  areAllFieldsDisabled ||
-                  areAllFieldsDisabledButQuantity
-                }
-                error={errors.entries?.[index]?.label?.message}
-                label="Intitulé du tarif"
-                maxLength={PRICE_TABLE_ENTRY_MAX_LABEL_LENGTH}
-                count={entry.label?.length || 0}
-                description="Par exemple : catégorie 2, moins de 18 ans, pass 3 jours..."
-              />
+              <div className={styles['input-label']}>
+                <TextInput
+                  {...register(`entries.${index}.label`)}
+                  autoComplete="off"
+                  disabled={
+                    fields.length <= 1 ||
+                    areAllFieldsDisabled ||
+                    areAllFieldsDisabledButQuantity
+                  }
+                  error={errors.entries?.[index]?.label?.message}
+                  label="Intitulé du tarif"
+                  charactersCount={{
+                    max: PRICE_TABLE_ENTRY_MAX_LABEL_LENGTH,
+                    current: entry.label?.length || 0,
+                  }}
+                  description="Par exemple : catégorie 2, moins de 18 ans, pass 3 jours..."
+                />
+              </div>
             )}
 
-            <PriceInput
-              name="price"
-              value={watch(`entries.${index}.price`) ?? ''}
+            <div
               className={
                 styles[offer.isDigital ? 'input-price--digital' : 'input-price']
               }
-              disabled={areAllFieldsDisabled || areAllFieldsDisabledButQuantity}
-              error={errors.entries?.[index]?.price?.message}
-              label="Prix"
-              currency={isCaledonian ? 'XPF' : 'EUR'}
-              showFreeCheckbox={!offer.isDigital}
-              onChange={(event) => {
-                setValue(`entries.${index}.price`, event.target.valueAsNumber, {
-                  shouldDirty: true,
-                })
-              }}
-            />
+            >
+              <PriceInput
+                name="price"
+                value={watch(`entries.${index}.price`) ?? ''}
+                disabled={
+                  areAllFieldsDisabled || areAllFieldsDisabledButQuantity
+                }
+                error={errors.entries?.[index]?.price?.message}
+                label="Prix"
+                currency={isCaledonian ? 'XPF' : 'EUR'}
+                showFreeCheckbox={!offer.isDigital}
+                onChange={(event) => {
+                  setValue(
+                    `entries.${index}.price`,
+                    event.target.valueAsNumber,
+                    {
+                      shouldDirty: true,
+                    }
+                  )
+                }}
+              />
+            </div>
 
             {!offer.isEvent && (
               <DatePicker
@@ -284,52 +296,50 @@ export const PriceTableForm = ({
             )}
 
             {!offer.isEvent && (
-              <QuantityInput
-                className={styles['input-stock']}
-                disabled={areAllFieldsDisabled || hasActivationCodes}
-                error={errors.entries?.[index]?.quantity?.message}
-                label="Stock"
-                minimum={computeEntryConstraints(entry).quantityMin}
-                onChange={(e) =>
-                  setValue(
-                    `entries.${index}.quantity`,
-                    toNumberOrNull(e.target.value),
-                    {
-                      shouldDirty: true,
-                    }
-                  )
-                }
-                required
-                value={entry.quantity}
-              />
+              <div className={styles['input-stock']}>
+                <QuantityInput
+                  disabled={areAllFieldsDisabled || hasActivationCodes}
+                  error={errors.entries?.[index]?.quantity?.message}
+                  label="Stock"
+                  min={computeEntryConstraints(entry).quantityMin}
+                  onChange={(e) =>
+                    setValue(
+                      `entries.${index}.quantity`,
+                      toNumberOrNull(e.target.value),
+                      {
+                        shouldDirty: true,
+                      }
+                    )
+                  }
+                  required
+                  value={entry.quantity}
+                />
+              </div>
             )}
 
             {!offer.isEvent && mode === OFFER_WIZARD_MODE.EDITION && (
               <>
-                <TextInput
-                  className={styles['input-readonly--first']}
-                  hasLabelLineBreak={false}
-                  isOptional
-                  label="Stock restant"
-                  name="availableStock"
-                  readOnly
-                  smallLabel
-                  value={
-                    entry.remainingQuantity === 'unlimited'
-                      ? 'Illimité'
-                      : (entry.remainingQuantity ?? undefined)
-                  }
-                />
+                <div className={styles['input-readonly']}>
+                  <TextInput
+                    label="Stock restant"
+                    name="availableStock"
+                    disabled
+                    value={
+                      entry.remainingQuantity === 'unlimited'
+                        ? 'Illimité'
+                        : (entry.remainingQuantity?.toString() ?? undefined)
+                    }
+                  />
+                </div>
 
-                <TextInput
-                  {...register(`entries.${index}.bookingsQuantity`)}
-                  className={styles['input-readonly']}
-                  isOptional
-                  label="Réservations"
-                  readOnly
-                  smallLabel
-                  value={entry.bookingsQuantity ?? 0}
-                />
+                <div className={styles['input-readonly']}>
+                  <TextInput
+                    name={`entries.${index}.bookingsQuantity`}
+                    value={entry.bookingsQuantity?.toString() ?? '0'}
+                    label="Réservations"
+                    disabled
+                  />
+                </div>
               </>
             )}
 

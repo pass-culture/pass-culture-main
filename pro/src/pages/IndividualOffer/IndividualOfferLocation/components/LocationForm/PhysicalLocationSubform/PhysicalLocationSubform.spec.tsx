@@ -321,7 +321,9 @@ describe('<PhysicalLocationSubform />', () => {
       })
     ).toBeDisabled()
 
-    const manualStreet = postaleFields.find((el) => el.id === 'street')
+    const manualStreet = screen.getByRole('textbox', {
+      name: /Adresse postale/,
+    })
     expect(manualStreet).toBeDefined()
     expect(manualStreet).not.toBeDisabled()
   })

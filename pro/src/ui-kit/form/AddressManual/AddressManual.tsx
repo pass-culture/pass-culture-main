@@ -3,11 +3,11 @@ import { useFormContext } from 'react-hook-form'
 import type { AddressFormValues } from '@/commons/core/shared/types'
 import { getCoordsType, parseDms } from '@/commons/utils/coords'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import styles from './AddressManual.module.scss'
 
@@ -49,6 +49,10 @@ export const AddressManual = ({
       <FormLayout.Row mdSpaceAfter>
         <TextInput
           label="Adresse postale"
+          charactersCount={{
+            max: 200,
+            current: methods.watch('street')?.length || 0,
+          }}
           disabled={readOnlyFields.includes('street')}
           maxLength={200}
           {...methods.register('street')}
@@ -57,24 +61,32 @@ export const AddressManual = ({
         />
       </FormLayout.Row>
       <FormLayout.Row inline className={styles['inline-fields']} mdSpaceAfter>
-        <TextInput
-          label="Code postal"
-          maxLength={5}
-          className={styles['field-cp']}
-          disabled={readOnlyFields.includes('postalCode')}
-          {...methods.register('postalCode')}
-          error={methods.formState.errors.postalCode?.message}
-          required
-        />
-        <TextInput
-          label="Ville"
-          className={styles['field-city']}
-          disabled={readOnlyFields.includes('city')}
-          maxLength={50}
-          {...methods.register('city')}
-          error={methods.formState.errors.city?.message}
-          required
-        />
+        <div className={styles['field-cp']}>
+          <TextInput
+            label="Code postal"
+            charactersCount={{
+              max: 5,
+              current: methods.watch('postalCode')?.length || 0,
+            }}
+            disabled={readOnlyFields.includes('postalCode')}
+            {...methods.register('postalCode')}
+            error={methods.formState.errors.postalCode?.message}
+            required
+          />
+        </div>
+        <div className={styles['field-city']}>
+          <TextInput
+            label="Ville"
+            disabled={readOnlyFields.includes('city')}
+            charactersCount={{
+              max: 50,
+              current: methods.watch('city')?.length || 0,
+            }}
+            {...methods.register('city')}
+            error={methods.formState.errors.city?.message}
+            required
+          />
+        </div>
       </FormLayout.Row>
       <FormLayout.Row mdSpaceAfter>
         <TextInput

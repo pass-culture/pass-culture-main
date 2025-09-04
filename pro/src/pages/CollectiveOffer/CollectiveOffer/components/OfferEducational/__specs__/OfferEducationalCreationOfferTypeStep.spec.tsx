@@ -61,14 +61,12 @@ describe('screens | OfferEducational : creation offer type step', () => {
     expect(formatSelect).toBeEnabled()
     expect(formatSelect).toHaveValue('')
 
-    const titleInput = await screen.findByLabelText('Titre de l’offre *')
+    const titleInput = await screen.findByLabelText(/Titre de l’offre/)
     expect(titleInput).toBeEnabled()
     expect(titleInput).toHaveValue('')
     expect(titleInput.getAttribute('placeholder')).toBeNull()
 
-    expect(await screen.findByTestId('counter-title')).toHaveTextContent(
-      '0/110'
-    )
+    expect(screen.getByText('0/110')).toBeInTheDocument()
 
     const descriptionTextArea = await screen.findByLabelText(
       /Décrivez ici votre projet et son interêt pédagogique */
@@ -185,11 +183,9 @@ describe('screens | OfferEducational : creation offer type step', () => {
       renderComponent(props)
       const titleMaxLength = 110
 
-      const titleInput = await screen.findByLabelText('Titre de l’offre *')
+      const titleInput = await screen.findByLabelText(/Titre de l’offre/)
       expect(titleInput).toHaveValue('')
-      expect(screen.getByTestId('counter-title')).toHaveTextContent(
-        `0/${titleMaxLength}`
-      )
+      expect(screen.getByText(`0/${titleMaxLength}`)).toBeInTheDocument()
 
       await userEvent.click(titleInput)
       await userEvent.tab()
@@ -203,9 +199,9 @@ describe('screens | OfferEducational : creation offer type step', () => {
       const title = `a valid title ${Array.from({ length: 50 }).map(() => 'test ')}`
       await userEvent.type(titleInput, title)
 
-      expect(screen.getByTestId('counter-title')).toHaveTextContent(
-        `${titleMaxLength}/${titleMaxLength}`
-      )
+      expect(
+        screen.getByText(`${titleMaxLength}/${titleMaxLength}`)
+      ).toBeInTheDocument()
 
       expect(titleInput).toHaveValue(title.slice(0, titleMaxLength))
     })

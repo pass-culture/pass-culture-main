@@ -32,6 +32,7 @@ import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { FormLayoutDescription } from '@/components/FormLayout/FormLayoutDescription'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullCodeIcon from '@/icons/full-code.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import { getSuccessMessage } from '@/pages/IndividualOffer/commons/getSuccessMessage'
@@ -40,7 +41,6 @@ import { DialogStockThingDeleteConfirm } from '@/pages/IndividualOffer/component
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { PriceInput } from '@/ui-kit/form/PriceInput/PriceInput'
 import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import type { Link } from '@/ui-kit/LinkNodes/LinkNodes'
 import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
 
@@ -415,16 +415,17 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               className={styles['callout-area-margin']}
             />
             <div className={styles.row}>
-              <PriceInput
-                name="price"
-                value={watch('price')}
-                error={errors.price?.message}
-                label="Prix"
-                disabled={readOnlyFields.includes('price')}
-                currency={isCaledonian ? 'XPF' : 'EUR'}
-                className={styles['field-layout-xsmall']}
-                onChange={onPriceChange}
-              />
+              <div className={styles['field-layout-xsmall']}>
+                <PriceInput
+                  name="price"
+                  value={watch('price')}
+                  error={errors.price?.message}
+                  label="Prix"
+                  disabled={readOnlyFields.includes('price')}
+                  currency={isCaledonian ? 'XPF' : 'EUR'}
+                  onChange={onPriceChange}
+                />
+              </div>
               <DatePicker
                 {...register('bookingLimitDatetime')}
                 name="bookingLimitDatetime"
@@ -458,41 +459,39 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   className={styles['field-layout-small']}
                 />
               )}
-              <QuantityInput
-                value={watch('quantity')}
-                error={errors.quantity?.message}
-                label="Quantité"
-                disabled={readOnlyFields.includes('quantity')}
-                onChange={onQuantityChange}
-                className={styles['field-layout-small']}
-                minimum={minQuantity}
-              />
+              <div className={styles['field-layout-small']}>
+                <QuantityInput
+                  value={watch('quantity')}
+                  error={errors.quantity?.message}
+                  label="Quantité"
+                  disabled={readOnlyFields.includes('quantity')}
+                  onChange={onQuantityChange}
+                  min={minQuantity}
+                />
+              </div>
               {mode === OFFER_WIZARD_MODE.EDITION && stocks.length > 0 && (
                 <>
-                  <TextInput
-                    name="availableStock"
-                    value={
-                      getValues('remainingQuantity') === 'unlimited'
-                        ? 'Illimité'
-                        : getValues('remainingQuantity')
-                    }
-                    readOnly
-                    label="Stock restant"
-                    hasLabelLineBreak={false}
-                    isOptional
-                    smallLabel
-                    className={styles['field-layout-shrink']}
-                  />
-                  <TextInput
-                    {...register('bookingsQuantity')}
-                    error={errors.bookingsQuantity?.message}
-                    value={getValues('bookingsQuantity') || 0}
-                    readOnly
-                    label="Réservations"
-                    isOptional
-                    smallLabel
-                    className={styles['field-layout-shrink']}
-                  />
+                  <div className={styles['field-layout-shrink']}>
+                    <TextInput
+                      name="availableStock"
+                      value={
+                        getValues('remainingQuantity') === 'unlimited'
+                          ? 'Illimité'
+                          : getValues('remainingQuantity')
+                      }
+                      disabled
+                      label="Stock restant"
+                    />
+                  </div>
+                  <div className={styles['field-layout-shrink']}>
+                    <TextInput
+                      name="bookingsQuantity"
+                      value={getValues('bookingsQuantity') || '0'}
+                      error={errors.bookingsQuantity?.message}
+                      label="Réservations"
+                      disabled
+                    />
+                  </div>
                 </>
               )}
               {!hasPublishedOfferWithSameEan && (

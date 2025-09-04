@@ -11,11 +11,11 @@ import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { getIsOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/getIsOfferSubcategoryOnline'
 import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import {
@@ -55,7 +55,7 @@ export const UsefulInformationForm = ({
   conditionalFields,
   selectedVenue,
   hasPublishedOfferWithSameEan,
-}: UsefulInformationFormProps): JSX.Element => {
+}: UsefulInformationFormProps) => {
   const {
     register,
     watch,
@@ -82,7 +82,7 @@ export const UsefulInformationForm = ({
   // within IndividualOfferInformationsScreen, which itself is only
   // rendered when offer is defined - this is to keep TS quiet.
   if (!offer) {
-    return <></>
+    return null
   }
 
   const offerSubCategory = subCategories.find(
@@ -208,7 +208,10 @@ export const UsefulInformationForm = ({
             <TextInput
               {...register('bookingContact')}
               label="Email de contact communiqué aux bénéficiaires"
-              maxLength={90}
+              charactersCount={{
+                max: 90,
+                current: watch('bookingContact')?.length || 0,
+              }}
               description="Format : email@exemple.com"
               disabled={readOnlyFields.includes('bookingContact')}
               error={errors.bookingContact?.message}
@@ -227,7 +230,6 @@ export const UsefulInformationForm = ({
           <TextInput
             {...register('externalTicketOfficeUrl')}
             label="URL de votre site ou billetterie"
-            type="text"
             description="Format : https://exemple.com"
             disabled={readOnlyFields.includes('externalTicketOfficeUrl')}
             error={errors.externalTicketOfficeUrl?.message}
@@ -274,7 +276,10 @@ export const UsefulInformationForm = ({
             <TextInput
               {...register('bookingEmail')}
               label="Email auquel envoyer les notifications"
-              maxLength={90}
+              charactersCount={{
+                max: 90,
+                current: watch('bookingEmail')?.length || 0,
+              }}
               description="Format : email@exemple.com"
               disabled={readOnlyFields.includes('bookingEmail')}
               required

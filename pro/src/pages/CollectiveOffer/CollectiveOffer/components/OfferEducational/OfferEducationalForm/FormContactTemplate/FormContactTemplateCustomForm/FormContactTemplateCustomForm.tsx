@@ -1,9 +1,9 @@
 import { useFormContext } from 'react-hook-form'
 
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullLinkIcon from '@/icons/full-link.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import styles from './FormContactTemplateCustomForm.module.scss'
 
@@ -44,15 +44,17 @@ export const FormContactTemplateCustomForm = ({
             label: 'Mon propre formulaire',
             value: 'url',
             collapsed: (
-              <TextInput
-                label="URL de mon formulaire de contact"
-                required
-                {...register('contactUrl')}
-                error={getFieldState('contactUrl').error?.message}
-                disabled={disableForm}
-                description="Format : https://exemple.com"
-                className={styles['custom-form-radio-input-control']}
-              />
+              <div className={styles['custom-form-radio-input-control']}>
+                <TextInput
+                  label="URL de mon formulaire de contact"
+                  type="url"
+                  required
+                  {...register('contactUrl')}
+                  error={getFieldState('contactUrl').error?.message}
+                  disabled={disableForm}
+                  description="Format : https://exemple.com"
+                />
+              </div>
             ),
           },
         ]}
