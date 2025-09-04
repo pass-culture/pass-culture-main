@@ -248,12 +248,12 @@ class BaseBackendTest:
         finance_factories.PricingLineFactory(
             pricing=pricing1,
             category=finance_models.PricingLineCategory.OFFERER_REVENUE,
-            amount=-1_00,
+            amount=-3_00,
         )
         finance_factories.PricingLineFactory(
             pricing=pricing1,
             category=finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
-            amount=-1_00,
+            amount=1_00,
         )
         pricing2 = finance_factories.PricingFactory(
             booking=booking2,
@@ -264,12 +264,12 @@ class BaseBackendTest:
         finance_factories.PricingLineFactory(
             pricing=pricing2,
             category=finance_models.PricingLineCategory.OFFERER_REVENUE,
-            amount=-1_00,
+            amount=-3_00,
         )
         finance_factories.PricingLineFactory(
             pricing=pricing2,
             category=finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
-            amount=-1_00,
+            amount=1_00,
         )
         cashflow = finance_factories.CashflowFactory(pricings=[pricing1, pricing2])
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
@@ -279,11 +279,11 @@ class BaseBackendTest:
         assert len(invoice_lines) == 2
         assert {"OCINDGRANT_18", "ORINDGRANT_18"} == {e["product_id"] for e in invoice_lines}
         offerer_revenue_line = [e for e in invoice_lines if e["product_id"] == "ORINDGRANT_18"][0]
-        assert offerer_revenue_line["amount"] == -200
+        assert offerer_revenue_line["amount"] == -600
         assert offerer_revenue_line["title"] == "Réservations"
 
         offerer_contribution_line = [e for e in invoice_lines if e["product_id"] == "OCINDGRANT_18"][0]
-        assert offerer_contribution_line["amount"] == -200
+        assert offerer_contribution_line["amount"] == 200
         assert offerer_contribution_line["title"] == "Réservations"
 
     @pytest.mark.parametrize(
@@ -557,12 +557,12 @@ class BaseBackendTest:
             user__deposit__type=finance_models.DepositType.GRANT_18, stock__offer__venue=venue
         )
         pricing = finance_factories.PricingFactory(
-            booking=booking, pricingPoint=venue, status=finance_models.PricingStatus.PROCESSED, amount=55_66
+            booking=booking, pricingPoint=venue, status=finance_models.PricingStatus.PROCESSED, amount=-55_66
         )
         finance_factories.PricingLineFactory(
             pricing=pricing,
             category=finance_models.PricingLineCategory.OFFERER_REVENUE,
-            amount=55_66,
+            amount=-55_66,
         )
         cashflow = finance_factories.CashflowFactory(pricings=[pricing])
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
@@ -572,7 +572,7 @@ class BaseBackendTest:
         assert len(invoice_lines) == 1
         invoice_line = invoice_lines[0]
         assert len(invoice_line) == 3
-        assert invoice_line["amount"] == 55_66
+        assert invoice_line["amount"] == -55_66
         assert invoice_line["product_id"] == "ORINDGRANT_18"
         assert invoice_line["title"] == "Réservations"
 
@@ -614,6 +614,11 @@ class CegidFinanceBackendTest:
             pricing=pricing1,
             category=finance_models.PricingLineCategory.OFFERER_REVENUE,
             amount=-1199_60,
+        )
+        finance_factories.PricingLineFactory(
+            pricing=pricing1,
+            category=finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+            amount=1_40,
         )
         booking_finance_incident = finance_factories.IndividualBookingFinanceCommercialGestureFactory(
             newTotalAmount=-23_20,
@@ -760,19 +765,19 @@ class CegidFinanceBackendTest:
         assert set_open_request_matcher.call_count == 1
         assert invoice_data == response_data
         request_json = request_matcher.request_history[0].json()
-        assert request_json["Amount"] == {"value": "1222.80"}
+        assert request_json["Amount"] == {"value": "1221.40"}
         assert request_json["ApprovedForPayment"] == {"value": False}
-        assert request_json["Balance"] == {"value": "1222.80"}
+        assert request_json["Balance"] == {"value": "1221.40"}
         assert request_json["BranchID"] == {"value": "PASSCULT"}
         assert request_json["CurrencyID"] == {"value": "EUR"}
         assert request_json["Date"] == {"value": now.strftime("%Y-%m-%dT%H:%M:%S+00:00")}
         assert request_json["Description"] == {"value": f"{invoice.reference} - 16/01-31/01"}
         assert "Details" in request_json
         details = request_json["Details"]
-        assert len(details) == 2
+        assert len(details) == 3
         assert {v["Description"]["value"] for v in details} == {"Réservations", "Gestes commerciaux"}
 
-        details1 = [e for e in details if e["Description"]["value"] == "Réservations"][0]
+        details1 = [e for e in details if e["InventoryID"]["value"] == "ORIND18P0000"][0]
         assert details1["Amount"] == {"value": "1199.60"}
         assert details1["Branch"] == {"value": "PASSCULT"}
         assert details1["InventoryID"] == {"value": "ORIND18P0000"}
@@ -782,15 +787,25 @@ class CegidFinanceBackendTest:
         assert details1["UnitCost"] == {"value": "1199.60"}
         assert details1["UOM"] == {"value": "UNITE"}
 
-        details2 = [e for e in details if e["Description"]["value"] == "Gestes commerciaux"][0]
-        assert details2["Amount"] == {"value": "23.20"}
+        details2 = [e for e in details if e["InventoryID"]["value"] == "CTIND18P0000"][0]
+        assert details2["Amount"] == {"value": "-1.40"}
         assert details2["Branch"] == {"value": "PASSCULT"}
-        assert details2["InventoryID"] == {"value": "CGIND18P0000"}
-        assert details2["TransactionDescription"] == {"value": "Gestes commerciaux"}
-        assert details2["Description"] == {"value": "Gestes commerciaux"}
+        assert details2["InventoryID"] == {"value": "CTIND18P0000"}
+        assert details2["TransactionDescription"] == {"value": "Réservations"}
+        assert details2["Description"] == {"value": "Réservations"}
         assert details2["Qty"] == {"value": 1}
-        assert details2["UnitCost"] == {"value": "23.20"}
+        assert details2["UnitCost"] == {"value": "-1.40"}
         assert details2["UOM"] == {"value": "UNITE"}
+
+        details3 = [e for e in details if e["InventoryID"]["value"] == "CGIND18P0000"][0]
+        assert details3["Amount"] == {"value": "23.20"}
+        assert details3["Branch"] == {"value": "PASSCULT"}
+        assert details3["InventoryID"] == {"value": "CGIND18P0000"}
+        assert details3["TransactionDescription"] == {"value": "Gestes commerciaux"}
+        assert details3["Description"] == {"value": "Gestes commerciaux"}
+        assert details3["Qty"] == {"value": 1}
+        assert details3["UnitCost"] == {"value": "23.20"}
+        assert details3["UOM"] == {"value": "UNITE"}
 
         assert request_json["Hold"] == {"value": False}
         assert request_json["LocationID"] == {"value": "PRINCIPAL"}

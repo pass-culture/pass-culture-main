@@ -95,7 +95,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
                 headers = kwargs.pop("headers", {})
                 token = self._get_token(force_cache_update)
                 headers["Authorization"] = f"Bearer {token}"
-                response = requests.request(method, url, *args, headers=headers, **kwargs)
+                response = requests.request(method, url, *args, headers=headers, timeout=60, **kwargs)
             except requests.exceptions.RequestException as exc:
                 raise exceptions.FinanceBackendApiError(f"Network error on Cegid API: {url}") from exc
             if response.status_code == 422:
@@ -185,11 +185,12 @@ class CegidFinanceBackend(BaseFinanceBackend):
         return response_json
 
     @staticmethod
-    def _format_amount(amount_in_cent: int) -> str:
+    def _format_amount(amount_in_cent: int, is_debit_note: bool) -> str:
         """Convert from amount in cents (integer) to formatted unsigned string in full unit"""
         amount = finance_utils.cents_to_full_unit(amount_in_cent)
-        abs_amount = abs(amount)
-        return str(abs_amount)
+        if is_debit_note:
+            return str(amount)
+        return str(-amount)
 
     def push_invoice(self, invoice: finance_models.Invoice) -> dict:
         """
@@ -198,22 +199,24 @@ class CegidFinanceBackend(BaseFinanceBackend):
         assert invoice.bankAccountId  # helps mypy
         url = f"{self.base_url}/{self._interface}/Bill"
         params = {"$expand": "Details"}
+
+        is_debit_note = invoice.reference.startswith("A")
         invoice_lines = self.get_invoice_lines(invoice)
         lines = [
             {
-                "Amount": {"value": self._format_amount(line["amount"])},
+                "Amount": {"value": self._format_amount(line["amount"], is_debit_note)},
                 "Branch": {"value": "PASSCULT"},
                 "InventoryID": {"value": INVENTORY_IDS[line["product_id"]]},
                 "TransactionDescription": {"value": line["title"]},
                 "Description": {"value": line["title"]},
                 "Qty": {"value": 1},
-                "UnitCost": {"value": self._format_amount(line["amount"])},
+                "UnitCost": {"value": self._format_amount(line["amount"], is_debit_note)},
                 "UOM": {"value": "UNITE"},
             }
             for line in invoice_lines
         ]
 
-        total_amount_str = self._format_amount(sum(e["amount"] for e in invoice_lines))
+        total_amount_str = self._format_amount(sum(e["amount"] for e in invoice_lines), is_debit_note)
         invoice_date_range = self._get_formatted_invoice_description(invoice.date)
         body = {
             "Amount": {"value": total_amount_str},
@@ -232,7 +235,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
             "Status": {"value": "Open"},
             "TaxTotal": {"value": "0"},
             "Terms": {"value": "30J"},
-            "Type": {"value": "ADR" if invoice.reference.startswith("A") else "INV"},
+            "Type": {"value": "ADR" if is_debit_note else "INV"},
             "Vendor": {"value": str(invoice.bankAccountId)},
             "VendorRef": {"value": invoice.reference},
         }
@@ -243,21 +246,24 @@ class CegidFinanceBackend(BaseFinanceBackend):
             response.status_code == 500
             and self._get_exception_type(response) == "PX.Api.ContractBased.OutcomeEntityHasErrorsException"
         ):
-            raise exceptions.FinanceBackendInvoiceAlreadyExists(
-                response, f"Invoice '{invoice.reference}' already pushed"
-            )
+            # If the invoice is already pushed, we might be in a retry due to a timeout from the first PUT query
+            # We thus get the id necessary for the POST
+            logger.warning("Invoice '%s' already pushed", invoice.reference)
+            response_json = self.get_invoice(invoice.reference)
 
-        if response.status_code != 200:
+        elif response.status_code != 200:
             raise exceptions.FinanceBackendBadRequest(response, "Error in invoice creation payload")
 
-        response_json = response.json()
+        else:
+            response_json = response.json()
 
-        # Set invoice to Open in Cegid
-        set_open_url = f"{self.base_url}/{self._interface}/Bill/ReleaseBill"
-        set_open_response = self._request("POST", set_open_url, json={"Entity": {"value": response_json["id"]}})
+        if response_json.get("Status", {}).get("value") == "Balanced":
+            # Set invoice to Open in Cegid
+            set_open_url = f"{self.base_url}/{self._interface}/Bill/ReleaseBill"
+            set_open_response = self._request("POST", set_open_url, json={"Entity": {"value": response_json["id"]}})
 
-        if set_open_response.status_code != 200:
-            raise exceptions.FinanceBackendBadRequest(set_open_response, "Error in setting invoice to Open")
+            if set_open_response.status_code != 200:
+                raise exceptions.FinanceBackendBadRequest(set_open_response, "Error in setting invoice to Open")
 
         return response_json
 
