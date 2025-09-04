@@ -117,6 +117,22 @@ class Returns200Test:
         # 2 requests (for 2 bookingEmail) for sendinblue
         assert len(sendinblue_testing.sendinblue_requests) == 3
 
+    def test_create_collective_offer_allowed_one_adage(self, client):
+        # offerer is allowed on adage but has no venue with adageId
+        # this can happen if the venue with adageId has been soft-deleted
+        offerer = offerers_factories.OffererFactory(allowedOnAdage=True)
+        user = offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com").user
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, adageId=None)
+
+        data = base_offer_payload(venue=venue)
+        with patch("pcapi.core.educational.adage_backends.get_adage_offerer") as get_adage_offerer_mock:
+            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
+
+        get_adage_offerer_mock.assert_not_called()
+
+        assert response.status_code == 201
+        assert db.session.query(models.CollectiveOffer).one().id == response.json["id"]
+
     def test_create_collective_offer_college_6(self, client):
         # Given
         venue = offerers_factories.VenueFactory()
@@ -439,23 +455,19 @@ class Returns200Test:
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
     def test_create_collective_offer_random_user(self, client):
-        # Given
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        # When
         data = base_offer_payload(venue=venue)
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
-        # Then
         assert response.status_code == 403
         assert db.session.query(models.CollectiveOffer).count() == 0
 
-    def test_create_collective_offer_no_adage_offerer(self, client):
-        # Given
+    def test_create_collective_offer_cannot_create_educational(self, client):
         def raise_ac(*args, **kwargs):
             raise educational_exceptions.CulturalPartnerNotFoundException("pouet")
 
@@ -463,13 +475,24 @@ class Returns403Test:
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        # When
         data = base_offer_payload(venue=venue)
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH, side_effect=raise_ac):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
-        # Then
         assert response.status_code == 403
+        assert db.session.query(models.CollectiveOffer).count() == 0
+
+    def test_create_collective_offer_no_adage_offerer(self, client):
+        venue = offerers_factories.VenueFactory(managingOfferer__allowedOnAdage=False)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        data = base_offer_payload(venue=venue)
+        with patch("pcapi.core.educational.adage_backends.get_adage_offerer", return_value=[]):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        assert response.status_code == 403
+        assert response.json == {"offerer": "not found in adage"}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
     def test_offerer_address_venue_not_allowed(self, client):
