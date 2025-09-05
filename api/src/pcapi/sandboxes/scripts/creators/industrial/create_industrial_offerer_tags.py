@@ -1,5 +1,6 @@
 import logging
 
+from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.routes.backoffice.home import CONFORMITE_TAG_NAME
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
@@ -25,7 +26,9 @@ def create_industrial_offerer_tags() -> None:
         name="auto-entrepreneur", label="Auto-Entrepreneur", categories=[comptage, homologation]
     )
     offerers_factories.OffererTagFactory.create(name="festival", label="Festival", categories=[comptage])
-    offerers_factories.OffererTagFactory.create(name="top-acteur", label="Top Acteur", categories=[homologation])
+    offerers_factories.OffererTagFactory.create(
+        name=offerers_constants.TOP_ACTEUR_TAG_NAME, label="Top Acteur", categories=[homologation]
+    )
     offerers_factories.OffererTagFactory.create(
         name="culture-scientifique", label="Culture scientifique", categories=[homologation]
     )

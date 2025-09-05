@@ -271,3 +271,5 @@ CODE_TO_CATEGORY_MAPPING = {
     9900: "Autre personne morale de droit privé",
     9970: "Groupement de coopération sanitaire à gestion privée",
 }
+
+TOP_ACTEUR_TAG_NAME = "top-acteur"

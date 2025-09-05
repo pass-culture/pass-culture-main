@@ -9,6 +9,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -266,7 +267,7 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         collective_offer_template_id = educational_factories.CollectiveOfferTemplateFactory(
             venue__managingOfferer__name="Offerer",
             venue__managingOfferer__tags=[
-                offerers_factories.OffererTagFactory(name="top-acteur", label="Top Acteur"),
+                offerers_factories.OffererTagFactory(name=offerers_constants.TOP_ACTEUR_TAG_NAME, label="Top Acteur"),
                 offerers_factories.OffererTagFactory(name="test", label="Test"),
             ],
         ).id
@@ -367,7 +368,7 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
         collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
             venue__managingOfferer__name="Offerer",
             venue__managingOfferer__tags=[
-                offerers_factories.OffererTagFactory(name="top-acteur", label="Top Acteur"),
+                offerers_factories.OffererTagFactory(name=offerers_constants.TOP_ACTEUR_TAG_NAME, label="Top Acteur"),
                 offerers_factories.OffererTagFactory(name="test", label="Test"),
             ],
         )
