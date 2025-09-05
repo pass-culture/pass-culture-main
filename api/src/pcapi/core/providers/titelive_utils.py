@@ -136,3 +136,10 @@ GTLS: dict[str, Gtl] = {json.dumps(gtls).encode("ascii").decode("unicode-escape"
                 mode=black.FileMode(),
             )
             gtl_python_file.write(gtl_file_content)
+
+
+def truncate_string(s: str) -> str:
+    max_length = 140
+    if len(s) > max_length:
+        return s[: max_length - 1] + "…"
+    return s
