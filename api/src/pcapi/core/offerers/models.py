@@ -35,6 +35,7 @@ from pcapi.connectors.big_query.queries.offerer_stats import TopOffersData
 from pcapi.core.criteria.models import VenueCriterion
 from pcapi.core.educational import models as educational_models
 from pcapi.core.geography import models as geography_models
+from pcapi.core.offerers import constants
 from pcapi.core.offerers.schemas import BannerMetaModel
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.models import Base
@@ -1038,7 +1039,7 @@ class Offerer(
 
     @hybrid_property
     def is_top_acteur(self) -> bool:
-        return any(tag.name == "top-acteur" for tag in self.tags)
+        return any(tag.name == constants.TOP_ACTEUR_TAG_NAME for tag in self.tags)
 
     @is_top_acteur.expression  # type: ignore[no-redef]
     def is_top_acteur(cls) -> sa.sql.elements.BooleanClauseList:
@@ -1046,7 +1047,7 @@ class Offerer(
             sa.select(1)
             .select_from(OffererTagMapping)
             .join(OffererTag, OffererTag.id == OffererTagMapping.tagId)
-            .where(OffererTagMapping.offererId == cls.id, OffererTag.name == "top-acteur")
+            .where(OffererTagMapping.offererId == cls.id, OffererTag.name == constants.TOP_ACTEUR_TAG_NAME)
             .limit(1)
             .exists()
         )

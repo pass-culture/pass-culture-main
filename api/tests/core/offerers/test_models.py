@@ -11,6 +11,7 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.users.factories as users_factories
 from pcapi import settings
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.offerers import constants
 from pcapi.core.offerers import factories
 from pcapi.core.offerers import models
 from pcapi.core.testing import assert_num_queries
@@ -275,7 +276,7 @@ class OffererIsTopActeurTest:
         offerer = factories.OffererFactory(
             tags=[
                 factories.OffererTagFactory(name="test", label="Test"),
-                factories.OffererTagFactory(name="top-acteur", label="Top Acteur"),
+                factories.OffererTagFactory(name=constants.TOP_ACTEUR_TAG_NAME, label="Top Acteur"),
             ]
         )
         assert offerer.is_top_acteur
@@ -290,7 +291,7 @@ class OffererIsTopActeurSQLExpressionTest:
         factories.OffererFactory(
             tags=[
                 factories.OffererTagFactory(name="test", label="Test"),
-                factories.OffererTagFactory(name="top-acteur", label="Top Acteur"),
+                factories.OffererTagFactory(name=constants.TOP_ACTEUR_TAG_NAME, label="Top Acteur"),
             ]
         )
         assert db.session.query(models.Offerer).filter(models.Offerer.is_top_acteur.is_(True)).count() == 1

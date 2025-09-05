@@ -26,6 +26,7 @@ from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.mails import transactional as transactional_mails
+from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import models as offers_models
@@ -181,6 +182,27 @@ SEARCH_FIELD_TO_PYTHON = {
                     )
                 )
                 .correlate(educational_models.EducationalInstitution)
+                .is_(value)
+            )
+        },
+    },
+    "TOP_ACTEUR": {
+        "field": "boolean",
+        "special": lambda x: x == "true",
+        "custom_filters_inner_joins": {  # "inner_join" would not be applied with custom filter
+            "NULLABLE": ["venue"]
+        },
+        "custom_filters": {
+            "NULLABLE": lambda value: (
+                sa.exists()
+                .where(
+                    sa.and_(
+                        offerers_models.OffererTagMapping.offererId == offerers_models.Venue.managingOffererId,
+                        offerers_models.OffererTagMapping.tagId == offerers_models.OffererTag.id,
+                        offerers_models.OffererTag.name == offerers_constants.TOP_ACTEUR_TAG_NAME,
+                    )
+                )
+                .correlate(offerers_models.Venue)
                 .is_(value)
             )
         },

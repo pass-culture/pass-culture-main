@@ -42,6 +42,7 @@ class CollectiveOffersSearchAttributes(enum.Enum):
     PRICE = "Prix"
     MINISTRY = "Ministère"
     MEG = "Marseille en Grand"
+    TOP_ACTEUR = "Top Acteur"
     VALIDATED_OFFERER = "Entité juridique validée"
 
 
@@ -66,6 +67,7 @@ form_field_configuration = {
     "SYNCHRONIZED": {"field": "boolean", "operator": ["NULLABLE"]},
     "MINISTRY": {"field": "ministry", "operator": ["IN", "NOT_IN"]},
     "MEG": {"field": "boolean", "operator": ["NULLABLE"]},
+    "TOP_ACTEUR": {"field": "boolean", "operator": ["NULLABLE"]},
     "VALIDATED_OFFERER": {"field": "boolean", "operator": ["EQUALS"]},
 }
 
