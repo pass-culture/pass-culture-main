@@ -26,37 +26,34 @@ export const MultiSelectTrigger = ({
   error,
 }: MultiSelectTriggerProps): JSX.Element => {
   return (
-    <>
-      <button
-        type="button"
-        className={cn(styles['trigger'], {
-          [styles['trigger-selected']]: selectedCount > 0,
-          [styles['trigger-error']]: !!error,
-        })}
-        onClick={toggleDropdown}
-        aria-haspopup="listbox"
-        aria-label={buttonLabel}
-        aria-expanded={isOpen}
-        aria-controls={id}
-        disabled={disabled}
-        data-error={!!error}
-      >
-        <div className={styles['trigger-content']}>
-          {selectedCount > 0 && (
-            <div className={styles['badge']}>
-              {selectedCount}{' '}
-              <span className={styles['visually-hidden']}>
-                éléments sélectionnés
-              </span>
-            </div>
-          )}
-          <span className={styles['trigger-label']}>{buttonLabel}</span>
-        </div>
-        <SvgIcon
-          className={`${styles['chevron']} ${isOpen ? styles['chevronOpen'] : ''} ${disabled ? styles['chevron-disabled'] : ''}`}
-          src={isOpen ? fullUpIcon : fullDownIcon}
-        />
-      </button>
-    </>
+    <button
+      type="button"
+      className={cn(styles['trigger'], {
+        [styles['trigger-selected']]: selectedCount > 0,
+        [styles['trigger-error']]: !!error,
+      })}
+      onClick={toggleDropdown}
+      aria-haspopup="listbox"
+      aria-label={buttonLabel}
+      aria-controls={id}
+      disabled={disabled}
+      data-error={!!error}
+    >
+      <div className={styles['trigger-content']}>
+        {selectedCount > 0 && (
+          <div className={styles['badge']}>
+            {selectedCount}{' '}
+            <span className={styles['visually-hidden']}>
+              éléments sélectionnés
+            </span>
+          </div>
+        )}
+        <span className={styles['trigger-label']}>{buttonLabel}</span>
+      </div>
+      <SvgIcon
+        className={`${styles['chevron']} ${isOpen ? styles['chevronOpen'] : ''} ${disabled ? styles['chevron-disabled'] : ''}`}
+        src={isOpen ? fullUpIcon : fullDownIcon}
+      />
+    </button>
   )
 }

@@ -1,8 +1,12 @@
+import { useId } from 'react'
+
 type ShadowTipsHelpIconProps = {
   className?: string
 }
 
 export function ShadowTipsHelpIcon({ className }: ShadowTipsHelpIconProps) {
+  const ShadowIconId = useId()
+
   return (
     <svg
       width="48"
@@ -10,8 +14,10 @@ export function ShadowTipsHelpIcon({ className }: ShadowTipsHelpIconProps) {
       viewBox="0 0 48 48"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
+      aria-labelledby={ShadowIconId}
     >
-      <g id="icon">
+      <title id={ShadowIconId}>Shadow tips help icon</title>
+      <g id={ShadowIconId}>
         <path
           opacity="0.5"
           d="M22.0631 42.2066H32.363C33.9116 42.2066 35.1682 40.9345 35.1682 39.3413V39.2629C35.1682 36.6853 36.0357 34.1922 37.5627 32.1113C39.1016 30.0247 40.0132 27.442 40.0408 24.6486C40.1093 17.7181 34.9101 11.8071 27.2131 11.8071C19.5161 11.8071 14.3857 17.7181 14.3853 24.6486C14.4129 27.442 15.3245 30.0247 16.8634 32.1113C18.3904 34.1922 19.2579 36.6853 19.2579 39.2629V39.3413C19.2579 40.9345 20.5145 42.2066 22.0631 42.2066Z"
