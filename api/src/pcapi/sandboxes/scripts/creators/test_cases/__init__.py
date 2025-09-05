@@ -749,7 +749,12 @@ def create_offers_interactions() -> None:
 @log_func_duration
 def create_offers_with_video_url() -> None:
     metadata = offers_factories.OfferMetaDataFactory(
-        videoUrl="https://www.youtube.com/watch?v=e_04ZrNroTo", offer__name="Offre avec video"
+        videoUrl="https://www.youtube.com/watch?v=e_04ZrNroTo",
+        videoDuration=229,
+        videoExternalId="e_04ZrNroTo",
+        videoThumbnailUrl="https://i.ytimg.com/vi/e_04ZrNroTo/hqdefault.jpg",
+        videoTitle="Wheels on the Bus | @CoComelon Nursery Rhymes & Kids Songs",
+        offer__name="Offre avec video",
     )
     offers_factories.StockFactory.create(offer=metadata.offer)
 

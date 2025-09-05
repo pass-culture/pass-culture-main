@@ -106,6 +106,10 @@ class OfferMetaDataFactory(BaseFactory):
 
     offer = factory.SubFactory("pcapi.core.offers.factories.OfferFactory")
     videoUrl: str | None = None
+    videoDuration: int | None = None
+    videoExternalId: str | None = None
+    videoThumbnailUrl: str | None = None
+    videoTitle: str | None = None
 
 
 def build_extra_data_from_subcategory(
