@@ -16,6 +16,7 @@ from .constants import NOT_CD_LIBELLES
 from .constants import TITELIVE_MUSIC_SUPPORTS_BY_CODE
 from .titelive_api import TiteliveSearchTemplate
 from .titelive_api import activate_newly_eligible_product_and_offers
+from .titelive_utils import truncate_string
 
 
 logger = logging.getLogger(__name__)
@@ -71,7 +72,7 @@ class TiteliveMusicSearch(TiteliveSearchTemplate[TiteliveMusicWork]):
             extraData=build_music_extra_data(article, common_article_fields),
             ean=article.gencod,
             lastProvider=self.provider,
-            name=self.truncate_string(common_article_fields["titre"]),
+            name=truncate_string(common_article_fields["titre"]),
             subcategoryId=parse_titelive_music_codesupport(article.codesupport).id,
         )
 
@@ -86,7 +87,7 @@ class TiteliveMusicSearch(TiteliveSearchTemplate[TiteliveMusicWork]):
             product.extraData = offers_models.OfferExtraData()
         product.extraData.update(build_music_extra_data(article, common_article_fields))
         product.ean = article.gencod
-        product.name = self.truncate_string(common_article_fields["titre"])
+        product.name = truncate_string(common_article_fields["titre"])
         product.subcategoryId = parse_titelive_music_codesupport(article.codesupport).id
 
         activate_newly_eligible_product_and_offers(product)

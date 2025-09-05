@@ -16,6 +16,7 @@ from pcapi.utils.csr import get_closest_csr
 
 from .titelive_api import TiteliveSearchTemplate
 from .titelive_api import activate_newly_eligible_product_and_offers
+from .titelive_utils import truncate_string
 
 
 logger = logging.getLogger(__name__)
@@ -54,7 +55,7 @@ class TiteliveBookSearch(TiteliveSearchTemplate[TiteLiveBookWork]):
     def upsert_titelive_result_in_dict(
         self, titelive_search_result: TiteLiveBookWork, products_by_ean: dict[str, offers_models.Product]
     ) -> dict[str, offers_models.Product]:
-        title = self.truncate_string(titelive_search_result.titre)
+        title = truncate_string(titelive_search_result.titre)
         authors = titelive_search_result.auteurs_multi
         for article in titelive_search_result.article:
             ean = article.gencod
@@ -191,7 +192,7 @@ def get_ineligibility_reasons(article: TiteLiveBookArticle, title: str) -> list[
         reasons.append("pornography-or-violence")
 
     # Toeic or toefl
-    if constants.TOEIC_TEXT in title or constants.TOEFL_TEXT in title:
+    if constants.TOEIC_TEXT in title.lower() or constants.TOEFL_TEXT in title.lower():
         reasons.append("toeic-toefl")
 
     # --- GTL-based categorization ---
