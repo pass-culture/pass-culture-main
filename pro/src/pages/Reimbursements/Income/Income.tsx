@@ -1,5 +1,5 @@
 import classnames from 'classnames'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 
@@ -28,7 +28,7 @@ export const Income = () => {
   const firstYearFilterRef = useRef<HTMLButtonElement>(null)
   const [activeYear, setActiveYear] = useState<number>()
   const selectedOffererId = useSelector(selectCurrentOffererId)
-
+  const incomeResults = useId()
   const {
     data: venues,
     isLoading: areVenuesLoading,
@@ -138,77 +138,73 @@ export const Income = () => {
           )}
 
           {isIncomeLoading ? (
-            <div id="income-results" role="status">
+            <div id={incomeResults} role="status">
               <Spinner testId="income-spinner" />
             </div>
           ) : incomeApiError ? (
-            <div id="income-results" role="status">
+            <div id={incomeResults} role="status">
               <IncomeError />
             </div>
+          ) : !hasIncomeData ? (
+            <IncomeNoData type="income" />
           ) : (
             <>
-              {!hasIncomeData ? (
-                <IncomeNoData type="income" />
-              ) : (
-                <>
-                  <ul
-                    className={classnames(
-                      styles['income-filters'],
-                      styles['income-filters-by-year'],
-                      {
-                        [styles['income-filters-by-year-is-only-filter']]:
-                          hasSingleVenue,
-                      }
-                    )}
-                    aria-label="Filtrage par année"
-                  >
-                    {years.map((year) => (
-                      <li key={year}>
-                        <button
-                          id={`income-filter-by-year-${year}-${year === finalActiveYear}`}
-                          {...(year === finalActiveYear
-                            ? { ref: firstYearFilterRef }
-                            : {})}
-                          type="button"
-                          onClick={() => setActiveYear(year)}
-                          aria-label={`Afficher les revenus de l'année ${year}`}
-                          aria-controls="income-results"
-                          aria-current={year === finalActiveYear}
-                          className={classnames(
-                            styles['income-filters-by-year-button'],
-                            {
-                              [styles['income-filters-by-year-button-active']]:
-                                year === finalActiveYear,
-                            }
-                          )}
-                        >
-                          {year}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
+              <ul
+                className={classnames(
+                  styles['income-filters'],
+                  styles['income-filters-by-year'],
+                  {
+                    [styles['income-filters-by-year-is-only-filter']]:
+                      hasSingleVenue,
+                  }
+                )}
+                aria-label="Filtrage par année"
+              >
+                {years.map((year) => (
+                  <li key={year}>
+                    <button
+                      id={`income-filter-by-year-${year}-${year === finalActiveYear}`}
+                      {...(year === finalActiveYear
+                        ? { ref: firstYearFilterRef }
+                        : {})}
+                      type="button"
+                      onClick={() => setActiveYear(year)}
+                      aria-label={`Afficher les revenus de l'année ${year}`}
+                      aria-controls="income-results"
+                      aria-current={year === finalActiveYear}
+                      className={classnames(
+                        styles['income-filters-by-year-button'],
+                        {
+                          [styles['income-filters-by-year-button-active']]:
+                            year === finalActiveYear,
+                        }
+                      )}
+                    >
+                      {year}
+                    </button>
+                  </li>
+                ))}
+              </ul>
 
-                  {!activeYearHasData ? (
-                    <IncomeNoData type="income-year" />
-                  ) : (
-                    <div className={styles['income-results']}>
-                      {activeYearIncome.revenue && (
-                        <div className={styles['income-box']}>
-                          <IncomeResultsBox
-                            type="revenue"
-                            income={activeYearIncome.revenue}
-                          />
-                        </div>
-                      )}
-                      {activeYearIncome.expectedRevenue && (
-                        <IncomeResultsBox
-                          type="expectedRevenue"
-                          income={activeYearIncome.expectedRevenue}
-                        />
-                      )}
+              {!activeYearHasData ? (
+                <IncomeNoData type="income-year" />
+              ) : (
+                <div className={styles['income-results']}>
+                  {activeYearIncome.revenue && (
+                    <div className={styles['income-box']}>
+                      <IncomeResultsBox
+                        type="revenue"
+                        income={activeYearIncome.revenue}
+                      />
                     </div>
                   )}
-                </>
+                  {activeYearIncome.expectedRevenue && (
+                    <IncomeResultsBox
+                      type="expectedRevenue"
+                      income={activeYearIncome.expectedRevenue}
+                    />
+                  )}
+                </div>
               )}
             </>
           )}

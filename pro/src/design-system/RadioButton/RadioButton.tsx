@@ -71,53 +71,51 @@ export const RadioButton = forwardRef(
     const isVariantDetailed = variant === 'detailed'
 
     return (
-      <>
-        <div
-          className={cn(styles['radio-button'], {
-            [styles['sizing-fill']]: sizing === 'fill',
-            [styles['variant-detailed']]: isVariantDetailed,
-            [styles['is-collapsed']]: collapsed && checked,
-            [styles['is-checked']]: checked,
-            [styles['is-disabled']]: disabled,
-            [styles['has-error']]: hasError,
-          })}
-        >
-          <label htmlFor={id} className={styles['radio-button-label']}>
-            <div className={styles['radio-button-left']}>
-              <input
-                type="radio"
-                value={value}
-                className={styles[`radio-button-input`]}
-                id={id}
-                ref={ref}
-                onChange={onChange}
-                onBlur={onBlur}
-                disabled={disabled}
-                name={name}
-                checked={checked}
-                aria-invalid={hasError}
-              />
-              <div>
-                {label}
-                {description && isVariantDetailed && (
-                  <p className={styles['description']}>{description}</p>
-                )}
-              </div>
+      <div
+        className={cn(styles['radio-button'], {
+          [styles['sizing-fill']]: sizing === 'fill',
+          [styles['variant-detailed']]: isVariantDetailed,
+          [styles['is-collapsed']]: collapsed && checked,
+          [styles['is-checked']]: checked,
+          [styles['is-disabled']]: disabled,
+          [styles['has-error']]: hasError,
+        })}
+      >
+        <label htmlFor={id} className={styles['radio-button-label']}>
+          <div className={styles['radio-button-left']}>
+            <input
+              type="radio"
+              value={value}
+              className={styles[`radio-button-input`]}
+              id={id}
+              ref={ref}
+              onChange={onChange}
+              onBlur={onBlur}
+              disabled={disabled}
+              name={name}
+              checked={checked}
+              aria-invalid={hasError}
+            />
+            <div>
+              {label}
+              {description && isVariantDetailed && (
+                <p className={styles['description']}>{description}</p>
+              )}
             </div>
-            {asset && isVariantDetailed && (
-              <RadioButtonAsset
-                {...asset}
-                className={cn(styles['radio-asset'], {
-                  [styles[asset.variant]]: asset.variant,
-                })}
-              />
-            )}
-          </label>
-          {collapsed && isVariantDetailed && checked && (
-            <div className={styles['collapsed']}>{collapsed}</div>
+          </div>
+          {asset && isVariantDetailed && (
+            <RadioButtonAsset
+              {...asset}
+              className={cn(styles['radio-asset'], {
+                [styles[asset.variant]]: asset.variant,
+              })}
+            />
           )}
-        </div>
-      </>
+        </label>
+        {collapsed && isVariantDetailed && checked && (
+          <div className={styles['collapsed']}>{collapsed}</div>
+        )}
+      </div>
     )
   }
 )

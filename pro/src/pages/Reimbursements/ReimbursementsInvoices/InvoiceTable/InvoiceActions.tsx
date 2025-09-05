@@ -58,24 +58,22 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
       triggerIcon={fullThreeDotsIcon}
       triggerTooltip
     >
-      <>
-        <DropdownItem
-          title="Télécharger le justificatif comptable (.pdf)"
-          onSelect={() => downloadPDFFile(invoice.url)}
-        >
-          <Button icon={fullDownloadIcon} variant={ButtonVariant.TERNARY}>
-            Télécharger le justificatif comptable (.pdf)
-          </Button>
-        </DropdownItem>
-        <DropdownItem
-          title="Télécharger le détail des réservations (.csv)"
-          onSelect={() => downloadCSVFile(invoice.reference)}
-        >
-          <Button icon={fullDownloadIcon} variant={ButtonVariant.TERNARY}>
-            Télécharger le détail des réservations (.csv)
-          </Button>
-        </DropdownItem>
-      </>
+      <DropdownItem
+        title="Télécharger le justificatif comptable (.pdf)"
+        onSelect={() => downloadPDFFile(invoice.url)}
+      >
+        <Button icon={fullDownloadIcon} variant={ButtonVariant.TERNARY}>
+          Télécharger le justificatif comptable (.pdf)
+        </Button>
+      </DropdownItem>
+      <DropdownItem
+        title="Télécharger le détail des réservations (.csv)"
+        onSelect={() => downloadCSVFile(invoice.reference)}
+      >
+        <Button icon={fullDownloadIcon} variant={ButtonVariant.TERNARY}>
+          Télécharger le détail des réservations (.csv)
+        </Button>
+      </DropdownItem>
     </DropdownMenuWrapper>
   )
 }

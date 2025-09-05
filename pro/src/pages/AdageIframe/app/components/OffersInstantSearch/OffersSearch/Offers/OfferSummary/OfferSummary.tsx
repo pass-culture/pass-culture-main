@@ -63,16 +63,14 @@ export const OfferSummary = ({ offer }: OfferSummaryProps): JSX.Element => {
   return (
     <dl className={styles['offer-summary']}>
       <div className={styles['offer-summary-item']}>
-        <>
-          <dt>
-            <SvgIcon
-              alt="Format"
-              src={strokeOfferIcon}
-              className={styles['offer-summary-item-icon']}
-            />
-          </dt>
-          <dd>{offer.formats.join(', ')}</dd>
-        </>
+        <dt>
+          <SvgIcon
+            alt="Format"
+            src={strokeOfferIcon}
+            className={styles['offer-summary-item-icon']}
+          />
+        </dt>
+        <dd>{offer.formats.join(', ')}</dd>
       </div>
       <div className={styles['offer-summary-item']}>
         <dt>

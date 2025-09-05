@@ -160,53 +160,51 @@ export const OfferTypeScreen = ({ collectiveOnly }: OfferTypeScreenProps) => {
     offer.offerType === OFFER_TYPES.EDUCATIONAL && !offerer?.allowedOnAdage
 
   return (
-    <>
-      <div className={styles['offer-type-container']}>
-        <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <FormLayout>
-              {/* If we're on boarding process, we don't need to ask for offer type (we already chose individual at previous step) */}
-              {!isOnboarding && !collectiveOnly && (
-                <RadioButtonGroup
-                  variant="detailed"
-                  name="offerType"
-                  label="À qui destinez-vous cette offre ?"
-                  labelTag="h2"
-                  onChange={(e) =>
-                    setValue('offer.offerType', e.target.value as OFFER_TYPES)
-                  }
-                  checkedOption={getValues('offer.offerType')}
-                  options={[
-                    {
-                      label: 'Au grand public',
-                      value: OFFER_TYPES.INDIVIDUAL_OR_DUO,
-                    },
-                    {
-                      label: 'À un groupe scolaire',
-                      value: OFFER_TYPES.EDUCATIONAL,
-                    },
-                  ]}
-                  display="horizontal"
-                  sizing="hug"
-                />
-              )}
+    <div className={styles['offer-type-container']}>
+      <FormProvider {...methods}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <FormLayout>
+            {/* If we're on boarding process, we don't need to ask for offer type (we already chose individual at previous step) */}
+            {!isOnboarding && !collectiveOnly && (
+              <RadioButtonGroup
+                variant="detailed"
+                name="offerType"
+                label="À qui destinez-vous cette offre ?"
+                labelTag="h2"
+                onChange={(e) =>
+                  setValue('offer.offerType', e.target.value as OFFER_TYPES)
+                }
+                checkedOption={getValues('offer.offerType')}
+                options={[
+                  {
+                    label: 'Au grand public',
+                    value: OFFER_TYPES.INDIVIDUAL_OR_DUO,
+                  },
+                  {
+                    label: 'À un groupe scolaire',
+                    value: OFFER_TYPES.EDUCATIONAL,
+                  },
+                ]}
+                display="horizontal"
+                sizing="hug"
+              />
+            )}
 
-              {offer.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
-                <IndividualOfferType />
-              )}
+            {offer.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
+              <IndividualOfferType />
+            )}
 
-              {offer.offerType === OFFER_TYPES.EDUCATIONAL &&
-                (isOffererLoading ? (
-                  <Spinner />
-                ) : (
-                  <CollectiveOfferType offerer={offerer} />
-                ))}
+            {offer.offerType === OFFER_TYPES.EDUCATIONAL &&
+              (isOffererLoading ? (
+                <Spinner />
+              ) : (
+                <CollectiveOfferType offerer={offerer} />
+              ))}
 
-              <ActionsBar disableNextButton={isDisabledForEducationnal} />
-            </FormLayout>
-          </form>
-        </FormProvider>
-      </div>
-    </>
+            <ActionsBar disableNextButton={isDisabledForEducationnal} />
+          </FormLayout>
+        </form>
+      </FormProvider>
+    </div>
   )
 }

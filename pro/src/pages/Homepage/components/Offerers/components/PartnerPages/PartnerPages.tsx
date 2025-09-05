@@ -71,23 +71,17 @@ export const PartnerPages = ({
       </p>
 
       {venues.length > 1 && (
-        <>
-          <FieldLayout label="Sélectionnez votre page partenaire" name="venues">
-            <SelectInput
-              name="venues"
-              options={venuesOptions}
-              value={selectedVenueId}
-              onChange={(e) => {
-                setSelectedVenueId(e.target.value)
-                setSavedPartnerPageVenueId(
-                  'homepage',
-                  offerer.id,
-                  e.target.value
-                )
-              }}
-            />
-          </FieldLayout>
-        </>
+        <FieldLayout label="Sélectionnez votre page partenaire" name="venues">
+          <SelectInput
+            name="venues"
+            options={venuesOptions}
+            value={selectedVenueId}
+            onChange={(e) => {
+              setSelectedVenueId(e.target.value)
+              setSavedPartnerPageVenueId('homepage', offerer.id, e.target.value)
+            }}
+          />
+        </FieldLayout>
       )}
 
       {venue && (

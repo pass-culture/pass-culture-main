@@ -119,22 +119,18 @@ export const VenueSettingsForm = ({
                 />
               </FormLayout.Row>
 
-              <>
-                <FormLayout.Row>
-                  <Button
-                    variant={ButtonVariant.QUATERNARY}
-                    icon={manuallySetAddress ? fullBackIcon : fullNextIcon}
-                    onClick={toggleManuallySetAddress}
-                  >
-                    {manuallySetAddress ? (
-                      <>Revenir à la sélection automatique</>
-                    ) : (
-                      <>Vous ne trouvez pas votre adresse ?</>
-                    )}
-                  </Button>
-                </FormLayout.Row>
-                {manuallySetAddress && <AddressManual />}
-              </>
+              <FormLayout.Row>
+                <Button
+                  variant={ButtonVariant.QUATERNARY}
+                  icon={manuallySetAddress ? fullBackIcon : fullNextIcon}
+                  onClick={toggleManuallySetAddress}
+                >
+                  {manuallySetAddress
+                    ? 'Revenir à la sélection automatique'
+                    : 'Vous ne trouvez pas votre adresse ?'}
+                </Button>
+              </FormLayout.Row>
+              {manuallySetAddress && <AddressManual />}
             </>
           )}
         </FormLayout.Section>

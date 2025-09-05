@@ -33,14 +33,12 @@ export const VenueEditionFormScreen = ({
   return (
     <>
       {shouldDisplayAccessToPageWarning && (
-        <>
-          <div className={styles['page-status']}>
-            <Callout variant={CalloutVariant.WARNING}>
-              Sans offre publiée, les jeunes n’ont pas accès à votre page sur
-              l’application.
-            </Callout>
-          </div>
-        </>
+        <div className={styles['page-status']}>
+          <Callout variant={CalloutVariant.WARNING}>
+            Sans offre publiée, les jeunes n’ont pas accès à votre page sur
+            l’application.
+          </Callout>
+        </div>
       )}
 
       {location.pathname.includes('/edition') ? (

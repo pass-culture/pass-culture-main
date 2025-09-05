@@ -287,31 +287,29 @@ export const CollectiveOfferVisibilityScreen = ({
                 {isLoadingInstitutions ? (
                   <Spinner />
                 ) : (
-                  <>
-                    <SelectAutocomplete
-                      name="institution"
-                      options={institutionsOptions}
-                      label="Nom de l’établissement scolaire ou code UAI"
-                      description="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
-                      hideArrow
-                      onReset={() => {
-                        setValue('institution', '')
-                        setValue('teacher', '')
-                      }}
-                      onChange={(event) => {
-                        setValue('institution', event.target.value, {
-                          shouldDirty: true,
-                        })
+                  <SelectAutocomplete
+                    name="institution"
+                    options={institutionsOptions}
+                    label="Nom de l’établissement scolaire ou code UAI"
+                    description="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
+                    hideArrow
+                    onReset={() => {
+                      setValue('institution', '')
+                      setValue('teacher', '')
+                    }}
+                    onChange={(event) => {
+                      setValue('institution', event.target.value, {
+                        shouldDirty: true,
+                      })
 
-                        setValue('teacher', undefined)
-                      }}
-                      disabled={!canEditInstitution}
-                      searchInOptions={(options, pattern) =>
-                        searchPatternInOptions(options, pattern, 300)
-                      }
-                      value={watch('institution')}
-                    />
-                  </>
+                      setValue('teacher', undefined)
+                    }}
+                    disabled={!canEditInstitution}
+                    searchInOptions={(options, pattern) =>
+                      searchPatternInOptions(options, pattern, 300)
+                    }
+                    value={watch('institution')}
+                  />
                 )}
               </FormLayout.Row>
               <FormLayout.Row className={styles['row-layout']}>

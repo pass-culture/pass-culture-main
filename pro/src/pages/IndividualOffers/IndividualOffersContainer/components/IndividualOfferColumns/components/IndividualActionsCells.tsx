@@ -138,30 +138,25 @@ export const IndividualActionsCells = ({
           triggerTooltip
           dropdownTriggerRef={dropdownTriggerRef}
         >
-          <>
-            <EditOfferCell editionOfferLink={editionOfferLink} />
-            {offer.status === OFFER_STATUS_DRAFT ? (
-              <DeleteDraftCell
-                setIsConfirmDialogOpen={setIsConfirmDialogDeleteDraftOpen}
-              />
-            ) : (
-              <EditStocksCell
-                offer={offer}
-                editionStockLink={editionStockLink}
-              />
-            )}{' '}
-            {isHeadlineActionDisplayed && (
-              <HeadlineOfferCell
-                offer={offer}
-                setIsConfirmReplacementDialogOpen={
-                  setIsConfirmDialogReplaceHeadlineOfferOpen
-                }
-                setIsOfferWithoutImageDialogOpen={
-                  setIsDialogForHeadlineOfferWithoutImageOpen
-                }
-              />
-            )}
-          </>
+          <EditOfferCell editionOfferLink={editionOfferLink} />
+          {offer.status === OFFER_STATUS_DRAFT ? (
+            <DeleteDraftCell
+              setIsConfirmDialogOpen={setIsConfirmDialogDeleteDraftOpen}
+            />
+          ) : (
+            <EditStocksCell offer={offer} editionStockLink={editionStockLink} />
+          )}{' '}
+          {isHeadlineActionDisplayed && (
+            <HeadlineOfferCell
+              offer={offer}
+              setIsConfirmReplacementDialogOpen={
+                setIsConfirmDialogReplaceHeadlineOfferOpen
+              }
+              setIsOfferWithoutImageDialogOpen={
+                setIsDialogForHeadlineOfferWithoutImageOpen
+              }
+            />
+          )}
         </DropdownMenuWrapper>
       </div>
       <ConfirmDialog
