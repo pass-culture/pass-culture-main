@@ -125,7 +125,9 @@ class BoostContext(PivotContext):
             raise NotFound()
         try:
             boost.logout(pivot)
-        except (requests.exceptions.RequestException, BoostInvalidTokenException, BoostAPIException) as exc:
+        except BoostInvalidTokenException:
+            pass  # when the token is no longer valid, no need to raise an alert before its deletion
+        except (requests.exceptions.RequestException, BoostAPIException) as exc:
             logger.exception(
                 "Unexpected error from Boost logout API", extra={"exc": exc, "cinema_url": pivot.cinemaUrl}
             )
