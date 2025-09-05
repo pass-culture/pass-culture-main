@@ -1827,21 +1827,6 @@
                 "title": "TO_BE_DEFINED",
                 "type": "object"
             },
-            "CollectiveOfferStatus": {
-                "description": "An enumeration.",
-                "enum": [
-                    "ACTIVE",
-                    "PENDING",
-                    "EXPIRED",
-                    "REJECTED",
-                    "SOLD_OUT",
-                    "INACTIVE",
-                    "DRAFT",
-                    "ARCHIVED"
-                ],
-                "title": "CollectiveOfferStatus",
-                "type": "string"
-            },
             "CollectiveOffersDomainResponseModel": {
                 "properties": {
                     "id": {
@@ -1983,12 +1968,6 @@
                         "title": "Startdatetime",
                         "type": "string"
                     },
-                    "status": {
-                        "description": "[\u26a0\ufe0f DEPRECATED - use `offerStatus` instead]\n\n\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\nIn the case of a collective offer, there is stock for only one booking.\n\n\n- `ARCHIVED`: offer is archived by pro.",
-                        "example": "ACTIVE",
-                        "title": "Status",
-                        "type": "string"
-                    },
                     "venueId": {
                         "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "example": 535,
@@ -2000,7 +1979,6 @@
                     "id",
                     "startDatetime",
                     "endDatetime",
-                    "status",
                     "offerStatus",
                     "venueId",
                     "bookings"
@@ -4503,12 +4481,6 @@
                         "title": "Startdatetime",
                         "type": "string"
                     },
-                    "status": {
-                        "description": "[\u26a0\ufe0f DEPRECATED - use `offerStatus` instead]\n\n\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\nIn the case of a collective offer, there is stock for only one booking.\n\n\n- `ARCHIVED`: offer is archived by pro.",
-                        "example": "ACTIVE",
-                        "title": "Status",
-                        "type": "string"
-                    },
                     "students": {
                         "items": {
                             "type": "string"
@@ -4538,7 +4510,6 @@
                 },
                 "required": [
                     "id",
-                    "status",
                     "offerStatus",
                     "name",
                     "contactEmail",
@@ -5234,16 +5205,6 @@
                         "nullable": true,
                         "title": "Periodendingdate",
                         "type": "string"
-                    },
-                    "status": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/CollectiveOfferStatus"
-                            }
-                        ],
-                        "description": "[\u26a0\ufe0f DEPRECATED - use `offerStatus` instead]\n\n\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\nIn the case of a collective offer, there is stock for only one booking.\n\n\n- `ARCHIVED`: offer is archived by pro.",
-                        "example": "ACTIVE",
-                        "nullable": true
                     },
                     "venueId": {
                         "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
@@ -12628,22 +12589,6 @@
                 "description": "Return collective offers. It will only return collective offers created by API (collective offers created manually in the pro interface will not show up).",
                 "operationId": "GetCollectiveOffersPublic",
                 "parameters": [
-                    {
-                        "description": "[\u26a0\ufe0f DEPRECATED - use `offerStatus` instead]\n\n\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\nIn the case of a collective offer, there is stock for only one booking.\n\n\n- `ARCHIVED`: offer is archived by pro.",
-                        "in": "query",
-                        "name": "status",
-                        "required": false,
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/components/schemas/CollectiveOfferStatus"
-                                }
-                            ],
-                            "description": "[\u26a0\ufe0f DEPRECATED - use `offerStatus` instead]\n\n\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\nIn the case of a collective offer, there is stock for only one booking.\n\n\n- `ARCHIVED`: offer is archived by pro.",
-                            "example": "ACTIVE",
-                            "nullable": true
-                        }
-                    },
                     {
                         "description": "Collective offer status - [see this page](/docs/understanding-our-api/resources/collective-offers#collective-offer-status-and-allowed-actions)",
                         "in": "query",

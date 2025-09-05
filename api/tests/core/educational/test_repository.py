@@ -839,22 +839,16 @@ class ListPublicCollectiveOffersTest:
         assert offers[0].id == offer.id
 
     def test_should_filter_by_status(self, app):
-        # TODO: (rprasquier) adapt this test to use the new status on the public API
         provider = providers_factories.ProviderFactory()
-        approved_offer = educational_factories.create_collective_offer_by_status(
-            models.CollectiveOfferDisplayedStatus.PUBLISHED, provider=provider
-        )
-
-        educational_factories.create_collective_offer_by_status(
-            models.CollectiveOfferDisplayedStatus.UNDER_REVIEW, provider=provider
-        )
+        published_offer = educational_factories.PublishedCollectiveOfferFactory(provider=provider)
+        educational_factories.UnderReviewCollectiveOfferFactory(provider=provider)
 
         offers = educational_repository.list_public_collective_offers(
-            required_id=provider.id, status=offer_mixin.CollectiveOfferStatus.ACTIVE
+            required_id=provider.id, displayedStatus=models.CollectiveOfferDisplayedStatus.PUBLISHED
         )
 
         assert len(offers) == 1
-        assert offers[0].id == approved_offer.id
+        assert offers[0].id == published_offer.id
 
     def test_should_filter_by_venue(self, app):
         provider = providers_factories.ProviderFactory()

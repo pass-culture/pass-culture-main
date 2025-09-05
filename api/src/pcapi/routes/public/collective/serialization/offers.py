@@ -15,7 +15,6 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.educational.models import StudentLevels
-from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.collective_offers_serialize import validate_venue_id
@@ -27,7 +26,6 @@ from pcapi.utils import email as email_utils
 
 
 class ListCollectiveOffersQueryModel(BaseModel):
-    status: CollectiveOfferStatus | None = fields.COLLECTIVE_OFFER_STATUS
     offerStatus: CollectiveOfferDisplayedStatus | None = fields.COLLECTIVE_OFFER_OFFER_STATUS
     venue_id: int | None = fields.VENUE_ID
     period_beginning_date: str | None = fields.PERIOD_BEGINNING_DATE
@@ -191,7 +189,6 @@ class CollectiveOffersResponseModel(BaseModel):
     id: int = fields.COLLECTIVE_OFFER_ID
     startDatetime: str = fields.COLLECTIVE_OFFER_START_DATETIME
     endDatetime: str = fields.COLLECTIVE_OFFER_END_DATETIME
-    status: str = fields.COLLECTIVE_OFFER_STATUS
     offerStatus: str = fields.COLLECTIVE_OFFER_OFFER_STATUS
     venueId: int = fields.VENUE_ID
     bookings: typing.Sequence[CollectiveBookingResponseModel]
@@ -205,7 +202,6 @@ class CollectiveOffersResponseModel(BaseModel):
             id=offer.id,
             startDatetime=offer.collectiveStock.startDatetime.replace(microsecond=0).isoformat(),
             endDatetime=offer.collectiveStock.endDatetime.replace(microsecond=0).isoformat(),
-            status=offer.status.value,
             offerStatus=offer.displayedStatus.value,
             venueId=offer.venueId,
             bookings=offer.collectiveStock.collectiveBookings,
@@ -285,7 +281,6 @@ def get_collective_offer_location_from_offer(offer: CollectiveOffer) -> Collecti
 
 class GetPublicCollectiveOfferResponseModel(BaseModel):
     id: int = fields.COLLECTIVE_OFFER_ID
-    status: str = fields.COLLECTIVE_OFFER_STATUS
     offerStatus: str = fields.COLLECTIVE_OFFER_OFFER_STATUS
     name: str = fields.COLLECTIVE_OFFER_NAME
     description: str | None = fields.COLLECTIVE_OFFER_DESCRIPTION
@@ -331,7 +326,6 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
 
         return cls(
             id=offer.id,
-            status=offer.status.name,
             offerStatus=offer.displayedStatus.value,
             name=offer.name,
             description=offer.description,

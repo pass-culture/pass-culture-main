@@ -226,7 +226,6 @@ def expected_serialized_offer(offer):
         "educationalPriceDetail": offer.collectiveStock.priceDetail,
         "interventionArea": offer.interventionArea,
         "numberOfTickets": offer.collectiveStock.numberOfTickets,
-        "status": offer.status.name,
         "offerStatus": offer.displayedStatus.value,
         "students": [student.name for student in offer.students],
         "totalPrice": float(offer.collectiveStock.price),
