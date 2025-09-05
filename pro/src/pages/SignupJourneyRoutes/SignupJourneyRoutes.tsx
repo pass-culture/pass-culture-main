@@ -23,16 +23,14 @@ export const SignupJourneyRoutes = () => {
     }
   }, [])
   return (
-    <>
-      <Layout layout="funnel">
-        <Header disableHomeLink={!currentUser?.hasUserOfferer} />
-        <SignupJourneyContextProvider>
-          <SignupJourneyFormLayout>
-            <Outlet />
-          </SignupJourneyFormLayout>
-        </SignupJourneyContextProvider>
-      </Layout>
-    </>
+    <Layout layout="funnel">
+      <Header disableHomeLink={!currentUser?.hasUserOfferer} />
+      <SignupJourneyContextProvider>
+        <SignupJourneyFormLayout>
+          <Outlet />
+        </SignupJourneyFormLayout>
+      </SignupJourneyContextProvider>
+    </Layout>
   )
 }
 

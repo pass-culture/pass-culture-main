@@ -59,28 +59,27 @@ export function PartnerPageIndividualSection({
       >
         Gérer votre page pour le grand public
       </ButtonLink>
-      <>
-        <ButtonLink
-          variant={ButtonVariant.TERNARY}
-          icon={fullLinkIcon}
-          to={venuePreviewLink}
-          isExternal
-          opensInNewTab
-          className={styles['details-link']}
-          onClick={logVenueLinkClick}
-        >
-          Voir votre page dans l’application
-        </ButtonLink>
 
-        <Button
-          variant={ButtonVariant.TERNARY}
-          icon={fullDuplicateIcon}
-          className={styles['details-link']}
-          onClick={copyVenueLink}
-        >
-          Copier le lien de la page
-        </Button>
-      </>
+      <ButtonLink
+        variant={ButtonVariant.TERNARY}
+        icon={fullLinkIcon}
+        to={venuePreviewLink}
+        isExternal
+        opensInNewTab
+        className={styles['details-link']}
+        onClick={logVenueLinkClick}
+      >
+        Voir votre page dans l’application
+      </ButtonLink>
+
+      <Button
+        variant={ButtonVariant.TERNARY}
+        icon={fullDuplicateIcon}
+        className={styles['details-link']}
+        onClick={copyVenueLink}
+      >
+        Copier le lien de la page
+      </Button>
     </section>
   )
 }

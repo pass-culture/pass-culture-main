@@ -139,23 +139,21 @@ export const OfferEducationalStock = <
               pas validé la réservation.
             </Callout>
             <FormLayout.Section title="Indiquez le prix et la date de votre offre">
-              <>
-                <p className={styles['description-text']}>
-                  Indiquez le prix total TTC de l’évènement et le nombre de
-                  personnes qui y participeront.
-                  <br />
-                  <span className={styles['description-text-example']}>
-                    Exemple : j’accueille 30 élèves à 5{NBSP}€ la place, le prix
-                    total de mon offre s’élève à 150{NBSP}€ TTC.
-                  </span>
-                </p>
-                <FormStock
-                  mode={mode}
-                  canEditDiscount={canEditDiscount}
-                  canEditDates={canEditDates}
-                  preventPriceIncrease={preventPriceIncrease}
-                />
-              </>
+              <p className={styles['description-text']}>
+                Indiquez le prix total TTC de l’évènement et le nombre de
+                personnes qui y participeront.
+                <br />
+                <span className={styles['description-text-example']}>
+                  Exemple : j’accueille 30 élèves à 5{NBSP}€ la place, le prix
+                  total de mon offre s’élève à 150{NBSP}€ TTC.
+                </span>
+              </p>
+              <FormStock
+                mode={mode}
+                canEditDiscount={canEditDiscount}
+                canEditDates={canEditDates}
+                preventPriceIncrease={preventPriceIncrease}
+              />
 
               <FormLayout.Row>
                 <TextArea
@@ -172,30 +170,28 @@ export const OfferEducationalStock = <
               </FormLayout.Row>
             </FormLayout.Section>
             <FormLayout.Section title="Conditions de réservation">
-              <>
-                <p className={styles['description-text']}>
-                  Indiquez la date limite avant laquelle l’offre doit être
-                  réservée par l’enseignant puis par le chef d’établissement. À
-                  défaut, l’offre expirera et ne sera plus visible sur ADAGE.
-                </p>
-                <FormLayout.Row>
-                  <DatePicker
-                    disabled={!canEditDates}
-                    label={BOOKING_LIMIT_DATETIME_LABEL}
-                    minDate={new Date(offer.dateCreated)}
-                    maxDate={
-                      isDateValid(new Date(values.startDatetime))
-                        ? new Date(values.startDatetime)
-                        : undefined
-                    }
-                    {...form.register('bookingLimitDatetime')}
-                    error={form.formState.errors.bookingLimitDatetime?.message}
-                    className={styles['input-date']}
-                    required
-                    asterisk={false}
-                  />
-                </FormLayout.Row>
-              </>
+              <p className={styles['description-text']}>
+                Indiquez la date limite avant laquelle l’offre doit être
+                réservée par l’enseignant puis par le chef d’établissement. À
+                défaut, l’offre expirera et ne sera plus visible sur ADAGE.
+              </p>
+              <FormLayout.Row>
+                <DatePicker
+                  disabled={!canEditDates}
+                  label={BOOKING_LIMIT_DATETIME_LABEL}
+                  minDate={new Date(offer.dateCreated)}
+                  maxDate={
+                    isDateValid(new Date(values.startDatetime))
+                      ? new Date(values.startDatetime)
+                      : undefined
+                  }
+                  {...form.register('bookingLimitDatetime')}
+                  error={form.formState.errors.bookingLimitDatetime?.message}
+                  className={styles['input-date']}
+                  required
+                  asterisk={false}
+                />
+              </FormLayout.Row>
             </FormLayout.Section>
             <ActionsBarSticky>
               <ActionsBarSticky.Left>

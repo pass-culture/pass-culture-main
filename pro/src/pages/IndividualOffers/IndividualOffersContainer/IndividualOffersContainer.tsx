@@ -163,84 +163,83 @@ export const IndividualOffersContainer = ({
         offererAddresses={offererAddresses}
         searchButtonRef={searchButtonRef}
       />
-      <>
-        <HeadlineOffer />
 
-        <div role="status">
-          {offers.length > MAX_OFFERS_TO_DISPLAY && (
-            <Callout className={styles['offers-table-callout']}>
-              L’affichage est limité à {MAX_OFFERS_TO_DISPLAY} offres. Modifiez
-              les filtres pour affiner votre recherche.
-            </Callout>
-          )}
-          {hasOffers && (
-            <div className={styles['offers-table-title']}>
-              <h2
-                id="offers-table-title"
-                className={styles['offers-table-title-heading']}
-              >
-                Liste des offres
-              </h2>
-              <div>
-                {`${getOffersCountToDisplay(offers.length)} ${
-                  offers.length <= 1 ? 'offre' : 'offres'
-                }`}
-              </div>
+      <HeadlineOffer />
+
+      <div role="status">
+        {offers.length > MAX_OFFERS_TO_DISPLAY && (
+          <Callout className={styles['offers-table-callout']}>
+            L’affichage est limité à {MAX_OFFERS_TO_DISPLAY} offres. Modifiez
+            les filtres pour affiner votre recherche.
+          </Callout>
+        )}
+        {hasOffers && (
+          <div className={styles['offers-table-title']}>
+            <h2
+              id="offers-table-title"
+              className={styles['offers-table-title-heading']}
+            >
+              Liste des offres
+            </h2>
+            <div>
+              {`${getOffersCountToDisplay(offers.length)} ${
+                offers.length <= 1 ? 'offre' : 'offres'
+              }`}
             </div>
-          )}
-        </div>
-        <Table
-          columns={columns}
-          data={currentPageOffersSubset}
-          allData={offers}
-          isLoading={isLoading}
-          variant={TableVariant.COLLAPSE}
-          selectable={true}
-          selectedIds={selectedOfferIds}
-          onSelectionChange={(rows) =>
-            setSelectedOfferIds(new Set(rows.map((r) => r.id)))
-          }
-          isRowSelectable={(row: ListOffersOfferResponseModel) =>
-            !isOfferDisabled(row.status)
-          }
-          noResult={{
-            message: 'Aucune offre trouvée pour votre recherche',
-            resetMessage: 'Afficher toutes les offres',
-            onFilterReset: () => resetFilters(false),
-          }}
-          noData={{
-            hasNoData: userHasNoOffers,
-            message: {
-              icon: strokeNoBooking,
-              title: 'Vous n’avez pas encore créé d’offre',
-              subtitle: '',
-            },
-          }}
+          </div>
+        )}
+      </div>
+      <Table
+        columns={columns}
+        data={currentPageOffersSubset}
+        allData={offers}
+        isLoading={isLoading}
+        variant={TableVariant.COLLAPSE}
+        selectable={true}
+        selectedIds={selectedOfferIds}
+        onSelectionChange={(rows) =>
+          setSelectedOfferIds(new Set(rows.map((r) => r.id)))
+        }
+        isRowSelectable={(row: ListOffersOfferResponseModel) =>
+          !isOfferDisabled(row.status)
+        }
+        noResult={{
+          message: 'Aucune offre trouvée pour votre recherche',
+          resetMessage: 'Afficher toutes les offres',
+          onFilterReset: () => resetFilters(false),
+        }}
+        noData={{
+          hasNoData: userHasNoOffers,
+          message: {
+            icon: strokeNoBooking,
+            title: 'Vous n’avez pas encore créé d’offre',
+            subtitle: '',
+          },
+        }}
+      />
+
+      <div className={styles['offers-table-pagination']}>
+        <Pagination
+          currentPage={currentPageNumber}
+          pageCount={pageCount}
+          onPreviousPageClick={onPreviousPageClick}
+          onNextPageClick={onNextPageClick}
         />
+      </div>
 
-        <div className={styles['offers-table-pagination']}>
-          <Pagination
-            currentPage={currentPageNumber}
-            pageCount={pageCount}
-            onPreviousPageClick={onPreviousPageClick}
-            onNextPageClick={onNextPageClick}
+      <div role="status">
+        {selectedOfferIds.size > 0 && (
+          <IndividualOffersActionsBar
+            areAllOffersSelected={areAllOffersSelected}
+            clearSelectedOffers={clearSelectedOffers}
+            selectedOffers={selectedOfferList}
+            canDelete={canDelete}
+            canDeactivate={canDeactivate}
+            canPublish={canPublish}
+            searchButtonRef={searchButtonRef}
           />
-        </div>
-
-        <div role="status">
-          {selectedOfferIds.size > 0 && (
-            <IndividualOffersActionsBar
-              areAllOffersSelected={areAllOffersSelected}
-              clearSelectedOffers={clearSelectedOffers}
-              selectedOffers={selectedOfferList}
-              canDelete={canDelete}
-              canDeactivate={canDeactivate}
-              canPublish={canPublish}
-              searchButtonRef={searchButtonRef}
-            />
-          )}
-        </div>
-      </>
+        )}
+      </div>
     </div>
   )
 }
