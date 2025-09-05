@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 
+import { api } from '@/apiClient/api'
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import {
   IndividualOfferContext,
@@ -14,13 +15,6 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { IndividualOfferTimetable } from './IndividualOfferTimetable'
-
-vi.mock('@/apiClient/api', () => ({
-  api: {
-    getStocks: vi.fn(() => ({ stocks: [] })),
-    getOpeningHours: vi.fn(),
-  },
-}))
 
 vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
   useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.CREATION),
@@ -55,6 +49,12 @@ describe('IndividualOfferTimetable', () => {
     contextOverride = individualOfferContextValuesFactory({
       offer,
     })
+
+    vi.spyOn(api, 'getStocks').mockResolvedValue({
+      stocks: [],
+      hasStocks: false,
+      stockCount: 0,
+    })
   })
 
   it('should render the content of the offer timetable form', async () => {
@@ -67,5 +67,21 @@ describe('IndividualOfferTimetable', () => {
     expect(
       screen.getByRole('heading', { name: 'Dates et capacités' })
     ).toBeInTheDocument()
+  })
+
+  it('should not get the venue and openingHours if the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled but the FF WIP_ENABLE_OHO is disabled', async () => {
+    const venuesSpy = vi.spyOn(api, 'getVenues')
+    const oHsSpy = vi.spyOn(api, 'getOfferOpeningHours')
+
+    renderIndividualOfferTimetable(contextOverride, [
+      'WIP_ENABLE_NEW_OFFER_CREATION_FLOW',
+    ])
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    expect(venuesSpy).not.toHaveBeenCalled()
+    expect(oHsSpy).not.toHaveBeenCalled()
   })
 })
