@@ -7,6 +7,7 @@ import { api } from '@/apiClient/api'
 import {
   type GetIndividualOfferWithAddressResponseModel,
   type GetOfferStockResponseModel,
+  type GetVenueResponseModel,
   SubcategoryIdEnum,
   type WeekdayOpeningHoursTimespans,
 } from '@/apiClient/v1'
@@ -37,6 +38,7 @@ export type IndividualOfferTimetableScreenProps = {
   mode: OFFER_WIZARD_MODE
   openingHours?: WeekdayOpeningHoursTimespans | null
   stocks: GetOfferStockResponseModel[]
+  venue?: GetVenueResponseModel
 }
 
 //  TODO : have this info on the subcategories in the back
@@ -53,6 +55,7 @@ export function IndividualOfferTimetableScreen({
   mode,
   openingHours,
   stocks,
+  venue,
 }: IndividualOfferTimetableScreenProps) {
   const isNewOfferCreationFlowFFEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
@@ -68,6 +71,7 @@ export function IndividualOfferTimetableScreen({
   const form = useForm<IndividualOfferTimetableFormValues>({
     defaultValues: getTimetableFormDefaultValues({
       openingHours,
+      venueOpeningHours: venue?.openingHours,
       stocks,
       offer,
       isOhoFFEnabled,
