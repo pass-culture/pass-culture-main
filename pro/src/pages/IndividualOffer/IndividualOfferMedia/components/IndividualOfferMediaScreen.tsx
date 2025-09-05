@@ -78,7 +78,8 @@ export const IndividualOfferMediaScreen = ({
     mode: 'onBlur',
   })
 
-  const isFormDirty = form.formState.isDirty || hasUpsertedImage
+  const hasUpdatedVideoUrl = form.formState.isDirty
+  const isFormDirty = hasUpdatedVideoUrl || hasUpsertedImage
 
   const handlePreviousStep = async () => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
@@ -122,15 +123,28 @@ export const IndividualOfferMediaScreen = ({
               ) => {
                 // If defined, the result comes from a thumbnail
                 // creation. Otherwise, its a result from a deletion.
+                // FIXME: in cache we update both offer.activeMediation and offer.thumbUrl
+                // properties, depending on the type of offer, one or another is actually updated
+                // (aka. getIndividualOfferImage) but we'd like an unique way to store this information.
                 if (thumbnailResult) {
                   return {
-                    ...offer,
+                    ...(offer || {}),
                     thumbUrl: thumbnailResult.url,
+                    activeMediation: {
+                      ...(offer?.activeMediation || {}),
+                      thumbUrl: thumbnailResult.url,
+                      credit: thumbnailResult.credit,
+                    },
                   }
                 } else {
                   return {
-                    ...offer,
+                    ...(offer || {}),
                     thumbUrl: '',
+                    activeMediation: {
+                      ...(offer?.activeMediation || {}),
+                      thumbUrl: '',
+                      credit: '',
+                    },
                   }
                 }
               },
@@ -138,15 +152,17 @@ export const IndividualOfferMediaScreen = ({
           )
         }
 
-        await mutate(
-          [GET_OFFER_QUERY_KEY, offer.id],
-          api.patchDraftOffer(offer.id, {
-            videoUrl: formValues.videoUrl,
-          }),
-          {
-            revalidate: false,
-          }
-        )
+        if (hasUpdatedVideoUrl) {
+          await mutate(
+            [GET_OFFER_QUERY_KEY, offer.id],
+            api.patchDraftOffer(offer.id, {
+              videoUrl: formValues.videoUrl,
+            }),
+            {
+              revalidate: false,
+            }
+          )
+        }
       }
 
       let nextStep = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA

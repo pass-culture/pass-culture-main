@@ -47,7 +47,7 @@ export interface OnImageUploadArgs {
 export interface ModalImageUpsertOrEditProps
   extends Omit<DialogBuilderProps, 'children'> {
   mode: UploaderModeEnum
-  onImageUpload: (values: OnImageUploadArgs) => void
+  onImageUpload: (values: OnImageUploadArgs, successMessage: string) => void
   onImageDelete?: () => void
   initialValues?: UploadImageValues
 }
@@ -108,9 +108,10 @@ export const ModalImageUpsertOrEdit = ({
     y: yInitialPosition,
   })
   const [credit, setCredit] = useState<string>(initialCredit ?? '')
-  const [scale, setScale] = useState<number>(
-    initalWidthCropPercent ? widthCropPercentToScale(initalWidthCropPercent) : 1
-  )
+  const initialScale = initalWidthCropPercent
+    ? widthCropPercentToScale(initalWidthCropPercent)
+    : 1
+  const [scale, setScale] = useState<number>(initialScale)
 
   const { width, height } = useGetImageBitmap(image)
   const imageEditorConfig = getImageEditorConfig(width, height, mode)
@@ -146,9 +147,17 @@ export const ModalImageUpsertOrEdit = ({
 
   useEffect(() => {
     setImage(draftImage)
+
+    if (draftImage) {
+      setIsLoadingImage(false)
+    }
   }, [draftImage])
 
-  const onImageReplace = () => {
+  useEffect(() => {
+    setCredit(initialCredit ?? '')
+  }, [initialCredit])
+
+  const hardReset = () => {
     setImage(undefined)
     setEditorInitialPosition({
       x: defaultPositions.x,
@@ -157,6 +166,19 @@ export const ModalImageUpsertOrEdit = ({
     setCredit('')
     setScale(1)
   }
+
+  const resetWithInitialValues = () => {
+    // Image needs to be kept, but
+    // everything else can be reset to its initial values.
+    setEditorInitialPosition({
+      x: xInitialPosition,
+      y: yInitialPosition,
+    })
+    setCredit(initialCredit ?? '')
+    setScale(initialScale)
+  }
+
+  const onImageReplace = () => hardReset()
 
   const onImageReplacementDropOrSelected = (file: File) => {
     setIsPaintingImage(true)
@@ -175,12 +197,18 @@ export const ModalImageUpsertOrEdit = ({
         imageCreationStage: 'save',
       })
 
-      onImageUpload({
-        imageFile: image,
-        imageCroppedDataUrl: imageDataUrl,
-        cropParams: croppedRect,
-        credit: credit,
-      })
+      const onlyImageHasBeenUpdated = credit === initialCredit
+      onImageUpload(
+        {
+          imageFile: image,
+          imageCroppedDataUrl: imageDataUrl,
+          cropParams: croppedRect,
+          credit: credit,
+        },
+        onlyImageHasBeenUpdated
+          ? 'Votre image a bien été importée'
+          : 'Vos modifications ont bien été prises en compte'
+      )
     }
   }
 
@@ -234,6 +262,18 @@ export const ModalImageUpsertOrEdit = ({
   return (
     <DialogBuilder
       {...dialogBuilderProps}
+      onOpenChange={(open: boolean) => {
+        // When dialog closes, its either :
+        // - via the close button, which is a cancel action, we need a reset to inital values.
+        // - externally, via dialogBuilderProps.onOpenChange, which usually
+        // happens after a submit, initial values are updated so its safe to operate
+        // a reset too, without a need of extra conditions.
+        if (!open) {
+          resetWithInitialValues()
+        }
+
+        dialogBuilderProps.onOpenChange?.(open)
+      }}
       title="Modifier une image"
       variant="drawer"
     >
