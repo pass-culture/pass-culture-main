@@ -21,7 +21,6 @@ export const PriceAndParticipantsCell = ({
 
   return (
     <td
-      role="cell"
       className={cn(
         styles['offers-table-cell'],
         styles['price-and-participants-column'],

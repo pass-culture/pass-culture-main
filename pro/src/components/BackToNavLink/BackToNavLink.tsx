@@ -1,4 +1,5 @@
 import classnames from 'classnames'
+import { useId } from 'react'
 
 import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import fullGoTop from '@/icons/full-go-top.svg'
@@ -14,10 +15,12 @@ export const BackToNavLink = ({
   className,
 }: BackToNavLinkProps): JSX.Element => {
   const isMobileScreen = useMediaQuery('(max-width: 64rem)')
+  const navLinkId = useId()
 
   return (
     <a
-      id="back-to-nav-link"
+      id={navLinkId}
+      title="Revenir à la barre de navigation"
       href={isMobileScreen ? '#header-nav-toggle' : '#lateral-panel'}
       className={classnames(className, styles['back-to-nav-link'])}
     >

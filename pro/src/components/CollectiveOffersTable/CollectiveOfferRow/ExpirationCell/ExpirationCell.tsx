@@ -37,8 +37,6 @@ export function ExpirationCell({
 
   return (
     <td
-      // biome-ignore lint/a11y: accepted for assistive tech
-      role="cell"
       colSpan={8}
       headers={`${rowId} ${getCellsDefinition().INFO_ON_EXPIRATION.id}`}
       className={classNames(styles['expiration-cell'], className)}

@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import type React from 'react'
-import { type ChangeEvent, useRef, useState } from 'react'
+import { type ChangeEvent, useId, useRef, useState } from 'react'
 
 import type {
   BookingRecapResponseModel,
@@ -63,6 +63,7 @@ export const FilterByBookingStatus = <
   const [isToolTipVisible, setIsToolTipVisible] = useState(false)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const { logEvent } = useAnalytics()
+  const bookingFilterTooltipId = useId()
 
   const showTooltip = () => {
     setIsToolTipVisible(true)
@@ -122,8 +123,7 @@ export const FilterByBookingStatus = <
         onClick={toggleTooltip}
         onKeyDown={handleKeyDown}
         type="button"
-        aria-expanded={isToolTipVisible}
-        aria-controls="booking-filter-tooltip"
+        aria-controls={bookingFilterTooltipId}
       >
         <span
           className={cn(styles['table-head-label'], styles['status-filter'])}
@@ -143,7 +143,7 @@ export const FilterByBookingStatus = <
           {bookingStatuses.length > 0 && <span className="status-badge-icon" />}
         </span>
       </button>
-      <div className={styles['bs-filter']} id="booking-filter-tooltip">
+      <div className={styles['bs-filter']} id={bookingFilterTooltipId}>
         {isToolTipVisible && (
           <div className={styles['bs-filter-tooltip']}>
             <fieldset>

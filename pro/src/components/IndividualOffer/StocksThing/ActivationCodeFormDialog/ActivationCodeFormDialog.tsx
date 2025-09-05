@@ -75,7 +75,7 @@ export const ActivationCodeFormDialog = ({
 
       setIsFileInputDisabled(false)
     },
-    [setUnsavedActivationCodes, setIsFileInputDisabled, setErrorMessage]
+    []
   )
 
   const dismissModal = useCallback(() => {

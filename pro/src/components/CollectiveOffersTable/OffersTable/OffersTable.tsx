@@ -84,7 +84,6 @@ export const OffersTable = ({
                 />
               </div>
               <table
-                role="table"
                 className={styles['offers-table-table']}
                 aria-labelledby="offers-table-title"
               >

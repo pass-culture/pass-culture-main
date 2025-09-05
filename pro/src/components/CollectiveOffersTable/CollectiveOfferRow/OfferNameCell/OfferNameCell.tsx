@@ -27,8 +27,6 @@ export const OfferNameCell = ({
   return (
     <th
       scope="row"
-      // biome-ignore lint: accepted for assistive technologies
-      role="rowheader"
       className={classNames(
         styles['offers-table-cell'],
         styles['title-column'],

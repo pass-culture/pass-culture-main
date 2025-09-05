@@ -15,16 +15,15 @@ export const ReSendEmailCallout = ({
   const notification = useNotification()
 
   const onClick = () => {
-    action &&
-      action()
-        .then(() => {
-          notification.information('Email renvoyé !')
-        })
-        .catch(() => {
-          notification.error(
-            `Une erreur est survenue, veuillez réessayer ultérieurement.`
-          )
-        })
+    action?.()
+      .then(() => {
+        notification.information('Email renvoyé !')
+      })
+      .catch(() => {
+        notification.error(
+          `Une erreur est survenue, veuillez réessayer ultérieurement.`
+        )
+      })
   }
 
   return (

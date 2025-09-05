@@ -36,7 +36,7 @@ describe('ReSendEmailCallout', () => {
   it('should display a notification on action success', async () => {
     renderComponent(
       () =>
-        new CancelablePromise<any>((resolve, reject) =>
+        new CancelablePromise<any>((_resolve, reject) =>
           reject(new Error('error'))
         )
     )
