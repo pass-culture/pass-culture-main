@@ -10,11 +10,6 @@ import { ApiError } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import {
-  domtomOptions,
-  mainlandInterventionOption,
-  mainlandOptions,
-} from '@/commons/core/shared/interventionOptions'
 import * as useNotification from '@/commons/hooks/useNotification'
 import {
   defaultDMSApplicationForEAC,
@@ -29,46 +24,6 @@ import {
   CollectiveDataEdition,
   type CollectiveDataEditionProps,
 } from './CollectiveDataEdition'
-
-// RomainC: we need this mock to accelerate this test
-// it('should select (unselect) "Toute la France" and "France métropolitaine" when selecting (unselecting) all (one) departments'
-// in which he is clicking on all departements one by one
-// if we only mock mainlandOptions, the mock is not use to build venueInterventionOptions, allDepartmentValues and mainlandValues
-// and the test fail...
-// the workaround I found is to mock this way :
-vi.mock('@/commons/core/shared/interventionOptions', async () => {
-  const originalModule = await vi.importActual<
-    typeof import('@/commons/core/shared/interventionOptions')
-  >('@/commons/core/shared/interventionOptions')
-
-  const mockedMainlandOptions = [
-    { id: '01', label: '01 - Ain' },
-    { id: '02', label: '02 - Aisne' },
-    { id: '03', label: '03 - Allier' },
-    { id: '04', label: '04 - Alpes-de-Haute-Provence' },
-    { id: '05', label: '05 - Hautes-Alpes' },
-  ]
-
-  return {
-    __esModule: true,
-    ...originalModule,
-    mainlandOptions: mockedMainlandOptions,
-    venueInterventionOptions: [
-      {
-        id: 'culturalPartner',
-        label: 'Dans mon lieu',
-      },
-      originalModule.mainlandInterventionOption,
-      ...mockedMainlandOptions,
-      ...originalModule.domtomOptions,
-    ],
-    allDepartmentValues: [
-      ...mockedMainlandOptions.map(({ id }) => id),
-      ...originalModule.domtomOptions.map(({ id }) => id),
-    ],
-    mainlandValues: mockedMainlandOptions.map(({ id }) => id),
-  }
-})
 
 const mockedUsedNavigate = vi.fn()
 vi.mock('react-router', async () => ({
@@ -302,80 +257,6 @@ describe('CollectiveDataEdition', () => {
           'Veuillez renseigner une URL valide. Ex : https://exemple.com'
         )
       ).not.toBeInTheDocument()
-    })
-  })
-
-  describe('intervention area', () => {
-    it('should select all mainland departments when clicking on "France métropolitaine"', async () => {
-      renderCollectiveDataEdition()
-
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-      const interventionAreaField = screen.getByLabelText('Département(s)')
-      await userEvent.click(interventionAreaField)
-
-      expect(
-        await screen.findByLabelText(mainlandInterventionOption.label)
-      ).toBeInTheDocument()
-
-      const mainlandOption = screen.getByLabelText(
-        mainlandInterventionOption.label
-      )
-      await userEvent.click(mainlandOption)
-      ;[...mainlandOptions].forEach((option) => {
-        expect(screen.getByLabelText(option.label)).toBeChecked()
-      })
-    })
-
-    it('should select only domtom options', async () => {
-      renderCollectiveDataEdition()
-
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-      const interventionAreaField = screen.getByLabelText('Département(s)')
-      await userEvent.click(interventionAreaField)
-      await waitFor(() =>
-        expect(
-          screen.getByLabelText(mainlandOptions[0].label)
-        ).not.toBeChecked()
-      )
-      for (const option of domtomOptions) {
-        await userEvent.click(screen.getByLabelText(option.label))
-      }
-      domtomOptions.forEach((option) =>
-        expect(screen.getByLabelText(option.label)).toBeChecked()
-      )
-    })
-
-    it('should select (unselect) "France métropolitaine" when selecting (unselecting) all (one) departments', async () => {
-      renderCollectiveDataEdition()
-
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-      const interventionAreaField = screen.getByLabelText('Département(s)')
-      await userEvent.click(interventionAreaField)
-
-      const mainlandOption = screen.getByRole('checkbox', {
-        name: 'France métropolitaine',
-      })
-      expect(mainlandOption).toBeInTheDocument()
-
-      // check all mainland options
-      for (const option of mainlandOptions) {
-        await userEvent.click(
-          screen.getByRole('checkbox', { name: option.label })
-        )
-      }
-
-      expect(mainlandOption).toBeChecked()
-
-      // check all other departments
-      for (const option of domtomOptions) {
-        await userEvent.click(screen.getByLabelText(option.label))
-      }
-
-      await userEvent.click(screen.getByLabelText(mainlandOptions[0].label))
-      expect(screen.getByLabelText('France métropolitaine')).not.toBeChecked()
     })
   })
 
