@@ -181,7 +181,6 @@ def create_draft_offer(
     body: offers_schemas.deprecated.PostDraftOfferBodyModel,
     venue: offerers_models.Venue,
     product: offers_models.Product | None = None,
-    is_from_private_api: bool = True,
 ) -> models.Offer:
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
     validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
@@ -191,7 +190,10 @@ def create_draft_offer(
 
     validation.check_offer_name_does_not_contain_ean(body.name)
     body_ean = body.extra_data.pop("ean", None)
-    validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api, ean=body_ean)
+    validation.check_offer_extra_data(
+        body.subcategory_id, body.extra_data, venue, is_from_private_api=True, ean=body_ean
+    )
+    validation.check_duration_minutes(body.duration_minutes, is_from_private_api=True)
 
     validation.check_accessibility_compliance(
         audio_disability_compliant=body.audio_disability_compliant,
