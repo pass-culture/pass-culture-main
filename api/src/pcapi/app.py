@@ -49,7 +49,7 @@ if __name__ == "__main__":
             debug_port = 10002
             debugpy.listen(("0.0.0.0", debug_port))
             print(
-                f"⏳ Code debugger can now be attached on port {debug_port}, press F5 in VS Code for example ⏳",
+                f"⏳ Code debugger can now be attached on port {debug_port}, press F5 in VS Code for example ⏳.",
                 flush=True,
             )
             debugpy.wait_for_client()
