@@ -91,15 +91,15 @@ export const AddressManual = ({
 
       {coords && (
         <Callout variant={CalloutVariant.INFO} className={styles['callout']}>
-            <ButtonLink
-              to={`https://google.com/maps/place/${decodeURIComponent(coords)}`}
-              variant={ButtonVariant.TERNARY}
-              isExternal
-              opensInNewTab
-            >
-              Vérifiez la localisation en cliquant ici
-            </ButtonLink>
-          </Callout>
+          <ButtonLink
+            to={`https://google.com/maps/place/${decodeURIComponent(coords)}`}
+            variant={ButtonVariant.TERNARY}
+            isExternal
+            opensInNewTab
+          >
+            Vérifiez la localisation en cliquant ici
+          </ButtonLink>
+        </Callout>
       )}
 
       <Callout variant={CalloutVariant.WARNING} className={styles['callout']}>

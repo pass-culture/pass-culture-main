@@ -53,54 +53,51 @@ export const IconRadioGroup = ({
 
   return (
     <fieldset
-        className={styles['icon-radio-group']}
-        name={`icon-radio-group-${name}`}
-        aria-describedby={`${hasError ? errorId : ''} ${scaleId}`}
-      >
-        <legend className={styles['icon-radio-group-legend']}>
-          {legend}
-          {required && asterisk && ' *'}
-        </legend>
+      className={styles['icon-radio-group']}
+      name={`icon-radio-group-${name}`}
+      aria-describedby={`${hasError ? errorId : ''} ${scaleId}`}
+    >
+      <legend className={styles['icon-radio-group-legend']}>
+        {legend}
+        {required && asterisk && ' *'}
+      </legend>
+      {displayScale && (
+        <p className={styles['visually-hidden']} id={scaleId}>
+          L’échelle de sélection va de {scale[0]} à {scale[1]}
+        </p>
+      )}
+      <div className={styles['icon-radio-group-items-container']}>
+        <div className={styles['icon-radio-group-items']}>
+          {group.map((item) => (
+            <IconRadio
+              name={name}
+              className={styles['icon-radio-group-item']}
+              key={item.label}
+              icon={item.icon}
+              label={item.label}
+              checked={item.value === value}
+              hasError={hasError}
+              onChange={() => {
+                onChange(item.value)
+              }}
+            />
+          ))}
+        </div>
         {displayScale && (
-          <p className={styles['visually-hidden']} id={scaleId}>
-            L’échelle de sélection va de {scale[0]} à {scale[1]}
-          </p>
-        )}
-        <div className={styles['icon-radio-group-items-container']}>
-          <div className={styles['icon-radio-group-items']}>
-            {group.map((item) => (
-              <IconRadio
-                name={name}
-                className={styles['icon-radio-group-item']}
-                key={item.label}
-                icon={item.icon}
-                label={item.label}
-                checked={item.value === value}
-                hasError={hasError}
-                onChange={() => {
-                  onChange(item.value)
-                }}
-              />
+          <div className={styles['icon-radio-group-scale']} aria-hidden="true">
+            {scale.map((s) => (
+              <span key={s}>{s}</span>
             ))}
           </div>
-          {displayScale && (
-            <div
-              className={styles['icon-radio-group-scale']}
-              aria-hidden="true"
-            >
-              {scale.map((s) => (
-                <span key={s}>{s}</span>
-              ))}
-            </div>
+        )}
+        <div role="alert" id={errorId}>
+          {error && (
+            <FieldError name={name} className={styles['error']}>
+              {error}
+            </FieldError>
           )}
-          <div role="alert" id={errorId}>
-            {error && (
-              <FieldError name={name} className={styles['error']}>
-                {error}
-              </FieldError>
-            )}
-          </div>
         </div>
-      </fieldset>
+      </div>
+    </fieldset>
   )
 }
