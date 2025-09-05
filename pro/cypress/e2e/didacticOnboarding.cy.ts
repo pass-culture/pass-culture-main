@@ -7,10 +7,8 @@ describe('Didactic Onboarding feature', () => {
   let login: string
 
   beforeEach(() => {
-    cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
-    cy.intercept({ method: 'PATCH', url: '/offers/draft/*' }).as(
-      'patchDraftOffer'
-    )
+    cy.intercept({ method: 'POST', url: '/offers' }).as('postOffer')
+    cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
@@ -160,7 +158,7 @@ describe('Didactic Onboarding feature', () => {
 
         // Saving a draft
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
-        cy.wait(['@getOffer', '@postDraftOffer'])
+        cy.wait(['@getOffer', '@postOffer'])
         cy.findByText('Brouillon enregistré')
 
         // --------------------
@@ -191,7 +189,7 @@ describe('Didactic Onboarding feature', () => {
           'Mon offre en brouillon'
         )
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
-        cy.wait(['@getOffer', '@patchDraftOffer'])
+        cy.wait(['@getOffer', '@patchOffer'])
 
         // ---------------------------
         // Step 2: Useful informations

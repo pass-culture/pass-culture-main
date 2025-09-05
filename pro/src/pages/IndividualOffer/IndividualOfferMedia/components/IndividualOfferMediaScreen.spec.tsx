@@ -71,7 +71,7 @@ const mockHandleImageOnSubmit = vi.fn()
 const mockNavigate = vi.fn()
 vi.mock('@/apiClient/api', () => ({
   api: {
-    patchDraftOffer: vi.fn(),
+    patchOffer: vi.fn(),
   },
 }))
 vi.mock('react-router', async () => {
@@ -240,14 +240,14 @@ describe('IndividualOfferMediaScreen', () => {
       expect(videoInput).toBeInvalid()
       const videoErrorMessage = screen.getByText(LABELS.videoError)
       expect(videoErrorMessage).toBeInTheDocument()
-      expect(api.patchDraftOffer).not.toHaveBeenCalled()
+      expect(api.patchOffer).not.toHaveBeenCalled()
     })
 
     it('should not call the patch offer api until the video url has changed', async () => {
       await renderIndividualOfferMediaScreen()
 
       await userEvent.click(screen.getByText(LABELS.nextButtonCreationMode))
-      expect(api.patchDraftOffer).not.toHaveBeenCalled()
+      expect(api.patchOffer).not.toHaveBeenCalled()
     })
 
     it('should call the patch offer api when the video url has changed', async () => {
@@ -255,7 +255,7 @@ describe('IndividualOfferMediaScreen', () => {
       await renderIndividualOfferMediaScreen({ props: { offer: knownOffer } })
 
       await updateVideoUrlAndSubmit()
-      expect(api.patchDraftOffer).toHaveBeenCalledWith(knownOffer.id, {
+      expect(api.patchOffer).toHaveBeenCalledWith(knownOffer.id, {
         videoUrl: MOCK_DATA.videoUrl,
       })
     })
@@ -267,7 +267,7 @@ describe('IndividualOfferMediaScreen', () => {
       await renderIndividualOfferMediaScreen({ props: { offer: knownOffer } })
 
       await updateVideoUrlAndSubmit({ text: '' })
-      expect(api.patchDraftOffer).toHaveBeenCalledWith(knownOffer.id, {
+      expect(api.patchOffer).toHaveBeenCalledWith(knownOffer.id, {
         videoUrl: '',
       })
     })

@@ -11,7 +11,7 @@ describe('Create individual offers', { testIsolation: false }, () => {
 
   beforeEach(() => {
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
-    cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
+    cy.intercept({ method: 'POST', url: '/offers' }).as('postOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
     cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
     cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postEventStocks')
@@ -79,7 +79,7 @@ describe('Create individual offers', { testIsolation: false }, () => {
 
     cy.stepLog({ message: 'I validate event details step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getOffer', '@postDraftOffer'])
+    cy.wait(['@getOffer', '@postOffer'])
 
     cy.stepLog({ message: 'I fill in event useful informations' })
     cy.findByText('Retrait sur place (guichet, comptoir...)').click()
@@ -271,7 +271,7 @@ describe('Create individual offers', { testIsolation: false }, () => {
 
     cy.stepLog({ message: 'I validate offer details step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getOffer', '@postDraftOffer'])
+    cy.wait(['@getOffer', '@postOffer'])
 
     cy.stepLog({ message: 'I fill in useful informations for physical offer' })
     cy.findByLabelText('Informations de retrait').type(

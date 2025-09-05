@@ -20,7 +20,7 @@ from pcapi.validation.routes.offers import check_video_url
 OFFER_DESCRIPTION_MAX_LENGTH = 10_000
 
 
-class PatchDraftOfferBodyModel(BaseModel):
+class PatchOfferBodyModel(BaseModel):
     name: str | None = None
     subcategory_id: str | None = None
     url: HttpUrl | None = None

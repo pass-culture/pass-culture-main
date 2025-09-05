@@ -1459,13 +1459,25 @@ class UpdateOfferTest:
         assert offer.name == "New name"
         assert offer.description == "new Description"
 
+    def test_can_delete_video_url(self):
+        meta_data = factories.OfferMetaDataFactory(videoUrl="https://www.youtube.com/watch?v=WtM4OW2qVjY")
+        offer = factories.OfferFactory(
+            metaData=meta_data,
+        )
+        body = offers_schemas.UpdateOffer(videoUrl=" ")
+        offer = api.update_offer(offer, body)
+        db.session.flush()
+        db.session.refresh(offer)
+
+        assert offer.metaData is None
+
     def test_cannot_update_with_name_too_long(self):
-        offer = factories.OfferFactory(name="Old name", ean="1234567890124")
-        body = offers_schemas.UpdateOffer(name="Luftballons" * 99)
+        offer = factories.OfferFactory(name="Old name")
+        body = offers_schemas.UpdateOffer(name="ABC" * 31)
         with pytest.raises(api_errors.ApiErrors) as error:
             api.update_offer(offer, body)
 
-        assert error.value.errors == {"name": ["Vous devez saisir moins de 140 caractères"]}
+        assert error.value.errors == {"name": ["Le titre de l’offre doit faire au maximum 90 caractères."]}
         assert db.session.query(models.Offer).one().name == "Old name"
 
     def test_cannot_update_with_name_containing_ean(self):

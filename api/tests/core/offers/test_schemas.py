@@ -9,13 +9,13 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class PatchDraftOfferBodyModelTest:
     def test_patch_draft_offer_body_model(self):
-        _ = schemas.PatchDraftOfferBodyModel(
+        _ = schemas.PatchOfferBodyModel(
             name="Name", description="description", extraData={"artist": "An-2"}, durationMinutes=12
         )
 
     def test_patch_offer_with_invalid_subcategory(self):
         with pytest.raises(offers_exceptions.OfferException) as error:
-            _ = schemas.PatchDraftOfferBodyModel(
+            _ = schemas.PatchOfferBodyModel(
                 name="I solemnly swear that my intentions are evil",
                 subcategoryId="Misconduct fullfield",
             )

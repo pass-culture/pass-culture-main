@@ -367,9 +367,7 @@ function fromOnBoardingPublishMyFirstOffer() {
   // Step 1: Offer details
   // ---------------------
 
-  cy.intercept('POST', 'http://localhost:5001/offers/draft').as(
-    'postOfferDraft'
-  )
+  cy.intercept('POST', 'http://localhost:5001/offers').as('postOffer')
 
   cy.findByRole('textbox', { name: /Titre de l’offre/ }).type(
     'Mon offre en brouillon'
@@ -380,7 +378,7 @@ function fromOnBoardingPublishMyFirstOffer() {
   // Saving a draft
   cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
 
-  cy.wait('@postOfferDraft')
+  cy.wait('@postOffer')
 
   // ---------------------------
   // Step 2: Useful informations

@@ -77,7 +77,7 @@ class CategoryResponseModel(BaseModel):
 
 class PostOfferBodyModel(BaseModel):
     address: offerers_schemas.AddressBodyModel | None
-    audio_disability_compliant: bool
+    audio_disability_compliant: bool | None
     booking_contact: EmailStr | None
     booking_email: EmailStr | None
     description: str | None
@@ -86,13 +86,13 @@ class PostOfferBodyModel(BaseModel):
     extra_data: dict[str, typing.Any] | None
     is_duo: bool | None
     is_national: bool | None
-    mental_disability_compliant: bool
-    motor_disability_compliant: bool
+    mental_disability_compliant: bool | None
+    motor_disability_compliant: bool | None
     name: str
     subcategory_id: str
     url: HttpUrl | None
     venue_id: int
-    visual_disability_compliant: bool
+    visual_disability_compliant: bool | None
     withdrawal_delay: int | None
     withdrawal_details: str | None
     withdrawal_type: offers_models.WithdrawalTypeEnum | None
@@ -123,6 +123,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     extraData: Any
     externalTicketOfficeUrl: HttpUrl | None
     url: HttpUrl | None
+    videoUrl: HttpUrl | None
     withdrawalDetails: str | None
     withdrawalType: offers_models.WithdrawalTypeEnum | None
     withdrawalDelay: int | None

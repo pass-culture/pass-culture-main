@@ -1,7 +1,4 @@
-import type {
-  PatchDraftOfferBodyModel,
-  PostDraftOfferBodyModel,
-} from '@/apiClient/v1'
+import type { PatchOfferBodyModel, PostOfferBodyModel } from '@/apiClient/v1'
 import { trimStringsInObject } from '@/commons/utils/trimStringsInObject'
 
 import type { DetailsFormValues } from './types'
@@ -45,7 +42,7 @@ export const serializeExtraData = (formValues: DetailsFormValues) => {
 export function serializeDetailsPostData(
   formValues: DetailsFormValues,
   isNewOfferCreationFlowFeatureActive: boolean
-): PostDraftOfferBodyModel {
+): PostOfferBodyModel {
   return trimStringsInObject({
     name: formValues.name,
     subcategoryId: formValues.subcategoryId,
@@ -70,7 +67,7 @@ export function serializeDetailsPostData(
 export function serializeDetailsPatchData(
   formValues: DetailsFormValues,
   isNewOfferCreationFlowFeatureActive: boolean
-): PatchDraftOfferBodyModel {
+): PatchOfferBodyModel {
   return trimStringsInObject({
     name: formValues.name,
     subcategoryId: formValues.subcategoryId,

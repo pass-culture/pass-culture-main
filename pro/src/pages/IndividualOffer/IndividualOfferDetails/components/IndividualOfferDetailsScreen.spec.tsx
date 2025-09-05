@@ -49,8 +49,8 @@ import {
 vi.mock('@/apiClient/api', () => ({
   api: {
     getMusicTypes: vi.fn(),
-    postDraftOffer: vi.fn(),
-    patchDraftOffer: vi.fn(),
+    postOffer: vi.fn(),
+    patchOffer: vi.fn(),
     getProductByEan: vi.fn(),
     getActiveVenueOfferByEan: vi.fn(),
   },
@@ -260,7 +260,7 @@ describe('IndividualOfferDetailsScreen', () => {
       subCategories: MOCK_DATA.subCategories,
       offer: null,
     })
-    vi.spyOn(api, 'patchDraftOffer').mockResolvedValue(
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(
       getIndividualOfferFactory({
         id: 12,
       })
@@ -329,7 +329,7 @@ describe('IndividualOfferDetailsScreen', () => {
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))
-      vi.spyOn(api, 'postDraftOffer').mockResolvedValue(
+      vi.spyOn(api, 'postOffer').mockResolvedValue(
         getIndividualOfferFactory({
           id: 12,
         })
@@ -514,7 +514,7 @@ describe('IndividualOfferDetailsScreen', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(api, 'postDraftOffer').mockRejectedValue({
+    vi.spyOn(api, 'postOffer').mockRejectedValue({
       message: 'oups',
       name: 'ApiError',
       body: { ean: 'broken ean from api' },
@@ -573,7 +573,7 @@ describe('IndividualOfferDetailsScreen', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(api, 'postDraftOffer').mockResolvedValue(
+    vi.spyOn(api, 'postOffer').mockResolvedValue(
       getIndividualOfferFactory({
         id: 12,
       })
@@ -587,8 +587,8 @@ describe('IndividualOfferDetailsScreen', () => {
 
     await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
 
-    expect(api.postDraftOffer).toHaveBeenCalledOnce()
-    expect(api.postDraftOffer).toHaveBeenCalledWith({
+    expect(api.postOffer).toHaveBeenCalledOnce()
+    expect(api.postOffer).toHaveBeenCalledWith({
       description: 'My super description',
       extraData: {
         author: '',
@@ -645,8 +645,8 @@ describe('IndividualOfferDetailsScreen', () => {
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
-    expect(api.patchDraftOffer).toHaveBeenCalledOnce()
-    expect(api.patchDraftOffer).toHaveBeenCalledWith(12, {
+    expect(api.patchOffer).toHaveBeenCalledOnce()
+    expect(api.patchOffer).toHaveBeenCalledWith(12, {
       description: 'My super description',
       durationMinutes: undefined,
       extraData: {
@@ -1038,7 +1038,7 @@ describe('IndividualOfferDetailsScreen', () => {
       })
       await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
-      expect(api.patchDraftOffer).not.toHaveBeenCalledOnce()
+      expect(api.patchOffer).not.toHaveBeenCalledOnce()
       expect(mockHandleImageOnSubmit).toHaveBeenCalled()
     })
 

@@ -84,6 +84,7 @@ from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import is_managed_transaction
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
+from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 from pcapi.workers import push_notification_job
 
 from . import exceptions
@@ -301,6 +302,17 @@ def update_offer(
     if offerer_address:
         fields["offererAddress"] = offerer_address
 
+    if "videoUrl" in fields:
+        new_video_url = fields.pop("videoUrl")
+        if not new_video_url:
+            if offer.metaData:
+                db.session.delete(offer.metaData)
+        else:
+            if not offer.metaData:
+                offer.metaData = models.OfferMetaData(offer=offer)
+            offer.metaData.videoUrl = new_video_url
+            db.session.add(offer.metaData)
+
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
     updates_set = set(updates)
     if not updates:
@@ -343,6 +355,7 @@ def update_offer(
         name = get_field(offer, updates, "name", aliases=aliases)
         if name is None:
             raise exceptions.OfferException({"name": ["cannot be null"]})
+        check_offer_name_length_is_valid(name)
         validation.check_offer_name_does_not_contain_ean(name)
 
     if (

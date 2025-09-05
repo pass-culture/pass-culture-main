@@ -143,14 +143,14 @@ export const IndividualOfferDetailsScreen = ({
       let offerId = initialOfferId
 
       if (isDraftOffer) {
-        response = await api.postDraftOffer(
+        response = await api.postOffer(
           serializeDetailsPostData(
             formValues,
             isNewOfferCreationFlowFeatureActive
           )
         )
       } else if (!shouldNotPatchData && initialOfferId) {
-        response = await api.patchDraftOffer(
+        response = await api.patchOffer(
           initialOfferId,
           serializeDetailsPatchData(
             formValues,

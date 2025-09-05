@@ -140,7 +140,7 @@ export const IndividualOfferMediaScreen = ({
 
         await mutate(
           [GET_OFFER_QUERY_KEY, offer.id],
-          api.patchDraftOffer(offer.id, {
+          api.patchOffer(offer.id, {
             videoUrl: formValues.videoUrl,
           }),
           {
