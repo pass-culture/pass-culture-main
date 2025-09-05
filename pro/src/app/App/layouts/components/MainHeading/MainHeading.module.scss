@@ -1,0 +1,34 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.main-heading {
+  &-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: rem.torem(32px);
+
+    &-with-subtitle {
+      align-items: flex-end;
+    }
+  }
+
+  &-title {
+    @include fonts.title1;
+  }
+
+  &-subtitle {
+    @include fonts.title2;
+
+    max-width: rem.torem(588px);
+    display: block;
+  }
+
+  &-back-to-nav-link {
+    margin-left: rem.torem(16px);
+
+    &-with-subtitle {
+      margin-bottom: rem.torem(4px);
+    }
+  }
+}

@@ -1,0 +1,104 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/variables/_z-index.scss" as zIndex;
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--color-background-subtle);
+}
+
+.page-layout {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  border-top: none;
+
+  @media (min-width: size.$desktop) {
+    margin: 0 auto;
+    width: rem.torem(size.$desktop);
+  }
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  width: 100%;
+  overflow-y: auto;
+  background-color: var(--color-background-default);
+
+  &-left-side {
+    @media screen and (min-width: size.$tablet) {
+      flex-direction: row;
+    }
+
+    &-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: rem.torem(120px);
+      background: var(--color-background-locked-brand-primary);
+
+      @media screen and (min-width: size.$tablet) {
+        min-width: rem.torem(202px);
+        width: size.$side-logo-width;
+        min-height: 100vh;
+        max-width: size.$logo-side-width;
+        position: sticky;
+        height: 100vh;
+        top: 0;
+      }
+    }
+  }
+}
+
+.content-container {
+  width: 100%;
+  flex-grow: 1;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  @media screen and (min-width: size.$tablet) {
+    padding: size.$main-content-padding size.$main-content-padding 0;
+  }
+}
+
+.content {
+  position: relative;
+  max-width: 100%;
+  border: none;
+  margin: 0;
+
+  &-logged-out {
+    padding: rem.torem(24px);
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: size.$full-content-min-width;
+    max-width: size.$full-content-max-width;
+    min-height: calc(
+      100vh -
+        #{size.$footer-height} - rem.torem(32px) - var(
+          --typography-title1-line-height
+        )
+    );
+  }
+}
+
+.logo-unlogged {
+  color: var(--color-text-locked-inverted);
+  max-width: rem.torem(135px);
+
+  @media (min-width: size.$tablet) {
+    width: 80%;
+    min-width: rem.torem(135px);
+    max-width: rem.torem(282px);
+  }
+}

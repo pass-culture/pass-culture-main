@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { GET_VENUE_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
@@ -71,14 +71,14 @@ export const Homepage = (): JSX.Element => {
     !venueTypes
   ) {
     return (
-      <Layout>
+      <BasicLayout>
         <Spinner />
-      </Layout>
+      </BasicLayout>
     )
   }
 
   return (
-    <Layout mainHeading="Bienvenue sur votre espace partenaire">
+    <BasicLayout mainHeading="Bienvenue sur votre espace partenaire">
       <div className={styles['reimbursements-banners']}>
         <AddBankAccountCallout offerer={selectedOfferer} />
         <LinkVenueCallout offerer={selectedOfferer} />
@@ -123,7 +123,7 @@ export const Homepage = (): JSX.Element => {
           <Newsletter />
         </div>
       </section>
-    </Layout>
+    </BasicLayout>
   )
 }
 

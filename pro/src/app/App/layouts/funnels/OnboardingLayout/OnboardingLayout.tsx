@@ -1,0 +1,138 @@
+/** biome-ignore-all lint/correctness/useUniqueElementIds: Layout is used once per page. There cannot be id duplications. */
+import cn from 'classnames'
+import type React from 'react'
+import { useSelector } from 'react-redux'
+import { Navigate } from 'react-router'
+
+import { ConnectedAsAside } from '@/app/App/layouts/components/ConnectedAsAside/ConnectedAsAside'
+import { Header } from '@/app/App/layouts/components/Header/Header'
+import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
+import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
+import { selectCurrentUser } from '@/commons/store/user/selectors'
+import { Footer } from '@/components/Footer/Footer'
+import { SkipLinks } from '@/components/SkipLinks/SkipLinks'
+
+import styles from './OnboardingLayout.module.scss'
+
+interface OnboardingLayoutProps {
+  children?: React.ReactNode
+  /**
+   * Name of the page to display in the main heading.
+   * Make sure that only one heading is displayed per page.
+   */
+  mainHeading?: React.ReactNode
+  /**
+   * In case both `<h1>` & back to nav link
+   * had to be declared within the children
+   */
+  areMainHeadingAndBackToNavLinkInChild?: boolean
+  /**
+   * When StickyActionBar is rendered within the children,
+   * Footer needs to have a special margin-bottom to be visible
+   * above it.
+   */
+  isStickyActionBarInChild?: boolean
+  /**
+   * A property to vertically center contents, only
+   * available for entry screens.
+   */
+  verticallyCentered?: boolean
+  /**
+   * Entry screens (screens that preceeds a redirection,
+   * or a form) have extra paddings and can be
+   * vertically centered.
+   * FIXME: this should be removed in favor of an unique
+   * UI in the context of an onboarding.
+   */
+  isEntryScreen?: boolean
+}
+
+export const OnboardingLayout = ({
+  children,
+  mainHeading,
+  areMainHeadingAndBackToNavLinkInChild = false,
+  isStickyActionBarInChild = false,
+  verticallyCentered = false,
+  isEntryScreen = false,
+}: OnboardingLayoutProps) => {
+  const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
+  const currentUser = useSelector(selectCurrentUser)
+
+  if (isDidacticOnboardingEnabled === false) {
+    return <Navigate to="/accueil" />
+  }
+
+  const isConnected = !!currentUser
+  const isBackToNavLinkDisplayed =
+    areMainHeadingAndBackToNavLinkInChild || isConnected
+
+  const mainHeadingWrapper = mainHeading ? (
+    <MainHeading
+      className={styles['main-heading']}
+      mainHeading={mainHeading}
+      isConnected={isConnected}
+    />
+  ) : null
+
+  const layoutVariant = isStickyActionBarInChild
+    ? 'sticky-onboarding'
+    : 'onboarding'
+
+  return (
+    <div className={styles.layout}>
+      <SkipLinks shouldDisplayTopPageLink={!isBackToNavLinkDisplayed} />
+      {currentUser?.isImpersonated && (
+        <ConnectedAsAside currentUser={currentUser} />
+      )}
+      <Header disableHomeLink />
+      <div
+        className={cn(styles['page-layout'], styles[`page-layout-onboarding`], {
+          [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
+        })}
+      >
+        <div id="content-wrapper" className={styles['content-wrapper']}>
+          <div
+            className={cn(
+              styles['content-container'],
+              styles[`content-container-${layoutVariant}`]
+            )}
+          >
+            <main id="content">
+              <div id="orejimeElement" />
+              <div
+                className={cn(
+                  styles['content'],
+                  styles[`content-${layoutVariant}`]
+                )}
+              >
+                {isEntryScreen ? (
+                  <div
+                    className={cn(
+                      styles[`onboarding-layout`],
+                      verticallyCentered
+                        ? styles[`vertically-centered`]
+                        : undefined
+                    )}
+                  >
+                    {mainHeadingWrapper}
+                    {children}
+                  </div>
+                ) : (
+                  <>
+                    {mainHeadingWrapper}
+                    {children}
+                  </>
+                )}
+              </div>
+            </main>
+            <Footer
+              layout={
+                isStickyActionBarInChild ? 'sticky-onboarding' : 'onboarding'
+              }
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
