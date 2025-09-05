@@ -1006,7 +1006,6 @@ def _get_filtered_collective_bookings_query(
 def list_public_collective_offers(
     *,
     required_id: int,
-    status: offer_mixin.CollectiveOfferStatus | None = None,
     displayedStatus: models.CollectiveOfferDisplayedStatus | None = None,
     venue_id: int | None = None,
     period_beginning_date: str | None = None,
@@ -1025,8 +1024,6 @@ def list_public_collective_offers(
         models.CollectiveOffer.validation != offer_mixin.OfferValidationStatus.DRAFT,
     ]
 
-    if status is not None:
-        filters.append(models.CollectiveOffer.status == status)  # type: ignore[arg-type]
     if venue_id:
         filters.append(models.CollectiveOffer.venueId == venue_id)
     if period_beginning_date:

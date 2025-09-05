@@ -113,17 +113,7 @@ Also, the validation process is not the same as individual offers since these of
 
 ## Collective offer status and allowed actions
 
-### ⚠️ Upcoming changes
-
-A collective offer can have different statuses, depending on the event dates and the related booking status. You can check the current possible status values in the [Get Collective Offer endpoint response schema](/rest-api#tag/Collective-Offers/operation/GetCollectiveOfferPublic) -> `status` field.
-
-:::warning
-The collective offer status will be changed in the coming months. You can find below the new statuses list.
-
-To allow the migration, this new status is available in the dedicated attribute `offerStatus`.
-
-In addition, the offer status will determine the actions that are allowed on the offer (which fields can be updated, whether the booking can be cancelled...). You can find below a table showing which actions are allowed for each new status.
-:::
+A collective offer can have different statuses, depending on the event dates and the related booking status. The corresponding field is `offerStatus` in the different collective endpoints. Here is the list of the status values:
 
 - **DRAFT**: the offer is not yet published. Currently an offer created with the API cannot have this status
 - **UNDER_REVIEW**: the offer is waiting to be reviewed and validated
@@ -137,7 +127,7 @@ In addition, the offer status will determine the actions that are allowed on the
 - **CANCELLED**: 1. the offer has been cancelled by the school or with the API, or 2. the offer has not been confirmed before the offer start date
 - **ARCHIVED**: the offer has been archived (this is currently only possible on the pro interface). It will not be visible on Adage
 
-Here are the allowed actions depending on the offer status:
+The offer status will determine the actions that are allowed on the offer (which fields can be updated, whether the booking can be cancelled...). You can find below a table showing which actions are allowed for each status:
 
 |Status           |Edit the details (title, description...) and increase the price|Edit the dates (start, end, booking limit) |Edit the institution |Edit the number of students, price details and lower the price |Duplicate the offer |Cancel the offer |Archive the offer|
 |-----------------|:-:|:--:|:--:|:-:|:--:|:--:|:--:|
@@ -153,12 +143,6 @@ Here are the allowed actions depending on the offer status:
 |**REIMBURSED**   | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ |
 |**CANCELLED**    | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ |
 |**ARCHIVED**     | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
-
-### Current state of developments
-
-The new status is available in the `offerStatus` field.
-
-`offerStatus` determines the actions that are allowed on the offer.
 
 ## 📍 Offers location
 

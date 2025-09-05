@@ -57,13 +57,6 @@ You have **three options** for the location:
 - `"TO_BE_DEFINED"`: Use this if the offer location is not precisely defined.
 """
 
-COLLECTIVE_OFFER_STATUS_FIELD_DESCRIPTION = (
-    "[⚠️ DEPRECATED - use `offerStatus` instead]"
-    + "\n\n"
-    + OFFER_STATUS_FIELD_DESCRIPTION
-    + "\n\n"
-    + "- `ARCHIVED`: offer is archived by pro."
-)
 
 BOOKING_STATUS_DESCRIPTION = """
 Booking status explanation:
