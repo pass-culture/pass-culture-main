@@ -163,6 +163,22 @@ class AccountUpdateRequestAcceptForm(utils.PCForm):
     motivation = fields.PCOptCommentField("Explication facultative envoyée au demandeur sur Démarches-Simplifiées")
 
 
+class AccountUpdateRequestCorrectionForm(utils.PCForm):
+    correction_reason = fields.PCSelectField(
+        "Raison de demande de correction",
+        choices=[
+            ("refused-file", "refused-file"),
+            ("unreadable-photo", "unreadable-photo"),
+            ("missing-file", "missing-file"),
+        ],
+    )
+
+    def validate_correction_reason(self, correction_reason: fields.PCSelectField) -> fields.PCSelectField:
+        if correction_reason.data not in ("refused-file", "missing-file", "unreadable-photo"):
+            raise wtforms.validators.ValidationError("La raison de demande de correction est invalide")
+        return correction_reason
+
+
 class UserTagBaseForm(FlaskForm):
     name = fields.PCStringField(
         "Nom",
