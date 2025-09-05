@@ -269,9 +269,25 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
         if not new_video_url:
             if offer.metaData:
                 db.session.delete(offer.metaData)
+                logger.info(
+                    "Video has been deleted from offer",
+                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": offer.metaData.videoUrl},
+                    technical_message_id="offer.video.deleted",
+                )
         else:
             if not offer.metaData:
                 offer.metaData = models.OfferMetaData(offer=offer)
+                logger.info(
+                    "Video has been added to offer",
+                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": new_video_url},
+                    technical_message_id="offer.video.added",
+                )
+            else:
+                logger.info(
+                    "Video has been updated on offer",
+                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": new_video_url},
+                    technical_message_id="offer.video.updated",
+                )
             offer.metaData.videoUrl = new_video_url
             db.session.add(offer.metaData)
 
