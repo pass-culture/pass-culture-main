@@ -225,7 +225,7 @@ export function Table<
                 <span className={styles['visually-hidden']}>Sélectionner</span>
               </th>
             )}
-            {columns.map((col, index) => {
+            {columns.map((col) => {
               if (col.headerHidden) {
                 return null
               }
@@ -236,7 +236,7 @@ export function Table<
                   scope="col"
                   id={col.id}
                   colSpan={col.headerColSpan || 1}
-                  key={`col-${index}`}
+                  key={`col-${col.id}`}
                   className={classNames(
                     styles.columnWidth,
                     styles['table-header-th'],
@@ -305,11 +305,7 @@ export function Table<
                       })}
                     >
                       <Checkbox
-                        label={
-                          row.hasOwnProperty.call(row, 'name')
-                            ? (row as any).name
-                            : `ligne ${row.id}`
-                        }
+                        label={row.name ?? `ligne ${row.id}`}
                         checked={isSelected}
                         onChange={() => toggleSelectRow(row)}
                         className={styles['table-checkbox-label']}
