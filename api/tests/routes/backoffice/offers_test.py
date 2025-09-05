@@ -23,6 +23,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
@@ -1407,7 +1408,7 @@ class ListOffersTest(GetEndpointHelper):
         offer = offers_factories.OfferFactory(
             venue__managingOfferer__name="Offerer",
             venue__managingOfferer__tags=[
-                offerers_factories.OffererTagFactory(name="top-acteur", label="Top Acteur"),
+                offerers_factories.OffererTagFactory(name=offerers_constants.TOP_ACTEUR_TAG_NAME, label="Top Acteur"),
                 offerers_factories.OffererTagFactory(name="test", label="Test"),
             ],
         )
@@ -4166,7 +4167,9 @@ class GetOfferDetailsTest(GetEndpointHelper):
     def test_collective_offer_with_top_acteur_offerer(self, authenticated_client):
         offer = offers_factories.OfferFactory(
             venue__managingOfferer__name="Offerer",
-            venue__managingOfferer__tags=[offerers_factories.OffererTagFactory(name="top-acteur", label="Top Acteur")],
+            venue__managingOfferer__tags=[
+                offerers_factories.OffererTagFactory(name=offerers_constants.TOP_ACTEUR_TAG_NAME, label="Top Acteur")
+            ],
         )
 
         url = url_for(self.endpoint, offer_id=offer.id)
