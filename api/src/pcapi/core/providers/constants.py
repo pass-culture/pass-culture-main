@@ -644,3 +644,5 @@ TITELIVE_BOOK_SUPPORTS: list[TiteliveBookSupport] = [
 ]
 
 TITELIVE_BOOK_SUPPORTS_BY_CODE = {support["codesupport"]: support for support in TITELIVE_BOOK_SUPPORTS}
+
+TITELIVE_PRODUCT_NAME_MAX_LENGTH = 140
