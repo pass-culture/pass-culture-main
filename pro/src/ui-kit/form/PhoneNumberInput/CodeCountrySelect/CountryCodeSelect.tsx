@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import type { ChangeEvent, FocusEvent } from 'react'
+import { type ChangeEvent, type FocusEvent, useId } from 'react'
 
 import fullRightIcon from '@/icons/full-right.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -24,6 +24,8 @@ export const CountryCodeSelect = ({
   onChange,
   onBlur,
 }: CountryCodeSelectProps) => {
+  const countryId = useId()
+
   return (
     <div className={cn(styles['select-input-wrapper'], className)}>
       <SvgIcon
@@ -36,12 +38,13 @@ export const CountryCodeSelect = ({
       />
       <select
         className={styles['select-input']}
-        id="countryCode"
+        id={countryId}
         disabled={disabled}
         value={value}
         onChange={onChange}
         onBlur={onBlur}
         autoComplete="tel-country-code"
+        aria-label="Indicatifs pays"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value} label={option.value}>

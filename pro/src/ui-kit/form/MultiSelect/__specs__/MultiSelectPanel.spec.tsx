@@ -28,7 +28,6 @@ describe('<MultiSelectPanel />', () => {
   } = {}) => {
     return render(
       <MultiSelectPanel
-        id="1"
         options={options}
         label={''}
         onOptionSelect={onOptionSelect}
@@ -37,6 +36,7 @@ describe('<MultiSelectPanel />', () => {
         isAllChecked={isAllChecked}
         hasSearch={hasSearch}
         searchLabel={searchLabel}
+        id={''}
       />
     )
   }

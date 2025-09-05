@@ -18,12 +18,12 @@ describe('<MultiSelectTrigger />', () => {
   } = {}) => {
     return render(
       <MultiSelectTrigger
-        id="1"
         toggleDropdown={mockToggleDropdown}
         buttonLabel={'Options Label'}
         disabled={disabled}
         isOpen={isOpen}
         selectedCount={selectedCount}
+        id={''}
       />
     )
   }
