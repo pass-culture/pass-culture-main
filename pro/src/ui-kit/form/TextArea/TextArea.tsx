@@ -1,5 +1,4 @@
-import cn from 'classnames'
-import classNames from 'classnames'
+import { default as classNames, default as cn } from 'classnames'
 import type React from 'react'
 import {
   type ForwardedRef,
@@ -173,7 +172,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         textAreaRef.current.focus()
         textAreaRef.current.setSelectionRange(128, 128)
       }
-      onPressTemplateButton && onPressTemplateButton()
+      onPressTemplateButton?.()
     }
 
     return (

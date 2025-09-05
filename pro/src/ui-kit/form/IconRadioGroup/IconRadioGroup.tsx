@@ -52,8 +52,7 @@ export const IconRadioGroup = ({
   const displayScale = scale.length > 1
 
   return (
-    <>
-      <fieldset
+    <fieldset
         className={styles['icon-radio-group']}
         name={`icon-radio-group-${name}`}
         aria-describedby={`${hasError ? errorId : ''} ${scaleId}`}
@@ -103,6 +102,5 @@ export const IconRadioGroup = ({
           </div>
         </div>
       </fieldset>
-    </>
   )
 }

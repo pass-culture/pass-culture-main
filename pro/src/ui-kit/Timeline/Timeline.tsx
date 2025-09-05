@@ -183,7 +183,7 @@ export const Timeline = ({ steps }: TimelineProps): JSX.Element => {
         const nextStepType = steps[index + 1]?.type
         const isLast = index === steps.length - 1
         return (
-          <li key={index} className={styles['step']}>
+          <li key={`${step.type}-${index}`} className={styles['step']}>
             <div className={styles['icon-line-container']}>
               <div className={styles['icon-container']}>
                 {getIconComponent(step.type)}
