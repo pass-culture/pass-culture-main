@@ -54,3 +54,13 @@ MULTIPLE_YEARS_AGGREGATED_VENUE_INDIVIDUAL_REVENUE = [
         2022, Decimal("22.12"), Decimal("22.12"), Decimal("22.12"), Decimal("22.12"), only_individual=True
     ),
 ]
+
+
+class MockTotalExpectedRevenueQueryResult:
+    expected_revenue: str
+
+    def __init__(self, expected_revenue: Decimal = Decimal("70.48")):
+        self.expected_revenue = str(expected_revenue)
+
+
+TOTAL_EXPECTED_REVENUE = [MockTotalExpectedRevenueQueryResult()]
