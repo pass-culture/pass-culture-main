@@ -994,16 +994,25 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Partenaire culturel"] == "Venue Revue manuelle"
 
     def test_list_collective_offers_with_top_acteur_offerer(self, client, pro_fraud_admin):
-        collective_offer = educational_factories.CollectiveOfferFactory(
+        top_acteur_tag = offerers_factories.OffererTagFactory(
+            name=offerers_constants.TOP_ACTEUR_TAG_NAME, label="Top Acteur"
+        )
+        other_tag = offerers_factories.OffererTagFactory(name="test", label="Test")
+        educational_factories.CollectiveOfferFactory()
+        educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer__tags=[other_tag],
+        )
+        educational_factories.CollectiveOfferFactory(
             venue__managingOfferer__name="Offerer",
-            venue__managingOfferer__tags=[
-                offerers_factories.OffererTagFactory(name=offerers_constants.TOP_ACTEUR_TAG_NAME, label="Top Acteur"),
-                offerers_factories.OffererTagFactory(name="test", label="Test"),
-            ],
+            venue__managingOfferer__tags=[top_acteur_tag, other_tag],
         )
 
         client = client.with_bo_session_auth(pro_fraud_admin)
-        query_args = self._get_query_args_by_id(collective_offer.id)
+        query_args = {
+            "search-0-search_field": "TOP_ACTEUR",
+            "search-0-operator": "NULLABLE",
+            "search-0-string": "true",
+        }
         with assert_num_queries(self.expected_num_queries):
             response = client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
