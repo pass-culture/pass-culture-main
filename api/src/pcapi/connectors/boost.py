@@ -248,8 +248,8 @@ def _check_response_is_ok(response: requests.Response, cinema_api_token: str | N
         reason = _extract_reason_from_response(response)
         message = _extract_message_from_response(response)
         error_message = _filter_token(reason, cinema_api_token)
-        if response.status_code == 401 and message == "Invalid JWT Token":
-            raise BoostInvalidTokenException("Boost token is invalid")
+        if response.status_code == 401:
+            raise BoostInvalidTokenException(f"Boost: {message}")
         raise BoostAPIException(f"Error on Boost API on {request_detail} : {error_message} - {message}")
 
 
