@@ -15,8 +15,7 @@ export const ReSendEmailCallout = ({
   const notification = useNotification()
 
   const onClick = () => {
-    action &&
-      action()
+    action?.()
         .then(() => {
           notification.information('Email renvoyé !')
         })

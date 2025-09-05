@@ -48,7 +48,6 @@ const sortBookings = (
         (a, b) =>
           sortByBookingDate(a, b) * (sortingMode === SortingMode.ASC ? 1 : -1)
       )
-    case null:
     default:
       return bookings.sort((a, b) => sortByBookingDate(a, b) * -1)
   }
@@ -86,7 +85,7 @@ export const IndividualBookingsTable = ({
 
   useEffect(() => {
     setPage(1)
-  }, [bookings, setPage])
+  }, [setPage])
 
   const { logEvent } = useAnalytics()
 

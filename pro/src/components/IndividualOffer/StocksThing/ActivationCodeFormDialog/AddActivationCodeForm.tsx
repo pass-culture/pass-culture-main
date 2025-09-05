@@ -20,8 +20,7 @@ export const AddActivationCodeForm = ({
 }: AddActivationCodeFormProps) => {
   return (
     <>
-      <>
-        {errorMessage ? (
+      {errorMessage ? (
           <div className={styles['activation-codes-errors']}>
             <p>Une erreur s’est produite lors de l’import de votre fichier.</p>
             <p>{errorMessage}</p>
@@ -30,7 +29,6 @@ export const AddActivationCodeForm = ({
         ) : (
           <ActivationCodesUploadInformationDescription />
         )}
-      </>
       <BaseFileInput
         label="Importer un fichier .csv depuis l’ordinateur"
         fileTypes={['.csv']}

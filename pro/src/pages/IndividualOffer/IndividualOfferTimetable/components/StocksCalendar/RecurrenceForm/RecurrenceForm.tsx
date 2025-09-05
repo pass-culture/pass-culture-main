@@ -120,7 +120,7 @@ const BeginningTimesForm = (): JSX.Element => {
         </h2>
 
         <FormLayout.Row>
-          <>
+          
             <div className={styles['beginning-time-list']}>
               {fields.map((field, index) => (
                 <div key={field.id} className={styles['time-slot']}>
@@ -169,7 +169,7 @@ const BeginningTimesForm = (): JSX.Element => {
             >
               Ajouter un créneau
             </Button>
-          </>
+          
         </FormLayout.Row>
       </div>
     </fieldset>

@@ -114,9 +114,9 @@ export const OnboardingCollectiveModal = ({
           disabled={isLoading}
         >
           {isLoading ? (
-            <>Vérification en cours …</>
+            "Vérification en cours …"
           ) : (
-            <>J’ai déposé un dossier</>
+            "J’ai déposé un dossier"
           )}
         </Button>
       </div>

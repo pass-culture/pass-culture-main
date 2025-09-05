@@ -64,7 +64,7 @@ export const Offerers = (): JSX.Element => {
     error: venuesOfOffererError,
     data: venuesOfOfferer,
   } = useSWR(
-    offerer && offerer.siret
+    offerer?.siret
       ? [GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY, offerer.siret]
       : null,
     ([, offererSiret]) =>
@@ -80,7 +80,8 @@ export const Offerers = (): JSX.Element => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate('/inscription/structure/recherche')
     }
-  }, [isLoadingVenues, venuesOfOffererError])
+  }, [venuesOfOffererError, // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      navigate])
 
   if (isLoadingVenues || !offerer) {
     return <Spinner />
