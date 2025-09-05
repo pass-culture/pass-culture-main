@@ -26,7 +26,7 @@ const FormWrapper = () => {
         {...register('email')}
         label="Email"
         required={true}
-        asterisk={true}
+        currentCount={10}
         description="Format : mail@exemple.com"
         onApplyTip={(tip) => {
           setValue('email', tip)
