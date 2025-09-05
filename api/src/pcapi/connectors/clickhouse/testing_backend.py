@@ -10,6 +10,7 @@ from .queries import TotalExpectedRevenueQuery
 from .query_mock import MULTIPLE_YEARS_AGGREGATED_VENUE_COLLECTIVE_REVENUE
 from .query_mock import MULTIPLE_YEARS_AGGREGATED_VENUE_INDIVIDUAL_REVENUE
 from .query_mock import MULTIPLE_YEARS_AGGREGATED_VENUE_TOTAL_REVENUE
+from .query_mock import TOTAL_EXPECTED_REVENUE
 
 
 class TestingBackend(BaseBackend):
@@ -18,7 +19,7 @@ class TestingBackend(BaseBackend):
 
     def run_query(self, query: str, params: typing.Tuple) -> list:
         if query == TotalExpectedRevenueQuery().raw_query:
-            return []
+            return TOTAL_EXPECTED_REVENUE
         if query == AggregatedCollectiveRevenueQuery().raw_query:
             return MULTIPLE_YEARS_AGGREGATED_VENUE_COLLECTIVE_REVENUE
         if query == AggregatedIndividualRevenueQuery().raw_query:
