@@ -59,6 +59,7 @@ export const DayCheckbox = forwardRef(
           <input
             type="checkbox"
             className={styles['checkbox-input']}
+            aria-labelledby={`${name}-label`}
             name={name}
             ref={ref}
             aria-describedby={errorId}

@@ -60,11 +60,11 @@ export const AddressSelect = forwardRef(
       onlyTypes,
       disabled = false,
       className,
-      onAddressChosen = () => {},
+      onAddressChosen,
       error,
       name,
-      onChange = () => {},
-      onBlur = () => {},
+      onChange,
+      onBlur,
       value: inputValue,
       isOptional,
     }: AddressSelectProps,
@@ -139,16 +139,16 @@ export const AddressSelect = forwardRef(
           void debouncedOnSearch()
         }}
         onChange={(event) => {
-          onChange(event)
+          onChange?.(event)
           const addressData = addressesMap.current.get(event.target.value)
           if (addressData) {
-            onAddressChosen(addressData)
+            onAddressChosen?.(addressData)
           }
         }}
         onBlur={(event) => {
           // If the "value" returned by the component is empty, we synchronize this with empty address fields
           if (event.target.value.trim() === '') {
-            onAddressChosen({
+            onAddressChosen?.({
               id: '',
               address: '',
               city: '',
@@ -161,7 +161,7 @@ export const AddressSelect = forwardRef(
               inseeCode: '',
             })
           }
-          onBlur(event)
+          onBlur?.(event)
         }}
         searchInOptions={searchInOptions}
         disabled={disabled}
