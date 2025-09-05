@@ -16,14 +16,14 @@ export const ReSendEmailCallout = ({
 
   const onClick = () => {
     action?.()
-        .then(() => {
-          notification.information('Email renvoyé !')
-        })
-        .catch(() => {
-          notification.error(
-            `Une erreur est survenue, veuillez réessayer ultérieurement.`
-          )
-        })
+      .then(() => {
+        notification.information('Email renvoyé !')
+      })
+      .catch(() => {
+        notification.error(
+          `Une erreur est survenue, veuillez réessayer ultérieurement.`
+        )
+      })
   }
 
   return (

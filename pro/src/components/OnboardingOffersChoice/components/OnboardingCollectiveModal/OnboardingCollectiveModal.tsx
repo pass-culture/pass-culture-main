@@ -113,11 +113,7 @@ export const OnboardingCollectiveModal = ({
           onClick={checkEligibility}
           disabled={isLoading}
         >
-          {isLoading ? (
-            "Vérification en cours …"
-          ) : (
-            "J’ai déposé un dossier"
-          )}
+          {isLoading ? 'Vérification en cours …' : 'J’ai déposé un dossier'}
         </Button>
       </div>
       {errorMessage && (

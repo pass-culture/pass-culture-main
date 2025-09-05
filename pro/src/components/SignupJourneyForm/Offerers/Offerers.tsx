@@ -80,8 +80,7 @@ export const Offerers = (): JSX.Element => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate('/inscription/structure/recherche')
     }
-  }, [venuesOfOffererError, // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigate])
+  }, [venuesOfOffererError])
 
   if (isLoadingVenues || !offerer) {
     return <Spinner />

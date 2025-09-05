@@ -85,7 +85,7 @@ export const IndividualBookingsTable = ({
 
   useEffect(() => {
     setPage(1)
-  }, [setPage])
+  }, [bookings, setPage])
 
   const { logEvent } = useAnalytics()
 

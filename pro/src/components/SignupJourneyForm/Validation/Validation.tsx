@@ -82,8 +82,7 @@ export const Validation = (): JSX.Element => {
       navigate('/inscription/structure/activite')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activity, offerer, // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigate])
+  }, [activity, offerer])
 
   if (venueTypesQuery.isLoading) {
     return <Spinner />

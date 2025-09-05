@@ -28,7 +28,7 @@ export const onSubmit = async (
   departmentCode: string,
   offerId: number,
   notify: ReturnType<typeof useNotification>
-): Promise<StocksEvent[] | undefined> => {
+): Promise<StocksEvent[] | void> => {
   const dates = getRecurrenceDates(values)
   const generatedStocks = generateStocksForDates(values, dates, departmentCode)
 
