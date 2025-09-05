@@ -1,4 +1,5 @@
 import logging
+import textwrap
 
 import pydantic.v1 as pydantic
 
@@ -54,7 +55,9 @@ class TiteliveBookSearch(TiteliveSearchTemplate[TiteLiveBookWork]):
     def upsert_titelive_result_in_dict(
         self, titelive_search_result: TiteLiveBookWork, products_by_ean: dict[str, offers_models.Product]
     ) -> dict[str, offers_models.Product]:
-        title = self.truncate_string(titelive_search_result.titre)
+        title = textwrap.shorten(
+            titelive_search_result.titre, width=constants.TITELIVE_PRODUCT_NAME_MAX_LENGTH, placeholder="…"
+        )
         authors = titelive_search_result.auteurs_multi
         for article in titelive_search_result.article:
             ean = article.gencod
@@ -191,7 +194,7 @@ def get_ineligibility_reasons(article: TiteLiveBookArticle, title: str) -> list[
         reasons.append("pornography-or-violence")
 
     # Toeic or toefl
-    if constants.TOEIC_TEXT in title or constants.TOEFL_TEXT in title:
+    if constants.TOEIC_TEXT in title.lower() or constants.TOEFL_TEXT in title.lower():
         reasons.append("toeic-toefl")
 
     # --- GTL-based categorization ---
