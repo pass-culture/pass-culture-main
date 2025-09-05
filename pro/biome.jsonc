@@ -53,7 +53,8 @@
       "!coverage",
       "!scripts/customRequest.ts",
       "!src/apiClient/adage",
-      "!src/apiClient/v1"
+      "!src/apiClient/v1",
+      "!**/*.stories.tsx"
     ],
     "ignoreUnknown": true
   },

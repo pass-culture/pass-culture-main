@@ -139,7 +139,7 @@ export const FieldLayout = ({
               icon={fullHelpIcon}
               iconAlt="À propos"
               variant={ButtonVariant.SECONDARY}
-              tooltipContent={<>{help}</>}
+              tooltipContent={help}
             />
           )}
         </div>
@@ -172,7 +172,7 @@ export const FieldLayout = ({
                 icon={
                   clearButtonDisplay === 'clear' ? fullClearIcon : fullCloseIcon
                 }
-                tooltipContent={<>{clearButtonProps.tooltip || 'Supprimer'}</>}
+                tooltipContent={clearButtonProps.tooltip || 'Supprimer'}
                 variant={ButtonVariant.TERNARY}
               />
             </div>

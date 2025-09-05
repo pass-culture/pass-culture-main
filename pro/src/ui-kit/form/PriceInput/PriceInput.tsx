@@ -98,7 +98,7 @@ export const PriceInput = React.forwardRef(
       if (freeRef.current && priceRef.current?.value === '0') {
         setIsFree(true)
       }
-    }, [priceRef.current?.value, freeRef.current?.value])
+    }, [])
 
     const onTextInputChange = (e: ChangeEvent<HTMLInputElement>) => {
       updatePriceValue(e.target.value)
