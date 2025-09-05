@@ -6,7 +6,7 @@ updates:
     schedule:
       interval: 'daily'
       time: '09:00'
-    open-pull-requests-limit: 15
+    open-pull-requests-limit: 25
     ignore:
       - dependency-name: '@pass-culture/design-system' # Keep the design-system repo under control while it's early-stage
   - package-ecosystem: 'npm'
@@ -23,7 +23,7 @@ updates:
     schedule:
       interval: 'daily'
       time: '03:00'
-    open-pull-requests-limit: 15
+    open-pull-requests-limit: 25
     ignore:
       # Exclude packages that have very frequent updates. They have a
       # specific configuration, see block below.
@@ -55,7 +55,7 @@ updates:
       interval: 'weekly'
       day: 'wednesday'
       time: '03:00'
-    open-pull-requests-limit: 15
+    open-pull-requests-limit: 25
     allow:
       - dependency-name: boto3
     rebase-strategy: 'disabled'
@@ -65,4 +65,4 @@ updates:
     schedule:
       interval: 'daily'
       time: '06:00'
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 25
