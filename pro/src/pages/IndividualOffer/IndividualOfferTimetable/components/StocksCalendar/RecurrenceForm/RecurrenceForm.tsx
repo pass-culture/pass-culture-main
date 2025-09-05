@@ -120,56 +120,54 @@ const BeginningTimesForm = (): JSX.Element => {
         </h2>
 
         <FormLayout.Row>
-          <>
-            <div className={styles['beginning-time-list']}>
-              {fields.map((field, index) => (
-                <div key={field.id} className={styles['time-slot']}>
-                  <TimePicker
-                    label={`Horaire ${index + 1}`}
-                    className={styles['time-slot-picker']}
-                    error={
-                      formState.errors.beginningTimes?.[index]?.beginningTime
-                        ?.message
-                    }
-                    {...register(`beginningTimes.${index}.beginningTime`)}
-                    required
-                  />
-                  {watch('beginningTimes').length > 1 && (
-                    <div className={styles['time-slot-clear']}>
-                      <Tooltip content={`Supprimer l'horaire ${index + 1}`}>
-                        <button
-                          type="button"
-                          className={styles['time-slot-clear-button']}
-                          onClick={() => remove(index)}
-                        >
-                          <SvgIcon
-                            alt={`Supprimer l'horaire ${index + 1}`}
-                            src={fullClearIcon}
-                            className={styles['time-slot-clear-button-icon']}
-                          ></SvgIcon>
-                        </button>
-                      </Tooltip>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-            <Button
-              variant={ButtonVariant.TERNARY}
-              icon={fullMoreIcon}
-              onClick={() => {
-                append('')
-                const inputToFocus = `beginningTimes.${watch('beginningTimes').length}`
+          <div className={styles['beginning-time-list']}>
+            {fields.map((field, index) => (
+              <div key={field.id} className={styles['time-slot']}>
+                <TimePicker
+                  label={`Horaire ${index + 1}`}
+                  className={styles['time-slot-picker']}
+                  error={
+                    formState.errors.beginningTimes?.[index]?.beginningTime
+                      ?.message
+                  }
+                  {...register(`beginningTimes.${index}.beginningTime`)}
+                  required
+                />
+                {watch('beginningTimes').length > 1 && (
+                  <div className={styles['time-slot-clear']}>
+                    <Tooltip content={`Supprimer l'horaire ${index + 1}`}>
+                      <button
+                        type="button"
+                        className={styles['time-slot-clear-button']}
+                        onClick={() => remove(index)}
+                      >
+                        <SvgIcon
+                          alt={`Supprimer l'horaire ${index + 1}`}
+                          src={fullClearIcon}
+                          className={styles['time-slot-clear-button-icon']}
+                        ></SvgIcon>
+                      </button>
+                    </Tooltip>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          <Button
+            variant={ButtonVariant.TERNARY}
+            icon={fullMoreIcon}
+            onClick={() => {
+              append('')
+              const inputToFocus = `beginningTimes.${watch('beginningTimes').length}`
 
-                // The input we want to focus has not been rendered yet
-                setTimeout(() => {
-                  document.getElementById(inputToFocus)?.focus()
-                }, 0)
-              }}
-            >
-              Ajouter un créneau
-            </Button>
-          </>
+              // The input we want to focus has not been rendered yet
+              setTimeout(() => {
+                document.getElementById(inputToFocus)?.focus()
+              }, 0)
+            }}
+          >
+            Ajouter un créneau
+          </Button>
         </FormLayout.Row>
       </div>
     </fieldset>

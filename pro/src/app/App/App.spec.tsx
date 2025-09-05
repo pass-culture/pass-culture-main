@@ -33,7 +33,7 @@ vi.mock('@sentry/browser', () => ({ setUser: vi.fn() }))
 function TestBrokenCallComponent() {
   useSWR([GET_OFFER_QUERY_KEY], () => api.getOffer(17))
 
-  return <>broken page</>
+  return 'broken page'
 }
 
 const renderApp = (options?: RenderWithProvidersOptions) =>

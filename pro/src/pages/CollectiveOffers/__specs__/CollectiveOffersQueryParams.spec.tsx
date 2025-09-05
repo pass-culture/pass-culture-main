@@ -43,14 +43,7 @@ const renderOffers = async (
     <router.Routes>
       <router.Route path="/offres/collectives" element={<CollectiveOffers />} />
 
-      <router.Route
-        path="/offres"
-        element={
-          <>
-            <h1>Offres individuelles</h1>
-          </>
-        }
-      />
+      <router.Route path="/offres" element={<h1>Offres individuelles</h1>} />
     </router.Routes>,
     {
       user: sharedCurrentUserFactory(),

@@ -144,11 +144,9 @@ export const FormLocation = ({
                     onClick={toggleManualAddressForm}
                     disabled={disableForm}
                   >
-                    {isManualEdition ? (
-                      <>Revenir à la sélection automatique</>
-                    ) : (
-                      <>Vous ne trouvez pas votre adresse ?</>
-                    )}
+                    {isManualEdition
+                      ? 'Revenir à la sélection automatique'
+                      : 'Vous ne trouvez pas votre adresse ?'}
                   </Button>
                   {isManualEdition && (
                     <AddressManual

@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useId } from 'react'
 
 import type {
   GetOffererResponseModel,
@@ -22,6 +22,7 @@ export const ReimbursementFields = ({
 }: ReimbursementFieldsProps) => {
   const venueHaveSiret = !!venue.siret
   const offererHaveVenueWithSiret = offerer.hasAvailablePricingPoints
+  const reimbursementSection = useId()
 
   const scrollToReimbursementSection = useCallback((node: any) => {
     if (node !== null && scrollToSection) {
@@ -32,30 +33,24 @@ export const ReimbursementFields = ({
   }, [])
 
   return (
-    <>
-      <div ref={scrollToReimbursementSection} id="reimbursement-section">
-        <FormLayout.Section title="Barème de remboursement">
-          {!venueHaveSiret && !offererHaveVenueWithSiret ? (
-            <Callout
-              links={[
-                {
-                  href: `/inscription/structure/recherche`,
-                  label: 'Créer une structure avec SIRET',
-                },
-              ]}
-            >
-              Afin de pouvoir ajouter de nouvelles coordonnées bancaires, vous
-              devez avoir, au minimum, une structure rattachée à un SIRET.
-            </Callout>
-          ) : (
-            <>
-              {!venueHaveSiret && (
-                <PricingPoint offerer={offerer} venue={venue} />
-              )}
-            </>
-          )}
-        </FormLayout.Section>
-      </div>
-    </>
+    <div ref={scrollToReimbursementSection} id={reimbursementSection}>
+      <FormLayout.Section title="Barème de remboursement">
+        {!venueHaveSiret && !offererHaveVenueWithSiret ? (
+          <Callout
+            links={[
+              {
+                href: `/inscription/structure/recherche`,
+                label: 'Créer une structure avec SIRET',
+              },
+            ]}
+          >
+            Afin de pouvoir ajouter de nouvelles coordonnées bancaires, vous
+            devez avoir, au minimum, une structure rattachée à un SIRET.
+          </Callout>
+        ) : (
+          !venueHaveSiret && <PricingPoint offerer={offerer} venue={venue} />
+        )}
+      </FormLayout.Section>
+    </div>
   )
 }

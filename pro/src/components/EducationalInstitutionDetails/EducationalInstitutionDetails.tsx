@@ -79,13 +79,11 @@ export const EducationalInstitutionDetails = ({
             )}
           </>
         ) : (
-          <>
-            {educationalRedactor && (
-              <EducationalRedactorDetailsForBooking
-                contact={educationalRedactor}
-              />
-            )}
-          </>
+          educationalRedactor && (
+            <EducationalRedactorDetailsForBooking
+              contact={educationalRedactor}
+            />
+          )
         )}
       </dl>
     </div>
