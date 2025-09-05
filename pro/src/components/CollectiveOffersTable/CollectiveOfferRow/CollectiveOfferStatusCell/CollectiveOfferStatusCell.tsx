@@ -18,8 +18,6 @@ export const CollectiveOfferStatusCell = ({
   className,
 }: CollectiveOfferStatusCellProps) => (
   <td
-    // biome-ignore lint/a11y: accepted for assistive tech
-    role="cell"
     className={cn(
       styles['offers-table-cell'],
       styles['status-column'],

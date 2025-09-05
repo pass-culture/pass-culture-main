@@ -21,8 +21,6 @@ export const OfferVenueCell = ({
 }: OfferVenueCellProps) => {
   return (
     <td
-      // biome-ignore lint/a11y: accepted for assistive technologies
-      role="cell"
       className={classNames(
         styles['offers-table-cell'],
         styles['venue-column'],
