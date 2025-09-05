@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import pytest
 
 from pcapi.core import testing
@@ -45,7 +43,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
                 "venueId": offer1.venueId,
                 "startDatetime": stock1.startDatetime.isoformat(timespec="seconds"),
                 "endDatetime": stock1.endDatetime.isoformat(timespec="seconds"),
-                "status": offer1.status.name,
                 "offerStatus": offer1.displayedStatus.value,
                 "bookings": [],
             },
@@ -54,7 +51,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
                 "venueId": offer2.venueId,
                 "startDatetime": offer2.collectiveStock.startDatetime.isoformat(timespec="seconds"),
                 "endDatetime": offer2.collectiveStock.endDatetime.isoformat(timespec="seconds"),
-                "status": offer2.status.name,
                 "offerStatus": offer2.displayedStatus.value,
                 "bookings": [
                     {
@@ -73,54 +69,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
                         "dateCreated": booking2.dateCreated.isoformat() if booking2.dateCreated else None,
                     }
                 ],
-            },
-        ]
-
-    def test_get_offers_filter_by_status(self, client):
-        venue_provider = provider_factories.VenueProviderFactory()
-
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-
-        stock1 = educational_factories.CollectiveStockFactory(
-            collectiveOffer__provider=venue_provider.provider,
-            startDatetime=datetime(2043, 5, 2, 15),
-        )
-        offer1 = stock1.collectiveOffer
-        stock2 = educational_factories.CollectiveStockFactory(
-            collectiveOffer__provider=venue_provider.provider,
-            startDatetime=datetime(2043, 5, 2, 15),
-        )
-        offer2 = stock2.collectiveOffer
-
-        # this BOOKED offer will not appear in the result
-        educational_factories.create_collective_offer_by_status(
-            status=models.CollectiveOfferDisplayedStatus.BOOKED, provider=venue_provider.provider
-        )
-
-        with testing.assert_num_queries(self.num_queries):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                "/v2/collective/offers/?status=ACTIVE"
-            )
-            assert response.status_code == 200
-
-        assert response.json == [
-            {
-                "id": offer1.id,
-                "venueId": offer1.venueId,
-                "startDatetime": "2043-05-02T15:00:00",
-                "endDatetime": "2043-05-02T15:00:00",
-                "status": "ACTIVE",
-                "offerStatus": "PUBLISHED",
-                "bookings": [],
-            },
-            {
-                "id": offer2.id,
-                "venueId": offer2.venueId,
-                "startDatetime": "2043-05-02T15:00:00",
-                "endDatetime": "2043-05-02T15:00:00",
-                "status": "ACTIVE",
-                "offerStatus": "PUBLISHED",
-                "bookings": [],
             },
         ]
 
@@ -205,7 +153,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
                 "venueId": offer.venueId,
                 "startDatetime": stock.startDatetime.isoformat(timespec="seconds"),
                 "endDatetime": stock.endDatetime.isoformat(timespec="seconds"),
-                "status": "ACTIVE",
                 "offerStatus": "PUBLISHED",
                 "bookings": [],
             },
@@ -233,7 +180,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
                 "venueId": offer1.venueId,
                 "startDatetime": stock1.startDatetime.isoformat(timespec="seconds"),
                 "endDatetime": stock1.endDatetime.isoformat(timespec="seconds"),
-                "status": "ACTIVE",
                 "offerStatus": "PUBLISHED",
                 "bookings": [],
             },
@@ -262,7 +208,6 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
                 "venueId": offer1.venueId,
                 "startDatetime": stock1.startDatetime.isoformat(timespec="seconds"),
                 "endDatetime": stock1.endDatetime.isoformat(timespec="seconds"),
-                "status": "ACTIVE",
                 "offerStatus": "PUBLISHED",
                 "bookings": [],
             },
