@@ -99,7 +99,7 @@ export const mainlandOptions: Option[] = [
   { id: '95', label: '95 - Val-d’Oise' },
 ]
 
-export const domtomOptions: Option[] = [
+const domtomOptions: Option[] = [
   { id: '971', label: '971 - Guadeloupe' },
   { id: '972', label: '972 - Martinique' },
   { id: '973', label: '973 - Guyane' },
@@ -111,7 +111,7 @@ export const domtomOptions: Option[] = [
 const MAINLAND_OPTION_VALUE = 'mainland'
 const MAINLAND_OPTION_LABEL = 'France métropolitaine'
 
-export const mainlandInterventionOption = {
+const mainlandInterventionOption = {
   id: MAINLAND_OPTION_VALUE,
   label: MAINLAND_OPTION_LABEL,
 }
