@@ -21,6 +21,10 @@ on:
         required: false
         default: false
         type: boolean
+      deployment_source_branch:
+        description: "Branch of pass-culture-deployment repository to use for helm charts."
+        required: false
+        default: "master"
 
 permissions: write-all
 
@@ -253,7 +257,7 @@ jobs:
             -e pullrequest \
             --sourceRepoURL https://github.com/pass-culture/pass-culture-deployment.git \
             --sourcePath helm/pcapi \
-            --sourceRepoRef master \
+            --sourceRepoRef ${{ inputs.deployment_source_branch }} \
             --destinationRepoRef pcapi/pullrequests \
             --additionalStateValues "pcapi.image.tag=${{ github.sha }}" \
             --additionalStateValues "prId=${PRID}" \
