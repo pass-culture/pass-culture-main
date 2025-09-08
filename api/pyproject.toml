@@ -21,7 +21,7 @@ brevo-python = "1.1.2"
 celery = { version = "5.5.3", extras = ["redis"] }
 click = "8.2.1"
 click-option-group = "0.5.7"
-clickhouse-sqlalchemy = "0.2.7"
+clickhouse-sqlalchemy = "0.2.9"
 cryptography = "^44.0.3"       # pyopenssl (24.3.0) depends on cryptography (>=41.0.5<45)
 ecdsa = "0.19.1"                     # <0.20.0
 email-validator = "2.3.0"
