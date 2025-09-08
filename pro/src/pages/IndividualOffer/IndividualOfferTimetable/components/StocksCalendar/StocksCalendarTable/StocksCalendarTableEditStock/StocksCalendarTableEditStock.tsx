@@ -8,6 +8,7 @@ import type {
   GetIndividualOfferResponseModel,
   GetOfferStockResponseModel,
 } from '@/apiClient/v1'
+import { isOfferAllocineSynchronized } from '@/commons/core/Offers/utils/typology'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { getPriceCategoryOptions } from '@/pages/IndividualOffer/commons/getPriceCategoryOptions'
@@ -39,9 +40,11 @@ export type StocksCalendarTableEditStockProps = {
   departmentCode: string
   priceCategories: GetIndividualOfferResponseModel['priceCategories']
   onUpdateStock: (body: EventStockUpdateBodyModel) => void
+  offer: GetIndividualOfferResponseModel
 }
 
 export function StocksCalendarTableEditStock({
+  offer,
   stock,
   departmentCode,
   priceCategories,
@@ -55,6 +58,8 @@ export function StocksCalendarTableEditStock({
       validationSchema
     ),
   })
+
+  const isAllocineSynchro = isOfferAllocineSynchronized(offer)
 
   const formValues = form.watch()
 
@@ -85,6 +90,7 @@ export function StocksCalendarTableEditStock({
               required
               error={form.formState.errors.date?.message}
               minDate={new Date()}
+              disabled={isAllocineSynchro}
             />
             <TimePicker
               {...form.register('time')}
@@ -92,6 +98,7 @@ export function StocksCalendarTableEditStock({
               label="Horaire"
               required
               error={form.formState.errors.time?.message}
+              disabled={isAllocineSynchro}
             />
           </div>
           <h2 className={styles['title']}>Places et tarifs</h2>

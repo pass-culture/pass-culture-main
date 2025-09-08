@@ -4,7 +4,10 @@ import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { getOfferStockFactory } from '@/commons/utils/factories/individualApiFactories'
+import {
+  getIndividualOfferFactory,
+  getOfferStockFactory,
+} from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
@@ -35,6 +38,7 @@ function renderStocksCalendarTableEditStock(
             stock={getOfferStockFactory()}
             priceCategories={[{ id: 1, label: 'tarif', price: 12 }]}
             onUpdateStock={() => vi.fn()}
+            offer={getIndividualOfferFactory()}
             {...props}
           />
         </FormProvider>
@@ -118,5 +122,14 @@ describe('StocksCalendarTableEditStock', () => {
     expect(
       screen.queryByText('Veuillez indiquer une quantité supérieure à 0')
     ).not.toBeInTheDocument()
+  })
+
+  it('should disable the date and time edition if the offer is an allociné synchro', () => {
+    renderStocksCalendarTableEditStock({
+      offer: getIndividualOfferFactory({ lastProvider: { name: 'Allociné' } }),
+    })
+
+    expect(screen.getAllByLabelText(/Date/)[0]).toBeDisabled()
+    expect(screen.getByLabelText(/Horaire/)).toBeDisabled()
   })
 })

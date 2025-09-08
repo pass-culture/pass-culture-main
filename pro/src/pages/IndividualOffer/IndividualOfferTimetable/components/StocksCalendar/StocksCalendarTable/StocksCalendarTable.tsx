@@ -8,7 +8,10 @@ import type {
 } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
-import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
+import {
+  isOfferAllocineSynchronized,
+  isOfferSynchronized,
+} from '@/commons/core/Offers/utils/typology'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from '@/commons/utils/date'
@@ -121,6 +124,7 @@ export function StocksCalendarTable({
             departmentCode={departmentCode}
             priceCategories={offer.priceCategories}
             onUpdateStock={handleUpdateStock}
+            offer={offer}
           />
         )}
       </DialogBuilder>
@@ -188,7 +192,8 @@ export function StocksCalendarTable({
               !isOfferDisabled(offer.status) &&
               stock.beginningDatetime &&
               !isBefore(stock.beginningDatetime, new Date()) &&
-              !isOfferSynchronized(offer)
+              (!isOfferSynchronized(offer) ||
+                isOfferAllocineSynchronized(offer))
 
             return (
               <tr key={stock.id} className={styles['tr']}>

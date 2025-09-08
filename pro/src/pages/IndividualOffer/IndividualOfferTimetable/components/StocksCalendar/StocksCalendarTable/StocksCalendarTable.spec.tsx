@@ -99,6 +99,24 @@ describe('StocksCalendarTable', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('should render the edit options when the offer is synchronized with allociné', () => {
+    renderStocksCalendarTable({
+      offer: getIndividualOfferFactory({
+        lastProvider: { name: 'Allociné' },
+      }),
+      stocks: [
+        getOfferStockFactory({
+          beginningDatetime: addDays(new Date(), 1).toISOString(),
+        }),
+      ],
+      mode: OFFER_WIZARD_MODE.EDITION,
+    })
+
+    expect(
+      screen.getByRole('button', { name: 'Modifier la date' })
+    ).toBeInTheDocument()
+  })
+
   it('should not render the delete and edit options when the offer is disabled (because it is pending)', () => {
     renderStocksCalendarTable({
       offer: getIndividualOfferFactory({ status: OfferStatus.PENDING }),
