@@ -108,7 +108,7 @@
     "sass": "^1.92.1",
     "storybook": "^8.6.14",
     "storybook-addon-remix-react-router": "^4.0.0",
-    "stylelint": "^16.23.1",
+    "stylelint": "^16.24.0",
     "stylelint-a11y": "^1.2.3",
     "stylelint-config-standard-scss": "^15.0.1",
     "tree-dump": "^1.1.0",
