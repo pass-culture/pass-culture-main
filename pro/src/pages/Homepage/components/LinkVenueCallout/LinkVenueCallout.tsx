@@ -29,8 +29,7 @@ export const LinkVenueCallout = ({
     <Callout
       links={[
         {
-          href:
-            '/remboursements/informations-bancaires?structure=' + offerer.id,
+          href: `/remboursements/informations-bancaires?structure=${offerer.id}`,
           label: 'Gérer le rattachement de mes structures',
           onClick: () => {
             logEvent(BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT, {

@@ -9,7 +9,7 @@ export const setInitialFormValues = ({
   venue: GetVenueResponseModel
 }): VenueSettingsFormValues => {
   const autoCompleteStreet = venue.address?.street
-    ? venue.address.street + ' '
+    ? `${venue.address.street} `
     : ''
 
   return {

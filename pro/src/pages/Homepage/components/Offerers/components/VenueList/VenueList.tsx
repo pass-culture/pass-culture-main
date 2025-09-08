@@ -29,7 +29,7 @@ export const VenueList = ({ offerer }: VenueListProps) => {
 
       {physicalVenues.map((venue, index) => (
         <Venue
-          key={offerer.id + '-' + venue.id}
+          key={`${offerer.id}-${venue.id}`}
           venue={venue}
           offerer={offerer}
           isFirstVenue={index === indexLastPhysicalVenues}

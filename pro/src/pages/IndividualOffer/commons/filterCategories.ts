@@ -21,8 +21,6 @@ export const getOfferSubtypeFromParam = (
       return INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT
     case INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT:
       return INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
-    case null:
-    case undefined:
     default:
   }
 

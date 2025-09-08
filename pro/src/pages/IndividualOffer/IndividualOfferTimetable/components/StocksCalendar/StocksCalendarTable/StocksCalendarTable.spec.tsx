@@ -259,7 +259,7 @@ describe('StocksCalendarTable', () => {
     )
 
     expect(
-      screen.getByText((content, element) => {
+      screen.getByText((_content, element) => {
         return (
           element?.textContent ===
           'Elle ne sera plus disponible à la réservation et entraînera l’annulation des réservations en cours et validées !'

@@ -200,8 +200,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
         ).toBeInTheDocument()
       )
 
-      const title =
-        'a valid title ' + Array.from({ length: 50 }).map(() => 'test ')
+      const title = `a valid title ${Array.from({ length: 50 }).map(() => 'test ')}`
       await userEvent.type(titleInput, title)
 
       expect(screen.getByTestId('counter-title')).toHaveTextContent(

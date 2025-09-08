@@ -106,7 +106,7 @@ export const generateValidationSchema = (
               date.setHours(Number(hours))
               date.setMinutes(Number(minutes))
 
-              return new Date().getTime() < date.getTime()
+              return Date.now() < date.getTime()
             },
             message: "L'heure doit être postérieure à l'heure actuelle",
           }),

@@ -28,7 +28,6 @@ export function getLocationForOfferVenue(
       return offerVenue.otherAddress
     case OfferAddressType.SCHOOL:
       return 'Le partenaire culturel se déplace dans les établissements scolaires.'
-    case OfferAddressType.OFFERER_VENUE:
     default:
       return (
         <>
