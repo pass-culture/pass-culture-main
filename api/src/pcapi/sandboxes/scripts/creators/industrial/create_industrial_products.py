@@ -19,8 +19,6 @@ def create_industrial_products() -> None:
     product = offers_factories.ProductFactory.create(id=1000, ean=ean, lastProvider=book_provider)
     for _ in range(10):
         offers_factories.OfferFactory.create_batch(
-            random.randint(150, 300), product=product, validation=random.choice(list(OfferValidationStatus))
+            10, product=product, validation=random.choice(list(OfferValidationStatus))
         )
-        offers_factories.OfferFactory.create_batch(
-            random.randint(50, 100), ean=ean, validation=random.choice(list(OfferValidationStatus))
-        )
+        offers_factories.OfferFactory.create_batch(5, ean=ean, validation=random.choice(list(OfferValidationStatus)))
