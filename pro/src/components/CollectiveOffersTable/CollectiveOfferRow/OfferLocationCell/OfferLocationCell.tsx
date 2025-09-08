@@ -35,7 +35,6 @@ export const OfferLocationCell = ({
 
   return (
     <td
-      role="cell"
       className={classNames(
         styles['offers-table-cell'],
         styles['location-column']
