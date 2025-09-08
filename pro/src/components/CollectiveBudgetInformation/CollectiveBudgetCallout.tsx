@@ -6,6 +6,7 @@ import { CalloutVariant } from '@/ui-kit/Callout/types'
 
 import styles from './CollectiveBudgetInformation.module.scss'
 import {
+  COLLECTIVE_CALLOUT_HREF,
   COLLECTIVE_OFFER_CREATION_DESCRIPTION,
   COLLECTIVE_OFFER_CREATION_TITLE,
   COLLECTIVE_TABLES_DESCRIPTION,
@@ -52,7 +53,7 @@ export const CollectiveBudgetCallout = ({
       }
       links={[
         {
-          href: 'https://aide.passculture.app/hc/fr/articles/18234132822684--Acteurs-culturels-Informations-importantes-Cr%C3%A9dit-de-la-part-collective-pour-l-ann%C3%A9e-scolaire-2024-2025',
+          href: COLLECTIVE_CALLOUT_HREF,
           label: 'En savoir plus',
           isExternal: true,
         },

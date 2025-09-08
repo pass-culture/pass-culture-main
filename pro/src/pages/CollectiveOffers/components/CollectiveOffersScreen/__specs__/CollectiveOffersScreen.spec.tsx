@@ -19,6 +19,7 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
+import { COLLECTIVE_TABLES_TITLE } from '@/components/CollectiveBudgetInformation/constants'
 
 import {
   CollectiveOffersScreen,
@@ -332,24 +333,18 @@ describe('CollectiveOffersScreen', () => {
   })
 
   it('should not display the offer type filter if the WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE FF is active', () => {
-    renderOffers(
-      {
-        ...props,
-      },
-      { features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'] }
-    )
+    renderOffers(props, {
+      features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'],
+    })
     expect(
       screen.queryByRole('button', { name: 'Type de l’offre' })
     ).not.toBeInTheDocument()
   })
 
   it('should not show the inactive status option if the WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE FF is active', async () => {
-    renderOffers(
-      {
-        ...props,
-      },
-      { features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'] }
-    )
+    renderOffers(props, {
+      features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'],
+    })
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -363,9 +358,7 @@ describe('CollectiveOffersScreen', () => {
   })
 
   it('should display "Structure"', () => {
-    renderOffers({
-      ...props,
-    })
+    renderOffers(props)
 
     // In filters
     expect(
@@ -376,5 +369,20 @@ describe('CollectiveOffersScreen', () => {
     expect(
       screen.getByRole('columnheader', { name: 'Structure' })
     ).toBeInTheDocument()
+  })
+
+  it('should render budget information callout when offerer is allowed on adage', () => {
+    renderOffers(props)
+
+    expect(screen.getByText(COLLECTIVE_TABLES_TITLE)).toBeInTheDocument()
+  })
+
+  it('should not render budget information callout when offerer is not allowed on adage', () => {
+    renderOffers({
+      ...props,
+      offerer: { ...defaultGetOffererResponseModel, allowedOnAdage: false },
+    })
+
+    expect(screen.queryByText(COLLECTIVE_TABLES_TITLE)).not.toBeInTheDocument()
   })
 })
