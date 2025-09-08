@@ -71,9 +71,8 @@ def update_ds_applications_for_procedure(
     for node in ds_client.get_pro_bank_nodes_states(procedure_number=procedure_number, since=since):
         data = parse_raw_bank_info_data(node, procedure_version)
         try:
-            ImportBankAccount = ImportBankAccountFactory.get(procedure_version)
             application_details = ApplicationDetail(**{"application_type": procedure_version, **data})
-            ImportBankAccount(application_details).execute()
+            ImportBankAccountV5(application_details).execute()
         except Exception as exc:
             logger.exception(
                 "[DS] Application parsing failed with error %s",
@@ -445,58 +444,6 @@ class ImportBankAccountMixin:
         )
 
 
-class ImportBankAccountV4(AbstractImportBankAccount, ImportBankAccountMixin):
-    def execute(self) -> None:
-        venue = self.get_venue()
-
-        if not venue:
-            return
-
-        if not self.validate_bic_and_iban():
-            return
-
-        bank_account, created = self.create_or_update_bank_account(venue.managingOfferer, venue)
-        if not created and not self.application_details.is_accepted:
-            self.deprecate_venue_bank_account_links(bank_account)
-        self.keep_track_of_bank_account_status_changes(bank_account)
-        if self.application_details.is_accepted:
-            self.link_venue_to_bank_account(bank_account, venue)
-        self.validated_bank_account_email_notification(bank_account, venue)
-        self.archive_dossier()
-
-    def get_venue(self) -> "Venue | None":
-        """
-        Fetch the venue given the DS token of the application.
-        """
-        venue = (
-            db.session.query(offerers_models.Venue)
-            .filter(offerers_models.Venue.dmsToken == self.application_details.dms_token)
-            .options(
-                sa_orm.load_only(offerers_models.Venue.id, offerers_models.Venue.publicName, offerers_models.Venue.name)
-            )
-            .join(offerers_models.Offerer)
-            .outerjoin(
-                offerers_models.VenueBankAccountLink,
-                sa.and_(
-                    offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
-                    offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
-                ),
-            )
-            .options(sa_orm.contains_eager(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.id))
-            .options(sa_orm.contains_eager(offerers_models.Venue.bankAccountLinks))
-            .one_or_none()
-        )
-        if venue is None:
-            logger.info(
-                "Venue not found with DS token",
-                extra={
-                    "application_id": self.application_details.application_id,
-                    "ds_token": self.application_details.dms_token,
-                },
-            )
-        return venue
-
-
 class ImportBankAccountV5(AbstractImportBankAccount, ImportBankAccountMixin):
     def execute(self) -> None:
         if not self.application_details.siren:
@@ -581,17 +528,6 @@ class ImportBankAccountV5(AbstractImportBankAccount, ImportBankAccountMixin):
                 },
             )
         return offerer
-
-
-class ImportBankAccountFactory:
-    procedure_to_class = {
-        4: ImportBankAccountV4,
-        5: ImportBankAccountV5,
-    }
-
-    @classmethod
-    def get(cls, procedure_version: int) -> type["AbstractImportBankAccount"]:
-        return cls.procedure_to_class[procedure_version]
 
 
 def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
