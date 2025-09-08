@@ -1,29 +1,19 @@
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type {
+  GetIndividualOfferWithAddressResponseModel,
+  SubcategoryResponseModel,
+} from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 
-export const RECALCULATED_PROPERTIES = [
-  // Recalculated since it depends on the accessibility form current values.
-  'accessibility',
-  // Recalculated since offer.priceCategories alone is not a sufficient condition, we also need to check if price
-  // categories are not empty.
-  'priceCategories',
-] as const
-export type RecalculatedProperty = (typeof RECALCULATED_PROPERTIES)[number]
-type SignificativeProperty =
-  | keyof GetIndividualOfferResponseModel
-  | RecalculatedProperty
-
 export interface StepPattern {
   id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS
   label: string | React.ReactNode
-  // This is to help aknowledge that the step has been submitted.
-  // A significative property must be a mandatory field in the form matching the step.
-  // If the form has no mandatory property, significativeProperty is null.
-  // An optional step is considered submitted when the step previous to it has been submitted.
-  significativeProperty: SignificativeProperty | null
+  canGoBeyondStep?: (
+    offer: GetIndividualOfferWithAddressResponseModel,
+    subCategory?: SubcategoryResponseModel
+  ) => boolean
 }
 
 import { LabelBooking } from '../LabelBooking/LabelBooking'
@@ -47,14 +37,16 @@ export const getSteps = ({
       label: isNewOfferCreationFlowFeatureActive
         ? 'Description'
         : 'Détails de l’offre',
-      significativeProperty: 'name',
+      canGoBeyondStep: (offer) => Boolean(offer.name),
     },
     {
       id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
       label: isNewOfferCreationFlowFeatureActive
         ? 'Localisation'
         : 'Informations pratiques',
-      significativeProperty: 'accessibility',
+      canGoBeyondStep: (offer) => {
+        return Boolean(offer.address)
+      },
     },
   ]
 
@@ -62,7 +54,6 @@ export const getSteps = ({
     steps.push({
       id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
       label: 'Image et vidéo',
-      significativeProperty: null,
     })
   }
 
@@ -74,25 +65,26 @@ export const getSteps = ({
         {
           id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           label: 'Tarifs',
-          significativeProperty: 'priceCategories',
+          canGoBeyondStep: (offer) => Boolean(offer?.priceCategories?.length),
         },
         {
           id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           label: 'Horaires',
-          significativeProperty: 'hasStocks',
+          canGoBeyondStep: (offer) => Boolean(offer?.hasStocks),
         }
       )
     } else {
       steps.push({
         id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
         label: 'Tarifs',
-        significativeProperty: 'priceCategories',
+        canGoBeyondStep: (offer) => Boolean(offer?.hasStocks),
       })
     }
     steps.push({
       id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
       label: 'Informations pratiques',
-      significativeProperty: null,
+      canGoBeyondStep: (offer, subCategory) =>
+        subCategory?.canBeWithdrawable ? Boolean(offer.bookingContact) : true,
     })
   } else {
     // This part will disappear once the FF is enabled in production.
@@ -101,19 +93,19 @@ export const getSteps = ({
         {
           id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           label: 'Tarifs',
-          significativeProperty: 'priceCategories',
+          canGoBeyondStep: (offer) => Boolean(offer?.priceCategories?.length),
         },
         {
           id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           label: 'Dates & Capacités',
-          significativeProperty: 'hasStocks',
+          canGoBeyondStep: (offer) => Boolean(offer?.hasStocks),
         }
       )
     } else {
       steps.push({
         id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
         label: 'Stock & Prix',
-        significativeProperty: 'hasStocks',
+        canGoBeyondStep: (offer) => Boolean(offer?.hasStocks),
       })
     }
   }
@@ -122,7 +114,6 @@ export const getSteps = ({
     steps.push({
       id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
       label: 'Récapitulatif',
-      significativeProperty: null,
     })
   } else if (
     mode === OFFER_WIZARD_MODE.READ_ONLY ||
@@ -131,7 +122,6 @@ export const getSteps = ({
     steps.push({
       id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.BOOKINGS,
       label: <LabelBooking bookingsCount={bookingsCount || 0} />,
-      significativeProperty: null,
     })
   }
 

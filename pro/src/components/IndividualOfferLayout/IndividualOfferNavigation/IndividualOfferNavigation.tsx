@@ -23,7 +23,7 @@ import { getSteps, type StepPattern } from './utils/getSteps'
 export const IndividualOfferNavigation = () => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
-  const { offer, isEvent, isAccessibilityFilled } = useIndividualOfferContext()
+  const { offer, isEvent, subCategories } = useIndividualOfferContext()
   const activeStep = useActiveStep(
     Object.values(INDIVIDUAL_OFFER_WIZARD_STEP_IDS)
   )
@@ -53,11 +53,8 @@ export const IndividualOfferNavigation = () => {
   // Steps are passed as argument since they are not static.
   const lastSubmittedStepIndex = getLastSubmittedStepIndex({
     offer,
+    subCategory: subCategories.find((cat) => offer?.subcategoryId === cat.id),
     orderedSteps: steps,
-    externalConditions: {
-      accessibility: isAccessibilityFilled,
-      priceCategories: Boolean(offer?.priceCategories?.length),
-    },
   })
 
   const stepList = steps.map(
