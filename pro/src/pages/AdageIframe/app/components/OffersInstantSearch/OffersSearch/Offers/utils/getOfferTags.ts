@@ -59,9 +59,7 @@ export function getOfferTags(
     )
 
   const distanceFromOffer =
-    offer.location &&
-    offer.location.address &&
-    offer.location.address.latitude &&
+    offer.location?.address?.latitude &&
     offer.location.address.longitude &&
     (adageUser.lat || adageUser.lat === 0) &&
     (adageUser.lon || adageUser.lon === 0) &&

@@ -18,8 +18,7 @@ export const LinkVenueCallout = ({
   const location = useLocation()
 
   const displayCallout =
-    offerer &&
-    offerer.hasValidBankAccount &&
+    offerer?.hasValidBankAccount &&
     offerer.venuesWithNonFreeOffersWithoutBankAccounts.length > 0
 
   if (!displayCallout) {
