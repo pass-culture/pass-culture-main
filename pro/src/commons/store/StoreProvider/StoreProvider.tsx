@@ -105,7 +105,7 @@ export const StoreProvider = ({
 
   if (!isStoreInitialized) {
     return (
-      <main id="content" className={styles['spinner-container']}>
+      <main id={'content'} className={styles['spinner-container']}>
         <Spinner />
       </main>
     )

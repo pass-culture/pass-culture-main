@@ -12,7 +12,7 @@ const renderApp = () =>
         element={
           <div>
             <SkipLinks />
-            <div id="content">
+            <div id={'content'}>
               <a href="#">focusable content element</a>
             </div>
           </div>

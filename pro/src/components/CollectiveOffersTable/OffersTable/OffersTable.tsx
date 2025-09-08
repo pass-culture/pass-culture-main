@@ -50,7 +50,7 @@ export const OffersTable = ({
           <div className={styles['offers-table-title']}>
             <div>
               <h2
-                id="offers-table-title"
+                id={'offers-table-title'}
                 className={styles['offers-table-title-heading']}
               >
                 Liste des offres
@@ -84,9 +84,8 @@ export const OffersTable = ({
                 />
               </div>
               <table
-                role="table"
                 className={styles['offers-table-table']}
-                aria-labelledby="offers-table-title"
+                aria-labelledby={'offers-table-title'}
               >
                 {children}
               </table>

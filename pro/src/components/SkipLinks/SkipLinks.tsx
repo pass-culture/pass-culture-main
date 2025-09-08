@@ -22,6 +22,7 @@ export const SkipLinks = ({
           href="#"
           id="unaccessible-top-page"
           className={styles['visually-hidden']}
+          title="Haut de page"
         />
       )}
       <nav aria-label="Accès rapide" className={styles['skip-links']}>

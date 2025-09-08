@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useState } from 'react'
+import { useId, useState } from 'react'
 
 import {
   type FilterConfigType,
@@ -53,6 +53,8 @@ export const OffersTableSearch = ({
     setFiltersVisibility(newFiltersVisibility)
   }
 
+  const searchId = useId()
+
   return (
     <form onSubmit={onSubmit} className={styles['offers-table-search']}>
       <div className={styles['offers-table-search-name-and-toggle-row']}>
@@ -75,7 +77,7 @@ export const OffersTableSearch = ({
           isActive={hasActiveFilters}
           isOpen={filtersVisibility}
           onClick={toggleFiltersVisibility}
-          aria-controls="offers-filter"
+          aria-controls={`offers-filter-${searchId}`}
           aria-expanded={filtersVisibility}
         >
           Filtrer
@@ -85,7 +87,7 @@ export const OffersTableSearch = ({
         </ButtonFilter>
       </div>
       <div
-        id="offers-filter"
+        id={`offers-filter-${searchId}`}
         data-testid="offers-filter"
         className={cn(styles['offers-table-search-filters'], {
           [styles['offers-table-search-filters-collapsed']]: !filtersVisibility,

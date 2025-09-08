@@ -15,7 +15,7 @@ export const NotFound = ({ redirect = '/accueil' }: NotFoundProps) => {
   const { state } = useLocation()
 
   return (
-    <main className={styles['not-found']} id="content">
+    <main className={styles['not-found']}>
       <div className={styles['not-found-content']}>
         <SvgIcon
           src={stroke404Icon}
