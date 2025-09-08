@@ -411,65 +411,6 @@ class HasImageMixin:
         self.imageId = None
 
 
-@sa_orm.declarative_mixin
-class CollectiveStatusMixin:
-    @hybrid_property
-    def status(self) -> offer_mixin.CollectiveOfferStatus:
-        if self.isArchived:
-            return offer_mixin.CollectiveOfferStatus.ARCHIVED
-
-        if self.validation == offer_mixin.OfferValidationStatus.REJECTED:
-            return offer_mixin.CollectiveOfferStatus.REJECTED
-
-        if self.validation == offer_mixin.OfferValidationStatus.PENDING:
-            return offer_mixin.CollectiveOfferStatus.PENDING
-
-        if self.validation == offer_mixin.OfferValidationStatus.DRAFT:
-            return offer_mixin.CollectiveOfferStatus.DRAFT
-
-        if not self.isActive:
-            return offer_mixin.CollectiveOfferStatus.INACTIVE
-
-        if self.validation == offer_mixin.OfferValidationStatus.APPROVED:
-            if self.hasStartDatetimePassed:
-                return offer_mixin.CollectiveOfferStatus.EXPIRED
-            if self.isSoldOut:
-                return offer_mixin.CollectiveOfferStatus.SOLD_OUT
-            if self.hasBookingLimitDatetimesPassed:
-                return offer_mixin.CollectiveOfferStatus.INACTIVE
-            if self.hasEndDatePassed:
-                return offer_mixin.CollectiveOfferStatus.INACTIVE
-
-        return offer_mixin.CollectiveOfferStatus.ACTIVE
-
-    @status.expression  # type: ignore[no-redef]
-    def status(cls) -> sa.sql.elements.Case:
-        return sa.case(
-            (
-                cls.isArchived.is_(True),
-                offer_mixin.CollectiveOfferStatus.ARCHIVED.name,
-            ),
-            (
-                cls.validation == offer_mixin.OfferValidationStatus.REJECTED.name,
-                offer_mixin.CollectiveOfferStatus.REJECTED.name,
-            ),
-            (
-                cls.validation == offer_mixin.OfferValidationStatus.PENDING.name,
-                offer_mixin.CollectiveOfferStatus.PENDING.name,
-            ),
-            (
-                cls.validation == offer_mixin.OfferValidationStatus.DRAFT.name,
-                offer_mixin.CollectiveOfferStatus.DRAFT.name,
-            ),
-            (cls.isActive.is_(False), offer_mixin.CollectiveOfferStatus.INACTIVE.name),
-            (cls.hasStartDatetimePassed, offer_mixin.CollectiveOfferStatus.EXPIRED.name),
-            (cls.isSoldOut, offer_mixin.CollectiveOfferStatus.SOLD_OUT.name),
-            (cls.hasBookingLimitDatetimesPassed, offer_mixin.CollectiveOfferStatus.INACTIVE.name),
-            (cls.hasEndDatePassed, offer_mixin.CollectiveOfferStatus.INACTIVE.name),
-            else_=offer_mixin.CollectiveOfferStatus.ACTIVE.name,
-        )
-
-
 class OfferContactFormEnum(enum.Enum):
     FORM = "form"
 
@@ -548,7 +489,6 @@ class CollectiveOffer(
     models.Base,
     offer_mixin.ValidationMixin,
     AccessibilityMixin,
-    CollectiveStatusMixin,
     HasImageMixin,
     models.Model,
 ):
@@ -1068,7 +1008,6 @@ class CollectiveOfferTemplate(
     PcObject,
     offer_mixin.ValidationMixin,
     AccessibilityMixin,
-    CollectiveStatusMixin,
     HasImageMixin,
     models.Base,
     models.Model,
