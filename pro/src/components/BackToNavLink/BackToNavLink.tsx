@@ -18,7 +18,7 @@ export const BackToNavLink = ({
   return (
     <a
       id={'back-to-nav-link'}
-      title="Revenir à la barre de navigation"
+      aria-label="Revenir à la barre de navigation"
       href={isMobileScreen ? '#header-nav-toggle' : '#lateral-panel'}
       className={classnames(className, styles['back-to-nav-link'])}
     >
