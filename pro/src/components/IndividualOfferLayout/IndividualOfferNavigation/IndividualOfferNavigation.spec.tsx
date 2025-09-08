@@ -9,6 +9,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
@@ -192,6 +193,7 @@ describe('IndividualOfferNavigation', () => {
       const offerWithNumerousStepsBase = getIndividualOfferFactory({
         isEvent: true,
         priceCategories: [priceCategoryFactory()],
+        address: getAddressResponseIsLinkedToVenueModelFactory(),
         hasStocks: false,
       })
       const contextValuesWithNumerousSteps =
@@ -373,6 +375,22 @@ describe('IndividualOfferNavigation', () => {
           listitem.textContent?.match(FF_LABELS.links.SUMMARY)
         )
       ).toBeDefined()
+    })
+
+    it('should display the expected active steps when the offer is completed', () => {
+      const contextValues = individualOfferContextValuesFactory({
+        isEvent: true,
+        offer: getIndividualOfferFactory({
+          audioDisabilityCompliant: true,
+          address: getAddressResponseIsLinkedToVenueModelFactory(),
+        }),
+      })
+
+      renderIndividualOfferNavigation({ contextValues, options })
+
+      const locationStep = screen.getByRole('link', { name: '6 Récapitulatif' })
+
+      expect(locationStep).toBeInTheDocument()
     })
   })
 })

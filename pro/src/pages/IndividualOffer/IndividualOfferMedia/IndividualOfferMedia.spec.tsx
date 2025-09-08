@@ -19,11 +19,19 @@ const renderIndividualOfferMedia = () => {
   return renderWithProviders(
     <IndividualOfferContextProvider>
       <IndividualOfferMedia />
-    </IndividualOfferContextProvider>
+    </IndividualOfferContextProvider>,
+    { storeOverrides: {} }
   )
 }
 
 describe('IndividialOfferMedia', () => {
+  beforeEach(() => {
+    vi.spyOn(api, 'getCategories').mockResolvedValue({
+      categories: [],
+      subcategories: [],
+    })
+  })
+
   it('should render a spinner until offer is fetched', () => {
     renderIndividualOfferMedia()
 

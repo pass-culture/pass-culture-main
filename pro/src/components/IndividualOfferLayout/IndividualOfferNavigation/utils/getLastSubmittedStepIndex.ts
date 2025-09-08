@@ -1,21 +1,18 @@
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type {
+  GetIndividualOfferWithAddressResponseModel,
+  SubcategoryResponseModel,
+} from '@/apiClient/v1'
 
-import {
-  RECALCULATED_PROPERTIES,
-  type RecalculatedProperty,
-  type StepPattern,
-} from './getSteps'
+import type { StepPattern } from './getSteps'
 
 export const getLastSubmittedStepIndex = ({
   offer,
+  subCategory,
   orderedSteps,
-  externalConditions = {},
 }: {
-  offer: GetIndividualOfferResponseModel | null
+  offer: GetIndividualOfferWithAddressResponseModel | null
+  subCategory?: SubcategoryResponseModel
   orderedSteps: StepPattern[]
-  externalConditions?:
-    | Record<RecalculatedProperty, boolean>
-    | Record<string, never>
 }) => {
   let stepIndex = -1
 
@@ -26,24 +23,14 @@ export const getLastSubmittedStepIndex = ({
   }
 
   for (const step of orderedSteps) {
-    const { significativeProperty } = step
+    const { canGoBeyondStep } = step
 
-    if (significativeProperty === null) {
+    if (!canGoBeyondStep) {
       stepIndex++
-    } else if (
-      RECALCULATED_PROPERTIES.includes(
-        // @ts-expect-error: this is inherently a type guard for the significativeProperty.
-        significativeProperty
-      )
-    ) {
-      if (externalConditions[significativeProperty as RecalculatedProperty]) {
-        stepIndex++
-      } else {
-        break
-      }
-    } else if (
-      offer[significativeProperty as keyof GetIndividualOfferResponseModel]
-    ) {
+      continue
+    }
+
+    if (canGoBeyondStep(offer, subCategory)) {
       stepIndex++
     } else {
       break
