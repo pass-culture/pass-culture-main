@@ -275,7 +275,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               /* istanbul ignore next */
               mode === OFFER_WIZARD_MODE.EDITION &&
               stockId !== undefined &&
-              parseInt(getValues('bookingsQuantity') || '0') > 0
+              parseInt(getValues('bookingsQuantity') || '0', 10) > 0
             ) {
               setIsDeleteConfirmVisible(true)
             } else {
