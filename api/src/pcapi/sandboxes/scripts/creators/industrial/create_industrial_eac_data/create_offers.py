@@ -226,7 +226,7 @@ def create_eac_offers(
 
     # eac_with_displayed_status_cases
     offerer = next(o for o in offerers if o.name == "eac_with_displayed_status_cases")
-    provider = create_collective_api_provider(offerer.managedVenues)
+    provider = create_collective_api_provider(offerer.managedVenues, api_key_prefix="displayed_status")
 
     venue_pc_pro = next(v for v in offerer.managedVenues if "PC_PRO" in v.name)
     create_collective_offers_with_different_displayed_status(
