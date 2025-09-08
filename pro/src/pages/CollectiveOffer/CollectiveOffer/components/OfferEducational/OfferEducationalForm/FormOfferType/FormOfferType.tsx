@@ -61,11 +61,7 @@ export const FormOfferType = ({
 
   const [programsOptions, setProgramsOptions] = useState<
     SelectOption<number>[]
-  >(() =>
-    domainsValue && domainsValue.length
-      ? getAssociatedPrograms(domainsValue)
-      : []
-  )
+  >(() => (domainsValue?.length ? getAssociatedPrograms(domainsValue) : []))
 
   const eacFormatOptions = Object.entries(EacFormat).map(([, value]) => ({
     id: value,

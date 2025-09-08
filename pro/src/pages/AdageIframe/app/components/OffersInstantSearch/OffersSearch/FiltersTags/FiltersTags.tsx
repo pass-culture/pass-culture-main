@@ -95,7 +95,7 @@ export const FiltersTags = ({
       () => {
         form.setValue('geolocRadius', 50)
         setLocalisationFilterState(LocalisationFilterStates.NONE)
-        setIsUserTriggered && setIsUserTriggered(true)
+        setIsUserTriggered?.(true)
       }
     )
   }
@@ -130,7 +130,7 @@ export const FiltersTags = ({
           form.setValue('academies', updatedAcademies)
           if (updatedAcademies.length === 0) {
             setLocalisationFilterState(LocalisationFilterStates.NONE)
-            setIsUserTriggered && setIsUserTriggered(true)
+            setIsUserTriggered?.(true)
           } else {
             onSubmit()
           }
@@ -147,7 +147,7 @@ export const FiltersTags = ({
             form.setValue('departments', updatedDepartments)
             if (updatedDepartments.length === 0) {
               setLocalisationFilterState(LocalisationFilterStates.NONE)
-              setIsUserTriggered && setIsUserTriggered(true)
+              setIsUserTriggered?.(true)
             } else {
               onSubmit()
             }

@@ -64,7 +64,7 @@ export const Offerers = (): JSX.Element => {
     error: venuesOfOffererError,
     data: venuesOfOfferer,
   } = useSWR(
-    offerer && offerer.siret
+    offerer?.siret
       ? [GET_VENUES_OF_OFFERER_FROM_SIRET_QUERY_KEY, offerer.siret]
       : null,
     ([, offererSiret]) =>

@@ -9,22 +9,21 @@ export const ReSendEmailCallout = ({
   action,
   hideLink = false,
 }: {
-  action?: () => Promise<any>
+  action?: () => Promise<void>
   hideLink?: boolean
 }) => {
   const notification = useNotification()
 
   const onClick = () => {
-    action &&
-      action()
-        .then(() => {
-          notification.information('Email renvoyé !')
-        })
-        .catch(() => {
-          notification.error(
-            `Une erreur est survenue, veuillez réessayer ultérieurement.`
-          )
-        })
+    action?.()
+      .then(() => {
+        notification.information('Email renvoyé !')
+      })
+      .catch(() => {
+        notification.error(
+          `Une erreur est survenue, veuillez réessayer ultérieurement.`
+        )
+      })
   }
 
   return (

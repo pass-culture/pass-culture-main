@@ -17,7 +17,7 @@ export const BankAccountHasPendingCorrectionCallout = ({
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
-  const displayCallout = offerer && offerer.hasBankAccountWithPendingCorrections
+  const displayCallout = offerer?.hasBankAccountWithPendingCorrections
 
   if (!displayCallout) {
     return null

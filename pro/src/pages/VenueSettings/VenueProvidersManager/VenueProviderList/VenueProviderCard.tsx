@@ -42,7 +42,7 @@ export const VenueProviderCard = ({
   return (
     <div className={style['venue-provider-card']}>
       <div className={style['provider-info-container']}>
-        {providerInfo && providerInfo.logo && (
+        {providerInfo?.logo && (
           <img
             alt={providerInfo.name}
             src={providerInfo.logo}

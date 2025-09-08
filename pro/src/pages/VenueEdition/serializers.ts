@@ -46,9 +46,7 @@ function serializeOpeningHours(
     !alreadyHasOpeningHours &&
     !OPENING_HOURS_DAYS.some(
       (d) =>
-        formValues.openingHours &&
-        formValues.openingHours[d] &&
-        formValues.openingHours[d].length > 0
+        formValues.openingHours?.[d] && formValues.openingHours[d].length > 0
     )
   ) {
     //  If the opening hours have never been set yet, and if none of the days have a timespan set on the form,
