@@ -54,7 +54,7 @@ export const OfferNameCell = ({
               className={styles['title-column-offer-id']}
             >{`N°${offer.id}`}</span>
           ) : null}
-          <span>{offer.name}</span>
+          <div className={styles['text-overflow-ellipsis']}>{offer.name}</div>
         </div>
       </Link>
     </th>
