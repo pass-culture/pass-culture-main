@@ -2,6 +2,7 @@
 import classnames from 'classnames'
 import { useEffect } from 'react'
 
+import { noop } from '@/commons/utils/noop'
 import { SideNavLinks } from '@/components/SideNavLinks/SideNavLinks'
 import logoPassCultureProIcon from '@/icons/logo-pass-culture-pro.svg'
 import strokeCloseIcon from '@/icons/stroke-close.svg'
@@ -29,7 +30,7 @@ export const LateralPanel = ({
   useEffect(() => {
     const modalElement = navPanel.current
     if (!modalElement) {
-      return () => {}
+      return () => noop
     }
 
     const focusableElements = modalElement.querySelectorAll<HTMLElement>(

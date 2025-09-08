@@ -13,6 +13,7 @@ import {
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { noopAsync } from '@/commons/utils/noop'
 
 type UpsertHeadlineOfferParams = {
   offerId: number
@@ -31,8 +32,8 @@ type HeadlineOfferContextValues = {
 
 const HeadlineOfferContext = createContext<HeadlineOfferContextValues>({
   headlineOffer: null,
-  upsertHeadlineOffer: async () => {},
-  removeHeadlineOffer: async () => {},
+  upsertHeadlineOffer: async () => noopAsync(),
+  removeHeadlineOffer: async () => noopAsync(),
   isHeadlineOfferAllowedForOfferer: false,
 })
 

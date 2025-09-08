@@ -17,6 +17,7 @@ import {
   UploaderModeEnum,
   type UploadImageValues,
 } from '@/commons/utils/imageUploadTypes'
+import { noop } from '@/commons/utils/noop'
 import { Card } from '@/components/Card/Card'
 import { ImageUploader } from '@/components/ImageUploader/ImageUploader'
 import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
@@ -99,7 +100,7 @@ export const PartnerPage = ({
         <ImageUploader
           className={styles['image-uploader']}
           onImageUpload={handleOnImageUpload}
-          onImageDelete={() => {}}
+          onImageDelete={() => noop}
           initialValues={imageValues}
           hideActionButtons
           onClickButtonImageAdd={logButtonAddClick}

@@ -9,6 +9,7 @@ import {
 } from 'react'
 
 import type { SelectOption } from '@/commons/custom_types/form'
+import { noop } from '@/commons/utils/noop'
 import { BaseInput } from '@/ui-kit/form/shared/BaseInput/BaseInput'
 import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
@@ -92,15 +93,15 @@ export const SelectAutocomplete = forwardRef(
       resetOnOpen = true,
       description,
       error,
-      onChange = () => {},
-      onBlur = () => {},
+      onChange = () => noop,
+      onBlur = () => noop,
       value: inputValue,
-      onSearch = () => {},
+      onSearch = () => noop,
       searchInOptions = (options, pattern) =>
         options.filter((opt) =>
           opt.label.toLowerCase().includes(pattern.trim().toLowerCase())
         ),
-      onReset = () => {},
+      onReset = () => noop,
     }: SelectAutocompleteProps,
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
@@ -367,7 +368,7 @@ export const SelectAutocomplete = forwardRef(
             hidden
             ref={selectRef}
             value={field || ''}
-            onChange={() => {}} // Silent React warning that is irrelevant here
+            onChange={() => noop} // Silent React warning that is irrelevant here
             data-testid="select"
             // No matter this is hidden,
             // this is to fix : "A form field element should have an id or name attribute"
