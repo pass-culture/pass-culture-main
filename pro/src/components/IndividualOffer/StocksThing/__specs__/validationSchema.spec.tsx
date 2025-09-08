@@ -33,9 +33,9 @@ describe('validationSchema', () => {
       bookingsQuantity: 0,
     },
     {
-      description: 'price above 20000 in Caledonian',
-      formValues: { price: 20001 },
-      expectedErrors: ['Veuillez renseigner un prix inférieur à 20000 F'],
+      description: 'price above 23865 in Caledonian',
+      formValues: { price: 23866 },
+      expectedErrors: ['Veuillez renseigner un prix inférieur à 23865 F'],
       bookingsQuantity: 0,
       isCaledonian: true,
     },
