@@ -5,7 +5,7 @@ export const parseDuration = (duration: string): number | undefined => {
 
   const [hours, minutes] = duration
     .split(':')
-    .map((numberString) => parseInt(numberString))
+    .map((numberString) => parseInt(numberString, 10))
 
   return hours * 60 + minutes
 }

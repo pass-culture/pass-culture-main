@@ -6,7 +6,7 @@ export const extractOfferIdAndOfferTypeFromRouteParams = (
     return { offerId: Number(splitResult[1]), isTemplateId: true }
   }
   return {
-    offerId: isNaN(Number(offerIdFromParams))
+    offerId: Number.isNaN(Number(offerIdFromParams))
       ? undefined
       : Number(offerIdFromParams),
     isTemplateId: false,

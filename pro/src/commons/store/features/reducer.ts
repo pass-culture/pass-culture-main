@@ -20,7 +20,7 @@ const featuresSlice = createSlice({
       action: PayloadAction<FeatureResponseModel[]>
     ) => {
       state.list = action.payload
-      state.lastLoaded = new Date().getTime()
+      state.lastLoaded = Date.now()
     },
   },
 })

@@ -56,11 +56,10 @@ export function formatPrice(
         'Failed to initialize NumberFormat since used feature is not supported in the linked ICU version'
       )
     ) {
-      formattedPrice =
-        price
-          .toFixed(2)
-          .replace(/\d(?=(\d{3})+\.)/g, '$& ') // space after each group of 3
-          .replace('.', ',') + ' €'
+      formattedPrice = `${price
+        .toFixed(2)
+        .replace(/\d(?=(\d{3})+\.)/g, '$& ') // space after each group of 3
+        .replace('.', ',')} €`
     } else {
       sendSentryCustomError(e)
     }
