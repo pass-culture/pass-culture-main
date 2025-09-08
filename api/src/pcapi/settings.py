@@ -523,7 +523,8 @@ FINANCE_GOOGLE_DRIVE_ROOT_FOLDER_ID = os.environ.get("FINANCE_GOOGLE_DRIVE_ROOT_
 FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS = utils.env_get_list(
     "FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS", type_=int
 )
-FINANCE_BACKEND = os.environ.get("FINANCE_BACKEND", "pcapi.core.finance.backend.dummy.DummyFinanceBackend")
+# FINANCE_BACKEND = os.environ.get("FINANCE_BACKEND", "pcapi.core.finance.backend.dummy.DummyFinanceBackend")
+FINANCE_BACKEND = "pcapi.core.finance.backend.cegid.CegidFinanceBackend"
 CGR_GOOGLE_DRIVE_CSV_REIMBURSEMENT_ID = os.environ.get("CGR_GOOGLE_DRIVE_CSV_REIMBURSEMENT_ID", "")
 KINEPOLIS_GOOGLE_DRIVE_CSV_REIMBURSEMENT_ID = os.environ.get("KINEPOLIS_GOOGLE_DRIVE_CSV_REIMBURSEMENT_ID", "")
 CGR_EMAIL = os.environ.get("CGR_EMAIL", "")
