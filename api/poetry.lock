@@ -1162,13 +1162,13 @@ zstd = ["clickhouse-cityhash (>=1.0.2.1)", "zstd"]
 
 [[package]]
 name = "clickhouse-sqlalchemy"
-version = "0.2.7"
+version = "0.2.9"
 description = "Simple ClickHouse SQLAlchemy Dialect"
 optional = false
 python-versions = "<4,>=3.7"
 groups = ["main"]
 files = [
-    {file = "clickhouse-sqlalchemy-0.2.7.tar.gz", hash = "sha256:73eda69df52244759077d53af2059452fd7a603e2712e52a9cc94042ee9e2154"},
+    {file = "clickhouse_sqlalchemy-0.2.9.tar.gz", hash = "sha256:64b1c79edf3f277c229ccdc519e9ab3f7acc28e49dc4919f9dd280ea331728be"},
 ]
 
 [package.dependencies]
@@ -6850,4 +6850,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "70f6994255f07eb3fc0eb4a46cb56fe61c2cf18b6db10112e5a1a723ec9ad227"
+content-hash = "26574097964934081089bf37300663c84e35b2ab51f279ec42ec5af19ebc87fa"
