@@ -8,14 +8,14 @@ export function getPatchOfferBody(
   departmentCode: string,
   shouldSendMail: boolean
 ) {
-  const withdrawalDelayNullishValue =
+  const withdrawalDelayValue = formValues.withdrawalDelay
+    ? Number(formValues.withdrawalDelay)
+    : null
+
+  const withdrawalDelayInBody =
     formValues.withdrawalType === WithdrawalTypeEnum.NO_TICKET
       ? null
-      : undefined
-  const withdrawalDelay =
-    formValues.withdrawalDelay === undefined
-      ? withdrawalDelayNullishValue
-      : Number(formValues.withdrawalDelay)
+      : withdrawalDelayValue
 
   const formattedBookabilityDate =
     formValues.bookingAllowedDate && formValues.bookingAllowedTime
@@ -35,7 +35,7 @@ export function getPatchOfferBody(
       ? null
       : formValues.externalTicketOfficeUrl,
     shouldSendMail: shouldSendMail,
-    withdrawalDelay,
+    withdrawalDelay: withdrawalDelayInBody,
     withdrawalDetails: formValues.withdrawalDetails ?? undefined,
     withdrawalType: formValues.withdrawalType,
     bookingAllowedDatetime:
