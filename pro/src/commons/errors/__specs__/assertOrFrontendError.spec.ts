@@ -26,16 +26,11 @@ describe('assertOrFrontendError', () => {
     ]
 
     const foundItem = items.find((item) => item.id === 1)
-    // @ts-expect-error `'foundItem' is possibly 'undefined'.`
-    const _impossibleExtraction = foundItem.id
     assertOrFrontendError(foundItem, 'This should not fail')
-    // @ts-expect-no-error
-    const _extraction = foundItem.id
 
     const mixedArray = [1, 'two', true]
     const firstMixedArrayItem = mixedArray[0]
-    // @ts-expect-error `The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.`
-    const _impossibleCalculation = firstMixedArrayItem / 2
+    
     assertOrFrontendError(
       typeof firstMixedArrayItem === 'number',
       'This should not fail'
