@@ -22,5 +22,5 @@ export const hasProperties = <T extends string>(
   properties.every((property) => hasProperty(element, property))
 
 export const isNumber = (value: any) => {
-  return typeof value === 'number' && isFinite(value)
+  return typeof value === 'number' && Number.isFinite(value)
 }

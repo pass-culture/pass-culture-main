@@ -163,7 +163,7 @@ export const toISOStringWithoutMilliseconds = (date: Date) => {
 
 export const getYearMonthDay = (date: string) => {
   const [year, month, day] = date.split('-')
-  return [parseInt(year), parseInt(month) - 1, parseInt(day)]
+  return [parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10)]
 }
 
 export function formatShortDateForInput(date: Date) {
