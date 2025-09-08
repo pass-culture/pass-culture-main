@@ -167,8 +167,8 @@ export const IndividualOfferDetailsScreenNext = ({
       // this is a safeguard.
       if (!isMediaPageEnabled && !!offerId && !hasSelectedProduct) {
         await handleImageOnSubmit(offerId)
-        await mutate([GET_OFFER_QUERY_KEY, offerId])
       }
+      await mutate([GET_OFFER_QUERY_KEY, offerId])
 
       // replace url to fix back button
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
