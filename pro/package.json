@@ -30,7 +30,11 @@
     "test:unit:hookcoverage": "vitest related --run --coverage.enabled=true --coverage.100=true",
     "test:unit:ci": "vitest run --coverage",
     "storybook": "NODE_PATH=src storybook dev -p 6006",
-    "build-storybook": "NODE_PATH=src storybook build -o docs-build"
+    "build-storybook": "NODE_PATH=src storybook build -o docs-build",
+    "tests:slow": "node scripts/report-slow-tests.mjs .vitest_cache/results.json --top 30 --threshold 200",
+    "tests:slow:all": "node scripts/report-slow-tests.mjs .vitest_cache/results.json --top 9999",
+    "tests:slow:json": "node scripts/report-slow-tests.mjs .vitest_cache/results.json --top 50 --threshold 200 --json"
+
   },
   "dependencies": {
     "@algolia/autocomplete-plugin-query-suggestions": "1.19.3",
