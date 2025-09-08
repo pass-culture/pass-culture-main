@@ -244,6 +244,8 @@ export const ImageDragAndDrop = forwardRef(
       errors.hasWrongWidth ||
       errors.hasWrongHeight
 
+    const ariaId = useId()
+
     return (
       <div className={cn(styles['image-drag-and-drop-container'])}>
         <div
@@ -280,7 +282,7 @@ export const ImageDragAndDrop = forwardRef(
                 <span>
                   {' ou '}
                   <label
-                    id="drag-and-drop-label"
+                    id={`drag-and-drop-label-${ariaId}`}
                     className={styles['image-drag-and-drop-text-highlight']}
                     htmlFor={inputProps.id}
                   >
@@ -289,9 +291,9 @@ export const ImageDragAndDrop = forwardRef(
                   <input
                     {...inputProps}
                     ref={dragAndDropInputRef}
-                    aria-labelledby="drag-and-drop-label"
-                    aria-describedby="drag-and-drop-description"
-                    aria-invalid={hasError}
+                    aria-labelledby={`drag-and-drop-label-${ariaId}`}
+                    aria-describedby={`drag-and-drop-description-${ariaId}`}
+                    aria-invalid={hasError ? 'true' : 'false'}
                     className={cn(styles['image-drag-and-drop-input'], {
                       [styles['image-drag-and-drop-input-error']]: hasError,
                       [styles['image-drag-and-drop-input-disabled']]: disabled,
@@ -324,7 +326,7 @@ export const ImageDragAndDrop = forwardRef(
           </div>
         </div>
         <div
-          id="drag-and-drop-description"
+          id={`drag-and-drop-description-${ariaId}`}
           className={styles['image-drag-and-drop-description']}
           role="alert"
           aria-relevant="additions"

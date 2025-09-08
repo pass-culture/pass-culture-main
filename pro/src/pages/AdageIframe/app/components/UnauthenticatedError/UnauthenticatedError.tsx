@@ -5,7 +5,7 @@ import styles from './UnauthenticatedError.module.scss'
 
 export function UnauthenticatedError(): JSX.Element {
   return (
-    <main className={styles['error']} id="content">
+    <main className={styles['error']}>
       <div className={styles['error-header']}>
         <div className={styles['error-header-brand']}>
           <SvgIcon

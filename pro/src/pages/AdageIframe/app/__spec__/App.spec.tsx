@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import { useId } from 'react'
 import { Configure } from 'react-instantsearch'
 
 import { AdageFrontRoles } from '@/apiClient/adage'
@@ -16,17 +17,23 @@ vi.mock(
   '../components/OffersInstantSearch/OffersSearch/Autocomplete/Autocomplete',
   () => {
     return {
-      Autocomplete: ({ initialQuery }: { initialQuery: string }) => (
-        <div>
-          <label htmlFor="autocomplete">Autocomplete</label>
-          <input
-            id="autocomplete"
-            value={initialQuery}
-            onChange={() => vi.fn()}
-          />
-          <button onClick={() => vi.fn()}>Rechercher</button>
-        </div>
-      ),
+      Autocomplete: ({ initialQuery }: { initialQuery: string }) => {
+        const autocompleteId = useId()
+        return (
+          <div>
+            <label htmlFor={`autocomplete-${autocompleteId}`}>
+              Autocomplete
+            </label>
+            <input
+              id={`autocomplete-${autocompleteId}`}
+              value={initialQuery}
+              onChange={() => vi.fn()}
+              aria-label="Autocomplete search"
+            />
+            <button onClick={() => vi.fn()}>Rechercher</button>
+          </div>
+        )
+      },
     }
   }
 )

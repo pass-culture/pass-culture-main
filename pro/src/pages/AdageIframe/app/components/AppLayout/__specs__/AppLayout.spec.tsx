@@ -19,11 +19,13 @@ vi.mock(
     return {
       Autocomplete: ({ initialQuery }: { initialQuery: string }) => (
         <div>
-          <label htmlFor="autocomplete">Autocomplete</label>
+          <label htmlFor={`autocomplete-1`}>Autocomplete</label>
+
           <input
-            id="autocomplete"
+            id={`autocomplete-1`}
             value={initialQuery}
             onChange={() => vi.fn()}
+            aria-label="Autocomplete search"
           />
           <button onClick={() => vi.fn()}>Rechercher</button>
         </div>

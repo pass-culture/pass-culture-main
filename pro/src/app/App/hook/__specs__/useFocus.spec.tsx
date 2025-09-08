@@ -45,7 +45,14 @@ const renderUseFocusRoutes = (url = '/accueil') => {
           <>
             <FocusTopPageOrBackToNavLink />
             <SkipLinks />
-            <a id="back-to-nav-link" href="#" />
+            <a
+              id={'back-to-nav-link'}
+              title="Back to navigation"
+              href="#"
+              aria-label="Back to navigation"
+            >
+              Back to navigation
+            </a>
             <span>Page With "Back to Nav" link</span>
           </>
         }

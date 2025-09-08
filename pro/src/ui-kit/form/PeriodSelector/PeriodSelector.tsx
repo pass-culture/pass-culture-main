@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import { useId } from 'react'
 
 import { BaseDatePicker } from '@/ui-kit/form/shared/BaseDatePicker/BaseDatePicker'
 
@@ -24,52 +25,62 @@ export const PeriodSelector = ({
   minDateBeginning,
   periodBeginningDate,
   periodEndingDate,
-}: PeriodSelectorProps) => (
-  <div className={styles['period-filter']}>
-    <div
-      className={cn(
-        styles['period-filter-inputs'],
-        { disabled: isDisabled },
-        className
-      )}
-    >
-      <div className={styles['period-filter-begin-picker']}>
-        <label htmlFor="field-date-begin" className={styles['visually-hidden']}>
-          Début de la période
-        </label>
-        <BaseDatePicker
-          className={cn(
-            styles['period-filter-input'],
-            styles['field-date-begin']
-          )}
-          disabled={isDisabled}
-          maxDate={new Date(periodEndingDate)}
-          minDate={minDateBeginning}
-          onChange={(event) => onBeginningDateChange(event.target.value)}
-          value={periodBeginningDate}
-          id="field-date-begin"
-        />
-      </div>
+}: PeriodSelectorProps) => {
+  const ariaId = useId()
 
-      <span className={styles['vertical-bar']} />
+  return (
+    <div className={styles['period-filter']}>
+      <div
+        className={cn(
+          styles['period-filter-inputs'],
+          { disabled: isDisabled },
+          className
+        )}
+      >
+        <div className={styles['period-filter-begin-picker']}>
+          <label
+            htmlFor={`field-date-begin-${ariaId}`}
+            className={styles['visually-hidden']}
+          >
+            Début de la période
+          </label>
+          <BaseDatePicker
+            className={cn(
+              styles['period-filter-input'],
+              styles['field-date-begin']
+            )}
+            disabled={isDisabled}
+            maxDate={new Date(periodEndingDate)}
+            minDate={minDateBeginning}
+            onChange={(event) => onBeginningDateChange(event.target.value)}
+            value={periodBeginningDate}
+            id={`field-date-begin-${ariaId}`}
+          />
+        </div>
 
-      <div className={styles['period-filter-end-picker']}>
-        <label htmlFor="field-date-end" className={styles['visually-hidden']}>
-          Fin de la période
-        </label>
-        <BaseDatePicker
-          className={cn(
-            styles['period-filter-input'],
-            styles['field-date-end']
-          )}
-          disabled={isDisabled}
-          maxDate={maxDateEnding}
-          minDate={new Date(periodBeginningDate)}
-          onChange={(event) => onEndingDateChange(event.target.value)}
-          value={periodEndingDate}
-          id="field-date-end"
-        />
+        <span className={styles['vertical-bar']} />
+
+        <div className={styles['period-filter-end-picker']}>
+          <label
+            htmlFor={`field-date-end-${ariaId}`}
+            className={styles['visually-hidden']}
+          >
+            Fin de la période
+          </label>
+          <BaseDatePicker
+            className={cn(
+              styles['period-filter-input'],
+              styles['field-date-end']
+            )}
+            disabled={isDisabled}
+            maxDate={maxDateEnding}
+            minDate={new Date(periodBeginningDate)}
+            onChange={(event) => onEndingDateChange(event.target.value)}
+            value={periodEndingDate}
+            id={`field-date-end-${ariaId}`}
+          />
+        </div>
       </div>
     </div>
-  </div>
-)
+  )
+}

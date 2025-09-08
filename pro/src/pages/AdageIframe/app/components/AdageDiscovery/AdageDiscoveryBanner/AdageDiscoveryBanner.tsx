@@ -45,8 +45,16 @@ export function AdageDiscoveryBanner() {
         </span>{' '}
         du pass Culture
       </h1>
-      <div className={styles['discovery-banner-background']} aria-hidden={true}>
-        <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
+      <div className={styles['discovery-banner-background']} aria-hidden="true">
+        <svg
+          height="100%"
+          width="100%"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-labelledby="bannerTitle"
+        >
+          <title id={'bannerTitle'}>
+            Bannière décorative avec motifs géométriques
+          </title>
           <g ref={ovalsGroupRef} data-testid="banner-ovals-group">
             <path
               className={styles['discovery-banner-svg-oval']}
@@ -55,7 +63,7 @@ export function AdageDiscoveryBanner() {
           </g>
           <g ref={circlesGroupRef}>
             <circle
-              id="banner-circle"
+              id={'banner-circle'}
               cx="20px"
               cy="40%"
               r="6"
@@ -67,7 +75,7 @@ export function AdageDiscoveryBanner() {
           </g>
           <g ref={crossesGroupRef}>
             <path
-              id="banner-cross"
+              id={'banner-cross'}
               d="M50.5457 38.999C49.2838 39.1453 48.1353 38.2882 47.8915 37.0579L47.861 36.8607L47.2485 31.5772L41.968 32.1894C40.635 32.3439 39.4294 31.3907 39.2752 30.0611C39.129 28.7996 39.9836 27.6505 41.2129 27.4068L41.4098 27.3748L46.6905 26.7641L45.9662 20.5171C45.8114 19.1814 46.762 17.9752 48.0889 17.8213C49.3524 17.6749 50.4994 18.5321 50.743 19.7609L50.775 19.958L51.4994 26.2065L57.7411 25.4829C59.0741 25.3284 60.2795 26.2801 60.4335 27.6081C60.5799 28.8711 59.7253 30.0203 58.4961 30.264L58.299 30.2945L52.0574 31.0196L52.67 36.3031C52.8247 37.6372 51.8727 38.8452 50.5457 38.999Z"
               className={styles['discovery-banner-svg-cross']}
             />

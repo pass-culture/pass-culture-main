@@ -166,7 +166,7 @@ export const IndividualOffersContainer = ({
 
       <HeadlineOffer />
 
-      <div role="status">
+      <output aria-live="polite">
         {offers.length > MAX_OFFERS_TO_DISPLAY && (
           <Callout className={styles['offers-table-callout']}>
             L’affichage est limité à {MAX_OFFERS_TO_DISPLAY} offres. Modifiez
@@ -175,10 +175,7 @@ export const IndividualOffersContainer = ({
         )}
         {hasOffers && (
           <div className={styles['offers-table-title']}>
-            <h2
-              id="offers-table-title"
-              className={styles['offers-table-title-heading']}
-            >
+            <h2 className={styles['offers-table-title-heading']}>
               Liste des offres
             </h2>
             <div>
@@ -188,7 +185,7 @@ export const IndividualOffersContainer = ({
             </div>
           </div>
         )}
-      </div>
+      </output>
       <Table
         columns={columns}
         data={currentPageOffersSubset}
@@ -227,7 +224,7 @@ export const IndividualOffersContainer = ({
         />
       </div>
 
-      <div role="status">
+      <output>
         {selectedOfferIds.size > 0 && (
           <IndividualOffersActionsBar
             areAllOffersSelected={areAllOffersSelected}
@@ -239,7 +236,7 @@ export const IndividualOffersContainer = ({
             searchButtonRef={searchButtonRef}
           />
         )}
-      </div>
+      </output>
     </div>
   )
 }

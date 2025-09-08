@@ -49,11 +49,11 @@ export const serializePatchOffer = ({
       address: {
         banId: !formValues.banId ? undefined : formValues.banId,
         inseeCode: !formValues.inseeCode ? undefined : formValues.inseeCode,
-        city: removeQuotes(formValues.city!.trim()), // checked in `allAddressFieldsAreNotNull`
+        city: removeQuotes(formValues.city?.trim() ?? ''), // checked in `allAddressFieldsAreNotNull`
         latitude: formValues.latitude,
         longitude: formValues.longitude,
         postalCode: formValues.postalCode,
-        street: removeQuotes(formValues.street!.trim()), // checked in `allAddressFieldsAreNotNull`
+        street: removeQuotes(formValues.street?.trim() ?? ''), // checked in `allAddressFieldsAreNotNull`
         label: formValues.locationLabel,
         isManualEdition: formValues.manuallySetAddress,
         isVenueAddress:

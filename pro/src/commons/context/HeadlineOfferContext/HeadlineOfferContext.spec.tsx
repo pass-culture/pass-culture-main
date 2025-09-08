@@ -79,7 +79,7 @@ const TestComponent = () => {
   return (
     <>
       <h1>Test Component</h1>
-      <div id="display">
+      <div>
         <span>
           {LABELS.display.headlineOffer}:{' '}
           {headlineOffer ? headlineOffer.id : 'null'}
@@ -89,7 +89,7 @@ const TestComponent = () => {
           {isHeadlineOfferAllowedForOfferer ? 'true' : 'false'}
         </span>
       </div>
-      <div id="controls">
+      <div>
         <button
           onClick={() =>
             upsertHeadlineOffer({

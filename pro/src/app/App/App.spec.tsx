@@ -39,7 +39,7 @@ function TestBrokenCallComponent() {
 const renderApp = (options?: RenderWithProvidersOptions) =>
   renderWithProviders(
     <>
-      <div id="root" />
+      <div id={'root'} />
 
       <Routes>
         <Route path="/" element={<App />}>
