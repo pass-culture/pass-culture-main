@@ -24,7 +24,7 @@ describe('CumulatedViews', () => {
   })
 
   it('should render empty state when 0 views in the past 6 months', () => {
-    const sixMonthsWithNoViews = Array.from(Array(180)).map((key, index) => ({
+    const sixMonthsWithNoViews = Array.from(Array(180)).map((_key, index) => ({
       numberOfViews: 0,
       eventDate: format(
         add(new Date('2021-01-01'), { days: index }),
@@ -42,7 +42,7 @@ describe('CumulatedViews', () => {
   })
 
   it('should render graph and accessible table if data is present', () => {
-    const dailyViews = Array.from(Array(180)).map((key, index) => ({
+    const dailyViews = Array.from(Array(180)).map((_key, index) => ({
       numberOfViews: index,
       eventDate: format(
         add(new Date('2021-01-01'), { days: index }),

@@ -27,8 +27,7 @@ export const BankAccountHasPendingCorrectionCallout = ({
     <Callout
       links={[
         {
-          href:
-            '/remboursements/informations-bancaires?structure=' + offerer.id,
+          href: `/remboursements/informations-bancaires?structure=${offerer.id}`,
           label: 'Voir les corrections attendues',
           onClick: () => {
             logEvent(

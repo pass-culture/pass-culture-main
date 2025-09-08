@@ -65,7 +65,7 @@ export const buildShowSubTypeOptions = (showType?: string): SelectOption[] => {
   }
 
   const selectedShowTypeChildren = showOptionsTree.find(
-    (showTypeOption) => showTypeOption.code === parseInt(showType)
+    (showTypeOption) => showTypeOption.code === parseInt(showType, 10)
   )?.children
 
   if (!selectedShowTypeChildren) {

@@ -115,7 +115,7 @@ describe('ActionsBar', () => {
   it('should show a generic count when more than 500 offers are selected', () => {
     props.selectedOffers = Array(101)
       .fill(null)
-      .map((val, i) => ({ id: i, status: OfferStatus.ACTIVE }))
+      .map((_val, i) => ({ id: i, status: OfferStatus.ACTIVE }))
 
     renderActionsBar(props)
 

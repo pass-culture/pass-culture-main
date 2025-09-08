@@ -96,7 +96,7 @@ export const SignupContainer = (): JSX.Element => {
     errorsRef.current = errors
   }, [touchedFields, errors])
 
-  const logFormAbort = (): void | undefined => {
+  const logFormAbort = () => {
     const filledFields = Object.keys(touchedRef.current)
     if (filledFields.length === 0) {
       return
