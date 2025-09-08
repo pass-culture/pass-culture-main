@@ -15,7 +15,6 @@
   justify-content: space-between;
   flex-wrap: wrap;
   margin-bottom: rem.torem(8px);
-  margin-left: rem.torem(8px);
 
   &.banner-expires-soon {
     background-color: var(--color-background-warning);
@@ -46,6 +45,10 @@
 }
 
 @media (min-width: size.$tablet) {
+  .banner {
+    margin-left: rem.torem(8px);
+  }
+
   .banner-expiration {
     gap: rem.torem(16px);
   }
