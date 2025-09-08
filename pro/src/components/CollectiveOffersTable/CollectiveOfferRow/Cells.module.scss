@@ -14,10 +14,12 @@
 }
 
 .checkbox-column {
+  grid-area: check;
   width: fit-content;
 }
 
 .thumb-column {
+  grid-area: thumb;
   padding: rem.torem(8px);
 
   &-link {
@@ -36,6 +38,8 @@
 }
 
 .title-column {
+  grid-area: title;
+
   &-name {
     @include fonts.body-accent;
 
@@ -43,12 +47,12 @@
     flex-direction: column;
     overflow-wrap: anywhere;
     text-align: left;
-    padding-left: rem.torem(8px);
   }
 
   &-thumb {
     display: block;
     width: fit-content;
+    padding-right: rem.torem(8px);
   }
 
   &-with-thumb {
@@ -64,13 +68,24 @@
   }
 }
 
+.event-date-column {
+  grid-area: event-date;
+}
+
+.venue-column {
+  grid-area: venue;
+}
+
 .institution-column {
+  grid-area: stock-or-institution;
+
   @include fonts.body-accent-xs;
 
   width: rem.torem(150px);
 }
 
 .status-column {
+  grid-area: status;
   min-width: rem.torem(120px);
   display: flex;
   flex-direction: row;
@@ -99,6 +114,7 @@
 }
 
 .actions-column {
+  grid-area: actions;
   place-self: end end;
 
   &-container {
@@ -246,6 +262,7 @@
 .price-and-participants-column {
   @include fonts.body-accent-xs;
 
+  grid-area: price;
   width: rem.torem(145px);
 }
 
@@ -258,6 +275,7 @@
 .location-column {
   @include fonts.body-accent-xs;
 
+  grid-area: location;
   width: rem.torem(150px);
   color: var(--color-text-subtle);
 }
