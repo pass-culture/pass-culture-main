@@ -393,13 +393,13 @@ quality = ["flake8", "tox", "twine"]
 
 [[package]]
 name = "brevo-python"
-version = "1.1.2"
+version = "1.2.0"
 description = "Brevo API"
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "brevo_python-1.1.2.tar.gz", hash = "sha256:07b90d8f5f4db8941281c781382cfa6ef68f8b1fbdb9cbc89fefc96f6b6df4bb"},
+    {file = "brevo_python-1.2.0.tar.gz", hash = "sha256:50d2a1aecfea81a0c162a43f78a7032b4917ba59f64fa0bee4758e45321c6d00"},
 ]
 
 [package.dependencies]
@@ -6850,4 +6850,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "26574097964934081089bf37300663c84e35b2ab51f279ec42ec5af19ebc87fa"
+content-hash = "1f09e34e2454f3f32a04eddf8f22b908f7d88853500c4a3ade8a4ca85e7fc646"
