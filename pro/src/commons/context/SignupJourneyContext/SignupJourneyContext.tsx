@@ -2,6 +2,7 @@ import type React from 'react'
 import { createContext, useContext, useState } from 'react'
 
 import type { Target } from '@/apiClient/v1'
+import { noop } from '@/commons/utils/noop'
 import type { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
 import type { OffererAuthenticationFormValues } from '@/components/SignupJourneyForm/Authentication/OffererAuthenticationForm'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
@@ -37,8 +38,8 @@ export interface SignupJourneyContextValues {
 export const SignupJourneyContext = createContext<SignupJourneyContextValues>({
   activity: null,
   offerer: null,
-  setActivity: () => {},
-  setOfferer: () => {},
+  setActivity: () => noop,
+  setOfferer: () => noop,
 })
 
 export const useSignupJourneyContext = () => {

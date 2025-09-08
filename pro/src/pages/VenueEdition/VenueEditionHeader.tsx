@@ -21,6 +21,7 @@ import {
   UploaderModeEnum,
   type UploadImageValues,
 } from '@/commons/utils/imageUploadTypes'
+import { noop } from '@/commons/utils/noop'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
 import { ButtonImageEdit } from '@/components/ImageUploader/components/ButtonImageEdit/ButtonImageEdit'
 import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
@@ -130,7 +131,7 @@ export const VenueEditionHeader = ({
         className={styles['image-uploader']}
         dragAndDropClassName={styles['image-uploader-drag-and-drop']}
         onImageUpload={handleOnImageUpload}
-        onImageDelete={() => {}}
+        onImageDelete={() => noop}
         initialValues={imageValues}
         mode={UploaderModeEnum.VENUE}
         hideActionButtons

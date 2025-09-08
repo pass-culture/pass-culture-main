@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux'
 
 import { useVenuesFromOfferer } from '@/commons/hooks/swr/useVenuesFromOfferer'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { noop } from '@/commons/utils/noop'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { useIncome } from '@/pages/Reimbursements/Income/useIncome'
 import { MultiSelect } from '@/ui-kit/form/MultiSelect/MultiSelect'
@@ -131,7 +132,7 @@ export const Income = () => {
                     onChange(selectedOption)
                   }
                   error={errors.selectedVenues?.message}
-                  onBlur={() => {}}
+                  onBlur={() => noop}
                 />
               </div>
             </>
@@ -142,7 +143,7 @@ export const Income = () => {
               <Spinner testId="income-spinner" />
             </div>
           ) : incomeApiError ? (
-            <div id={incomeResults} role="status">
+            <div id={incomeResults} role="alert">
               <IncomeError />
             </div>
           ) : !hasIncomeData ? (
@@ -170,7 +171,6 @@ export const Income = () => {
                       type="button"
                       onClick={() => setActiveYear(year)}
                       aria-label={`Afficher les revenus de l'année ${year}`}
-                      aria-controls="income-results"
                       aria-current={year === finalActiveYear}
                       className={classnames(
                         styles['income-filters-by-year-button'],
