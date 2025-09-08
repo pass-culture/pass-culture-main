@@ -2344,7 +2344,7 @@ class GetPublicAccountHistoryTest:
 
     def test_history_contains_deposits_and_recredits(self):
         now = datetime.datetime.utcnow()
-        user = users_factories.UserFactory(dateCreated=now - datetime.timedelta(days=365 + 10))
+        user = users_factories.UserFactory(dateCreated=now - datetime.timedelta(days=365 + 10), postalCode="29280")
         recredit_16 = finance_factories.RecreditFactory(
             recreditType=finance_models.RecreditType.RECREDIT_16,
             amount=30,
