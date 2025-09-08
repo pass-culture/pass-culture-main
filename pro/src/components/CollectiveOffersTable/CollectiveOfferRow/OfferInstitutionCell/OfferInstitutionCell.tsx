@@ -48,7 +48,9 @@ export const OfferInstitutionCell = ({
       )}
       headers={`${rowId} ${getCellsDefinition().INSTITUTION.id}`}
     >
-      {getInstitutionLabel()}
+      <div className={styles['text-overflow-ellipsis']}>
+        {getInstitutionLabel()}
+      </div>
     </td>
   )
 }
