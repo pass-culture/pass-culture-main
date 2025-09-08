@@ -1,4 +1,5 @@
 import classNames from 'classnames'
+import cn from 'classnames'
 
 import { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
 import { SortingMode } from '@/commons/hooks/useColumnSorting'
@@ -37,7 +38,13 @@ export const OffersTableHead = ({
           </span>
         </th>
         {columns.map(({ id, title, isVisuallyHidden, sortableProps }) => (
-          <th id={id} key={id} className={styles['offers-thead-th']}>
+          <th
+            id={id}
+            key={id}
+            className={cn(styles['offers-thead-th'], {
+              [styles['visually-hidden']]: isVisuallyHidden,
+            })}
+          >
             {isVisuallyHidden ? (
               <span className={styles['visually-hidden']}>{title}</span>
             ) : (

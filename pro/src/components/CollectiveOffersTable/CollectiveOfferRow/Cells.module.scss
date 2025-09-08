@@ -37,9 +37,13 @@
 
 .title-column {
   &-name {
+    @include fonts.body-accent;
+
     display: flex;
     flex-direction: column;
     overflow-wrap: anywhere;
+    text-align: left;
+    padding-left: rem.torem(8px);
   }
 
   &-thumb {
@@ -51,12 +55,19 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: rem.torem(8px) rem.torem(24px);
+  }
+
+  &-offer-id {
+    @include fonts.body-accent-xs;
+
+    color: var(--color-text-subtle);
   }
 }
 
 .institution-column {
-  min-width: rem.torem(160px);
+  @include fonts.body-accent-xs;
+
+  width: rem.torem(150px);
 }
 
 .status-column {
@@ -151,6 +162,8 @@
   }
 
   .venue-column {
+    @include fonts.body-accent-xs;
+
     min-width: rem.torem(200px);
   }
 
@@ -213,7 +226,9 @@
 }
 
 .offer-event {
-  min-width: rem.torem(120px);
+  @include fonts.body-accent-xs;
+
+  width: rem.torem(100px);
   display: flex;
   flex-direction: column;
 }
@@ -229,15 +244,20 @@
 }
 
 .price-and-participants-column {
-  min-width: rem.torem(140px);
+  @include fonts.body-accent-xs;
+
+  width: rem.torem(145px);
 }
 
 .price-and-participants-container {
-  min-width: rem.torem(130px);
+  width: rem.torem(145px);
   display: flex;
   flex-direction: column;
 }
 
 .location-column {
-  min-width: rem.torem(130px);
+  @include fonts.body-accent-xs;
+
+  width: rem.torem(150px);
+  color: var(--color-text-subtle);
 }
