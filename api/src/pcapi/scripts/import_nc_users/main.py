@@ -50,7 +50,7 @@ def create_pro(user_row: UserRow, offerer: offerers_models.Offerer, row_number: 
 
     counters.total += 1
     if user_in_db is not None:
-        logger.info("User already present for row %s", row_number)
+        logger.info("User already present for email %s for row %s", user_row["email"], row_number)
         counters.already_present += 1
 
         user_offerer_in_db = (
