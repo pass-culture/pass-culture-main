@@ -1,64 +1,25 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import type { BookingRecapResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { SortingMode, useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
+import strokeNoBookingIcon from '@/icons/stroke-no-booking.svg'
 import { Pagination } from '@/ui-kit/Pagination/Pagination'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import type { BookingsFilters } from '../Components/types'
-import {
-  sortByBeneficiaryName,
-  sortByBookingDate,
-  sortByOfferName,
-} from '../Components/utils/sortingFunctions'
 import { useBookingsTableColumnsByIndex } from './ColumnsIndividualBooking'
 import styles from './IndividualBookingsTable.module.scss'
 
-enum IndividualBookingsSortingColumn {
-  OFFER_NAME = 'OFFER_NAME',
-  BENEFICIARY_NAME = 'BENEFICIARY_NAME',
-  BOOKING_DATE = 'BOOKING_DATE',
-}
 const BOOKINGS_PER_PAGE = 20
-
-const sortBookings = (
-  bookings: BookingRecapResponseModel[],
-  currentSortingColumn: IndividualBookingsSortingColumn | null,
-  sortingMode: SortingMode
-) => {
-  switch (currentSortingColumn) {
-    case IndividualBookingsSortingColumn.OFFER_NAME:
-      return bookings.sort(
-        (a, b) =>
-          sortByOfferName(a, b) * (sortingMode === SortingMode.ASC ? 1 : -1)
-      )
-
-    case IndividualBookingsSortingColumn.BENEFICIARY_NAME:
-      return bookings.sort(
-        (a, b) =>
-          sortByBeneficiaryName(a, b) *
-          (sortingMode === SortingMode.ASC ? 1 : -1)
-      )
-
-    case IndividualBookingsSortingColumn.BOOKING_DATE:
-      return bookings.sort(
-        (a, b) =>
-          sortByBookingDate(a, b) * (sortingMode === SortingMode.ASC ? 1 : -1)
-      )
-    default:
-      return bookings.sort((a, b) => sortByBookingDate(a, b) * -1)
-  }
-}
-
 interface IndividualBookingsTableProps {
   bookings: BookingRecapResponseModel[]
   bookingStatuses: string[]
   updateGlobalFilters: (updatedFilters: Partial<BookingsFilters>) => void
   resetFilters: () => void
   isLoading: boolean
+  hasNoBooking: boolean
 }
 
 export const IndividualBookingsTable = ({
@@ -67,27 +28,17 @@ export const IndividualBookingsTable = ({
   updateGlobalFilters,
   resetFilters,
   isLoading,
+  hasNoBooking,
 }: IndividualBookingsTableProps): JSX.Element => {
-  const { currentSortingColumn, currentSortingMode } =
-    useColumnSorting<IndividualBookingsSortingColumn>()
-
-  const sortedBookings = sortBookings(
-    bookings,
-    currentSortingColumn,
-    currentSortingMode
-  ).map(
+  const bookingsWithIds = bookings.map(
     (b, i) =>
       ({ ...(b as object), id: i }) as BookingRecapResponseModel & {
         id: number
       }
   )
 
-  const { page, setPage, previousPage, nextPage, pageCount, currentPageItems } =
-    usePagination(sortedBookings, BOOKINGS_PER_PAGE)
-
-  useEffect(() => {
-    setPage(1)
-  }, [bookings, setPage])
+  const { page, previousPage, nextPage, pageCount, currentPageItems } =
+    usePagination(bookingsWithIds, BOOKINGS_PER_PAGE)
 
   const { logEvent } = useAnalytics()
 
@@ -103,7 +54,7 @@ export const IndividualBookingsTable = ({
 
   const { columns, getFullRowContentIndividual } =
     useBookingsTableColumnsByIndex({
-      bookings: sortedBookings,
+      bookings: bookingsWithIds,
       bookingStatuses,
       updateGlobalFilters: updateGlobalFilters,
       expandedIds: expanded,
@@ -125,9 +76,9 @@ export const IndividualBookingsTable = ({
           onFilterReset: resetFilters,
         }}
         noData={{
-          hasNoData: false,
+          hasNoData: hasNoBooking,
           message: {
-            icon: 'strokeNoBookingIcon',
+            icon: strokeNoBookingIcon,
             title: 'Vous n’avez aucune réservation pour le moment',
             subtitle: '',
           },

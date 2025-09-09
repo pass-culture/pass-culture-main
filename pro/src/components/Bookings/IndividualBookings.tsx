@@ -26,7 +26,7 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isEqual } from '@/commons/utils/isEqual'
 import { ChoosePreFiltersMessage } from '@/components/Bookings/Components/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
-import { NoData } from '@/components/NoData/NoData'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import {
   ALL_BOOKING_STATUS,
@@ -48,7 +48,6 @@ type BookingsProps<T> = {
   getFilteredBookingsAdapter: (
     params: PreFiltersParams & { page?: number }
   ) => Promise<{ bookings: T[]; pages: number; currentPage: number }>
-  getUserHasBookingsAdapter: () => Promise<boolean>
 }
 
 const MAX_LOADED_PAGES = 5
@@ -59,7 +58,6 @@ export const IndividualBookingsComponent = <
   locationState,
   audience,
   getFilteredBookingsAdapter,
-  getUserHasBookingsAdapter,
 }: BookingsProps<T>): JSX.Element => {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
@@ -180,15 +178,18 @@ export const IndividualBookingsComponent = <
     }))
   }
 
-  const hasBookingsQuery = useSWR(
+  const { data: hasBookingsQuery, isLoading: hasBookingsQueryLoading } = useSWR(
     [GET_HAS_BOOKINGS_QUERY_KEY],
-    () => getUserHasBookingsAdapter(),
-    { fallbackData: true }
+    () => api.getUserHasBookings()
   )
 
   const resetPreFiltersWithLog = () => {
     resetPreFilters()
     logEvent(Events.CLICKED_RESET_FILTERS, { from: location.pathname })
+  }
+
+  if (hasBookingsQueryLoading) {
+    return <Spinner />
   }
 
   return (
@@ -203,7 +204,7 @@ export const IndividualBookingsComponent = <
         wereBookingsRequested={wereBookingsRequested}
         audience={audience}
         hasResult={(bookingsQuery ?? []).length > 0}
-        isFiltersDisabled={!hasBookingsQuery.data}
+        isFiltersDisabled={!hasBookingsQuery?.hasBookings}
         isLocalLoading={venuesQuery.isLoading}
         isTableLoading={isLoading}
         venues={venues}
@@ -228,18 +229,18 @@ export const IndividualBookingsComponent = <
         />
       )}
 
-      {wereBookingsRequested ? (
+      {/* {!hasBookingsQueryLoading && */}
+      {hasBookingsQuery?.hasBookings && !wereBookingsRequested ? (
+        <ChoosePreFiltersMessage />
+      ) : (
         <IndividualBookingsTable
           bookings={filteredBookings}
           bookingStatuses={filters.bookingStatus}
           updateGlobalFilters={updateGlobalFilters}
           resetFilters={resetAndApplyPreFilters}
           isLoading={isLoading}
+          hasNoBooking={!hasBookingsQuery?.hasBookings}
         />
-      ) : hasBookingsQuery.data ? (
-        <ChoosePreFiltersMessage />
-      ) : (
-        <NoData page="bookings" />
       )}
     </div>
   )

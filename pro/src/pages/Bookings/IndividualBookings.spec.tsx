@@ -1,4 +1,9 @@
-import { screen, waitFor, within } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+  within,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
@@ -676,7 +681,10 @@ describe('components | BookingsRecap | Pro user', () => {
     vi.spyOn(api, 'getUserHasBookings').mockResolvedValue({
       hasBookings: false,
     })
+
     renderBookingsRecap()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(
       screen.getByRole('button', {
