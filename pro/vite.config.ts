@@ -1,6 +1,6 @@
-import { fileURLToPath, URL } from 'node:url'
 import { fontPreloads } from '@pass-culture/design-system/lib/global/font-preloads'
 import react from '@vitejs/plugin-react'
+import { fileURLToPath, URL } from 'node:url'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig, type PluginOption } from 'vite'
 import { createHtmlPlugin } from 'vite-plugin-html'
@@ -15,6 +15,23 @@ export default defineConfig(({ mode }) => {
       sourcemap: true,
       emptyOutDir: true,
       assetsInlineLimit: 0,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes("node_modules")) {
+              if (id.includes("react")) { return "react-vendor"; }
+              if (id.includes("react-router")) { return "router"; }
+              if (id.includes("chart.js") || id.includes("recharts")) { return "charts"; }
+              if (id.includes("lodash")) { return "lodash"; }
+              if (id.includes("sentry")) { return "sentry"; }
+              if (id.includes("date-fns") || id.includes("dayjs") || id.includes("moment")) { return "dates"; }
+              // fallback: one chunk per package
+              const m = id.match(/node_modules\/(@?[^/]+)/);
+              return m ? `vendor-${m[1]}` : "vendor";
+            }
+          }
+        }
+      }
     },
     resolve: {
       alias: {
