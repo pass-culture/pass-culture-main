@@ -31,14 +31,14 @@ export const OffererAuthenticationForm = (): JSX.Element => {
   const isPartiallyDiffusableSignupEnabled = useActiveFeature(
     'WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE'
   )
-  const { offerer } = useSignupJourneyContext()
+  const { offerer, initialAddress } = useSignupJourneyContext()
 
   const {
     watch,
     setValue,
     register,
     getFieldState,
-    formState: { errors, defaultValues },
+    formState: { errors },
   } = useFormContext<OffererAuthenticationFormValues>()
 
   const manuallySetAddress = watch('manuallySetAddress')
@@ -122,11 +122,11 @@ export const OffererAuthenticationForm = (): JSX.Element => {
                 )
               } else {
                 // We init the address fields as the default ones when the user untoggle the open to public toggle when they are not diffusible
-                if (defaultValues) {
-                  resetReactHookFormAddressFields((name, _) =>
+                if (initialAddress) {
+                  resetReactHookFormAddressFields((name, _) => {
                     // @ts-expect-error Type is right since it's gotten from the defaultValues
-                    setValue(name, defaultValues[name])
-                  )
+                    setValue(name, initialAddress[name])
+                  })
                 }
               }
             }

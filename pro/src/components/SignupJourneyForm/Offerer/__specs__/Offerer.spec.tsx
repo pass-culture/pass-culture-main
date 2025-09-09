@@ -72,6 +72,7 @@ const renderOffererScreen = (contextValue: SignupJourneyContextValues) => {
 }
 
 const mockSetOfferer = vi.fn()
+const mockSetInitialAddress = vi.fn()
 
 describe('Offerer', () => {
   let contextValue: SignupJourneyContextValues
@@ -82,6 +83,8 @@ describe('Offerer', () => {
       offerer: DEFAULT_OFFERER_FORM_VALUES,
       setActivity: () => {},
       setOfferer: mockSetOfferer,
+      initialAddress: null,
+      setInitialAddress: mockSetInitialAddress,
     }
 
     vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
@@ -207,6 +210,17 @@ describe('Offerer', () => {
       '12345678933333'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+    expect(mockSetInitialAddress).toHaveBeenCalledWith({
+      banId: '49759_1304_00002',
+      city: 'Paris',
+      inseeCode: '75056',
+      latitude: 48.869440910282734,
+      longitude: 2.3087717501609233,
+      postalCode: '75001',
+      street: '4 rue Carnot',
+      addressAutocomplete: '4 rue Carnot 75001 Paris',
+      'search-addressAutocomplete': '4 rue Carnot 75001 Paris',
+    })
     expect(mockSetOfferer).toHaveBeenCalledWith({
       apeCode: '9003A',
       hasVenueWithSiret: false,

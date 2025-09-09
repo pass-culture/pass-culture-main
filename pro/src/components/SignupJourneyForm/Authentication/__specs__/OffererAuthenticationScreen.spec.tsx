@@ -9,6 +9,7 @@ import {
   type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
@@ -122,6 +123,8 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
       },
       setActivity: () => {},
       setOfferer: () => {},
+      initialAddress: null,
+      setInitialAddress: noop,
     }
   })
 
@@ -219,6 +222,8 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
       },
       setActivity: () => {},
       setOfferer: () => {},
+      initialAddress: null,
+      setInitialAddress: noop,
     }
 
     it('should render the not diffusible callout', async () => {

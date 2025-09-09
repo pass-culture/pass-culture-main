@@ -11,6 +11,7 @@ import {
   type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { noop } from '@/commons/utils/noop'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -135,6 +136,8 @@ describe('OffererAuthenticationForm', () => {
       offerer: offererAuthenticationFormValues,
       setActivity: () => {},
       setOfferer: () => {},
+      initialAddress: null,
+      setInitialAddress: noop,
     }
   })
 

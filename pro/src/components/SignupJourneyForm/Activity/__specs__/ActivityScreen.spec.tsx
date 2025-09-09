@@ -10,6 +10,7 @@ import {
   type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 
@@ -57,6 +58,8 @@ describe('screens:SignupJourney::Activity', () => {
       offerer: null,
       setActivity: () => {},
       setOfferer: () => {},
+      initialAddress: null,
+      setInitialAddress: noop,
     }
     vi.spyOn(api, 'getVenueTypes').mockResolvedValue([
       { id: 'MUSEUM', label: 'first venue label' },

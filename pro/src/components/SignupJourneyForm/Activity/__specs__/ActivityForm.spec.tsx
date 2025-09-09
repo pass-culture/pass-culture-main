@@ -11,6 +11,7 @@ import {
   SignupJourneyContext,
   type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { defaultActivityFormValues } from '@/components/SignupJourneyForm/Activity/constants'
 import { Button } from '@/ui-kit/Button/Button'
@@ -78,6 +79,8 @@ describe('screens:SignupJourney::ActivityForm', () => {
       offerer: null,
       setActivity: () => {},
       setOfferer: () => {},
+      initialAddress: null,
+      setInitialAddress: noop,
     }
     vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
   })

@@ -39,7 +39,7 @@ export const Offerer = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
-  const { offerer, setOfferer } = useSignupJourneyContext()
+  const { offerer, setOfferer, setInitialAddress } = useSignupJourneyContext()
   const [showIsAppUserDialog, setShowIsAppUserDialog] = useState<boolean>(false)
   const [showInvisibleBanner, setShowInvisibleBanner] = useState<boolean>(false)
 
@@ -104,9 +104,7 @@ export const Offerer = (): JSX.Element => {
       const venueOfOffererProvidersResponse =
         await api.getVenuesOfOffererFromSiret(formattedSiret)
 
-      setOfferer({
-        ...formValues,
-        name: offererSiretData.name ?? '',
+      const addressValues = {
         street: offererSiretData.address?.street ?? '',
         city: offererSiretData.address?.city ?? '',
         latitude: offererSiretData.address
@@ -118,6 +116,18 @@ export const Offerer = (): JSX.Element => {
         postalCode: offererSiretData.address?.postalCode ?? '',
         inseeCode: offererSiretData.address?.inseeCode ?? null,
         banId: offererSiretData.address?.banId ?? null,
+      }
+
+      setInitialAddress({
+        ...addressValues,
+        addressAutocomplete: `${addressValues?.street} ${addressValues?.postalCode} ${addressValues?.city}`,
+        'search-addressAutocomplete': `${addressValues?.street} ${addressValues?.postalCode} ${addressValues?.city}`,
+      })
+
+      setOfferer({
+        ...formValues,
+        name: offererSiretData.name ?? '',
+        ...addressValues,
         hasVenueWithSiret:
           venueOfOffererProvidersResponse.venues.find(
             (venue) => venue.siret === formattedSiret

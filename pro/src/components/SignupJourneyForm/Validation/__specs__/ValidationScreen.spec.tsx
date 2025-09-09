@@ -20,6 +20,7 @@ import {
 import type { Address } from '@/commons/core/shared/types'
 import { getOffererNameFactory } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { noop } from '@/commons/utils/noop'
 import * as utils from '@/commons/utils/recaptcha'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
@@ -93,6 +94,8 @@ describe('ValidationScreen', () => {
       offerer: null,
       setActivity: () => {},
       setOfferer: () => {},
+      initialAddress: null,
+      setInitialAddress: noop,
     }
     vi.spyOn(api, 'getVenueTypes').mockResolvedValue([
       { id: 'MUSEUM', label: 'first venue label' },
@@ -172,6 +175,8 @@ describe('ValidationScreen', () => {
         },
         setActivity: () => {},
         setOfferer: () => {},
+        initialAddress: null,
+        setInitialAddress: noop,
       }
       selectCurrentOffererId.mockReturnValue(null)
     })
@@ -287,6 +292,8 @@ describe('ValidationScreen', () => {
         },
         setActivity: () => {},
         setOfferer: () => {},
+        initialAddress: null,
+        setInitialAddress: noop,
       }
     })
 
@@ -391,6 +398,8 @@ describe('ValidationScreen', () => {
         },
         setActivity: () => {},
         setOfferer: () => {},
+        initialAddress: null,
+        setInitialAddress: noop,
       }
     })
 
