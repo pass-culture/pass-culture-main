@@ -1223,7 +1223,7 @@ def get_collective_offer_by_id_query(offer_id: int) -> sa_orm.Query:
 
 def get_collective_offer_by_id(offer_id: int) -> models.CollectiveOffer:
     try:
-        return get_collective_offer_by_id_query(offer_id=offer_id).one()
+        return get_collective_offer_by_id_query(offer_id=offer_id).populate_existing().one()
     except sa_orm.exc.NoResultFound:
         raise exceptions.CollectiveOfferNotFound()
 
