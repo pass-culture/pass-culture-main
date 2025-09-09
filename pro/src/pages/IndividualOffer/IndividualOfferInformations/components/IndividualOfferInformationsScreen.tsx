@@ -57,11 +57,8 @@ export const IndividualOfferInformationsScreen = ({
   const notify = useNotification()
   const mode = useOfferWizardMode()
   const { mutate } = useSWRConfig()
-  const {
-    subCategories,
-    hasPublishedOfferWithSameEan,
-    setIsAccessibilityFilled,
-  } = useIndividualOfferContext()
+  const { subCategories, hasPublishedOfferWithSameEan } =
+    useIndividualOfferContext()
 
   const saveEditionChangesButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -91,7 +88,6 @@ export const IndividualOfferInformationsScreen = ({
   const validationSchema = getValidationSchema({
     conditionalFields,
     isOfferOnline: getIsOfferSubcategoryOnline(offer, subCategories),
-    setIsAccessibilityFilled,
   })
 
   const initialValues = getInitialValuesFromOffer(offer, {

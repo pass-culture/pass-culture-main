@@ -49,10 +49,8 @@ const renderIndividualOfferSummaryPriceTableScreen: RenderComponentFunction<
     subCategories: MOCKED_SUBCATEGORIES,
     hasPublishedOfferWithSameEan: false,
     isEvent: params.offer.isEvent,
-    isAccessibilityFilled: false,
     offer: params.offer,
     offerId: params.offer.id,
-    setIsAccessibilityFilled: vi.fn(),
     setIsEvent: vi.fn(),
     ...params.contextValues,
   }

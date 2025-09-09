@@ -25,11 +25,6 @@ export interface IndividualOfferContextValues {
   subCategories: SubcategoryResponseModel[]
   isEvent: boolean | null
   setIsEvent: (isEvent: boolean | null) => void
-  // Both isAccessibilityFilled and setIsAccessibilityFilled are
-  // used as a workaround to make the form context sync with the offer context
-  // so the stepper can be updated depending on form changes.
-  isAccessibilityFilled: boolean
-  setIsAccessibilityFilled: (isAccessibilityFilled: boolean) => void
   /** Real boolean guarded by early `<Splinner />` return while fetching offer data in context provider. */
   hasPublishedOfferWithSameEan: boolean
 }
@@ -38,11 +33,9 @@ export const IndividualOfferContext =
   createContext<IndividualOfferContextValues>({
     categories: [],
     hasPublishedOfferWithSameEan: false,
-    isAccessibilityFilled: true,
     isEvent: null,
     offer: null,
     offerId: null,
-    setIsAccessibilityFilled: () => undefined,
     // TODO (igabriele, 2025-08-20): Rename that to `setIsControlledEvent`.
     setIsEvent: () => undefined,
     subCategories: [],
@@ -60,7 +53,6 @@ export const IndividualOfferContextProvider = ({
   children,
 }: IndividualOfferContextProviderProps) => {
   const [isControlledEvent, setIsEvent] = useState<boolean | null>(null)
-  const [isAccessibilityFilled, setIsAccessibilityFilled] = useState(true)
   const { offerId: offerIdAsString } = useParams<{
     offerId: string
   }>()
@@ -136,11 +128,9 @@ export const IndividualOfferContextProvider = ({
       value={{
         categories: categoriesQuery.data.categories,
         hasPublishedOfferWithSameEan: Boolean(publishedOfferWithSameEAN),
-        isAccessibilityFilled,
         isEvent: offer?.isEvent ?? isControlledEvent,
         offer: offer ?? null,
         offerId,
-        setIsAccessibilityFilled,
         setIsEvent,
         subCategories: categoriesQuery.data.subcategories,
       }}
