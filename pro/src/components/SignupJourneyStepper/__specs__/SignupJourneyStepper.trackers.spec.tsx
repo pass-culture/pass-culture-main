@@ -11,6 +11,7 @@ import {
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import {
   DEFAULT_ADDRESS_FORM_VALUES,
@@ -71,6 +72,8 @@ describe('test renderSignupJourneyStepper', () => {
       offerer: DEFAULT_OFFERER_FORM_VALUES,
       setActivity: () => {},
       setOfferer: () => {},
+      initialAddress: null,
+      setInitialAddress: noop,
     }
   })
   it('should not log current tab click and disabled ones', async () => {

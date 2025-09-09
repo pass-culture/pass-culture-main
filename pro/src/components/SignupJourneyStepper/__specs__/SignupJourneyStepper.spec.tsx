@@ -9,6 +9,7 @@ import {
   type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import {
   DEFAULT_ADDRESS_FORM_VALUES,
@@ -62,6 +63,8 @@ describe('test SignupJourneyStepper', () => {
       offerer: DEFAULT_OFFERER_FORM_VALUES,
       setActivity: () => {},
       setOfferer: () => {},
+      initialAddress: null,
+      setInitialAddress: noop,
     }
   })
   it('should render authentication step', async () => {

@@ -14,6 +14,7 @@ import {
   type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { noop } from '@/commons/utils/noop'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -79,6 +80,8 @@ describe('screens:SignupJourney::Offerers', () => {
       },
       setActivity: () => {},
       setOfferer: () => {},
+      initialAddress: null,
+      setInitialAddress: noop,
     }
 
     venues = [
@@ -359,6 +362,8 @@ describe('screens:SignupJourney::Offerers', () => {
       },
       setActivity: () => {},
       setOfferer: () => {},
+      initialAddress: null,
+      setInitialAddress: noop,
     }
 
     renderOfferersScreen(contextValueForLocalAuthority)
@@ -424,6 +429,8 @@ describe('screens:SignupJourney::Offerers', () => {
       },
       setActivity: () => {},
       setOfferer: () => {},
+      initialAddress: null,
+      setInitialAddress: noop,
     }
 
     renderOfferersScreen(contextValueForLocalAuthority)
