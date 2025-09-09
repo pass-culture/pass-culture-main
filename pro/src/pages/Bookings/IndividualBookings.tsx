@@ -5,7 +5,6 @@ import { Audience } from '@/commons/core/shared/types'
 import { IndividualBookingsComponent } from '@/components/Bookings/IndividualBookings'
 
 import { getFilteredIndividualBookingsAdapter } from './adapters/getFilteredIndividualBookingsAdapter'
-import { getUserHasIndividualBookingsAdapter } from './adapters/getUserHasIndividualBookingsAdapter'
 
 export const IndividualBookings = (): JSX.Element => {
   const location = useLocation()
@@ -15,7 +14,6 @@ export const IndividualBookings = (): JSX.Element => {
       <IndividualBookingsComponent
         audience={Audience.INDIVIDUAL}
         getFilteredBookingsAdapter={getFilteredIndividualBookingsAdapter}
-        getUserHasBookingsAdapter={getUserHasIndividualBookingsAdapter}
         locationState={location.state}
       />
     </Layout>
