@@ -9,9 +9,9 @@ import type { DetailsFormValues } from '../types'
 
 describe('deSerializeDurationMinutes', () => {
   it('should correctly de serialize duration minutes', () => {
-    expect(deSerializeDurationMinutes(0)).toStrictEqual('0:00')
-    expect(deSerializeDurationMinutes(21)).toStrictEqual('0:21')
-    expect(deSerializeDurationMinutes(183)).toStrictEqual('3:03')
+    expect(deSerializeDurationMinutes(0)).toStrictEqual('00:00')
+    expect(deSerializeDurationMinutes(21)).toStrictEqual('00:21')
+    expect(deSerializeDurationMinutes(183)).toStrictEqual('03:03')
     expect(deSerializeDurationMinutes(1838)).toStrictEqual('30:38')
   })
 })
@@ -123,7 +123,7 @@ describe('serializeDetailsPostData', () => {
         subcategoryId: 'anything',
         venueId: 0,
         description: 'Ancien festival annuel musical',
-        durationMinutes: undefined,
+        durationMinutes: null,
         extraData: {
           author: 'Boris Vian',
           gtl_id: 'a gtl id',
@@ -166,7 +166,7 @@ describe('serializeDetailsPostData', () => {
         subcategoryId: 'anything',
         venueId: 0,
         description: 'Ancien festival annuel musical',
-        durationMinutes: undefined,
+        durationMinutes: null,
         extraData: {
           author: 'Boris Vian',
           gtl_id: 'a gtl id',
@@ -225,7 +225,7 @@ describe('serializeDetailsPatchData', () => {
         name: 'Festival de la Musique',
         subcategoryId: 'anything',
         description: 'Ancien festival annuel musical',
-        durationMinutes: undefined,
+        durationMinutes: null,
         extraData: {
           author: 'Boris Vian',
           gtl_id: 'a gtl id',
@@ -266,7 +266,7 @@ describe('serializeDetailsPatchData', () => {
         name: 'Festival de la Musique',
         subcategoryId: 'anything',
         description: 'Ancien festival annuel musical',
-        durationMinutes: undefined,
+        durationMinutes: null,
         extraData: {
           author: 'Boris Vian',
           gtl_id: 'a gtl id',
@@ -290,7 +290,7 @@ describe('serializeDetailsPatchData', () => {
 
 describe('serializeDurationMinutes', () => {
   it('should return undefined when durationHour is empty', () => {
-    expect(serializeDurationMinutes('')).toStrictEqual(undefined)
+    expect(serializeDurationMinutes('')).toStrictEqual(null)
   })
 
   it('should transform string duration into int minutes', () => {
