@@ -65,6 +65,39 @@ class BigQueryProductSync:
             type=event_type,
         )
 
+    def _remove_existing_mediations(self, product: offers_models.Product) -> None:
+        (
+            db.session.query(offers_models.ProductMediation)
+            .filter(offers_models.ProductMediation.productId == product.id)
+            .delete(synchronize_session=False)
+        )
+
+    def _update_product_images(self, product: offers_models.Product, bq_product: BigQueryProductModel) -> None:
+        if not bq_product.recto_uuid and not bq_product.verso_uuid:
+            return
+
+        provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+
+        self._remove_existing_mediations(product)
+
+        if bq_product.recto_uuid:
+            recto_mediation = offers_models.ProductMediation(
+                productId=product.id,
+                uuid=bq_product.recto_uuid,
+                imageType=offers_models.ImageType.RECTO,
+                lastProvider=provider,
+            )
+            db.session.add(recto_mediation)
+
+        if bq_product.verso_uuid:
+            verso_mediation = offers_models.ProductMediation(
+                productId=product.id,
+                uuid=bq_product.verso_uuid,
+                imageType=offers_models.ImageType.VERSO,
+                lastProvider=provider,
+            )
+            db.session.add(verso_mediation)
+
     def run_synchronization(self, from_date: datetime.date, to_date: datetime.date) -> None:
         logger.info("Starting product synchronization from %s to %s.", from_date.isoformat(), to_date.isoformat())
 
@@ -94,6 +127,13 @@ class BigQueryProductSync:
                 total_products_upserted += 1
             except sa_exc.IntegrityError as exc:
                 logger.error("Failed to upsert product with EAN %s: %s", product.ean, exc)
+                continue
+
+            try:
+                with transaction():
+                    self._update_product_images(product, bq_product)
+            except sa_exc.IntegrityError as exc:
+                logger.error("Failed to update images for EAN %s. Reason: %s", product.ean, exc)
 
         if ineligible_eans:
             offers_api.reject_inappropriate_products(ineligible_eans, author=None)

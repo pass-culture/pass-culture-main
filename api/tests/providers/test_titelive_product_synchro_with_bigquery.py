@@ -1,4 +1,5 @@
 import datetime
+import uuid
 from unittest.mock import patch
 
 import pytest
@@ -458,3 +459,103 @@ class BigQueryProductSyncTest:
         )
 
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+
+    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    def test_creates_images_for_new_product(self, mock_execute):
+        recto_uuid = str(uuid.uuid4())
+        verso_uuid = str(uuid.uuid4())
+        fixture = build_titelive_one_book_response(ean=self.EAN_TEST)
+        bq_product = self._prepare_bq_product_from_fixture(fixture)
+        bq_product.recto_uuid = recto_uuid
+        bq_product.verso_uuid = verso_uuid
+        mock_execute.return_value = iter([bq_product])
+
+        BigQueryProductSync().run_synchronization(
+            from_date=datetime.date(2025, 1, 1), to_date=datetime.date(2025, 1, 2)
+        )
+
+        product = db.session.query(offers_models.Product).filter_by(ean=self.EAN_TEST).one()
+        mediations = db.session.query(offers_models.ProductMediation).filter_by(productId=product.id).all()
+        assert len(mediations) == 2
+        mediation_map = {m.imageType: m.uuid for m in mediations}
+        assert mediation_map[offers_models.ImageType.RECTO] == recto_uuid
+        assert mediation_map[offers_models.ImageType.VERSO] == verso_uuid
+
+    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    def test_replaces_all_images_on_full_update(self, mock_execute):
+        provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+        product = offers_factories.ProductFactory(ean=self.EAN_TEST, lastProviderId=provider.id)
+        offers_factories.ProductMediationFactory(
+            product=product, imageType=offers_models.ImageType.RECTO, uuid="old-recto-uuid"
+        )
+        offers_factories.ProductMediationFactory(
+            product=product, imageType=offers_models.ImageType.VERSO, uuid="old-verso-uuid"
+        )
+        new_recto_uuid = str(uuid.uuid4())
+        new_verso_uuid = str(uuid.uuid4())
+        fixture = build_titelive_one_book_response(ean=self.EAN_TEST)
+        bq_product = self._prepare_bq_product_from_fixture(fixture)
+        bq_product.recto_uuid = new_recto_uuid
+        bq_product.verso_uuid = new_verso_uuid
+        mock_execute.return_value = iter([bq_product])
+
+        BigQueryProductSync().run_synchronization(
+            from_date=datetime.date(2025, 1, 1), to_date=datetime.date(2025, 1, 2)
+        )
+
+        mediations = db.session.query(offers_models.ProductMediation).filter_by(productId=product.id).all()
+        assert len(mediations) == 2
+        mediation_map = {m.imageType: m.uuid for m in mediations}
+        assert mediation_map[offers_models.ImageType.RECTO] == new_recto_uuid
+        assert mediation_map[offers_models.ImageType.VERSO] == new_verso_uuid
+
+    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    def test_replaces_all_images_even_on_partial_update(self, mock_execute):
+        provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+        product = offers_factories.ProductFactory(ean=self.EAN_TEST, lastProviderId=provider.id)
+        offers_factories.ProductMediationFactory(
+            product=product, imageType=offers_models.ImageType.RECTO, uuid="old-recto-uuid"
+        )
+        offers_factories.ProductMediationFactory(
+            product=product, imageType=offers_models.ImageType.VERSO, uuid="old-verso-uuid"
+        )
+        new_recto_uuid = str(uuid.uuid4())
+        fixture = build_titelive_one_book_response(ean=self.EAN_TEST)
+        bq_product = self._prepare_bq_product_from_fixture(fixture)
+        bq_product.recto_uuid = new_recto_uuid
+        bq_product.verso_uuid = None
+        mock_execute.return_value = iter([bq_product])
+
+        BigQueryProductSync().run_synchronization(
+            from_date=datetime.date(2025, 1, 1), to_date=datetime.date(2025, 1, 2)
+        )
+
+        mediations = db.session.query(offers_models.ProductMediation).filter_by(productId=product.id).all()
+        assert len(mediations) == 1
+        assert mediations[0].imageType == offers_models.ImageType.RECTO
+        assert mediations[0].uuid == new_recto_uuid
+
+    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    def test_does_not_change_images_when_uuids_are_null(self, mock_execute):
+        provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+        product = offers_factories.ProductFactory(ean=self.EAN_TEST, lastProviderId=provider.id)
+        offers_factories.ProductMediationFactory(
+            product=product, imageType=offers_models.ImageType.RECTO, uuid="old-recto-uuid"
+        )
+        offers_factories.ProductMediationFactory(
+            product=product, imageType=offers_models.ImageType.VERSO, uuid="old-verso-uuid"
+        )
+        fixture = build_titelive_one_book_response(ean=self.EAN_TEST)
+        bq_product = self._prepare_bq_product_from_fixture(fixture)
+        bq_product.recto_uuid = None
+        bq_product.verso_uuid = None
+        mock_execute.return_value = iter([bq_product])
+
+        BigQueryProductSync().run_synchronization(
+            from_date=datetime.date(2025, 1, 1), to_date=datetime.date(2025, 1, 2)
+        )
+
+        mediations = db.session.query(offers_models.ProductMediation).filter_by(productId=product.id).all()
+        assert len(mediations) == 2
+        assert mediations[0].uuid == "old-recto-uuid"
+        assert mediations[1].uuid == "old-verso-uuid"
