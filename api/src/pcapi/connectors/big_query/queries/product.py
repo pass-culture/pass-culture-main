@@ -16,6 +16,9 @@ class BigQueryProductModel(TiteLiveBookArticle):
     titre: str
     auteurs_multi: list[str]
 
+    recto_uuid: str | None
+    verso_uuid: str | None
+
     @validator("auteurs_multi", pre=True)
     def validate_auteurs_multi(cls, auteurs_multi: typing.Any) -> list:
         if isinstance(auteurs_multi, list):
@@ -43,7 +46,9 @@ class ProductsToSyncQuery(BaseQuery):
             langueiso,
             taux_tva,
             id_lectorat,
-            datemodification
+            datemodification,
+            recto_uuid,
+            verso_uuid
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.wip_titelive_books`
     """  # FIXME (jmontagnat, 2025-09-11): switch to final table when its name will be decided
