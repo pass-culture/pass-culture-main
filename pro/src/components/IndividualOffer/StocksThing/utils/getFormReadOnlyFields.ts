@@ -6,7 +6,7 @@ import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
 } from '@/commons/core/Offers/constants'
-import { isAllocineProvider } from '@/commons/core/Providers/utils/utils'
+import { isAllocineOffer } from '@/commons/core/Providers/utils/localProvider'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
 import type { StockThingFormValues } from '../types'
@@ -20,12 +20,13 @@ export const getFormReadOnlyFields = (
     OFFER_STATUS_REJECTED,
     OFFER_STATUS_PENDING,
   ].includes(offer.status)
-  const isOfferSynchronized = !!offer.lastProvider
-  const isOfferSynchronizedAllocine =
-    offer.lastProvider && isAllocineProvider(offer.lastProvider)
+
   if (isDisabledStatus) {
     return Object.keys(STOCK_THING_FORM_DEFAULT_VALUES)
   }
+
+  const isOfferSynchronized = Boolean(offer.lastProvider)
+  const isOfferSynchronizedAllocine = isAllocineOffer(offer)
 
   if (isOfferSynchronized && !isOfferSynchronizedAllocine) {
     const readOnlyFields = Object.keys(STOCK_THING_FORM_DEFAULT_VALUES)

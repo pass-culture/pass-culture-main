@@ -1,8 +1,12 @@
 import { useRef, useState } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type {
+  GetIndividualOfferWithAddressResponseModel,
+  GetOfferStockResponseModel,
+} from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { isAllocineOffer } from '@/commons/core/Providers/utils/localProvider'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { isDateValid } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
@@ -37,6 +41,7 @@ export interface PriceTableFormProps {
   mode: OFFER_WIZARD_MODE
   offer: GetIndividualOfferWithAddressResponseModel
   schemaValidationContext: PriceTableFormContext
+  offerStocks: GetOfferStockResponseModel[]
 }
 export const PriceTableForm = ({
   isCaledonian,
@@ -44,6 +49,7 @@ export const PriceTableForm = ({
   mode,
   offer,
   schemaValidationContext,
+  offerStocks,
 }: PriceTableFormProps) => {
   const activationCodeButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -66,6 +72,11 @@ export const PriceTableForm = ({
   ] = useState<number | null>(null)
   const [entryIndexToConfirmAndRemove, setEntryIndexToConfirmAndRemove] =
     useState<number | null>(null)
+
+  const isOfferSynchronized = Boolean(offer.lastProvider)
+  const isOfferSynchronizedAllocine = isAllocineOffer(offer)
+  const disableEverythingButQuantity =
+    !isReadOnly && isOfferSynchronized && !isOfferSynchronizedAllocine
 
   const { computeEntryConstraints, nowAsDate } = makeFieldConstraints({
     offer,
@@ -171,6 +182,11 @@ export const PriceTableForm = ({
       {fields.map((field, index) => {
         const entry = watch(`entries.${index}`)
 
+        const hasActivationCodes =
+          (!disableEverythingButQuantity &&
+            (watch(`entries.${index}.activationCodes`) || []).length > 0) ||
+          (offerStocks.length > 0 && offerStocks[0].hasActivationCode)
+
         return (
           <div key={field.id} className={styles['row']}>
             {offer.isEvent && (
@@ -178,7 +194,11 @@ export const PriceTableForm = ({
                 {...register(`entries.${index}.label`)}
                 autoComplete="off"
                 className={styles['input-label']}
-                disabled={fields.length <= 1 || isReadOnly}
+                disabled={
+                  fields.length <= 1 ||
+                  isReadOnly ||
+                  disableEverythingButQuantity
+                }
                 error={errors.entries?.[index]?.label?.message}
                 label="Intitulé du tarif"
                 maxLength={PRICE_TABLE_ENTRY_MAX_LABEL_LENGTH}
@@ -188,7 +208,7 @@ export const PriceTableForm = ({
             <PriceInput
               {...register(`entries.${index}.price`)}
               className={styles['input-price']}
-              disabled={isReadOnly}
+              disabled={isReadOnly || disableEverythingButQuantity}
               error={errors.entries?.[index]?.price?.message}
               label="Prix"
               rightIcon={isCaledonian ? strokeFrancIcon : strokeEuroIcon}
@@ -204,7 +224,7 @@ export const PriceTableForm = ({
               <DatePicker
                 {...register(`entries.${index}.bookingLimitDatetime`)}
                 className={styles['input-booking-limit-datetime']}
-                disabled={isReadOnly}
+                disabled={isReadOnly || disableEverythingButQuantity}
                 error={errors.entries?.[index]?.bookingLimitDatetime?.message}
                 label="Date limite de réservation"
                 maxDate={computeEntryConstraints(entry).bookingLimitDatetimeMax}
@@ -230,7 +250,7 @@ export const PriceTableForm = ({
             {!offer.isEvent && (
               <QuantityInput
                 className={styles['input-stock']}
-                disabled={isReadOnly}
+                disabled={isReadOnly || hasActivationCodes}
                 error={errors.entries?.[index]?.quantity?.message}
                 label="Stock"
                 minimum={computeEntryConstraints(entry).quantityMin}
