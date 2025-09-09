@@ -21,6 +21,7 @@ from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalDeposit
+from pcapi.core.educational.models import EducationalYear
 from pcapi.core.educational.models import HasImageMixin
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -542,6 +543,26 @@ class CollectiveOfferTemplateIsEligibleForSearchTest:
             isActive=True, venue__managingOfferer__validationStatus=validation_status
         )
         assert collective_offer_template.is_eligible_for_search is is_eligible_for_search
+
+
+class EducationalYearTest:
+    def test_displayed_year(self):
+        educational_year = factories.EducationalYearFactory(
+            beginningDate=datetime.datetime(2025, 9, 1),
+            expirationDate=datetime.datetime(2026, 8, 31),
+        )
+
+        assert educational_year.displayed_year == "2025-2026"
+
+    def test_displayed_year_expression(self):
+        educational_year = factories.EducationalYearFactory(
+            beginningDate=datetime.datetime(2025, 9, 1),
+            expirationDate=datetime.datetime(2026, 8, 31),
+        )
+
+        assert (
+            db.session.query(EducationalYear.displayed_year).filter_by(id=educational_year.id).scalar() == "2025-2026"
+        )
 
 
 class EducationalInstitutionProgramTest:

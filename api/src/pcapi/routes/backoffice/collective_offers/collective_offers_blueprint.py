@@ -342,24 +342,102 @@ def _get_collective_offer_ids_query(form: forms.GetCollectiveOfferAdvancedSearch
 def _get_collective_offers(
     collective_offers_ids: list[int] | sa_orm.Query,
 ) -> sa_orm.Query:
-    # Aggregate validation rules as an array of names returned in a single row
-    rules_subquery = (
-        sa.select(sa.func.array_agg(offers_models.OfferValidationRule.name))
-        .select_from(offers_models.OfferValidationRule)
-        .join(educational_models.ValidationRuleCollectiveOfferLink)
-        .filter(
-            educational_models.ValidationRuleCollectiveOfferLink.collectiveOfferId
-            == educational_models.CollectiveOffer.id
-        )
-        .correlate(educational_models.CollectiveOffer)
-        .scalar_subquery()
-    )
+    if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+        # Subqueries avoid too many joins, which would make the query planner decide to seq scan tables.
 
-    query = (
-        db.session.query(
+        # Aggregate validation rules as an array of names returned in a single row
+        rules_subquery = (
+            sa.select(sa.func.array_agg(offers_models.OfferValidationRule.name))
+            .select_from(offers_models.OfferValidationRule)
+            .join(educational_models.ValidationRuleCollectiveOfferLink)
+            .filter(
+                educational_models.ValidationRuleCollectiveOfferLink.collectiveOfferId
+                == educational_models.CollectiveOffer.id
+            )
+            .correlate(educational_models.CollectiveOffer)
+            .scalar_subquery()
+        )
+
+        institution_info_subquery = (
+            sa.select(
+                sa.func.jsonb_build_object(
+                    "ministry",
+                    educational_models.EducationalDeposit.ministry,
+                    "educational_programs",
+                    sa.func.array_agg(educational_models.EducationalInstitutionProgram.label),
+                    "educational_year",
+                    educational_models.EducationalYear.displayed_year,
+                )
+            )
+            .select_from(educational_models.EducationalDeposit)
+            .filter(
+                educational_models.EducationalDeposit.educationalInstitutionId
+                == educational_models.EducationalInstitution.id,
+                educational_models.EducationalDeposit.educationalYearId
+                == _get_educational_year_subquery(educational_models.CollectiveStock),
+            )
+            .outerjoin(
+                educational_models.EducationalYear,
+                educational_models.EducationalYear.adageId == educational_models.EducationalDeposit.educationalYearId,
+            )
+            .outerjoin(
+                educational_models.EducationalInstitutionProgramAssociation,
+                sa.and_(
+                    educational_models.EducationalInstitutionProgramAssociation.institutionId
+                    == educational_models.EducationalInstitution.id,
+                    educational_models.EducationalInstitutionProgramAssociation.timespan.contains(
+                        educational_models.CollectiveStock.startDatetime
+                    ),
+                ),
+            )
+            .outerjoin(educational_models.EducationalInstitutionProgramAssociation.program)
+            .group_by(educational_models.EducationalDeposit.ministry, educational_models.EducationalYear.displayed_year)
+            .correlate(educational_models.EducationalInstitution, educational_models.CollectiveStock)
+            .scalar_subquery()
+        )
+
+        # build an object which can be read by jinja macro as if it was the Offerer
+        aliased_offerer = sa_orm.aliased(offerers_models.Offerer)
+        offerer_badges_subquery = (
+            sa.select(
+                sa.func.jsonb_build_object(
+                    "confidenceLevel",
+                    offerers_models.OffererConfidenceRule.confidenceLevel,
+                    "isTopActeur",
+                    aliased_offerer.is_top_acteur,
+                )
+            )
+            .select_from(aliased_offerer)
+            .outerjoin(offerers_models.OffererConfidenceRule)
+            .filter(aliased_offerer.id == offerers_models.Offerer.id)
+            .correlate(offerers_models.Offerer)
+        )
+
+        # build an object which can be read by jinja macro as if it was the Venue
+        venue_badges_subquery = (
+            sa.select(
+                sa.func.jsonb_build_object("confidenceLevel", offerers_models.OffererConfidenceRule.confidenceLevel)
+            )
+            .select_from(offerers_models.OffererConfidenceRule)
+            .filter(offerers_models.OffererConfidenceRule.venueId == offerers_models.Venue.id)
+            .correlate(offerers_models.Venue)
+        )
+
+        entities: tuple = (
             educational_models.CollectiveOffer,
             rules_subquery.label("rules"),
+            institution_info_subquery.label("institution_info"),
+            offerer_badges_subquery.label("offerer_badges"),
+            venue_badges_subquery.label("venue_badges"),
         )
+    else:
+        entities = (
+            educational_models.CollectiveOffer,
+            sa.null(),  # otherwise row is the CollectiveOffer itself
+        )
+
+    query = (
+        db.session.query(*entities)
         .filter(educational_models.CollectiveOffer.id.in_(collective_offers_ids))
         .join(offerers_models.Venue)
         .join(offerers_models.Offerer)
@@ -406,16 +484,6 @@ def _get_collective_offers(
                         offerers_models.Offerer.isActive,
                         offerers_models.Offerer.validationStatus,
                     ),
-                    sa_orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
-                        offerers_models.OffererConfidenceRule.confidenceLevel
-                    ),
-                    sa_orm.with_expression(
-                        offerers_models.Offerer.isTopActeur,
-                        offerers_models.Offerer.is_top_acteur.expression,  # type: ignore[attr-defined]
-                    ),
-                ),
-                sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
-                    offerers_models.OffererConfidenceRule.confidenceLevel
                 ),
             ),
             sa_orm.contains_eager(educational_models.CollectiveOffer.institution).load_only(
@@ -434,47 +502,6 @@ def _get_collective_offers(
             ),
         )
     )
-
-    if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
-        query = (
-            query.outerjoin(
-                educational_models.EducationalDeposit,
-                sa.and_(
-                    educational_models.EducationalDeposit.educationalInstitutionId
-                    == educational_models.EducationalInstitution.id,
-                    educational_models.EducationalDeposit.educationalYearId
-                    == _get_educational_year_subquery(educational_models.CollectiveStock),
-                ),
-            )
-            .outerjoin(
-                educational_models.EducationalYear,
-                educational_models.EducationalYear.adageId == educational_models.EducationalDeposit.educationalYearId,
-            )
-            .outerjoin(
-                educational_models.EducationalInstitutionProgramAssociation,
-                sa.and_(
-                    educational_models.EducationalInstitutionProgramAssociation.institutionId
-                    == educational_models.EducationalInstitution.id,
-                    educational_models.EducationalInstitutionProgramAssociation.timespan.contains(
-                        educational_models.CollectiveStock.startDatetime
-                    ),
-                ),
-            )
-            .options(
-                sa_orm.contains_eager(educational_models.CollectiveOffer.institution).options(
-                    sa_orm.contains_eager(educational_models.EducationalInstitution.deposits)
-                    .load_only(educational_models.EducationalDeposit.ministry)
-                    .contains_eager(educational_models.EducationalDeposit.educationalYear)
-                    .load_only(
-                        educational_models.EducationalYear.beginningDate,
-                        educational_models.EducationalYear.expirationDate,
-                    ),
-                    sa_orm.contains_eager(educational_models.EducationalInstitution.programAssociations)
-                    .joinedload(educational_models.EducationalInstitutionProgramAssociation.program)
-                    .load_only(educational_models.EducationalInstitutionProgram.label),
-                )
-            )
-        )
 
     return query
 
