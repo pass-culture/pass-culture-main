@@ -24,7 +24,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       releaseNumber: ${{ steps.version.outputs.releaseNumber }}
-      versionName: ${{ steps.version.outputs.versionName }}
       commitHash: ${{ steps.rc_commit.outputs.commitHash }}
     steps:
       - name: Checkout repository
@@ -47,9 +46,6 @@ jobs:
 
           releaseNumber=$((major + 1))
           echo "releaseNumber=$releaseNumber" >> $GITHUB_OUTPUT
-
-          versionName="v${releaseNumber}.0.0"
-          echo "versionName=$versionName" >> $GITHUB_OUTPUT
 
       - name: Get commit hash from RC tag
         id: rc_commit
@@ -78,7 +74,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: staging
-      app_version: ${{ needs.get-version-and-trigger-release.outputs.versionName }}
+      app_version: ${{ needs.get-version-and-trigger-release.outputs.releaseNumber }}
       cluster_scope: metier
       cluster_environment: ehp
       workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
@@ -131,7 +127,7 @@ jobs:
                   - type: "section"
                     text:
                       type: "mrkdwn"
-                      text: "Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déploiement> de la version `v${{ needs.version.outputs.APP_VERSION }}` a ${{ fromJSON('["réussi", "échoué"]')[env.WORKFLOW_CONCLUSION != 'success'] }} sur `${{ github.event.inputs.target_environment }}`"
+                      text: "Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déploiement> de la version `v${{ needs.get-version-and-trigger-release.outputs.releaseNumber }}` a ${{ fromJSON('["réussi", "échoué"]')[env.WORKFLOW_CONCLUSION != 'success'] }} sur `staging`"
       - name: "Post success on #shérif"
         if: env.WORKFLOW_CONCLUSION == 'success'
         uses: slackapi/slack-github-action@v2.1.1
