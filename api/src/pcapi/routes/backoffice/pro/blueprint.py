@@ -13,13 +13,10 @@ from sqlalchemy import func
 from werkzeug.exceptions import NotFound
 
 from pcapi import settings
-from pcapi.connectors import api_adresse
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
-from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.token import SecureToken
@@ -30,9 +27,6 @@ from pcapi.models import db
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.pro import forms as pro_forms
-from pcapi.routes.serialization import offerers_serialize
-from pcapi.routes.serialization import venues_serialize
-from pcapi.utils import string as string_utils
 from pcapi.utils import urls
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
@@ -163,125 +157,6 @@ def get_context(pro_type: pro_forms.TypeOptions) -> type[Context]:
         pro_forms.TypeOptions.VENUE: VenueContext,
         pro_forms.TypeOptions.BANK_ACCOUNT: BankAccountContext,
     }[pro_type]
-
-
-def _render_get_create_offerer_form(form: pro_forms.CreateOffererForm) -> str:
-    return render_template(
-        "components/turbo/modal_form.html",
-        information="Ce formulaire permet de créer une nouvelle entité juridique et le partenaire culturel associé dans la base de données. "
-        "L'Acteur Culturel doit avoir créé son compte utilisateur sur PC Pro et sera ainsi rattaché à la nouvelle entité juridique. ",
-        form=form,
-        dst=url_for("backoffice_web.pro.create_offerer"),
-        div_id="create-offerer-modal",  # must be consistent with parameter passed to build_lazy_modal
-        title="Créer un partenaire culturel",
-        button_text="Créer l'entité juridique",
-        data_turbo=True,
-    )
-
-
-@pro_blueprint.route("/create", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.CREATE_PRO_ENTITY)
-def get_create_offerer_form() -> utils.BackofficeResponse:
-    form = pro_forms.CreateOffererForm()
-    return _render_get_create_offerer_form(form)
-
-
-@pro_blueprint.route("/create", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.CREATE_PRO_ENTITY)
-def create_offerer() -> utils.BackofficeResponse:
-    form = pro_forms.CreateOffererForm()
-    if not form.validate():
-        mark_transaction_as_invalid()
-        return _render_get_create_offerer_form(form), 400
-
-    pro_user = form.user
-    address = form.siret_info.address
-    # When non-diffusible, postal code is often [ND] but city and INSEE code are public
-    postal_code = address.postal_code if string_utils.is_numeric(address.postal_code) else None
-
-    try:
-        city_info = api_adresse.get_municipality_centroid(
-            address.city, postcode=postal_code, citycode=address.insee_code
-        )
-        if not postal_code:
-            postal_code = city_info.postcode
-    except api_adresse.AdresseApiException as exc:
-        mark_transaction_as_invalid()
-        flash(
-            Markup(
-                "Une erreur s'est produite lors de la recherche des coordonnées pour <b>{code} {city}</b> : {error}"
-            ).format(code=address.insee_code, city=address.city, error=str(exc))
-        )
-        return _render_get_create_offerer_form(form), 400
-
-    offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
-        siren=form.siret_info.siret[:9],
-        name=form.public_name.data,
-        street=address.street,  # [ND]
-        postalCode=postal_code,
-        inseeCode=city_info.citycode,
-        city=address.city,
-        latitude=city_info.latitude,
-        longitude=city_info.longitude,
-        phoneNumber=None,
-    )
-
-    new_onboarding_info = offerers_api.NewOnboardingInfo(
-        target=offerers_models.Target(form.target.data),
-        venueTypeCode=form.venue_type_code.data,
-        webPresence=form.web_presence.data,
-    )
-
-    user_offerer = offerers_api.create_offerer(
-        pro_user,
-        offerer_creation_info,
-        new_onboarding_info,
-        author=current_user,
-        comment="Entité juridique créée depuis le backoffice",
-        ds_dossier_id=form.ds_id.data,
-    )
-    address_body_model = offerers_schemas.AddressBodyModel(
-        street=offerers_schemas.VenueAddress(address.street),
-        city=offerers_schemas.VenueCity(address.city),
-        postalCode=offerers_schemas.VenuePostalCode(postal_code),
-        inseeCode=offerers_schemas.VenueInseeCode(city_info.citycode),
-        latitude=city_info.latitude,
-        longitude=city_info.longitude,
-        banId=city_info.id,
-        label=None,
-    )
-
-    venue_creation_info = venues_serialize.PostVenueBodyModel(
-        address=address_body_model,
-        siret=offerers_schemas.VenueSiret(form.siret_info.siret),
-        bookingEmail=offerers_schemas.VenueBookingEmail(pro_user.email),
-        managingOffererId=user_offerer.offererId,
-        name=offerers_schemas.VenueName(form.public_name.data),
-        publicName=offerers_schemas.VenuePublicName(form.public_name.data),
-        venueLabelId=None,
-        venueTypeCode=form.venue_type_code.data,
-        withdrawalDetails=None,
-        description=None,
-        contact=None,
-        audioDisabilityCompliant=None,
-        mentalDisabilityCompliant=None,
-        motorDisabilityCompliant=None,
-        visualDisabilityCompliant=None,
-        comment=None,
-        isOpenToPublic=False,
-    )
-    venue = offerers_api.create_venue(venue_creation_info, current_user)
-    offerers_api.create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
-
-    transactional_mails.send_welcome_to_pro_email(pro_user, venue)
-
-    flash(
-        Markup("L'entité juridique et le partenaire culturel <b>{name}</b> ont été créés").format(
-            name=venue.common_name
-        ),
-        "success",
-    )
-    return redirect(url_for("backoffice_web.offerer.get", offerer_id=user_offerer.offererId), code=303)
 
 
 def _get_connect_as_base_query() -> sa_orm.Query:

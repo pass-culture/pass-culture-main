@@ -6,20 +6,11 @@ import urllib.parse
 import wtforms
 from flask_wtf import FlaskForm
 
-from pcapi.connectors.entreprise import api as entreprise_api
-from pcapi.connectors.entreprise import exceptions as sirene_exceptions
-from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers.repository import find_offerer_by_siren
-from pcapi.core.users import models as users_models
-from pcapi.core.users.repository import find_pro_or_non_attached_pro_user_by_email_query
-from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import search as search_forms
 from pcapi.routes.backoffice.forms import utils
 from pcapi.routes.backoffice.forms.constants import area_choices
-from pcapi.utils import siren as siren_utils
-from pcapi.utils import string as string_utils
 
 from .utils import CONNECT_AS_OBJECT_TYPES
 
@@ -92,75 +83,6 @@ class CreateVenueWithoutSIRETForm(FlaskForm):
             for offerer_venue in offerer.managedVenues
             if offerer_venue.siret
         ]
-
-
-class CreateOffererForm(FlaskForm):
-    email = fields.PCEmailField("Adresse email du compte pro")
-    siret = fields.PCSiretField("SIRET")
-    public_name = fields.PCStringField(
-        "Nom d'usage du partenaire culturel",
-        validators=(
-            wtforms.validators.DataRequired("Information obligatoire"),
-            wtforms.validators.Length(max=255, message="doit contenir au maximum %(max)d caractères"),
-        ),
-    )
-    venue_type_code = fields.PCSelectWithPlaceholderValueField(
-        "Activité principale", choices=utils.choices_from_enum(offerers_models.VenueTypeCode)
-    )
-    web_presence = fields.PCOptStringField(
-        "Site internet, réseau social",
-        validators=(wtforms.validators.Length(max=255, message="doit contenir au maximum %(max)d caractères"),),
-    )
-    target = fields.PCSelectWithPlaceholderValueField(
-        "Offres ciblées",
-        choices=utils.choices_from_enum(offerers_models.Target, formatter=filters.format_venue_target),
-    )
-    ds_id = fields.PCIntegerField("N° Dossier Démarches Simplifiées")
-
-    def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
-        super().__init__(*args, **kwargs)
-        self._user: users_models.User | None = None
-        self._siret_info: sirene_models.SiretInfo | None = None
-
-    @property
-    def user(self) -> users_models.User:
-        assert self._user, "user has not been validated"
-        return self._user
-
-    @property
-    def siret_info(self) -> sirene_models.SiretInfo:
-        assert self._siret_info, "siret has not been validated"
-        return self._siret_info
-
-    def validate_email(self, email: fields.PCEmailField) -> fields.PCEmailField:
-        if email.data:
-            self._user = find_pro_or_non_attached_pro_user_by_email_query(email.data).one_or_none()
-            if not self._user:
-                raise wtforms.validators.ValidationError(f"Aucun compte pro n'existe avec l'adresse {email.data}")
-        return email
-
-    def validate_siret(self, siret: fields.PCSiretField) -> fields.PCSiretField:
-        if siret.data and len(siret.data) == siren_utils.SIRET_LENGTH and string_utils.is_numeric(siret.data):
-            siren = siret.data[:9]
-            if find_offerer_by_siren(siren):
-                raise wtforms.validators.ValidationError(f"Une entité juridique existe déjà avec le SIREN {siren}")
-
-            try:
-                siret_info = entreprise_api.get_siret_open_data(siret.data)
-            except sirene_exceptions.UnknownEntityException:
-                raise wtforms.validators.ValidationError(f"Le SIRET {siret.data} n'existe pas")
-            except sirene_exceptions.ApiException:
-                raise wtforms.validators.ValidationError("Une erreur s'est produite lors de l'appel à l'API Entreprise")
-
-            if not siret_info.active:
-                raise wtforms.validators.ValidationError(f"L'établissement portant le SIRET {siret.data} est fermé")
-            if siret_info.diffusible:
-                raise wtforms.validators.ValidationError(
-                    f"L'établissement portant le SIRET {siret.data} est diffusible, l'acteur culturel peut créer l'entité juridique sur PC Pro"
-                )
-            self._siret_info = siret_info
-
-        return siret
 
 
 class ConnectAsForm(FlaskForm):

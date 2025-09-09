@@ -50,7 +50,7 @@ class Permissions(enum.Enum):
     READ_PRO_ENTITY = "visualiser une entité juridique, un partenaire culturel ou un compte pro"
     MANAGE_PRO_ENTITY = "gérer une entité juridique, un partenaire culturel ou un compte pro"
     DELETE_PRO_ENTITY = "supprimer une entité juridique ou un partenaire culturel"
-    CREATE_PRO_ENTITY = "créer une entité juridique"
+    CREATE_PRO_ENTITY = "ajouter un partenaire culturel sans SIRET"
     READ_PRO_ENTREPRISE_INFO = "visualiser les données INSEE/RCS d'une entité juridique"
     READ_PRO_SENSITIVE_INFO = "vérifier les attestations URSSAF/DGFIP d'une entité juridique"
     READ_PRO_AE_INFO = "consulter le suivi de l'inscription d'un Auto-Entrepreneur"
