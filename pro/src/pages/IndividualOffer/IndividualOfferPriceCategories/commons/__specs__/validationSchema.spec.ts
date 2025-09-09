@@ -3,7 +3,7 @@ import {
   priceCategoryFormFactory,
 } from '@/commons/utils/factories/priceCategoryFactories'
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
-import { PRICE_CATEGORY_PRICE_MAX } from '@/pages/IndividualOffer/commons/prices/constants'
+import { PRICE_TABLE_ENTRY_MAX_PRICE_IN_EUR } from '@/pages/IndividualOffer/IndividualOfferPriceTable/commons/constants'
 
 import { PRICE_CATEGORY_LABEL_MAX_LENGTH } from '../constants'
 import type { PriceCategoriesFormValues } from '../types'
@@ -38,7 +38,7 @@ describe('validationSchema', () => {
         priceCategories: [priceCategoryFormFactory({ price: 1000 })],
       }),
       expectedErrors: [
-        `Veuillez renseigner un tarif inférieur à ${PRICE_CATEGORY_PRICE_MAX} €`,
+        `Veuillez renseigner un tarif inférieur à ${PRICE_TABLE_ENTRY_MAX_PRICE_IN_EUR} €`,
       ],
     },
     {

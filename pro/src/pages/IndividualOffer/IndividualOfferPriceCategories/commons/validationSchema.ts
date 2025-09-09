@@ -1,11 +1,11 @@
 import * as yup from 'yup'
 
 import { getNthParentFormValues } from '@/commons/utils/yupValidationTestHelpers'
-import {
-  PRICE_CATEGORY_PRICE_MAX,
-  PRICE_MAX_PACIFIC_FRANC,
-} from '@/pages/IndividualOffer/commons/prices/constants'
 
+import {
+  PRICE_TABLE_ENTRY_MAX_PRICE_IN_EUR,
+  PRICE_TABLE_ENTRY_MAX_PRICE_IN_XPF,
+} from '../../IndividualOfferPriceTable/commons/constants'
 import { PRICE_CATEGORY_LABEL_MAX_LENGTH } from './constants'
 import { isPriceCategoriesForm, isPriceCategoriesFormValues } from './types'
 
@@ -19,11 +19,11 @@ const priceTooLowMsg = 'Le prix ne peut pas être inferieur à 0 €'
 
 export const getValidationSchema = (isCaledonian: boolean = false) => {
   const maxPrice = isCaledonian
-    ? PRICE_MAX_PACIFIC_FRANC
-    : PRICE_CATEGORY_PRICE_MAX
+    ? PRICE_TABLE_ENTRY_MAX_PRICE_IN_XPF
+    : PRICE_TABLE_ENTRY_MAX_PRICE_IN_EUR
   const priceTooHighMsg = isCaledonian
-    ? `Veuillez renseigner un tarif inférieur à ${PRICE_MAX_PACIFIC_FRANC} F`
-    : `Veuillez renseigner un tarif inférieur à ${PRICE_CATEGORY_PRICE_MAX} €`
+    ? `Veuillez renseigner un tarif inférieur à ${PRICE_TABLE_ENTRY_MAX_PRICE_IN_XPF} F`
+    : `Veuillez renseigner un tarif inférieur à ${PRICE_TABLE_ENTRY_MAX_PRICE_IN_EUR} €`
 
   const priceCategoryValidationSchema = yup.object({
     label: yup
