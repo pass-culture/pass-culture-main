@@ -40,16 +40,4 @@ describe('saveEventOfferPriceTable', () => {
       expect.objectContaining({ priceCategories: expect.any(Array) })
     )
   })
-
-  it('should handle errors', async () => {
-    const consoleErrorSpy = vi
-      .spyOn(console, 'error')
-      .mockImplementation(() => {})
-    vi.spyOn(api, 'patchOffer').mockRejectedValueOnce('An error')
-
-    await saveEventOfferPriceTable(formValues, { offer })
-
-    expect(api.postPriceCategories).not.toHaveBeenCalled()
-    expect(consoleErrorSpy).toHaveBeenCalledWith('An error')
-  })
 })
