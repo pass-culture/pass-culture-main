@@ -125,6 +125,7 @@
         ]
     ],
     "numericAttributesForFiltering": [
+        "offer.chroniclesCount",
         "offer.dates",
         "offer.last30DaysBookings",
         "offer.likes",
