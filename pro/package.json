@@ -114,7 +114,7 @@
     "tree-dump": "^1.1.0",
     "ts-unused-exports": "11.0.1",
     "typescript": "^5.9.2",
-    "vite": "5.4.19",
+    "vite": "5.4.20",
     "vite-plugin-html": "3.2.2",
     "vite-tsconfig-paths": "5.1.4",
     "vitest": "3.2.4",
