@@ -35,12 +35,12 @@
   {% if has_permission("PRO_FRAUD_ACTIONS") %}
     <th scope="col">Score data</th>
     <th scope="col">Prédiction de validité</th>
-    <th scope="col">Tarif</th>
   {% endif %}
+  <th scope="col">Tarif</th>
   {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<th scope="col">Tag</th>{% endif %}
   <th scope="col">Date(s) de l'évènement</th>
   <th scope="col">Date(s) limite(s) de réservation</th>
-  {% if not has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Créateur de l'offre</th>{% endif %}
+  <th scope="col">Créateur de l'offre</th>
   {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
     <th data-pc-column-name="Pondération"
         scope="col">Pond.</th>

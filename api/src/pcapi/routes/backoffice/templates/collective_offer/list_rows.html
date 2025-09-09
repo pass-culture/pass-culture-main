@@ -64,11 +64,9 @@
         {% if end_date and end_date != start_date %}→ {{ end_date }}{% endif %}
       {% endif %}
     </td>
-    {% if has_permission("PRO_FRAUD_ACTIONS") %}
-      <td>
-        {% if collective_offer.collectiveStock %}{{ collective_offer.collectiveStock.price | format_amount }}{% endif %}
-      </td>
-    {% endif %}
+    <td>
+      {% if collective_offer.collectiveStock %}{{ collective_offer.collectiveStock.price | format_amount }}{% endif %}
+    </td>
     <td>
       {{ links.build_offerer_name_to_details_link(collective_offer.venue.managingOfferer) }}
       {% call badges.badges_container() %}

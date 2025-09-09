@@ -187,7 +187,6 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert "Tarif" not in rows[0]
         assert "Règles de conformité" not in rows[0]
         assert "Ministère" not in rows[0]
         assert "Année" not in rows[0]

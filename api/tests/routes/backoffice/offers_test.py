@@ -188,15 +188,15 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Date(s) de l'évènement"] == ""
         assert rows[0]["Date(s) limite(s) de réservation"] == ""
         assert rows[0]["Partenaire technique"] == "Music Provider"
+        assert rows[0]["Tarif"] == "10,10 € - 15,00 €"
+        assert rows[0]["Créateur de l'offre"] == offers[0].author.full_name
 
         if stock_data_expected:
             assert rows[0]["Stock réservé"] == "0"
             assert rows[0]["Stock restant"] == "Illimité"
-            assert rows[0]["Créateur de l'offre"] == offers[0].author.full_name
         else:
             assert "Stock réservé" not in rows[0]
             assert "Stock restant" not in rows[0]
-            assert "Créateur de l'offre" not in rows[0]
 
         if tag_data_expected:
             assert rows[0]["Tag"] == offers[0].criteria[0].name
@@ -212,10 +212,8 @@ class ListOffersTest(GetEndpointHelper):
 
         if fraud_data_expected:
             assert rows[0]["Score data"] == ""
-            assert rows[0]["Tarif"] == "10,10 € - 15,00 €"
         else:
             assert "Score data" not in rows[0]
-            assert "Tarif" not in rows[0]
 
     def test_list_offers_by_ids_list(self, authenticated_client, offers):
         query_args = self._get_query_args_by_id(f"{offers[0].id}, {offers[2].id}\n")
@@ -1512,7 +1510,7 @@ class EditOfferTest(PostEndpointHelper):
         # ensure that the row is rendered
         row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_edit.id}", is_xml=True)
         cells = html_parser.extract(row, "td", is_xml=True)
-        assert len(cells) == 23
+        assert len(cells) == 24
         assert cells[0] == ""  # Checkbox
         assert cells[1] == (  # Actions
             "Voir le détail de l’offre Valider l'offre Rejeter l'offre Désactiver l'offre Taguer / Pondérer"
@@ -1529,15 +1527,16 @@ class EditOfferTest(PostEndpointHelper):
         assert cells[11] == f"{criteria[0].name} {criteria[1].name}"  # Tag
         assert cells[12] == ""  # Date(s) de l'évènement
         assert cells[13] == ""  # Date(s) limite(s) de réservation
-        assert cells[14] == "22"  # Pondération
-        assert cells[15] == "• Validée"  # État
-        assert cells[16] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
-        assert cells[17] == ""  # Dérnière validation
-        assert cells[18] == offer_to_edit.venue.departementCode  # Département
-        assert cells[19] == offer_to_edit.venue.managingOfferer.name  # Entité juridique
-        assert cells[20] == offer_to_edit.venue.name  # Partenaire culturel
-        assert cells[21] == "Voir toutes les offres"  # Offres du partenaire culturel
-        assert cells[22] == ""  # Partenaire technique
+        assert cells[14] == ""  # Créateur de l'offre
+        assert cells[15] == "22"  # Pondération
+        assert cells[16] == "• Validée"  # État
+        assert cells[17] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
+        assert cells[18] == ""  # Dérnière validation
+        assert cells[19] == offer_to_edit.venue.departementCode  # Département
+        assert cells[20] == offer_to_edit.venue.managingOfferer.name  # Entité juridique
+        assert cells[21] == offer_to_edit.venue.name  # Partenaire culturel
+        assert cells[22] == "Voir toutes les offres"  # Offres du partenaire culturel
+        assert cells[23] == ""  # Partenaire technique
 
 
 class GetEditOfferFormTest(GetEndpointHelper):
@@ -1974,7 +1973,7 @@ class ValidateOfferTest(PostEndpointHelper):
         # ensure that the row is rendered
         row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_validate.id}", is_xml=True)
         cells = html_parser.extract(row, "td", is_xml=True)
-        assert len(cells) == 23
+        assert len(cells) == 24
         assert cells[0] == ""  # Checkbox
         assert cells[1] == (  # Actions
             "Voir le détail de l’offre Valider l'offre Rejeter l'offre Désactiver l'offre Taguer / Pondérer"
@@ -1991,15 +1990,16 @@ class ValidateOfferTest(PostEndpointHelper):
         assert cells[11] == ""  # Tag
         assert cells[12] == ""  # Date(s) de l'évènement
         assert cells[13] == ""  # Date(s) limite(s) de réservation
-        assert cells[14] == ""  # Pondération
-        assert cells[15] == "• Validée"  # État
-        assert cells[16] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
-        assert cells[17] == datetime.date.today().strftime("%d/%m/%Y")  # Dérnière validation
-        assert cells[18] == offer_to_validate.venue.departementCode  # Département
-        assert cells[19] == offer_to_validate.venue.managingOfferer.name  # Entité juridique
-        assert cells[20] == offer_to_validate.venue.name  # Partenaire culturel
-        assert cells[21] == "Voir toutes les offres"  # Offres du partenaire culturel
-        assert cells[22] == ""  # Partenaire technique
+        assert cells[14] == ""  # Créateur de l'offre
+        assert cells[15] == ""  # Pondération
+        assert cells[16] == "• Validée"  # État
+        assert cells[17] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
+        assert cells[18] == datetime.date.today().strftime("%d/%m/%Y")  # Dérnière validation
+        assert cells[19] == offer_to_validate.venue.departementCode  # Département
+        assert cells[20] == offer_to_validate.venue.managingOfferer.name  # Entité juridique
+        assert cells[21] == offer_to_validate.venue.name  # Partenaire culturel
+        assert cells[22] == "Voir toutes les offres"  # Offres du partenaire culturel
+        assert cells[23] == ""  # Partenaire technique
 
         db.session.refresh(offer_to_validate)
         assert offer_to_validate.isActive is True
@@ -2088,7 +2088,7 @@ class RejectOfferTest(PostEndpointHelper):
         # ensure that the row is rendered
         row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_reject.id}", is_xml=True)
         cells = html_parser.extract(row, "td", is_xml=True)
-        assert len(cells) == 23
+        assert len(cells) == 24
         assert cells[0] == ""  # Checkbox
         assert cells[1] == (  # Actions
             "Voir le détail de l’offre Valider l'offre Rejeter l'offre Activer l'offre Taguer / Pondérer"
@@ -2105,15 +2105,16 @@ class RejectOfferTest(PostEndpointHelper):
         assert cells[11] == ""  # Tag
         assert cells[12] == ""  # Date(s) de l'évènement
         assert cells[13] == ""  # Date(s) limite(s) de réservation
-        assert cells[14] == ""  # Pondération
-        assert cells[15] == "• Rejetée"  # État
-        assert cells[16] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
-        assert cells[17] == datetime.date.today().strftime("%d/%m/%Y")  # Dérnière validation
-        assert cells[18] == offer_to_reject.venue.departementCode  # Département
-        assert cells[19] == offer_to_reject.venue.managingOfferer.name  # Entité juridique
-        assert cells[20] == offer_to_reject.venue.name  # Partenaire culturel
-        assert cells[21] == "Voir toutes les offres"  # Offres du partenaire culturel
-        assert cells[22] == ""  # Partenaire technique
+        assert cells[14] == ""  # Créateur de l'offre
+        assert cells[15] == ""  # Pondération
+        assert cells[16] == "• Rejetée"  # État
+        assert cells[17] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
+        assert cells[18] == datetime.date.today().strftime("%d/%m/%Y")  # Dérnière validation
+        assert cells[19] == offer_to_reject.venue.departementCode  # Département
+        assert cells[20] == offer_to_reject.venue.managingOfferer.name  # Entité juridique
+        assert cells[21] == offer_to_reject.venue.name  # Partenaire culturel
+        assert cells[22] == "Voir toutes les offres"  # Offres du partenaire culturel
+        assert cells[23] == ""  # Partenaire technique
 
         assert offer_to_reject.isActive is False
         assert offer_to_reject.validation == offers_models.OfferValidationStatus.REJECTED
@@ -3346,7 +3347,7 @@ class ActivateOfferTest(PostEndpointHelper):
         # ensure that the row is rendered
         row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_activate.id}", is_xml=True)
         cells = html_parser.extract(row, "td", is_xml=True)
-        assert len(cells) == 23
+        assert len(cells) == 24
         assert cells[0] == ""  # Checkbox
         assert cells[1] == (  # Actions
             "Voir le détail de l’offre Valider l'offre Rejeter l'offre Désactiver l'offre Taguer / Pondérer"
@@ -3363,15 +3364,16 @@ class ActivateOfferTest(PostEndpointHelper):
         assert cells[11] == ""  # Tag
         assert cells[12] == ""  # Date(s) de l'évènement
         assert cells[13] == ""  # Date(s) limite(s) de réservation
-        assert cells[14] == ""  # Pondération
-        assert cells[15] == "• Validée"  # État
-        assert cells[16] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
-        assert cells[17] == ""  # Dérnière validation
-        assert cells[18] == offer_to_activate.venue.departementCode  # Département
-        assert cells[19] == offer_to_activate.venue.managingOfferer.name  # Entité juridique
-        assert cells[20] == offer_to_activate.venue.name  # Partenaire culturel
-        assert cells[21] == "Voir toutes les offres"  # Offres du partenaire culturel
-        assert cells[22] == ""  # Partenaire technique
+        assert cells[14] == ""  # Créateur de l'offre
+        assert cells[15] == ""  # Pondération
+        assert cells[16] == "• Validée"  # État
+        assert cells[17] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
+        assert cells[18] == ""  # Dérnière validation
+        assert cells[19] == offer_to_activate.venue.departementCode  # Département
+        assert cells[20] == offer_to_activate.venue.managingOfferer.name  # Entité juridique
+        assert cells[21] == offer_to_activate.venue.name  # Partenaire culturel
+        assert cells[22] == "Voir toutes les offres"  # Offres du partenaire culturel
+        assert cells[23] == ""  # Partenaire technique
 
         db.session.refresh(offer_to_activate)
         assert offer_to_activate.isActive is True
@@ -3438,7 +3440,7 @@ class DeactivateOfferTest(PostEndpointHelper):
         # ensure that the row is rendered
         row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_deactivate.id}", is_xml=True)
         cells = html_parser.extract(row, "td", is_xml=True)
-        assert len(cells) == 23
+        assert len(cells) == 24
         assert cells[0] == ""  # Checkbox
         assert cells[1] == (  # Actions
             "Voir le détail de l’offre Valider l'offre Rejeter l'offre Activer l'offre Taguer / Pondérer"
@@ -3455,15 +3457,16 @@ class DeactivateOfferTest(PostEndpointHelper):
         assert cells[11] == ""  # Tag
         assert cells[12] == ""  # Date(s) de l'évènement
         assert cells[13] == ""  # Date(s) limite(s) de réservation
-        assert cells[14] == ""  # Pondération
-        assert cells[15] == "• Validée"  # État
-        assert cells[16] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
-        assert cells[17] == ""  # Dérnière validation
-        assert cells[18] == offer_to_deactivate.venue.departementCode  # Département
-        assert cells[19] == offer_to_deactivate.venue.managingOfferer.name  # Entité juridique
-        assert cells[20] == offer_to_deactivate.venue.name  # Partenaire culturel
-        assert cells[21] == "Voir toutes les offres"  # Offres du partenaire culturel
-        assert cells[22] == ""  # Partenaire technique
+        assert cells[14] == ""  # Créateur de l'offre
+        assert cells[15] == ""  # Pondération
+        assert cells[16] == "• Validée"  # État
+        assert cells[17] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
+        assert cells[18] == ""  # Dérnière validation
+        assert cells[19] == offer_to_deactivate.venue.departementCode  # Département
+        assert cells[20] == offer_to_deactivate.venue.managingOfferer.name  # Entité juridique
+        assert cells[21] == offer_to_deactivate.venue.name  # Partenaire culturel
+        assert cells[22] == "Voir toutes les offres"  # Offres du partenaire culturel
+        assert cells[23] == ""  # Partenaire technique
 
         db.session.refresh(offer_to_deactivate)
         assert offer_to_deactivate.isActive is False
