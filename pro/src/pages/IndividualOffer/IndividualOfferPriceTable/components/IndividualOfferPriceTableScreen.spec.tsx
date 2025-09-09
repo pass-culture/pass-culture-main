@@ -46,9 +46,7 @@ const renderPriceTableScreen: RenderComponentFunction<
   const contextValues: IndividualOfferContextValues = {
     categories: [],
     hasPublishedOfferWithSameEan: false,
-    isAccessibilityFilled: false,
     isEvent: null,
-    setIsAccessibilityFilled: vi.fn(),
     setIsEvent: vi.fn(),
     subCategories: MOCKED_SUBCATEGORIES,
     offer,

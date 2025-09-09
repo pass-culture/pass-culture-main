@@ -51,11 +51,9 @@ const renderIndividualOfferSummaryPriceTable: RenderComponentFunction<
   const contextValues: IndividualOfferContextValues = {
     categories: MOCKED_CATEGORIES,
     hasPublishedOfferWithSameEan: false,
-    isAccessibilityFilled: false,
     isEvent: params.offer?.isEvent ?? null,
     offer: params.offer,
     offerId: params.offer?.id ?? params.offerId ?? null,
-    setIsAccessibilityFilled: vi.fn(),
     setIsEvent: vi.fn(),
     subCategories: MOCKED_SUBCATEGORIES,
     ...params.contextValues,

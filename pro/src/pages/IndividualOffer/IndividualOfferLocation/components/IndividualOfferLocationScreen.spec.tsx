@@ -66,9 +66,7 @@ const renderIndividualOfferLocationScreen: RenderComponentFunction<
   const contextValues: IndividualOfferContextValues = {
     categories: MOCKED_CATEGORIES,
     hasPublishedOfferWithSameEan: false,
-    isAccessibilityFilled: false,
     isEvent: null,
-    setIsAccessibilityFilled: vi.fn(),
     setIsEvent: vi.fn(),
     subCategories: MOCKED_SUBCATEGORIES,
     offer,

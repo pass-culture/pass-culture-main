@@ -36,8 +36,6 @@ const renderPriceCategoriesForm = (
     subCategories: [subcategoryFactory({ id: offer.subcategoryId, canBeDuo })],
     isEvent: null,
     setIsEvent: () => {},
-    isAccessibilityFilled: false,
-    setIsAccessibilityFilled: () => {},
     hasPublishedOfferWithSameEan: false,
   }
   return renderWithProviders(

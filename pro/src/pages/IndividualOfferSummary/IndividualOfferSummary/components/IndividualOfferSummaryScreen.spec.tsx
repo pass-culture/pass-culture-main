@@ -104,9 +104,7 @@ const renderIndividualOfferSummaryScreen: RenderComponentFunction<
     categories: MOCKED_CATEGORIES,
     hasPublishedOfferWithSameEan: false,
     isEvent: false,
-    isAccessibilityFilled: false,
     offer,
-    setIsAccessibilityFilled: vi.fn(),
     setIsEvent: vi.fn(),
     subCategories: MOCKED_SUBCATEGORIES,
     ...params.contextValues,
@@ -191,10 +189,8 @@ describe('IndividualOfferSummaryScreen', () => {
   const contextValuesBase: IndividualOfferContextValues = {
     categories: MOCKED_CATEGORIES,
     hasPublishedOfferWithSameEan: false,
-    isAccessibilityFilled: false,
     isEvent: false,
     offer: offerBase,
-    setIsAccessibilityFilled: vi.fn(),
     setIsEvent: vi.fn(),
     subCategories: MOCKED_SUBCATEGORIES,
   }

@@ -117,16 +117,6 @@ describe('IndividualOfferContextProvider', () => {
       expect(result.current.isEvent).toBe(true)
       expect(result.current.offerId).toBeNull()
     })
-
-    it('should allow toggling isAccessibilityFilled via setter', async () => {
-      const { result } = await renderUseIndividualOfferContext()
-
-      expect(result.current.isAccessibilityFilled).toBe(true)
-
-      await waitFor(() => void result.current.setIsAccessibilityFilled(false))
-
-      expect(result.current.isAccessibilityFilled).toBe(false)
-    })
   })
 
   describe('when there is an offerId in the URL', () => {
@@ -211,16 +201,6 @@ describe('IndividualOfferContextProvider', () => {
       await waitFor(() => void result.current.setIsEvent(true))
 
       expect(result.current.isEvent).toBe(false)
-    })
-
-    it('should allow toggling isAccessibilityFilled via setter', async () => {
-      const { result } = await renderUseIndividualOfferContext()
-
-      expect(result.current.isAccessibilityFilled).toBe(true)
-
-      await waitFor(() => void result.current.setIsAccessibilityFilled(false))
-
-      expect(result.current.isAccessibilityFilled).toBe(false)
     })
   })
 })

@@ -45,7 +45,7 @@ export const getSteps = ({
         ? 'Localisation'
         : 'Informations pratiques',
       canGoBeyondStep: (offer) => {
-        return Boolean(offer.address)
+        return Boolean(offer.address ?? offer.url)
       },
     },
   ]

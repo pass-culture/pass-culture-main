@@ -6,7 +6,6 @@ import { getValidationSchema } from '../validationSchema'
 describe('getValidationSchema', () => {
   const baseParams = {
     isOfferOnline: false,
-    setIsAccessibilityFilled: () => {},
   }
 
   const validInformationFormValuesBase: UsefulInformationFormValues = {

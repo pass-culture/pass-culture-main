@@ -13,11 +13,9 @@ const isAnyTrue = (values: Record<string, boolean>): boolean =>
 export const getValidationSchema = ({
   conditionalFields,
   isOfferOnline,
-  setIsAccessibilityFilled,
 }: {
   conditionalFields: string[]
   isOfferOnline: boolean
-  setIsAccessibilityFilled: (isAccessibilityFilled: boolean) => void
 }) => {
   const maybeLocationSchema = isOfferOnline ? {} : { ...locationSchema }
 
@@ -27,11 +25,7 @@ export const getValidationSchema = ({
       .test({
         name: 'is-any-true',
         message: 'Veuillez sélectionner au moins un critère d’accessibilité',
-        test: (values) => {
-          const isAccessibilityFilled = isAnyTrue(values)
-          setIsAccessibilityFilled(isAccessibilityFilled)
-          return isAccessibilityFilled
-        },
+        test: (values) => isAnyTrue(values),
       })
       .shape({
         mental: yup.boolean().required(),
