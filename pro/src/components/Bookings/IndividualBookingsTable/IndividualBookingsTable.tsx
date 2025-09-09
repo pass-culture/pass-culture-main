@@ -58,6 +58,7 @@ interface IndividualBookingsTableProps {
   bookingStatuses: string[]
   updateGlobalFilters: (updatedFilters: Partial<BookingsFilters>) => void
   resetFilters: () => void
+  isLoading: boolean
 }
 
 export const IndividualBookingsTable = ({
@@ -65,6 +66,7 @@ export const IndividualBookingsTable = ({
   bookingStatuses,
   updateGlobalFilters,
   resetFilters,
+  isLoading,
 }: IndividualBookingsTableProps): JSX.Element => {
   const { currentSortingColumn, currentSortingMode } =
     useColumnSorting<IndividualBookingsSortingColumn>()
@@ -113,7 +115,7 @@ export const IndividualBookingsTable = ({
       <Table
         columns={columns}
         data={currentPageItems}
-        isLoading={false}
+        isLoading={isLoading}
         variant={TableVariant.COLLAPSE}
         noResult={{
           message: 'Aucune réservation trouvée pour votre recherche',

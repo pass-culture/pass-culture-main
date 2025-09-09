@@ -26,9 +26,7 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isEqual } from '@/commons/utils/isEqual'
 import { ChoosePreFiltersMessage } from '@/components/Bookings/Components/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
-import { NoBookingsForPreFiltersMessage } from '@/components/Bookings/Components/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import { NoData } from '@/components/NoData/NoData'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import {
   ALL_BOOKING_STATUS,
@@ -231,20 +229,13 @@ export const IndividualBookingsComponent = <
       )}
 
       {wereBookingsRequested ? (
-        (bookingsQuery ?? []).length > 0 ? (
-          <IndividualBookingsTable
-            bookings={filteredBookings}
-            bookingStatuses={filters.bookingStatus}
-            updateGlobalFilters={updateGlobalFilters}
-            resetFilters={resetAndApplyPreFilters}
-          />
-        ) : isLoading ? (
-          <Spinner />
-        ) : (
-          <NoBookingsForPreFiltersMessage
-            resetPreFilters={resetPreFiltersWithLog}
-          />
-        )
+        <IndividualBookingsTable
+          bookings={filteredBookings}
+          bookingStatuses={filters.bookingStatus}
+          updateGlobalFilters={updateGlobalFilters}
+          resetFilters={resetAndApplyPreFilters}
+          isLoading={isLoading}
+        />
       ) : hasBookingsQuery.data ? (
         <ChoosePreFiltersMessage />
       ) : (
