@@ -1089,12 +1089,15 @@ def format_user_offerer_status_badge(user_offerer: offerers_models.UserOfferer) 
 
 
 def format_confidence_level_badge(
-    confidence_level: offerers_models.OffererConfidenceLevel | None, show_no_rule: bool = False, info: str = ""
+    confidence_level: offerers_models.OffererConfidenceLevel | str | None, show_no_rule: bool = False, info: str = ""
 ) -> str:
     match confidence_level:
-        case offerers_models.OffererConfidenceLevel.MANUAL_REVIEW:
+        case (
+            offerers_models.OffererConfidenceLevel.MANUAL_REVIEW
+            | offerers_models.OffererConfidenceLevel.MANUAL_REVIEW.value
+        ):
             return format_badge(f"Revue manuelle {info}", "warning")
-        case offerers_models.OffererConfidenceLevel.WHITELIST:
+        case offerers_models.OffererConfidenceLevel.WHITELIST | offerers_models.OffererConfidenceLevel.WHITELIST.value:
             return format_badge(f"Validation auto {info}", "success")
 
     if show_no_rule:
@@ -1733,6 +1736,15 @@ def format_finance_incident_type(incident_kind: finance_models.IncidentType) -> 
             return incident_kind.value
 
 
+def format_ministry(ministry: str | None) -> str:
+    if ministry:
+        try:
+            return educational_models.Ministry[ministry].value
+        except KeyError:
+            return ministry
+    return ""
+
+
 def format_notice_type(notice_type: offerers_models.NoticeType) -> str:
     match notice_type:
         case offerers_models.NoticeType.UNPAID_AMOUNT_NOTICE:
@@ -1992,6 +2004,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_finance_incident_status_badge"] = format_finance_incident_status_badge
     app.jinja_env.filters["format_finance_incident_type"] = format_finance_incident_type
     app.jinja_env.filters["format_finance_incident_type_str"] = format_finance_incident_type_str
+    app.jinja_env.filters["format_ministry"] = format_ministry
     app.jinja_env.filters["format_notice_type"] = format_notice_type
     app.jinja_env.filters["format_notice_status_motivation"] = format_notice_status_motivation
     app.jinja_env.filters["format_notice_status"] = format_notice_status

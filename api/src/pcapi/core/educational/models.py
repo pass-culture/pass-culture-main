@@ -499,7 +499,7 @@ class ValidationRuleCollectiveOfferLink(PcObject, models.Base, models.Model):
         sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
     )
     collectiveOfferId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), nullable=False
+        sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), nullable=False, index=True
     )
 
 
@@ -509,7 +509,7 @@ class ValidationRuleCollectiveOfferTemplateLink(PcObject, models.Base, models.Mo
         sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
     )
     collectiveOfferTemplateId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), nullable=False
+        sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), nullable=False, index=True
     )
 
 
@@ -1587,6 +1587,18 @@ class EducationalYear(PcObject, models.Base, models.Model):
     beginningDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
 
     expirationDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
+
+    @hybrid_property
+    def displayed_year(self) -> str:
+        return f"{self.beginningDate.year}-{self.expirationDate.year}"
+
+    @displayed_year.expression  # type: ignore[no-redef]
+    def displayed_year(cls) -> str:
+        return (
+            sa.func.extract("year", cls.beginningDate).cast(sa.String)
+            + "-"
+            + sa.func.extract("year", cls.expirationDate).cast(sa.String)
+        )
 
 
 class EducationalDeposit(PcObject, models.Base, models.Model):
