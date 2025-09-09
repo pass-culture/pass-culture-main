@@ -387,23 +387,6 @@ def _get_offers_by_ids(
             .scalar_subquery()
         )
 
-        # Aggregate min and max prices as dict returned in a single row
-        min_max_prices_subquery: sa.sql.selectable.ScalarSelect | sa.sql.elements.Null = (
-            sa.select(
-                sa.func.jsonb_build_object(
-                    "min_price",
-                    sa.func.min(sa.func.coalesce(offers_models.PriceCategory.price, offers_models.Stock.price)),
-                    "max_price",
-                    sa.func.max(sa.func.coalesce(offers_models.PriceCategory.price, offers_models.Stock.price)),
-                )
-            )
-            .select_from(offers_models.Stock)
-            .outerjoin(offers_models.Stock.priceCategory)
-            .filter(offers_models.Stock.offerId == offers_models.Offer.id, ~offers_models.Stock.isSoftDeleted)
-            .correlate(offers_models.Offer)
-            .scalar_subquery()
-        )
-
     else:
         # Compute displayed information in remaining stock column directly, don't joinedload/fetch huge stock data
         booked_quantity_subquery = (
@@ -447,7 +430,23 @@ def _get_offers_by_ids(
 
         # Those columns are not shown to non fraud pro users
         rules_subquery = sa.null()
-        min_max_prices_subquery = sa.null()
+
+    # Aggregate min and max prices as dict returned in a single row
+    min_max_prices_subquery: sa.sql.selectable.ScalarSelect | sa.sql.elements.Null = (
+        sa.select(
+            sa.func.jsonb_build_object(
+                "min_price",
+                sa.func.min(sa.func.coalesce(offers_models.PriceCategory.price, offers_models.Stock.price)),
+                "max_price",
+                sa.func.max(sa.func.coalesce(offers_models.PriceCategory.price, offers_models.Stock.price)),
+            )
+        )
+        .select_from(offers_models.Stock)
+        .outerjoin(offers_models.Stock.priceCategory)
+        .filter(offers_models.Stock.offerId == offers_models.Offer.id, ~offers_models.Stock.isSoftDeleted)
+        .correlate(offers_models.Offer)
+        .scalar_subquery()
+    )
 
     # retrieve one product mediation
     product_mediation_uuid_subquery = (

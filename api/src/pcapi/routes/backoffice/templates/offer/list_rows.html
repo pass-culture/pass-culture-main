@@ -115,18 +115,18 @@
           {% endif %}
         {% endif %}
       </td>
-      <td>
-        {% if row.prices.min_price is none %}
-          -
-        {% elif row.prices.min_price == row.prices.max_price %}
-          {{ row.prices.min_price | format_amount(target=offer.venue) }}
-        {% else %}
-          {{ row.prices.min_price | format_amount(target=offer.venue) }}
-          -
-          {{ row.prices.max_price | format_amount(target=offer.venue) }}
-        {% endif %}
-      </td>
     {% endif %}
+    <td>
+      {% if row.prices.min_price is none %}
+        -
+      {% elif row.prices.min_price == row.prices.max_price %}
+        {{ row.prices.min_price | format_amount(target=offer.venue) }}
+      {% else %}
+        {{ row.prices.min_price | format_amount(target=offer.venue) }}
+        -
+        {{ row.prices.max_price | format_amount(target=offer.venue) }}
+      {% endif %}
+    </td>
     {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ row.tags | format_as_badges }}</td>{% endif %}
     <td>
       {% if row.offer_event_datetimes|length > 0 %}
@@ -146,9 +146,7 @@
         {% if max_date != min_date %}→ {{ max_date }}{% endif %}
       {% endif %}
     </td>
-    {% if not has_permission("PRO_FRAUD_ACTIONS") %}
-      <td>{{ links.build_pro_user_name_to_details_link(offer.author.id, offer.author.full_name) }}</td>
-    {% endif %}
+    <td>{{ links.build_pro_user_name_to_details_link(offer.author.id, offer.author.full_name) }}</td>
     {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ offer.rankingWeight | empty_string_if_null }}</td>{% endif %}
     <td>{{ offer.validation | format_offer_validation_status(with_badge=True) }}</td>
     <td>{{ offer.dateCreated | format_date("%d/%m/%Y") }}</td>
