@@ -44,6 +44,15 @@ export const SiretOrCommentFields = ({
     try {
       const response = await getSiretData(siret)
 
+      if (!response.isDiffusible) {
+        setError('siret', {
+          type: 'siret',
+          message:
+            'Certaines informations de votre structure ne sont pas diffusibles. Veuillez contacter le support.',
+        })
+        return
+      }
+
       /* istanbul ignore next: DEBT, TO FIX */
       const address = `${response.address?.street} ${response.address?.postalCode} ${response.address?.city}`
       setIsFieldNameFrozen?.(
