@@ -1,4 +1,4 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
@@ -53,8 +53,6 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
 
     render(offer)
 
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
     expect(screen.getByText(/Réservations/)).toBeInTheDocument()
     expect(
       await screen.findByRole('button', {
@@ -82,8 +80,6 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
 
     render(offer)
 
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
     expect(screen.getByText(/Réservations/)).toBeInTheDocument()
     expect(
       await screen.findByRole('button', {
@@ -95,7 +91,7 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
     )
   })
 
-  it('should render a message when no bookings', async () => {
+  it('should render a message when no bookings', () => {
     const offer = getIndividualOfferFactory({ name: 'Offre de test' })
 
     vi.spyOn(api, 'getBookingsPro').mockResolvedValueOnce({
@@ -107,10 +103,8 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
 
     render(offer)
 
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
     expect(
-      screen.getByText('Vous n’avez pas encore de réservations')
+      screen.getByText('Vous n’avez aucune réservation pour le moment')
     ).toBeInTheDocument()
   })
 
@@ -135,8 +129,6 @@ describe('IndividualOfferSummaryBookingsScreen', () => {
     })
 
     render(offer)
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const downloadButton = await screen.findByRole('button', {
       name: 'Télécharger les réservations',

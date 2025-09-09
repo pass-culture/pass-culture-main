@@ -188,7 +188,7 @@ export const IndividualBookingsComponent = <
     logEvent(Events.CLICKED_RESET_FILTERS, { from: location.pathname })
   }
 
-  if (hasBookingsQueryLoading) {
+  if (hasBookingsQueryLoading || !hasBookingsQuery) {
     return <Spinner />
   }
 
@@ -204,7 +204,7 @@ export const IndividualBookingsComponent = <
         wereBookingsRequested={wereBookingsRequested}
         audience={audience}
         hasResult={(bookingsQuery ?? []).length > 0}
-        isFiltersDisabled={!hasBookingsQuery?.hasBookings}
+        isFiltersDisabled={!hasBookingsQuery.hasBookings}
         isLocalLoading={venuesQuery.isLoading}
         isTableLoading={isLoading}
         venues={venues}
@@ -229,8 +229,7 @@ export const IndividualBookingsComponent = <
         />
       )}
 
-      {/* {!hasBookingsQueryLoading && */}
-      {hasBookingsQuery?.hasBookings && !wereBookingsRequested ? (
+      {hasBookingsQuery.hasBookings && !wereBookingsRequested ? (
         <ChoosePreFiltersMessage />
       ) : (
         <IndividualBookingsTable
@@ -239,7 +238,7 @@ export const IndividualBookingsComponent = <
           updateGlobalFilters={updateGlobalFilters}
           resetFilters={resetAndApplyPreFilters}
           isLoading={isLoading}
-          hasNoBooking={!hasBookingsQuery?.hasBookings}
+          hasNoBooking={!hasBookingsQuery.hasBookings}
         />
       )}
     </div>
