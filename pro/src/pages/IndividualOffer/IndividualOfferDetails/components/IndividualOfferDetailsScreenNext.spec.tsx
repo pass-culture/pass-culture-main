@@ -593,6 +593,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
     expect(api.postDraftOffer).toHaveBeenCalledWith({
       audioDisabilityCompliant: true,
       description: 'My super description',
+      durationMinutes: null,
       extraData: {
         author: '',
         ean: '1234567891234',
@@ -660,7 +661,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
     expect(api.patchDraftOffer).toHaveBeenCalledWith(12, {
       audioDisabilityCompliant: true,
       description: 'My super description',
-      durationMinutes: undefined,
+      durationMinutes: null,
       extraData: {
         author: 'Chuck Norris',
         gtl_id: '',

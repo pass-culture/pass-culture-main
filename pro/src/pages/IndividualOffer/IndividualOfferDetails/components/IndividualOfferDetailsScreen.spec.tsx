@@ -590,6 +590,7 @@ describe('IndividualOfferDetailsScreen', () => {
     expect(api.postDraftOffer).toHaveBeenCalledOnce()
     expect(api.postDraftOffer).toHaveBeenCalledWith({
       description: 'My super description',
+      durationMinutes: null,
       extraData: {
         author: '',
         ean: '1234567891234',
@@ -648,7 +649,7 @@ describe('IndividualOfferDetailsScreen', () => {
     expect(api.patchDraftOffer).toHaveBeenCalledOnce()
     expect(api.patchDraftOffer).toHaveBeenCalledWith(12, {
       description: 'My super description',
-      durationMinutes: undefined,
+      durationMinutes: null,
       extraData: {
         author: 'Chuck Norris',
         gtl_id: '',

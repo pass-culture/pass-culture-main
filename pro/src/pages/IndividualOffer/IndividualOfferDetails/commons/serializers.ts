@@ -8,10 +8,10 @@ import type { DetailsFormValues } from './types'
 
 export const serializeDurationMinutes = (
   durationHour: string
-): number | undefined => {
+): number | null => {
   /* istanbul ignore next: DEBT, TO FIX */
   if (durationHour.trim().length === 0) {
-    return undefined
+    return null
   }
 
   /* istanbul ignore next: DEBT, TO FIX */
@@ -24,6 +24,8 @@ export const serializeDurationMinutes = (
 
 export function deSerializeDurationMinutes(durationMinute: number): string {
   const hours = Math.floor(durationMinute / 60)
+    .toString()
+    .padStart(2, '0')
   const minutes = (durationMinute % 60).toString().padStart(2, '0')
   return `${hours}:${minutes}`
 }
