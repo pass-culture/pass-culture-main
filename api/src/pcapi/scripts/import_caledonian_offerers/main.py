@@ -16,6 +16,7 @@ from functools import partial
 
 from pydantic import BaseModel
 
+import pcapi.utils.email as email_utils
 from pcapi.app import app
 from pcapi.core import search
 from pcapi.core.external import zendesk_sell
@@ -33,6 +34,12 @@ from pcapi.utils.transaction_manager import on_commit
 
 
 logger = logging.getLogger(__name__)
+
+
+class ImportCounters(BaseModel):
+    already_existing_venues: int = 0
+    already_existing_offerers: int = 0
+
 
 NEW_CALEDONIA_TIMEZONE = "Pacific/Noumea"
 
@@ -152,11 +159,6 @@ def create_or_get_address(address_data: dict) -> geography_models.Address:
     return address
 
 
-class ImportCounters(BaseModel):
-    already_existing_venues: int = 0
-    already_existing_offerers: int = 0
-
-
 def create_offerer_and_venue(data: dict, not_dry: bool, counters: ImportCounters) -> offerers_models.Offerer:
     """Crée un offerer et sa venue correspondante."""
     ridet = data["ridet"].strip().replace(" ", "").replace(".", "")
@@ -230,6 +232,8 @@ def create_offerer_and_venue(data: dict, not_dry: bool, counters: ImportCounters
             db.session.flush()
 
         db.session.flush()
+
+        email_utils.is_valid_email(data.get("booking_email", ""))
 
         venue = offerers_models.Venue(
             name=venue_name,
