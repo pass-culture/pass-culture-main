@@ -636,7 +636,13 @@ class ApiAdresseBackend(BaseBackend):
         enforce_reliability: bool = False,
     ) -> AddressInfo:
         address = f"{postal_code} {city}" if postal_code is not None else city
-        result = self.find_ban_address(address=address, insee_code=insee_code, enforce_reliability=enforce_reliability)
+        try:
+            result = self.find_ban_address(
+                address=address, insee_code=insee_code, enforce_reliability=enforce_reliability
+            )
+        except NoResultException:
+            result = self.find_ban_address(address=address, enforce_reliability=enforce_reliability)
+
         if result.type not in ("municipality", "locality"):
             logger.info(
                 "No BAN city centroid found for query", extra={"queried_address": city, "insee_code": insee_code}
