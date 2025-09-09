@@ -116,6 +116,32 @@ describe('SiretOrCommentFields', () => {
       })
     })
 
+    it('should display error if siret is not diffusible', async () => {
+      vi.spyOn(api, 'getStructureData').mockResolvedValue({
+        ...structureDataBodyModelFactory(),
+        name: 'Siret is not diffusible',
+        isDiffusible: false,
+      })
+
+      renderSiretOrComment(props)
+
+      // Find input again after rerender
+      const siretInput = screen.getByLabelText(/SIRET de la structure/i)
+
+      // Simulate input change with a valid siret starting with siren
+      await userEvent.clear(siretInput)
+      await userEvent.type(siretInput, '12345678901235')
+
+      await waitFor(() => {
+        expect(api.getStructureData).toHaveBeenCalledWith('12345678901235')
+      })
+      expect(
+        await screen.findByText(
+          'Certaines informations de votre structure ne sont pas diffusibles. Veuillez contacter le support.'
+        )
+      ).toBeInTheDocument()
+    })
+
     it('should submit valid form', async () => {
       renderSiretOrComment(props)
 

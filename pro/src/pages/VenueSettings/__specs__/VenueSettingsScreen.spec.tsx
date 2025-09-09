@@ -10,6 +10,7 @@ import {
   defaultVenueProvider,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { structureDataBodyModelFactory } from '@/commons/utils/factories/userOfferersFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -217,6 +218,29 @@ describe('VenueSettingsScreen', () => {
       withdrawalDetails:
         "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
     })
+  })
+
+  it('should not change name if siret is not diffusible', async () => {
+    vi.spyOn(api, 'getStructureData').mockResolvedValue({
+      ...structureDataBodyModelFactory(),
+      name: 'Siret is not diffusible',
+      isDiffusible: false,
+    })
+
+    await renderForm()
+
+    const siretField = await screen.findByRole('textbox', {
+      name: /SIRET de la structure/,
+    })
+    const nameField = await screen.findByRole('textbox', {
+      name: /Raison sociale/,
+    })
+
+    await userEvent.clear(siretField)
+    await userEvent.type(siretField, '12345678901234')
+    await userEvent.tab()
+    expect(nameField).not.toHaveValue('Siret is not diffusible')
+    expect(nameField).toHaveValue('Lieu Exemple')
   })
 
   describe('toggleManuallySetAddress', () => {
