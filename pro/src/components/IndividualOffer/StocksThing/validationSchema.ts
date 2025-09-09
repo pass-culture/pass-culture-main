@@ -3,9 +3,9 @@ import * as yup from 'yup'
 
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import {
-  PRICE_CATEGORY_PRICE_MAX,
-  PRICE_MAX_PACIFIC_FRANC,
-} from '@/pages/IndividualOffer/commons/prices/constants'
+  PRICE_TABLE_ENTRY_MAX_PRICE_IN_EUR,
+  PRICE_TABLE_ENTRY_MAX_PRICE_IN_XPF,
+} from '@/pages/IndividualOffer/IndividualOfferPriceTable/commons/constants'
 
 export const MAX_STOCKS_QUANTITY = 1000000
 
@@ -33,10 +33,12 @@ export const getValidationSchema = (
               : 'Le prix ne peut pas être inferieur à 0€'
           )
           .max(
-            isCaledonian ? PRICE_MAX_PACIFIC_FRANC : PRICE_CATEGORY_PRICE_MAX,
             isCaledonian
-              ? `Veuillez renseigner un prix inférieur à ${PRICE_MAX_PACIFIC_FRANC} F`
-              : `Veuillez renseigner un prix inférieur à ${PRICE_CATEGORY_PRICE_MAX} €`
+              ? PRICE_TABLE_ENTRY_MAX_PRICE_IN_XPF
+              : PRICE_TABLE_ENTRY_MAX_PRICE_IN_EUR,
+            isCaledonian
+              ? `Veuillez renseigner un prix inférieur à ${PRICE_TABLE_ENTRY_MAX_PRICE_IN_XPF} F`
+              : `Veuillez renseigner un prix inférieur à ${PRICE_TABLE_ENTRY_MAX_PRICE_IN_EUR} €`
           )
           .required('Veuillez renseigner un prix')
       } else {

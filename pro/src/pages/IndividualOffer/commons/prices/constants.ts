@@ -1,2 +1,0 @@
-export const PRICE_CATEGORY_PRICE_MAX = 300
-export const PRICE_MAX_PACIFIC_FRANC = 23_865
