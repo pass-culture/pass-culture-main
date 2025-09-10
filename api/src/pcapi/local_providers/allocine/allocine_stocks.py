@@ -99,9 +99,9 @@ class AllocineStocks(LocalProvider):
         offer.name = self.product.name
         offer.product = self.product
         if offer.product:
-            offer.description = None
-            offer.durationMinutes = None
-            offer.extraData = None
+            offer._description = None
+            offer._durationMinutes = None
+            offer._extraData = {}
 
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
         offer.venueId = self.venue.id

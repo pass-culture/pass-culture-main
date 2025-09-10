@@ -696,9 +696,9 @@ class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
             sa.UniqueConstraint("idAtProvider", "venueId", name="unique_idAtProvider_venueId"),
             sa.CheckConstraint("ean ~ '^\\d{13}$'", name="check_ean_validity"),
             sa.CheckConstraint(
-            '"productId" is not null AND description IS NULL and "durationMinutes" is null and "jsonData" is null',
-            name="check_product_id_has_minimal_data",
-        ),
+                '"productId" is not null AND description IS NULL and "durationMinutes" is null and "jsonData" is null',
+                name="check_product_id_has_minimal_data",
+            ),
         ]
 
         return tuple(parent_args)
@@ -817,7 +817,7 @@ class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
             return
         if self.product:
             logger.error("No extraData should be set on an offer with a product")
-            self._extraData = None
+            self._extraData = {}
         else:
             self._extraData = value
 
